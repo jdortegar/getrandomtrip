@@ -65,8 +65,81 @@ This document outlines the end-to-end test plan for the Randomtrip web applicati
 ## 8. Tools
 - Manual testing.
 - Browser developer tools for responsiveness and console errors.
+- Postman or curl for API testing.
 
-## 9. Future Considerations
+## 9. API Endpoints for Manual Verification
+
+### 9.1. Checkout Endpoint
+
+**Description:** Simulates a payment process.
+
+**Endpoint:** `POST /api/checkout`
+
+**Request Body:**
+```json
+{
+  "amount": 1410,
+  "paymentMethod": "Mercado Pago"
+}
+```
+
+**Sample cURL Command (Success):**
+```bash
+curl -X POST http://localhost:3001/api/checkout \
+-H "Content-Type: application/json" \
+-d "{\"amount\": 1410, \"paymentMethod\": \"Mercado Pago\"}"
+```
+
+**Sample cURL Command (Failure - adjust amount or method to trigger failure):**
+```bash
+curl -X POST http://localhost:3001/api/checkout \
+-H "Content-Type: application/json" \
+-d "{\"amount\": 10, \"paymentMethod\": \"Invalid Method\"}"
+```
+
+### 9.2. Post-Purchase Endpoint
+
+**Description:** Records a booking confirmation.
+
+**Endpoint:** `POST /api/post-purchase`
+
+**Request Body:**
+```json
+{
+  "bookingId": "mock_booking_123"
+}
+```
+
+**Sample cURL Command:**
+```bash
+curl -X POST http://localhost:3001/api/post-purchase \
+-H "Content-Type: application/json" \
+-d "{\"bookingId\": \"mock_booking_123\"}"
+```
+
+### 9.3. Reveal Endpoint
+
+**Description:** Triggers destination revelation.
+
+**Endpoint:** `POST /api/reveal`
+
+**Request Body:**
+```json
+{
+  "bookingId": "mock_booking_123"
+}
+```
+
+**Sample cURL Command:**
+```bash
+curl -X POST http://localhost:3001/api/reveal \
+-H "Content-Type: application/json" \
+-d "{\"bookingId\": \"mock_booking_123\"}"
+```
+
+## 10. Future Considerations
 - Integration with automated testing frameworks (e.g., Cypress, Playwright).
 - Performance testing.
 - Security testing.
+- Automated API testing using tools like Jest or Supertest.
+
