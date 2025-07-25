@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
+import { useRouter } from 'next/navigation';
 
 interface TripSummary {
   experienceLevel: string;
@@ -43,6 +44,8 @@ const mockTripSummary: TripSummary = {
 export default function CheckoutClient() {
   const [tripSummary] = useState<TripSummary>(mockTripSummary);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleEdit = (section: string) => {
     console.log(`Editing section: ${section}`);
@@ -51,20 +54,46 @@ export default function CheckoutClient() {
 
   const handlePayNow = async () => {
     setPaymentStatus('processing');
+    setErrorMessage(null); // Clear previous errors
     console.log('Simulating payment...');
+
+    // Basic client-side validation
+    if (tripSummary.totalPrice <= 0) {
+      setErrorMessage('Total price must be greater than 0.');
+      setPaymentStatus('failed');
+      return;
+    }
+
     // Simulate an API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate network delay
-      const success = Math.random() > 0.2; // 80% chance of success
-      if (success) {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
+      const response = await fetch(`${backendUrl}/api/checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: tripSummary.totalPrice,
+          currency: 'USD', // Assuming USD as default currency
+          token: 'mock_payment_token', // This would come from a real payment gateway
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setPaymentStatus('success');
-        console.log('Payment successful!');
+        console.log('Payment successful!', data);
+        // Redirect to post-purchase page
+        router.push('/post-purchase');
       } else {
         setPaymentStatus('failed');
-        console.error('Payment failed.');
+        setErrorMessage(data.message || 'Payment failed. Please try again.');
+        console.error('Payment failed:', data.message || 'Unknown error');
       }
     } catch (error) {
       setPaymentStatus('failed');
+      setErrorMessage('Network error or server issue. Please check your connection.');
       console.error('Payment error:', error);
     }
   };

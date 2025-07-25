@@ -1,18 +1,17 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 
 const router = Router();
 
-router.post('/', (req, res) => {
-  const { bookingId } = req.body;
+router.post('/', (req: Request, res: Response) => {
+  // Mock recording of confirmation
+  const { bookingId, status, paymentId } = req.body;
 
-  if (bookingId) {
-    // In a real application, this would record the confirmation in the database
-    // and potentially trigger other post-purchase flows.
-    console.log(`Booking ${bookingId} confirmed.`);
-    res.status(200).json({ success: true, message: `Booking ${bookingId} confirmed.` });
-  } else {
-    res.status(400).json({ success: false, message: 'Booking ID is required.' });
+  if (!bookingId || !status || !paymentId) {
+    return res.status(400).json({ success: false, message: 'Missing required confirmation details.' });
   }
+
+  console.log(`Recording confirmation for booking ${bookingId} with status ${status} and payment ID ${paymentId}`);
+  res.status(200).json({ success: true, message: 'Confirmation recorded successfully.' });
 });
 
 export default router;

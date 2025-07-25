@@ -41,6 +41,16 @@ jobs:
       run: echo "Running frontend tests... (Implement actual tests later)"
       working-directory: frontend
 
+    - name: Install Cypress
+      run: npm install cypress
+      working-directory: frontend
+
+    - name: Run Cypress E2E tests
+      run: npm run cypress run
+      working-directory: frontend
+      env:
+        NEXT_PUBLIC_BACKEND_API_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_API_URL }}
+
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
