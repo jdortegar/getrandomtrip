@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
+import SkeletonLoader from '../../components/SkeletonLoader';
 
 export default function RevealDestinationClient() {
   const mockRevealTime = new Date(Date.now() + (10 * 1000)); // Reveal in 10 seconds for testing
@@ -7,8 +10,14 @@ export default function RevealDestinationClient() {
 
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [destination, setDestination] = useState<any>(null);
+  const [destination, setDestination] = useState<{
+    name: string;
+    image: string;
+    description: string;
+    itinerary: string[];
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const calculateTimeRemaining = () => {
@@ -26,8 +35,16 @@ export default function RevealDestinationClient() {
     const timer = setInterval(calculateTimeRemaining, 1000);
     calculateTimeRemaining(); // Initial calculation
 
-    return () => clearInterval(timer);
-  }, [isRevealed]);
+    // Simulate initial loading for the countdown page
+    const initialLoadTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(initialLoadTimer);
+    };
+  }, [isRevealed, mockRevealTime]);
 
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -40,6 +57,7 @@ export default function RevealDestinationClient() {
   };
 
   const fetchDestination = async () => {
+    setLoading(true); // Set loading true when fetching destination after countdown
     try {
       // In a real application, this would fetch the actual destination from the backend
       // For now, we'll simulate the call to /api/reveal and return mock data.
@@ -72,10 +90,23 @@ export default function RevealDestinationClient() {
       } else {
         setError(data.message || 'Failed to fetch destination.');
       }
-    } catch (err) {
+    } catch (error) {
       setError('Network error or server issue.');
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Preparing Your Reveal...</h1>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
+          <SkeletonLoader />
+        </div>
+      </div>
+    );
+  }
 
   if (error) {
     return (

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
+import SkeletonLoader from '../../components/SkeletonLoader';
 
 interface FilterOption {
   id: string;
@@ -40,8 +41,18 @@ const premiumFilters: FilterOption[] = [
 export default function FiltersPremiumClient() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const handleFilterChange = (filterId: string, price: number) => {
+  useEffect(() => {
+    // Simulate data fetching or heavy computation
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleFilterChange = (filterId: string) => {
     setSelectedFilters((prevSelected) => {
       const newSelected = prevSelected.includes(filterId)
         ? prevSelected.filter((id) => id !== filterId)
@@ -67,6 +78,17 @@ export default function FiltersPremiumClient() {
     // TODO: Navigate to the next step (Add-ons)
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Enhance Your Trip with Premium Filters</h1>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
+          <SkeletonLoader />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Enhance Your Trip with Premium Filters</h1>
@@ -80,14 +102,14 @@ export default function FiltersPremiumClient() {
                   type="checkbox"
                   className="form-checkbox h-5 w-5 text-[#D97E4A]"
                   checked={selectedFilters.includes(filter.id)}
-                  onChange={() => handleFilterChange(filter.id, filter.price)}
+                  onChange={() => handleFilterChange(filter.id)}
                 />
                 <span className="ml-3 text-lg font-semibold text-[#0A2240]">{filter.name}</span>
               </label>
               <p className="text-gray-600 text-sm ml-8">{filter.description}</p>
             </div>
             <span className="text-lg font-bold text-[#D97E4A]">
-              {filter.price === 0 ? 'Free' : `$${filter.price}`}
+              {filter.price === 0 ? 'Free' : `${filter.price}`}
             </span>
           </div>
         ))}

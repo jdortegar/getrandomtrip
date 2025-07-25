@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
 
 
@@ -40,6 +40,16 @@ const experienceLevels: ExperienceLevel[] = [
 
 export default function ExperienceClient() {
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate an API call or data loading
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSelectLevel = (levelId: string) => {
     setSelectedLevel(levelId);
@@ -49,6 +59,14 @@ export default function ExperienceClient() {
     console.log('Continue to Basic Configuration with level:', selectedLevel);
     // TODO: Navigate to the next step
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#D97E4A]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

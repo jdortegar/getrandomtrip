@@ -2,6 +2,7 @@ import express from 'express';
 import checkoutRoutes from './routes/checkout';
 import postPurchaseRoutes from './routes/post-purchase';
 import revealRoutes from './routes/reveal';
+import mercadopagoWebhookRoutes from './routes/mercadopago-webhook';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/post-purchase', postPurchaseRoutes);
 app.use('/api/reveal', revealRoutes);
+app.use('/webhooks/mercadopago', mercadopagoWebhookRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);

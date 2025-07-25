@@ -1,7 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PrimaryButton from '../../../components/PrimaryButton';
+import SkeletonLoader from '../../../components/SkeletonLoader';
+
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 export default function BasicConfigClient() {
   const [originCity, setOriginCity] = useState('');
@@ -10,6 +17,63 @@ export default function BasicConfigClient() {
   const [travelers, setTravelers] = useState(1);
   const [accommodationType, setAccommodationType] = useState('');
   const [transportationType, setTransportationType] = useState('');
+  const [loading, setLoading] = useState(true);
+  const autocompleteInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Simulate data fetching or heavy computation
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const [googleMapsApiLoaded, setGoogleMapsApiLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadGoogleMapsScript = () => {
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => setGoogleMapsApiLoaded(true);
+        script.onerror = () => {
+          console.error('Google Maps API failed to load.');
+          setGoogleMapsApiLoaded(false);
+        };
+        document.head.appendChild(script);
+      } else {
+        setGoogleMapsApiLoaded(true);
+      }
+    };
+
+    loadGoogleMapsScript();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && googleMapsApiLoaded && autocompleteInputRef.current) {
+      try {
+        const autocomplete = new window.google.maps.places.Autocomplete(
+          autocompleteInputRef.current,
+          { types: ['(cities)'] }
+        );
+
+        autocomplete.addListener('place_changed', () => {
+          const place = autocomplete.getPlace();
+          if (place.formatted_address) {
+            setOriginCity(place.formatted_address);
+          } else if (place.name) {
+            setOriginCity(place.name);
+          }
+        });
+      } catch (error) {
+        console.error('Error initializing Google Maps Autocomplete:', error);
+        // Fallback to free-text input if Autocomplete fails
+      }
+    }
+  }, [loading, googleMapsApiLoaded]);
 
   const handleContinue = () => {
     console.log({
@@ -22,6 +86,17 @@ export default function BasicConfigClient() {
     });
     // TODO: Navigate to the next step (Premium Filters)
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Basic Services</h1>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
+          <SkeletonLoader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -38,6 +113,7 @@ export default function BasicConfigClient() {
               placeholder="e.g., New York"
               value={originCity}
               onChange={(e) => setOriginCity(e.target.value)}
+              ref={autocompleteInputRef}
             />
           </div>
           <div>
@@ -167,3 +243,5 @@ export default function BasicConfigClient() {
     </div>
   );
 }
+
+

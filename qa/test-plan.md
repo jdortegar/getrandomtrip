@@ -96,6 +96,41 @@ This document outlines the end-to-end test plan for the Randomtrip web applicati
     3. Complete the purchase.
   - **Expected Result:** The price correctly reflects the solo traveler markup.
 
+- **TC-FE-007: Invalid Input - Checkout Form**
+  - **Description:** Verify client-side validation prevents submission with invalid/missing required fields on the Checkout form.
+  - **Steps:**
+    1. Navigate to the Checkout page.
+    2. Attempt to submit the form with invalid or missing required payment information (if applicable, based on the form fields).
+    3. Verify that appropriate client-side validation error messages are displayed.
+    4. Verify that the form cannot be submitted until all validation errors are resolved.
+  - **Expected Result:** Client-side validation prevents submission, and clear error messages guide the user to correct inputs.
+
+- **TC-FE-008: API Failure - Backend Checkout Endpoint**
+  - **Description:** Verify the frontend gracefully handles a 500-level error or network timeout from the `/api/checkout` endpoint.
+  - **Steps:**
+    1. On the Checkout page, trigger the payment process.
+    2. Simulate a backend error (e.g., by temporarily disabling the backend or configuring a mock to return a 500 status).
+    3. Verify that an appropriate error toast notification is displayed to the user.
+    4. Verify that the UI remains functional and allows for retry.
+  - **Expected Result:** A user-friendly error message is displayed, and the application does not crash.
+
+- **TC-FE-009: API Failure - Backend Post-Purchase Endpoint**
+  - **Description:** Verify the frontend gracefully handles a 500-level error or network timeout when fetching post-purchase data.
+  - **Steps:**
+    1. Successfully complete the checkout process.
+    2. Simulate a backend error when the `/api/post-purchase` endpoint is called.
+    3. Verify that an appropriate error message is displayed on the Post-Purchase page.
+  - **Expected Result:** A user-friendly error message is displayed on the Post-Purchase page.
+
+- **TC-FE-010: API Failure - Backend Reveal Endpoint**
+  - **Description:** Verify the frontend gracefully handles a 500-level error or network timeout when fetching reveal data.
+  - **Steps:**
+    1. Successfully complete the checkout and post-purchase process.
+    2. Navigate to the Reveal Destination page.
+    3. Simulate a backend error when the `/api/reveal` endpoint is called.
+    4. Verify that an appropriate error message is displayed on the Reveal Destination page.
+  - **Expected Result:** A user-friendly error message is displayed on the Reveal Destination page.
+
 ### 5.3. Cross-Browser/Device Compatibility
 - Verify UI and functionality across all specified browsers and devices.
 

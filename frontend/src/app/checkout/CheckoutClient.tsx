@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import SkeletonLoader from '../../components/SkeletonLoader';
 
 interface TripSummary {
   experienceLevel: string;
@@ -45,7 +47,17 @@ export default function CheckoutClient() {
   const [tripSummary] = useState<TripSummary>(mockTripSummary);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // Add loading state
   const router = useRouter();
+
+  useEffect(() => {
+    // Simulate data fetching or heavy computation
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleEdit = (section: string) => {
     console.log(`Editing section: ${section}`);
@@ -83,20 +95,34 @@ export default function CheckoutClient() {
 
       if (response.ok && data.success) {
         setPaymentStatus('success');
-        console.log('Payment successful!', data);
-        // Redirect to post-purchase page
+        toast.success('Payment successful! Redirecting...');
         router.push('/post-purchase');
       } else {
         setPaymentStatus('failed');
-        setErrorMessage(data.message || 'Payment failed. Please try again.');
+        const msg = data.message || 'Payment failed. Please try again.';
+        setErrorMessage(msg);
+        toast.error(msg);
         console.error('Payment failed:', data.message || 'Unknown error');
       }
     } catch (error) {
       setPaymentStatus('failed');
-      setErrorMessage('Network error or server issue. Please check your connection.');
+      const msg = 'Network error or server issue. Please check your connection.';
+      setErrorMessage(msg);
+      toast.error(msg);
       console.error('Payment error:', error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Review Your Trip & Payment</h1>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
+          <SkeletonLoader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -179,8 +205,8 @@ export default function CheckoutClient() {
             {paymentStatus === 'success' && (
               <p className="text-green-600 font-semibold">Payment Successful! Redirecting...</p>
             )}
-            {paymentStatus === 'failed' && (
-              <p className="text-red-600 font-semibold mb-2">Payment Failed. Please try again.</p>
+            {paymentStatus === 'failed' && errorMessage && (
+              <p className="text-red-600 font-semibold mb-2">{errorMessage}</p>
             )}
             <PrimaryButton onClick={handlePayNow} disabled={paymentStatus === 'processing'}>
               {paymentStatus === 'processing' ? 'Processing...' : 'Pay Now'}
@@ -191,3 +217,8 @@ export default function CheckoutClient() {
     </div>
   );
 }
+
+
+
+
+  

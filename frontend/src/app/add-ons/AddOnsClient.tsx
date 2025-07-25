@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
+import SkeletonLoader from '../../components/SkeletonLoader';
 
 interface AddOn {
   id: string;
@@ -46,6 +47,16 @@ const initialAddOns: AddOn[] = [
 export default function AddOnsClient() {
   const [addOns, setAddOns] = useState<AddOn[]>(initialAddOns);
   const [numberOfTravelers, setNumberOfTravelers] = useState(1); // Assuming this comes from a previous step
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data fetching or heavy computation
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleAddOnToggle = (id: string) => {
     setAddOns((prevAddOns) =>
@@ -77,6 +88,17 @@ export default function AddOnsClient() {
     console.log('Total Extra Cost:', totalExtraCost);
     // TODO: Navigate to the next step (Review and Pay)
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Customize with Add-ons</h1>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
+          <SkeletonLoader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

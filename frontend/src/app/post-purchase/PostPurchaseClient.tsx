@@ -2,9 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
+import SkeletonLoader from '../../components/SkeletonLoader';
+
+interface BookingConfirmation {
+  success: boolean;
+  message: string;
+  // Add other properties that might be returned by the API
+}
 
 export default function PostPurchaseClient() {
-  const [bookingConfirmation, setBookingConfirmation] = useState<any>(null);
+  const [bookingConfirmation, setBookingConfirmation] = useState<BookingConfirmation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +42,7 @@ export default function PostPurchaseClient() {
         } else {
           setError(data.message || 'Failed to fetch booking confirmation.');
         }
-      } catch (err) {
+      } catch (error) {
         setError('Network error or server issue.');
       } finally {
         setLoading(false);
@@ -52,9 +59,11 @@ export default function PostPurchaseClient() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">Loading Confirmation...</h1>
-        <p className="text-xl text-gray-700">Please wait while we confirm your booking.</p>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Loading Confirmation...</h1>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
+          <SkeletonLoader />
+        </div>
       </div>
     );
   }
@@ -87,3 +96,4 @@ export default function PostPurchaseClient() {
     </div>
   );
 }
+
