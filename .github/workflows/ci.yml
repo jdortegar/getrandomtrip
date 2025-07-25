@@ -1,0 +1,50 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Frontend Dependencies
+      run: npm install
+      working-directory: frontend
+
+    - name: Build Frontend
+      run: npm run build
+      working-directory: frontend
+
+    - name: Install Backend Dependencies
+      run: npm install
+      working-directory: backend
+
+    - name: Run Backend Tests (Placeholder)
+      run: echo "Running backend tests... (Implement actual tests later)"
+      working-directory: backend
+
+    - name: Run Frontend Tests (Placeholder)
+      run: echo "Running frontend tests... (Implement actual tests later)"
+      working-directory: frontend
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Deploy (Placeholder)
+      run: echo "Deploying to production... (Implement actual deployment steps later)"

@@ -1,0 +1,35 @@
+{
+  "buttons": {
+    "randomtripMe": "RandomtripME!",
+    "startYourJourney": "Start Your Journey",
+    "exploreTrips": "Explore Trips",
+    "viewDetails": "View Details",
+    "continue": "Continue",
+    "proceed": "Proceed",
+    "reviewAndPay": "Review and Pay",
+    "payNow": "Pay Now",
+    "retry": "Retry",
+    "edit": "Edit"
+  },
+  "headings": {
+    "heroTitle": "Your Next Unforgettable Journey",
+    "heroSubtitle": "Discover curated trips tailored just for you.",
+    "popularDestinations": "Popular Destinations",
+    "chooseAdventureStyle": "Choose Your Adventure Style",
+    "selectExperienceLevel": "Select Your Experience Level",
+    "basicServices": "Basic Services",
+    "enhanceYourTrip": "Enhance Your Trip with Premium Filters",
+    "customizeWithAddons": "Customize with Add-ons",
+    "reviewYourTrip": "Review Your Trip & Payment",
+    "congratulations": "Congratulations! Your Randomtrip is Booked!",
+    "yourDestinationAwaits": "Your Destination Awaits!"
+  },
+  "errorMessages": {
+    "paymentFailed": "Payment failed. Please try again.",
+    "mapLoadFailed": "Failed to load map. Please enter your destination manually.",
+    "generalError": "An unexpected error occurred. Please try again later."
+  },
+  "progressBar": {
+    "stepOfTotal": "{{currentStep}} of {{totalSteps}}"
+  }
+}
