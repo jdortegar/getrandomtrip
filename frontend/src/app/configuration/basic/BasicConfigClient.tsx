@@ -1,12 +1,23 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import PrimaryButton from '../../../components/PrimaryButton';
 import SkeletonLoader from '../../../components/SkeletonLoader';
 
 declare global {
   interface Window {
-    google: any;
+    google: {
+      maps: {
+        places: {
+          Autocomplete: new (
+            inputField: HTMLInputElement,
+            options?: google.maps.places.AutocompleteOptions
+          ) => google.maps.places.Autocomplete;
+          PlaceResult: google.maps.places.PlaceResult;
+        };
+      };
+    };
   }
 }
 
@@ -75,6 +86,8 @@ export default function BasicConfigClient() {
     }
   }, [loading, googleMapsApiLoaded]);
 
+  const router = useRouter();
+
   const handleContinue = () => {
     console.log({
       originCity,
@@ -84,7 +97,7 @@ export default function BasicConfigClient() {
       accommodationType,
       transportationType,
     });
-    // TODO: Navigate to the next step (Premium Filters)
+    router.push('/filters-premium');
   };
 
   if (loading) {

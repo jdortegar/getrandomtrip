@@ -1,12 +1,101 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import PrimaryButton from '../../components/PrimaryButton';
 import SkeletonLoader from '../../components/SkeletonLoader';
 
 export default function RevealDestinationClient() {
-  const mockRevealTime = new Date(Date.now() + (10 * 1000)); // Reveal in 10 seconds for testing
-  const mockBookingId = 'mock_booking_abcde';
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get('bookingId');
+
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [destination, setDestination] = useState<{
+    name: string;
+    image: string;
+    description: string;
+    itinerary: string[];
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      // For now, we'll assume the reveal time is immediate for testing purposes
+      // In a real scenario, this would come from the backend or a fixed time after booking
+      const revealTime = now; 
+      const remaining = revealTime - now;
+      setTimeRemaining(remaining > 0 ? remaining : 0);
+
+      if (remaining <= 0 && !isRevealed) {
+        setIsRevealed(true);
+        fetchDestination();
+      }
+    };
+
+    const timer = setInterval(calculateTimeRemaining, 1000);
+    calculateTimeRemaining(); // Initial calculation
+
+    // Simulate initial loading for the countdown page
+    const initialLoadTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate 1.5 seconds loading time
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(initialLoadTimer);
+    };
+  }, [isRevealed]);
+
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / (3600 * 24));
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  const fetchDestination = async () => {
+    setLoading(true); // Set loading true when fetching destination after countdown
+    if (!bookingId) {
+      setError('Booking ID not found.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
+      const response = await fetch(`${backendUrl}/api/reveal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId: bookingId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setDestination({
+          name: data.destination.name,
+          image: data.destination.image || '/images/placeholder.jpg', // Use placeholder if no image from backend
+          description: data.destination.description,
+          itinerary: data.destination.itinerary,
+        });
+      } else {
+        setError(data.message || 'Failed to fetch destination.');
+      }
+    } catch (error) {
+      setError('Network error or server issue.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
@@ -44,7 +133,7 @@ export default function RevealDestinationClient() {
       clearInterval(timer);
       clearTimeout(initialLoadTimer);
     };
-  }, [isRevealed, mockRevealTime]);
+  }, [isRevealed]);
 
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);

@@ -42,7 +42,7 @@ export default function PostPurchaseClient() {
         } else {
           setError(data.message || 'Failed to fetch booking confirmation.');
         }
-      } catch (error) {
+      } catch {
         setError('Network error or server issue.');
       } finally {
         setLoading(false);

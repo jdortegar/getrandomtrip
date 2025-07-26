@@ -1,8 +1,14 @@
 import { Router, Request, Response } from 'express';
-import mercadopago from 'mercadopago';
+// import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { PrismaClient } from '@prisma/client';
 import { scheduleRevealEmail } from '../scheduler'; // Import the scheduler
 
 const router = Router();
+const prisma = new PrismaClient();
+
+// const client = new MercadoPagoConfig({
+//   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
+// });
 
 router.post('/', async (req: Request, res: Response) => {
   const { type, data } = req.body;
@@ -10,33 +16,49 @@ router.post('/', async (req: Request, res: Response) => {
   if (type === 'payment') {
     const paymentId = data.id;
     try {
-      const payment = await mercadopago.payment.findById(Number(paymentId));
-      const status = payment.body.status;
-      const externalReference = payment.body.external_reference; // This could be your booking ID
+      // const payment = await new Payment(client).get({ id: Number(paymentId) });
+      // const status = payment.status;
+      // const externalReference = payment.external_reference; // This could be your booking ID
 
-      console.log(`Mercado Pago Payment Notification: Payment ID ${paymentId}, Status: ${status}, External Reference: ${externalReference}`);
+      // console.log(`Mercado Pago Payment Notification: Payment ID ${paymentId}, Status: ${status}, External Reference: ${externalReference}`);
 
-      // Handle different payment statuses
+      // Simulate payment status for now
+      const status = 'approved'; // Mock status
+      const externalReference = 'mock_booking_id'; // Mock external reference
+
+      let bookingStatus = 'pending';
       switch (status) {
         case 'approved':
+          bookingStatus = 'confirmed';
           console.log('Payment approved!');
           // In a real application, you would fetch the actual tripDate associated with the externalReference (bookingId)
           // For now, using a placeholder date (e.g., 7 days from now)
           const mockTripDate = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
           if (externalReference) {
             scheduleRevealEmail(externalReference, mockTripDate);
-          } else {
-            console.warn('No externalReference found for approved payment. Cannot schedule reveal email.');
           }
           break;
         case 'pending':
+          bookingStatus = 'pending';
           console.log('Payment pending.');
           break;
         case 'rejected':
+          bookingStatus = 'failed';
           console.log('Payment rejected.');
           break;
         default:
+          bookingStatus = 'unknown';
           console.log(`Unhandled payment status: ${status}`);
+      }
+
+      if (externalReference) {
+        await prisma.booking.update({
+          where: { id: externalReference },
+          data: { status: bookingStatus },
+        });
+        console.log(`Booking ${externalReference} status updated to ${bookingStatus}`);
+      } else {
+        console.warn('No externalReference found for payment. Cannot update booking status.');
       }
 
       res.status(200).send('Webhook received');

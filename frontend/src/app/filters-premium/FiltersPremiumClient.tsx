@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PrimaryButton from '../../components/PrimaryButton';
 import SkeletonLoader from '../../components/SkeletonLoader';
 
@@ -73,9 +74,11 @@ export default function FiltersPremiumClient() {
     });
   };
 
+  const router = useRouter();
+
   const handleContinue = () => {
     console.log('Continue to Add-ons with selected filters:', selectedFilters, 'Total Price:', totalPrice);
-    // TODO: Navigate to the next step (Add-ons)
+    router.push('/add-ons');
   };
 
   if (loading) {

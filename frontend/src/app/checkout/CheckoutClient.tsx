@@ -24,39 +24,57 @@ interface TripSummary {
   totalPrice: number;
 }
 
-// Mock data for demonstration. In a real app, this would come from context/API.
-const mockTripSummary: TripSummary = {
-  experienceLevel: 'Explora+',
-  basicConfig: {
-    originCity: 'Buenos Aires',
-    travelDate: '2025-08-15',
-    nights: 7,
-    travelers: 2,
-    accommodationType: 'hotel',
-    transportationType: 'flights',
-  },
-  premiumFilters: ['Specific Experience Type', 'Climate Preference'],
-  addOns: ['Travel Insurance', 'Airport Transfer'],
-  basePrice: 1200,
-  premiumFilterCost: 80, // Example: 50 + 30
-  addOnsCost: 130, // Example: (25+40) * 2 travelers
-  totalPrice: 1410,
-};
-
 export default function CheckoutClient() {
-  const [tripSummary] = useState<TripSummary>(mockTripSummary);
+  const [tripSummary, setTripSummary] = useState<TripSummary | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Simulate data fetching or heavy computation
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500); // Simulate 1.5 seconds loading time
+    const fetchTripSummary = async () => {
+      try {
+        // In a real application, you would send the actual configuration data from previous steps
+        // For now, using mock data to simulate the request
+        const mockConfig = {
+          experienceLevel: 'Explora+',
+          basicConfig: {
+            originCity: 'Buenos Aires',
+            travelDate: '2025-08-15',
+            nights: 7,
+            travelers: 2,
+            accommodationType: 'hotel',
+            transportationType: 'flights',
+          },
+          premiumFilters: ['Specific Experience Type', 'Climate Preference'],
+          addOns: ['Travel Insurance', 'Airport Transfer'],
+        };
 
-    return () => clearTimeout(timer);
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
+        const response = await fetch(`${backendUrl}/api/summary`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(mockConfig),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setTripSummary(data.summary);
+        } else {
+          setErrorMessage(data.message || 'Failed to fetch trip summary.');
+        }
+      } catch (error) {
+        setErrorMessage('Network error or server issue. Failed to fetch trip summary.');
+        console.error('Error fetching trip summary:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTripSummary();
   }, []);
 
   const handleEdit = (section: string) => {
@@ -65,9 +83,14 @@ export default function CheckoutClient() {
   };
 
   const handlePayNow = async () => {
+    if (!tripSummary) {
+      setErrorMessage('Trip summary not loaded.');
+      return;
+    }
+
     setPaymentStatus('processing');
     setErrorMessage(null); // Clear previous errors
-    console.log('Simulating payment...');
+    console.log('Initiating payment...');
 
     // Basic client-side validation
     if (tripSummary.totalPrice <= 0) {
@@ -76,7 +99,6 @@ export default function CheckoutClient() {
       return;
     }
 
-    // Simulate an API call
     try {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
       const response = await fetch(`${backendUrl}/api/checkout`, {
@@ -87,7 +109,8 @@ export default function CheckoutClient() {
         body: JSON.stringify({
           amount: tripSummary.totalPrice,
           currency: 'USD', // Assuming USD as default currency
-          token: 'mock_payment_token', // This would come from a real payment gateway
+          payerEmail: 'test@example.com', // Placeholder: Replace with actual user email
+          description: `Randomtrip for ${tripSummary.basicConfig.originCity}`,
         }),
       });
 
@@ -96,7 +119,12 @@ export default function CheckoutClient() {
       if (response.ok && data.success) {
         setPaymentStatus('success');
         toast.success('Payment successful! Redirecting...');
-        router.push('/post-purchase');
+        // Redirect to Mercado Pago init_point if available, otherwise to post-purchase
+        if (data.initPoint) {
+          window.location.href = data.initPoint;
+        } else {
+          router.push('/post-purchase');
+        }
       } else {
         setPaymentStatus('failed');
         const msg = data.message || 'Payment failed. Please try again.';
@@ -113,13 +141,23 @@ export default function CheckoutClient() {
     }
   };
 
-  if (loading) {
+  if (loading || !tripSummary) {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Review Your Trip & Payment</h1>
         <div className="bg-white p-8 rounded-lg shadow-md mb-8">
           <SkeletonLoader />
         </div>
+      </div>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-4xl font-bold mb-4 text-red-600">Error!</h1>
+        <p className="text-xl text-gray-700">{errorMessage}</p>
+        <p className="text-lg text-gray-600 mt-4">Please try again or contact support.</p>
       </div>
     );
   }

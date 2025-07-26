@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PrimaryButton from '../../components/PrimaryButton';
 import SkeletonLoader from '../../components/SkeletonLoader';
 
@@ -83,10 +84,12 @@ export default function AddOnsClient() {
 
   const { totalExtraCostPerPerson, totalExtraCost } = calculateCosts();
 
+  const router = useRouter();
+
   const handleReviewAndPay = () => {
     console.log('Review and Pay with selected add-ons:', addOns.filter(ao => ao.selected));
     console.log('Total Extra Cost:', totalExtraCost);
-    // TODO: Navigate to the next step (Review and Pay)
+    router.push('/checkout');
   };
 
   if (loading) {

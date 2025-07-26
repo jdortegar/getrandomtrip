@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
-import mercadopago from 'mercadopago';
+// import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { PrismaClient } from '@prisma/client';
 
 const router = Router();
+const prisma = new PrismaClient();
 
-// Configure Mercado Pago SDK
-mercadopago.configure({
-  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
-});
+// const client = new MercadoPagoConfig({
+//   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
+// });
 
 // Placeholder for scheduleRevealEmail - this should be imported from scheduler.ts
 const scheduleRevealEmail = (bookingId: string, tripDate: Date) => {
@@ -22,35 +23,54 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const preference = {
-      items: [
-        {
-          title: description,
-          unit_price: Number(amount),
-          quantity: 1,
-        },
-      ],
-      payer: {
-        email: payerEmail,
-      },
-      back_urls: {
-        success: `${process.env.FRONTEND_URL}/post-purchase?status=success`,
-        pending: `${process.env.FRONTEND_URL}/post-purchase?status=pending`,
-        failure: `${process.env.FRONTEND_URL}/post-purchase?status=failure`,
-      },
-      auto_return: 'approved_on_success',
-      notification_url: `${process.env.BACKEND_URL}/webhooks/mercadopago`, // This will be a separate webhook endpoint
-    };
+    // const preference = {
+    //   items: [
+    //     {
+    //       title: description,
+    //       unit_price: Number(amount),
+    //       quantity: 1,
+    //       id: '1234', // Placeholder ID, replace with actual product ID if available
+    //     },
+    //   ],
+    //   payer: {
+    //     email: payerEmail,
+    //   },
+    //   back_urls: {
+    //     success: `${process.env.FRONTEND_URL}/post-purchase?status=success`,
+    //     pending: `${process.env.FRONTEND_URL}/post-purchase?status=pending`,
+    //     failure: `${process.env.FRONTEND_URL}/post-purchase?status=failure`,
+    //   },
+    //   auto_return: 'approved_on_success',
+    //   notification_url: `${process.env.BACKEND_URL}/webhooks/mercadopago`, // This will be a separate webhook endpoint
+    // };
 
-    const response = await mercadopago.preferences.create(preference);
-    const { id, init_point } = response.body;
+    // const response = await new Preference(client).create({
+    //   body: preference
+    // });
+    // const { id, init_point } = response;
 
-    // Simulate booking creation and scheduling of reveal email
-    const mockBookingId = 'mock_booking_abcde'; // In a real app, this would come from your booking service
+    // Simulate Mercado Pago response for now
+    const id = 'mock_preference_id';
+    const init_point = 'mock_init_point';
+
+    // Persist the booking in the database
+    const booking = await prisma.booking.create({
+      data: {
+        userId: 'clx000000000000000000000', // Placeholder: Replace with actual user ID from authentication context
+        level: 'basic', // Placeholder: Replace with actual level from frontend
+        basePrice: Number(amount), // Use amount as basePrice for now
+        filters: [], // Placeholder: Replace with actual filters from frontend
+        addOns: [], // Placeholder: Replace with actual add-ons from frontend
+        totalPrice: Number(amount), // Use amount as totalPrice for now
+        status: 'pending', // Initial status
+      },
+    });
+
+    // Schedule reveal email using the actual booking ID
     const mockTripDate = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)); // 7 days from now
-    scheduleRevealEmail(mockBookingId, mockTripDate);
+    scheduleRevealEmail(booking.id, mockTripDate);
 
-    res.status(200).json({ success: true, message: 'Payment preference created.', preferenceId: id, initPoint: init_point });
+    res.status(200).json({ success: true, message: 'Payment preference created.', preferenceId: id, initPoint: init_point, bookingId: booking.id });
 
   } catch (error: any) {
     console.error('Error creating Mercado Pago preference:', error.message);
