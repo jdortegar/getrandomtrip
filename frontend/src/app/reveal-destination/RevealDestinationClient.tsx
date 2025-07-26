@@ -5,27 +5,56 @@ import { useSearchParams } from 'next/navigation';
 import PrimaryButton from '../../components/PrimaryButton';
 import SkeletonLoader from '../../components/SkeletonLoader';
 
+interface DestinationData {
+  name: string;
+  image: string;
+  description: string;
+  itinerary: string[];
+}
+
 export default function RevealDestinationClient() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('bookingId');
 
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [destination, setDestination] = useState<{
-    name: string;
-    image: string;
-    description: string;
-    itinerary: string[];
-  } | null>(null);
+  const [destination, setDestination] = useState<DestinationData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Placeholder for tripDate - in a real app, this would come from the booking details
+  // For demonstration, let's set it to 5 minutes from now for testing the countdown
+  const [tripDate, setTripDate] = useState<Date | null>(null);
+
   useEffect(() => {
+    // In a real application, you would fetch the booking details here to get the actual tripDate
+    // For now, we'll simulate fetching it or assume it's passed via props/context
+    const fetchBookingDetails = async () => {
+      // Simulate API call to get booking details and tripDate
+      // const response = await fetch(`/api/booking/${bookingId}`);
+      // const data = await response.json();
+      // setTripDate(new Date(data.tripDate));
+
+      // For testing, set a mock trip date (e.g., 5 minutes from now)
+      const mockTripDate = new Date(Date.now() + (5 * 60 * 1000)); 
+      setTripDate(mockTripDate);
+      setLoading(false); // Stop initial loading once tripDate is set
+    };
+
+    if (bookingId) {
+      fetchBookingDetails();
+    } else {
+      setError('Booking ID not found.');
+      setLoading(false);
+    }
+  }, [bookingId]);
+
+  useEffect(() => {
+    if (!tripDate) return;
+
     const calculateTimeRemaining = () => {
       const now = new Date().getTime();
-      // For now, we'll assume the reveal time is immediate for testing purposes
-      // In a real scenario, this would come from the backend or a fixed time after booking
-      const revealTime = now; 
+      const revealTime = tripDate.getTime() - (48 * 60 * 60 * 1000); // 48 hours before tripDate
       const remaining = revealTime - now;
       setTimeRemaining(remaining > 0 ? remaining : 0);
 
@@ -38,16 +67,10 @@ export default function RevealDestinationClient() {
     const timer = setInterval(calculateTimeRemaining, 1000);
     calculateTimeRemaining(); // Initial calculation
 
-    // Simulate initial loading for the countdown page
-    const initialLoadTimer = setTimeout(() => {
-      setLoading(false);
-    }, 1500); // Simulate 1.5 seconds loading time
-
     return () => {
       clearInterval(timer);
-      clearTimeout(initialLoadTimer);
     };
-  }, [isRevealed]);
+  }, [tripDate, isRevealed]);
 
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -60,7 +83,7 @@ export default function RevealDestinationClient() {
   };
 
   const fetchDestination = async () => {
-    setLoading(true); // Set loading true when fetching destination after countdown
+    setLoading(true); 
     if (!bookingId) {
       setError('Booking ID not found.');
       setLoading(false);
@@ -83,104 +106,15 @@ export default function RevealDestinationClient() {
       if (response.ok && data.success) {
         setDestination({
           name: data.destination.name,
-          image: data.destination.image || '/images/placeholder.jpg', // Use placeholder if no image from backend
+          image: data.destination.image || '/images/placeholder.jpg', 
           description: data.destination.description,
           itinerary: data.destination.itinerary,
         });
       } else {
         setError(data.message || 'Failed to fetch destination.');
       }
-    } catch (error) {
-      setError('Network error or server issue.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const [timeRemaining, setTimeRemaining] = useState(0);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [destination, setDestination] = useState<{
-    name: string;
-    image: string;
-    description: string;
-    itinerary: string[];
-  } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const calculateTimeRemaining = () => {
-      const now = new Date().getTime();
-      const revealTime = mockRevealTime.getTime();
-      const remaining = revealTime - now;
-      setTimeRemaining(remaining > 0 ? remaining : 0);
-
-      if (remaining <= 0 && !isRevealed) {
-        setIsRevealed(true);
-        fetchDestination();
-      }
-    };
-
-    const timer = setInterval(calculateTimeRemaining, 1000);
-    calculateTimeRemaining(); // Initial calculation
-
-    // Simulate initial loading for the countdown page
-    const initialLoadTimer = setTimeout(() => {
-      setLoading(false);
-    }, 1500); // Simulate 1.5 seconds loading time
-
-    return () => {
-      clearInterval(timer);
-      clearTimeout(initialLoadTimer);
-    };
-  }, [isRevealed]);
-
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const days = Math.floor(totalSeconds / (3600 * 24));
-    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-  };
-
-  const fetchDestination = async () => {
-    setLoading(true); // Set loading true when fetching destination after countdown
-    try {
-      // In a real application, this would fetch the actual destination from the backend
-      // For now, we'll simulate the call to /api/reveal and return mock data.
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
-      const response = await fetch(`${backendUrl}/api/reveal`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookingId: mockBookingId,
-          destination: 'Kyoto, Japan', // This would ideally come from the backend
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setDestination({
-          name: data.destination || 'Kyoto, Japan',
-          image: '/images/kyoto.jpg', // Placeholder image
-          description: 'Discover ancient temples, beautiful gardens, and traditional geisha districts.',
-          itinerary: [
-            'Day 1: Arrive in Kyoto, check into ryokan, explore Gion district.',
-            'Day 2: Visit Fushimi Inari Shrine and Arashiyama Bamboo Grove.',
-            'Day 3: Explore Kinkaku-ji (Golden Pavilion) and Ryoan-ji (Zen garden).',
-            'Day 4: Day trip to Nara to see Todai-ji Temple and deer park.',
-          ],
-        });
-      } else {
-        setError(data.message || 'Failed to fetch destination.');
-      }
-    } catch (error) {
-      setError('Network error or server issue.');
+    } catch (e: any) {
+      setError('Network error or server issue: ' + e.message);
     } finally {
       setLoading(false);
     }

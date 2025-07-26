@@ -52,11 +52,11 @@ router.post('/', async (req: Request, res: Response) => {
       }
 
       if (externalReference) {
-        await prisma.booking.update({
-          where: { id: externalReference },
+        await prisma.booking.updateMany({
+          where: { mercadoPagoPreferenceId: externalReference },
           data: { status: bookingStatus },
         });
-        console.log(`Booking ${externalReference} status updated to ${bookingStatus}`);
+        console.log(`Booking with preference ID ${externalReference} status updated to ${bookingStatus}`);
       } else {
         console.warn('No externalReference found for payment. Cannot update booking status.');
       }

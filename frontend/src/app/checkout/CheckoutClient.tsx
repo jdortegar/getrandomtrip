@@ -36,7 +36,11 @@ export default function CheckoutClient() {
       try {
         // In a real application, you would send the actual configuration data from previous steps
         // For now, using mock data to simulate the request
-        const mockConfig = {
+        const storedConfig = localStorage.getItem('tripConfig');
+        const tripConfig = storedConfig ? JSON.parse(storedConfig) : {};
+
+        // Default values if not found in localStorage (for testing/initial load)
+        const defaultConfig = {
           experienceLevel: 'Explora+',
           basicConfig: {
             originCity: 'Buenos Aires',
@@ -46,9 +50,11 @@ export default function CheckoutClient() {
             accommodationType: 'hotel',
             transportationType: 'flights',
           },
-          premiumFilters: ['Specific Experience Type', 'Climate Preference'],
-          addOns: ['Travel Insurance', 'Airport Transfer'],
+          premiumFilters: [],
+          addOns: [],
         };
+
+        const finalConfig = { ...defaultConfig, ...tripConfig };
 
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
         const response = await fetch(`${backendUrl}/api/summary`, {
@@ -56,7 +62,7 @@ export default function CheckoutClient() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(mockConfig),
+          body: JSON.stringify(finalConfig),
         });
 
         const data = await response.json();

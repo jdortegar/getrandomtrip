@@ -89,14 +89,17 @@ export default function BasicConfigClient() {
   const router = useRouter();
 
   const handleContinue = () => {
-    console.log({
-      originCity,
-      travelDate,
-      nights,
-      travelers,
-      accommodationType,
-      transportationType,
-    });
+    const currentConfig = {
+      basicConfig: {
+        originCity,
+        travelDate,
+        nights,
+        travelers,
+        accommodationType,
+        transportationType,
+      },
+    };
+    localStorage.setItem('tripConfig', JSON.stringify(currentConfig));
     router.push('/filters-premium');
   };
 

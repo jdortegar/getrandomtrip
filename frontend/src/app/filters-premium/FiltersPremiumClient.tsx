@@ -12,56 +12,36 @@ interface FilterOption {
   price: number;
 }
 
-const premiumFilters: FilterOption[] = [
-  {
-    id: 'transport_type',
-    name: 'Preferred Transport Type',
-    description: 'Choose your preferred mode of transport.',
-    price: 0, // First filter is free
-  },
-  {
-    id: 'experience_type',
-    name: 'Specific Experience Type',
-    description: 'Tailor your trip to a specific experience (e.g., adventure, relaxation).',
-    price: 50,
-  },
-  {
-    id: 'climate_preference',
-    name: 'Climate Preference',
-    description: 'Select your ideal climate (e.g., tropical, snowy, temperate).',
-    price: 30,
-  },
-  {
-    id: 'avoid_destinations',
-    name: 'Avoid Specific Destinations',
-    description: 'Exclude places you\'ve already visited or don\'t wish to go.',
-    price: 20,
-  },
-];
-
 export default function FiltersPremiumClient() {
+  const [premiumFilters, setPremiumFilters] = useState<FilterOption[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate data fetching or heavy computation
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500); // Simulate 1.5 seconds loading time
+    const fetchPremiumFilters = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/premium-filters`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: FilterOption[] = await response.json();
+        setPremiumFilters(data);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchPremiumFilters();
   }, []);
 
-  const handleFilterChange = (filterId: string) => {
-    setSelectedFilters((prevSelected) => {
-      const newSelected = prevSelected.includes(filterId)
-        ? prevSelected.filter((id) => id !== filterId)
-        : [...prevSelected, filterId];
-
-      // Calculate total price based on selected filters
+  useEffect(() => {
+    if (premiumFilters.length > 0) {
       let currentPrice = 0;
-      const sortedFilters = premiumFilters.filter(f => newSelected.includes(f.id)).sort((a, b) => a.price - b.price);
+      const sortedFilters = premiumFilters.filter(f => selectedFilters.includes(f.id)).sort((a, b) => a.price - b.price);
 
       sortedFilters.forEach((filter, index) => {
         if (index > 0) { // First filter is free
@@ -69,7 +49,14 @@ export default function FiltersPremiumClient() {
         }
       });
       setTotalPrice(currentPrice);
+    }
+  }, [selectedFilters, premiumFilters]);
 
+  const handleFilterChange = (filterId: string) => {
+    setSelectedFilters((prevSelected) => {
+      const newSelected = prevSelected.includes(filterId)
+        ? prevSelected.filter((id) => id !== filterId)
+        : [...prevSelected, filterId];
       return newSelected;
     });
   };
@@ -77,7 +64,14 @@ export default function FiltersPremiumClient() {
   const router = useRouter();
 
   const handleContinue = () => {
-    console.log('Continue to Add-ons with selected filters:', selectedFilters, 'Total Price:', totalPrice);
+    const storedConfig = localStorage.getItem('tripConfig');
+    const tripConfig = storedConfig ? JSON.parse(storedConfig) : {};
+    const updatedConfig = {
+      ...tripConfig,
+      premiumFilters: selectedFilters,
+      premiumFilterCost: totalPrice,
+    };
+    localStorage.setItem('tripConfig', JSON.stringify(updatedConfig));
     router.push('/add-ons');
   };
 

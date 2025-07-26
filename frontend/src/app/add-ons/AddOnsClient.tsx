@@ -87,8 +87,14 @@ export default function AddOnsClient() {
   const router = useRouter();
 
   const handleReviewAndPay = () => {
-    console.log('Review and Pay with selected add-ons:', addOns.filter(ao => ao.selected));
-    console.log('Total Extra Cost:', totalExtraCost);
+    const storedConfig = localStorage.getItem('tripConfig');
+    const tripConfig = storedConfig ? JSON.parse(storedConfig) : {};
+    const updatedConfig = {
+      ...tripConfig,
+      addOns: addOns.filter(ao => ao.selected).map(ao => ao.name),
+      addOnsCost: totalExtraCost,
+    };
+    localStorage.setItem('tripConfig', JSON.stringify(updatedConfig));
     router.push('/checkout');
   };
 

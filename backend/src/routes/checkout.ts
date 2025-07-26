@@ -63,6 +63,7 @@ router.post('/', async (req: Request, res: Response) => {
         addOns: [], // Placeholder: Replace with actual add-ons from frontend
         totalPrice: Number(amount), // Use amount as totalPrice for now
         status: 'pending', // Initial status
+        mercadoPagoPreferenceId: id,
       },
     });
 
