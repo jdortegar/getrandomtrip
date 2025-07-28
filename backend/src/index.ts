@@ -7,6 +7,7 @@ import revealRoutes from './routes/reveal';
 import mercadopagoWebhookRoutes from './routes/mercadopago-webhook';
 import summaryRoutes from './routes/summary';
 import premiumFiltersRoutes from './routes/premium-filters';
+import axios from 'axios'
 
 const app = express();
 const prisma = new PrismaClient();
@@ -154,6 +155,67 @@ app.get('/api/bookings/:id/reveal', async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: 'No se pudo procesar la revelación.' });
+  }
+});
+
+import { createClient } from 'pexels';
+
+// This line can go near the top with your other imports
+const pexelsClient = createClient(process.env.PEXELS_API_KEY || '');
+
+// Add this new route before the app.listen call
+app.get('/api/images/:query', async (req, res) => {
+  const { query } = req.params;
+  try {
+    const response = await pexelsClient.photos.search({ query, per_page: 10, orientation: 'portrait' });
+    if ('photos' in response && response.photos.length > 0) {
+      const randomIndex = Math.floor(Math.random() * response.photos.length);
+      res.json({ imageUrl: response.photos[randomIndex].src.large });
+    } else {
+      // Fallback image if Pexels finds nothing
+      res.json({ imageUrl: 'https://images.unsplash.com/photo-1503220317375-aaad61436b1b' });
+    }
+  } catch (error) {
+    console.error("Pexels API error:", error);
+    res.status(500).json({ error: 'Failed to fetch image.' });
+  }
+});
+
+// --- NEW ROUTE for Ticketmaster Event Search ---
+// Replace the existing /api/events route with this
+app.get('/api/events', async (req, res) => {
+  const { keyword, city, startDate, endDate } = req.query;
+
+  try {
+    const apiKey = process.env.TICKETMASTER_API_KEY;
+    
+    // Build parameters for Ticketmaster API
+    const params: any = {
+      apikey: apiKey,
+      size: 5,
+    };
+    if (keyword) params.keyword = keyword as string;
+    if (city) params.city = city as string;
+    // Add date parameters if they exist
+    if (startDate) params.startDateTime = `${startDate}T00:00:00Z`;
+    if (endDate) params.endDateTime = `${endDate}T23:59:59Z`;
+
+    const response = await axios.get('https://app.ticketmaster.com/discovery/v2/events.json', { params });
+    
+    const events = response.data._embedded?.events.map((event: any) => ({
+      id: event.id,
+      name: event.name,
+      url: event.url,
+      date: event.dates.start.localDate,
+      venue: event._embedded?.venues[0]?.name || 'Venue not specified',
+      image: event.images.find((img: any) => img.ratio === '16_9')?.url || event.images[0]?.url // Prefer 16:9 ratio for consistency
+    }));
+
+    res.json({ events: events || [] });
+
+  } catch (error) {
+    console.error('Ticketmaster API error:', error);
+    res.status(500).json({ error: 'Failed to fetch events.' });
   }
 });
 

@@ -3,18 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BACKEND_API_URL: process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:3001',
+    NEXT_PUBLIC_PEXELS_API_KEY: process.env.NEXT_PUBLIC_PEXELS_API_KEY || '',
   },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
+        hostname: 'images.pexels.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      }
     ],
   },
-  /* config options here */
 };
 
 export default nextConfig;

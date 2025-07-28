@@ -1,0 +1,38 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+
+interface BlogCardProps {
+  post: {
+    image: string;
+    category: string;
+    title: string;
+  };
+}
+
+const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
+  return (
+    <div className="relative h-[60vh] w-80 flex-shrink-0 cursor-pointer group overflow-hidden rounded-lg">
+      <Image
+        src={post.image}
+        alt={post.title}
+        fill
+        style={{ objectFit: 'cover' }}
+        className="group-hover:scale-105 transition-transform duration-300"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+      <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+        <p className="text-yellow-400 text-sm font-semibold mb-2 uppercase tracking-wider">{post.category}</p>
+        <h3 className="text-2xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
+          {post.title}
+        </h3>
+        <button className="mt-4 text-left font-bold text-white uppercase text-sm tracking-widest border-b border-white pb-1">
+          Explore Trip
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default BlogCard;
