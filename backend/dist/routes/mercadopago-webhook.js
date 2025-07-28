@@ -11,8 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mercadopago_1 = require("mercadopago");
+const client_1 = require("@prisma/client"); // Import BookingStatus enum
 const scheduler_1 = require("../scheduler"); // Import the scheduler
 const router = (0, express_1.Router)();
+const prisma = new client_1.PrismaClient();
 const client = new mercadopago_1.MercadoPagoConfig({
     accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
 });
@@ -25,9 +27,10 @@ router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const status = payment.status;
             const externalReference = payment.external_reference; // This could be your booking ID
             console.log(`Mercado Pago Payment Notification: Payment ID ${paymentId}, Status: ${status}, External Reference: ${externalReference}`);
-            // Handle different payment statuses
+            let bookingStatus = client_1.BookingStatus.PENDING; // Initialize with a default enum value
             switch (status) {
                 case 'approved':
+                    bookingStatus = client_1.BookingStatus.CONFIRMED;
                     console.log('Payment approved!');
                     // In a real application, you would fetch the actual tripDate associated with the externalReference (bookingId)
                     // For now, using a placeholder date (e.g., 7 days from now)
@@ -35,18 +38,28 @@ router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     if (externalReference) {
                         (0, scheduler_1.scheduleRevealEmail)(externalReference, mockTripDate);
                     }
-                    else {
-                        console.warn('No externalReference found for approved payment. Cannot schedule reveal email.');
-                    }
                     break;
                 case 'pending':
+                    bookingStatus = client_1.BookingStatus.PENDING;
                     console.log('Payment pending.');
                     break;
                 case 'rejected':
+                    bookingStatus = client_1.BookingStatus.CANCELLED;
                     console.log('Payment rejected.');
                     break;
                 default:
+                    bookingStatus = client_1.BookingStatus.PENDING; // Default to PENDING for unhandled statuses
                     console.log(`Unhandled payment status: ${status}`);
+            }
+            if (externalReference) {
+                yield prisma.booking.updateMany({
+                    where: { mercadoPagoPreferenceId: externalReference },
+                    data: { status: bookingStatus },
+                });
+                console.log(`Booking with preference ID ${externalReference} status updated to ${bookingStatus}`);
+            }
+            else {
+                console.warn('No externalReference found for payment. Cannot update booking status.');
             }
             res.status(200).send('Webhook received');
         }

@@ -17,7 +17,6 @@ export default function FiltersPremiumClient() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPremiumFilters = async () => {
@@ -28,8 +27,9 @@ export default function FiltersPremiumClient() {
         }
         const data: FilterOption[] = await response.json();
         setPremiumFilters(data);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        // Error is not currently displayed to the user, so we just log it
+        console.error('Error fetching premium filters:', e);
       } finally {
         setLoading(false);
       }

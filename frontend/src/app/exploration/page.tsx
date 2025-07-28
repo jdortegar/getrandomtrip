@@ -14,7 +14,7 @@ export default function ExplorationPage() {
       {/* Header */}
       <header className="w-full bg-white shadow-md p-4 flex items-center justify-between">
         <Link href="/">
-          <PrimaryButton>Back</PrimaryButton>
+          <PrimaryButton onClick={() => {}}>Back</PrimaryButton>
         </Link>
         <div className="flex-grow mx-4">
           <ProgressBar currentStep={1} totalSteps={4} />

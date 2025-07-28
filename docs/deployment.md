@@ -1,122 +1,106 @@
-# Deployment Guide for Randomtrip
+# Deployment and Rollback Runbook
 
-This document outlines the steps to deploy the Randomtrip application to various platforms.
+This document outlines the procedures for deploying the Randomtrip web application to staging and production environments, managing environment variables, setting up monitoring, and performing emergency rollbacks.
 
 ## Table of Contents
-1.  [Environment Variables Setup](#environment-variables-setup)
-2.  [Deployment to Vercel (Frontend)](#deployment-to-vercel-frontend)
-3.  [Deployment to Azure (Backend)](#deployment-to-azure-backend)
-4.  [Monitoring](#monitoring)
-5.  [Rollback Procedures](#rollback-procedures)
+1.  [Deployment Process](#1-deployment-process)
+    *   [Staging Environment](#11-staging-environment)
+    *   [Production Environment](#11-production-environment)
+2.  [Environment Variables](#2-environment-variables)
+3.  [Monitoring Setup](#3-monitoring-setup)
+4.  [Emergency Rollback Procedures](#4-emergency-rollback-procedures)
 
 ---
 
-## 1. Environment Variables Setup
+## 1. Deployment Process
 
-Ensure you have the following environment variables configured for both your frontend and backend services. These should be set securely in your deployment environment (e.g., Vercel project settings, Azure App Service configuration).
+### 1.1 Staging Environment
 
-### Project Root `.env.example` (for local development reference)
+The staging environment is used for testing new features and changes before they are deployed to production.
 
-```
-DATABASE_URL="file:./dev.db"
-MERCADO_PAGO_ACCESS_TOKEN="your_mercadopago_access_token"
-NEXT_PUBLIC_BACKEND_API_URL="http://localhost:3001"
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your_google_maps_api_key"
-```
+**Platform:** Vercel (or similar CI/CD platform configured for staging deployments)
 
-### Backend (`backend/.env`)
+**Steps:**
+1.  Ensure all changes are merged into the `develop` branch.
+2.  A pull request from `feature` branch to `develop` branch will trigger an automatic deployment to the staging environment via Vercel's Git integration.
+3.  Verify the deployment status in the Vercel dashboard.
+4.  Perform thorough testing on the staging environment.
 
-These variables are used by the Node.js backend.
+### 1.2 Production Environment
 
--   `DATABASE_URL`: Connection string for your PostgreSQL or SQLite database.
-    -   Example (PostgreSQL): `postgresql://user:password@host:port/database`
-    -   Example (SQLite - for local dev): `file:./dev.db`
--   `MERCADOPAGO_ACCESS_TOKEN`: Your Mercado Pago access token for API calls.
--   `FRONTEND_URL`: The URL of your deployed frontend application (e.g., `https://your-frontend.vercel.app`). Used for `back_urls` in Mercado Pago preferences.
--   `BACKEND_URL`: The URL of your deployed backend API (e.g., `https://your-backend.azurewebsites.net`). Used for Mercado Pago webhook `notification_url`.
--   `PORT`: The port the backend server should listen on (e.g., `3001`).
+The production environment hosts the live application accessible to users.
 
-### Frontend (`frontend/.env.local` or Vercel Environment Variables)
+**Platform:** Vercel (or similar CI/CD platform configured for production deployments)
 
-These variables are used by the Next.js frontend.
-
--   `NEXT_PUBLIC_BACKEND_API_URL`: The public URL of your deployed backend API (e.g., `https://your-backend.azurewebsites.net`).
--   `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: Your Google Maps API key for client-side map functionalities.
+**Steps:**
+1.  Ensure all changes have been thoroughly tested and approved in the staging environment.
+2.  Merge the `develop` branch into the `main` branch.
+3.  A push to the `main` branch will trigger an automatic production deployment via Vercel's Git integration.
+4.  Monitor the deployment status in the Vercel dashboard.
+5.  Perform a quick smoke test on the live production environment to ensure basic functionality.
 
 ---
 
-## 2. Deployment to Vercel (Frontend)
+## 2. Environment Variables
 
-Vercel is recommended for deploying the Next.js frontend due to its seamless integration with Next.js.
+Environment variables are crucial for configuring the application for different environments (development, staging, production).
 
-1.  **Connect Repository**: Log in to Vercel, import your Git repository (e.g., GitHub, GitLab, Bitbucket).
-2.  **Project Configuration**:
-    *   **Root Directory**: Set the root directory to `frontend/`.
-    *   **Build Command**: Vercel automatically detects Next.js, so `next build` should be default.
-    *   **Output Directory**: `build` (default for Next.js).
-3.  **Environment Variables**: Add all `NEXT_PUBLIC_` environment variables from the [Frontend section](#frontend-frontendenvlocal-or-vercel-environment-variables) to your Vercel project settings.
-4.  **Deploy**: Vercel will automatically deploy on every push to your configured branch (e.g., `main`).
+**Required Environment Variables:**
 
----
+*   `NEXT_PUBLIC_BACKEND_API_URL`: The URL of the backend API.
+*   `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: Google Maps API Key for frontend services.
+*   `MERCADOPAGO_ACCESS_TOKEN`: Mercado Pago access token for payment processing (backend).
+*   `DATABASE_URL`: Database connection string (backend).
+*   `FRONTEND_URL`: The URL of the frontend application (backend).
+*   `BACKEND_URL`: The URL of the backend application (backend).
 
-## 3. Deployment to Azure (Backend)
-
-Azure App Service is a good option for deploying the Node.js backend.
-
-1.  **Create App Service**: In the Azure portal, create a new App Service.
-    *   **Runtime Stack**: Node.js (choose the appropriate version).
-    *   **Operating System**: Linux.
-    *   **Region**: Choose a region close to your users and database.
-2.  **Deployment Method**:
-    *   **GitHub Actions (Recommended)**: Configure continuous deployment from your Git repository. Azure will generate a workflow file (`.github/workflows/main_your-app-name.yml`) that builds and deploys your backend.
-        *   Ensure the workflow specifies the `backend/` directory for deployment. You might need to modify the generated workflow to navigate into the `backend` directory before running `npm install` and `npm run build`.
-        *   Example snippet for `ci.yml` (adjust as needed):
-            ```yaml
-            - name: Install dependencies
-              run: npm install
-              working-directory: backend
-
-            - name: Build
-              run: npm run build
-              working-directory: backend
-            ```
-    *   **Zip Deploy / FTP**: Manually deploy your `dist` folder (after `npm run build` in `backend/`).
-3.  **Configuration**:
-    *   **Application Settings**: Add all environment variables from the [Backend section](#backend-backendenv) as Application Settings in your App Service.
-    *   **Connection Strings**: If using a managed database service (e.g., Azure Database for PostgreSQL), configure its connection string here.
-4.  **Database Migration**: After deployment, you'll need to run Prisma migrations on your production database. This can be done via SSH into the App Service instance or as part of your CI/CD pipeline.
-    ```bash
-    npx prisma migrate deploy
-    ```
-5.  **Start Command**: Ensure your App Service is configured to start your Node.js application correctly. For example, `node dist/index.js` (assuming your main entry point is `index.ts` and it compiles to `dist/index.js`).
+**Management in Vercel:**
+1.  Go to your project settings in Vercel.
+2.  Navigate to "Environment Variables".
+3.  Add each variable, specifying whether it applies to "Development", "Preview" (Staging), or "Production" environments.
+4.  Ensure sensitive keys are not exposed in public repositories.
 
 ---
 
-## 4. Monitoring
+## 3. Monitoring Setup
 
-Implement monitoring to ensure the health and performance of your application.
+Effective monitoring is essential for identifying and resolving issues quickly.
 
--   **Frontend (Vercel)**:
-    *   Vercel provides built-in analytics and logs.
-    *   Integrate with a third-party service like Sentry for error tracking.
--   **Backend (Azure App Service)**:
-    *   **Application Insights**: Enable Application Insights for detailed performance monitoring, logging, and error tracking.
-    *   **Azure Monitor**: Set up alerts for CPU usage, memory, and HTTP errors.
-    *   **Log Streaming**: Monitor real-time logs from your App Service for debugging.
--   **Database**: Monitor database performance, connection usage, and query times through your database provider's tools.
+**Recommended Tools:**
+
+*   **Vercel Analytics/Logs:** Built-in Vercel features provide basic analytics and access to deployment logs.
+*   **Sentry (or similar error tracking):** For real-time error reporting and performance monitoring.
+    *   Integrate Sentry SDKs into both frontend and backend applications.
+    *   Configure appropriate DSNs for each environment.
+*   **UptimeRobot (or similar uptime monitoring):** To monitor the availability of the application endpoints.
+    *   Set up alerts for downtime.
+
+**Key Metrics to Monitor:**
+
+*   Application uptime and response times.
+*   Error rates (server-side and client-side).
+*   API request latency.
+*   Database connection and query performance.
+*   Resource utilization (CPU, memory).
 
 ---
 
-## 5. Rollback Procedures
+## 4. Emergency Rollback Procedures
 
-In case of issues after a deployment, you should have a clear rollback strategy.
+In case of critical issues in production, a quick rollback to a stable version is necessary.
 
--   **Frontend (Vercel)**:
-    *   Vercel keeps a history of all deployments. You can easily revert to a previous successful deployment directly from the Vercel dashboard.
--   **Backend (Azure App Service)**:
-    *   **Deployment Slots**: Use deployment slots (e.g., a "staging" slot and a "production" slot). Deploy to staging first, test, and then swap with production. If issues arise, you can quickly swap back to the previous production slot.
-    *   **Git Revert**: If using Git-based deployment, revert the problematic commit in your repository and push the change. This will trigger a new deployment of the previous working version.
--   **Database Rollback**:
-    *   **Prisma Migrate Rollback**: Prisma has `prisma migrate resolve --rolled-back <migration_name>` but generally, database rollbacks are complex and should be handled with caution.
-    *   **Database Backups**: Ensure regular database backups are in place. In a critical situation, you might need to restore from a recent backup. This should be a last resort as it can lead to data loss.
-    *   **Idempotent Migrations**: Design your database migrations to be idempotent where possible, making them safe to re-run.
+**Procedure:**
+
+1.  **Identify the Problem:** Confirm the issue is critical and requires an immediate rollback. Check monitoring alerts and user reports.
+2.  **Identify Stable Deployment:** In Vercel, go to your project's "Deployments" tab. Identify the last known stable deployment.
+3.  **Initiate Rollback:**
+    *   Click on the stable deployment.
+    *   Click the "Redeploy" or "Rollback" button (Vercel typically allows redeploying a previous successful build).
+    *   Confirm the rollback.
+4.  **Monitor Rollback:** Observe the deployment status in Vercel.
+5.  **Verify Stability:** Once the rollback is complete, perform a smoke test on the application to ensure the issue is resolved and the application is stable.
+6.  **Post-Rollback Analysis:**
+    *   Investigate the root cause of the issue that necessitated the rollback.
+    *   Create a post-mortem document.
+    *   Implement preventative measures to avoid recurrence.
+    *   Plan a fix for the rolled-back features in a new development cycle.

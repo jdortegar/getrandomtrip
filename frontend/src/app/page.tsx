@@ -1,89 +1,88 @@
-import HeroSectionClient from '../components/HeroSectionClient';
-import TripCard from '../components/TripCard';
-import ProgressBar from '../components/ProgressBar';
+'use client'; // Necesario para usar hooks como `useRouter` y manejar eventos onClick
 
-export const metadata = {
-  title: 'Randomtrip - Your Next Unforgettable Journey',
-  description: 'Discover curated trips tailored just for you.',
-};
+import React from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation'; // Hook para la redirección
+import PrimaryButton from '@/components/PrimaryButton';
+import TripCard from '@/components/TripCard';
 
-export default function Home() {
-  const dummyTrips = [
-    {
-      id: 1,
-      title: 'Beach Paradise',
-      description: 'Relax on pristine beaches with crystal clear waters.',
-      imageUrl: 'https://via.placeholder.com/300x200?text=Beach+Paradise',
-    },
-    {
-      id: 2,
-      title: 'Mountain Adventure',
-      description: 'Hike through breathtaking landscapes and conquer peaks.',
-      imageUrl: 'https://via.placeholder.com/300x200?text=Mountain+Adventure',
-    },
-    {
-      id: 3,
-      title: 'City Explorer',
-      description: 'Immerse yourself in vibrant city life and culture.',
-      imageUrl: 'https://via.placeholder.com/300x200?text=City+Explorer',
-    },
-  ];
+export default function HomePage() {
+  const router = useRouter(); // Inicializamos el hook
+
+  const handleStartJourney = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/bookings', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Falló la creación de la reserva');
+      }
+
+      const data = await response.json();
+      const { bookingId } = data;
+
+      // Redirigimos al usuario al siguiente paso, pasando el ID de la reserva
+      router.push(`/journey/exploration?bookingId=${bookingId}`);
+
+    } catch (error) {
+      console.error('Error al iniciar el viaje:', error);
+      // Aquí podríamos mostrar una notificación de error al usuario
+    }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <HeroSectionClient
-        title="Your Next Unforgettable Journey"
-        subtitle="Discover curated trips tailored just for you."
-      />
-
-      {/* Informative Sections (Placeholder for now) */}
-      <section className="py-16 bg-gray-100 text-center">
-        <h2 className="text-4xl font-bold mb-8">How it works?</h2>
-        <p className="text-lg max-w-3xl mx-auto">
-          Randomtrip simplifies your travel planning. Just tell us your preferences, and we&apos;ll
-          curate a unique trip experience for you.
-        </p>
-      </section>
-
-      <section className="py-16 bg-white text-center">
-        <h2 className="text-4xl font-bold mb-8">Benefits</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-          <div className="p-6 shadow-lg rounded-lg">
-            <h3 className="text-2xl font-semibold mb-2">Surprise Destinations</h3>
-            <p>Experience the thrill of discovering new places.</p>
-          </div>
-          <div className="p-6 shadow-lg rounded-lg">
-            <h3 className="text-2xl font-semibold mb-2">Tailored Experiences</h3>
-            <p>Trips designed to match your unique interests.</p>
-          </div>
-          <div className="p-6 shadow-lg rounded-lg">
-            <h3 className="text-2xl font-semibold mb-2">Hassle-Free Planning</h3>
-            <p>We handle the details, so you can focus on enjoying.</p>
-          </div>
+    <main className="bg-[#111827] text-white">
+      {/* --- 1. Hero Section --- */}
+      <header className="relative h-screen flex flex-col items-center justify-center text-center">
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop"
+            alt="Paisaje evocador de un viaje"
+            fill
+            style={{ objectFit: 'cover' }}
+            className="opacity-40"
+            priority // Ayuda a que la imagen principal cargue más rápido
+          />
+        </div>
+        
+        <div className="relative z-10 p-4">
+          <h1 
+            className="text-6xl md:text-8xl font-bold text-white mb-4" 
+            style={{ fontFamily: 'Playfair Display, serif' }}
+          >
+            Donde termina la rutina, comienza la aventura.
+          </h1>
+          <p 
+            className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            Diseñamos la sorpresa. Odiamos la improvisación. Responde unas preguntas y nos encargaremos del resto. Tu único trabajo es disfrutar del viaje.
+          </p>
+          <PrimaryButton onClick={handleStartJourney}>
+            RandomtripME!
+          </PrimaryButton>
+        </div>
+      </header>
+      
+      {/* --- 2. Inspiración Section --- */}
+      <section className="py-20 px-8">
+        <h2 className="text-4xl font-bold text-center mb-12" style={{ fontFamily: 'Playfair Display, serif' }}>Inspiración para tu Próxima Aventura</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <TripCard 
+            title="Costas Olvidadas" 
+            imageUrl="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=2070&auto=format&fit=crop" // URL Corregida
+          />
+          <TripCard 
+            title="Ciudades con Alma" 
+            imageUrl="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070&auto=format&fit=crop" 
+          />
+          <TripCard 
+            title="Cumbres Silenciosas" 
+            imageUrl="https://images.unsplash.com/photo-1589834390005-5d4fb9bf3d32?q=80&w=2070&auto=format&fit=crop" 
+          />
         </div>
       </section>
-
-      {/* Trip Cards Section */}
-      <section className="py-16 bg-gray-100">
-        <h2 className="text-4xl font-bold text-center mb-12">Popular Trips</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-          {dummyTrips.map((trip) => (
-            <TripCard key={trip.id} trip={{ id: String(trip.id), title: trip.title, description: trip.description, image: trip.imageUrl }} />
-          ))}
-        </div>
-      </section>
-
-      {/* Progress Bar */}
-      <section className="py-8 bg-white">
-        <div className="max-w-xl mx-auto px-4">
-          <ProgressBar currentStep={1} totalSteps={4} />
-        </div>
-      </section>
-
-      {/* Footer (Placeholder for now) */}
-      <footer className="bg-gray-800 text-white py-8 text-center">
-        <p>&copy; 2025 Randomtrip. All rights reserved.</p>
-      </footer>
-    </div>
+    </main>
   );
 }

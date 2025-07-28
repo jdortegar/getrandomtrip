@@ -7,8 +7,34 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
+
+// --- ENUMS PARA TIPOS DE DATOS ESTRICTOS ---
+enum TravelType {
+  Family
+  Couple
+  Group
+  Honeymoon
+  Solo
+}
+
+enum ExperienceLevel {
+  Essenza
+  ModoExplora
+  Explora_
+  Bivouac
+  AtelierGetaway
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REVEALED
+  CANCELLED
+}
+
+// --- MODELOS DE LA APLICACIÓN ---
 
 model User {
   id        String    @id @default(uuid())
@@ -20,27 +46,48 @@ model User {
 }
 
 model Booking {
-  id            String    @id @default(uuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id])
-  level         String
-  basePrice     Float
-  filters       Json      @default("[]") // Store selected filters as JSON array
-  addOns        Json      @default("[]") // Store selected add-ons as JSON array
-  totalPrice    Float
-  status        String    @default("pending") // e.g., pending, confirmed, cancelled
-  revealEmailSent Boolean @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                      String          @id @default(uuid())
+  status                  BookingStatus   @default(PENDING)
+  
+  // Relación con el usuario
+  user                    User            @relation(fields: [userId], references: [id])
+  userId                  String
+
+  // Datos del flujo de configuración
+  travelType              TravelType
+  experienceLevel         ExperienceLevel
+  originCity              String
+  startDate               DateTime
+  travelerCount           Int
+  
+  // Datos de precios
+  basePrice               Float
+  filtersCost             Float
+  addonsCost              Float
+  totalPrice              Float
+  
+  // Datos flexibles para selecciones
+  premiumFilters          Json            @default("[]")
+  selectedAddons          Json            @default("[]")
+
+  // Post-compra
+  mercadoPagoPreferenceId String?
+  revealEmailSent         Boolean         @default(false)
+  duration_nights         Int? // Added duration_nights field
+  destination             String?
+  
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
 }
 
+// Modelo para gestionar los precios base y modificadores
 model Pricing {
-  id            String    @id @default(uuid())
-  level         String    @unique
-  basePrice     Float
-  filterCost1   Float     @default(18.00) // Cost for 2nd and 3rd filter
-  filterCost2   Float     @default(25.00) // Cost for 4th filter onwards
-  soloTravelerMarkup Float @default(0.50) // 50% markup for solo travelers
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                   String           @id @default(uuid())
+  level                ExperienceLevel  @unique // Cada nivel tiene una sola entrada de precio
+  basePrice            Float
+  filterCost1          Float            @default(18.00)
+  filterCost2          Float            @default(25.00)
+  soloTravelerMarkup   Float            @default(0.50) // 50%
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 }

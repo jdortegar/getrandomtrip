@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PrimaryButton from '../../components/PrimaryButton';
 import SkeletonLoader from '../../components/SkeletonLoader';
@@ -25,6 +25,48 @@ export default function RevealDestinationClient() {
   // Placeholder for tripDate - in a real app, this would come from the booking details
   // For demonstration, let's set it to 5 minutes from now for testing the countdown
   const [tripDate, setTripDate] = useState<Date | null>(null);
+
+  const fetchDestination = useCallback(async () => {
+    setLoading(true); 
+    if (!bookingId) {
+      setError('Booking ID not found.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
+      const response = await fetch(`${backendUrl}/api/reveal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId: bookingId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setDestination({
+          name: data.destination.name,
+          image: data.destination.image || '/images/placeholder.jpg', 
+          description: data.destination.description,
+          itinerary: data.destination.itinerary,
+        });
+      } else {
+        setError(data.message || 'Failed to fetch destination.');
+      }
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError('Network error or server issue: ' + e.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [bookingId]);
 
   useEffect(() => {
     // In a real application, you would fetch the booking details here to get the actual tripDate
@@ -70,7 +112,7 @@ export default function RevealDestinationClient() {
     return () => {
       clearInterval(timer);
     };
-  }, [tripDate, isRevealed]);
+  }, [tripDate, isRevealed, fetchDestination]);
 
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -80,44 +122,6 @@ export default function RevealDestinationClient() {
     const seconds = totalSeconds % 60;
 
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-  };
-
-  const fetchDestination = async () => {
-    setLoading(true); 
-    if (!bookingId) {
-      setError('Booking ID not found.');
-      setLoading(false);
-      return;
-    }
-    try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
-      const response = await fetch(`${backendUrl}/api/reveal`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookingId: bookingId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setDestination({
-          name: data.destination.name,
-          image: data.destination.image || '/images/placeholder.jpg', 
-          description: data.destination.description,
-          itinerary: data.destination.itinerary,
-        });
-      } else {
-        setError(data.message || 'Failed to fetch destination.');
-      }
-    } catch (e: any) {
-      setError('Network error or server issue: ' + e.message);
-    } finally {
-      setLoading(false);
-    }
   };
 
   if (loading) {

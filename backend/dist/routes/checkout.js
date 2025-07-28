@@ -11,7 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mercadopago_1 = require("mercadopago");
+const client_1 = require("@prisma/client");
 const router = (0, express_1.Router)();
+const prisma = new client_1.PrismaClient();
 const client = new mercadopago_1.MercadoPagoConfig({
     accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
 });
@@ -50,11 +52,29 @@ router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             body: preference
         });
         const { id, init_point } = response;
-        // Simulate booking creation and scheduling of reveal email
-        const mockBookingId = 'mock_booking_abcde'; // In a real app, this would come from your booking service
+        // Persist the booking in the database
+        const booking = yield prisma.booking.create({
+            data: {
+                userId: 'clx000000000000000000000', // Placeholder: Replace with actual user ID from authentication context
+                travelType: 'Family', // Placeholder
+                experienceLevel: 'Essenza', // Placeholder: Replace with actual level from frontend
+                originCity: 'Placeholder City', // Placeholder
+                startDate: new Date(), // Placeholder
+                travelerCount: 1, // Placeholder
+                basePrice: Number(amount), // Use amount as basePrice for now
+                filtersCost: 0, // Placeholder
+                addonsCost: 0, // Placeholder
+                premiumFilters: [], // Placeholder: Replace with actual filters from frontend
+                selectedAddons: [], // Placeholder: Replace with actual add-ons from frontend
+                totalPrice: Number(amount), // Use amount as totalPrice for now
+                status: 'PENDING', // Initial status
+                mercadoPagoPreferenceId: id,
+            },
+        });
+        // Schedule reveal email using the actual booking ID
         const mockTripDate = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)); // 7 days from now
-        scheduleRevealEmail(mockBookingId, mockTripDate);
-        res.status(200).json({ success: true, message: 'Payment preference created.', preferenceId: id, initPoint: init_point });
+        scheduleRevealEmail(booking.id, mockTripDate);
+        res.status(200).json({ success: true, message: 'Payment preference created.', preferenceId: id, initPoint: init_point, bookingId: booking.id });
     }
     catch (error) {
         console.error('Error creating Mercado Pago preference:', error.message);

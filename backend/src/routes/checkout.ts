@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
-// import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { PrismaClient } from '@prisma/client';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-// const client = new MercadoPagoConfig({
-//   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
-// });
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
+});
 
 // Placeholder for scheduleRevealEmail - this should be imported from scheduler.ts
 const scheduleRevealEmail = (bookingId: string, tripDate: Date) => {
@@ -23,46 +23,48 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    // const preference = {
-    //   items: [
-    //     {
-    //       title: description,
-    //       unit_price: Number(amount),
-    //       quantity: 1,
-    //       id: '1234', // Placeholder ID, replace with actual product ID if available
-    //     },
-    //   ],
-    //   payer: {
-    //     email: payerEmail,
-    //   },
-    //   back_urls: {
-    //     success: `${process.env.FRONTEND_URL}/post-purchase?status=success`,
-    //     pending: `${process.env.FRONTEND_URL}/post-purchase?status=pending`,
-    //     failure: `${process.env.FRONTEND_URL}/post-purchase?status=failure`,
-    //   },
-    //   auto_return: 'approved_on_success',
-    //   notification_url: `${process.env.BACKEND_URL}/webhooks/mercadopago`, // This will be a separate webhook endpoint
-    // };
+    const preference = {
+      items: [
+        {
+          title: description,
+          unit_price: Number(amount),
+          quantity: 1,
+          id: '1234', // Placeholder ID, replace with actual product ID if available
+        },
+      ],
+      payer: {
+        email: payerEmail,
+      },
+      back_urls: {
+        success: `${process.env.FRONTEND_URL}/post-purchase?status=success`,
+        pending: `${process.env.FRONTEND_URL}/post-purchase?status=pending`,
+        failure: `${process.env.FRONTEND_URL}/post-purchase?status=failure`,
+      },
+      auto_return: 'approved_on_success',
+      notification_url: `${process.env.BACKEND_URL}/webhooks/mercadopago`, // This will be a separate webhook endpoint
+    };
 
-    // const response = await new Preference(client).create({
-    //   body: preference
-    // });
-    // const { id, init_point } = response;
-
-    // Simulate Mercado Pago response for now
-    const id = 'mock_preference_id';
-    const init_point = 'mock_init_point';
+    const response = await new Preference(client).create({
+      body: preference
+    });
+    const { id, init_point } = response;
 
     // Persist the booking in the database
     const booking = await prisma.booking.create({
       data: {
         userId: 'clx000000000000000000000', // Placeholder: Replace with actual user ID from authentication context
-        level: 'basic', // Placeholder: Replace with actual level from frontend
+        travelType: 'Family', // Placeholder
+        experienceLevel: 'Essenza', // Placeholder: Replace with actual level from frontend
+        originCity: 'Placeholder City', // Placeholder
+        startDate: new Date(), // Placeholder
+        travelerCount: 1, // Placeholder
         basePrice: Number(amount), // Use amount as basePrice for now
-        filters: [], // Placeholder: Replace with actual filters from frontend
-        addOns: [], // Placeholder: Replace with actual add-ons from frontend
+        filtersCost: 0, // Placeholder
+        addonsCost: 0, // Placeholder
+        premiumFilters: [], // Placeholder: Replace with actual filters from frontend
+        selectedAddons: [], // Placeholder: Replace with actual add-ons from frontend
         totalPrice: Number(amount), // Use amount as totalPrice for now
-        status: 'pending', // Initial status
+        status: 'PENDING', // Initial status
         mercadoPagoPreferenceId: id,
       },
     });

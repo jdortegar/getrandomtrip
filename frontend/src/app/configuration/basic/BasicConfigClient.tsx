@@ -5,21 +5,6 @@ import { useRouter } from 'next/navigation';
 import PrimaryButton from '../../../components/PrimaryButton';
 import SkeletonLoader from '../../../components/SkeletonLoader';
 
-declare global {
-  interface Window {
-    google: {
-      maps: {
-        places: {
-          Autocomplete: new (
-            inputField: HTMLInputElement,
-            options?: google.maps.places.AutocompleteOptions
-          ) => google.maps.places.Autocomplete;
-          PlaceResult: google.maps.places.PlaceResult;
-        };
-      };
-    };
-  }
-}
 
 export default function BasicConfigClient() {
   const [originCity, setOriginCity] = useState('');
