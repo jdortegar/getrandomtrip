@@ -13,7 +13,6 @@ import {
   Crown,
   MessageCircle,
   DollarSign,
-  Shield,
   Star,
   Trophy,
   Award,
@@ -27,70 +26,19 @@ import {
   Compass,
   Gift,
   Bed,
-  Clock,
   ArrowRight,
   ChevronRight,
   Mail,
-  CheckCircle,
   Zap,
   Phone,
-  Search,
-  Mountain,
   Palmtree,
   Building2,
-  Car,
-  Train,
-  Ship,
   Camera,
-  Map,
-  Navigation,
   Hotel,
-  Tent,
-  Umbrella,
-  Sun,
-  Moon,
-  Cloud,
-  Wind,
-  Waves,
   TreePine,
-  MountainSnow,
-  Building,
-  Castle,
-  Landmark,
-  Flag,
   Globe2,
   Route,
-  Navigation2,
-  Target,
-  Crosshair,
   Eye,
-  EyeOff,
-  Lock,
-  Unlock,
-  Key,
-  CreditCard,
-  Wallet,
-  PiggyBank,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  PieChart,
-  Activity,
-  Flame,
-  Droplets,
-  Snowflake,
-  CloudRain,
-  CloudLightning,
-  CloudSnow,
-  CloudFog,
-  Sunrise,
-  Sunset,
-  Thermometer,
-  ThermometerSun,
-  ThermometerSnowflake,
-  Gauge,
-  Timer,
-  TimerOff,
   Info,
   User,
 } from 'lucide-react';
@@ -358,8 +306,8 @@ export default function Home() {
                   <Star className="h-5 w-5 text-yellow-400" />
                 </div>
                 <p className="text-gray-700 mb-4 font-light leading-relaxed font-roboto italic">
-                  "Sin duda fue la experiencia más increíble que nuestra familia
-                  ha vivido"
+                  &ldquo;Sin duda fue la experiencia más increíble que nuestra
+                  familia ha vivido&rdquo;
                 </p>
                 <p className="text-sm text-gray-500 font-light font-roboto">
                   Brett, Oriente Medio
@@ -377,8 +325,9 @@ export default function Home() {
                   <Star className="h-5 w-5 text-yellow-400" />
                 </div>
                 <p className="text-gray-700 mb-4 font-light leading-relaxed font-roboto italic">
-                  "Hemos explorado lugares increíbles y tenido aventuras únicas
-                  que solo hubieran sido posibles con la guía de GetRandomTrip"
+                  &ldquo;Hemos explorado lugares increíbles y tenido aventuras
+                  únicas que solo hubieran sido posibles con la guía de
+                  GetRandomTrip&rdquo;
                 </p>
                 <p className="text-sm text-gray-500 font-light font-roboto">
                   Ike y Alexa, Italia
@@ -396,8 +345,8 @@ export default function Home() {
                   <Star className="h-5 w-5 text-yellow-400" />
                 </div>
                 <p className="text-gray-700 mb-4 font-light leading-relaxed font-roboto italic">
-                  "Maravilloso, maravilloso, maravilloso. GetRandomTrip es de
-                  primera clase – no te decepcionarás"
+                  &ldquo;Maravilloso, maravilloso, maravilloso. GetRandomTrip es
+                  de primera clase – no te decepcionarás&rdquo;
                 </p>
                 <p className="text-sm text-gray-500 font-light font-roboto">
                   Wendy, Marruecos
@@ -415,8 +364,8 @@ export default function Home() {
                   <Star className="h-5 w-5 text-yellow-400" />
                 </div>
                 <p className="text-gray-700 mb-4 font-light leading-relaxed font-roboto italic">
-                  "GetRandomTrip entregó una experiencia única en la vida que mi
-                  familia y yo atesoraremos para siempre"
+                  &ldquo;GetRandomTrip entregó una experiencia única en la vida
+                  que mi familia y yo atesoraremos para siempre&rdquo;
                 </p>
                 <p className="text-sm text-gray-500 font-light font-roboto">
                   Adrienne, Italia
@@ -434,7 +383,7 @@ export default function Home() {
                   <Star className="h-5 w-5 text-yellow-400" />
                 </div>
                 <p className="text-gray-700 mb-4 font-light leading-relaxed font-roboto italic">
-                  "GetRandomTrip cambiará la forma en que viajas"
+                  &ldquo;GetRandomTrip cambiará la forma en que viajas&rdquo;
                 </p>
                 <p className="text-sm text-gray-500 font-light font-roboto">
                   Micah, Egipto
@@ -452,8 +401,8 @@ export default function Home() {
                   <Star className="h-5 w-5 text-yellow-400" />
                 </div>
                 <p className="text-gray-700 mb-4 font-light leading-relaxed font-roboto italic">
-                  "Glamping, senderismo, icebergs, comida gourmet. No estoy
-                  seguro de cómo mi viaje podría haber sido mejor"
+                  &ldquo;Glamping, senderismo, icebergs, comida gourmet. No
+                  estoy seguro de cómo mi viaje podría haber sido mejor&rdquo;
                 </p>
                 <p className="text-sm text-gray-500 font-light font-roboto">
                   Jimmy, Groenlandia
@@ -502,7 +451,7 @@ export default function Home() {
               <Crown className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
               <p className="text-sm text-gray-600 font-light font-roboto">
                 GALARDONADO POR LOS MEJORES ITINERARIOS A MEDIDA EN LOS PREMIOS
-                DE VIAJES DE MEN'S JOURNAL 2025
+                DE VIAJES DE MEN&apos;S JOURNAL 2025
               </p>
             </div>
           </div>
