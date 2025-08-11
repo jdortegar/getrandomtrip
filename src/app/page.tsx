@@ -10,105 +10,39 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Crown,
   MessageCircle,
-  DollarSign,
   Star,
-  Trophy,
-  Award,
-  MapPin,
-  Calendar,
   Users,
-  Plane,
-  Heart,
   Sparkles,
-  Globe,
   Compass,
-  Gift,
-  Bed,
   ArrowRight,
   ChevronRight,
   Mail,
   Zap,
-  Phone,
   Palmtree,
   Building2,
   Camera,
   Hotel,
-  TreePine,
   Globe2,
   Route,
   Eye,
-  Info,
-  User,
+  Globe,
+  Calendar,
+  Plane,
+  Crown,
+  Award,
+  Trophy,
+  Gift,
+  MapPin,
+  Bed,
+  DollarSign,
+  Heart,
+  Phone,
 } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header - Black Tomato Style */}
-      <header className="bg-white border-b border-gray-100 fixed w-full top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-light text-gray-900 tracking-wide font-roboto flex items-center gap-2">
-                <Globe className="h-6 w-6 text-yellow-500" />
-                GetRandomTrip
-              </h1>
-            </div>
-            <nav className="hidden lg:flex space-x-12">
-              <a
-                href="#destinations"
-                className="text-gray-700 hover:text-gray-900 font-light tracking-wide font-roboto flex items-center gap-1"
-              >
-                <MapPin className="h-4 w-4 text-yellow-500" />
-                Destinos
-              </a>
-              <a
-                href="#experiences"
-                className="text-gray-700 hover:text-gray-900 font-light tracking-wide font-roboto flex items-center gap-1"
-              >
-                <Sparkles className="h-4 w-4 text-yellow-500" />
-                Experiencias
-              </a>
-              <a
-                href="#inspiration"
-                className="text-gray-700 hover:text-gray-900 font-light tracking-wide font-roboto flex items-center gap-1"
-              >
-                <Zap className="h-4 w-4 text-yellow-500" />
-                Inspiración
-              </a>
-              <a
-                href="#about"
-                className="text-gray-700 hover:text-gray-900 font-light tracking-wide font-roboto flex items-center gap-1"
-              >
-                <Info className="h-4 w-4 text-yellow-500" />
-                Sobre Nosotros
-              </a>
-            </nav>
-            <div className="flex items-center space-x-6">
-              <div className="hidden lg:flex items-center space-x-4 text-sm text-gray-600 font-light">
-                <span className="flex items-center gap-1">
-                  <Phone className="h-3 w-3 text-yellow-500" />
-                  +34 688 862 945
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                className="font-light tracking-wide font-roboto flex items-center gap-2 hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200"
-              >
-                <User className="h-4 w-4 text-yellow-500" />
-                Mi Cuenta
-              </Button>
-              <Button className="bg-black text-white px-6 py-3 font-light tracking-wide hover:bg-gray-800 transition-all duration-200 font-roboto flex items-center gap-2 shadow-lg hover:shadow-xl">
-                <MessageCircle className="h-4 w-4" />
-                Consultar Ahora
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-white pt-16">
       {/* Hero Section - Black Tomato Luxury Style */}
       <section className="relative pt-20 min-h-screen flex items-center">
         <div className="absolute inset-0">
