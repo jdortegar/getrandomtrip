@@ -1,0 +1,67 @@
+/* Styles for By Type pages */
+
+:root {
+  --rt-primary: #FFFFFF;
+  --rt-secondary: #0A2240;
+  --rt-accent: #F2C53D;
+  --rt-text: #1a1a1a;
+}
+
+.rt-primary-bg {
+  background-color: var(--rt-primary);
+}
+
+.rt-secondary-bg {
+  background-color: var(--rt-secondary);
+}
+
+.rt-accent-bg {
+  background-color: var(--rt-accent);
+}
+
+.rt-text-color {
+  color: var(--rt-text);
+}
+
+.rt-primary-color {
+  color: var(--rt-primary);
+}
+
+.rt-secondary-color {
+  color: var(--rt-secondary);
+}
+
+.rt-accent-color {
+  color: var(--rt-accent);
+}
+
+.rt-border-color {
+  border-color: var(--rt-accent);
+}
+
+.rt-button {
+  background-color: var(--rt-accent);
+  color: var(--rt-secondary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.rt-button:hover {
+  background-color: color-mix(in srgb, var(--rt-accent) 90%, black);
+}
+
+.rt-button-outline {
+  border: 2px solid var(--rt-accent);
+  color: var(--rt-accent);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.rt-button-outline:hover {
+  background-color: var(--rt-accent);
+  color: var(--rt-secondary);
+}

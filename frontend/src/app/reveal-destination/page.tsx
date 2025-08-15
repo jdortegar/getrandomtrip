@@ -1,5 +1,6 @@
 import RevealDestinationClient from './RevealDestinationClient';
 import ProgressBar from '../../components/ProgressBar';
+import { Suspense } from 'react';
 
 export const metadata = {
   title: 'Your Destination Revealed!',
@@ -17,7 +18,9 @@ export default function RevealDestinationPage() {
         </div>
       </header>
       <main className="flex-grow">
-        <RevealDestinationClient />
+        <Suspense fallback={<div>Loading...</div>}>
+          <RevealDestinationClient />
+        </Suspense>
       </main>
     </div>
   );

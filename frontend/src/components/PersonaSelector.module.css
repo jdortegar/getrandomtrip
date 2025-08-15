@@ -1,0 +1,68 @@
+.selectorContainer {
+  width: 100%;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.cardsWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card.selected {
+  border-color: #0070f3;
+  box-shadow: 0 0 15px rgba(0, 112, 243, 0.3);
+}
+
+.avatarContainer {
+  margin-bottom: 10px;
+}
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.infoContainer {
+  text-align: center;
+}
+
+.name {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.bio {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}

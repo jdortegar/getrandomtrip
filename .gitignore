@@ -1,0 +1,21 @@
+﻿# Node / Next (frontend y backend)
+node_modules/
+.npm/
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+.turbo/
+coverage/
+*.log
+*.tmp
+*.cache
+
+# SO / editor
+.DS_Store
+Thumbs.db
+
+# Env / secretos
+.env
+.env.*

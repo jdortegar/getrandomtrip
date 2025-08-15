@@ -5,11 +5,31 @@
   --foreground: #171717;
 }
 
+:root {
+  --rt-primary: #0A2240;
+  --rt-terracotta: #D97E4A;
+  --rt-accent: #F2C53D;
+  --rt-neutral: #F5F5F5;
+  --rt-text: #212121;
+}
+
+.theme-scope {
+  background: var(--bg, #FFF);
+  color: var(--fg, #212121);
+}
+.theme-card {
+  background: color-mix(in oklab, var(--bg), black 6%);
+  border: 1px solid color-mix(in oklab, var(--fg), transparent 85%);
+}
+.theme-accent {
+  color: var(--accent, #F2C53D);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair-display);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,7 +42,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* Estilos para el indicador de Scroll */

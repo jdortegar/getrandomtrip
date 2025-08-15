@@ -1,35 +1,19 @@
 {
-  "buttons": {
-    "randomtripMe": "RandomtripME!",
-    "startYourJourney": "Start Your Journey",
-    "exploreTrips": "Explore Trips",
-    "viewDetails": "View Details",
-    "continue": "Continue",
-    "proceed": "Proceed",
-    "reviewAndPay": "Review and Pay",
-    "payNow": "Pay Now",
-    "retry": "Retry",
-    "edit": "Edit"
-  },
-  "headings": {
-    "heroTitle": "Your Next Unforgettable Journey",
-    "heroSubtitle": "Discover curated trips tailored just for you.",
-    "popularDestinations": "Popular Destinations",
-    "chooseAdventureStyle": "Choose Your Adventure Style",
-    "selectExperienceLevel": "Select Your Experience Level",
-    "basicServices": "Basic Services",
-    "enhanceYourTrip": "Enhance Your Trip with Premium Filters",
-    "customizeWithAddons": "Customize with Add-ons",
-    "reviewYourTrip": "Review Your Trip & Payment",
-    "congratulations": "Congratulations! Your Randomtrip is Booked!",
-    "yourDestinationAwaits": "Your Destination Awaits!"
-  },
-  "errorMessages": {
-    "paymentFailed": "Payment failed. Please try again.",
-    "mapLoadFailed": "Failed to load map. Please enter your destination manually.",
-    "generalError": "An unexpected error occurred. Please try again later."
-  },
-  "progressBar": {
-    "stepOfTotal": "{{currentStep}} of {{totalSteps}}"
-  }
+  "startYourJourney": "Start Your Journey",
+  "chooseHowToStart": "Choose how you want to start shaping your adventure.",
+  "experiences": "Experiences",
+  "aboutUs": "About Us",
+  "byTraveller": "By Traveller",
+  "topTrippers": "Top Trippers",
+  "roadtrips": "Roadtrips",
+  "trippersDecode": "Trippers Decode",
+  "byTravellerSubtitle": "Who will you write your next story with?",
+  "topTrippersSubtitle": "They have already left their mark. Who will be your travel accomplice?",
+  "roadtripsSubtitle": "Freedom on wheels. You set the pace.",
+  "trippersDecodeSubtitle": "Routes with soul, told by those who lived them. Experience destinations through the eyes of authentic experts.",
+  "searchYourFavoriteTripper": "Search for your favorite Tripper",
+  "writeAName": "Write a name...",
+  "search": "Search",
+  "whereNext": "Where next? e.g., Río Negro",
+  "anyMonth": "Any Month"
 }

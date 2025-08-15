@@ -14,8 +14,15 @@ export async function fetchPexelsImages(query: string, perPage = 6) {
 
     const data = await res.json();
 
+    interface PexelsPhoto {
+      src: {
+        large: string;
+      };
+      alt: string;
+    }
+
     if (data.photos && data.photos.length > 0) {
-      return data.photos.map((photo: any) => ({
+      return data.photos.map((photo: PexelsPhoto) => ({
         src: photo.src.large,
         alt: photo.alt || query
       }));

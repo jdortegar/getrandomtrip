@@ -26,9 +26,9 @@ const topTrippersData = [
     { img: 'https://i.pravatar.cc/150?u=valentina', name: 'Valentina Díaz' }
 ];
 const roadtripTypes = [
-    { type: 'Car', description: 'Libertad sobre ruedas.', bgImage: 'https://source.unsplash.com/random/800x600?road,car' },
-    { type: 'Motorcycle', description: 'Siente el camino y el viento.', bgImage: 'https://source.unsplash.com/random/800x600?road,motorcycle' },
-    { type: 'Bike', description: 'Una aventura a tu propio ritmo.', bgImage: 'https://source.unsplash.com/random/800x600?road,bike' },
+    { type: 'Car', icon: 'car-icon', description: 'Libertad sobre ruedas.', bgImage: 'https://source.unsplash.com/random/800x600?road,car' },
+    { type: 'Motorcycle', icon: 'motorcycle-icon', description: 'Siente el camino y el viento.', bgImage: 'https://source.unsplash.com/random/800x600?road,motorcycle' },
+    { type: 'Bike', icon: 'bike-icon', description: 'Una aventura a tu propio ritmo.', bgImage: 'https://source.unsplash.com/random/800x600?road,bike' },
 ];
 const decodeData = [
     { destination: 'Río Negro', month: 'Enero', bg: 'https://source.unsplash.com/random/800x600?patagonia', profileImg: 'https://i.pravatar.cc/150?u=ana', title: 'Río Negro Edition', author: 'Ana García' },
@@ -67,7 +67,7 @@ function ExplorationPageContent() {
               <p className="text-center text-gray-400 mb-8 italic">¿Con quién vas a escribir tu próxima historia?</p>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {travellerTypes.map((type) => (
-                  <TravelerTypeCard key={type.title} {...type} onClick={handleSelect} />
+                  <TravelerTypeCard key={type.title} {...type} />
                 ))}
               </div>
             </div>

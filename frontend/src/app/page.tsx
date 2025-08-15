@@ -1,18 +1,19 @@
 'use client'; 
 
 import React, { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import PrimaryButton from '@/components/PrimaryButton';
 import BlogCard from '@/components/BlogCard';
 import EventFinder from '@/components/EventFinder';
 import TabButton from '@/components/TabButton';
-import TravelerTypeCard from '@/components/TravelerTypeCard'; // Using the Image-based TravelerTypeCard
+import TravelerTypeCard from '@/components/TravelerTypeCard';
 import TripperCard from '@/components/TripperCard';
 import RoadtripCard from '@/components/RoadtripCard';
 import DecodeResultCard from '@/components/DecodeResultCard';
-// The fetchPexelsImages import is commented out as it's no longer used for static images.
-// import { fetchPexelsImages } from '@/utils/pexels'; 
-import { motion, AnimatePresence } from 'framer-motion'; // For smooth animations
+import { motion, AnimatePresence } from 'framer-motion';
+import { TRIPPERS } from "@/content/trippers";
+import { slugify } from '@/lib/slugify';
 
 // Placeholder for Kai Service, if not implemented yet
 const getKaiSuggestion = async (destination: string, month: string) => {
@@ -22,26 +23,21 @@ const getKaiSuggestion = async (destination: string, month: string) => {
   return `¡Kai sugiere explorar ${destination} en ${month || 'cualquier mes'}! Podría ser una aventura inesperada llena de... ¡sorpresas!`;
 };
 
-// --- Data Definitions and Queries for Pexels API (Queries are kept for context but not used for static images) ---
+// --- Data Definitions ---
 interface TravelerType {
   title: string;
   description: string;
   imageUrl: string;
-  travelType: string; // e.g., 'Couple', 'Solo', 'Family', 'Group', 'Honeymoon'
-  query: string; // For Pexels API (not used for static images)
-}
-
-interface Tripper {
-  img: string;
-  name: string;
+  travelType: string;
+  query: string;
 }
 
 interface RoadtripType {
-  type: string; // e.g., 'Car', 'Motorcycle', 'Bike'
+  type: string;
   icon: string;
   description: string;
   bgImage: string;
-  query: string; // For Pexels API (not used for static images)
+  query: string;
 }
 
 interface DecodeItem {
@@ -51,30 +47,52 @@ interface DecodeItem {
   profileImg: string;
   title: string;
   author: string;
-  query: string; // For Pexels API
+  query: string;
 }
 
-// Data for each tab, now using static image URLs
+// Data for each tab
 const initialTravellerTypes: TravelerType[] = [
-  { title: 'En Pareja', description: 'Escapadas románticas.', imageUrl: '/images/journey-types/couple-hetero.jpg', travelType: 'Couple', query: 'heterosexual couple romantic travel' },
-  { title: 'Solo', description: 'Un viaje único.', imageUrl: '/images/journey-types/solo-traveler.jpg', travelType: 'Solo', query: 'solo travel adventure landscape' },
-  { title: 'En Familia', description: 'Recuerdos juntos.', imageUrl: '/images/journey-types/family-vacation.jpg', travelType: 'Family', query: 'family vacation happy kids outdoor' },
-  { title: 'En Grupo', description: 'Experiencias compartidas.', imageUrl: '/images/journey-types/friends-group.jpg', travelType: 'Group', query: 'friends group travel exploring city' },
-  { title: 'Honeymoon', description: 'El comienzo perfecto.', imageUrl: '/images/journey-types/honeymoon-same-sex.jpg', travelType: 'Honeymoon', query: 'same sex couple honeymoon romantic getaway' },
-];
-
-const initialTopTrippersData: Tripper[] = [
-  { img: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', name: 'Ana García' },
-  { img: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', name: 'Martín López' },
-  { img: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', name: 'Camila Ruiz' },
-  { img: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', name: 'Julián Soto' },
-  { img: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', name: 'Valentina Díaz' }
+  {
+    title: 'En Pareja',
+    description: 'Escapadas románticas.',
+    travelType: 'Couple',
+    query: 'heterosexual couple romantic travel',
+    imageUrl: '/images/journey-types/couple-hetero.jpg',
+  },
+  {
+    title: 'Solo',
+    description: 'Un viaje único.',
+    travelType: 'Solo',
+    query: 'solo travel adventure landscape',
+    imageUrl: '/images/journey-types/solo-traveler.jpg',
+  },
+  {
+    title: 'En Familia',
+    description: 'Recuerdos juntos.',
+    travelType: 'Family',
+    query: 'family vacation happy kids outdoor',
+    imageUrl: '/images/journey-types/family-vacation.jpg',
+  },
+  {
+    title: 'En Grupo',
+    description: 'Experiencias compartidas.',
+    travelType: 'Group',
+    query: 'friends group travel exploring city',
+    imageUrl: '/images/journey-types/friends-group.jpg',
+  },
+  {
+    title: 'Honeymoon',
+    description: 'El comienzo perfecto.',
+    travelType: 'Honeymoon',
+    query: 'same sex couple honeymoon romantic getaway',
+    imageUrl: '/images/journey-types/honeymoon-same-sex.jpg',
+  },
 ];
 
 const initialRoadtripTypes: RoadtripType[] = [
-  { type: 'Car', description: 'Libertad sobre ruedas.', bgImage: '/images/journey-types/roadtrip-car.jpg', query: 'scenic car roadtrip mountain' },
-  { type: 'Motorcycle', description: 'Siente el camino y el viento.', bgImage: '/images/journey-types/roadtrip-motorcycle.jpg', query: 'motorcycle adventure open road' },
-  { type: 'Bike', description: 'Una aventura a tu propio ritmo.', bgImage: '/images/journey-types/roadtrip-bike.jpg', query: 'bicycle touring nature path' },
+  { type: 'Car', icon: 'car-icon', description: 'Libertad sobre ruedas.', bgImage: '/images/journey-types/roadtrip-car.jpg', query: 'scenic car roadtrip mountain' },
+  { type: 'Motorcycle', icon: 'motorcycle-icon', description: 'Siente el camino y el viento.', bgImage: '/images/journey-types/roadtrip-motorcycle.jpg', query: 'motorcycle adventure open road' },
+  { type: 'Bike', icon: 'bike-icon', description: 'Una aventura a tu propio ritmo.', bgImage: '/images/journey-types/roadtrip-bike.jpg', query: 'bicycle touring nature path' },
 ];
 
 const initialDecodeData: DecodeItem[] = [
@@ -82,7 +100,7 @@ const initialDecodeData: DecodeItem[] = [
   { destination: 'Kyoto', month: 'Abril', bg: 'https://images.pexels.com/photos/16142728/pexels-photo-16142728/free-photo-of-persona-sentada-en-banco-de-piedra-con-paraguas-en-kioto-japon.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', profileImg: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', title: 'Esencia de Kyoto', author: 'Julián Soto', query: 'kyoto japan cherry blossoms temple' },
 ];
 
-// --- Loader Component (Still needed for Suspense fallback) ---
+// --- Loader Component ---
 const PremiumLoader = ({ message }: { message: string }) => (
   <div className="flex flex-col items-center justify-center py-20 text-gray-400">
     <motion.div
@@ -94,45 +112,36 @@ const PremiumLoader = ({ message }: { message: string }) => (
   </div>
 );
 
-// --- ExplorationPageContent Component (Now integrated into HomePage) ---
+// --- ExplorationPageContent Component ---
 function ExplorationPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const bookingId = searchParams.get('bookingId');
+  const tab = searchParams.get('tab');
 
-  const [activeTab, setActiveTab] = useState('By Traveller');
-  
-  // Removed dynamic image loading states and useEffect as per instructions.
-  // Images are now loaded directly from static initial data.
+  const [activeTab, setActiveTab] = useState(tab || 'By Traveller');
+
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+      const element = document.getElementById('start-your-journey-anchor');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [tab]);
 
   const [tripperSearchState, setTripperSearchState] = useState<'initial' | 'categories' | 'searching' | 'found'>('initial');
-  const [foundTripper, setFoundTripper] = useState<Tripper | null>(null);
+  const [foundTripper, setFoundTripper] = useState<{name: string, img: string} | null>(null);
   const [decodeDestination, setDecodeDestination] = useState('');
   const [decodeMonth, setDecodeMonth] = useState('');
   const [decodeSearchResults, setDecodeSearchResults] = useState<DecodeItem[]>([]);
   const [kaiSuggestion, setKaiSuggestion] = useState('');
   const [isSearchingDecode, setIsSearchingDecode] = useState(false);
 
-  // No more `loadImages` useEffect
-
-  const handleCardSelect = (type: string, route: string) => {
-    // In this integrated page, we don't need bookingId for navigation,
-    // but we keep the logic for potential future use or if it's used elsewhere.
-    // if (!bookingId) {
-    //   console.warn("No bookingId found. Cannot proceed.");
-    //   return;
-    // }
-    if (activeTab === 'By Traveller') {
-      console.log(`Selected travel type: ${type}`);
-    }
-    // For now, we don't navigate away from the page.
-    // If navigation is needed, it would be router.push(`${route}?bookingId=${bookingId}`);
-  };
-
   const findTripper = (name: string) => {
     if (name.trim()) {
-      const found = initialTopTrippersData.find(t => t.name.toLowerCase().includes(name.toLowerCase()));
-      setFoundTripper(found || { name: 'Tripper no encontrado', img: '/images/fallback.jpg' });
+      const found = TRIPPERS.find(t => t.name.toLowerCase().includes(name.toLowerCase()));
+      setFoundTripper(found ? { name: found.name, img: found.avatar } : { name: 'Tripper no encontrado', img: '/images/fallback.jpg' });
       setTripperSearchState('found');
     }
   };
@@ -156,14 +165,12 @@ function ExplorationPageContent() {
     setIsSearchingDecode(false);
   };
 
-
   return (
     <main id="start-your-journey-anchor" className="bg-white text-gray-900 min-h-screen py-16 px-4 md:px-8">
       <div className="max-w-7xl mx-auto text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-2 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Comienza tu Viaje</h1>
         <p className="text-lg text-gray-800 mt-4 mb-12" style={{ fontFamily: 'Inter, sans-serif' }}>Elige cómo quieres empezar a dar forma a tu aventura.</p>
 
-        {/* Tab Navigation */}
         <div className="flex justify-center space-x-4 md:space-x-8 border-b border-gray-300 mb-12">
           {["By Traveller", "Top Trippers", "Roadtrips", "Trippers Decode"].map(tab => (
             <TabButton
@@ -175,7 +182,6 @@ function ExplorationPageContent() {
           ))}
         </div>
 
-        {/* Tab Content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -183,10 +189,8 @@ function ExplorationPageContent() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="w-full" // Ensure the div takes full width
+            className="w-full"
           >
-            {/* No isLoading check needed here as images are static or handled by component's own state */}
-            {/* By Traveller Tab */}
             {activeTab === 'By Traveller' && (
               <div className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">¿Con quién vas a escribir tu próxima historia?</p>
@@ -203,7 +207,7 @@ function ExplorationPageContent() {
                         title={type.title}
                         description={type.description}
                         imageUrl={type.imageUrl}
-                        onClick={() => handleCardSelect(type.travelType, '/journey/experience-level')}
+                        href={`/packages/by-type/${slugify(type.travelType)}`}
                       />
                     </motion.div>
                   ))}
@@ -211,12 +215,11 @@ function ExplorationPageContent() {
               </div>
             )}
 
-            {/* Top Trippers Tab */}
             {activeTab === 'Top Trippers' && (
               <div className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
-                  {initialTopTrippersData.map(tripper => (
+                  {TRIPPERS.map(tripper => (
                     <motion.div
                       key={tripper.name}
                       initial={{ opacity: 0, y: 30 }}
@@ -224,10 +227,9 @@ function ExplorationPageContent() {
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, ease: "easeOut" }}
                     >
-                      <TripperCard key={tripper.name} {...tripper} onClick={() => handleCardSelect(tripper.name, '/journey/experience-level')} />
+                      <TripperCard key={tripper.name} name={tripper.name} img={tripper.avatar} onClick={() => router.push(`/packages/${tripper.slug}`)} />
                     </motion.div>
                   ))}
-                  {/* Search Tripper Card */}
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -250,7 +252,7 @@ function ExplorationPageContent() {
                       </div>
                     )}
                     {tripperSearchState === 'searching' && (
-                      <form onSubmit={(e) => { e.preventDefault(); findTripper((e.target as any).tripperName.value); }} className="w-full flex flex-col items-center">
+                      <form onSubmit={(e) => { e.preventDefault(); findTripper((e.target as HTMLFormElement).tripperName.value); }} className="w-full flex flex-col items-center">
                         <h3 className="font-bold text-lg mb-2">Nombre del Tripper</h3>
                         <input
                           name="tripperName"
@@ -265,9 +267,9 @@ function ExplorationPageContent() {
                     {tripperSearchState === 'found' && foundTripper && (
                       <div className="flex flex-col items-center text-center">
                         <img src={foundTripper.img} alt={foundTripper.name} className='w-24 h-24 rounded-full border-4 border-[#D4AF37]' />
-                        <h3 className='mt-2 font-semibold text-gray-900'>{foundTripper.name}</h3> {/* CORRECCIÓN: text-gray-900 para contraste */}
+                        <h3 className='mt-2 font-semibold text-gray-900'>{foundTripper.name}</h3>
                         <p className="text-xs text-[#D4AF37]">¡Tripper encontrado!</p>
-                        <button onClick={() => handleCardSelect(foundTripper.name, '/journey/experience-level')} className="text-sm text-gray-600 mt-2 hover:text-gray-900 transition-colors">Continuar con {foundTripper.name.split(' ')[0]}</button>
+                        <button onClick={() => router.push('/journey/experience-level')} className="text-sm text-gray-600 mt-2 hover:text-gray-900 transition-colors">Continuar con {foundTripper.name.split(' ')[0]}</button>
                       </div>
                     )}
                   </motion.div>
@@ -275,7 +277,6 @@ function ExplorationPageContent() {
               </div>
             )}
 
-            {/* Roadtrips Tab */}
             {activeTab === 'Roadtrips' && (
               <div className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">Libertad sobre ruedas. Tú eliges el ritmo.</p>
@@ -293,7 +294,7 @@ function ExplorationPageContent() {
                         icon={item.icon}
                         description={item.description}
                         bgImage={item.bgImage}
-                        onClick={() => handleCardSelect(item.type, '/journey/basic-config')} // Assuming basic-config for roadtrip flow
+                        onClick={() => router.push('/packages/build/basic-config')}
                       />
                     </motion.div>
                   ))}
@@ -301,7 +302,6 @@ function ExplorationPageContent() {
               </div>
             )}
 
-            {/* Trippers Decode Tab */}
             {activeTab === 'Trippers Decode' && (
               <div className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic max-w-2xl mx-auto">Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.</p>
@@ -329,7 +329,7 @@ function ExplorationPageContent() {
                     {isSearchingDecode ? (
                       <svg className="animate-spin h-6 w-6 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     ) : (
-                      "Buscar" // Changed icon to text to avoid conflicts
+                      "Buscar"
                     )}
                   </button>
                 </div>
@@ -337,7 +337,7 @@ function ExplorationPageContent() {
                 {(decodeSearchResults.length > 0 || kaiSuggestion) && (
                   <div className="mt-12">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                      {initialDecodeData.map(item => ( // Changed decodeSearchResults.map to initialDecodeData.map
+                      {initialDecodeData.map(item => (
                         <motion.div
                           key={item.title}
                           initial={{ opacity: 0, y: 30 }}
@@ -345,7 +345,7 @@ function ExplorationPageContent() {
                           viewport={{ once: true }}
                           transition={{ duration: 0.6, ease: "easeOut" }}
                         >
-                          <DecodeResultCard item={item} onClick={() => handleCardSelect(item.title, '/journey/add-ons')} /> {/* Assuming add-ons for decode flow */}
+                          <DecodeResultCard item={item} onClick={() => router.push('/packages/build/add-ons')} />
                         </motion.div>
                       ))}
                     </div>
@@ -359,7 +359,7 @@ function ExplorationPageContent() {
                       >
                         <span className="text-4xl">🤖</span>
                         <h4 className="font-bold text-xl text-[#D4AF37] mt-4" style={{ fontFamily: 'Playfair Display, serif' }}>Sugerencia de Kai</h4>
-                        <p className="text-gray-800 mt-2 italic">{kaiSuggestion}</p> {/* CORRECCIÓN: text-gray-800 para contraste */}
+                        <p className="text-gray-800 mt-2 italic">{kaiSuggestion}</p>
                       </motion.div>
                     )}
                     {decodeSearchResults.length === 0 && !kaiSuggestion && decodeDestination && !isSearchingDecode && (
@@ -475,7 +475,7 @@ const BlogSection: React.FC = () => {
     };
 
     return (
-        <section className="py-20 px-8 bg-[#111827] text-white">
+        <section id="trippers-inspiration" className="py-20 px-8 bg-[#111827] text-white">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 
                 <div className="md:col-span-1 text-left">
@@ -504,13 +504,15 @@ const BlogSection: React.FC = () => {
                         {posts.map(post => (
                             <BlogCard key={post.title} post={post} />
                         ))}
-                        <div className="bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center p-6 w-80 flex-shrink-0 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700">
-                            <div className="w-16 h-16 border-2 border-gray-500 rounded-full flex items-center justify-center mb-4">
-                               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        <Link href="/blog">
+                            <div className="bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center p-6 w-80 flex-shrink-0 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700">
+                                <div className="w-16 h-16 border-2 border-gray-500 rounded-full flex items-center justify-center mb-4">
+                                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                </div>
+                                <h3 className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>View All</h3>
+                                <p className="text-gray-400 mt-2">Ir al Blog</p>
                             </div>
-                            <h3 className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>View All</h3>
-                            <p className="text-gray-400 mt-2">Ir al Blog</p>
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>
