@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* globals.css */
+:root {
+  --rhythm: 8px;
+}
+html { scroll-behavior: smooth; }
+h1,h2,h3 { letter-spacing: var(--tracking, -0.01em); }
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

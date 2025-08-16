@@ -1,58 +1,54 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { COUPLE_LEVELS } from "@/content/levels";
-import { useLanguage } from "@/context/LanguageContext";
+import SectionHeading from "@/components/ui/SectionHeading";
 
 export default function ExperienceLevels() {
-  const router = useRouter();
-  const { t, lang } = useLanguage();
-
   return (
-    <section id="experience-levels" className="container mx-auto px-4 py-16">
-      <div className="mx-auto max-w-3xl text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-          Comienza a planear la escapada
-        </h2>
-        <p className="text-muted-foreground mt-3">
-          💡 Lo único que definís en este paso es el presupuesto por persona (base doble).
-          Ese será tu techo. El resto… corre por nuestra cuenta.
-        </p>
-      </div>
+    <section id="experience-levels" className="relative scroll-mt-16 bg-neutral-950 text-white">
+      <div className="mx-auto max-w-7xl px-4 py-20">
+        <SectionHeading
+          title="Comienza a planear la escapada"
+          subtitle="💡 Lo único que definís en este paso es el presupuesto por persona (base doble). Ese será tu techo. El resto… corre por nuestra cuenta."
+        />
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-        {COUPLE_LEVELS.map((lvl) => (
-          <article
-            key={lvl.id}
-            className="rounded-2xl border bg-white/60 backdrop-blur p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
-          >
-            <div>
-              <h3 className="text-xl font-semibold">{t(lvl.name)}</h3>
-              {lvl.subtitle && (
-                <p className="text-sm text-muted-foreground mt-1">{t(lvl.subtitle ?? {es: "", en: ""})}</p>
-              )}
-              <p className="text-2xl font-bold mt-4">Hasta {lvl.price} USD</p>
-              <p className="text-xs text-muted-foreground">{t({es: "por persona", en: "per person"})}</p>
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+          {COUPLE_LEVELS.map((lvl) => (
+            <article
+              key={lvl.id}
+              className="rounded-2xl bg-white/8 p-6 ring-1 ring-white/10 transition hover:bg-white/12 hover:shadow-soft"
+            >
+              <h3 className="font-display text-xl tracking-tightish">{lvl.name}</h3>
+              <p className="text-white/70 text-sm">{lvl.subtitle}</p>
 
-              <ul className="mt-4 space-y-2 text-sm">
-                {(lvl.features[lang] ?? lvl.features[lang==="es"?"en":"es"] ?? []).map((f, i) => (
+              <div className="mt-6">
+                <div className="font-display text-2xl leading-tight">
+                  {lvl.priceLabel}
+                </div>
+                <span className="block text-xs text-white/60">por persona</span>
+              </div>
+
+              <ul className="mt-5 space-y-2 text-sm">
+                {(lvl.features ?? []).map((f, i) => (
                   <li key={i} className="leading-snug">• {f}</li>
                 ))}
               </ul>
 
               {lvl.priceFootnote && (
-                <p className="text-xs text-muted-foreground mt-4">{t(lvl.priceFootnote ?? {es: "", en: ""})}</p>
+                <p className="mt-4 text-xs text-white/60">{lvl.priceFootnote}</p>
               )}
-            </div>
 
-            <button
-              onClick={() => router.push(`/journey/experience-level?tier=${lvl.id}`)}
-              className="mt-6 w-full rounded-full bg-black text-white py-3 text-sm font-semibold hover:bg-black/90"
-            >
-              {t(lvl.cta ?? {es: "Reservar", en: "Book"})}
-            </button>
-          </article>
-        ))}
+              <Link
+                href={`/journey/experience-level?tier=${lvl.id}&origin=couple`}
+                className="group mt-6 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:bg-white/90 active:scale-[0.99] cursor-pointer"
+              >
+                {lvl.cta}
+                <span className="ml-2 transition-transform group-hover:translate-x-0.5">→</span>
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
