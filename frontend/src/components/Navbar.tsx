@@ -94,7 +94,6 @@ export default function Navbar() {
             <Link
               href="/?tab=Top%20Trippers#start-your-journey-anchor"
               aria-label="Ir a la sección 'Comienza tu Viaje' con la tab 'Top Trippers' seleccionada"
-              className="hover:underline underline-offset-4"
             >
               Trippers’ Finder
             </Link>

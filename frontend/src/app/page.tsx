@@ -132,9 +132,10 @@ function ExplorationPageContent() {
   const [activeTab, setActiveTab] = useState(safeTab || 'By Traveller');
 
   useEffect(() => {
+    const tab = searchParams.get('tab');
     // Si viene ?tab=..., seleccionamos la tab y scrolleamos al ancla
-    if (safeTab) {
-      setActiveTab(safeTab);
+    if (tab) {
+      setActiveTab(tab);
       const el = document.getElementById('start-your-journey-anchor');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -144,13 +145,9 @@ function ExplorationPageContent() {
     } else if (typeof window !== 'undefined' && window.location.hash === '#start-your-journey-anchor') {
       // Fallback: si no hay ?tab pero hay hash, igual scrollear
       const el = document.getElementById('start-your-journey-anchor');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const heading = document.querySelector('section[aria-label="Comienza tu Viaje"] h2') as HTMLElement | null;
-        if (heading) setTimeout(() => heading.focus({ preventScroll: true }), 350);
-      }
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [safeTab]);
+  }, [searchParams]);
 
   const [tripperSearchState, setTripperSearchState] = useState<'initial' | 'categories' | 'searching' | 'found'>('initial');
   const [foundTripper, setFoundTripper] = useState<{name: string, img: string} | null>(null);
