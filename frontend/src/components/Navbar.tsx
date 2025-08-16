@@ -91,7 +91,11 @@ export default function Navbar() {
               </svg>
             </button>
 
-            <Link href="/#top-trippers" className="hover:underline underline-offset-4">
+            <Link
+              href="/?tab=Top%20Trippers#start-your-journey-anchor"
+              aria-label="Ir a la sección 'Comienza tu Viaje' con la tab 'Top Trippers' seleccionada"
+              className="hover:underline underline-offset-4"
+            >
               Trippers’ Finder
             </Link>
             <Link href="/inspiration" className="hover:underline underline-offset-4">

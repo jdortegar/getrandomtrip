@@ -110,7 +110,7 @@ export default function AddOnsClient() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div data-testid="addons-root" className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Customize with Add-ons</h1>
 
       <div className="bg-white p-8 rounded-lg shadow-md mb-8">
@@ -131,6 +131,7 @@ export default function AddOnsClient() {
             <div>
               <label className="inline-flex items-center cursor-pointer">
                 <input
+                  data-testid={`addon-item-${addOn.id}`}
                   type="checkbox"
                   className="form-checkbox h-5 w-5 text-[#D97E4A]"
                   checked={addOn.selected}
@@ -148,7 +149,7 @@ export default function AddOnsClient() {
 
         <div className="text-right mt-8">
           <p className="text-xl font-bold text-[#0A2240]">Extra Cost Per Person: ${totalExtraCostPerPerson.toFixed(2)}</p>
-          <p className="text-2xl font-bold text-[#0A2240]">Total Extra Cost: ${totalExtraCost.toFixed(2)}</p>
+          <p data-testid="addons-total" className="text-2xl font-bold text-[#0A2240]">Total Extra Cost: ${totalExtraCost.toFixed(2)}</p>
         </div>
       </div>
 

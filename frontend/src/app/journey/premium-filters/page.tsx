@@ -96,6 +96,7 @@ function PremiumFiltersContent() {
           {filterOptions.map(filter => (
             <button
               key={filter.id}
+              data-testid={`premium-${filter.id}`}
               onClick={() => handleFilterToggle(filter.id)}
               className={`p-4 border rounded-lg transition-colors ${
                 selectedFilters.includes(filter.id) 
@@ -110,7 +111,7 @@ function PremiumFiltersContent() {
 
         <div className="mt-12 p-6 bg-gray-800/50 rounded-lg text-center">
           <p className="text-gray-400">Costo extra por filtros seleccionados:</p>
-          <p className="text-4xl font-bold text-white">${filtersCost.toFixed(2)}</p>
+          <p data-testid="premium-total" className="text-4xl font-bold text-white">${filtersCost.toFixed(2)}</p>
           <p className="text-xs text-gray-500">
             {selectedFilters.length} filtros para {booking?.travelerCount || 0} viajeros
           </p>

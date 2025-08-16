@@ -72,7 +72,6 @@ export default function RevealDestinationClient() {
     // In a real application, you would fetch the booking details here to get the actual tripDate
     // For now, we'll simulate fetching it or assume it's passed via props/context
     const fetchBookingDetails = async () => {
-      // Simulate API call to get booking details and tripDate
       // const response = await fetch(`/api/booking/${bookingId}`);
       // const data = await response.json();
       // setTripDate(new Date(data.tripDate));
@@ -145,12 +144,12 @@ export default function RevealDestinationClient() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 text-center">
+    <div data-testid="reveal-root" className="container mx-auto px-4 py-8 text-center">
       {!isRevealed ? (
         <>
-          <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">Your Adventure Awaits!</h1>
+          <h1 data-testid="reveal-title" className="text-4xl font-bold mb-4 text-[#0A2240]">Your Adventure Awaits!</h1>
           <p className="text-xl text-gray-700 mb-8">Your destination will be revealed in:</p>
-          <div className="text-6xl font-bold text-[#D97E4A] mb-8">
+          <div data-testid="reveal-countdown" className="text-6xl font-bold text-[#D97E4A] mb-8">
             {formatTime(timeRemaining)}
           </div>
           <p className="text-lg text-gray-600">Stay tuned for an unforgettable experience!</p>
@@ -159,7 +158,7 @@ export default function RevealDestinationClient() {
         destination ? (
           <>
             <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">Your Destination Revealed!</h1>
-            <h2 className="text-3xl font-semibold mb-6 text-[#D97E4A]">{destination.name}</h2>
+            <h2 data-testid="reveal-destination" className="text-3xl font-semibold mb-6 text-[#D97E4A]">{destination.name}</h2>
 
             <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden shadow-lg">
               {/* Placeholder for Google Maps API */}
@@ -198,4 +197,3 @@ export default function RevealDestinationClient() {
     </div>
   );
 }
-

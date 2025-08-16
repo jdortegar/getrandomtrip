@@ -5,6 +5,7 @@
   --rhythm: 8px;
 }
 html { scroll-behavior: smooth; }
+:focus-visible { outline: 2px dashed currentColor; outline-offset: 3px; }
 h1,h2,h3 { letter-spacing: var(--tracking, -0.01em); }
 
 :root {

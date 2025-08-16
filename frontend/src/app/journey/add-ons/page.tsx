@@ -113,7 +113,7 @@ function AddonsContent() {
   }
 
   return (
-    <main className="bg-[#111827] text-white min-h-screen p-8 md:p-16">
+    <main data-testid="addons-root" className="bg-[#111827] text-white min-h-screen p-8 md:p-16">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-5xl font-bold text-center mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Servicios Adicionales</h1>
         <p className="text-lg text-gray-300 text-center mb-12">Añade esos toques finales que harán tu viaje aún más memorable.</p>
@@ -122,6 +122,7 @@ function AddonsContent() {
           {addonOptions.map(addon => (
             <div
               key={addon.id}
+              data-testid={`addon-item-${addon.id}`}
               onClick={() => handleAddonToggle(addon.id)}
               className={`p-4 border rounded-lg transition-colors flex items-center justify-between cursor-pointer ${
                 selectedAddons.includes(addon.id)
@@ -132,7 +133,7 @@ function AddonsContent() {
               <div>
                 <p className="font-bold">{addon.label}</p>
                 <p className="text-sm opacity-80">
-                  {addon.type === 'percentage' ? `${addon.price * 100}% del total` : `$${addon.price.toFixed(2)} ${addon.type.replace('_', ' ')}`}
+                  {addon.type === 'percentage' ? `${addon.price * 100}% del total` : `${addon.price.toFixed(2)} ${addon.type.replace('_', ' ')}`}
                 </p>
               </div>
               <div className={`w-6 h-6 rounded-full border-2 ${selectedAddons.includes(addon.id) ? 'bg-black border-black' : 'border-current'}`}/>
@@ -142,7 +143,7 @@ function AddonsContent() {
         
         <div className="mt-12 p-6 bg-gray-800/50 rounded-lg text-center">
           <p className="text-gray-400">Costo extra por add-ons:</p>
-          <p className="text-4xl font-bold text-white">${addonsCost.toFixed(2)}</p>
+          <p data-testid="addons-total" className="text-4xl font-bold text-white">${addonsCost.toFixed(2)}</p>
         </div>
         
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}

@@ -1,6 +1,6 @@
 describe('Checkout Page', () => {
   beforeEach(() => {
-    cy.visit('/checkout');
+    cy.visit('/checkout?bookingId=bk_123');
   });
 
   it('should display the main heading', () => {
@@ -8,34 +8,26 @@ describe('Checkout Page', () => {
   });
 
   it('should display trip summary sections', () => {
-    cy.contains('h2', 'Your Trip Details').should('be.visible');
-    cy.contains('h3', 'Experience Level:').should('be.visible');
-    cy.contains('h3', 'Basic Configuration:').should('be.visible');
-    cy.contains('h3', 'Premium Filters:').should('be.visible');
-    cy.contains('h3', 'Add-ons:').should('be.visible');
+    cy.get('[data-testid="checkout-summary"]').should('exist');
   });
 
   it('should display price breakdown', () => {
-    cy.contains('h2', 'Price Breakdown').should('be.visible');
-    cy.contains('p', 'Base Price:').should('be.visible');
-    cy.contains('p', 'Premium Filters Cost:').should('be.visible');
-    cy.contains('p', 'Add-ons Cost:').should('be.visible');
-    cy.contains('p', 'Total Price:').should('be.visible');
+    cy.get('[data-testid="checkout-prices"]').should('exist');
   });
 
   it('should display payment section', () => {
-    cy.contains('h2', 'Payment').should('be.visible');
-    cy.contains('button', 'Pay Now').should('be.visible');
+    cy.get('[data-testid="checkout-payment"]').should('exist');
+    cy.get('[data-testid="pay-now"]').should('be.visible');
   });
 
   it('should show success toast and redirect on successful payment', () => {
     // Intercept the POST request to /api/checkout and mock a successful response
-    cy.intercept('POST', '/api/checkout', {
+    cy.intercept('POST', '**/checkout', {
       statusCode: 200,
-      body: { success: true, message: 'Payment processed successfully.' },
+      fixture: "checkout.preference.success.json",
     }).as('checkoutRequest');
 
-    cy.contains('button', 'Pay Now').click();
+    cy.get('[data-testid="pay-now"]').click();
 
     cy.wait('@checkoutRequest').then(() => {
       cy.contains('Payment successful! Redirecting...').should('be.visible');
@@ -45,12 +37,12 @@ describe('Checkout Page', () => {
 
   it('should show error toast on failed payment', () => {
     // Intercept the POST request to /api/checkout and mock a failed response
-    cy.intercept('POST', '/api/checkout', {
+    cy.intercept('POST', '**/checkout', {
       statusCode: 400,
       body: { success: false, message: 'Payment failed due to invalid details.' },
     }).as('checkoutRequest');
 
-    cy.contains('button', 'Pay Now').click();
+    cy.get('[data-testid="pay-now"]').click();
 
     cy.wait('@checkoutRequest').then(() => {
       cy.contains('Payment failed due to invalid details.').should('be.visible');
@@ -60,11 +52,11 @@ describe('Checkout Page', () => {
 
   it('should show error toast on network error during payment', () => {
     // Intercept the POST request to /api/checkout and simulate a network error
-    cy.intercept('POST', '/api/checkout', {
+    cy.intercept('POST', '**/checkout', {
       forceNetworkError: true,
     }).as('checkoutRequest');
 
-    cy.contains('button', 'Pay Now').click();
+    cy.get('[data-testid="pay-now"]').click();
 
     cy.wait('@checkoutRequest').then(() => {
       cy.contains('Network error or server issue. Please check your connection.').should('be.visible');

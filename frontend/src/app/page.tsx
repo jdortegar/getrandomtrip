@@ -112,23 +112,45 @@ const PremiumLoader = ({ message }: { message: string }) => (
   </div>
 );
 
+const ALLOWED_TABS = new Set(["By Traveller","Top Trippers","Roadtrips","Trippers Decode"]);
+
+function normalizeTab(input: string | null): string | null {
+  if (!input) return null;
+  try { input = decodeURIComponent(input); } catch {}
+  // normaliza espacios múltiples
+  input = input.replace(/\s+/g, " ").trim();
+  return ALLOWED_TABS.has(input) ? input : null;
+}
+
 // --- ExplorationPageContent Component ---
 function ExplorationPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab');
+  const rawTab = searchParams.get('tab');
+  const safeTab = normalizeTab(rawTab);
 
-  const [activeTab, setActiveTab] = useState(tab || 'By Traveller');
+  const [activeTab, setActiveTab] = useState(safeTab || 'By Traveller');
 
   useEffect(() => {
-    if (tab) {
-      setActiveTab(tab);
-      const element = document.getElementById('start-your-journey-anchor');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+    // Si viene ?tab=..., seleccionamos la tab y scrolleamos al ancla
+    if (safeTab) {
+      setActiveTab(safeTab);
+      const el = document.getElementById('start-your-journey-anchor');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const heading = document.querySelector('section[aria-label="Comienza tu Viaje"] h2') as HTMLElement | null;
+        if (heading) setTimeout(() => heading.focus({ preventScroll: true }), 350);
+      }
+    } else if (typeof window !== 'undefined' && window.location.hash === '#start-your-journey-anchor') {
+      // Fallback: si no hay ?tab pero hay hash, igual scrollear
+      const el = document.getElementById('start-your-journey-anchor');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const heading = document.querySelector('section[aria-label="Comienza tu Viaje"] h2') as HTMLElement | null;
+        if (heading) setTimeout(() => heading.focus({ preventScroll: true }), 350);
       }
     }
-  }, [tab]);
+  }, [safeTab]);
 
   const [tripperSearchState, setTripperSearchState] = useState<'initial' | 'categories' | 'searching' | 'found'>('initial');
   const [foundTripper, setFoundTripper] = useState<{name: string, img: string} | null>(null);
@@ -166,18 +188,19 @@ function ExplorationPageContent() {
   };
 
   return (
-    <main id="start-your-journey-anchor" className="bg-white text-gray-900 min-h-screen py-16 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto text-center">
-        <h1 className="text-5xl md:text-7xl font-bold mb-2 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Comienza tu Viaje</h1>
+    <main className="bg-white text-gray-900 min-h-screen py-16 px-4 md:px-8">
+      <div id="start-your-journey-anchor" />
+      <section data-testid="journey-section" aria-label="Comienza tu Viaje" className="max-w-7xl mx-auto text-center">
+        <h2 data-testid="journey-title" tabIndex={-1} className="text-5xl md:text-7xl font-bold mb-2 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Comienza tu Viaje</h2>
         <p className="text-lg text-gray-800 mt-4 mb-12" style={{ fontFamily: 'Inter, sans-serif' }}>Elige cómo quieres empezar a dar forma a tu aventura.</p>
 
         <div className="flex justify-center space-x-4 md:space-x-8 border-b border-gray-300 mb-12">
-          {["By Traveller", "Top Trippers", "Roadtrips", "Trippers Decode"].map(tab => (
+          {["By Traveller", "Top Trippers", "Roadtrips", "Trippers Decode"].map(tabName => (
             <TabButton
-              key={tab}
-              label={tab}
-              isActive={activeTab === tab}
-              onClick={() => setActiveTab(tab)}
+              key={tabName}
+              label={tabName}
+              isActive={activeTab === tabName}
+              onClick={() => setActiveTab(tabName)}
             />
           ))}
         </div>
@@ -371,7 +394,7 @@ function ExplorationPageContent() {
             )}
           </motion.div> 
         </AnimatePresence>
-      </div>
+      </section>
     </main>
   );
 }
@@ -522,6 +545,7 @@ const BlogSection: React.FC = () => {
 
 // --- Section Component: Ready For Adventure ---
 const ReadyForAdventureSection: React.FC = () => {
+  const router = useRouter();
   return (
     <section
       aria-label="Sección final - Listo para la aventura"
@@ -539,7 +563,11 @@ const ReadyForAdventureSection: React.FC = () => {
           Tu próximo recuerdo inolvidable está a un solo click de distancia.  
           No lo pienses más.
         </p>
-        <Link href="/#by-traveller" className="bg-[#E59A60] hover:bg-[#d58b50] text-white font-bold py-3 px-8 rounded-full transition-colors">
+        <Link
+          href="/?tab=By%20Traveller#start-your-journey-anchor"
+          aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
+          className="bg-[#E59A60] hover:bg-[#d58b50] text-white font-bold py-3 px-8 rounded-full transition-colors"
+        >
           RANDOMTRIPME!
         </Link>
       </div>
@@ -706,14 +734,13 @@ export default function HomePage() {
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>
             Diseñamos la sorpresa. Odiamos la improvisación. Responde unas preguntas y nos encargaremos del resto.
           </p>
-          <PrimaryButton
-            onClick={() => {
-              document.getElementById('start-your-journey-anchor')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="mt-8 animate-pulse-once"
+          <Link
+            href="/?tab=By%20Traveller#start-your-journey-anchor"
+            aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
+            className="bg-[#D97E4A] text-white font-bold uppercase tracking-wider py-3 px-8 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#111827] focus:ring-[#D4AF37] mt-8 animate-pulse-once"
           >
             RandomtripME!
-          </PrimaryButton>
+          </Link>
         </div>
 
         {/* Indicador de scroll (el que late) */}

@@ -174,7 +174,7 @@ export default function CheckoutClient() {
 
       <div className="bg-white p-8 rounded-lg shadow-md mb-8">
         {/* Trip Summary Section */}
-        <section className="mb-6">
+        <section data-testid="checkout-summary" className="mb-6">
           <h2 className="text-2xl font-semibold mb-4 text-[#0A2240]">Your Trip Details</h2>
 
           <div className="mb-4 border-b pb-4">
@@ -230,7 +230,7 @@ export default function CheckoutClient() {
         </section>
 
         {/* Price Breakdown */}
-        <section className="mb-6 text-right">
+        <section data-testid="checkout-prices" className="mb-6 text-right">
           <h2 className="text-2xl font-semibold mb-4 text-[#0A2240]">Price Breakdown</h2>
           <p className="text-lg text-gray-700">Base Price: ${tripSummary.basePrice.toFixed(2)}</p>
           <p className="text-lg text-gray-700">Premium Filters Cost: ${tripSummary.premiumFilterCost.toFixed(2)}</p>
@@ -239,7 +239,7 @@ export default function CheckoutClient() {
         </section>
 
         {/* Payment Section */}
-        <section className="text-center">
+        <section data-testid="checkout-payment" className="text-center">
           <h2 className="text-2xl font-semibold mb-4 text-[#0A2240]">Payment</h2>
           <div className="bg-gray-100 p-6 rounded-lg mb-6">
             <p className="text-gray-700 mb-4">Placeholder for Mercado Pago integration.</p>
@@ -252,7 +252,7 @@ export default function CheckoutClient() {
             {paymentStatus === 'failed' && errorMessage && (
               <p className="text-red-600 font-semibold mb-2">{errorMessage}</p>
             )}
-            <PrimaryButton onClick={handlePayNow} disabled={paymentStatus === 'processing'}>
+            <PrimaryButton data-testid="pay-now" onClick={handlePayNow} disabled={paymentStatus === 'processing'}>
               {paymentStatus === 'processing' ? 'Processing...' : 'Pay Now'}
             </PrimaryButton>
           </div>
@@ -261,8 +261,3 @@ export default function CheckoutClient() {
     </div>
   );
 }
-
-
-
-
-  

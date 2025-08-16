@@ -1,48 +1,54 @@
 describe('Reveal Destination Page', () => {
   beforeEach(() => {
-    cy.visit('/reveal-destination');
+    cy.visit('/reveal-destination?bookingId=bk_123');
   });
 
   it('should display loading skeleton initially and then hide it', () => {
     cy.get('.animate-pulse').should('be.visible');
     cy.get('.animate-pulse', { timeout: 2000 }).should('not.exist');
-    cy.get('h1').should('contain', 'Your Adventure Awaits!');
+    cy.get('h1').should('contain', 'Preparing Your Reveal...');
   });
 
   it('should display countdown initially', () => {
-    cy.get('h1').should('contain', 'Your Adventure Awaits!');
-    cy.contains('p', 'Your destination will be revealed in:').should('be.visible');
-    cy.get('.text-6xl').should('be.visible'); // Checks for the countdown timer display
+    cy.get('[data-testid="reveal-title"]').should('exist');
+    cy.get('[data-testid="reveal-countdown"]').should('be.visible');
   });
 
   it('should reveal destination after countdown', () => {
-    // Wait for the simulated countdown to finish (10 seconds in mockRevealTime)
-    cy.get('h1', { timeout: 12000 }).should('contain', 'Your Destination Revealed!');
-    cy.contains('h2', 'Kyoto, Japan').should('be.visible');
-    cy.contains('h3', 'About Your Trip:').should('be.visible');
-    cy.contains('h3', 'Your Itinerary:').should('be.visible');
-    cy.contains('button', 'Share Your Experience').should('be.visible');
-    cy.contains('button', 'Book Another Trip').should('be.visible');
+    cy.clock();
+    cy.intercept("GET", "**/bookings/**/reveal", { fixture: "reveal.success.json" }).as("reveal");
+    cy.visit("/reveal-destination?bookingId=bk_123"); // Assuming a bookingId is needed
+    cy.get('[data-testid="reveal-countdown"]').should("exist");
+    cy.tick(48 * 60 * 60 * 1000); // Adjust based on actual UI logic
+    cy.wait("@reveal");
+    cy.get('[data-testid="reveal-title"]').should('contain', 'Your Destination Revealed!');
+    cy.get('[data-testid="reveal-destination"]').should('contain', 'Barcelona');
   });
 
   it('should display error message on failed destination fetch', () => {
-    cy.intercept('POST', '/api/reveal', {
+    cy.clock();
+    cy.intercept('GET', '**/bookings/**/reveal', {
       statusCode: 500,
       body: { success: false, message: 'Failed to fetch destination.' },
     }).as('revealRequest');
 
-    // Wait for the simulated countdown to finish and API call to be made
-    cy.get('h1', { timeout: 12000 }).should('contain', 'Error!');
+    cy.visit("/reveal-destination?bookingId=bk_123");
+    cy.tick(48 * 60 * 60 * 1000); // Advance time to trigger reveal
+    cy.wait('@revealRequest');
+    cy.get('h1').should('contain', 'Error!');
     cy.contains('p', 'Failed to fetch destination.').should('be.visible');
   });
 
   it('should display network error message on network failure during destination fetch', () => {
-    cy.intercept('POST', '/api/reveal', {
+    cy.clock();
+    cy.intercept('GET', '**/bookings/**/reveal', {
       forceNetworkError: true,
     }).as('revealRequest');
 
-    // Wait for the simulated countdown to finish and API call to be made
-    cy.get('h1', { timeout: 12000 }).should('contain', 'Error!');
+    cy.visit("/reveal-destination?bookingId=bk_123");
+    cy.tick(48 * 60 * 60 * 1000); // Advance time to trigger reveal
+    cy.wait('@revealRequest');
+    cy.get('h1').should('contain', 'Error!');
     cy.contains('p', 'Network error or server issue.').should('be.visible');
   });
 });

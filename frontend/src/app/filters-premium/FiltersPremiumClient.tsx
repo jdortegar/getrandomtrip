@@ -87,7 +87,7 @@ export default function FiltersPremiumClient() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div data-testid="premium-root" className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Enhance Your Trip with Premium Filters</h1>
 
       <div className="bg-white p-8 rounded-lg shadow-md mb-8">
@@ -96,6 +96,7 @@ export default function FiltersPremiumClient() {
             <div>
               <label className="inline-flex items-center cursor-pointer">
                 <input
+                  data-testid={`premium-${filter.id}`}
                   type="checkbox"
                   className="form-checkbox h-5 w-5 text-[#D97E4A]"
                   checked={selectedFilters.includes(filter.id)}
@@ -112,7 +113,7 @@ export default function FiltersPremiumClient() {
         ))}
 
         <div className="text-right mt-8">
-          <p className="text-2xl font-bold text-[#0A2240]">Current Total Price: ${totalPrice.toFixed(2)}</p>
+          <p data-testid="premium-total" className="text-2xl font-bold text-[#0A2240]">Current Total Price: ${totalPrice.toFixed(2)}</p>
           <p className="text-sm text-gray-600">First premium filter is free.</p>
         </div>
       </div>

@@ -79,8 +79,8 @@ export default function PostPurchaseClient() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 text-center">
-      <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">Thank You for Your Purchase!</h1>
+    <div data-testid="postpurchase-root" className="container mx-auto px-4 py-8 text-center">
+      <h1 data-testid="postpurchase-title" className="text-4xl font-bold mb-4 text-[#0A2240]">Thank You for Your Purchase!</h1>
       <p className="text-xl text-gray-700 mb-8">Your Randomtrip adventure is confirmed.</p>
       {bookingConfirmation && (
         <div className="bg-white p-6 rounded-lg shadow-md inline-block">
@@ -96,4 +96,3 @@ export default function PostPurchaseClient() {
     </div>
   );
 }
-

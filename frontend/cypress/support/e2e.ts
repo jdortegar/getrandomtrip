@@ -13,5 +13,17 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+// Log de todas las requests para ajustar intercepts más fácil
+beforeEach(() => {
+  cy.intercept('**', (req) => {
+    // Sólo muestra fetch/xhr de tu app
+    if (req.headers['x-cypress-request'] !== 'true' && !req.url.includes('__cypress')) {
+      // Útil: ver en el runner qué está llamando el front
+      // eslint-disable-next-line no-console
+      console.log('[NET]', req.method, req.url);
+    }
+  });
+});
+
 // Import commands.js using ES2015 syntax:
 import './commands'
