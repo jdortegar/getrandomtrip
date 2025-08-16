@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Inter, Fraunces } from "next/font/google";
-import { LanguageProvider } from "@/context/LanguageContext";
+import HeaderGate from "@/components/layout/HeaderGate";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const fraunces = Fraunces({
@@ -15,7 +15,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased text-neutral-900">
-        <LanguageProvider>{children}</LanguageProvider>
+        <HeaderGate />
+        {children}
       </body>
     </html>
   );

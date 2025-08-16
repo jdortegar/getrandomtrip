@@ -192,7 +192,7 @@ function ExplorationPageContent() {
             className="w-full"
           >
             {activeTab === 'By Traveller' && (
-              <div className="py-8">
+              <div id="by-traveller" className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">¿Con quién vas a escribir tu próxima historia?</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
                   {initialTravellerTypes.map((type) => (
@@ -216,7 +216,7 @@ function ExplorationPageContent() {
             )}
 
             {activeTab === 'Top Trippers' && (
-              <div className="py-8">
+              <div id="top-trippers" className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
                   {TRIPPERS.map(tripper => (
@@ -539,9 +539,9 @@ const ReadyForAdventureSection: React.FC = () => {
           Tu próximo recuerdo inolvidable está a un solo click de distancia.  
           No lo pienses más.
         </p>
-        <PrimaryButton className="bg-[#E59A60] hover:bg-[#d58b50]">
+        <Link href="/#by-traveller" className="bg-[#E59A60] hover:bg-[#d58b50] text-white font-bold py-3 px-8 rounded-full transition-colors">
           RANDOMTRIPME!
-        </PrimaryButton>
+        </Link>
       </div>
     </section>
   );
@@ -679,18 +679,27 @@ const AppFooter: React.FC = () => {
 export default function HomePage() {
   const router = useRouter();
 
-  const scrollToJourney = () => {
-      document.getElementById('start-your-journey-anchor')?.scrollIntoView({ behavior: 'smooth' });
-  }
-
   return (
     <main className="bg-[#111827] text-white">
-      <header className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden">
+      {/* HERO */}
+      <section
+        id="home-hero"
+        className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
+      >
+        {/* Sentinel para el navbar (overlay vs sólido) */}
+        <div id="hero-sentinel" className="absolute inset-x-0 top-0 h-4 pointer-events-none" />
+
+        {/* Capa de fondo (video o imagen que ya tengas) */}
         <div className="absolute top-0 left-0 w-full h-full z-0">
           <video src="/videos/hero-video.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/40" />
         </div>
-        <div className="relative z-10 p-4">
+
+        {/* Oscurecedor */}
+        <div className="absolute inset-0 bg-black/40 z-0" />
+
+        {/* Contenido del hero */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4">
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Donde termina la rutina, comienza la aventura.
           </h1>
@@ -706,15 +715,21 @@ export default function HomePage() {
             RandomtripME!
           </PrimaryButton>
         </div>
-        <div className="scroll-indicator">Scroll</div>
-      </header>
-      
+
+        {/* Indicador de scroll (el que late) */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+          <span className="block text-xs tracking-[0.3em]">SCROLL</span>
+          <span className="block h-8 w-px mx-auto animate-pulse bg-white/80"></span>
+        </div>
+      </section>
+
+      {/* Resto del contenido existente de la home, INTACTO */}
       <HowItWorksSection />
       <BenefitsSection />
       <BlogSection />
       <Suspense fallback={<PremiumLoader message="Preparando tu aventura..." />}><ExplorationPageContent /></Suspense>
       <EventFinder />
-      <ReadyForAdventureSection /> {/* Added ReadyForAdventureSection here */}
+      <ReadyForAdventureSection />
       <AppFooter />
     </main>
   );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import MinimalHeader from "@/components/layout/MinimalHeader";
+
 import CoupleHero from "@/components/by-type/couple/CoupleHero";
 import CoupleIntro from "@/components/by-type/couple/CoupleIntro";
 import ExperienceLevels from "@/components/by-type/couple/ExperienceLevels";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CouplePage() {
   return (
     <main className="relative">
-      <MinimalHeader />
+      
       <CoupleHero />
       <CoupleIntro />
       <ExperienceLevels />

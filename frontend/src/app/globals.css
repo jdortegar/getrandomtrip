@@ -136,3 +136,15 @@ body {
   @apply relative bg-cover bg-center overflow-hidden;
   background-image: url('/images/bg-playa-mexico.jpg');
 }
+
+/* === Auto-invert para logo en header overlay === */
+@layer utilities {
+  .logo-auto {
+    transition: filter 200ms ease;
+  }
+
+  /* Cuando el header esté en overlay (sobre hero), invertimos el logo oscuro */
+  [data-overlay="true"] .logo-auto {
+    filter: invert(1) hue-rotate(180deg) contrast(1.05) brightness(1.1);
+  }
+}

@@ -1,169 +1,203 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Navbar() {
-  const [overlay, setOverlay] = useState(true); // true when over hero, false when scrolled
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // for mobile hamburger menu
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // for main menu dropdown
+  const [overlay, setOverlay] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Scroll detection logic
+  // Detectar si estamos sobre el hero
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) { // Adjust threshold as needed
-        setOverlay(false);
-      } else {
-        setOverlay(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const el = document.getElementById("hero-sentinel");
+    if (!el) {
+      const onScroll = () => setOverlay(window.scrollY < 1);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => setOverlay(entry.isIntersecting),
+      { rootMargin: "-1px 0px 0px 0px", threshold: [0, 1] }
+    );
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
-  // Close dropdown when clicking outside
+  // Cerrar dropdown con click afuera / Escape
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
+    const onDocClick = (e: MouseEvent) => {
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(e.target as Node)) setMenuOpen(false);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    document.addEventListener("click", onDocClick);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onEsc);
+    };
   }, []);
 
-  const toggleDropdown = useCallback(() => {
-    setIsDropdownOpen(prev => !prev);
-  }, []);
-
-  const closeDropdown = useCallback(() => {
-    setIsDropdownOpen(false);
-  }, []);
-
-  const toggleMobileMenu = useCallback(() => {
-    setIsMenuOpen(prev => !prev);
-    // Prevent body scroll when mobile menu is open
-    document.body.style.overflow = !isMenuOpen ? 'hidden' : 'auto';
-  }, [isMenuOpen]);
-
-  const closeMobileMenu = useCallback(() => {
-    setIsMenuOpen(false);
-    document.body.style.overflow = 'auto';
-  }, []);
-
-  const handleSearchClick = () => {
-    window.dispatchEvent(new CustomEvent("open-search"));
-  };
-
-  const logoSrc = overlay ? "/assets/logos/Logo.svg" : "/assets/logos/Logo.svg"; // Will handle color change via CSS
+  const headerClass = useMemo(
+    () =>
+      overlay
+        ? "fixed top-0 w-full z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200"
+        : "fixed top-0 w-full z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200",
+    [overlay]
+  );
 
   return (
-    <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-      overlay ? "bg-black/20 text-white backdrop-blur-sm" : "bg-white text-neutral-900 shadow"
-    }`}>
-      <nav className="h-16 flex items-center justify-between px-4 lg:px-8">
-        {/* Brand Logo */}
-        <Link href="/" aria-label="Randomtrip">
-          <img src={logoSrc} alt="Randomtrip" className={`h-8 w-auto transition-all duration-300 ${
-            overlay ? 'filter brightness-0 invert' : '' // Apply filter for white/dark logo effect
-          }`} />
-        </Link>
-
-        {/* Left Block (Main Navigation - hidden on mobile) */}
-        <div className="hidden md:flex items-center gap-7 uppercase tracking-wide text-sm font-medium">
-          <button aria-label="Buscar" onClick={handleSearchClick} className="hover:opacity-80 underline-offset-4">
-            {/* Search Icon */}
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"></path></svg>
-          </button>
-          <Link href="/?tab=Top+Trippers#start-your-journey-anchor" className="hover:underline hover:underline-offset-4 transition-all duration-150">Trippers’ Finder</Link>
-          <Link href="/#trippers-inspiration" className="hover:underline hover:underline-offset-4 transition-all duration-150">Trippers’ Inspiration</Link>
-          <Link href="/nosotros" className="hover:underline hover:underline-offset-4 transition-all duration-150">Nosotros</Link>
-
-          {/* Dropdown Menu */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              aria-haspopup="menu"
-              aria-expanded={isDropdownOpen}
-              onClick={toggleDropdown}
-              className="flex items-center gap-1 hover:underline hover:underline-offset-4 transition-all duration-150"
-            >
-              Menú
-              <svg className={`h-3 w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-            </button>
-            {isDropdownOpen && (
-              <div
-                role="menu"
-                className="absolute right-0 mt-3 w-80 rounded-xl bg-white/95 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
-                onClick={closeDropdown} // Close dropdown on item click
-              >
-                <Link href="/experiencias" role="menuitem" className="block px-4 py-2 rounded hover:bg-neutral-50 transition-colors duration-150">TripBuddy (replaces “Experiencias”)</Link>
-                <Link href="/bitacoras" role="menuitem" className="block px-4 py-2 rounded hover:bg-neutral-50 transition-colors duration-150">Off the Record: Bitácoras del Continente</Link>
-                <Link href="/proximos-lanzamientos" role="menuitem" className="block px-4 py-2 rounded hover:bg-neutral-50 transition-colors duration-150">Próximos Lanzamientos</Link>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Block (Actions) */}
-        <div className="flex items-center gap-4">
-          {/* WhatsApp */}
-          <a href="https://wa.me/526241928208" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="p-1 rounded-full hover:bg-white/10 transition-colors duration-150">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" className="h-7 w-7" />
-          </a>
-          {/* Login */}
-          <Link href="/login" aria-label="Iniciar sesión" className="p-1 rounded-full hover:bg-white/10 transition-colors duration-150">
-            {/* User Icon */}
-            <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+    <>
+      <header className={headerClass}>
+        <nav className="mx-auto h-16 max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          {/* Marca */}
+          <Link
+            href="/"
+            aria-label="Randomtrip"
+            className="flex items-center gap-2 shrink-0"
+          >
+            <img
+              src="/assets/logos/Logo.svg"
+              alt="Randomtrip"
+              className="h-12 w-auto md:h-12 sm:h-10"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = "/logo.svg";
+              }}
+            />
           </Link>
-          {/* Language Badge */}
-          <span aria-label="Idioma: Español" className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-xs font-semibold transition-all duration-300 ${
-            overlay ? "border border-white/30" : "border border-neutral-300"
-          }`}>
-            ES
-          </span>
 
-          {/* Hamburger (Mobile Only) */}
-          <button className="md:hidden p-2 rounded hover:bg-white/10 transition-colors duration-150" aria-label="Abrir menú" onClick={toggleMobileMenu}>
-            {/* Hamburger Icon */}
-            <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Panel (Slide-in) */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={closeMobileMenu}>
-          <div className="fixed right-0 top-0 h-full w-64 bg-white text-neutral-900 shadow-lg p-4 transform transition-transform duration-300 ease-in-out translate-x-0" onClick={(e) => e.stopPropagation()}>
-            <button onClick={closeMobileMenu} className="absolute top-4 right-4 p-2 rounded hover:bg-neutral-100">
-              {/* Close Icon */}
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+          {/* Bloque central: lupa + enlaces + hamburger */}
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+            {/* Buscar */}
+            <button
+              type="button"
+              className="p-2 rounded-full hover:bg-white/10"
+              aria-label="Buscar"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("open-search"))
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="11" cy="11" r="7" strokeWidth="2" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" strokeWidth="2" />
+              </svg>
             </button>
-            <nav className="mt-10 flex flex-col gap-4 uppercase tracking-wide text-sm font-medium">
-              <Link href="/?tab=Top+Trippers#start-your-journey-anchor" onClick={closeMobileMenu} className="block py-2 hover:bg-neutral-50">Trippers’ Finder</Link>
-              <Link href="/#trippers-inspiration" onClick={closeMobileMenu} className="block py-2 hover:bg-neutral-50">Trippers’ Inspiration</Link>
-              <Link href="/nosotros" onClick={closeMobileMenu} className="block py-2 hover:bg-neutral-50">Nosotros</Link>
 
-              {/* Mobile Dropdown (Accordion) */}
-              <div className="border-t border-neutral-200 pt-4 mt-4">
-                <button onClick={() => setIsDropdownOpen(prev => !prev)} className="flex items-center justify-between w-full py-2 hover:bg-neutral-50">
-                  Menú
-                  <svg className={`h-3 w-3 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-                </button>
-                {isDropdownOpen && (
-                  <div className="pl-4">
-                    <Link href="/experiencias" onClick={closeMobileMenu} className="block py-2 hover:bg-neutral-50">TripBuddy (replaces “Experiencias”)</Link>
-                    <Link href="/bitacoras" onClick={closeMobileMenu} className="block py-2 hover:bg-neutral-50">Off the Record: Bitácoras del Continente</Link>
-                    <Link href="/proximos-lanzamientos" onClick={closeMobileMenu} className="block py-2 hover:bg-neutral-50">Próximos Lanzamientos</Link>
-                  </div>
-                )}
-              </div>
-            </nav>
+            <Link href="/#top-trippers" className="hover:underline underline-offset-4">
+              Trippers’ Finder
+            </Link>
+            <Link href="/inspiration" className="hover:underline underline-offset-4">
+              Trippers’ Inspiration
+            </Link>
+            <Link href="/nosotros" className="hover:underline underline-offset-4">
+              Nosotros
+            </Link>
+
+            {/* Hamburger + dropdown */}
+            <div className="relative" ref={menuRef}>
+              <button
+                aria-label="Abrir menú"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((v) => !v)}
+                className="p-2 rounded-lg hover:bg-white/10"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M4 6h16M4 12h16M4 18h16" strokeWidth="2" />
+                </svg>
+              </button>
+
+              {menuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-3 w-80 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                >
+                  <Link
+                    role="menuitem"
+                    href="/tripbuddy"
+                    className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                  >
+                    IA TripBuddy
+                  </Link>
+                  <Link
+                    role="menuitem"
+                    href="/bitacoras"
+                    className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                  >
+                    Off the Record: Bitácoras del Continente
+                  </Link>
+                  <button
+                    role="menuitem"
+                    disabled
+                    className="block w-full text-left px-4 py-2 text-sm rounded opacity-60 cursor-not-allowed"
+                    title="Próximamente"
+                  >
+                    Coming soon
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </header>
+
+          {/* Bloque derecho */}
+          <div className="flex items-center gap-4">
+            <a
+              href="https://wa.me/526241928208"
+              target="_blank"
+              rel="noopener"
+              aria-label="WhatsApp"
+              className="p-1 rounded-full hover:bg-white/10"
+            >
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+                alt="WhatsApp"
+                className="h-7 w-7"
+              />
+            </a>
+
+            <Link
+              href="/login"
+              aria-label="Iniciar sesión"
+              className="p-1 rounded-full hover:bg-white/10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" strokeWidth="2" />
+                <path d="M4 20a8 8 0 0116 0" strokeWidth="2" />
+              </svg>
+            </Link>
+
+            <span
+              aria-label="Idioma: Español"
+              className="inline-flex items-center justify-center h-8 w-8 rounded-full border border-white/30 text-xs font-semibold"
+            >
+              ES
+            </span>
+          </div>
+        </nav>
+      </header>
+
+      {/* Spacer para que el contenido no quede tapado cuando deja de ser overlay */}
+      {!overlay && <div aria-hidden className="h-16" />}
+    </>
   );
 }

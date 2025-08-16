@@ -29,8 +29,14 @@ export default function CoupleHero() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-10 flex justify-center">
-        <div className="text-white/90 text-xs tracking-widest">SCROLL</div>
+      <div className="absolute inset-x-0 bottom-10 flex justify-center">
+        <button
+          onClick={onClick}
+          className="text-white/90 text-xs tracking-widest animate-bounce"
+        >
+          SCROLL
+          <div className="h-6 w-px bg-white/80 mx-auto mt-1" />
+        </button>
       </div>
     </section>
   );
