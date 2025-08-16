@@ -8,12 +8,16 @@ import ImageMosaic from '@/components/by-type/ImageMosaic';
 import BenefitGrid from '@/components/by-type/BenefitGrid';
 import LevelsSection from '@/components/by-type/LevelsSection';
 import CtaBand from '@/components/by-type/CtaBand';
+import CouplePage from '../../(by-type)/couple/page'; // Import the new CouplePage
 
 export function generateStaticParams() {
   return getAllTravellerSlugs().map((type) => ({ type }));
 }
 
 export async function generateMetadata({ params }: { params: { type: string } }): Promise<Metadata> {
+  if (params.type === "couple") {
+    return { title: "En Pareja | Randomtrip" }; // Use metadata from CouplePage
+  }
   const base = {
     slug: params.type,
     heroTitle: 'Ruta con Alma',
@@ -36,6 +40,10 @@ export async function generateMetadata({ params }: { params: { type: string } })
 export default function Page({ params }:{
   params: { type: string }
 }) {
+  if (params.type === "couple") {
+    return <CouplePage />;
+  }
+
   const base = {
     slug: params.type,
     heroTitle: 'Ruta con Alma',
