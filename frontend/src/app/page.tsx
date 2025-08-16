@@ -90,9 +90,9 @@ const initialTravellerTypes: TravelerType[] = [
 ];
 
 const initialRoadtripTypes: RoadtripType[] = [
-  { type: 'Car', icon: 'car-icon', description: 'Libertad sobre ruedas.', bgImage: '/images/journey-types/roadtrip-car.jpg', query: 'scenic car roadtrip mountain' },
-  { type: 'Motorcycle', icon: 'motorcycle-icon', description: 'Siente el camino y el viento.', bgImage: '/images/journey-types/roadtrip-motorcycle.jpg', query: 'motorcycle adventure open road' },
-  { type: 'Bike', icon: 'bike-icon', description: 'Una aventura a tu propio ritmo.', bgImage: '/images/journey-types/roadtrip-bike.jpg', query: 'bicycle touring nature path' },
+  { type: 'Car', description: 'Libertad sobre ruedas.', bgImage: '/images/journey-types/roadtrip-car.jpg', query: 'scenic car roadtrip mountain' },
+  { type: 'Motorcycle', description: 'Siente el camino y el viento.', bgImage: '/images/journey-types/roadtrip-motorcycle.jpg', query: 'motorcycle adventure open road' },
+  { type: 'Bike', description: 'Una aventura a tu propio ritmo.', bgImage: '/images/journey-types/roadtrip-bike.jpg', query: 'bicycle touring nature path' },
 ];
 
 const initialDecodeData: DecodeItem[] = [
@@ -750,7 +750,9 @@ export default function HomePage() {
       {/* Resto del contenido existente de la home, INTACTO */}
       <HowItWorksSection />
       <BenefitsSection />
-      <BlogSection />
+      <section id="inspiration" className="scroll-mt-28">
+        <BlogSection />
+      </section>
       <Suspense fallback={<PremiumLoader message="Preparando tu aventura..." />}><ExplorationPageContent /></Suspense>
       <EventFinder />
       <ReadyForAdventureSection />

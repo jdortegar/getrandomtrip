@@ -97,7 +97,7 @@ export default function Navbar() {
             >
               Trippers’ Finder
             </Link>
-            <Link href="/inspiration" className="hover:underline underline-offset-4">
+            <Link href="/#inspiration" prefetch={false} className="hover:underline underline-offset-4">
               Trippers’ Inspiration
             </Link>
             <Link href="/nosotros" className="hover:underline underline-offset-4">

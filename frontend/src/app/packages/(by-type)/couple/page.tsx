@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
 import CoupleHero from "@/components/by-type/couple/CoupleHero";
-import CoupleIntro from "@/components/by-type/couple/CoupleIntro";
 import ExperienceLevels from "@/components/by-type/couple/ExperienceLevels";
-import FavoritePlaces from "@/components/by-type/couple/FavoritePlaces";
+import CoupleInspiration from "@/components/by-type/couple/CoupleInspiration";
 import Testimonials from "@/components/by-type/couple/Testimonials";
 
 export const metadata: Metadata = {
@@ -15,9 +14,8 @@ export default function CouplePage() {
     <main className="relative">
       
       <CoupleHero />
-      <CoupleIntro />
       <ExperienceLevels />
-      <FavoritePlaces />
+      <CoupleInspiration />
       <Testimonials />
     </main>
   );

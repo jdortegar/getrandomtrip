@@ -1,5 +1,7 @@
 "use client";
 
+import Link from 'next/link';
+
 import SectionHeading from "@/components/ui/SectionHeading"; // Import SectionHeading
 
 const TESTIMONIALS = [
@@ -9,10 +11,6 @@ const TESTIMONIALS = [
 ];
 
 export default function Testimonials() {
-  const goLevels = () => {
-    const el = document.getElementById("experience-levels");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   return (
     <section className="bg-neutral-50 py-16">
@@ -20,6 +18,7 @@ export default function Testimonials() {
         <SectionHeading
           title="Lo que dicen quienes ya viajaron"
           align="center"
+          className="text-neutral-900"
         />
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -32,12 +31,12 @@ export default function Testimonials() {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <button
-            onClick={goLevels}
-            className="rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white hover:bg-ink/90 active:scale-[0.99] transition cursor-pointer"
+          <Link
+            href="#planes"
+            className="btn-primary"
           >
-            Randomtrip-us
-          </button>
+            RANDOMTRIP-us!
+          </Link>
         </div>
       </div>
     </section>

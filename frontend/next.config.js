@@ -9,4 +9,12 @@ const nextConfig = {
     ],
   },
 };
-module.exports = nextConfig;
+module.exports = {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'i.pravatar.cc' },      // avatares "humanos"
+      { protocol: 'https', hostname: 'picsum.photos' },      // fallback
+      { protocol: 'https', hostname: 'images.unsplash.com' } // por si ya usás Unsplash
+    ],
+  },
+};
