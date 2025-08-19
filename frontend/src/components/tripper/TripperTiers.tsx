@@ -1,18 +1,21 @@
 'use client';
 
+import React from 'react';
 import { BASE_TIERS } from '@/content/tiers';
 import Link from 'next/link';
-import clsx from 'clsx'; // Import clsx for conditional class names
+import clsx from 'clsx';
 
 type TripperTiersProps = {
-  tripper: any; // { slug?: string; tiers?: Tier[]; tiersSource?: 'base' | 'custom' }
+  tripper: { slug?: string; tiers?: any[]; tiersSource?: 'base' | 'custom' } | any;
   palette?: any;
   className?: string;
   ctaLabel?: string;
-  onTierClick?: (tier: any) => void;
-  variant?: 'light' | 'dark'; // Added variant prop
+  onTierClick?: (tierId: string) => void; // <- importante: string
+  variant?: 'light' | 'dark';
+  showHeader?: boolean;                    // <- NUEVO
 };
 
+// Catálogo SOLO (se usa si no vienen tiers custom y slug === 'solo')
 const SOLO_TIERS = [
   {
     id: 'essenza',
@@ -87,33 +90,43 @@ export default function TripperTiers({
   className = '',
   ctaLabel = 'Reservar',
   onTierClick,
-  variant = 'light', // Default to light
+  variant = 'light',
+  showHeader = true,
 }: TripperTiersProps) {
-  const tiers = tripper?.tiers?.length
-    ? tripper.tiers
-    : tripper.slug === 'solo'
-    ? SOLO_TIERS
-    : BASE_TIERS;
+  const tiers =
+    tripper?.tiers?.length ? tripper.tiers : tripper?.slug === 'solo' ? SOLO_TIERS : BASE_TIERS;
+
+  const isDark = variant === 'dark';
 
   return (
     <section
       className={clsx(
         'py-16',
         className,
-        variant === 'dark' ? 'bg-neutral-950 text-white' : 'bg-white text-slate-900'
+        isDark ? 'bg-neutral-950 text-white' : 'bg-white text-slate-900'
       )}
     >
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-center">Selecciona tu Nivel de Experiencia</h2>
-        <p className="text-center text-slate-600 mt-3 max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-2">
-            <span>💡</span>
-            <span>Todos los presupuestos son <strong>por persona en base doble</strong>.</span>
-          </span>
-          <br/>
-          Precios ajustados por cantidad de pasajero.
-        </p>
+        {/* Encabezado interno (opcional) */}
+        {showHeader !== false && (
+          <header className="mb-10 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Selecciona tu Nivel de Experiencia
+            </h2>
+            <p className={clsx('mt-3 text-sm md:text-base', isDark ? 'text-white/70' : 'text-slate-600')}>
+              <span className="inline-flex items-center gap-2">
+                <span>💡</span>
+                <span>
+                  Todos los presupuestos son <strong>por persona en base doble</strong>.
+                </span>
+              </span>
+              <br />
+              Precios ajustados por cantidad de pasajero.
+            </p>
+          </header>
+        )}
 
+        {/* Grid de tiers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mt-10">
           {tiers.map((tier: any) => (
             <TierCard
@@ -123,7 +136,7 @@ export default function TripperTiers({
               palette={palette}
               ctaLabel={tier.ctaLabel || ctaLabel}
               onClick={onTierClick}
-              variant={variant} // Pass variant to TierCard
+              variant={variant}
             />
           ))}
         </div>
@@ -137,35 +150,56 @@ type TierCardProps = {
   tripper: any;
   palette?: any;
   ctaLabel?: string;
-  onClick?: (tier: any) => void;
-  variant?: 'light' | 'dark'; // Added variant prop
+  onClick?: (tierId: string) => void; // <- recibe el ID
+  variant?: 'light' | 'dark';
 };
 
-function TierCard({ tier, tripper, palette, ctaLabel, onClick, variant = 'light' }: TierCardProps) {
+function TierCard({
+  tier,
+  tripper,
+  palette,
+  ctaLabel,
+  onClick,
+  variant = 'light',
+}: TierCardProps) {
   const ctaText = ctaLabel ?? 'Reservar';
-  const href = `/randomtripme?tripper=${tripper.slug}&tier=${tier.id}`;
+  const href = `/randomtripme?type=${encodeURIComponent(tripper?.slug ?? '')}&tier=${encodeURIComponent(
+    tier.id
+  )}`;
+
+  const cardBase = clsx(
+    'rounded-2xl border shadow-sm p-6 flex flex-col',
+    variant === 'dark'
+      ? 'bg-white/8 ring-1 ring-white/10 transition hover:bg-white/12 hover:shadow-soft'
+      : 'bg-white border-slate-200',
+    variant === 'dark' ? 'text-white' : 'text-slate-900'
+  );
 
   return (
-    <div
-      className={clsx(
-        'rounded-2xl border shadow-sm p-6 flex flex-col',
-        variant === 'dark'
-          ? 'bg-white/8 ring-1 ring-white/10 transition hover:bg-white/12 hover:shadow-soft'
-          : 'bg-white border-slate-200',
-        variant === 'dark' ? 'text-white' : 'text-slate-900'
-      )}
-    >
+    <div className={cardBase}>
       <h3 className="text-lg font-semibold">{tier.title}</h3>
-      <p className={clsx('mt-1', variant === 'dark' ? 'text-white/80' : 'text-slate-600')}>{tier.subtitle}</p>
+      {/* subtitle es opcional en algunos catálogos */}
+      {tier.subtitle && (
+        <p className={clsx('mt-1', variant === 'dark' ? 'text-white/80' : 'text-slate-600')}>
+          {tier.subtitle}
+        </p>
+      )}
 
       <div className="mt-5">
         <p className="text-2xl font-bold leading-tight">{tier.priceLabel}</p>
         {tier.priceFootnote && (
-          <p className={clsx('text-xs mt-1', variant === 'dark' ? 'text-white/60' : 'text-slate-500')}>{tier.priceFootnote}</p>
+          <p className={clsx('text-xs mt-1', variant === 'dark' ? 'text-white/60' : 'text-slate-500')}>
+            {tier.priceFootnote}
+          </p>
         )}
       </div>
 
-      <ul className={clsx('mt-5 space-y-2 text-sm list-disc pl-5 flex-1', variant === 'dark' ? 'text-white/90' : 'text-slate-700')}>
+      <ul
+        className={clsx(
+          'mt-5 space-y-2 text-sm list-disc pl-5 flex-1',
+          variant === 'dark' ? 'text-white/90' : 'text-slate-700'
+        )}
+      >
         {(tier.features ?? []).map((f: string, i: number) => (
           <li key={i}>{f}</li>
         ))}
@@ -177,11 +211,9 @@ function TierCard({ tier, tripper, palette, ctaLabel, onClick, variant = 'light'
             type="button"
             className={clsx(
               'tier-cta w-full rounded-xl px-4 py-3 font-semibold focus:outline-none focus:ring-2',
-              variant === 'dark'
-                ? 'btn-card' // Use btn-card for dark variant
-                : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-400'
+              variant === 'dark' ? 'btn-card' : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-400'
             )}
-            onClick={() => onClick(tier)}
+            onClick={() => onClick(tier.id)} // <- pasa EL ID
           >
             {ctaText}
           </button>
@@ -190,9 +222,7 @@ function TierCard({ tier, tripper, palette, ctaLabel, onClick, variant = 'light'
             href={href}
             className={clsx(
               'tier-cta block w-full rounded-xl px-4 py-3 text-center font-semibold focus:outline-none focus:ring-2',
-              variant === 'dark'
-                ? 'btn-card' // Use btn-card for dark variant
-                : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-400'
+              variant === 'dark' ? 'btn-card' : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-400'
             )}
           >
             {ctaText}

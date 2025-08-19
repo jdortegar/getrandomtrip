@@ -72,7 +72,7 @@ const initialTravellerTypes: TravelerType[] = [
     travelType: 'Family',
     query: 'family vacation happy kids outdoor',
     imageUrl: '/images/journey-types/family-vacation.jpg',
-  },
+    },
   {
     title: 'En Grupo',
     description: 'Experiencias compartidas.',
@@ -227,7 +227,7 @@ function ExplorationPageContent() {
                         title={type.title}
                         description={type.description}
                         imageUrl={type.imageUrl}
-                        href={`/packages/by-type/${slugify(type.travelType)}`}
+                        href={type.travelType === 'Family' ? '/packages/by-type/families#planner' : `/packages/by-type/${slugify(type.travelType)}`}
                       />
                     </motion.div>
                   ))}

@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import EmpathyCard from './EmpathyCard';
 
 export default function FamilyIntro({ onStart }: { onStart: () => void }) {
