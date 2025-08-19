@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Open_Sans, Roboto } from 'next/font/google';
+
 import './globals.css';
+
 import { Navigation } from '@/components/Navigation';
 
 const openSans = Open_Sans({
@@ -16,18 +18,15 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: 'GetRandomTrip - Luxury Travel Experiences',
-  description:
-    'Crafting remarkable, tailor-made luxury travel experiences. Put the world in your hands with our expert travel planning.',
-  keywords:
-    'luxury travel, bespoke holidays, tailor-made trips, luxury vacations, travel experts',
+  title: 'Random Trip - Luxury Travel Experiences',
+  description: 'Descubre tu destino 48h antes de viajar con Random Trip',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+interface RootLayoutProps {
   children: React.ReactNode;
-}>) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={`${openSans.variable} ${roboto.variable} antialiased`}>
