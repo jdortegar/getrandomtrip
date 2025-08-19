@@ -13,12 +13,12 @@ const TESTIMONIALS = [
 export default function Testimonials() {
 
   return (
-    <section className="bg-neutral-50 py-16">
+    <section className="bg-white py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-4">
         <SectionHeading
           title="Lo que dicen quienes ya viajaron"
           align="center"
-          className="text-neutral-900"
+          className="text-3xl md:text-4xl font-extrabold text-neutral-900"
         />
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -740,10 +740,9 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Indicador de scroll (el que late) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
-          <span className="block text-xs tracking-[0.3em]">SCROLL</span>
-          <span className="block h-8 w-px mx-auto animate-pulse bg-white/80"></span>
+        {/* Indicador de scroll (unificado) */}
+        <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
+          SCROLL
         </div>
       </section>
 

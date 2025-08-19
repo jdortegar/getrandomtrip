@@ -17,27 +17,16 @@ export default function LevelsSection({ type, palette }: Props) {
 
   return (
     <section
-      className="
-        isolate relative py-16
-        bg-white text-slate-900
-        dark:bg-white dark:text-slate-900
-        [&_*]:text-slate-900
-        [&_h1]:text-slate-900 [&_h2]:text-slate-900 [&_h3]:text-slate-900
-        [&_p]:text-slate-700 [&_li]:text-slate-700
-        [&_.card]:bg-white [&_.card]:border [&_.card]:border-slate-200 [&_.card]:shadow-sm
-        [&_.card:hover]:shadow-md
-      "
+      id={type === 'solo' ? 'planes' : 'levels'}
+      className={`relative scroll-mt-16 ${type === 'solo' ? 'bg-neutral-950 text-white' : 'bg-white text-slate-900'}`}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-20"> {/* Adjusted padding to py-20 */}
         <header className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-            Selecciona tu Nivel de Experiencia
+            {type === 'solo' ? '✨ Empieza a planear tu Randomtrip Solum' : 'Selecciona tu Nivel de Experiencia'}
           </h2>
           <p className="mt-3 text-sm md:text-base text-slate-600">
-            💡 Todos los presupuestos son <strong>por persona en base doble</strong>, y representan
-            el máximo que invertirás en tu viaje sorpresa. Vos elegís el nivel, nosotros hacemos el resto.
-            <br />
-            Precios ajustados por cantidad de pasajero.
+            {type === 'solo' ? '💡 Lo único que definís acá es hasta cuánto querés invertir en vos. El resto… lo define el camino.' : '💡 Todos los presupuestos son <strong>por persona en base doble</strong>, y representan el máximo que invertirás en tu viaje sorpresa. Vos elegís el nivel, nosotros hacemos el resto.<br />Precios ajustados por cantidad de pasajero.'}
           </p>
         </header>
 
@@ -49,6 +38,7 @@ export default function LevelsSection({ type, palette }: Props) {
           onTierClick={(tierId) =>
             router.push(`/randomtripme?type=${type}&tier=${tierId}`)
           }
+          variant={type === 'solo' ? 'dark' : 'light'} // Pass variant prop
         />
       </div>
     </section>
