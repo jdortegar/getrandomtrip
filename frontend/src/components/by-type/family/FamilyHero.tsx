@@ -1,0 +1,1 @@
+export default function FamilyHero() { return <div className="p-8 bg-gray-100 text-center"><h1 className="text-2xl font-bold">Family Hero Section</h1><p>(Contenido restaurado temporalmente)</p></div>; }
