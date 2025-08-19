@@ -6,13 +6,24 @@ export default function CoupleHero() {
   return (
     <section
       className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden"
-      style={{
-        backgroundImage: "url('/images/journey-types/couple-hetero.jpg')",
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
     >
+      <div className="absolute inset-0 z-0">
+        <video
+          src="/videos/couple-hero-video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/journey-types/couple-traveler.jpg"
+          className="w-full h-full object-cover hidden motion-safe:block"
+        />
+        <img
+          src="/images/journey-types/couple-traveler.jpg"
+          alt=""
+          className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
       {/* overlay / gradiente para legibilidad */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/10" />
 
@@ -91,10 +102,17 @@ export default function CoupleHero() {
                   imposibles de explicar sin gestos y sin exagerar… y con ganas de repetir,
                   como cuando una canción que nos gusta termina y uno aprieta “otra vez”.
                 </p>
+                <p>
+                  --- RANDOMTIRP. Wonder. Wander. Repeat. ---
+                </p>
               </div>
             </div>
           </aside>
         </div>
+      </div>
+    {/* Indicador de scroll (unificado) */}
+      <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
+        SCROLL
       </div>
     </section>
   );

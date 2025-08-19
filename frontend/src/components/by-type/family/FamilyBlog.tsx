@@ -1,0 +1,1 @@
+export default function FamilyBlog() { return <div className="p-8 bg-gray-100 text-center"><h2 className="text-xl font-bold">Family Blog Section</h2><p>(Contenido restaurado temporalmente)</p></div>; }
