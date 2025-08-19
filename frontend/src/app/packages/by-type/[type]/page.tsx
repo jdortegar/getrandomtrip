@@ -18,30 +18,7 @@ export function generateStaticParams() {
   return getAllTravellerSlugs().map((type) => ({ type }));
 }
 
-export async function generateMetadata({ params }: { params: { type: string } }): Promise<Metadata> {
-  if (params.type === "couple") {
-    return { title: "En Pareja | Randomtrip" }; // Use metadata from CouplePage
-  } else if (params.type === "solo") {
-    return { title: "Solo | Randomtrip" };
-  }
-  const base = {
-    slug: params.type,
-    heroTitle: 'Ruta con Alma',
-    subcopy: 'Preparamos la sorpresa; tú te quedas con la historia.',
-    palette: { primary:'#FFF', secondary:'#0A2240', accent:'#F2C53D', text:'#212121' },
-    images: { hero: '/images/travellers/solo/hero.svg' },
-    seoDescription: 'Descubre tu próxima aventura sorpresa con Randomtrip.'
-  };
-  const data = getTravellerData(params.type) ?? base;
 
-  return {
-    title: data.heroTitle,
-    description: data.seoDescription,
-    openGraph: {
-      images: [data.images.hero],
-    },
-  };
-}
 
 export default function Page({ params }:{
   params: { type: string }

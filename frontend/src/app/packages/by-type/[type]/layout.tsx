@@ -9,10 +9,10 @@ function capitalizeSlug(slug: string) {
 }
 
 const typeTitles: { [key: string]: string } = {
-  solo: "Aventura en Solitario",
-  pareja: "Escapada en Pareja",
-  familia: "Plan Familiar",
-  grupo: "Viaje en Grupo",
+  solo: "Solo",
+  couple: "En Pareja",
+  families: "En Familia",
+  grupo: "En Grupo",
   honeymoon: "Honeymoon",
 };
 
