@@ -9,6 +9,10 @@ const TRIPPER_SLUGS = [
   "cinthya-chavez",
   "horacio-teran",
   "sara-sanchez",
+  "lucia-ortega",
+  "mateo-campos",
+  "renata-silva",
+  "tomas-ibarra",
 ];
 
 export function generateStaticParams() {
