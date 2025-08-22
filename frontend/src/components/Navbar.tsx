@@ -61,7 +61,7 @@ export default function Navbar() {
             <img
               src="/assets/logos/Logo.svg"
               alt="Randomtrip"
-              className="h-12 w-auto md:h-12 sm:h-10"
+              className="h-16 w-auto md:h-16 sm:h-12"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src = "/logo.svg";
               }}

@@ -32,11 +32,11 @@ export default function CoupleHero() {
           {/* Columna izquierda: Título + chips + CTAs */}
           <div className="max-w-2xl">
             <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight tracking-tightish text-white">
-              Escapada para 2
+              <span>BOND<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP
             </h1>
 
-            <p className="mt-3 text-base md:text-lg text-white/90">
-              Sorpresa para ustedes. Sin spoilers 😉
+                        <p className="mt-3 text-base md:text-lg text-white/90">
+              Sorpresa para ustedes. Sin spoilers.
             </p>
 
             {/* Badges */}
@@ -54,11 +54,13 @@ export default function CoupleHero() {
             {/* CTAs — más notorios */}
             <div className="mt-8 flex flex-wrap gap-3">
               {/* Primario */}
+              <div className="mt-8 flex flex-wrap gap-3">
+              {/* Primario */}
               <Link
                 href="#planes"
                 className="btn-primary"
               >
-                RANDOMTRIP-us!
+                RANDOMTRIP-us! →
               </Link>
 
               {/* Secundario (outline + blur para que se note que es botón) */}
@@ -66,9 +68,12 @@ export default function CoupleHero() {
                 href="#inspiracion-couples"
                 className="btn-secondary"
               >
-                Ver inspiración de parejas →
+                Relatos que inspiran →
               </Link>
             </div>
+            </div>
+
+            
           </div>
 
           {/* Columna derecha: Storytelling */}

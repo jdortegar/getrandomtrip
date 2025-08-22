@@ -151,9 +151,20 @@ body {
   .btn-secondary:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,.5); }
 
   /* Botón de cards (Sección 3) */
-  .btn-card {
-    @apply inline-flex items-center justify-center rounded-lg bg-white px-5 py-3
-           font-semibold text-neutral-900 shadow-md ring-1 ring-white/40
-           hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-white/50;
+    .btn-card {
+    @apply inline-flex items-center justify-center rounded-lg px-5 py-3
+           font-semibold shadow-md ring-1 ring-white/40
+           transition;
+    background: transparent; /* Transparent background */
+    border: 1px solid var(--rt-terracotta); /* Terracotta border */
+    color: var(--rt-terracotta); /* Terracotta text */
+  }
+  .btn-card:hover {
+    background: var(--rt-terracotta); /* Fill with terracotta on hover */
+    color: white; /* White text on hover */
+  }
+  .btn-card:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--rt-terracotta);
   }
 }

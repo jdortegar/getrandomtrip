@@ -6,7 +6,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 
 export default function ExperienceLevels() {
   return (
-    <section id="planes" className="relative scroll-mt-16 bg-neutral-950 text-white">
+    <section id="planes" className="relative scroll-mt-16 bg-white text-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-20">
         <SectionHeading
           title="✨ Comiencen a planear su escapada"
@@ -18,16 +18,16 @@ export default function ExperienceLevels() {
           {COUPLE_LEVELS.map((lvl) => (
             <article
               key={lvl.id}
-              className="rounded-2xl bg-white/8 p-6 ring-1 ring-white/10 transition hover:bg-white/12 hover:shadow-soft flex flex-col"
+              className="rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02] flex flex-col"
             >
-              <h3 className="font-display text-xl tracking-tightish">{lvl.name}</h3>
-              <p className="text-white/80 text-sm">{lvl.subtitle}</p>
+              <h3 className="font-display text-xl tracking-tightish font-bold">{lvl.name}</h3>
+              <p className="text-gray-700 text-sm">{lvl.subtitle}</p>
 
               <div className="mt-6">
-                <div className="font-display text-2xl leading-tight">
+                <div className="font-display text-3xl leading-tight font-bold text-[var(--rt-terracotta)]">
                   {lvl.priceLabel}
                 </div>
-                <span className="block text-xs text-white/60">por persona</span>
+                <span className="block text-xs text-gray-900">por persona</span>
               </div>
 
               <ul className="mt-5 space-y-2 text-sm">
@@ -37,7 +37,7 @@ export default function ExperienceLevels() {
               </ul>
 
               {lvl.priceFootnote && (
-                <p className="mt-4 text-xs text-white/60">{lvl.priceFootnote}</p>
+                <p className="mt-4 text-xs text-gray-900">{lvl.priceFootnote}</p>
               )}
 
               <Link

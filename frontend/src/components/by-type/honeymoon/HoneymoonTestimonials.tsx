@@ -11,59 +11,60 @@ type T = {
 const testimonials: T[] = [
   {
     quote:
-      'Randomtrip hizo que nuestro viaje familiar fuera inolvidable. ¡Todo fue perfecto, desde la planificación hasta las actividades!',
-    author: 'Familia García',
-    city: 'Buenos Aires',
-  },
-  {
-    quote:
-      'Nunca pensamos que viajar con niños podría ser tan relajante. Descubrimos lugares increíbles sin estrés.',
-    author: 'Los Rodríguez',
+      'No elegimos un punto en el mapa; elegimos sorprendernos juntos. Fue el comienzo perfecto.',
+    author: 'Sofía & Belu',
     city: 'Córdoba',
   },
   {
     quote:
-      'La atención al detalle y las recomendaciones personalizadas superaron nuestras expectativas. ¡Vamos por el próximo!',
-    author: 'Familia Pérez',
+      'Hubo detalles pensados para dos que hicieron la diferencia. Se sintió hecho a mano.',
+    author: 'Valen & Tomi',
     city: 'Mendoza',
   },
   {
     quote:
-      'Logística impecable con cochecito y siestas. Todo fluyó para grandes y chicos.',
-    author: 'Familia Suárez',
-    city: 'Rosario',
+      'El mejor regalo después del “sí”: tiempo sin fricción y momentos que todavía nombramos.',
+    author: 'Carla & Nico',
+    city: 'Buenos Aires',
   },
   {
     quote:
-      'Actividades pensadas para cada edad. Nadie se quedó afuera.',
-    author: 'Familia Romero',
+      'Playas, viñedos y un ritmo que fue nuestro. Volvimos con rituales nuevos.',
+    author: 'Gaby & Leo',
     city: 'Montevideo',
   },
   {
     quote:
-      'Nos sorprendieron con detalles que todavía recordamos en casa.',
-    author: 'Familia Benítez',
-    city: 'La Plata',
+      'Nos dieron pistas y nosotros escribimos el resto. Intimidad y sorpresa, en partes justas.',
+    author: 'Flor & Juan',
+    city: 'Rosario',
+  },
+  {
+    quote:
+      'Nunca pensamos que el “después del sí” podía tener tanta magia. Gracias por el guion invisible.',
+    author: 'Lau & Fede',
+    city: 'Santiago',
   },
 ];
 
-export default function FamilyTestimonials() {
+export default function HoneymoonTestimonials() {
   const [start, setStart] = React.useState(0);
   const len = testimonials.length;
+  const perPage = 3;
 
-  const visible = Array.from({ length: 3 }, (_, i) => testimonials[(start + i) % len]);
+  const visible = Array.from({ length: perPage }, (_, i) => testimonials[(start + i) % len]);
 
-  const prev = () => setStart((s) => (s - 3 + len) % len);
-  const next = () => setStart((s) => (s + 3) % len);
+  const prev = () => setStart((s) => (s - perPage + len) % len);
+  const next = () => setStart((s) => (s + perPage) % len);
 
   return (
-    <section id="testimonios-families" className="py-20 px-8 bg-white text-neutral-900">
+    <section id="testimonios-honeymoon" className="py-20 px-8 bg-white text-neutral-900">
       <div className="max-w-7xl mx-auto">
         <h2
           className="text-5xl font-bold text-center mb-12"
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
-          Lo que dicen nuestras familias
+          Lo que dicen las parejas
         </h2>
 
         <div className="flex items-center justify-between mb-6">
@@ -75,7 +76,7 @@ export default function FamilyTestimonials() {
             ←
           </button>
           <div className="text-sm text-neutral-500">
-            {Math.floor(start / 3) + 1} / {Math.ceil(len / 3)}
+            {Math.floor(start / perPage) + 1} / {Math.ceil(len / perPage)}
           </div>
           <button
             aria-label="Ver más testimonios"

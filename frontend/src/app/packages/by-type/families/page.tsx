@@ -1,24 +1,28 @@
-'use client';
-
+import type { Metadata } from 'next';
 import FamilyHero from '@/components/by-type/family/FamilyHero';
-import FamilyWizard from '@/components/by-type/family/FamilyWizard';
-import FamilyBlog from '@/components/by-type/family/FamilyBlog';
+import FamilyPlanner from '@/components/by-type/family/FamilyPlanner';
+import FamilyInspiration from '@/components/by-type/family/FamilyInspiration';
 import FamilyTestimonials from '@/components/by-type/family/FamilyTestimonials';
+import FooterLanding from "@/components/layout/FooterLanding";
+
+export const metadata: Metadata = {
+  title: 'En Familia | Randomtrip',
+};
 
 export default function FamiliesPage() {
   return (
-    <main className="bg-white text-neutral-900">
-      {/* 1) Hero (espejo de /solo) */}
+    <>
       <FamilyHero />
+      <section id="planner" className="scroll-mt-28">
+        <FamilyPlanner />
+      </section>
 
-      {/* 2) Planner (SECCIÓN 2) — con ancla #planner */}
-      <FamilyWizard id="planner" />
+      {/* Sección 3 */}
+      <FamilyInspiration />
 
-      {/* 3) Inspiración (SECCIÓN 3) */}
-      <FamilyBlog />
-
-      {/* 4) Testimonios (SECCIÓN 4) */}
+      {/* Sección 4 */}
       <FamilyTestimonials />
-    </main>
+      <FooterLanding />
+    </>
   );
 }

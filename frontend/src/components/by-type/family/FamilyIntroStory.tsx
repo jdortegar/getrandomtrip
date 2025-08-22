@@ -24,6 +24,9 @@ export default function FamilyIntroStory(): JSX.Element {
           Días que pasan volando, noches que quedan en la memoria, historias que se contarán en cada sobremesa.
           Porque las escapadas terminan, pero las historias quedan.
         </p>
+        <p>
+          --- RANDOMTIRP. Wonder. Wander. Repeat. ---
+        </p>        
       </div>
     </>
   );

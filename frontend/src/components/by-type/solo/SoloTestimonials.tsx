@@ -2,52 +2,52 @@
 
 import React from 'react';
 
-type T = {
+type Testimonial = {
   quote: string;
   author: string;
   city: string;
 };
 
-const testimonials: T[] = [
+const testimonials: Testimonial[] = [
   {
     quote:
-      'Randomtrip hizo que nuestro viaje familiar fuera inolvidable. ¡Todo fue perfecto, desde la planificación hasta las actividades!',
-    author: 'Familia García',
+      'Mi primer viaje solo y me sentí acompañado por una organización impecable. Volví distinto.',
+    author: 'Martín S.',
     city: 'Buenos Aires',
   },
   {
     quote:
-      'Nunca pensamos que viajar con niños podría ser tan relajante. Descubrimos lugares increíbles sin estrés.',
-    author: 'Los Rodríguez',
-    city: 'Córdoba',
-  },
-  {
-    quote:
-      'La atención al detalle y las recomendaciones personalizadas superaron nuestras expectativas. ¡Vamos por el próximo!',
-    author: 'Familia Pérez',
-    city: 'Mendoza',
-  },
-  {
-    quote:
-      'Logística impecable con cochecito y siestas. Todo fluyó para grandes y chicos.',
-    author: 'Familia Suárez',
-    city: 'Rosario',
-  },
-  {
-    quote:
-      'Actividades pensadas para cada edad. Nadie se quedó afuera.',
-    author: 'Familia Romero',
+      'La sorpresa fue un regalo. Me encontré con lugares y personas que no esperaba.',
+    author: 'Camila R.',
     city: 'Montevideo',
   },
   {
     quote:
-      'Nos sorprendieron con detalles que todavía recordamos en casa.',
-    author: 'Familia Benítez',
-    city: 'La Plata',
+      'Itinerario flexible y seguro. Pude moverme a mi ritmo sin perderme lo esencial.',
+    author: 'Diego P.',
+    city: 'Santiago',
+  },
+  {
+    quote:
+      'Me animé a probar cosas nuevas. Gran equilibrio entre actividad y calma.',
+    author: 'Luisa G.',
+    city: 'Córdoba',
+  },
+  {
+    quote:
+      'La curaduría me hizo sentir protagonista del viaje, no espectador.',
+    author: 'Tomás L.',
+    city: 'Mendoza',
+  },
+  {
+    quote:
+      'Volví con historias que me dieron ganas de seguir viajando solo.',
+    author: 'Ivana Q.',
+    city: 'Rosario',
   },
 ];
 
-export default function FamilyTestimonials() {
+export default function SoloTestimonials() {
   const [start, setStart] = React.useState(0);
   const len = testimonials.length;
 
@@ -57,13 +57,13 @@ export default function FamilyTestimonials() {
   const next = () => setStart((s) => (s + 3) % len);
 
   return (
-    <section id="testimonios-families" className="py-20 px-8 bg-white text-neutral-900">
+    <section id="testimonios-solo" className="py-20 px-8 bg-white text-neutral-900">
       <div className="max-w-7xl mx-auto">
         <h2
           className="text-5xl font-bold text-center mb-12"
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
-          Lo que dicen nuestras familias
+          Lo que dicen quienes viajaron solos
         </h2>
 
         <div className="flex items-center justify-between mb-6">
@@ -87,11 +87,11 @@ export default function FamilyTestimonials() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {visible.map((testimonial, index) => (
-            <div key={`${testimonial.author}-${index}`} className="bg-neutral-100 p-8 rounded-lg shadow-lg">
-              <p className="text-lg italic text-neutral-700 mb-4">"{testimonial.quote}"</p>
-              <p className="font-semibold text-neutral-900">{testimonial.author}</p>
-              <p className="text-sm text-neutral-600">{testimonial.city}</p>
+          {visible.map((t, idx) => (
+            <div key={`${t.author}-${idx}`} className="bg-neutral-100 p-8 rounded-lg shadow-lg">
+              <p className="text-lg italic text-neutral-700 mb-4">"{t.quote}"</p>
+              <p className="font-semibold text-neutral-900">{t.author}</p>
+              <p className="text-sm text-neutral-600">{t.city}</p>
             </div>
           ))}
         </div>

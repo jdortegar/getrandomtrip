@@ -32,7 +32,7 @@ export default function SoloHero() {
           {/* Columna izquierda: título + chips + CTAs */}
           <div className="max-w-2xl">
             <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight tracking-tightish text-white">
-              RANDOMTRIP <span>SOLUM<sup className="align-super text-[0.65em] ml-0.5">©</sup></span>
+              <span>SOLUM<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP
             </h1>
             <p className="mt-3 text-base md:text-lg text-white/90">
               Escapadas secretas diseñadas para que te pierdas. Y te encuentres.
@@ -41,9 +41,9 @@ export default function SoloHero() {
             {/* Badges */}
             <div className="mt-4 flex flex-wrap gap-2 text-xs font-medium text-white">
               {[
-                'Seguridad garantizada – Te acompañamos en todo momento.',
-                'Viajar ligero – Menos plan, más descubrimiento.',
-                'Tu historia, sin spoilers – Lo descubrís en el camino.',
+                'Te acompañamos en todo momento.',
+                'Menos plan, más descubrimiento.',
+                'Tu historia, sin spoilers.',
               ].map((b) => (
                 <span
                   key={b}
@@ -57,10 +57,10 @@ export default function SoloHero() {
             {/* CTAs */}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="#planes" className="btn-primary">
-                RANDOMTRIP-me!
+                RANDOMTRIP-me! →
               </Link>
               <Link href="#inspiracion-solo" className="btn-secondary">
-                Ver inspiración Solo →
+                Relatos que inspiran →
               </Link>
             </div>
           </div>

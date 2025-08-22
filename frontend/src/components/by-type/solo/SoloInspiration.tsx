@@ -33,10 +33,10 @@ const SoloInspiration: React.FC = () => {
 
                 <div className="md:col-span-1 text-left">
                     <h2 className="text-5xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        👉 Nuestros destinos favoritos para viajar solo
+                        Nuestros destinos favoritos para viajar solo
                     </h2>
                     <p className="text-lg text-gray-300 mt-4">
-                        🔹 El camino en solitario no significa estar solo. Estas historias y destinos te muestran que perderte también es otra forma de encontrarte.
+                        El camino en solitario no significa estar solo. Estas historias y destinos te muestran que perderte también es otra forma de encontrarte.
                     </p>
                     <div className="flex space-x-4 mt-8">
                         <button onClick={() => handleScroll('left')} className="border border-gray-600 rounded-full p-3 hover:border-white transition-colors">

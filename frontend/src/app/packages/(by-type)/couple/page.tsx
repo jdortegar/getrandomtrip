@@ -4,6 +4,7 @@ import CoupleHero from "@/components/by-type/couple/CoupleHero";
 import ExperienceLevels from "@/components/by-type/couple/ExperienceLevels";
 import CoupleInspiration from "@/components/by-type/couple/CoupleInspiration";
 import Testimonials from "@/components/by-type/couple/Testimonials";
+import FooterLanding from "@/components/layout/FooterLanding";
 
 export const metadata: Metadata = {
   title: "En Pareja | Randomtrip",
@@ -17,6 +18,7 @@ export default function CouplePage() {
       <ExperienceLevels />
       <CoupleInspiration />
       <Testimonials />
+      <FooterLanding />
     </main>
   );
 }

@@ -22,9 +22,9 @@ export default function LevelsSection({ type, palette }: Props) {
       <div className="mx-auto max-w-7xl px-4 py-20">
         <header className="mb-10 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-            {isSolo ? '✨ Empieza a planear tu Randomtrip Solum' : 'Elige tu nivel Randomtrip'}
+            {isSolo ? '✨ Empieza a planear tu Solum Randomtrip' : 'Elige tu nivel Randomtrip'}
           </h2>
-          <p className="mt-3 text-sm md:text-base text-slate-600">
+          <p className="mt-3 text-sm md:text-base text-white">
             {isSolo
               ? '💡 Lo único que definís acá es hasta cuánto querés invertir en vos. El resto… lo define el camino.'
               : 'Selecciona el nivel que mejor se adapta a esta escapada.'}

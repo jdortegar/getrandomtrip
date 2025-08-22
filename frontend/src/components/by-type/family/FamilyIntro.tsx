@@ -9,7 +9,7 @@ export default function FamilyIntro({ onStart }: { onStart: () => void }) {
         Comencemos a diseñar su Randomtrip Familiar
       </h2>
       <p className="mt-2 text-center text-sm text-neutral-600">
-        3 pasos cortos. Del resto nos ocupamos nosotros.
+        3 pasos cortos, para crear la mejor experiencia.
       </p>
 
       <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-6 place-items-center">

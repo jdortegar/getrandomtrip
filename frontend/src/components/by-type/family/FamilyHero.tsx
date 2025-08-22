@@ -33,7 +33,7 @@ export default function FamilyHero(): JSX.Element {
           {/* Columna izquierda: título + bajada + chips + CTAs */}
           <div className="max-w-2xl">
             <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight tracking-tightish text-white">
-              FAMILY <span>RANDOMTRIP<sup className="align-super text-[0.65em] ml-0.5">©</sup></span>
+              <span>KIN<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP
             </h1>
 
             <p className="mt-3 text-base md:text-lg text-white/90">
@@ -43,7 +43,7 @@ export default function FamilyHero(): JSX.Element {
             {/* Badges (píldoras) — espejo de /solo */}
             <div className="mt-4 flex flex-wrap gap-2 text-xs font-medium text-white">
               {[
-                'Viajes seguros para todas las edades',
+                'Para todas las edades',
                 'Planes diseñados sin estrés',
                 'Flex reprogramación',
               ].map((b) => (
@@ -59,10 +59,10 @@ export default function FamilyHero(): JSX.Element {
             {/* CTAs */}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="#planner" className="btn-primary">
-                Armar mi viaje
+                RANDOMTRIP-we! →
               </Link>
-              <Link href="#family-inspiration" className="btn-secondary">
-                Inspírame →
+              <Link href="#inspiracion-families" className="btn-secondary">
+                Relatos que inspiran →
               </Link>
             </div>
           </div>

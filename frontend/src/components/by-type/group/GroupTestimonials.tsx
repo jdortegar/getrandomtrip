@@ -11,59 +11,58 @@ type T = {
 const testimonials: T[] = [
   {
     quote:
-      'Randomtrip hizo que nuestro viaje familiar fuera inolvidable. ¡Todo fue perfecto, desde la planificación hasta las actividades!',
-    author: 'Familia García',
-    city: 'Buenos Aires',
-  },
-  {
-    quote:
-      'Nunca pensamos que viajar con niños podría ser tan relajante. Descubrimos lugares increíbles sin estrés.',
-    author: 'Los Rodríguez',
-    city: 'Córdoba',
-  },
-  {
-    quote:
-      'La atención al detalle y las recomendaciones personalizadas superaron nuestras expectativas. ¡Vamos por el próximo!',
-    author: 'Familia Pérez',
+      'Éramos 12 con ritmos y presupuestos distintos. No hubo fricciones: cada día tuvo “ese” momento en común.',
+    author: 'Valentín R.',
     city: 'Mendoza',
   },
   {
     quote:
-      'Logística impecable con cochecito y siestas. Todo fluyó para grandes y chicos.',
-    author: 'Familia Suárez',
-    city: 'Rosario',
+      'Offsite con foco en estrategia y team-bonding. Logística impecable y actividades con intención.',
+    author: 'Carolina M.',
+    city: 'Valle de Uco',
   },
   {
     quote:
-      'Actividades pensadas para cada edad. Nadie se quedó afuera.',
-    author: 'Familia Romero',
-    city: 'Montevideo',
+      'Graduación sorpresa para 10. Aventura, playa y un cierre al atardecer que no vamos a olvidar.',
+    author: 'Sofía P.',
+    city: 'Bahía',
   },
   {
     quote:
-      'Nos sorprendieron con detalles que todavía recordamos en casa.',
-    author: 'Familia Benítez',
-    city: 'La Plata',
+      'Fuimos a fotografiar fauna y volvimos con historias. Los timings y permisos fueron clave.',
+    author: 'Nicolás T.',
+    city: 'Esteros',
+  },
+  {
+    quote:
+      'Retiros con pausa real. La curaduría de lugares, comida y silencios nos cambió el pulso.',
+    author: 'Mariana A.',
+    city: 'Sierras',
+  },
+  {
+    quote:
+      'Mesa larga, mercados y cocina local. La sorpresa estuvo en los detalles.',
+    author: 'Germán C.',
+    city: 'Salta',
   },
 ];
 
-export default function FamilyTestimonials() {
+export default function GroupTestimonials() {
   const [start, setStart] = React.useState(0);
   const len = testimonials.length;
-
   const visible = Array.from({ length: 3 }, (_, i) => testimonials[(start + i) % len]);
 
   const prev = () => setStart((s) => (s - 3 + len) % len);
   const next = () => setStart((s) => (s + 3) % len);
 
   return (
-    <section id="testimonios-families" className="py-20 px-8 bg-white text-neutral-900">
+    <section id="testimonios-group" className="py-20 px-8 bg-white text-neutral-900">
       <div className="max-w-7xl mx-auto">
         <h2
           className="text-5xl font-bold text-center mb-12"
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
-          Lo que dicen nuestras familias
+          Lo que dicen los grupos
         </h2>
 
         <div className="flex items-center justify-between mb-6">

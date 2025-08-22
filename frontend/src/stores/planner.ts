@@ -1,12 +1,11 @@
-
 import { create } from 'zustand';
 
 type PlannerState = {
   budgetTier: string | null;
-  familyType: string | null;
+  familyType: 'toddlers' | 'teens' | 'adults' | 'multigen' | null;
   escapeType: string | null;
   setBudgetTier: (v: string) => void;
-  setFamilyType: (v: string) => void;
+  setFamilyType: (v: PlannerState['familyType']) => void;
   setEscapeType: (v: string) => void;
   reset: () => void;
 };
