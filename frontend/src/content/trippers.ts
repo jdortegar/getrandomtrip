@@ -33,6 +33,7 @@ export type Tripper = {
   };
   palette: Palette;
   tiersSource?: 'base' | 'custom';
+  bio?: string;
 };
 
 /** ---- Tiers base, reutilizables en todas las landings ---- */
@@ -201,6 +202,7 @@ export const TRIPPERS: Tripper[] = [
       },
     ],
     tiersSource: 'custom',
+    bio: 'Alejandra es una experta en viajes románticos y escapadas en pareja, creando itinerarios personalizados que fortalecen la conexión y el amor.'
   },
   {
     slug: 'ilse-seaman',
@@ -213,6 +215,7 @@ export const TRIPPERS: Tripper[] = [
     },
     palette: DEFAULT_PALETTE,
     tiersSource: 'base',
+    bio: 'Ilse se especializa en viajes familiares, diseñando aventuras que encantan a grandes y chicos, con actividades para todas las edades.'
   },
   {
     slug: 'cinthya-chavez',
@@ -225,6 +228,7 @@ export const TRIPPERS: Tripper[] = [
     },
     palette: DEFAULT_PALETTE,
     tiersSource: 'base',
+    bio: 'Cinthya es la guía perfecta para viajeros solitarios, creando experiencias seguras y enriquecedoras que fomentan el autodescubrimiento.'
   },
   {
     slug: 'horacio-teran',
@@ -237,6 +241,7 @@ export const TRIPPERS: Tripper[] = [
     },
     palette: DEFAULT_PALETTE,
     tiersSource: 'base',
+    bio: 'Horacio es un experto en viajes de aventura y exploración, ideal para parejas que buscan emociones fuertes y destinos inusuales.'
   },
   {
     slug: 'sara-sanchez',
@@ -249,26 +254,31 @@ export const TRIPPERS: Tripper[] = [
     },
     palette: DEFAULT_PALETTE,
     tiersSource: 'base',
+    bio: 'Sara es la especialista en lunas de miel, diseñando viajes inolvidables que combinan romance, lujo y experiencias únicas para recién casados.'
   },
   {
     name: "Lucía Ortega",
     avatar: "https://i.pravatar.cc/200?u=lucia.ortega",
-    slug: "lucia-ortega"
+    slug: "lucia-ortega",
+    bio: "Curadora de viajes con foco en escapadas cortas y diseño de experiencias sostenibles en destinos de costa."
   },
   {
     name: "Mateo Campos",
     avatar: "https://i.pravatar.cc/200?u=mateo.campos",
-    slug: "mateo-campos"
+    slug: "mateo-campos",
+    bio: "Amante de la fotografía documental, recorre rutas poco conocidas y recomienda rincones con alma local."
   },
   {
     name: "Renata Silva",
     avatar: "https://i.pravatar.cc/200?u=renata.silva",
-    slug: "renata-silva"
+    slug: "renata-silva",
+    bio: "Especialista en viajes familiares multi-generación; logística impecable y planes que fluyen."
   },
   {
     name: "Tomas Ibarra",
     avatar: "https://i.pravatar.cc/200?u=tomas.ibarra",
-    slug: "tomas-ibarra"
+    slug: "tomas-ibarra",
+    bio: "Explorador urbano: restaurantes secreto, galerías independientes y barrios en transformación."
   },
 ];
 

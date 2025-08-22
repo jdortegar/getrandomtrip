@@ -227,7 +227,7 @@ function ExplorationPageContent() {
                         title={type.title}
                         description={type.description}
                         imageUrl={type.imageUrl}
-                        href={type.travelType === 'Family' ? '/packages/by-type/families#planner' : `/packages/by-type/${slugify(type.travelType)}`}
+                        href={`/packages/by-type/${slugify(type.travelType)}`}
                       />
                     </motion.div>
                   ))}
@@ -247,7 +247,12 @@ function ExplorationPageContent() {
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, ease: "easeOut" }}
                     >
-                      <TripperCard key={tripper.name} name={tripper.name} img={tripper.avatar} onClick={() => router.push(`/packages/${tripper.slug}`)} />
+                      <TripperCard
+                      name={tripper.name}
+                      img={tripper.avatar}
+                      slug={tripper.slug}
+                      bio={tripper.bio}
+                    />
                     </motion.div>
                   ))}
                   <motion.div
@@ -741,6 +746,38 @@ export default function HomePage() {
         </div>
 
         {/* Indicador de scroll (unificado) */}
+        <style jsx global>{`
+          @keyframes push-pulse {
+            0% {
+              transform: scaleY(0.2);
+              opacity: 0.8;
+            }
+            50% {
+              transform: scaleY(1);
+              opacity: 1;
+            }
+            100% {
+              transform: scaleY(0.2);
+              opacity: 0.8;
+            }
+          }
+          .scroll-indicator {
+            font-size: 1rem; /* Tamaño de fuente ajustado */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .scroll-indicator::after {
+            content: '';
+            display: block;
+            width: 2px;
+            height: 40px; /* Altura de la barra */
+            background-color: white;
+            margin-top: 0.75rem;
+            transform-origin: bottom;
+            animation: push-pulse 2s infinite;
+          }
+        `}</style>
         <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
           SCROLL
         </div>

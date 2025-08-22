@@ -1,42 +1,65 @@
 'use client';
-import React from 'react';
-import Image from "next/image";
 
-const avatarUrl = (seed: string, size = 320) =>
-  `https://i.pravatar.cc/${size}?u=${encodeURIComponent(seed)}`;
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-function TripperAvatar({ name }: { name: string }) {
+type TripperCardProps = {
+  name: string;
+  img: string;
+  slug: string;
+  bio?: string;
+};
+
+export default function TripperCard({ name, img, slug, bio = 'Bio coming soon.' }: TripperCardProps) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const panelId = `bio-panel-${slug}`;
+
   return (
-    <div className="relative size-36 md:size-40 rounded-full ring-4 ring-slate-600/70 overflow-hidden bg-slate-200">
-      <Image
-        src={avatarUrl(name || 'tripper')}
-        alt={name || 'Tripper'}
-        fill
-        sizes="160px"
-        className="object-cover"
-        loading="lazy"
-      />
+    <div className="max-w-[280px] w-full mx-auto">
+      {/* Foto + Nombre (clic navega al perfil del tripper) */}
+      <button
+        type="button"
+        onClick={() => router.push(`/packages/${slug}`)}
+        className="block w-full text-left group focus:outline-none"
+        aria-label={`Ir al perfil de ${name}`}
+      >
+        <div className="aspect-[4/3] w-full overflow-hidden rounded-md">
+          <img
+            src={img}
+            alt={name}
+            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition"
+            loading="lazy"
+          />
+        </div>
+        <div className="mt-3 text-center">
+          <h3 className="text-lg font-serif italic text-gray-900">{name}</h3>
+        </div>
+      </button>
+
+      {/* Separador + READ BIO */}
+      <div className="mt-3 border-t border-gray-200 pt-3">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls={panelId}
+          className="w-full flex items-center justify-between text-sm tracking-wide text-gray-800 hover:text-gray-900"
+        >
+          <span className="uppercase">READ BIO</span>
+          <span className="text-xl leading-none select-none">{open ? '–' : '+'}</span>
+        </button>
+
+        {/* Panel del acordeón */}
+        <div
+          id={panelId}
+          className={`overflow-hidden transition-all ${open ? 'mt-3 max-h-96' : 'max-h-0'}`}
+        >
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {bio}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
-
-interface TripperCardProps {
-  img: string;
-  name: string;
-  onClick: () => void;
-}
-
-const TripperCard: React.FC<TripperCardProps> = ({ img, name, onClick }) => (
-  <div className="flex flex-col items-center text-center group cursor-pointer" onClick={onClick}>
-    <TripperAvatar name={name} />
-    <span
-      className="mt-3 text-sm md:text-base font-semibold text-slate-800 text-center line-clamp-1"
-      title={name || 'Tripper invitado'}
-      aria-label={name || 'Tripper invitado'}
-    >
-      {name || 'Tripper invitado'}
-    </span>
-  </div>
-);
-
-export default TripperCard;
