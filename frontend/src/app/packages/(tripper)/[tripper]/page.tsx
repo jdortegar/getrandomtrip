@@ -43,15 +43,29 @@ export default function Page({ params }: { params: { tripper: string } }) {
 
   return (
     <main className="bg-white text-slate-900">
+      {/* Perfil */}
       <TripperProfile t={t} />
-      <TripperPlanner tripperName={t.name} />
+
+      {/* Planner: pasar también el slug para construir rutas del funnel */}
+      <TripperPlanner tripperName={t.name} tripperSlug={t.slug} />
+
+      {/* Blog / inspiración */}
       <TripperBlog posts={t.posts || []} sectionId="tripper-blog" />
+
+      {/* Mapa (CSR) */}
       <TripperVisitedMap places={t.visitedPlaces || []} />
+
+      {/* Opiniones */}
       <TripperTestimonials testimonials={t.testimonials || []} />
+
+      {/* Cierre */}
       <TripperClosing />
+
       <footer className="py-12 text-center text-gray-500 border-t">
         © 2025 Randomtrip. Where the routine ends, the adventure begins.
       </footer>
+
+      {/* JSON-LD SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

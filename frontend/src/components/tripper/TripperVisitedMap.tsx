@@ -32,8 +32,8 @@ export default function TripperVisitedMap({ places = [] as Place[] }: { places?:
   useEffect(() => {
     (async () => {
       try {
-        const mod = await import('@/lib/fixLeafletIcons');
-        if (mod?.default) mod.default();
+        const { fixLeafletIcons } = await import('@/lib/fixLeafletIcons');
+        if (typeof fixLeafletIcons === 'function') fixLeafletIcons();
       } catch {
         // no-op si no existe el helper
       }
@@ -75,18 +75,24 @@ export default function TripperVisitedMap({ places = [] as Place[] }: { places?:
 
       <div className="h-96 md:h-[480px] w-full overflow-hidden rounded-xl border">
         <MapContainer
+          ref={mapRef as any}
           center={initialCenter}
           zoom={defaultZoom}
           scrollWheelZoom
           className="h-full w-full"
-          whenCreated={(m) => {
-            mapRef.current = m;
+          whenReady={() => {
+            const map = mapRef.current as LeafletMap | null;
+            if (!map) return;
+
             if (!Array.isArray(places) || places.length === 0) return;
+
             if (places.length === 1) {
-              const p = places[0];
-              m.flyTo([p.lat, p.lng], defaultZoom, { duration: 0.8 });
-            } else if (bounds) {
-              m.fitBounds(bounds, { padding: [32, 32] });
+              map.setView([places[0].lat, places[0].lng], 6);
+            } else {
+              const bounds = L.latLngBounds(
+                places.map(p => [p.lat, p.lng] as [number, number])
+              );
+              map.fitBounds(bounds, { padding: [40, 40] });
             }
           }}
         >
@@ -102,8 +108,7 @@ export default function TripperVisitedMap({ places = [] as Place[] }: { places?:
                 position={[p.lat, p.lng]}
                 ref={(mk) => {
                   // Guardamos ref para abrir popups desde la lista
-                  // @ts-expect-error react-leaflet typings
-                  if (mk) markersRef.current[key] = mk;
+                  if (mk) markersRef.current[key] = mk as any;
                 }}
               >
                 <Popup>

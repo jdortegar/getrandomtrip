@@ -21,7 +21,7 @@ export default function TripperBlog({
         </div>
         <div className="md:col-span-2">
           <div className="flex overflow-x-auto space-x-8 pb-8 hide-scrollbar">
-            {posts.map(p => (
+            {items.map((p: { title: string; image: string; category: string }) => (
               <div key={p.title} className="w-80 flex-shrink-0 transition hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="h-48 rounded-lg overflow-hidden">
                   <img src={p.image} alt={p.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />

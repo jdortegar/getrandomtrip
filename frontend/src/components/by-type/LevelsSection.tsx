@@ -31,19 +31,9 @@ export default function LevelsSection({ type, palette }: Props) {
           </p>
         </header>
 
-        <TripperTiers
-          className="levels-grid"
-          tripper={tripper}
-          palette={palette}
-          ctaLabel="Reservar"
-          onTierClick={(tierId: string) =>
-            router.push(
-              `/randomtripme?type=${encodeURIComponent(type)}&tier=${encodeURIComponent(tierId)}`
-            )
-          }
-          variant={isSolo ? 'dark' : 'light'}
-          showHeader={!isSolo}   // oculta el encabezado interno en SOLO
-        />
+        <div className="levels-grid">
+          <TripperTiers tripperSlug={tripper.slug} />
+        </div>
       </div>
     </section>
   );

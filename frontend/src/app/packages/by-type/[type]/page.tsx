@@ -66,7 +66,7 @@ export default function Page({
         {/* Sección 2: Planes */}
         <section id="planes" className="relative scroll-mt-16 bg-neutral-950 text-white">
           <div className="mx-auto max-w-7xl px-4 py-20">
-            <LevelsSection type="solo" palette={data.palette} variant="dark" />
+            <LevelsSection type="solo" palette={data.palette} />
           </div>
         </section>
 

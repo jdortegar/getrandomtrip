@@ -12,7 +12,12 @@ type Step =
   | 'Alma del viaje'
   | 'Afinar detalles';
 
-export default function TripperPlanner({ tripperName }: { tripperName: string }) {
+type Props = {
+  tripperName: string;
+  tripperSlug: string;
+};
+
+export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
   const [step, setStep] = useState<Step>('Presentación');
   const [budgetTier, setBudgetTier] = useState<string | null>(null);
   const [travellerType, setTravellerType] = useState<string | null>(null);
@@ -20,7 +25,6 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
 
   const tabs: Step[] = ['Presentación', 'Presupuesto', 'By Traveller', 'Alma del viaje', 'Afinar detalles'];
 
-  // --- chips de presentación (solo demo, sin selección)
   const previewChips = [
     { title: 'Ritmo & Descubrimiento', core: 'Explorar sin correr. Sorpresas bien curadas.' },
     { title: 'Sabores & Lugares', core: 'Cocina local y escenarios auténticos.' },
@@ -28,7 +32,6 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
     { title: 'Diseño & Boutique', core: 'Stays con carácter, detalles que elevan.' },
   ];
 
-  // --- niveles de presupuesto (Tab 2)
   const tiers = useMemo(
     () => [
       {
@@ -60,16 +63,14 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
     []
   );
 
-  // --- opciones By Traveller (Tab 3)
   const travellerOptions = [
-    { key: 'pareja',    title: 'En Pareja',   img: '/images/couple-hetero.jpg' },
-    { key: 'solo',      title: 'Solo',        img: '/images/solo-hero-video.mp4' }, // si es video, se muestra un placeholder
-    { key: 'familia',   title: 'En Familia',  img: '/images/family-vacation.jpg' },
-    { key: 'grupo',     title: 'En Grupo',    img: '/images/friends-group.jpg' },
-    { key: 'honeymoon', title: 'Honeymoon',   img: '/images/honeymoon-same-sex.jpg' },
+    { key: 'pareja',    title: 'En Pareja',   img: '/images/journey-types/couple-hetero.jpg' },
+    { key: 'solo',      title: 'Solo',        img: '/images/journey-types/solo-traveler.jpg' }, // <— antes .mp4
+    { key: 'familia',   title: 'En Familia',  img: '/images/journey-types/family-vacation.jpg' },
+    { key: 'grupo',     title: 'En Grupo',    img: '/images/journey-types/friends-group.jpg' },
+    { key: 'honeymoon', title: 'Honeymoon',   img: '/images/journey-types/honeymoon-same-sex.jpg' },
   ];
 
-  // --- ALMA_OPTIONS como lista (Tab 4)
   const almaOptionsList = useMemo(() => {
     return Object.entries(ALMA_OPTIONS as Record<string, any>).map(([key, val]) => ({
       key,
@@ -81,21 +82,39 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
     }));
   }, []);
 
-  // --- auto scroll al cambiar de tab
   const sectionRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [step]);
 
-  // --- gating del header (evita saltar pasos sin selección)
-  const go = (target: Step) => {
-    if (target === 'Presentación' || target === 'Presupuesto') return setStep(target);
-    if (target === 'By Traveller' && budgetTier) return setStep(target);
-    if (target === 'Alma del viaje' && budgetTier && travellerType) return setStep(target);
-    if (target === 'Afinar detalles' && budgetTier && travellerType && groupAlma) return setStep(target);
+  // Scroll helper: lo llamamos SOLO tras interacciones del usuario
+  const scrollPlanner = () => {
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // --- FlipCard local (para no depender de un import inexistente)
+  // Si vienen con hash explícito al planner, respetarlo una sola vez
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const h = window.location.hash;
+    if (h === '#planner' || h === '#start-your-journey-anchor') {
+      scrollPlanner();
+    }
+  }, []);
+
+  // Gating + scroll manual (no automático en mount)
+  const go = (target: Step) => {
+    const doSet = (next: Step) => {
+      setStep(next);
+      // scrolleo solo si NO es 'Presentación'
+      if (next !== 'Presentación') {
+        // Esperar al commit del state:
+        setTimeout(scrollPlanner, 0);
+      }
+    };
+    if (target === 'Presentación' || target === 'Presupuesto') return doSet(target);
+    if (target === 'By Traveller' && budgetTier) return doSet(target);
+    if (target === 'Alma del viaje' && budgetTier && travellerType) return doSet(target);
+    if (target === 'Afinar detalles' && budgetTier && travellerType && groupAlma) return doSet(target);
+  };
+
+  // --- FlipCard local
   function FlipCard({
     item,
     onChoose,
@@ -185,6 +204,9 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
 
   return (
     <section id="planner" ref={sectionRef} className="bg-white text-neutral-900 py-16 scroll-mt-24">
+      {/* Ancla oculta por compatibilidad con enlaces antiguos */}
+      <span id="start-your-journey-anchor" className="sr-only" />
+
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Tabs header con gating */}
         <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-8" role="tablist" aria-label="Planificador Randomtrip">
@@ -232,7 +254,10 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
             <div className="mt-8 text-right">
               <button
                 className="inline-flex items-center rounded-full bg-[#E4A687] text-white px-5 py-3 text-sm font-semibold shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E4A687]"
-                onClick={() => setStep('Presupuesto')}
+                onClick={() => {
+                  setStep('Presupuesto');
+                  setTimeout(scrollPlanner, 0);
+                }}
                 aria-label="GetRandomtrip! Ir a Presupuesto"
               >
                 GetRandomtrip! →
@@ -271,11 +296,13 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
                       onClick={() => {
                         setBudgetTier(t.key);
                         setStep('By Traveller');
+                        setTimeout(scrollPlanner, 0);
                       }}
                       aria-pressed={budgetTier === t.key}
                       aria-label={`Elegir ${t.title}`}
                     >
-                      Elegir este nivel →</button>
+                      Elegir este nivel →
+                    </button>
                   </div>
                 </div>
               ))}
@@ -327,7 +354,10 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
             <div className="mt-8 text-right">
               <button
                 className="inline-flex items-center rounded-full bg-[#E4A687] text-white px-5 py-3 text-sm font-semibold shadow-sm disabled:opacity-50"
-                onClick={() => setStep('Alma del viaje')}
+                onClick={() => {
+                  setStep('Alma del viaje');
+                  setTimeout(scrollPlanner, 0);
+                }}
                 disabled={!travellerType}
                 aria-label="Continuar a Alma del viaje"
               >
@@ -352,6 +382,7 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
                   onChoose={(k) => {
                     setGroupAlma(k);
                     setStep('Afinar detalles');
+                    setTimeout(scrollPlanner, 0);
                   }}
                 />
               ))}
@@ -364,6 +395,7 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
                   onChoose={(k) => {
                     setGroupAlma(k);
                     setStep('Afinar detalles');
+                    setTimeout(scrollPlanner, 0);
                   }}
                 />
               ))}
@@ -376,17 +408,24 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
           <AlmaDetails
             groupKey={groupAlma}
             budgetTier={budgetTier}
-            onBack={() => setStep('Alma del viaje')}
+            onBack={() => {
+              setStep('Alma del viaje');
+              setTimeout(scrollPlanner, 0);
+            }}
             onContinue={(selectedKeys) => {
               const q = new URLSearchParams({
                 from: 'tripper',
+                by: tripperName,
                 tripperName,
                 travellerType: travellerType ?? '',
                 budgetTier: budgetTier ?? '',
                 groupAlma: groupAlma ?? '',
                 almaOptions: selectedKeys.join(','),
               }).toString();
-              window.location.href = `/journey/experience-level?${q}`;
+
+              const slug = tripperSlug || 'unknown';
+              const packageId = 'demo'; // placeholder hasta conectar el real
+              window.location.href = `/packages/${slug}/${packageId}/basic-config?${q}`;
             }}
           />
         )}
@@ -397,7 +436,10 @@ export default function TripperPlanner({ tripperName }: { tripperName: string })
             <div className="mt-4">
               <button
                 className="inline-flex items-center rounded-full border px-4 py-2 text-sm hover:bg-neutral-50"
-                onClick={() => setStep('Alma del viaje')}
+                onClick={() => {
+                  setStep('Alma del viaje');
+                  setTimeout(scrollPlanner, 0);
+                }}
               >
                 ← Volver
               </button>

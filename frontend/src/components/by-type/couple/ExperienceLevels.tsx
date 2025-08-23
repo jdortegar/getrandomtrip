@@ -8,11 +8,12 @@ export default function ExperienceLevels() {
   return (
     <section id="planes" className="relative scroll-mt-16 bg-white text-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-20">
-        <SectionHeading
-          title="✨ Comiencen a planear su escapada"
-          subtitle="💡 Lo único que definen en este paso es el presupuesto por persona. Ese será su techo. El resto… corre por nuestra cuenta."
-          className="text-white"
-        />
+        <div className="text-white">
+          <SectionHeading
+            title="✨ Comiencen a planear su escapada"
+            subtitle="💡 Lo único que definen en este paso es el presupuesto por persona. Ese será su techo. El resto… corre por nuestra cuenta."
+          />
+        </div>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {COUPLE_LEVELS.map((lvl) => (

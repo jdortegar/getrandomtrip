@@ -21,6 +21,16 @@ export type Tripper = {
   bio?: string;
   interests?: string[];
   destinations?: string[];
+  specialties?: {
+    interests?: string[];
+    destinations?: string[];
+    certifications?: string[];
+    languages?: string[];
+    partnerBadges?: { name: string; logoUrl: string; url?: string }[];
+  };
+
+  // sección 3 (opcional)
+  gallery?: { src: string; alt: string }[];
 
   // sección 4
   posts?: { image: string; category: string; title: string; href?: string }[];
@@ -40,8 +50,8 @@ export const TRIPPERS: Tripper[] = [
   {
     name: 'Alejandra Ramirez',
     slug: 'ale-ramirez',
-    avatar: '/images/trippers/ale.jpg',
-    heroImage: '/images/trippers/ale-hero.jpg',
+    avatar: 'https://i.pravatar.cc/256?u=ale-ramirez',
+    heroImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     ambassadorId: '167-2021',
     tierLevel: 'Rookie',
     bio: 'Travel advisor enfocada en…',
@@ -63,29 +73,29 @@ export const TRIPPERS: Tripper[] = [
   {
     name: 'Ilse Seaman',
     slug: 'ilse-seaman',
-    avatar: '/images/trippers/ilse.jpg',
-    heroImage: '/images/trippers/ilse-hero.jpg',
+    avatar: 'https://i.pravatar.cc/256?u=ilse-seaman',
+    heroImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     bio: 'Ilse se especializa en viajes familiares, diseñando aventuras que encantan a grandes y chicos, con actividades para todas las edades.',
   },
   {
     name: 'Cinthya Chávez',
     slug: 'cinthya-chavez',
-    avatar: '/images/trippers/cinthya.jpg',
-    heroImage: '/images/trippers/cinthya-hero.jpg',
+    avatar: 'https://i.pravatar.cc/256?u=cinthya-chavez',
+    heroImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     bio: 'Cinthya es la guía perfecta para viajeros solitarios, creando experiencias seguras y enriquecedoras que fomentan el autodescubrimiento.',
   },
   {
     name: 'Horacio Terán',
     slug: 'horacio-teran',
-    avatar: '/images/trippers/horacio.jpg',
-    heroImage: '/images/trippers/horacio-hero.jpg',
+    avatar: 'https://i.pravatar.cc/256?u=horacio-teran',
+    heroImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     bio: 'Horacio es un experto en viajes de aventura y exploración, ideal para parejas que buscan emociones fuertes y destinos inusuales.',
   },
   {
     name: 'Sara Sánchez',
     slug: 'sara-sanchez',
-    avatar: '/images/trippers/sara.jpg',
-    heroImage: '/images/trippers/sara-hero.jpg',
+    avatar: 'https://i.pravatar.cc/256?u=sara-sanchez',
+    heroImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     bio: 'Sara es la especialista en lunas de miel, diseñando viajes inolvidables que combinan romance, lujo y experiencias únicas para recién casados.',
   },
   {

@@ -3,27 +3,45 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type Language = "es" | "en";
-type TextDict = Record<Language, string | undefined>;
+type TextDict = { es: string; en: string };
+
+// Diccionario de claves → textos.
+const STRINGS: Record<string, TextDict> = {
+  startYourJourney:         { es: "Comienza tu Viaje", en: "Start Your Journey" },
+  chooseHowToStart:         { es: "Elige cómo quieres empezar a dar forma a tu aventura.", en: "Choose how you want to start shaping your adventure." },
+  byTraveller:              { es: "By Traveller", en: "By Traveller" },
+  topTrippers:              { es: "Top Trippers", en: "Top Trippers" },
+  roadtrips:                { es: "Roadtrips", en: "Roadtrips" },
+  trippersDecode:           { es: "Trippers Decode", en: "Trippers Decode" },
+  byTravellerSubtitle:      { es: "¿Con quién vas a escribir tu próxima historia?", en: "Who will you write your next story with?" },
+  topTrippersSubtitle:      { es: "Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?", en: "They have already left their mark. Who will be your travel partner?" },
+  roadtripsSubtitle:        { es: "Libertad sobre ruedas. Tú eliges el ritmo.", en: "Freedom on wheels. You choose the pace." },
+  trippersDecodeSubtitle:   { es: "Rutas con alma, contadas por quienes las vivieron.", en: "Routes with soul, told by those who lived them." },
+  searchYourFavoriteTripper:{ es: "Busca a tu Tripper favorito", en: "Search for your favorite Tripper" },
+  writeAName:               { es: "Escribe un nombre...", en: "Write a name..." },
+  search:                   { es: "Buscar", en: "Search" },
+  whereNext:                { es: "Where next? Ej: Río Negro", en: "Where next? e.g., Río Negro" },
+  anyMonth:                 { es: "Cualquier Mes", en: "Any Month" },
+};
+
+type TArg = TextDict | string;
 
 interface LanguageContextType {
   lang: Language;
   setLang: (lang: Language) => void;
-  t: (dict: TextDict, opts?: { fallback?: Language }) => string;
-  tx: (es: string | undefined, en?: string | undefined, opts?: { fallback?: Language }) => string;
+  t: (input: TArg) => string;
+  tx: (es: string, en: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 const detectInitialLang = (): Language => {
-  // localStorage first
   if (typeof window !== "undefined") {
     const saved = window.localStorage.getItem("lang") as Language | null;
     if (saved === "es" || saved === "en") return saved;
-    // then navigator
     const nav = navigator.language?.toLowerCase() || "";
     if (nav.startsWith("es")) return "es";
   }
-  // default
   return "es";
 };
 
@@ -35,20 +53,23 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     if (typeof window !== "undefined") localStorage.setItem("lang", l);
   };
 
-  // simple helpers:
-  // t({es, en}) => returns current language; if missing, falls back to the other
-  const t = (dict: TextDict, opts?: { fallback?: Language }) => {
-    const fb = opts?.fallback ?? (lang === "es" ? "en" : "es");
-    return dict[lang] ?? dict[fb] ?? "";
+  const t = (input: TArg): string => {
+    const language = lang ?? "es";
+    if (typeof input === "string") {
+      const hit = STRINGS[input];
+      if (hit) return language === "es" ? hit.es : hit.en;
+      return input; // fallback: devuelve la clave tal cual si no existe en STRINGS
+    }
+    const fb = language === "es" ? "en" : "es";
+    return input[language as keyof typeof input] ?? input[fb as keyof typeof input] ?? "";
   };
 
-  // tx("hola", "hello") => convenience wrapper when you don't want to build a dict
-  const tx = (es?: string, en?: string, opts?: { fallback?: Language }) =>
-    t({ es, en }, opts);
+  // Atajo cuando no querés armar el objeto {es, en}
+  const tx = (es: string, en: string): string => t({ es, en });
 
   const value = useMemo(() => ({ lang, setLang, t, tx }), [lang]);
 
-  // Optional: allow ?lang=es|en one-shot override
+  // Permite override one-shot con ?lang=es|en
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);

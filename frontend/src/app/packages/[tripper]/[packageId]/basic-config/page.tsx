@@ -112,7 +112,7 @@ const BasicConfigPage = () => {
         </p>
 
         <AppleCard className={theme.cardBg}>
-          <h2 className={`text-2xl font-semibold mb-6 ${theme.cardTextColor}`}>Configuración Básica</h2>
+          <h2 className={`text-2xl font-semibold mb-6 ${theme.textColor}`}>Configuración Básica</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <GooglePlacesAutocomplete
               label="País y Ciudad de origen"
@@ -131,13 +131,13 @@ const BasicConfigPage = () => {
               inputClassName={`${theme.inputBg} ${theme.inputTextColor}`}
             />
             <div>
-              <label className={`block text-sm font-medium mb-1 ${theme.cardTextColor}`}>Duración</label>
+              <label className={`block text-sm font-medium mb-1 ${theme.textColor}`}>Duración</label>
               <p className={`mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-base ${theme.inputBg} ${theme.inputTextColor}`}>
                 {pkg.nights} noches
               </p>
             </div>
             <div>
-              <label htmlFor="travelers" className={`block text-sm font-medium mb-1 ${theme.cardTextColor}`}>Nº de viajeros</label>
+              <label htmlFor="travelers" className={`block text-sm font-medium mb-1 ${theme.textColor}`}>Nº de viajeros</label>
               <select
                 id="travelers"
                 value={travelers}

@@ -83,5 +83,5 @@ export const COUPLE_LEVELS: ExperienceLevel[] = [
       "Alojamiento: Luxury / de autor / cadenas A1.",
       "Extras: Co-creación con Luxury Travel Advisor, Equipo soporte 24/7 + 2 Experiencias Premium, Traslados privados, Salas VIP, etc.",
     ],
-  },,
+  },
 ];

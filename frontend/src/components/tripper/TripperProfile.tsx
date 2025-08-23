@@ -1,24 +1,30 @@
 'use client';
+
 import React, { useState } from 'react';
 import type { Tripper } from '@/content/trippers';
+import SafeImage from '@/components/common/SafeImage';
 
 export default function TripperProfile({ t }: { t: Tripper }) {
   const [showVideo, setShowVideo] = useState(false);
 
   return (
-    <section className="relative bg-[#07143A] text-white">
+    // Ancla para “aterrizar” arriba del todo al entrar al perfil
+    <section id="tripper-hero" className="relative bg-[#07143A] text-white scroll-mt-24">
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-12 md:py-16">
         {/* Grid tipo Black Tomato */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* Foto */}
           <div className="md:col-span-4">
-            <img
-              src={t.avatar || t.heroImage || '/images/fallback.jpg'}
-              alt={`Retrato de ${t.name}`}
-              className="w-56 h-56 md:w-64 md:h-64 object-cover rounded-xl shadow-xl ring-1 ring-white/10"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="w-56 h-56 md:w-64 md:h-64 relative rounded-xl overflow-hidden shadow-xl ring-1 ring-white/10">
+              <SafeImage
+                src={t.avatar || t.heroImage || null}
+                alt={`Retrato de ${t.name}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 224px, 256px"
+                priority
+              />
+            </div>
           </div>
 
           {/* Texto + badges */}
@@ -58,10 +64,18 @@ export default function TripperProfile({ t }: { t: Tripper }) {
             )}
 
             <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3">
-              <a href="#planner" aria-label={`Planear un Randomtrip con ${t.name.split(' ')[0]}`} className="inline-flex items-center justify-center rounded-full bg-white text-[#07143A] px-6 py-3 font-semibold shadow hover:-translate-y-0.5 transition">
+              <a
+                href="#planner"
+                aria-label={`Planear un Randomtrip con ${t.name.split(' ')[0]}`}
+                className="inline-flex items-center justify-center rounded-full bg-white text-[#07143A] px-6 py-3 font-semibold shadow hover:-translate-y-0.5 transition"
+              >
                 Randomtrip ft. {t.name.split(' ')[0]}
               </a>
-              <a href="#tripper-blog" aria-label={`Ver las mejores historias de ${t.name.split(' ')[0]}`} className="inline-flex items-center justify-center rounded-full border border-white/60 text-white px-6 py-3 font-semibold hover:bg-white/10 transition">
+              <a
+                href="#tripper-blog"
+                aria-label={`Ver las mejores historias de ${t.name.split(' ')[0]}`}
+                className="inline-flex items-center justify-center rounded-full border border-white/60 text-white px-6 py-3 font-semibold hover:bg-white/10 transition"
+              >
                 Las mejores historias de {t.name.split(' ')[0]}
               </a>
             </div>

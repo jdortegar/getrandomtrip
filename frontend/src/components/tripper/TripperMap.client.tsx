@@ -38,24 +38,17 @@ export default function TripperMap({ places, className, height = 420 }: Props) {
           attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a> contributors'
         />
         <MarkerClusterGroup chunkedLoading>
-          {places.map(p => (
-            <Marker key={p.id} position={[p.lat, p.lng]}>
+          {places.map((p) => (
+            <Marker key={p.label} position={[p.lat, p.lng]}>
               <Popup>
                 <div className="space-y-1">
                   <div className="font-semibold">{p.label}</div>
-                  <div className="text-sm text-neutral-600">{p.country}</div>
-                  {(p.lastTripYear || p.tripsCount) && (
+                  {(p.lastTrip || p.trips) && (
                     <div className="text-xs text-neutral-500">
-                      {p.lastTripYear ? `Último viaje: ${p.lastTripYear}` : null}
-                      {p.lastTripYear && p.tripsCount ? " · " : null}
-                      {p.tripsCount ? `Nº de viajes: ${p.tripsCount}` : null}
+                      {p.lastTrip ? `Último viaje: ${p.lastTrip}` : null}
+                      {p.lastTrip && p.trips ? ' · ' : null}
+                      {p.trips ? `Nº de viajes: ${p.trips}` : null}
                     </div>
-                  )}
-                  {p.notes && <div className="text-xs">{p.notes}</div>}
-                  {p.url && (
-                    <a className="text-xs underline" href={p.url} target="_blank" rel="noreferrer">
-                      Ver más
-                    </a>
                   )}
                 </div>
               </Popup>
