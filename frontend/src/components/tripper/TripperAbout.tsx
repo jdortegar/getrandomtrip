@@ -35,13 +35,13 @@ export default function TripperAbout({
             <div>
               <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">Interests</h3>
               <ul className="text-sm text-slate-700 space-y-1">
-                {interests.length ? interests.map(x => <li>• {x}</li>) : <li>—</li>}
+                {interests.length ? interests.map((x, i) => <li key={i}>• {x}</li>) : <li>—</li>}
               </ul>
             </div>
             <div>
               <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">Destinations</h3>
               <ul className="text-sm text-slate-700 space-y-1">
-                {destinations.length ? destinations.map(x => <li>• {x}</li>) : <li>—</li>}
+                {destinations.length ? destinations.map((x, i) => <li key={i}>• {x}</li>) : <li>—</li>}
               </ul>
             </div>
           </div>

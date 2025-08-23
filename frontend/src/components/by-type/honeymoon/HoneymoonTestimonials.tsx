@@ -90,7 +90,7 @@ export default function HoneymoonTestimonials() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {visible.map((testimonial, index) => (
             <div key={`${testimonial.author}-${index}`} className="bg-neutral-100 p-8 rounded-lg shadow-lg">
-              <p className="text-lg italic text-neutral-700 mb-4">"{testimonial.quote}"</p>
+              <p className="text-lg italic text-neutral-700 mb-4">&quot;{testimonial.quote}&quot;</p>
               <p className="font-semibold text-neutral-900">{testimonial.author}</p>
               <p className="text-sm text-neutral-600">{testimonial.city}</p>
             </div>

@@ -89,7 +89,7 @@ export default function SoloTestimonials() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {visible.map((t, idx) => (
             <div key={`${t.author}-${idx}`} className="bg-neutral-100 p-8 rounded-lg shadow-lg">
-              <p className="text-lg italic text-neutral-700 mb-4">"{t.quote}"</p>
+              <p className="text-lg italic text-neutral-700 mb-4">&quot;{t.quote}&quot;</p>
               <p className="font-semibold text-neutral-900">{t.author}</p>
               <p className="text-sm text-neutral-600">{t.city}</p>
             </div>

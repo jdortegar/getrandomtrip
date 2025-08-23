@@ -68,7 +68,7 @@ export default function TripperVisitedMap({ places = [] as VisitedPlace[] }: { p
             <MapContainer
               ref={mapRef as any}
               center={initialCenter}
-              zoom={defaultCenter}
+              zoom={defaultZoom}
               scrollWheelZoom
               className="h-full w-full"
               whenReady={() => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 
 export type Language = "es" | "en";
 type TextDict = { es: string; en: string };
@@ -53,7 +53,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     if (typeof window !== "undefined") localStorage.setItem("lang", l);
   };
 
-  const t = (input: TArg): string => {
+  const t = useCallback((input: TArg): string => {
     const language = lang ?? "es";
     if (typeof input === "string") {
       const hit = STRINGS[input];
@@ -62,12 +62,12 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     }
     const fb = language === "es" ? "en" : "es";
     return input[language as keyof typeof input] ?? input[fb as keyof typeof input] ?? "";
-  };
+  }, [lang]);
 
   // Atajo cuando no querés armar el objeto {es, en}
-  const tx = (es: string, en: string): string => t({ es, en });
+  const tx = useCallback((es: string, en: string): string => t({ es, en }), [t]);
 
-  const value = useMemo(() => ({ lang, setLang, t, tx }), [lang]);
+  const value = useMemo(() => ({ lang, setLang, t, tx }), [lang, t, tx]);
 
   // Permite override one-shot con ?lang=es|en
   useEffect(() => {
