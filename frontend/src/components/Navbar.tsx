@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Navbar() {
@@ -58,13 +59,11 @@ export default function Navbar() {
             aria-label="Randomtrip"
             className="flex items-center gap-2 shrink-0"
           >
-            <img
+            <Image
               src="/assets/logos/Logo.svg"
               alt="Randomtrip"
-              className="h-16 w-auto md:h-16 sm:h-12"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/logo.svg";
-              }}
+              width={256}
+              height={64}
             />
           </Link>
 

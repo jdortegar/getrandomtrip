@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 type TripperCardProps = {
@@ -25,12 +26,12 @@ export default function TripperCard({ name, img, slug, bio = 'Bio coming soon.' 
         aria-label={`Ir al perfil de ${name}`}
       >
         <div className="aspect-[4/3] w-full overflow-hidden rounded-md">
-          <img
-            src={img || '/images/fallback.jpg'}
-            alt={name}
-            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition"
-            loading="lazy"
-          />
+          <Image
+              src={img || '/images/fallback.jpg'}
+              alt={name}
+              fill
+              className="object-cover grayscale group-hover:grayscale-0 transition"
+            />
         </div>
         <div className="mt-3 text-center">
           <h3 className="text-lg font-serif italic text-gray-900">{name}</h3>
