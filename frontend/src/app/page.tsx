@@ -248,11 +248,11 @@ function ExplorationPageContent() {
                       transition={{ duration: 0.6, ease: "easeOut" }}
                     >
                       <TripperCard
-                      name={tripper.name}
-                      img={tripper.avatar}
-                      slug={tripper.slug}
-                      bio={tripper.bio}
-                    />
+                        name={tripper.name}
+                        img={tripper.avatar ?? tripper.heroImage ?? '/images/fallback.jpg'}
+                        slug={tripper.slug}
+                        bio={tripper.bio}
+                      />
                     </motion.div>
                   ))}
                   <motion.div

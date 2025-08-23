@@ -1,43 +1,48 @@
 'use client';
+import clsx from 'clsx';
 
-import Link from 'next/link';
-import { Tripper } from '@/content/trippers';
-import { FaWhatsapp } from 'react-icons/fa';
-
-type Props = {
-  tripper: Tripper;
-};
-
-export default function TripperHero({ tripper }: Props) {
+export default function TripperHero({
+  name, heroImage, ambassadorId='167-2021', tierLevel='Rookie',
+  agency, location
+}: {
+  name: string;
+  heroImage?: string;
+  ambassadorId?: string;
+  tierLevel?: 'Rookie'|'Pro'|'Elite';
+  agency?: string;
+  location?: string;
+}) {
   return (
-    <div className="relative h-[60vh] min-h-[400px] bg-gray-800 text-white">
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex flex-col justify-end p-4 md:p-8 z-10">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="flex items-center mb-4">
-            <div className="w-40 h-40 rounded-full bg-gray-700 border-4 border-white shadow-lg"></div>
-            <div className="ml-4">
-              <h1 className="text-4xl font-bold">{tripper.name}</h1>
+    <section className="bg-[#07143A] text-white">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-10 grid grid-cols-1 md:grid-cols-[220px,1fr] gap-6 md:gap-10 items-center">
+        <div className="w-[220px] h-[220px] rounded-xl overflow-hidden mx-auto md:mx-0">
+          <img src={heroImage || '/images/fallback.jpg'} alt={name} className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-wide" style={{ fontFamily: 'Playfair Display, serif' }}>
+            {name.toUpperCase()}
+          </h1>
+          {(agency || location) && (
+            <div className="mt-3">
+              {agency && <p className="underline">{agency}</p>}
+              {location && <p className="text-white/80 text-sm">{location}</p>}
             </div>
-          </div>
-
-          <div className="flex gap-4">
-            <Link
-              href="https://wa.me/526241928208"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg flex items-center"
-            >
-              <FaWhatsapp className="mr-2" /> Escríbele por WhatsApp
-            </Link>
-            <Link
-              href="#tiers" // Anchor to the tiers section
-              className="bg-white text-neutral-900 hover:bg-neutral-100 font-bold py-3 px-6 rounded-lg"
-            >
-              Diseñar viaje con {tripper.name.split(' ')[0]}
-            </Link>
+          )}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <span className="text-sm bg-white/10 px-3 py-1 rounded-full border border-white/20">
+              <strong>Tripper Ambassador:</strong> ID {ambassadorId}
+            </span>
+            <span className={clsx(
+              'text-sm px-3 py-1 rounded-full border',
+              tierLevel==='Elite' ? 'bg-yellow-500/20 border-yellow-400' :
+              tierLevel==='Pro' ? 'bg-emerald-500/20 border-emerald-400' :
+              'bg-white/10 border-white/20'
+            )}>
+              <strong>Tripper Tier:</strong> {tierLevel}
+            </span>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

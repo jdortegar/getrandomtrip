@@ -26,7 +26,7 @@ export default function TripperCard({ name, img, slug, bio = 'Bio coming soon.' 
       >
         <div className="aspect-[4/3] w-full overflow-hidden rounded-md">
           <img
-            src={img}
+            src={img || '/images/fallback.jpg'}
             alt={name}
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition"
             loading="lazy"

@@ -1,76 +1,52 @@
-"use client";
-
-import { Tripper } from "@/content/trippers";
-import Link from "next/link";
-import { FaInstagram, FaLinkedinIn, FaTiktok, FaYoutube } from "react-icons/fa"; // Assuming react-icons is installed
-
-type Props = {
-  tripper: Tripper;
-};
-
-export default function TripperAbout({ tripper }: Props) {
+'use client';
+export default function TripperAbout({
+  name, bio, videoUrl, interests=[], destinations=[]
+}: {
+  name: string;
+  bio?: string;
+  videoUrl?: string;
+  interests?: string[];
+  destinations?: string[];
+}) {
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div className="md:col-span-2">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-4">About {tripper.name.split(" ")[0]}</h2>
-        {tripper.longBio.map((paragraph, index) => (
-          <p key={index} className="mb-4 text-neutral-700 leading-relaxed">
-            {paragraph}
-          </p>
-        ))}
+    <section className="max-w-6xl mx-auto px-4 md:px-8 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2">
+        <h2 className="text-xl font-medium">Sobre {name}</h2>
+        <div className="mt-4">
+          {videoUrl ? (
+            <div className="aspect-video w-full rounded-xl overflow-hidden border">
+              <iframe
+                src={videoUrl}
+                title={`Presentación de ${name}`}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <p className="text-slate-700 leading-relaxed">{bio || 'Pronto más sobre mi historia y cómo diseño cada viaje.'}</p>
+          )}
+        </div>
       </div>
-      <div className="md:col-span-1 bg-neutral-50 p-6 rounded-lg shadow-sm">
-        <h3 className="text-xl font-semibold mb-4">Quick Facts</h3>
-        <ul className="space-y-3 text-neutral-700">
-          {tripper.location && (
-            <li>
-              <span className="font-semibold">Based in:</span> {tripper.location}
-            </li>
-          )}
-          {tripper.languages && tripper.languages.length > 0 && (
-            <li>
-              <span className="font-semibold">Languages:</span> {tripper.languages.join(", ")}
-            </li>
-          )}
-          {tripper.destinations && tripper.destinations.length > 0 && (
-            <li>
-              <span className="font-semibold">Expert in:</span> {tripper.destinations.join(", ")}
-            </li>
-          )}
-          {tripper.certifications && tripper.certifications.length > 0 && (
-            <li>
-              <span className="font-semibold">Certifications:</span> {tripper.certifications.join(", ")}
-            </li>
-          )}
-        </ul>
-        {tripper.socials && (
-          <div className="mt-6 pt-4 border-t border-neutral-200">
-            <h4 className="font-semibold mb-3">Connect:</h4>
-            <div className="flex space-x-4">
-              {tripper.socials.instagram && (
-                <Link href={tripper.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-neutral-600 hover:text-pink-500">
-                  <FaInstagram size={24} />
-                </Link>
-              )}
-              {tripper.socials.linkedin && (
-                <Link href={tripper.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-neutral-600 hover:text-blue-700">
-                  <FaLinkedinIn size={24} />
-                </Link>
-              )}
-              {tripper.socials.tiktok && (
-                <Link href={tripper.socials.tiktok} target="_blank" rel="noopener noreferrer" className="text-neutral-600 hover:text-black">
-                  <FaTiktok size={24} />
-                </Link>
-              )}
-              {tripper.socials.youtube && (
-                <Link href={tripper.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-neutral-600 hover:text-red-600">
-                  <FaYoutube size={24} />
-                </Link>
-              )}
+      <aside className="lg:col-span-1">
+        <div className="rounded-xl border bg-white p-5">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">Interests</h3>
+              <ul className="text-sm text-slate-700 space-y-1">
+                {interests.length ? interests.map(x => <li>• {x}</li>) : <li>—</li>}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">Destinations</h3>
+              <ul className="text-sm text-slate-700 space-y-1">
+                {destinations.length ? destinations.map(x => <li>• {x}</li>) : <li>—</li>}
+              </ul>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </aside>
     </section>
   );
 }

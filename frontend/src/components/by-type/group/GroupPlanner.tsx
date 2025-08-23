@@ -431,7 +431,7 @@ export default function GroupPlanner() {
       {step === 'Afinar detalles' && !groupAlma && (
         <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
           <div className="rounded-xl border border-neutral-200 bg-white p-6">
-            <p className="text-neutral-700">Elegí primero un grupo en “Grupo & Alma”.</p>
+            <p className="text-neutral-700">Elegí primero un alma del viaje.</p>
           </div>
           <div className="mt-8 text-center">
             <button
