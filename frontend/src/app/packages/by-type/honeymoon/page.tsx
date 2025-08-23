@@ -9,14 +9,14 @@ import FooterLanding from '@/components/layout/FooterLanding';
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: 'Luna de Miel | Randomtrip',
+  title: 'Honeymoon | Randomtrip',
   description:
     'El after más épico empieza después del sí. Diseñamos la sorpresa; ustedes la viven.',
   icons: {
     icon: '/assets/icons/favicon-32x32.png',
   },
   openGraph: {
-    title: 'Luna de Miel | Randomtrip',
+    title: 'Honeymoon | Randomtrip',
     description:
       'La luna de miel no es un destino, es el primer capítulo. Inspirada en ustedes, diseñada por nosotros.',
     url: '/packages/by-type/honeymoon',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Luna de Miel | Randomtrip',
+    title: 'Honeymoon | Randomtrip',
     description:
       'El comienzo invisible que nadie más verá. Sorpresa bien diseñada.',
   },
