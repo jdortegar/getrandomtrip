@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "echo \"No unit tests configured yet.\" && exit 0",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint:fix": "next lint --fix"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
