@@ -89,6 +89,13 @@ const initialTravellerTypes: TravelerType[] = [
     query: 'same sex couple honeymoon romantic getaway',
     imageUrl: '/images/journey-types/honeymoon-same-sex.jpg',
   },
+  {
+    title: 'PAWS',
+    description: 'Viajes con mascotas.',
+    travelType: 'Paws',
+    query: 'pet friendly travel dog cat',
+    imageUrl: '/images/journey-types/paws-card.jpg',
+  },
 ];
 
 const initialRoadtripTypes: RoadtripType[] = [

@@ -14,27 +14,102 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
 ---
 
 ## ✅ INICIO: Landing Page  
-- ▶️ Hero con CTA **“RandomtripME!”**  
-- ▶️ Secciones informativas: ¿Cómo funciona? · Beneficios · Blog  
-- ✅ Pulsar **Start Your Journey** para avanzar
+    - ▶️ Hero con Titulo + Subtitulo + CTA **“RANDOMTRIPME!”**  
+    - ▶️ Secciones 1 - informativas: ¿Cómo funciona? · Beneficios Claves + CTA **"GETRANDOMTRIP!”**  
+    - ▶️ Seccion 2 - Blog  "Explora las historias de nuestros Trippers" + CTA **"GETRANDOMTRIP!”**  
+    - ▶️ Seccion 3 - " COMIENZA TU VIAJE " 
+    El usuario elige una de las siguientes rutas:  
+        - ▶️ **By Traveller**: tipo de viajero (familia, pareja, grupo,      honeymoon, solo [+30%]) 
+        - ▶️ **Top Trippers**: grid de 9 trippers + buscador de influencers/asesores  
+        - ▶️ **Roadtrip**: tarjetas según vehículo (auto, moto, bici)  
+        - ▶️ **Trippers Decode**: buscador destino + mes con guías verificados (add‑ons reducidos)
+    - ▶️ Seccion 4 - "Descubre tu próxima experiencia con Ticketmaster" + CTA **"GETRANDOMTRIP!”**    
+    - ▶️ Seccion 5 - "¿Listo para la aventura?" + CTA **"GETRANDOMTRIP!”** 
+    - Footer con links a diferentes landings de la pagina
+    - Cierre: Comparte tus viajes (Redes Sociales) - © 2025 Randomtrip. Wonder. Wander. Repeat.  
+
+🔁 Cada ruta conduce a su landing correspondiente, para el paso de selección de nivel de experiencia y algunos detalles adicionales en relacion a la ruta/opcion elegida.
 
 ---
 
-## 2. Exploración Inicial  
-El usuario elige una de las siguientes rutas:  
-- ▶️ **Top Trippers**: grid + buscador de influencers/asesores  
-- ▶️ **By Traveller**: tipo de viajero (familia, pareja, grupo, honeymoon, solo [+50 %])  
-- ▶️ **Roadtrip**: tarjetas según vehículo (auto, moto, bici)  
-- ▶️ **Trippers Decode**: buscador destino + mes con guías verificados (add‑ons reducidos)  
+## 2. Landings de Tab 1: Nivel/Tipo de Experiencia - By Traveller
 
-🔁 Cada ruta conduce al paso de selección de nivel de experiencia
+    - ▶️ Landingpage de "En Pareja"
+        - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
+        - ✅ Seccion 2 - Nivel de Experiencia (Essenza, Explora, Explora+, Bivouac, Atelier)
+        - ▶️ Seccion 3 - blog (filtrado -parejas-) "Nuestros lugares favoritos para escapadas en pareja" + CTA **"RANDOMTRIP-us!”**
+        - ▶️ Seccion 4 - Opinines "Lo que dicen las parejas" + CTA **"RANDOMTRIP-us!”**
+	- ✅ Avanzar a “Configuración Básica”
 
----
+    - ▶️ Landingpage de "Solo"
+        - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
+        - ✅ Seccion 2 - Nivel de Experiencia (Essenza, Explora, Explora+, Bivouac, Atelier)
+        - ▶️ Seccion 3 - blog (filtrado -Solo-) "Nuestros destinos favoritos para viajar solo" + CTA **"RANDOMTRIP-me!”**
+        - ▶️ Seccion 4 - Opinines "Lo que dicen quienes viajaron solos" + CTA **"RANDOMTRIP-me!”**    
+	- ✅ Avanzar a “Configuración Básica”
+	- ▶️ Landingpage de "En Familia"
 
-## 3. Nivel de Experiencia  
-- ▶️ Seleccionar nivel: Essenza, Explora, Explora+, Bivouac, Atelier  
-- 🔁 Si el usuario es **Solo Traveller** → aplicar **+50 %** al precio base  
-- ✅ Avanzar a “Configuración Básica”
+        - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
+        - ✅ Seccion 2 - "Comencemos a diseñar el Family Randomtrip" (4 tabs - 1 de presentacion + 3 informacion/detalles extras de personalizacion)
+            - ▶️ Seccion 2.1 - Presentacion Personalizada "Viajar en familia tiene sus códigos (y los entendemos)"
+            - ▶️ Seccion 2.2 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - ▶️ Seccion 2.3 - Tipo de viaje ("Con los mas chicos"; "Con Adolescentes; "Con hijos grandes"; "Con toda la familia")
+            - ▶️ Seccion 2.3 - Tipo de escapada ("Aventura en familia"; "Naturaleza & Fauna"; "Cultura & Tradiciones"; "Payas & Dunas"; "Graduaciones & Celebraciones"; "Escapadas Madre-hij@ / Padre-hij@")
+        - ▶️ Seccion 3 - blog (filtrado -Familia-) "Nuestros destinos favoritos para viajar en familia" + CTA **"RANDOMTRIP-we!”**
+        - ▶️ Seccion 4 - Opinines "Lo que dicen quienes viajaron solos" + CTA **"RANDOMTRIP-we!”**
+	- ✅ Avanzar a “Configuración Básica”    
+        
+    - ▶️ Landingpage de "En Grupo"
+        - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
+        - ✅ Seccion 2 - "De amigos a equipos: diseñen su Randomtrip" (4 tabs - 1 de presentacion + 3 informacion/detalles extras de personalizacion)
+            - ▶️ Seccion 2.1 - Presentacion Personalizada "Viajar en grupo tiene sus códigos (y los entendemos)"
+            - ▶️ Seccion 2.2 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - ▶️ Seccion 2.3 - Grupo & Alma ("Narradores Visuales; Yoga & Bienestar; Religioso o Espiritual; Gastronómico; Historias & Fantasía; Naturaleza & Aventura; Amigos; Negocios; Estudiantes; Música & Festivales)
+            - ▶️ Seccion 2.3 - Afinar detalles (4 Opciones personalizadas para opcion de "Grupo & Alma)
+        - ▶️ Seccion 3 - blog (filtrado -Grupo-) "Nuestros destinos favoritos para viajar en grupo" + CTA **"Activar Randomtrip en grupo!”**
+        - ▶️ Seccion 4 - Opinines "Lo que dicen quienes viajaron solos" + CTA **"RANDOMTRIP-all!”**    
+	- ✅ Avanzar a “Configuración Básica”
+
+    - ▶️ Landingpage de "En Honeymoon"
+        - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
+        - ✅ Seccion 2 - "Diseñen su Honeymoon Randomtrip" (2 tabs de informacion/detalles extras de personalizacion)
+            - ▶️ Seccion 2.1 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - ▶️ Seccion 2.2 - Tipo de honeymoon (Naturaleza & Aventura, Cultura & Tradiciones, 	Playas & Dunas, Musica & Festivales)
+        - ▶️ Seccion 3 - blog (filtrado -Honeymoon-) "Destinos y escenas para su luna de miel" + CTA **"A disenar la luna de miel!”**
+        - ▶️ Seccion 4 - Opinines "Lo que dicen las parejas" + CTA **"RANDOMTRIP-us!”**
+	- ✅ Avanzar a “Configuración Básica”
+
+    - ▶️ Landingpage de "Viajer@s con mascotas"
+        - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
+        - ✅ Seccion 2 - "Diseña el viaje con tu mascota" (2 tabs de informacion/detalles extras de personalizacion)
+            - ▶️ Seccion 2.1 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - ▶️ Seccion 2.2 - Informacion de si va con mascota extra y se suma un 25% al precio de nivel de experiencia, tamano del perro, si es pequene opcion de viajar en cabina
+        - ▶️ Seccion 3 - blog (filtrado -Masctoas-) "Viajes y experiencas para ir con tu mascota" + CTA **"RANDOMTRIP-paws!”**
+        - ▶️ Seccion 4 - Opinines "Opiniones de quienes ya se animaron" + CTA **"RANDOMTRIP-paws!”**
+	- ✅ Avanzar a “Configuración Básica”
+   
+## 3. Landings de Tab 2: Nivel de Experiencia - Top Tripper
+    Landing [tripper], todos misma estructura:
+        - ▶️ Seccion 1 - Hero Dividido en 2 columnas:
+        De un lado(Foto- Nombre - Subitulo - Chips -CTAs - Storytelling)
+        Del otro lado
+            - ✅ Seccion 2 - "Diseña el viaje con tu mascota" (2 tabs de informacion/detalles extras de personalizacion)
+            - ▶️ Seccion 2.1 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - ▶️ Seccion 2.2 - Informacion de si va con mascota extra y se suma un 25% al precio de nivel de experiencia, tamano del perro, si es pequene opcion de viajar en cabina
+        - ▶️ Seccion 3 - blog (filtrado -Masctoas-) "Viajes y experiencas para ir con tu mascota" + CTA **"RANDOMTRIP-paws!”**
+        - ▶️ Seccion 4 - Opinines "Opiniones de quienes ya se animaron" + CTA **"RANDOMTRIP-paws!”**
+        - ✅ Avanzar a “Configuración Básica”
+
+
+## 3. Landings de Tab 3: Roadtrip
+## 3. Nivel de Experiencia
+## 3. Nivel de Experiencia
+## 3. Nivel de Experiencia
+## 3. Nivel de Experiencia
+## 3. Nivel de Experiencia
+## 3. Nivel de Experiencia
+## 3. Nivel de Experiencia
+
 
 ---
 
