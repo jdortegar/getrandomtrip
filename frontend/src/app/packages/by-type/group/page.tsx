@@ -1,63 +1,54 @@
+
+
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import SafeImage from '@/components/common/SafeImage';
-import { TRIPPERS, type Tripper } from '@/content/trippers';
+import React from 'react';
+
+import GroupHero from '@/components/by-type/group/GroupHero';
+import GroupPlanner from '@/components/by-type/group/GroupPlanner';
+import GroupInspiration from '@/components/by-type/group/GroupInspiration';
+import GroupTestimonials from '@/components/by-type/group/GroupTestimonials';
+import FooterLanding from '@/components/layout/FooterLanding';
+
+export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: 'Viajes en Grupo · Top Trippers | Randomtrip',
+  title: 'En Grupo | Randomtrip',
   description:
-    'Explorá los perfiles de nuestros Trippers y elegí con quién querés co-crear tu Randomtrip.',
+    'Viajes en grupo que unen historias. Diseñamos escapadas para equipos, amigos y comunidades: logística sin fricción y experiencias que conectan.',
+  icons: {
+    icon: '/assets/icons/favicon-32x32.png',
+  },
+  openGraph: {
+    title: 'En Grupo | Randomtrip',
+    description:
+      'Viajes en grupo que unen historias. Diseñamos escapadas para equipos, amigos y comunidades.',
+    url: '/packages/by-type/group',
+    siteName: 'Randomtrip',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'En Grupo | Randomtrip',
+    description:
+      'Viajes en grupo que unen historias. Diseñamos escapadas para equipos, amigos y comunidades.',
+  },
 };
 
-function TripperCard({ t }: { t: Tripper }) {
+export default function GroupPage() {
   return (
-    <Link
-      href={`/packages/${t.slug}`}
-      className="group block rounded-2xl border border-neutral-200 bg-white hover:shadow-md transition shadow-sm overflow-hidden"
-      aria-label={`Ver perfil de ${t.name}`}
-    >
-      <div className="relative h-56 w-full">
-        <SafeImage
-          src={t.heroImage ?? t.avatar ?? null}
-          alt={t.name}
-          fill
-          className="object-cover"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-        />
-      </div>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-neutral-900 group-hover:underline">
-          {t.name}
-        </h3>
-        {(t.agency || t.location) && (
-          <p className="mt-1 text-sm text-neutral-600">
-            {t.agency}
-            {t.agency && t.location ? ' · ' : ''}
-            {t.location}
-          </p>
-        )}
-      </div>
-    </Link>
-  );
-}
+    <main className="relative">
+      {/* Sección 1: Hero + chips + CTAs */}
+      <GroupHero />
 
-export default function GroupByTypePage() {
-  return (
-    <main className="bg-white text-neutral-900">
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
-        <header className="text-center">
-          <h1 className="text-2xl md:text-4xl font-bold">Top Trippers</h1>
-          <p className="mt-2 text-neutral-600">
-            Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?
-          </p>
-        </header>
+      {/* Sección 2: Wizard con tabs */}
+      <GroupPlanner />
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {TRIPPERS.map((t) => (
-            <TripperCard key={t.slug} t={t} />
-          ))}
-        </div>
-      </section>
+      {/* Sección 3: Blog / Inspiración */}
+      <GroupInspiration />
+
+      {/* Sección 4: Testimonios */}
+      <GroupTestimonials />
+
+      <FooterLanding />
     </main>
   );
 }
