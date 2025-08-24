@@ -35,6 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         url: base,
         name: 'Randomtrip',
         inLanguage: 'es',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${base}/tripper-finder?q={search_term_string}`,
+          'query-input': 'required name=search_term_string',
+        },
       },
       {
         '@type': 'Organization',

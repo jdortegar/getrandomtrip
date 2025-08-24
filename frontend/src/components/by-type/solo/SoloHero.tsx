@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function SoloHero() {
@@ -16,9 +16,13 @@ export default function SoloHero() {
           poster="/images/journey-types/solo-traveler.jpg"
           className="w-full h-full object-cover hidden motion-safe:block"
         />
-        <img
+        <Image
           src="/images/journey-types/solo-traveler.jpg"
           alt=""
+          width={1920}
+          height={1080}
+          sizes="100vw"
+          priority
           className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
         />
         <div className="absolute inset-0 bg-black/40" />

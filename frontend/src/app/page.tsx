@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TopTrippersGrid from '@/components/tripper/TopTrippersGrid';
 import { slugify } from '@/lib/slugify';
 import GetRandomtripCta from '@/components/common/GetRandomtripCta';
+import Image from 'next/image';
 
 
 // Placeholder for Kai Service, if not implemented yet
@@ -641,16 +642,16 @@ const AppFooter: React.FC = () => {
             <h3 className="uppercase text-sm tracking-widest mb-4">Comparte tus viajes</h3>
             <div className="flex space-x-6">
               <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/instagram.svg" alt="Instagram" className="h-6 w-6 filter-invert" />
+                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/instagram.svg" alt="Instagram" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
               </a>
               <a href="#" aria-label="YouTube" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/youtube.svg" alt="YouTube" className="h-6 w-6 filter-invert" />
+                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/youtube.svg" alt="YouTube" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
               </a>
               <a href="#" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg" alt="LinkedIn" className="h-6 w-6 filter-invert" />
+                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
               </a>
               <a href="#" aria-label="TikTok" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tiktok.svg" alt="TikTok" className="h-6 w-6 filter-invert" />
+                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tiktok.svg" alt="TikTok" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
               </a>
             </div>
           </div>

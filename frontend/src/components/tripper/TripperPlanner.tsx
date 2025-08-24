@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import Image from 'next/image';
 import clsx from 'clsx';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 import { ALMA_OPTIONS } from '@/components/by-type/group/almaOptions';
@@ -167,12 +168,13 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
         >
           {/* Frente */}
           <div className="absolute inset-0" style={faceStyle}>
-            <img
+            <Image
               src={item.img}
               alt={item.title}
+              width={800}
+              height={600}
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
             <div className="absolute inset-x-0 bottom-0 p-4">
@@ -181,7 +183,7 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
           </div>
           {/* Dorso */}
           <div className="absolute inset-0" style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>
-            <img src={item.img} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+            <Image src={item.img} alt="" width={800} height={600} sizes="(max-width: 768px) 100vw, 50vw" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-between">
               <p className="text-sm leading-relaxed">
                 {copy[item.key] ?? 'La razón que les mueve, convertida en aventura bien diseñada.'}
@@ -334,12 +336,13 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
                       Video preview
                     </div>
                   ) : (
-                    <img
+                    <Image
                       src={opt.img}
                       alt={opt.title}
+                      width={800}
+                      height={600}
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />

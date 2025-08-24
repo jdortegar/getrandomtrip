@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import SectionHeading from "@/components/ui/SectionHeading"; // Import SectionHeading
 
 const INSPIRATION_CARDS = [
@@ -32,7 +33,7 @@ export default function FavoritePlaces() {
               className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5"
             >
               <div className="aspect-[4/3] w-full bg-black/20">
-                <img src={item.image} alt={item.title} className="h-full w-full object-cover opacity-90 transition group-hover:scale-105" />
+                <Image src={item.image} alt={item.title} width={1200} height={800} sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw" className="h-full w-full object-cover opacity-90 transition group-hover:scale-105" />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />
               <div className="absolute inset-x-0 bottom-0 p-4">

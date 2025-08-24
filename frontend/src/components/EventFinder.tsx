@@ -62,9 +62,12 @@ const EventFinder: React.FC = () => {
       {/* Fondo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/50" />
-        <img
+        <Image
           src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"
           alt="Concierto"
+          width={600}
+          height={400}
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="w-full h-full object-cover"
         />
       </div>
@@ -76,11 +79,9 @@ const EventFinder: React.FC = () => {
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
           Descubre tu próxima experiencia con
-          <img
-            src="/images/ticketmaster-logo.svg"
-            alt="Ticketmaster"
-            className="h-12 ml-4 mt-4 md:mt-0 inline-block"
-          />
+          <Image src="/images/ticketmaster-logo.svg" alt="Ticketmaster"
+            width={120} height={48}
+            className="h-12 ml-4 mt-4 md:mt-0 inline-block" />
         </h2>
 
         {/* Subtítulo */}

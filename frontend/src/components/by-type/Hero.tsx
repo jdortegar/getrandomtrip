@@ -63,7 +63,9 @@ export default function Hero({ data, videoSrc, posterSrc, titleOverride, subtitl
           <Image
             src={images.hero}
             alt={heroTitle}
-            fill
+            width={1920}
+            height={1080}
+            sizes="100vw"
             className="object-cover object-center opacity-50"
             priority
             {...(isSvg(images.hero) ? { unoptimized: true } : {})}
