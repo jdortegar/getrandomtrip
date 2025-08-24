@@ -37,9 +37,9 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
     <Image
       src={imageUrl}
       alt={title}
-      fill
-      style={{ objectFit: 'cover' }}
-      className="transition-transform duration-300 ease-in-out group-hover:scale-105"
+      width={800}
+      height={600}
+      className="h-48 w-full object-cover rounded-xl"
     />
     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
     <div className="absolute bottom-0 left-0 p-8 text-white text-left">

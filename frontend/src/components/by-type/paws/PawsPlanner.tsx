@@ -1,15 +1,15 @@
 'use client';
-
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { track } from '@/components/common/analytics';
 import Link from 'next/link';
 import PawsExperienceCard from './PawsExperienceCard';
 import GetRandomtripCta from '@/components/common/GetRandomtripCta';
 
-const LEVELS = [
+const experienceLevels = [
   {
     id: 'essenza',
     title: '🌱 Essenza — Lo esencial para viajar juntos',
-    top: 450,
+    price: 'Hasta 450 USD',
     duration: 'Máximo 2 noches.',
     transport: 'Low cost (buses o vuelos off-peak, con opción pet).',
     dates: 'Disponibilidad limitada.',
@@ -22,7 +22,7 @@ const LEVELS = [
   {
     id: 'explora',
     title: '🌿 Modo Explora — Aventuras compartidas',
-    top: 650,
+    price: 'Hasta 650 USD',
     duration: 'Hasta 3 noches.',
     transport: 'Multimodal flexible.',
     dates: 'Amplia disponibilidad; algunos bloqueos en feriados.',
@@ -35,7 +35,7 @@ const LEVELS = [
   {
     id: 'explora-plus',
     title: '💫 Explora+ — Más capas, más momentos',
-    top: 1100,
+    price: 'Hasta 1100 USD',
     duration: 'Hasta 4 noches.',
     transport: 'Multimodal.',
     dates: 'Alta disponibilidad, incluso en feriados.',
@@ -48,7 +48,7 @@ const LEVELS = [
   {
     id: 'bivouac',
     title: '🔥 Bivouac — Curaduría artesanal con huellas',
-    top: 1550,
+    price: 'Hasta 1550 USD',
     duration: 'Hasta 5 noches.',
     transport: 'Multimodal.',
     dates: 'Sin bloqueos.',
@@ -61,7 +61,7 @@ const LEVELS = [
   {
     id: 'atelier',
     title: '✨ Atelier Getaway — A medida, sin límites',
-    top: 1550, // base de referencia (desde)
+    price: 'Desde 1550 USD',
     duration: 'Customizable.',
     transport: 'A medida.',
     dates: 'A medida.',
@@ -74,161 +74,161 @@ const LEVELS = [
   },
 ];
 
+const getCapFromPrice = (price: string) => {
+  const m = price.match(/(\d+(?:[.,]\d+)?)/);
+  return m ? Number(m[1].replace(',', '.')) : 0;
+};
+
 export default function PawsPlanner() {
-  const [activeTab, setActiveTab] = useState<'levels' | 'interactive'>('levels');
+  const [activeTab, setActiveTab] = useState<'experienceLevels' | 'interactive'>('experienceLevels');
 
-  // MVP calculadora (tab 2)
-  const [levelId, setLevelId] = useState<string>('explora');
-  const [extraPets, setExtraPets] = useState<number>(0); // 0-2
+  const [levelKey, setLevelKey] = useState('essenza');
+  const [extraPet, setExtraPet] = useState(false);
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('small');
-  const [cargo, setCargo] = useState<'cabina' | 'bodega' | 'na'>('cabina');
+  const [transport, setTransport] = useState<'cabina' | 'bodega'>('cabina');
 
-  const baseTop = useMemo(
-    () => LEVELS.find((l) => l.id === levelId)?.top ?? 650,
-    [levelId]
+  const level = useMemo(
+    () => experienceLevels.find(l => l.id === levelKey) ?? experienceLevels[0],
+    [levelKey]
   );
 
-  const estimate = useMemo(() => {
-    let total = baseTop;
-    total *= 1 + 0.25 * extraPets; // +25% por mascota extra
-    if (size === 'large' || cargo === 'bodega') total *= 1.1; // +10% grande/bodega
-    return Math.round(total);
-  }, [baseTop, extraPets, size, cargo]);
+  React.useEffect(() => {
+    if (size === 'large' && transport !== 'bodega') setTransport('bodega');
+  }, [size, transport]);
+
+  const baseCap = useMemo(() => getCapFromPrice(level.price), [level]);
+  const finalCap = useMemo(() => (extraPet ? Math.round(baseCap * 1.25) : baseCap), [baseCap, extraPet]);
 
   return (
     <section id="paws-planner" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">
-          Planifica tu Aventura PAWS©
-        </h2>
-
-        {/* Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6" role="tablist" aria-label="Planificador PAWS">
+        <div role="tablist" aria-label="PAWS planner" className="flex justify-center mb-8">
           <button
-            id="tab-levels"
             role="tab"
-            aria-selected={activeTab === 'levels'}
-            aria-controls="panel-levels"
-            className={`px-5 py-2 rounded-full font-semibold ${activeTab === 'levels'
-              ? 'bg-[#D4AF37] text-white'
-              : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
-            onClick={() => setActiveTab('levels')}
+            aria-selected={activeTab === 'experienceLevels'}
+            className={`px-6 py-3 text-lg font-semibold rounded-t-lg ${activeTab === 'experienceLevels' ? 'bg-[#D4AF37] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+            onClick={() => setActiveTab('experienceLevels')}
           >
-            🐾 Niveles de Experiencia
+            🐾 PAWS© RANDOMTRIP — Niveles de Experiencia
           </button>
           <button
-            id="tab-interactive"
             role="tab"
             aria-selected={activeTab === 'interactive'}
-            aria-controls="panel-interactive"
-            className={`px-5 py-2 rounded-full font-semibold ${activeTab === 'interactive'
-              ? 'bg-[#D4AF37] text-white'
-              : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            }`}
+            className={`px-6 py-3 text-lg font-semibold rounded-t-lg ${activeTab === 'interactive' ? 'bg-[#D4AF37] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             onClick={() => setActiveTab('interactive')}
           >
             Más detalles (Interactivo)
           </button>
         </div>
 
-        <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg">
-          {activeTab === 'levels' && (
-            <div id="panel-levels" role="tabpanel" aria-labelledby="tab-levels">
-              <p className="text-center text-gray-600 mb-8 italic">
-                💡 Definen el presupuesto por persona + 1 mascota (tope). Del resto… nos ocupamos nosotros.
-              </p>
+        <div className="bg-white p-8 rounded-b-lg shadow-lg">
+          {activeTab === 'experienceLevels' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {LEVELS.map((level) => (
-                  <PawsExperienceCard key={level.id} {...level} />
+                {experienceLevels.map((levelData) => (
+                  <PawsExperienceCard key={levelData.id} {...levelData} top={getCapFromPrice(levelData.price)} />
                 ))}
               </div>
-
-              <p className="text-xs text-gray-500 mt-6">
-                * Sujeto a disponibilidad y políticas pet-friendly de cada proveedor. Pueden aplicar requisitos
-                (certificados sanitarios, vacunas, microchip, límites de peso/temperatura y restricciones por raza).
-              </p>
-
-              <div className="mt-10">
-                <GetRandomtripCta align="center" />
-              </div>
-            </div>
           )}
 
           {activeTab === 'interactive' && (
-            <div id="panel-interactive" role="tabpanel" aria-labelledby="tab-interactive">
-              <div className="max-w-2xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold mb-1">Nivel</label>
-                    <select
-                      className="w-full border rounded-md p-2"
-                      value={levelId}
-                      onChange={(e) => setLevelId(e.target.value)}
-                    >
-                      {LEVELS.map((l) => (
-                        <option key={l.id} value={l.id}>
-                          {l.title.substring(l.title.indexOf(' ') + 1)}
-                        </option>
-                      ))}
-                    </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-xl font-semibold mb-3">Nivel</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {['essenza','explora','explora-plus','bivouac'].map(k => (
+                      <label key={k} className={`cursor-pointer rounded-lg border p-3 ${levelKey === k ? 'border-[#D4AF37] ring-1 ring-[#D4AF37]' : 'border-gray-200'}`}>
+                        <input
+                          type="radio"
+                          name="paws-level"
+                          className="sr-only"
+                          checked={levelKey === k}
+                          onChange={() => { setLevelKey(k); track('paws_interactive_change', { field: 'level', value: k }); }}
+                        />
+                        <span className="font-medium capitalize">{k.replace('-', ' ')}</span>
+                      </label>
+                    ))}
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold mb-1">Mascotas extra</label>
+                <div>
+                  <h4 className="text-xl font-semibold mb-3">¿Mascota extra?</h4>
+                  <label className="inline-flex items-center gap-3">
                     <input
-                      type="number"
-                      min={0}
-                      max={2}
-                      value={extraPets}
-                      onChange={(e) => setExtraPets(Math.max(0, Math.min(2, +e.target.value || 0)))}
-                      className="w-full border rounded-md p-2"
-                  />
-                  </div>
+                      type="checkbox"
+                      checked={extraPet}
+                      onChange={(e) => { setExtraPet(e.target.checked); track('paws_interactive_change', { field: 'extra_pet', value: e.target.checked }); }}
+                    />
+                    <span>Sumar +25% al presupuesto</span>
+                  </label>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold mb-1">Tamaño</label>
-                    <select
-                      className="w-full border rounded-md p-2"
-                      value={size}
-                      onChange={(e) => setSize(e.target.value as any)}
-                    >
-                      <option value="small">Pequeño (≤ 12 kg)</option>
-                      <option value="medium">Mediano (≤ 23 kg)</option>
-                      <option value="large">Grande (&gt; 23 kg)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-1">Transporte</label>
-                    <select
-                      className="w-full border rounded-md p-2"
-                      value={cargo}
-                      onChange={(e) => setCargo(e.target.value as any)}
-                    >
-                      <option value="cabina">Cabina (si aplica)</option>
-                      <option value="bodega">Bodega</option>
-                      <option value="na">N/A</option>
-                    </select>
+                <div>
+                  <h4 className="text-xl font-semibold mb-3">Tamaño</h4>
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      {k:'small', label:'Pequeño (≤12 kg)'},
+                      {k:'medium', label:'Mediano (≤23 kg)'},
+                      {k:'large', label:'Grande (&gt;23 kg)'},
+                    ].map(opt => (
+                      <label key={opt.k} className={`cursor-pointer rounded-lg border p-3 ${size === opt.k ? 'border-[#D4AF37] ring-1 ring-[#D4AF37]' : 'border-gray-200'}`}>
+                        <input
+                          type="radio"
+                          name="paws-size"
+                          className="sr-only"
+                          checked={size === opt.k}
+                          onChange={() => { setSize(opt.k as any); track('paws_interactive_change', { field: 'size', value: opt.k }); }}
+                        />
+                        <span>{opt.label}</span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                <div className="text-center mt-8">
-                  <p className="text-gray-600 mb-2">Estimación tope por persona (+ 1 mascota):</p>
-                  <div className="text-3xl font-bold text-gray-900">${estimate} USD</div>
-
-                  <Link
-                    href={`/journey/basic-config?type=paws&level=${levelId}&extraPets=${extraPets}&size=${size}&cargo=${cargo}`}
-                    className="inline-block mt-6 bg-[#D4AF37] text-gray-900 font-bold py-3 px-6 rounded-full hover:bg-[#EACD65] transition-colors"
-                    data-analytics="cta_paws_continue_interactive"
-                  >
-                    Continuar →
-                  </Link>
-
-                  <p className="text-xs text-gray-500 mt-4">
-                    * Estimación orientativa. El costo final depende de aerolíneas, políticas y disponibilidad.
-                  </p>
+                <div>
+                  <h4 className="text-xl font-semibold mb-3">Transporte</h4>
+                  <div className="flex gap-3">
+                    {['cabina','bodega'].map(t => {
+                      const disabled = size === 'large' && t === 'cabina';
+                      return (
+                        <label key={t} className={`cursor-pointer rounded-lg border p-3 ${transport === t ? 'border-[#D4AF37] ring-1 ring-[#D4AF37]' : 'border-gray-200'} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          <input
+                            type="radio"
+                            name="paws-transport"
+                            className="sr-only"
+                            checked={transport === t}
+                            disabled={disabled}
+                            onChange={() => { setTransport(t as any); track('paws_interactive_change', { field: 'transport', value: t }); }}
+                          />
+                          <span className="capitalize">{t}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {size === 'large' && <p className="text-sm text-gray-500 mt-2">Mascotas grandes viajan en bodega según normativa aérea.</p>}
                 </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-xl font-semibold">Resumen</h4>
+                <div className="rounded-xl bg-gray-50 p-5">
+                  <p className="text-gray-700"><strong>Nivel:</strong> {level.title}</p>
+                  <p className="text-gray-700"><strong>Base:</strong> {level.price} (por persona + 1 mascota)</p>
+                  <p className="text-gray-700"><strong>Mascota extra:</strong> {extraPet ? '+25%' : 'No'}</p>
+                  <p className="text-gray-700"><strong>Tamaño:</strong> {size === 'small' ? 'Pequeño' : size === 'medium' ? 'Mediano' : 'Grande'}</p>
+                  <p className="text-gray-700"><strong>Transporte:</strong> {transport}</p>
+                  <hr className="my-4" />
+                  <p className="text-lg font-bold">Presupuesto techo aprox.: USD {finalCap.toLocaleString('en-US')}</p>
+                  <p className="text-xs text-gray-500 mt-2">Valor referencial para estimar el nivel. El precio final depende de fechas, disponibilidad y aerolíneas.</p>
+                </div>
+
+                <a
+                  href="/packages/by-type/paws#paws-planner"
+                  onClick={() => track('paws_interactive_start', { level: levelKey, extraPet, size, transport, cap: finalCap })}
+                  className="inline-flex items-center justify-center rounded-full bg-[#D4AF37] px-8 py-3 font-bold text-gray-900 hover:bg-[#EACD65] transition-colors"
+                >
+                  Empezar ahora →
+                </a>
               </div>
             </div>
           )}
