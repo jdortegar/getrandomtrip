@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { track } from '@/components/common/analytics';
 import Link from 'next/link';
 import PawsExperienceCard from './PawsExperienceCard';
@@ -86,15 +86,22 @@ export default function PawsPlanner() {
   const [extraPet, setExtraPet] = useState(false);
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('small');
   const [transport, setTransport] = useState<'cabina' | 'bodega'>('cabina');
+  const [viewedNotices, setViewedNotices] = useState<Set<string>>(new Set());
 
   const level = useMemo(
     () => experienceLevels.find(l => l.id === levelKey) ?? experienceLevels[0],
     [levelKey]
   );
 
-  React.useEffect(() => {
-    if (size === 'large' && transport !== 'bodega') setTransport('bodega');
-  }, [size, transport]);
+  useEffect(() => {
+    if (size === 'large' && transport !== 'bodega') {
+      setTransport('bodega');
+      if (!viewedNotices.has('large_pet_notice')) {
+        track('paws_notice_view', { type: 'large_pet_notice' });
+        setViewedNotices(prev => new Set(prev).add('large_pet_notice'));
+      }
+    }
+  }, [size, transport, viewedNotices]);
 
   const baseCap = useMemo(() => getCapFromPrice(level.price), [level]);
   const finalCap = useMemo(() => (extraPet ? Math.round(baseCap * 1.25) : baseCap), [baseCap, extraPet]);
@@ -220,6 +227,11 @@ export default function PawsPlanner() {
                   <hr className="my-4" />
                   <p className="text-lg font-bold">Presupuesto techo aprox.: USD {finalCap.toLocaleString('en-US')}</p>
                   <p className="text-xs text-gray-500 mt-2">Valor referencial para estimar el nivel. El precio final depende de fechas, disponibilidad y aerolíneas.</p>
+                </div>
+
+                <div className="text-xs text-gray-500 space-y-2 mt-4">
+                    <p><strong>Nota sobre razas braquicéfalas:</strong> Pueden tener restricciones específicas por seguridad. Ajustamos el plan con tu OK.</p>
+                    <p><strong>Checklist de bienestar:</strong> No recomendamos sedación. Te daremos un checklist de preparación y te sugerimos marcas de transportín compatibles con la aerolínea.</p>
                 </div>
 
                 <a

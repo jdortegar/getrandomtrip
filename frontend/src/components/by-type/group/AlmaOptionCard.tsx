@@ -1,6 +1,7 @@
 // frontend/src/components/by-type/group/AlmaOptionCard.tsx
 'use client';
 
+import Image from 'next/image';
 import React from 'react';
 
 export default function AlmaOptionCard({
@@ -38,15 +39,15 @@ export default function AlmaOptionCard({
         selected ? 'ring-2 ring-white/80' : 'ring-0',
       ].join(' ')}
     >
-      <img
+      <Image
         src={
           img ||
           'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80'
         }
         alt={label}
+        width={800}
+        height={1000}
         className="absolute inset-0 h-full w-full object-cover"
-        loading="lazy"
-        decoding="async"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
       {/* Marco en esquinas */}

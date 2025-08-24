@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import React, { useState } from 'react';
 import PrimaryButton from './PrimaryButton';
 import DatePicker from 'react-datepicker';
@@ -139,9 +141,11 @@ const EventFinder: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-colors backdrop-blur-sm"
               >
-                <img
+                <Image
                   src={event.image}
                   alt={event.name}
+                  width={160}
+                  height={96}
                   className="w-40 h-24 object-cover"
                 />
                 <div className="p-4">

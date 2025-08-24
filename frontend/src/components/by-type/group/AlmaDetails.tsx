@@ -1,6 +1,7 @@
 // frontend/src/components/by-type/group/AlmaDetails.tsx
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import AlmaOptionCard from './AlmaOptionCard';
 import { ALMA_OPTIONS } from './almaOptions';
@@ -77,15 +78,15 @@ export default function AlmaDetails({
     >
       {/* HERO del tab */}
       <div className="relative overflow-hidden rounded-3xl">
-        <img
+        <Image
           src={
             spec.heroImg ||
             'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80'
           }
           alt={spec.title}
+          width={1600}
+          height={400}
           className="h-64 w-full object-cover md:h-80"
-          loading="lazy"
-          decoding="async"
         />
         <div className={`absolute inset-0 ${spec.tint || 'bg-black/30'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />

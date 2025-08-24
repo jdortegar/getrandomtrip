@@ -164,9 +164,11 @@ export default function Navbar() {
               aria-label="WhatsApp"
               className="p-1 rounded-full hover:bg-white/10"
             >
-              <img
+              <Image
                 src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
                 alt="WhatsApp"
+                width={28}
+                height={28}
                 className="h-7 w-7"
               />
             </a>

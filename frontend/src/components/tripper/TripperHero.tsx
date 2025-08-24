@@ -1,3 +1,4 @@
+import Image from 'next/image';
 'use client';
 import clsx from 'clsx';
 
@@ -16,7 +17,7 @@ export default function TripperHero({
     <section className="bg-[#07143A] text-white">
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-10 grid grid-cols-1 md:grid-cols-[220px,1fr] gap-6 md:gap-10 items-center">
         <div className="w-[220px] h-[220px] rounded-xl overflow-hidden mx-auto md:mx-0">
-          <img src={heroImage || '/images/fallback.jpg'} alt={name} className="w-full h-full object-cover" />
+          <Image src={heroImage || '/images/fallback.jpg'} alt={name} width={220} height={220} className="w-full h-full object-cover" />
         </div>
         <div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-wide" style={{ fontFamily: 'Playfair Display, serif' }}>
