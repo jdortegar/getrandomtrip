@@ -4,7 +4,7 @@ import clsx from 'clsx';
 
 type Props = {
   src: string;
-  poster?: string;      // opcional: /images/lo-que-sea.jpg
+  poster?: string;
   overlayClassName?: string;
   className?: string;
 };
@@ -30,8 +30,7 @@ export default function BackgroundVideo({
         <source src={src} type="video/mp4" />
         Tu navegador no soporta video en HTML5.
       </video>
-
-      <div className={clsx("absolute inset-0 bg-black/35", overlayClassName)} />
+      <div className={clsx("absolute inset-0 bg-black/30", overlayClassName)} />
     </div>
   );
 }

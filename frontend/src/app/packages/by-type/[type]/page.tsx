@@ -15,13 +15,11 @@ import SoloInspiration from '@/components/by-type/solo/SoloInspiration';
 import SoloTestimonials from '@/components/by-type/solo/SoloTestimonials';
 import FooterLanding from '@/components/layout/FooterLanding';
 
-const VIDEO_MAP: Record<string, string> = {
+const VIDEO_BY_TYPE: Record<string, string> = {
   family: "/videos/family-hero-video.mp4",
   families: "/videos/family-hero-video.mp4",
   group: "/videos/group-hero-video.mp4",
-  groups: "/videos/group-hero-video.mp4",
   honeymoon: "/videos/honeymoon-video.mp4",
-  honeymoons: "/videos/honeymoon-video.mp4",
   paws: "/videos/paws-hero-video.mp4",
 };
 
@@ -59,7 +57,7 @@ export default function Page({
   };
 
   const data = getTravellerData(params.type) ?? base;
-  const videoSrc = VIDEO_MAP[params.type];
+  const videoSrc = VIDEO_BY_TYPE[params.type?.toLowerCase?.() ?? ""];
 
   const style = {
     '--rt-primary': data.palette.primary,

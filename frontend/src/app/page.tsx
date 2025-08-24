@@ -1,4 +1,5 @@
 'use client'; 
+import BackgroundVideo from '@/components/media/BackgroundVideo';
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
@@ -676,17 +677,9 @@ export default function HomePage() {
         id="home-hero"
         className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
       >
+        <BackgroundVideo src="/videos/hero-video.mp4" />
         {/* Sentinel para el navbar (overlay vs sólido) */}
         <div id="hero-sentinel" className="absolute inset-x-0 top-0 h-4 pointer-events-none" />
-
-        {/* Capa de fondo (video o imagen que ya tengas) */}
-        <div className="absolute top-0 left-0 w-full h-full z-0">
-          <video src="/videos/hero-video.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-
-        {/* Oscurecedor */}
-        <div className="absolute inset-0 bg-black/40 z-0" />
 
         {/* Contenido del hero */}
         <div className="relative z-10 max-w-5xl mx-auto px-4">

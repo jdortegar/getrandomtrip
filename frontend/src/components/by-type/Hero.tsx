@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import BackgroundVideo from "@/components/media/BackgroundVideo";
 
 interface HeroProps {
   data: {
@@ -34,22 +35,7 @@ export default function Hero({ data, videoSrc, posterSrc, titleOverride, subtitl
       className="relative h-[60vh] md:h-[80vh] flex items-center justify-center text-white overflow-hidden"
       style={{ backgroundColor: palette.secondary }}
     >
-      {videoSrc && (
-        <>
-          <video
-            className="absolute inset-0 h-full w-full object-cover pointer-events-none"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster={posterSrc}
-          >
-            <source src={videoSrc} type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-black/35" />
-        </>
-      )}
+      {videoSrc ? <BackgroundVideo src={videoSrc} poster={posterSrc} /> : null}
       <div className="relative z-10 text-center px-4 max-w-4xl">
         <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-4" style={{ color: palette.primary }}>
           {titleOverride || heroTitle}
