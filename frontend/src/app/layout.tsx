@@ -10,6 +10,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://getrandomtrip.com'),
   title: "Randomtrip",
   icons: {
     icon: [

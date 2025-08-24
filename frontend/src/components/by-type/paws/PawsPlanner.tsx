@@ -103,8 +103,12 @@ export default function PawsPlanner() {
         </h2>
 
         {/* Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="flex flex-wrap justify-center gap-2 mb-6" role="tablist" aria-label="Planificador PAWS">
           <button
+            id="tab-levels"
+            role="tab"
+            aria-selected={activeTab === 'levels'}
+            aria-controls="panel-levels"
             className={`px-5 py-2 rounded-full font-semibold ${activeTab === 'levels'
               ? 'bg-[#D4AF37] text-white'
               : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
@@ -114,6 +118,10 @@ export default function PawsPlanner() {
             🐾 Niveles de Experiencia
           </button>
           <button
+            id="tab-interactive"
+            role="tab"
+            aria-selected={activeTab === 'interactive'}
+            aria-controls="panel-interactive"
             className={`px-5 py-2 rounded-full font-semibold ${activeTab === 'interactive'
               ? 'bg-[#D4AF37] text-white'
               : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
@@ -126,7 +134,7 @@ export default function PawsPlanner() {
 
         <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg">
           {activeTab === 'levels' && (
-            <>
+            <div id="panel-levels" role="tabpanel" aria-labelledby="tab-levels">
               <p className="text-center text-gray-600 mb-8 italic">
                 💡 Definen el presupuesto por persona + 1 mascota (tope). Del resto… nos ocupamos nosotros.
               </p>
@@ -144,81 +152,83 @@ export default function PawsPlanner() {
               <div className="mt-10">
                 <GetRandomtripCta align="center" />
               </div>
-            </>
+            </div>
           )}
 
           {activeTab === 'interactive' && (
-            <div className="max-w-2xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Nivel</label>
-                  <select
-                    className="w-full border rounded-md p-2"
-                    value={levelId}
-                    onChange={(e) => setLevelId(e.target.value)}
-                  >
-                    {LEVELS.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.title.substring(l.title.indexOf(' ') + 1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <div id="panel-interactive" role="tabpanel" aria-labelledby="tab-interactive">
+              <div className="max-w-2xl mx-auto">
+                <div className="grid md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Nivel</label>
+                    <select
+                      className="w-full border rounded-md p-2"
+                      value={levelId}
+                      onChange={(e) => setLevelId(e.target.value)}
+                    >
+                      {LEVELS.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.title.substring(l.title.indexOf(' ') + 1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Mascotas extra</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={2}
-                    value={extraPets}
-                    onChange={(e) => setExtraPets(Math.max(0, Math.min(2, +e.target.value || 0)))}
-                    className="w-full border rounded-md p-2"
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Mascotas extra</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={2}
+                      value={extraPets}
+                      onChange={(e) => setExtraPets(Math.max(0, Math.min(2, +e.target.value || 0)))}
+                      className="w-full border rounded-md p-2"
                   />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Tamaño</label>
+                    <select
+                      className="w-full border rounded-md p-2"
+                      value={size}
+                      onChange={(e) => setSize(e.target.value as any)}
+                    >
+                      <option value="small">Pequeño (≤ 12 kg)</option>
+                      <option value="medium">Mediano (≤ 23 kg)</option>
+                      <option value="large">Grande (&gt; 23 kg)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-1">Transporte</label>
+                    <select
+                      className="w-full border rounded-md p-2"
+                      value={cargo}
+                      onChange={(e) => setCargo(e.target.value as any)}
+                    >
+                      <option value="cabina">Cabina (si aplica)</option>
+                      <option value="bodega">Bodega</option>
+                      <option value="na">N/A</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Tamaño</label>
-                  <select
-                    className="w-full border rounded-md p-2"
-                    value={size}
-                    onChange={(e) => setSize(e.target.value as any)}
+                <div className="text-center mt-8">
+                  <p className="text-gray-600 mb-2">Estimación tope por persona (+ 1 mascota):</p>
+                  <div className="text-3xl font-bold text-gray-900">${estimate} USD</div>
+
+                  <Link
+                    href={`/journey/basic-config?type=paws&level=${levelId}&extraPets=${extraPets}&size=${size}&cargo=${cargo}`}
+                    className="inline-block mt-6 bg-[#D4AF37] text-gray-900 font-bold py-3 px-6 rounded-full hover:bg-[#EACD65] transition-colors"
+                    data-analytics="cta_paws_continue_interactive"
                   >
-                    <option value="small">Pequeño (≤ 12 kg)</option>
-                    <option value="medium">Mediano (≤ 23 kg)</option>
-                    <option value="large">Grande (&gt; 23 kg)</option>
-                  </select>
+                    Continuar →
+                  </Link>
+
+                  <p className="text-xs text-gray-500 mt-4">
+                    * Estimación orientativa. El costo final depende de aerolíneas, políticas y disponibilidad.
+                  </p>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-1">Transporte</label>
-                  <select
-                    className="w-full border rounded-md p-2"
-                    value={cargo}
-                    onChange={(e) => setCargo(e.target.value as any)}
-                  >
-                    <option value="cabina">Cabina (si aplica)</option>
-                    <option value="bodega">Bodega</option>
-                    <option value="na">N/A</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="text-center mt-8">
-                <p className="text-gray-600 mb-2">Estimación tope por persona (+ 1 mascota):</p>
-                <div className="text-3xl font-bold text-gray-900">${estimate} USD</div>
-
-                <Link
-                  href={`/journey/basic-config?type=paws&level=${levelId}&extraPets=${extraPets}&size=${size}&cargo=${cargo}`}
-                  className="inline-block mt-6 bg-[#D4AF37] text-gray-900 font-bold py-3 px-6 rounded-full hover:bg-[#EACD65] transition-colors"
-                  data-analytics="cta_paws_continue_interactive"
-                >
-                  Continuar →
-                </Link>
-
-                <p className="text-xs text-gray-500 mt-4">
-                  * Estimación orientativa. El costo final depende de aerolíneas, políticas y disponibilidad.
-                </p>
               </div>
             </div>
           )}
