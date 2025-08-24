@@ -1,4 +1,6 @@
+'use client';
 import Link from 'next/link';
+import { track } from '@/components/common/analytics';
 
 export default function PawsHero() {
   return (
@@ -38,6 +40,8 @@ export default function PawsHero() {
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <Link
                 href="/packages/by-type/paws#paws-planner"
+                aria-label="Ir al planner PAWS para empezar su RANDOMTRIP"
+                onClick={() => track('cta_click', { area: 'paws_hero', label: 'randomtrip_paws' })}
                 className="bg-[#D4AF37] text-gray-900 font-bold py-3 px-6 rounded-full text-lg hover:bg-[#EACD65] transition-colors shadow-lg"
                 data-analytics="cta_paws_planner_hero"
               >
@@ -46,6 +50,7 @@ export default function PawsHero() {
               <Link
                 href="/blog"
                 aria-label="Ver relatos que inspiran de viajes con mascotas"
+                onClick={() => track('cta_click', { area: 'paws_hero', label: 'relatos' })}
                 className="bg-transparent border-2 border-white text-white font-bold py-3 px-6 rounded-full text-lg hover:bg-white hover:text-gray-900 transition-colors shadow-lg"
                 data-analytics="cta_paws_blog_hero"
               >
