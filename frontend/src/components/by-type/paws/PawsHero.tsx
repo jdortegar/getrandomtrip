@@ -10,7 +10,7 @@ export default function PawsHero() {
         muted
         playsInline
         preload="metadata"
-        poster="/images/hero/paws-hero-poster.jpg"
+        poster="/images/journey-types/paws-card.jpg"
         className="absolute z-0 w-full h-full object-cover"
       >
         <source src="/videos/paws-hero-video.mp4" type="video/mp4" />
