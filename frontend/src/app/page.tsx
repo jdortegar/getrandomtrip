@@ -234,14 +234,16 @@ function ExplorationPageContent() {
             {activeTab === 'By Traveller' && (
               <div id="by-traveller" className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">¿Con quién vas a escribir tu próxima historia?</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
-                  {initialTravellerTypes.map((type) => (
+                <div className="flex items-center justify-center w-full group">
+                  {initialTravellerTypes.map((type, index) => (
                     <motion.div
                       key={type.title}
+                      className={`w-64 md:w-80 h-[60vh] rounded-2xl shadow-xl transform transition-all duration-500 ease-in-out ${index !== 0 ? '-ml-20 md:-ml-40' : ''} hover:!ml-0 hover:mr-0 hover:scale-105 hover:z-10`}
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, ease: "easeOut" }}
+                      whileHover={{ y: -10, zIndex: 10 }}
                     >
                       <TravelerTypeCard
                         title={type.title}
