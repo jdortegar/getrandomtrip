@@ -111,7 +111,7 @@ const ExplorationScreen = () => {
                     slug={tripper.slug}
                     name={tripper.name}
                     img={tripper.avatar}
-                    bio={tripper.bio}
+                    
                   />
                 ))}
 

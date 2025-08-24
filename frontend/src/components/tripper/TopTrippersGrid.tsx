@@ -42,7 +42,7 @@ export default function TopTrippersGrid() {
               name={tripper.name}
               img={tripper.avatar ?? tripper.heroImage ?? "/images/fallback.jpg"}
               slug={tripper.slug}
-              bio={tripper.bio}
+              
             />
           </motion.div>
         ))}

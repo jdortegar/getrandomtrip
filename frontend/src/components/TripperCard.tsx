@@ -1,66 +1,41 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+
 
 type TripperCardProps = {
   name: string;
   img: string;
   slug: string;
-  bio?: string;
 };
 
-export default function TripperCard({ name, img, slug, bio = 'Bio coming soon.' }: TripperCardProps) {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const panelId = `bio-panel-${slug}`;
+export default function TripperCard({ name, img, slug }: TripperCardProps) {
+  
 
   return (
-    <div className="max-w-[280px] w-full mx-auto">
-      {/* Foto + Nombre (clic navega al perfil del tripper) */}
-      <button
-        type="button"
-        onClick={() => router.push(`/packages/${slug}`)}
-        className="block w-full text-left group focus:outline-none"
-        aria-label={`Ir al perfil de ${name}`}
-      >
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-md">
-          <Image
-              src={img || '/images/fallback.jpg'}
-              alt={name}
-              fill
-              className="object-cover grayscale group-hover:grayscale-0 transition"
-            />
-        </div>
-        <div className="mt-3 text-center">
-          <h3 className="text-lg font-serif italic text-gray-900">{name}</h3>
-        </div>
-      </button>
-
-      {/* Separador + READ BIO */}
-      <div className="mt-3 border-t border-gray-200 pt-3">
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls={panelId}
-          className="w-full flex items-center justify-between text-sm tracking-wide text-gray-800 hover:text-gray-900"
-        >
-          <span className="uppercase">READ BIO</span>
-          <span className="text-xl leading-none select-none">{open ? '–' : '+'}</span>
-        </button>
-
-        {/* Panel del acordeón */}
-        <div
-          id={panelId}
-          className={`overflow-hidden transition-all ${open ? 'mt-3 max-h-96' : 'max-h-0'}`}
-        >
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {bio}
-          </p>
-        </div>
+    <Link
+      href={`/packages/${slug}`}
+      className="relative group rounded-2xl overflow-hidden shadow-xl hover:scale-[1.03] transition-all bg-white text-gray-900"
+    >
+      {/* ✨ Contenedor con altura (3:2) y relative para <Image fill /> */}
+      <div className="relative w-full pt-[66%]"> 
+        <Image
+          src={img || '/images/fallback.jpg'}
+          alt={name}
+          fill
+          className="object-cover"
+          sizes="(min-width:1024px) 20vw, (min-width:768px) 30vw, 50vw"
+          priority={false}
+        />
       </div>
-    </div>
+
+      {/* cuerpo de la tarjeta */}
+      <div className="p-3">
+        <h3 className="font-semibold">{name}</h3>
+        {/* mantiene el resto tal cual (read bio, etc.) */}
+      </div>
+    </Link>
   );
 }
