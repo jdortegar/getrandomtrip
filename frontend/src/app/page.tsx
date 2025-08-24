@@ -14,6 +14,7 @@ import DecodeResultCard from '@/components/DecodeResultCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import TopTrippersGrid from '@/components/tripper/TopTrippersGrid';
 import { slugify } from '@/lib/slugify';
+import GetRandomtripCta from '@/components/common/GetRandomtripCta';
 
 
 // Placeholder for Kai Service, if not implemented yet
@@ -418,6 +419,7 @@ const BenefitsSection: React.FC = () => {
                            </div>
                     ))}
                 </div>
+                <GetRandomtripCta align="center" />
              </div>
         </section>
     )
@@ -469,6 +471,7 @@ const BlogSection: React.FC = () => {
                             </svg>
                         </button>
                     </div>
+                    <GetRandomtripCta align="left" className="md:ml-0" />
                 </div>
 
                 <div className="md:col-span-2">

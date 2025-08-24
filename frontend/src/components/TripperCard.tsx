@@ -36,7 +36,7 @@ export default function TripperCard({ name, img, slug, bio }: TripperCardProps) 
         </div>
       </Link>
 
-      {/* Toggle: READ BIO + (no navega) */}
+      {/* Toggle: BIO + (no navega) */}
       <div className="px-4 pb-4">
         <button
           type="button"
@@ -49,7 +49,7 @@ export default function TripperCard({ name, img, slug, bio }: TripperCardProps) 
           aria-controls={bioId}
           className="mt-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-gray-500 hover:text-gray-900"
         >
-          <span>Read Bio</span>
+          <span>Bio</span>
           <span
             className={`transition-transform ${open ? 'rotate-45' : ''}`}
             aria-hidden
