@@ -44,7 +44,7 @@ export default function PawsHero() {
                 🐾 RANDOMTRIP-paws! →
               </Link>
               <Link
-                href="/blog/paws-inspiration"
+                href="/blog"
                 className="bg-transparent border-2 border-white text-white font-bold py-3 px-6 rounded-full text-lg hover:bg-white hover:text-gray-900 transition-colors shadow-lg"
                 data-analytics="cta_paws_blog_hero"
               >

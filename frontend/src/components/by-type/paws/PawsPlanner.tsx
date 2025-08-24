@@ -186,7 +186,7 @@ export default function PawsPlanner() {
                   >
                     <option value="small">Pequeño (≤ 12 kg)</option>
                     <option value="medium">Mediano (≤ 23 kg)</option>
-                    <option value="large">Grande (> 23 kg)</option>
+                    <option value="large">Grande (&gt; 23 kg)</option>
                   </select>
                 </div>
 
