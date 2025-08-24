@@ -1,33 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function CoupleHero() {
   return (
     <section
       className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden"
     >
-      <div className="absolute inset-0 z-0">
-        <video
-          src="/videos/couple-hero-video.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="/images/journey-types/couple-traveler.jpg"
-          className="w-full h-full object-cover hidden motion-safe:block"
-        />
-        <Image
-          src="/images/journey-types/couple-traveler.jpg"
-          alt=""
-          fill
-          className="object-cover block motion-reduce:block motion-safe:hidden"
-        />
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
-      {/* overlay / gradiente para legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/10" />
+      <video
+        className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster="/images/journey-types/couple-traveler.jpg"
+      >
+        <source src="/videos/couple-hero-video.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-black/35" />
 
       <div className="relative z-10 mx-auto h-full max-w-7xl px-4">
         <div className="grid h-full items-center gap-8 md:grid-cols-2">

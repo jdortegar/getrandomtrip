@@ -1,35 +1,21 @@
 'use client';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function SoloHero() {
   return (
     <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
-      {/* Fondo video + overlay */}
-      <div className="absolute inset-0 z-0">
-        <video
-          src="/videos/solo-hero-video.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="/images/journey-types/solo-traveler.jpg"
-          className="w-full h-full object-cover hidden motion-safe:block"
-        />
-        <Image
-          src="/images/journey-types/solo-traveler.jpg"
-          alt=""
-          width={1920}
-          height={1080}
-          sizes="100vw"
-          priority
-          className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
-        />
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
-
-      {/* Gradiente para legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/10" />
+      <video
+        className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster="/images/journey-types/solo-traveler.jpg"
+      >
+        <source src="/videos/solo-hero-video.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-black/35" />
 
       <div className="relative z-10 mx-auto h-full max-w-7xl px-4">
         <div className="grid h-full items-center gap-8 md:grid-cols-2">

@@ -15,6 +15,16 @@ import SoloInspiration from '@/components/by-type/solo/SoloInspiration';
 import SoloTestimonials from '@/components/by-type/solo/SoloTestimonials';
 import FooterLanding from '@/components/layout/FooterLanding';
 
+const VIDEO_MAP: Record<string, string> = {
+  family: "/videos/family-hero-video.mp4",
+  families: "/videos/family-hero-video.mp4",
+  group: "/videos/group-hero-video.mp4",
+  groups: "/videos/group-hero-video.mp4",
+  honeymoon: "/videos/honeymoon-video.mp4",
+  honeymoons: "/videos/honeymoon-video.mp4",
+  paws: "/videos/paws-hero-video.mp4",
+};
+
 export async function generateMetadata(
   { params }: { params: { type: string } }
 ): Promise<Metadata> {
@@ -49,6 +59,7 @@ export default function Page({
   };
 
   const data = getTravellerData(params.type) ?? base;
+  const videoSrc = VIDEO_MAP[params.type];
 
   const style = {
     '--rt-primary': data.palette.primary,
@@ -85,7 +96,7 @@ export default function Page({
   // Otros tipos (/families, /family, etc.)
   return (
     <main style={style}>
-      <Hero data={data} />
+      <Hero data={data} videoSrc={videoSrc} />
       <IntroBlock type={data.slug} palette={data.palette} />
       <ImageMosaic type={data.slug} />
       <BenefitGrid type={data.slug} palette={data.palette} />
