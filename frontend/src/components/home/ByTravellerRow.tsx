@@ -11,50 +11,12 @@ type Card = {
 };
 
 const travellers: Card[] = [
-  {
-    key: "couple",
-    title: "Couple",
-    href: "/packages/by-type/couple",
-    img: "/images/journey-types/couple-card.jpg",
-    alt: "Viajes sorpresa en pareja",
-    priority: true,
-  },
-  {
-    key: "solo",
-    title: "Solo",
-    href: "/packages/by-type/solo",
-    img: "/images/journey-types/solo-card.jpg",
-    alt: "Viajes sorpresa en solitario",
-    priority: true,
-  },
-  {
-    key: "family",
-    title: "Family",
-    href: "/packages/by-type/family",
-    img: "/images/journey-types/family-card.jpg",
-    alt: "Viajes sorpresa en familia",
-  },
-  {
-    key: "group",
-    title: "Group",
-    href: "/packages/by-type/group",
-    img: "/images/journey-types/group-card.jpg",
-    alt: "Viajes sorpresa en grupo",
-  },
-  {
-    key: "honeymoon",
-    title: "Honeymoon",
-    href: "/packages/by-type/honeymoon",
-    img: "/images/journey-types/honeymoon-card.jpg",
-    alt: "Viajes sorpresa honeymoon",
-  },
-  {
-    key: "paws",
-    title: "Paws",
-    href: "/packages/by-type/paws",
-    img: "/images/journey-types/paws-card.jpg",
-    alt: "Viajes con mascotas",
-  },
+  { key: "couple", title: "Couple", href: "/packages/by-type/couple", img: "/images/journey-types/couple-card.jpg", alt: "Viajes sorpresa en pareja", priority: true },
+  { key: "solo", title: "Solo", href: "/packages/by-type/solo", img: "/images/journey-types/solo-card.jpg", alt: "Viajes sorpresa en solitario", priority: true },
+  { key: "family", title: "Family", href: "/packages/by-type/family", img: "/images/journey-types/family-card.jpg", alt: "Viajes sorpresa en familia" },
+  { key: "group", title: "Group", href: "/packages/by-type/group", img: "/images/journey-types/group-card.jpg", alt: "Viajes sorpresa en grupo" },
+  { key: "honeymoon", title: "Honeymoon", href: "/packages/by-type/honeymoon", img: "/images/journey-types/honeymoon-card.jpg", alt: "Viajes sorpresa honeymoon" },
+  { key: "paws", title: "Paws", href: "/packages/by-type/paws", img: "/images/journey-types/paws-card.jpg", alt: "Viajes con mascotas" },
 ];
 
 export default function ByTravellerRow() {
@@ -64,7 +26,7 @@ export default function ByTravellerRow() {
         {travellers.map((t, idx) => (
           <li
             key={t.key}
-            className="group relative transition-transform duration-300 ease-out will-change-transform hover:z-20 focus-within:z-20 hover:-translate-y-2 first:ml-0"
+            className="group relative transition-transform duration-300 ease-out will-change-transform hover:z-20 focus-within:z-20 hover:-translate-y-2"
             style={{ marginLeft: idx === 0 ? 0 : "var(--overlap)" }}
           >
             <Link
