@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React from 'react';
 
 interface RoadtripCardProps {
@@ -29,12 +28,12 @@ const RoadtripCard: React.FC<RoadtripCardProps> = ({
     }}
     aria-label={`Abrir ${title}`}
   >
-    <Image
+    <img
       src={bgImage}
       alt={title}
-      width={800}
-      height={600}
       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+      loading="lazy"
+      decoding="async"
     />
     <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-gradient-to-t from-black/80 to-transparent text-center">
       {icon ? <div className="text-5xl mb-2">{icon}</div> : null}

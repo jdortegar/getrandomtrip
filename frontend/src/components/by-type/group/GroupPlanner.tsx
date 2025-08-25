@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo, useEffect, type CSSProperties } from 'react';
-import Image from 'next/image';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 
 type Step = 'Intro' | 'Presupuesto' | 'Grupo & Alma' | 'Afinar detalles';
@@ -258,7 +257,7 @@ export default function GroupPlanner() {
           className="h-full w-full"
         >
           <div className="absolute inset-0" style={faceStyle}>
-            <Image src={item.img} alt={item.title} width={320} height={200} sizes="(max-width:768px) 100vw, 50vw" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+            <img src={item.img} alt={item.title} className="h-full w-full object-cover" loading="lazy" decoding="async" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
             <div className="absolute inset-x-0 bottom-0 p-4">
               <h3 className="text-lg font-semibold">{item.title}</h3>
@@ -266,7 +265,7 @@ export default function GroupPlanner() {
           </div>
 
           <div className="absolute inset-0" style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>
-            <Image src={item.img} alt="" width={320} height={200} sizes="(max-width:768px) 100vw, 50vw" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+            <img src={item.img} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
             <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-between">
               <p className="text-sm leading-relaxed">{supportCopy[item.key]}</p>
               <button

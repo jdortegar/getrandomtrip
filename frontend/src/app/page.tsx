@@ -1,5 +1,4 @@
 'use client'; 
-import BackgroundVideo from '@/components/media/BackgroundVideo';
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
@@ -16,7 +15,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TopTrippersGrid from '@/components/tripper/TopTrippersGrid';
 import { slugify } from '@/lib/slugify';
 import GetRandomtripCta from '@/components/common/GetRandomtripCta';
+import BackgroundVideo from "@/components/media/BackgroundVideo";
 import Image from 'next/image';
+import ByTravellerRow from "@/components/home/ByTravellerRow";
 
 
 // Placeholder for Kai Service, if not implemented yet
@@ -90,13 +91,6 @@ const initialTravellerTypes: TravelerType[] = [
     travelType: 'Honeymoon',
     query: 'same sex couple honeymoon romantic getaway',
     imageUrl: '/images/journey-types/honeymoon-same-sex.jpg',
-  },
-  {
-    title: 'PAWS',
-    description: 'Viajes con mascotas.',
-    travelType: 'Paws',
-    query: 'pet friendly travel dog cat',
-    imageUrl: '/images/journey-types/paws-card.jpg',
   },
 ];
 
@@ -236,26 +230,9 @@ function ExplorationPageContent() {
             {activeTab === 'By Traveller' && (
               <div id="by-traveller" className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">¿Con quién vas a escribir tu próxima historia?</p>
-                <div className="flex items-center justify-center w-full group">
-                  {initialTravellerTypes.map((type, index) => (
-                    <motion.div
-                      key={type.title}
-                      className={`w-64 md:w-80 h-[60vh] rounded-2xl shadow-xl transform transition-all duration-500 ease-in-out ${index !== 0 ? '-ml-20 md:-ml-40' : ''} hover:!ml-0 hover:mr-0 hover:scale-105 hover:z-10`}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                      whileHover={{ y: -10, zIndex: 10 }}
-                    >
-                      <TravelerTypeCard
-                        title={type.title}
-                        description={type.description}
-                        imageUrl={type.imageUrl}
-                        href={`/packages/by-type/${slugify(type.travelType)}`}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
+                {/* BEGIN ByTravellerRow */}
+                <ByTravellerRow />
+                {/* END ByTravellerRow */}
               </div>
             )}
 
@@ -643,16 +620,16 @@ const AppFooter: React.FC = () => {
             <h3 className="uppercase text-sm tracking-widest mb-4">Comparte tus viajes</h3>
             <div className="flex space-x-6">
               <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/instagram.svg" alt="Instagram" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/instagram.svg" alt="Instagram" className="h-6 w-6 filter-invert" />
               </a>
               <a href="#" aria-label="YouTube" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/youtube.svg" alt="YouTube" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/youtube.svg" alt="YouTube" className="h-6 w-6 filter-invert" />
               </a>
               <a href="#" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg" alt="LinkedIn" className="h-6 w-6 filter-invert" />
               </a>
               <a href="#" aria-label="TikTok" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <Image src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tiktok.svg" alt="TikTok" width={24} height={24} sizes="24px" className="h-6 w-6 filter-invert" />
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tiktok.svg" alt="TikTok" className="h-6 w-6 filter-invert" />
               </a>
             </div>
           </div>
@@ -675,11 +652,12 @@ export default function HomePage() {
       {/* HERO */}
       <section
         id="home-hero"
-        className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
+        className="relative min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-center text-center overflow-hidden"
       >
-        <BackgroundVideo src="/videos/hero-video.mp4" />
         {/* Sentinel para el navbar (overlay vs sólido) */}
         <div id="hero-sentinel" className="absolute inset-x-0 top-0 h-4 pointer-events-none" />
+
+        <BackgroundVideo src="/videos/hero-video.mp4" />
 
         {/* Contenido del hero */}
         <div className="relative z-10 max-w-5xl mx-auto px-4">

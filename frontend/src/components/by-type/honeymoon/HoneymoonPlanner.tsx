@@ -2,7 +2,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 type Step = 'Presupuesto' | 'Tipo de honeymoon';
@@ -264,12 +263,9 @@ export default function HoneymoonPlanner() {
                 key={t.key}
                 className="group relative h-[420px] overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm hover:shadow-md transition will-change-transform"
               >
-                <Image
+                <img
                   src={t.img}
                   alt={t.title}
-                  width={1200}
-                  height={800}
-                  sizes="(max-width:768px) 100vw, 50vw"
                   className="absolute inset-0 h-full w-full object-cover opacity-90 group-hover:opacity-100 transition"
                   loading="lazy"
                   decoding="async"

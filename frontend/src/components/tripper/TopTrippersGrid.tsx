@@ -1,6 +1,5 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -117,11 +116,9 @@ export default function TopTrippersGrid() {
 
           {tripperSearchState === "found" && foundTripper && (
             <div className="flex flex-col items-center text-center">
-              <Image
+              <img
                 src={foundTripper.img}
                 alt={foundTripper.name}
-                width={96}
-                height={96}
                 className="w-24 h-24 rounded-full border-4 border-[#D4AF37]"
               />
               <h3 className="mt-2 font-semibold text-gray-900">{foundTripper.name}</h3>

@@ -15,7 +15,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   title,
   description,
   imageUrl,
-  href = '',
+  href = '', // Provide a default empty string
 }) => (
   <Link
     href={href}
@@ -38,18 +38,18 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       src={imageUrl}
       alt={title}
       fill
-      className="object-cover"
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      style={{ objectFit: 'cover' }}
+      className="transition-transform duration-300 ease-in-out group-hover:scale-105"
     />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-    <div className="absolute bottom-0 left-0 p-6 text-white text-left">
+    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+    <div className="absolute bottom-0 left-0 p-8 text-white text-left">
       <h3
-        className="text-3xl font-bold drop-shadow-md"
+        className="text-4xl font-bold"
         style={{ fontFamily: 'Playfair Display, serif' }}
       >
         {title}
       </h3>
-      <p className="mt-1 text-base text-white/90 drop-shadow-sm">{description}</p>
+      <p className="mt-2 text-lg">{description}</p>
     </div>
   </Link>
 );

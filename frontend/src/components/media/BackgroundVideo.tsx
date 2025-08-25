@@ -5,7 +5,7 @@ import clsx from 'clsx';
 type Props = {
   src: string;
   poster?: string;
-  overlayClassName?: string;
+  overlayClassName?: string; // opcional: para oscurecer más/menos
   className?: string;
 };
 

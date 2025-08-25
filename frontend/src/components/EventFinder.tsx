@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 import React, { useState } from 'react';
 import PrimaryButton from './PrimaryButton';
 import DatePicker from 'react-datepicker';
@@ -62,12 +60,9 @@ const EventFinder: React.FC = () => {
       {/* Fondo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/50" />
-        <Image
+        <img
           src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"
           alt="Concierto"
-          width={600}
-          height={400}
-          sizes="(max-width: 768px) 100vw, 50vw"
           className="w-full h-full object-cover"
         />
       </div>
@@ -79,9 +74,11 @@ const EventFinder: React.FC = () => {
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
           Descubre tu próxima experiencia con
-          <Image src="/images/ticketmaster-logo.svg" alt="Ticketmaster"
-            width={120} height={48}
-            className="h-12 ml-4 mt-4 md:mt-0 inline-block" />
+          <img
+            src="/images/ticketmaster-logo.svg"
+            alt="Ticketmaster"
+            className="h-12 ml-4 mt-4 md:mt-0 inline-block"
+          />
         </h2>
 
         {/* Subtítulo */}
@@ -142,11 +139,9 @@ const EventFinder: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-colors backdrop-blur-sm"
               >
-                <Image
+                <img
                   src={event.image}
                   alt={event.name}
-                  width={160}
-                  height={96}
                   className="w-40 h-24 object-cover"
                 />
                 <div className="p-4">

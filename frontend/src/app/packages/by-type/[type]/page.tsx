@@ -57,7 +57,6 @@ export default function Page({
   };
 
   const data = getTravellerData(params.type) ?? base;
-  const videoSrc = VIDEO_BY_TYPE[params.type?.toLowerCase?.() ?? ""];
 
   const style = {
     '--rt-primary': data.palette.primary,
@@ -92,9 +91,11 @@ export default function Page({
   }
 
   // Otros tipos (/families, /family, etc.)
+  const videoSrc = VIDEO_BY_TYPE[params.type]; // Get video source based on type
+
   return (
     <main style={style}>
-      <Hero data={data} videoSrc={videoSrc} />
+      <Hero data={data} videoSrc={videoSrc} /> {/* Pass videoSrc to Hero */}
       <IntroBlock type={data.slug} palette={data.palette} />
       <ImageMosaic type={data.slug} />
       <BenefitGrid type={data.slug} palette={data.palette} />
