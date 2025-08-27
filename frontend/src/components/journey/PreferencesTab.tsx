@@ -1,7 +1,9 @@
 'use client';
 
-import { useJourneyStore } from '@/store/journeyStore';
+import SelectedFiltersChips from './SelectedFiltersChips';
 import StepperNav from './StepperNav';
+import { useJourneyStore } from '@/store/journeyStore';
+import { useMemo } from 'react';
 
 const Seg = ({options,value,onChange}:{options:string[];value:string;onChange:(v:string)=>void}) => (
   <div className="inline-flex flex-wrap gap-2">
