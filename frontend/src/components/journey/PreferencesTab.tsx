@@ -86,15 +86,7 @@ export default function PreferencesTab(){
         </div>
       </section>
 
-      <div className="pt-2">
-        <button
-          type="button"
-          onClick={()=>useJourneyStore.getState().setPartial({ activeTab: 'avoid' })}
-          className="px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium"
-        >
-          Continuar a Destinos a evitar
-        </button>
-      </div>
+      <StepperNav />
     </div>
   );
 }

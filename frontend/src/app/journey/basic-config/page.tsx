@@ -9,7 +9,7 @@ import InitClient from '@/components/journey/InitClient';
 export default function Page({ searchParams }: { searchParams: Record<string,string> }) {
   const displayPrice = decodeURIComponent(searchParams.price || '');
   return (
-    <div className="container mx-auto px-4 pb-10 pt-8"> {/* pt evita solaparse con navbar */}
+    <div className="container mx-auto px-4 pb-12 pt-24 md:pt-28">  {/* empuje bajo navbar */}
       <InitClient searchParams={searchParams} displayPrice={displayPrice} />
       <div className="mb-4">
         <SelectionsBar />
@@ -22,7 +22,7 @@ export default function Page({ searchParams }: { searchParams: Record<string,str
             avoid={<AvoidTab />}
           />
         </div>
-        <aside className="lg:sticky lg:top-24"> {/* ajustar top si la navbar es más alta */}
+        <aside className="lg:sticky lg:top-[96px]"> {/* compensar altura de navbar */}
           <SummaryCard />
         </aside>
       </div>

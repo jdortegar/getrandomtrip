@@ -5,11 +5,7 @@ type TabId = 'logistics'|'preferences'|'avoid';
 
 export function JourneyTabs({
   logistics, preferences, avoid,
-}:{
-  logistics: React.ReactNode;
-  preferences: React.ReactNode;
-  avoid: React.ReactNode;
-}) {
+}:{ logistics: React.ReactNode; preferences: React.ReactNode; avoid: React.ReactNode }) {
   const { activeTab, setPartial } = useJourneyStore();
   const setTab = (t:TabId) => setPartial({ activeTab: t });
 
@@ -18,8 +14,8 @@ export function JourneyTabs({
       onClick={()=>setTab(id)}
       className={`px-4 py-2 rounded-xl border transition ${
         activeTab===id
-        ? 'bg-white text-neutral-900 border-neutral-300 shadow-sm'
-        : 'bg-neutral-100 text-neutral-600 border-transparent hover:bg-neutral-200'
+          ? 'bg-white text-neutral-900 border-neutral-300 shadow-sm'
+          : 'bg-neutral-100 text-neutral-600 border-transparent hover:bg-neutral-200'
       }`}
     >
       {label}
@@ -30,7 +26,7 @@ export function JourneyTabs({
     <div>
       <div className="mb-4 flex flex-wrap gap-2">
         <Btn id="logistics" label="Planificá tu Aventura Sorpresa" />
-        <Btn id="preferences" label="Preferencias / Filtros" />
+        <Btn id="preferences" label="Preferencias y Filtros" />
         <Btn id="avoid" label="Destinos a evitar" />
       </div>
 

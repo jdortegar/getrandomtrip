@@ -76,26 +76,7 @@ export default function LogisticsTab() {
         </p>
       </div>
 
-      {/* CTA */}
-      <div className="pt-2">
-        <button
-          type="button"
-          onClick={() => setPartial({ activeTab: 'preferences' })}
-          disabled={!canContinue}
-          className={`px-5 py-3 rounded-xl font-medium ${
-            canContinue
-              ? 'bg-violet-600 hover:bg-violet-500 text-white'
-              : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
-          }`}
-        >
-          Continuar a Filtros Premium
-        </button>
-        {!canContinue && (
-          <p className="mt-2 text-xs text-red-400">
-            Completá país, ciudad, viajeros y fecha para continuar.
-          </p>
-        )}
-      </div>
+      <StepperNav />
     </div>
   );
 }
