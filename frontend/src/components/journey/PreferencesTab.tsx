@@ -27,6 +27,7 @@ export default function PreferencesTab(){
 
   return (
     <div className="space-y-6">
+      <SelectedFiltersChips />
       <div className="rounded-xl bg-neutral-50 text-neutral-700 p-3 text-sm">
         <strong>Freemium:</strong> el primer filtro opcional es <strong>gratis</strong>.
         2–3 filtros: <strong>USD 18</strong> c/u. 4+ filtros: <strong>USD 25</strong> c/u.
