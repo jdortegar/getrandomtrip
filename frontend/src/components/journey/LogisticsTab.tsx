@@ -3,6 +3,7 @@
 import { useJourneyStore } from '@/store/journeyStore';
 import { CountryInput, CityInput } from './PlacesAutocomplete';
 import NightsCalendar from './NightsCalendar';
+import StepperNav from './StepperNav';
 
 export default function LogisticsTab() {
   const { logistics, setPartial } = useJourneyStore();

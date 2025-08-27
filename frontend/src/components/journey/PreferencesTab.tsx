@@ -1,6 +1,7 @@
 'use client';
 
 import { useJourneyStore } from '@/store/journeyStore';
+import StepperNav from './StepperNav';
 
 const Seg = ({options,value,onChange}:{options:string[];value:string;onChange:(v:string)=>void}) => (
   <div className="inline-flex flex-wrap gap-2">
