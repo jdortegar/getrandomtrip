@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useJourneyStore } from '@/store/journeyStore';
@@ -28,33 +27,32 @@ export default function AvoidGrid() {
   const limitReached = len >= 15;
 
   return (
-    <div className="mt-6">
-      <h3 className="font-semibold">Destinos a evitar (opcional)</h3>
-      <p className="text-sm text-neutral-600">Seleccionados: {len}/15</p>
-      {limitReached && <p className="text-sm text-amber-600 mt-1">Llegaste al límite de 15 destinos.</p>}
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-        {AVOID_SUGGESTIONS.map(dest => (
-          <DestinationCard
-            key={dest.slug}
-            dest={dest}
-            isSelected={avoidDestinations.includes(dest.slug)}
-            onToggle={toggleDestination}
-          />
-        ))}
-        <div
-          role="button"
-          onClick={() => !limitReached && setModalOpen(true)}
-          className={`flex items-center justify-center aspect-[4/5] rounded-lg border-2 border-dashed border-neutral-300 text-neutral-500 ${limitReached ? 'opacity-50 cursor-not-allowed' : 'hover:border-terracotta-500 hover:text-terracotta-600'}`}
-        >
-          <div className="text-center">
-            <p className="font-bold text-lg">+</p>
-            <p>Buscar destino...</p>
-          </div>
-        </div>
+    <section className="space-y-2">
+      <div className="flex items-end justify-between">
+        <h3 className="text-lg font-semibold">Destinos a evitar (opcional)</h3>
+        <div className="text-sm text-neutral-500">Seleccioná hasta 15</div>
       </div>
 
-      <AvoidSearchModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-    </div>
+      <div className="rounded-2xl bg-white ring-1 ring-neutral-200 p-4">
+        <div className="grid grid-cols-4 gap-4 max-w-[920px]"> {/* 4 x 4 fijo */}
+          {AVOID_SUGGESTIONS.slice(0,15).map((d)=> (
+            <DestinationCard key={d.slug} dest={d} isSelected={avoidDestinations.includes(d.slug)} onToggle={toggleDestination} />
+          ))}
+
+          {/* Tarjeta 16: buscador */}
+          <button
+            type="button"
+            onClick={()=>setModalOpen(true)}
+            className="aspect-[4/5] rounded-2xl border-2 border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 flex items-center justify-center"
+          >
+            Buscar destino…
+          </button>
+        </div>
+
+        {/* nav inferior interno opcional aquí si lo usás */}
+      </div>
+
+      <AvoidSearchModal isOpen={isModalOpen} onClose={()=>setModalOpen(false)} />
+    </section>
   );
 }

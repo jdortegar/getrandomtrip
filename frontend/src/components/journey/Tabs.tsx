@@ -9,18 +9,23 @@ export function JourneyTabs({
   const { activeTab, setPartial } = useJourneyStore();
   const setTab = (t:TabId) => setPartial({ activeTab: t });
 
-  const Btn = ({id,label}:{id:TabId;label:string}) => (
-    <button
-      onClick={()=>setTab(id)}
-      className={`px-4 py-2 rounded-xl border transition ${
-        activeTab===id
-          ? 'bg-white text-neutral-900 border-neutral-300 shadow-sm'
-          : 'bg-neutral-100 text-neutral-600 border-transparent hover:bg-neutral-200'
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const Btn = ({id,label}:{id:TabId;label:string}) => {
+    const active = activeTab===id;
+    return (
+      <button
+        onClick={()=>setTab(id)}
+        aria-current={active ? 'page' : undefined}
+        className={`px-4 py-2 rounded-xl border transition relative
+          ${active
+            ? 'bg-white text-neutral-900 border-neutral-300 shadow-sm ring-2 ring-violet-500'
+            : 'bg-neutral-100 text-neutral-600 border-transparent hover:bg-neutral-200'
+          }`}
+        data-active={active ? 'true' : 'false'}
+      >
+        {label}
+      </button>
+    );
+  };
 
   return (
     <div>

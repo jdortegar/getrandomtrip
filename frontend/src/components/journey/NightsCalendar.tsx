@@ -8,6 +8,25 @@ import { getMaxNights } from '@/lib/levels';
 import { addDays, fmtISO, toDateOnly } from '@/lib/date';
 import { LevelSlug } from '@/store/journeyStore';
 
+function Chip({
+  active, onClick, children,
+}: { active:boolean; onClick:()=>void; children:React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm border transition
+        ${active
+          ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm'
+          : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200'
+        }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 const levelNames: Record<LevelSlug, string> = {
   'essenza': 'Essenza',
   'modo-explora': 'Modo Explora',
@@ -23,8 +42,8 @@ export default function NightsCalendar() {
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(startDate ? toDateOnly(new Date(startDate)) : undefined);
   const [error, setError] = useState<string | null>(null);
 
-  const maxNights = getMaxNights(level);
-  const nightOptions = Array.from({ length: maxNights === 'custom' ? 14 : maxNights }, (_, i) => i + 1);
+  const max = getMaxNights(level) === 'custom' ? 14 : (getMaxNights(level) as number);
+  const options = Array.from({length: max}, (_,i)=> i+1); // noches: 1..max
 
   useEffect(() => {
     if (startDate) {
@@ -33,8 +52,8 @@ export default function NightsCalendar() {
   }, [startDate]);
 
   const handleNightChange = (numNights: number) => {
-    if (maxNights !== 'custom' && numNights > maxNights) {
-      setError(`Con ${levelNames[level]} se permiten hasta ${maxNights} noches.`);
+    if (max !== 'custom' && numNights > max) {
+      setError(`Con ${levelNames[level]} se permiten hasta ${max} noches.`);
       return;
     }
     setError(null);
@@ -52,15 +71,6 @@ export default function NightsCalendar() {
     setPartial({ logistics: { ...logistics, startDate: newStartDate, endDate: newEndDate } });
   };
 
-  const Chip = ({ label, value, active }: { label: string, value: number, active: boolean }) => (
-    <button
-      onClick={() => handleNightChange(value)}
-      className={`px-4 py-2 rounded-full text-sm font-medium border ${active ? 'bg-terracotta-600 text-white border-terracotta-600' : 'bg-white text-neutral-700 border-neutral-300'}`}
-    >
-      {label}
-    </button>
-  );
-
   const modifiers = {
     selected: selectedDay,
     range: selectedDay ? { from: selectedDay, to: addDays(selectedDay, nights) } : undefined,
@@ -74,9 +84,12 @@ export default function NightsCalendar() {
   return (
     <div className="mt-6">
       <h3 className="font-semibold">Duración de la aventura</h3>
-      <div className="flex flex-wrap gap-2 my-4">
-        {nightOptions.map(n => (
-          <Chip key={n} label={`${n + 1} días / ${n} noches`} value={n} active={n === nights} />
+      <div className="flex flex-wrap gap-2 mb-3">
+        {options.map(n => (
+          <Chip key={n} active={n===nights} onClick={()=>handleNightChange(n)}>
+            <span className="font-semibold">{n+1} días</span>
+            <span className="opacity-80">/ {n} noches</span>
+          </Chip>
         ))}
       </div>
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
