@@ -31,7 +31,7 @@ export default function LogisticsTab() {
   const { logistics, setPartial } = useJourneyStore();
   const { country, city, startDate, pax } = logistics;
 
-  const isCtaDisabled = !country || !city || !startDate || pax < 1;
+  const isCtaDisabled = !logistics.country?.name || !logistics.city?.name || !logistics.startDate || !logistics.pax || logistics.pax < 1;
 
   const handleContinue = () => {
     setPartial({ activeTab: 'filters' });
