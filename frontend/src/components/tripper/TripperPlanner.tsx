@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import clsx from 'clsx';
+import { SOLO_TIERS } from '@/content/tiers';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 import { ALMA_OPTIONS } from '@/components/by-type/group/almaOptions';
 
@@ -32,36 +33,7 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
     { title: 'Diseño & Boutique', core: 'Stays con carácter, detalles que elevan.' },
   ];
 
-  const tiers = useMemo(
-    () => [
-      {
-        key: 'essenza',
-        title: 'Essenza — Lo esencial, compartido.',
-        bullets: ['Hasta 350 USD · por persona', 'Máx 2 noches', 'Alojamiento 3★', '👥 Precio por persona'],
-      },
-      {
-        key: 'explora',
-        title: 'Explora — Activo y flexible.',
-        bullets: ['Hasta 500 USD · por persona', 'Hasta 3 noches', 'Mid-to-Upscale', '👥 Precio por persona'],
-      },
-      {
-        key: 'exploraPlus',
-        title: 'Explora+ — Más capas.',
-        bullets: ['Hasta 850 USD · por persona', 'Hasta 4 noches', 'Upscale', '👥 Precio por persona'],
-      },
-      {
-        key: 'bivouac',
-        title: 'Bivouac — Curaduría artesanal.',
-        bullets: ['Hasta 1200 USD · por persona', 'Hasta 5 noches', 'Upper-Upscale', '👥 Precio por persona'],
-      },
-      {
-        key: 'atelier',
-        title: 'Atelier — Distinción a medida.',
-        bullets: ['Desde 1200 USD · por persona', 'Custom', 'Luxury', '👥 Precio por persona'],
-      },
-    ],
-    []
-  );
+  const tiers = SOLO_TIERS;
 
   const travellerOptions = [
     { key: 'pareja',    title: 'En Pareja',   img: '/images/journey-types/couple-hetero.jpg' },
@@ -269,7 +241,7 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
         {/* STEP 2: Presupuesto */}
         {step === 'Presupuesto' && (
           <div>
-            <h3 className="text-center text-2xl font-semibold text-neutral-900">Comiencen a planear su escapada</h3>
+            <h3 className="text-center text-2xl font-semibold text-neutral-900">✨ Comiencen a planear su escapada</h3>
             <p className="mt-2 text-center text-sm text-neutral-700 max-w-3xl mx-auto">
               💡 Lo único que se define acá en este paso es el presupuesto por persona. Ese será su techo.
               El resto… dejalo en manos de tu Tripper.
@@ -301,7 +273,7 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
                       aria-pressed={budgetTier === t.key}
                       aria-label={`Elegir ${t.title}`}
                     >
-                      Elegir este nivel →
+                      {t.cta || 'Elegir este nivel →'}
                     </button>
                   </div>
                 </div>

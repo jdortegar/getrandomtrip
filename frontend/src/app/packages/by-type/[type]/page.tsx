@@ -15,14 +15,6 @@ import SoloInspiration from '@/components/by-type/solo/SoloInspiration';
 import SoloTestimonials from '@/components/by-type/solo/SoloTestimonials';
 import FooterLanding from '@/components/layout/FooterLanding';
 
-const VIDEO_BY_TYPE: Record<string, string> = {
-  family: "/videos/family-hero-video.mp4",
-  families: "/videos/family-hero-video.mp4",
-  group: "/videos/group-hero-video.mp4",
-  honeymoon: "/videos/honeymoon-video.mp4",
-  paws: "/videos/paws-hero-video.mp4",
-};
-
 export async function generateMetadata(
   { params }: { params: { type: string } }
 ): Promise<Metadata> {
@@ -91,11 +83,9 @@ export default function Page({
   }
 
   // Otros tipos (/families, /family, etc.)
-  const videoSrc = VIDEO_BY_TYPE[params.type]; // Get video source based on type
-
   return (
     <main style={style}>
-      <Hero data={data} videoSrc={videoSrc} /> {/* Pass videoSrc to Hero */}
+      <Hero data={data} />
       <IntroBlock type={data.slug} palette={data.palette} />
       <ImageMosaic type={data.slug} />
       <BenefitGrid type={data.slug} palette={data.palette} />

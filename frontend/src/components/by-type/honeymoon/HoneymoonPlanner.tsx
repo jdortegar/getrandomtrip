@@ -28,85 +28,21 @@ export default function HoneymoonPlanner() {
   const tiers = useMemo(
     () => [
       {
-        key: 'essenza',
-        title: 'Essenza',
-        subtitle: 'Lo esencial del amor',
-        priceLabel: 'Hasta 350 USD',
-        bullets: [
-          'Duración: Máximo 2 noches.',
-          'Transporte: Low cost (buses o vuelos off-peak).',
-          'Fechas: Disponibilidad limitada con restricciones.',
-          'Alojamiento: Midscale (3★ o equivalentes).',
-          'Extras: Guía esencial diseñada para parejas que buscan la simpleza sin perder el encanto.',
-        ],
-        priceFootnote: '💑 Un escape breve, pero suficiente para mirarse distinto y recordar por qué empezó todo.',
-        ctaLabel: 'Den el primer paso',
-        testid: 'hm-tier-essenza',
-      },
-      {
-        key: 'explora',
-        title: 'Modo Explora',
-        subtitle: 'Aventuras compartidas',
-        priceLabel: 'Hasta 500 USD',
-        bullets: [
-          'Duración: Hasta 3 noches.',
-          'Transporte: Multimodal, horarios flexibles.',
-          'Fechas: Amplia disponibilidad; algunos bloqueos en feriados.',
-          'Alojamiento: Mid-to-Upscale.',
-          'Extras: Randomtrip Decode con pistas para descubrir juntos.',
-        ],
-        priceFootnote: '💑 Ideal para los que creen que la mejor forma de enamorarse es perderse… y reencontrarse.',
-        ctaLabel: 'Exploren su historia',
-        testid: 'hm-tier-explora',
-      },
-      {
-        key: 'exploraPlus',
-        title: 'Explora+',
-        subtitle: 'Capas de momentos',
-        priceLabel: 'Hasta 850 USD',
-        bullets: [
-          'Duración: Hasta 4 noches.',
-          'Transporte: Multimodal.',
-          'Fechas: Alta disponibilidad, incluso en feriados.',
-          'Alojamiento: Upscale asegurado.',
-          'Extras: Decode personalizado + 1 experiencia especial en pareja.',
-        ],
-        priceFootnote: '💑 Más noches, más sorpresas, más excusas para coleccionar recuerdos a dos voces.',
-        ctaLabel: 'Suban la apuesta',
-        testid: 'hm-tier-exploraplus',
-      },
-      {
-        key: 'bivouac',
-        title: 'Bivouac',
-        subtitle: 'Romance artesanal',
-        priceLabel: 'Hasta 1200 USD',
-        bullets: [
-          'Duración: Hasta 5 noches.',
-          'Transporte: Multimodal, con asientos incluidos.',
-          'Fechas: Sin bloqueos.',
-          'Alojamiento: Upper-Upscale (boutique, diseño, experiencias locales).',
-          'Extras: Concierge Advisor + 1 experiencia premium en pareja + perks exclusivos.',
-        ],
-        priceFootnote: '💑 Una travesía que se diseña con la misma paciencia y detalle con que se cuida una relación.',
-        ctaLabel: 'Viajen distinto',
-        testid: 'hm-tier-bivouac',
-      },
-      {
         key: 'atelier',
-        title: 'Atelier Getaway',
-        subtitle: 'Amor a medida',
-        priceLabel: 'Desde 1200 USD',
+        title: '✨ Atelier Getaway — Distinción, sin esfuerzo',
+        priceLabel: 'Desde 1800 USD · por persona',
         bullets: [
-          'Duración: Customizable.',
+          'Duración: Customizable',
+          'Transporte: Multimodal / a medida.',
+          'Fechas: Sin bloqueos.',
           'Alojamiento: Luxury / de autor / cadenas A1.',
-          'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7.',
-          'Incluye: 2+ experiencias premium diseñadas a medida.',
-          'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.',
+          'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium diseñadas a medida para la pareja.',
+          'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas de marcas asociadas.'
         ],
-        priceFootnote: '💑 Un lienzo en blanco para crear la luna de miel que no se repetirá jamás.',
-        ctaLabel: 'Creen lo irrepetible',
+        priceFootnote: '📝 Un viaje irrepetible, diseñado como prólogo de una historia que recién comienza.',
+        ctaLabel: 'Creen lo extraordinario →',
         testid: 'hm-tier-atelier',
-      },
+      }
     ],
     []
   );
@@ -287,7 +223,7 @@ export default function HoneymoonPlanner() {
                           budgetTier: budgetTier ?? '',
                           honeymoonType: t.key,
                         }).toString();
-                        router.push(`/journey/experience-level?${q}`);
+                        router.push(`/journey/basic-config?${q}`);
                       }}
                     >
                       Seguir a experiencia →

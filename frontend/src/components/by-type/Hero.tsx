@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import BackgroundVideo from "@/components/media/BackgroundVideo";
 
 interface HeroProps {
   data: {
@@ -40,7 +39,25 @@ export default function Hero({ data, videoSrc, posterSrc, titleOverride, subtitl
       style={{ backgroundColor: palette.secondary }}
     >
       {videoSrc ? (
-        <BackgroundVideo src={videoSrc} poster={posterSrc} />
+        <div className="absolute inset-0 z-0">
+          <video
+            src={videoSrc}
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster={posterSrc}
+            className="w-full h-full object-cover hidden motion-safe:block"
+          />
+          {posterSrc && (
+            <img
+              src={posterSrc}
+              alt=""
+              className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
       ) : (
         <>
           <Image

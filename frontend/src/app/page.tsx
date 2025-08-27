@@ -15,9 +15,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TopTrippersGrid from '@/components/tripper/TopTrippersGrid';
 import { slugify } from '@/lib/slugify';
 import GetRandomtripCta from '@/components/common/GetRandomtripCta';
-import BackgroundVideo from "@/components/media/BackgroundVideo";
-import Image from 'next/image';
-import ByTravellerRow from "@/components/home/ByTravellerRow";
 
 
 // Placeholder for Kai Service, if not implemented yet
@@ -91,6 +88,13 @@ const initialTravellerTypes: TravelerType[] = [
     travelType: 'Honeymoon',
     query: 'same sex couple honeymoon romantic getaway',
     imageUrl: '/images/journey-types/honeymoon-same-sex.jpg',
+  },
+  {
+    title: 'PAWS',
+    description: 'Aventuras con tu mascota.',
+    travelType: 'Paws',
+    query: 'travel with pet dog',
+    imageUrl: '/images/journey-types/paws-card.jpg',
   },
 ];
 
@@ -230,9 +234,25 @@ function ExplorationPageContent() {
             {activeTab === 'By Traveller' && (
               <div id="by-traveller" className="py-8">
                 <p className="text-center text-gray-600 mb-8 italic">¿Con quién vas a escribir tu próxima historia?</p>
-                {/* BEGIN ByTravellerRow */}
-                <ByTravellerRow />
-                {/* END ByTravellerRow */}
+                <div className="flex flex-wrap items-center justify-center gap-4 lg:h-[450px] lg:flex-nowrap lg:-space-x-32">
+                  {initialTravellerTypes.map((type) => (
+                    <motion.div
+                      key={type.title}
+                      className="w-72 shrink-0 transition-all duration-300 ease-in-out hover:z-10 hover:-translate-y-4 hover:scale-105 lg:w-64"
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
+                      <TravelerTypeCard
+                        title={type.title}
+                        description={type.description}
+                        imageUrl={type.imageUrl}
+                        href={`/packages/by-type/${slugify(type.travelType)}`}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -652,12 +672,19 @@ export default function HomePage() {
       {/* HERO */}
       <section
         id="home-hero"
-        className="relative min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-center text-center overflow-hidden"
+        className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
       >
         {/* Sentinel para el navbar (overlay vs sólido) */}
         <div id="hero-sentinel" className="absolute inset-x-0 top-0 h-4 pointer-events-none" />
 
-        <BackgroundVideo src="/videos/hero-video.mp4" />
+        {/* Capa de fondo (video o imagen que ya tengas) */}
+        <div className="absolute top-0 left-0 w-full h-full z-0">
+          <video src="/videos/hero-video.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+
+        {/* Oscurecedor */}
+        <div className="absolute inset-0 bg-black/40 z-0" />
 
         {/* Contenido del hero */}
         <div className="relative z-10 max-w-5xl mx-auto px-4">

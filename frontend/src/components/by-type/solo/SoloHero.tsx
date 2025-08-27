@@ -1,12 +1,28 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import BackgroundVideo from "@/components/media/BackgroundVideo";
 
 export default function SoloHero() {
   return (
     <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
-      <BackgroundVideo src="/videos/solo-hero-video.mp4" poster="/images/journey-types/solo-traveler.jpg" />
+      {/* Fondo video + overlay */}
+      <div className="absolute inset-0 z-0">
+        <video
+          src="/videos/solo-hero-video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/journey-types/solo-traveler.jpg"
+          className="w-full h-full object-cover hidden motion-safe:block"
+        />
+        <img
+          src="/images/journey-types/solo-traveler.jpg"
+          alt=""
+          className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
 
       {/* Gradiente para legibilidad */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/10" />
