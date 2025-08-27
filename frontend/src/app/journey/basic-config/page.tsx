@@ -5,14 +5,16 @@ import PreferencesTab from '@/components/journey/PreferencesTab';
 import AvoidTab from '@/components/journey/AvoidTab';
 import SummaryCard from '@/components/journey/SummaryCard';
 import InitClient from '@/components/journey/InitClient';
+import TopFiltersSummary from '@/components/journey/TopFiltersSummary';
 
 export default function Page({ searchParams }: { searchParams: Record<string,string> }) {
   const displayPrice = decodeURIComponent(searchParams.price || '');
   return (
     <div className="container mx-auto px-4 pb-12 pt-24 md:pt-28">  {/* empuje bajo navbar */}
       <InitClient searchParams={searchParams} displayPrice={displayPrice} />
-      <div className="mb-4">
+      <div className="mb-2">
         <SelectionsBar />
+        <TopFiltersSummary />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         <div className="min-w-0">
