@@ -1,29 +1,30 @@
 import SelectionsBar from '@/components/journey/SelectionsBar';
 import { JourneyTabs } from '@/components/journey/Tabs';
-import InitClient from '@/components/journey/InitClient';
 import LogisticsTab from '@/components/journey/LogisticsTab';
-import FiltersTab from '@/components/journey/FiltersTab';
+import PreferencesTab from '@/components/journey/PreferencesTab';
+import AvoidTab from '@/components/journey/AvoidTab';
 import SummaryCard from '@/components/journey/SummaryCard';
+import InitClient from '@/components/journey/InitClient';
 
-export default function BasicConfigPage({ searchParams }: { searchParams: Record<string, string> }) {
+export default function Page({ searchParams }: { searchParams: Record<string,string> }) {
   const displayPrice = decodeURIComponent(searchParams.price || '');
-
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+    <div className="container mx-auto px-4 pb-10 pt-8"> {/* pt evita solaparse con navbar */}
       <InitClient searchParams={searchParams} displayPrice={displayPrice} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <SelectionsBar />
+      <div className="mb-4">
+        <SelectionsBar />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+        <div className="min-w-0">
           <JourneyTabs
             logistics={<LogisticsTab />}
-            filters={<FiltersTab />}
+            preferences={<PreferencesTab />}
+            avoid={<AvoidTab />}
           />
         </div>
-        <div className="relative">
-          <div className="sticky top-8">
-            <SummaryCard />
-          </div>
-        </div>
+        <aside className="lg:sticky lg:top-24"> {/* ajustar top si la navbar es más alta */}
+          <SummaryCard />
+        </aside>
       </div>
     </div>
   );

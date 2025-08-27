@@ -1,23 +1,44 @@
 'use client';
 import { useJourneyStore } from '@/store/journeyStore';
 
-export function JourneyTabs({ logistics, filters }:{ logistics: React.ReactNode; filters: React.ReactNode }) {
+type TabId = 'logistics'|'preferences'|'avoid';
+
+export function JourneyTabs({
+  logistics, preferences, avoid,
+}:{
+  logistics: React.ReactNode;
+  preferences: React.ReactNode;
+  avoid: React.ReactNode;
+}) {
   const { activeTab, setPartial } = useJourneyStore();
-  const TabBtn = ({ id, label }:{ id:'logistics'|'filters'; label:string }) => (
+  const setTab = (t:TabId) => setPartial({ activeTab: t });
+
+  const Btn = ({id,label}:{id:TabId;label:string}) => (
     <button
-      onClick={() => setPartial({ activeTab: id })}
-      className={`px-4 py-2 rounded-xl border ${activeTab===id ? 'bg-white text-neutral-900 border-neutral-300 shadow-sm' : 'bg-neutral-100 text-neutral-600 border-transparent'}`}
+      onClick={()=>setTab(id)}
+      className={`px-4 py-2 rounded-xl border transition ${
+        activeTab===id
+        ? 'bg-white text-neutral-900 border-neutral-300 shadow-sm'
+        : 'bg-neutral-100 text-neutral-600 border-transparent hover:bg-neutral-200'
+      }`}
     >
       {label}
     </button>
   );
+
   return (
     <div>
-      <div className="mb-4 flex gap-2">
-        <TabBtn id="logistics" label="Planificá tu Aventura Sorpresa" />
-        <TabBtn id="filters" label="Filtros Premium" />
+      <div className="mb-4 flex flex-wrap gap-2">
+        <Btn id="logistics" label="Planificá tu Aventura Sorpresa" />
+        <Btn id="preferences" label="Preferencias / Filtros" />
+        <Btn id="avoid" label="Destinos a evitar" />
       </div>
-      <div>{activeTab==='logistics' ? logistics : filters}</div>
+
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-neutral-200 p-4 text-neutral-900">
+        {activeTab==='logistics' && logistics}
+        {activeTab==='preferences' && preferences}
+        {activeTab==='avoid' && avoid}
+      </div>
     </div>
   );
 }

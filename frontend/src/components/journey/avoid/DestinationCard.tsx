@@ -27,7 +27,7 @@ export default function DestinationCard({ dest, isSelected, onToggle }: Destinat
       )}
       <h3 className="absolute bottom-3 left-3 text-white font-bold text-lg drop-shadow-md">{dest.name}</h3>
       {isSelected && (
-        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+        <div className="absolute inset-0 bg-[var(--terracotta,#D97E4A)]/40 flex items-center justify-center">
           <Check className="h-12 w-12 text-white" />
         </div>
       )}

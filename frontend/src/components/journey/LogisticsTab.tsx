@@ -80,7 +80,7 @@ export default function LogisticsTab() {
       <div className="pt-2">
         <button
           type="button"
-          onClick={() => setPartial({ activeTab: 'filters' })}
+          onClick={() => setPartial({ activeTab: 'preferences' })}
           disabled={!canContinue}
           className={`px-5 py-3 rounded-xl font-medium ${
             canContinue
