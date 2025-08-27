@@ -1,72 +1,116 @@
-
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useJourneyStore } from '@/store/journeyStore';
 
-declare global { interface Window { google: any } }
+export default function AvoidSearchModal({
+  open, onClose,
+}: { open: boolean; onClose: () => void }) {
+  const { filters, setPartial } = useJourneyStore();
+  const [query, setQuery] = useState('');
+  const [local, setLocal] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-function loadScript(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) return resolve();
-    const s = document.createElement('script'); s.src = src; s.async = true; s.defer = true;
-    s.onload = () => resolve(); s.onerror = (e) => reject(e); document.head.appendChild(s);
-  });
-}
-
-interface AvoidSearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function AvoidSearchModal({ isOpen, onClose }: AvoidSearchModalProps) {
-  const ref = useRef<HTMLInputElement>(null);
-  const { logistics, filters, setPartial } = useJourneyStore();
-  const [inputValue, setInputValue] = useState('');
-
+  // abrir con foco
   useEffect(() => {
-    if (!isOpen) return;
+    if (open) {
+      setQuery('');
+      setLocal([]);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [open]);
 
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
-    loadScript(`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&language=es`).then(() => {
-      const ac = new window.google.maps.places.Autocomplete(ref.current!, {
-        types: ['(cities)'],
-        fields: ['name'],
-        componentRestrictions: logistics.country?.code ? { country: logistics.country.code } : undefined,
-      });
+  if (!open) return null;
 
-      ac.addListener('place_changed', () => {
-        const p = ac.getPlace();
-        if (p.name) {
-          const newAvoidList = [...new Set([...filters.avoidDestinations, p.name])];
-          if (newAvoidList.length <= 15) {
-            setPartial({ filters: { ...filters, avoidDestinations: newAvoidList } });
-          }
-          setInputValue('');
-          onClose();
-        }
-      });
-    });
-  }, [isOpen, logistics.country?.code]);
+  const current = filters.avoidDestinations || [];
+  const max = 15;
 
-  if (!isOpen) return null;
+  const add = (raw: string) => {
+    const name = raw.trim();
+    if (!name) return;
+    const exists = [...current, ...local].some(n => n.toLowerCase() === name.toLowerCase());
+    if (exists) { setQuery(''); return; }
+    if (current.length + local.length >= max) return;
+    setLocal(arr => [...arr, name]);
+    setQuery('');
+  };
+
+  const removeLocal = (name: string) => {
+    setLocal(arr => arr.filter(n => n.toLowerCase() !== name.toLowerCase()));
+  };
+
+  const save = () => {
+    // merge + dedupe
+    const merged = [...current, ...local].filter(Boolean)
+      .filter((v, i, a) => a.findIndex(x => x.toLowerCase() === v.toLowerCase()) === i)
+      .slice(0, max);
+    setPartial({ filters: { ...filters, avoidDestinations: merged } });
+    onClose();
+  };
+
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') add(query);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={onClose}>
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-lg font-medium text-gray-900">Buscar destino a evitar</h3>
-        <div className="mt-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative w-full max-w-xl rounded-2xl bg-white p-5 shadow-lg ring-1 ring-neutral-200">
+        <h4 className="text-lg font-semibold mb-3">Agregar destinos a evitar</h4>
+        <p className="text-sm text-neutral-600 mb-3">
+          Escribí un destino por vez y presioná <span className="font-medium">Enter</span> o el botón “Agregar”.
+          Podés cargar hasta {max} destinos en total.
+        </p>
+
+        <div className="flex gap-2">
           <input
-            ref={ref}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="input input-bordered w-full"
-            placeholder="Buscar ciudad..."
+            ref={inputRef}
+            value={query}
+            onChange={(e)=>setQuery(e.target.value)}
+            onKeyDown={onKey}
+            placeholder="Ej.: Berlín, Ischia, Bali…"
+            className="flex-1 rounded-xl border border-neutral-300 px-3 py-2"
           />
+          <button
+            type="button"
+            onClick={()=>add(query)}
+            className="px-4 py-2 rounded-xl bg-neutral-900 text-white hover:bg-neutral-800"
+            disabled={!query.trim() || (current.length + local.length) >= max}
+          >
+            Agregar
+          </button>
         </div>
-        <div className="mt-4 flex justify-end">
-          <button onClick={onClose} className="btn">Cerrar</button>
+
+        {(local.length > 0 || current.length > 0) && (
+          <div className="mt-4">
+            <div className="text-sm text-neutral-600 mb-2">
+              Seleccionados: {current.length + local.length} / {max}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {current.map(n => (
+                <span key={'c-'+n} className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 border border-neutral-200">
+                  {n}
+                </span>
+              ))}
+              {local.map(n => (
+                <button
+                  key={'l-'+n}
+                  onClick={()=>removeLocal(n)}
+                  className="px-3 py-1 rounded-full bg-violet-50 text-violet-800 border border-violet-200 hover:bg-violet-100"
+                >
+                  {n} ×
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-5 flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 rounded-xl border border-neutral-300 bg-white">Cancelar</button>
+          <button onClick={save} className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white">
+            Guardar destinos
+          </button>
         </div>
       </div>
-    </div>
+    &lt;/div&gt;
   );
 }

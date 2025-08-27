@@ -58,6 +58,6 @@ export function countOptionalFilters(f: Filters): number {
   if (f.maxTravelTime !== 'sin-limite') n++;
   if (f.departPref !== 'indistinto') n++;
   if (f.arrivePref !== 'indistinto') n++;
-  if ((f.avoidDestinations?.length ?? 0) > 0) n++; // cuenta como 1 total
+  n += (f.avoidDestinations?.length ?? 0);
   return n;
 }
