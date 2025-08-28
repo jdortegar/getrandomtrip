@@ -30,9 +30,9 @@ export default auth((req) => {
     return;
   }
 
-  // Redirect unauthenticated users to home for protected routes
+  // Redirect unauthenticated users to login for protected routes
   if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL('/', nextUrl));
+    return Response.redirect(new URL('/auth/login', nextUrl));
   }
 
   // For any other route that's not explicitly handled, allow it

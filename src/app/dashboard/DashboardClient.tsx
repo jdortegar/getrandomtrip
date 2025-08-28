@@ -22,7 +22,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({ user }: DashboardClientProps) {
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
+    signOut({ callbackUrl: '/auth/login' });
   };
 
   return (

@@ -6,7 +6,7 @@ import authConfig from '@/lib/auth.config';
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
-    signIn: '/',
+    signIn: '/auth/login',
     error: '/error',
   },
   debug: process.env.NODE_ENV === 'development',
