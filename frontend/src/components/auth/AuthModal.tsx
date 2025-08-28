@@ -6,6 +6,7 @@ import { useUserStore } from '@/store/userStore';
 
 type Budget = 'low' | 'mid' | 'high' | '';
 type Traveler = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa' | '';
+type Step = 0 | 1 | 2;
 
 const ALL_INTERESTS = [
   'playa',
@@ -17,16 +18,24 @@ const ALL_INTERESTS = [
   'ciudad',
   'pueblos',
 ];
+
 const ALL_DISLIKES = ['frío', 'calor-extremo', 'multitudes', 'madrugar'];
 
 export default function AuthModal() {
-  // ---- Store (usa los nombres que ya tenés)
-  const { isAuthed, user, closeAuth, signInDemo, upsertPrefs, authModalOpen } = useUserStore();
+  // 1) Hooks del store SIEMPRE al tope
+  const {
+    isAuthed,
+    user,
+    closeAuth,
+    signInDemo,
+    upsertPrefs,
+    authModalOpen, // flag del modal en el store
+  } = useUserStore();
 
-  const open = !!authModalOpen;
+  const open = authModalOpen;
 
-  // ---- Hooks locales (nunca condicionales)
-  const [step, setStep] = useState<0 | 1 | 2>(0); // 0: sign, 1: preguntas, 2: review
+  // 2) Hooks locales SIEMPRE, con valores neutros
+  const [step, setStep] = useState<Step>(0); // 0: sign, 1: preguntas, 2: review
   const [travelerType, setTravelerType] = useState<Traveler>('');
   const [interests, setInterests] = useState<string[]>([]);
   const [dislikes, setDislikes] = useState<string[]>([]);
@@ -34,22 +43,28 @@ export default function AuthModal() {
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  // Hidratar cuando abre
+  // 3) Al abrir el modal, hidratar desde user (si existe) y decidir step inicial
   useEffect(() => {
     if (!open) return;
+
+    // si ya está logueado, vamos directo a preguntas; si no, step 0
     setStep(isAuthed ? 1 : 0);
+
+    // hidratar desde user si hay datos
     setTravelerType((user?.prefs?.travelerType as Traveler) ?? '');
     setInterests(user?.prefs?.interests ?? []);
     setDislikes(user?.prefs?.dislikes ?? []);
     setBudget((user?.prefs?.budget as Budget) ?? '');
-  }, [open, isAuthed, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, isAuthed]);
 
-  // Cerrar con ESC / click afuera
+  // 4) Cerrar con Escape / click afuera (sin hooks condicionales)
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeAuth();
     const onClick = (e: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) closeAuth();
+      if (!dialogRef.current) return;
+      if (!dialogRef.current.contains(e.target as Node)) closeAuth();
     };
     document.addEventListener('keydown', onKey);
     document.addEventListener('mousedown', onClick);
@@ -59,26 +74,22 @@ export default function AuthModal() {
     };
   }, [open, closeAuth]);
 
-  // Listener global opcional: window.dispatchEvent(new CustomEvent('open-auth'))
+  // 5) Listener global "open-auth" (compatibilidad sin @ts-ignore/@ts-expect-error)
   useEffect(() => {
     const h = () => {
-      try {
-        // @ts-ignore - por si openAuth existe en el store
-        useUserStore.getState().openAuth?.();
-      } catch {}
+      const { openAuth } = useUserStore.getState() as any;
+      if (typeof openAuth === 'function') openAuth();
     };
-    // @ts-ignore
-    window.addEventListener('open-auth', h);
-    return () => {
-      // @ts-ignore
-      window.removeEventListener('open-auth', h);
-    };
+    (window as any).addEventListener('open-auth', h);
+    return () => (window as any).removeEventListener('open-auth', h);
   }, []);
 
+  // 6) Si está cerrado, retornar null (después de todos los hooks declarados)
   if (!open) return null;
 
-  // ---- Helpers
+  // 7) Handlers
   const doSignIn = () => {
+    // demo sign-in -> deja usuario “logueado”
     signInDemo?.();
     setStep(1);
   };
@@ -108,7 +119,6 @@ export default function AuthModal() {
     closeAuth();
   };
 
-  // ---- UI
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div ref={dialogRef} className="w-full max-w-lg">
@@ -134,7 +144,9 @@ export default function AuthModal() {
             <div className="mt-4">
               {step === 0 && (
                 <div className="space-y-4">
-                  <p className="text-sm text-neutral-700">Inicia sesión o crea tu cuenta (demo).</p>
+                  <p className="text-sm text-neutral-700">
+                    Inicia sesión o crea tu cuenta (demo).
+                  </p>
                   <div className="grid gap-2">
                     <button
                       onClick={doSignIn}
@@ -275,8 +287,7 @@ export default function AuthModal() {
                     {dislikes.length ? dislikes.join(', ') : '—'}
                   </div>
                   <div>
-                    <span className="font-medium text-neutral-900">Budget:</span>{' '}
-                    {budget || '—'}
+                    <span className="font-medium text-neutral-900">Budget:</span> {budget || '—'}
                   </div>
                 </div>
               )}
@@ -286,19 +297,21 @@ export default function AuthModal() {
             <div className="mt-6 flex justify-between">
               <button
                 className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50 disabled:opacity-50"
-                onClick={() => setStep((s) => Math.max(0, s - 1))}
+                onClick={() => setStep((s) => (s > 0 ? ((s - 1) as Step) : 0))}
                 disabled={step === 0}
               >
                 Atrás
               </button>
 
               {step === 0 && (
-                <button
-                  onClick={doSignIn}
-                  className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
-                >
-                  Continuar
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={doSignIn}
+                    className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
+                  >
+                    Continuar
+                  </button>
+                </div>
               )}
 
               {step === 1 && (

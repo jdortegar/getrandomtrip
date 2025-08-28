@@ -1,82 +1,93 @@
 'use client';
 
-import Link, { LinkProps } from 'next/link';
-import clsx from 'clsx';
-import { ComponentProps, ElementType } from 'react';
+import Link from 'next/link';
+import GlassCard from '@/components/ui/GlassCard';
 
-export type TierData = {
+type TierLite = {
   id: string;
-  name: string;
+  title: string;
   subtitle?: string;
-  priceLabel: string;
+  priceLabel?: string;
   priceFootnote?: string;
-  bullets: string[];
+  bullets?: string[];
   closingLine?: string;
-  ctaLabel: string;
-  title?: string;
+  ctaLabel?: string;
+  /** Algunos tiers antiguos no tienen `name`; lo hacemos opcional */
+  name?: string;
+  /** Por si en algún lugar se usa imagen */
+  imageUrl?: string;
 };
 
-type ExperienceCardProps = {
-  tier: TierData;
-  onSelect?: (id: string) => void;
-  href?: string;
+type Props = {
+  tier: TierLite;
+  href: string;
+  onSelect?: () => void;
   className?: string;
-  isSelected?: boolean;
-  variant?: 'default' | 'featured';
 };
 
-export default function ExperienceCard({
-  tier,
-  onSelect,
-  href,
-  className,
-  isSelected = false,
-  variant = 'default',
-}: ExperienceCardProps) {
-  const CtaComponent: ElementType = href ? Link : 'button';
-  const isFeatured = variant === 'featured';
-
-  const handleSelect = () => {
-    if (onSelect) {
-      onSelect(tier.id);
-    }
-  };
-
-  const ctaProps = (href
-    ? { href, onClick: handleSelect }
-    : { type: 'button', onClick: handleSelect, 'aria-pressed': isSelected, 'aria-label': `Elegir ${tier.name}` }) as LinkProps & ComponentProps<'button'>;
+export default function ExperienceCard({ tier, href, onSelect, className }: Props) {
+  const {
+    title,
+    subtitle,
+    priceLabel,
+    priceFootnote,
+    bullets = [],
+    closingLine,
+    ctaLabel = 'Elegir',
+  } = tier;
 
   return (
-    <div
-      className={clsx(
-        'flex h-full flex-col rounded-2xl border border-neutral-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5',
-        isFeatured ? 'p-6 shadow-lg hover:shadow-xl' : 'p-5 hover:shadow-md',
-        className,
-        isSelected && 'ring-2 ring-neutral-900'
-      )}
-    >
-      <h3 className={clsx('font-display font-bold tracking-tightish text-neutral-900', isFeatured ? 'text-xl' : 'text-lg')}>{tier.name}</h3>
-      {tier.subtitle && <p className="mt-1 text-sm text-neutral-700">{tier.subtitle}</p>}
+    <GlassCard className={className}>
+      <div className="p-4 md:p-5 flex flex-col h-full">
+        {/* Header */}
+        <div className="mb-3">
+          <h3 className="text-base md:text-lg font-semibold text-neutral-900">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="text-sm text-neutral-600 mt-1">
+              {subtitle}
+            </p>
+          )}
+        </div>
 
-      <p className={clsx('font-display font-bold text-[var(--rt-terracotta)]', isFeatured ? 'mt-4 text-3xl' : 'mt-3 text-2xl')}>{tier.priceLabel}</p>
+        {/* Precio */}
+        {(priceLabel || priceFootnote) && (
+          <div className="mb-3">
+            {priceLabel && (
+              <div className="text-sm font-medium text-neutral-900">{priceLabel}</div>
+            )}
+            {priceFootnote && (
+              <div className="text-xs text-neutral-600">{priceFootnote}</div>
+            )}
+          </div>
+        )}
 
-      {tier.priceFootnote && <p className={clsx('text-neutral-700', isFeatured ? 'mt-1 text-sm' : 'mt-1 text-xs')}>{tier.priceFootnote}</p>}
+        {/* Bullets */}
+        {bullets.length > 0 && (
+          <ul className="mb-4 list-disc list-inside text-sm text-neutral-800 space-y-1">
+            {bullets.map((b, i) => (
+              <li key={i}>{b}</li>
+            ))}
+          </ul>
+        )}
 
-      <ul className={clsx('flex-grow leading-normal text-neutral-700', isFeatured ? 'mt-5 space-y-2' : 'mt-4 space-y-1.5')}>
-        {tier.bullets.map((b, i) => (
-          <li key={i} className={clsx('flex', isFeatured ? 'gap-3' : 'gap-2')}>
-            {isFeatured ? <span aria-hidden className="text-[var(--rt-terracotta)] font-bold">✓</span> : <span aria-hidden className="text-[var(--rt-terracotta)]">•</span>}
-            <span>{b}</span>
-          </li>
-        ))}
-        {tier.closingLine && <li className={clsx('italic text-neutral-800', isFeatured ? 'pt-3 text-sm' : 'pt-2 text-xs')}>{tier.closingLine}</li>}
-      </ul>
+        {/* Closing line */}
+        {closingLine && (
+          <p className="text-sm text-neutral-700 mb-4">{closingLine}</p>
+        )}
 
-      <div className={clsx('pt-4', isFeatured ? 'mt-6' : 'mt-auto')}>
-        <CtaComponent {...ctaProps} className={clsx('btn-card w-full text-center', isFeatured && 'text-lg py-3')}>
-          {tier.ctaLabel}
-        </CtaComponent>
+        {/* CTA */}
+        <div className="mt-auto">
+          <Link
+            href={href}
+            onClick={onSelect}
+            className="inline-flex items-center justify-center w-full rounded-xl bg-violet-600 text-white py-2.5 font-medium hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+          >
+            {ctaLabel}
+          </Link>
+        </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }

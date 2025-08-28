@@ -182,12 +182,33 @@ function Row({ label, value, bold = false }: { label: string; value: string; bol
   );
 }
 
-function labelCL(v: any) {
-  return { calido: 'Cálido', frio: 'Frío', templado: 'Templado', indistinto: 'Indistinto' }[v] ?? v;
+/** Helpers tipados para evitar indexar con `any` */
+function labelCL(v: unknown): string {
+  switch (String(v)) {
+    case 'calido': return 'Cálido';
+    case 'frio': return 'Frío';
+    case 'templado': return 'Templado';
+    case 'indistinto': return 'Indistinto';
+    default: return String(v ?? '');
+  }
 }
-function labelTT(v: any) {
-  return { '3h': '3h', '5h': '5h', '8h': '8h', 'sin-limite': 'Sin límite' }[v] ?? v;
+
+function labelTT(v: unknown): string {
+  switch (String(v)) {
+    case '3h': return '3h';
+    case '5h': return '5h';
+    case '8h': return '8h';
+    case 'sin-limite': return 'Sin límite';
+    default: return String(v ?? '');
+  }
 }
-function labelDP(v: any) {
-  return { manana: 'mañana', tarde: 'tarde', noche: 'noche', indistinto: 'indistinto' }[v] ?? v;
+
+function labelDP(v: unknown): string {
+  switch (String(v)) {
+    case 'manana': return 'mañana';
+    case 'tarde': return 'tarde';
+    case 'noche': return 'noche';
+    case 'indistinto': return 'indistinto';
+    default: return String(v ?? '');
+  }
 }
