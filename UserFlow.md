@@ -32,11 +32,39 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
 
 ---
 
+## 1.5. Autenticación y Perfil de Usuario
+    - ▶️ **Navbar (Ícono de Perfil):**
+        - 🔁 **Sin sesión:** Click en ícono de perfil abre **Modal de Autenticación**.
+        - 🔁 **Con sesión:** Click en ícono de perfil muestra **Menú Desplegable** con opciones:
+            - ▶️ "Mis Viajes" → Navega a `/dashboard`.
+            - ▶️ "Mi Perfil" → Navega a `/login`.
+            - ✅ "Cerrar Sesión" → Cierra la sesión del usuario.
+    - ▶️ **Modal de Autenticación (AuthModal):**
+        - **Paso 1: Sign In / Sign Up (Demo):** Permite iniciar sesión o registrarse (dummy).
+        - **Paso 2: Onboarding de Preferencias:** Preguntas sobre tipo de viajero, intereses, cosas a evitar y presupuesto.
+        - **Paso 3: Revisión y Confirmación:** Muestra un resumen de las preferencias y cierra el modal.
+    - ▶️ **Página "Mis Viajes" (`/dashboard`):**
+        - ▶️ Layout moderno con pestañas: "Próximos", "Pasados", "Cancelados".
+        - ▶️ En "Próximos": Tarjeta destacada del próximo viaje con countdown en vivo.
+        - ▶️ Historial de Pagos.
+        - ▶️ Tarjetas de viajes con imagen en "Pasados" y "Cancelados".
+    - ▶️ **Página "Mi Perfil" (`/login`):**
+        - 🔁 **Sin sesión:** Abre automáticamente el Modal de Autenticación y muestra un fallback.
+        - 🔁 **Con sesión:** Muestra el perfil del usuario con secciones:
+            - ▶️ Datos Personales (nombre, email, editable dummy).
+            - ▶️ Preferencias de Viaje (muestra intereses, dislikes, tipo de viajero, presupuesto; botón "Editar" abre el modal de onboarding).
+            - ▶️ Métodos de Pago (placeholder).
+            - ▶️ Pasajeros (placeholder).
+            - ▶️ Privacidad y Seguridad (con botón "Cerrar Sesión").
+
+---
+
 ## 2. Landings de Tab 1: Nivel/Tipo de Experiencia - By Traveller
 
     - ▶️ Landingpage de "En Pareja"
         - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
         - ✅ Seccion 2 - Nivel de Experiencia (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
         - ▶️ Seccion 3 - blog (filtrado -parejas-) "Nuestros lugares favoritos para escapadas en pareja" + CTA **"RANDOMTRIP-us!”**
         - ▶️ Seccion 4 - Opinines "Lo que dicen las parejas" + CTA **"RANDOMTRIP-us!”**
 	- ✅ Avanzar a “Configuración Básica”
@@ -44,6 +72,7 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
     - ▶️ Landingpage de "Solo"
         - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
         - ✅ Seccion 2 - Nivel de Experiencia (Essenza, Explora, Explora+, Bivouac, Atelier)
+            - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
         - ▶️ Seccion 3 - blog (filtrado -Solo-) "Nuestros destinos favoritos para viajar solo" + CTA **"RANDOMTRIP-me!”**
         - ▶️ Seccion 4 - Opinines "Lo que dicen quienes viajaron solos" + CTA **"RANDOMTRIP-me!”**    
 	- ✅ Avanzar a “Configuración Básica”
@@ -53,6 +82,7 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
         - ✅ Seccion 2 - "Comencemos a diseñar el Family Randomtrip" (4 tabs - 1 de presentacion + 3 informacion/detalles extras de personalizacion)
             - ▶️ Seccion 2.1 - Presentacion Personalizada "Viajar en familia tiene sus códigos (y los entendemos)"
             - ▶️ Seccion 2.2 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+                - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
             - ▶️ Seccion 2.3 - Tipo de viaje ("Con los mas chicos"; "Con Adolescentes; "Con hijos grandes"; "Con toda la familia")
             - ▶️ Seccion 2.3 - Tipo de escapada ("Aventura en familia"; "Naturaleza & Fauna"; "Cultura & Tradiciones"; "Payas & Dunas"; "Graduaciones & Celebraciones"; "Escapadas Madre-hij@ / Padre-hij@")
         - ▶️ Seccion 3 - blog (filtrado -Familia-) "Nuestros destinos favoritos para viajar en familia" + CTA **"RANDOMTRIP-we!”**
@@ -64,6 +94,7 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
         - ✅ Seccion 2 - "De amigos a equipos: diseñen su Randomtrip" (4 tabs - 1 de presentacion + 3 informacion/detalles extras de personalizacion)
             - ▶️ Seccion 2.1 - Presentacion Personalizada "Viajar en grupo tiene sus códigos (y los entendemos)"
             - ▶️ Seccion 2.2 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+                - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
             - ▶️ Seccion 2.3 - Grupo & Alma ("Narradores Visuales; Yoga & Bienestar; Religioso o Espiritual; Gastronómico; Historias & Fantasía; Naturaleza & Aventura; Amigos; Negocios; Estudiantes; Música & Festivales)
             - ▶️ Seccion 2.3 - Afinar detalles (4 Opciones personalizadas para opcion de "Grupo & Alma)
         - ▶️ Seccion 3 - blog (filtrado -Grupo-) "Nuestros destinos favoritos para viajar en grupo" + CTA **"Activar Randomtrip en grupo!”**
@@ -74,6 +105,7 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
         - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
         - ✅ Seccion 2 - "Diseñen su Honeymoon Randomtrip" (2 tabs de informacion/detalles extras de personalizacion)
             - ▶️ Seccion 2.1 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+                - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
             - ▶️ Seccion 2.2 - Tipo de honeymoon (Naturaleza & Aventura, Cultura & Tradiciones, 	Playas & Dunas, Musica & Festivales)
         - ▶️ Seccion 3 - blog (filtrado -Honeymoon-) "Destinos y escenas para su luna de miel" + CTA **"A disenar la luna de miel!”**
         - ▶️ Seccion 4 - Opinines "Lo que dicen las parejas" + CTA **"RANDOMTRIP-us!”**
@@ -83,6 +115,7 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
         - ▶️ Seccion 1 - Hero (Titulo - Subitulo - Chips -CTAs - Storytelling)
         - ✅ Seccion 2 - "Diseña el viaje con tu mascota" (2 tabs de informacion/detalles extras de personalizacion)
             - ▶️ Seccion 2.1 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+                - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
             - ▶️ Seccion 2.2 - Informacion de si va con mascota extra y se suma un 25% al precio de nivel de experiencia, tamano del perro, si es pequene opcion de viajar en cabina
         - ▶️ Seccion 3 - blog (filtrado -Masctoas-) "Viajes y experiencas para ir con tu mascota" + CTA **"RANDOMTRIP-paws!”**
         - ▶️ Seccion 4 - Opinines "Opiniones de quienes ya se animaron" + CTA **"RANDOMTRIP-paws!”**
@@ -95,6 +128,7 @@ Guiar al usuario paso a paso por un viaje sorpresa personalizado, con precio din
         Del otro lado
             - ✅ Seccion 2 - "Diseña el viaje con tu mascota" (2 tabs de informacion/detalles extras de personalizacion)
             - ▶️ Seccion 2.1 - Nivel de Experiencia/Presupuesto (Essenza, Explora, Explora+, Bivouac, Atelier)
+                - 🔁 **Requiere Autenticación:** Al seleccionar una tarjeta de nivel de experiencia, si el usuario no está logueado, se abre el Modal de Autenticación.
             - ▶️ Seccion 2.2 - Informacion de si va con mascota extra y se suma un 25% al precio de nivel de experiencia, tamano del perro, si es pequene opcion de viajar en cabina
         - ▶️ Seccion 3 - blog (filtrado -Masctoas-) "Viajes y experiencas para ir con tu mascota" + CTA **"RANDOMTRIP-paws!”**
         - ▶️ Seccion 4 - Opinines "Opiniones de quienes ya se animaron" + CTA **"RANDOMTRIP-paws!”**
@@ -163,9 +197,6 @@ precio_total = precio_base + solo_markup + suma(filtros) + suma(add_ons)
 
 - ✅ Pantalla de agradecimiento y cierre del flujo
 
-- 🔁 Casos especiales y bucles de decisión
-- 🔁 Si falla la carga del mapa → se invita al usuario a ingresar el destino manualmente
-
 - 🔁 Si el pago falla → se permite reintentar de inmediato
 
 - ✅ Si el usuario no elige filtros o add‑ons → se continúa con el precio base
@@ -189,3 +220,10 @@ Flujo unidireccional claro y objetivo por etapa
 Transparencia en precios y control pleno del usuario
 
 Feedback visual constante: barra de progreso, mensajes de error/éxito, validaciones
+
+---
+
+## 🔁 Casos especiales y bucles de decisión
+- 🔁 Si falla la carga del mapa → se invita al usuario a ingresar el destino manualmente
+- 🔁 Si el pago falla → se permite reintentar de inmediato
+- ✅ Si el usuario no elige filtros o add‑ons → se continúa con el precio base
