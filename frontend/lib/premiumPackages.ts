@@ -84,4 +84,18 @@ export const premiumPackages: PremiumPackage[] = [
     channels: ['Online', 'Agencia'],
     ctaText: 'Curado para vos',
   },
+  {
+    id: 'custom-roadtrip',
+    title: 'Roadtrip Personalizado',
+    tagline: 'Tu aventura, a tu manera.',
+    budget: 0, // This will be dynamic
+    budgetType: 'Desde',
+    maxNights: 0, // This will be dynamic
+    accommodation: 'Varía según tu elección',
+    transportation: 'Vehículo propio o de alquiler',
+    keyExtras: ['Flexibilidad total'],
+    archetype: 'Explorador',
+    channels: ['Online'],
+    ctaText: 'Configurar Add-ons',
+  },
 ];

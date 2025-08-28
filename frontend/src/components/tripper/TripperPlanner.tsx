@@ -384,20 +384,11 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
               setStep('Alma del viaje');
               setTimeout(scrollPlanner, 0);
             }}
-            onContinue={(selectedKeys) => {
-              const q = new URLSearchParams({
-                from: 'tripper',
-                by: tripperName,
-                tripperName,
-                travellerType: travellerType ?? '',
-                budgetTier: budgetTier ?? '',
-                groupAlma: groupAlma ?? '',
-                almaOptions: selectedKeys.join(','),
-              }).toString();
-
-              const slug = tripperSlug || 'unknown';
-              const packageId = 'demo'; // placeholder hasta conectar el real
-              window.location.href = `/packages/${slug}/${packageId}/basic-config?${q}`;
+            onContinue={(_selectedKeys) => {
+              // The original implementation passed a lot of query params.
+              // The new destination is a generic starting point for a new journey,
+              // so we are navigating there directly without the old context.
+              window.location.href = '/journey/basic-config';
             }}
           />
         )}

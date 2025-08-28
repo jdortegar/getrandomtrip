@@ -1,44 +1,92 @@
-import { useRouter } from 'next/navigation';
-import { requireAuth } from '@/lib/requireAuth';
-import { useUserStore } from '@/store/userStore'; // Although not directly used in render, good to have for context if needed
+// frontend/src/components/by-type/paws/PawsExperienceCard.tsx
+'use client';
+import Link from 'next/link';
 
-type Props = {
+export type Props = {
   id: string;
   title: string;
-  top: number;
-  duration: string;
-  transport: string;
-  dates?: string;
-  accommodation: string;
-  extras: string;
-  description: string;
   cta: string;
+  /** “Techo” referencial en USD para mostrar como “Desde/Top” */
+  top?: number;
+
+  /** Campos opcionales que PawsPlanner pasa con defaults por seguridad */
+  duration?: string;
+  transport?: string;
+  accommodation?: string;
+  extras?: string;
+  description?: string;
+
+  /** NUEVO: lista de bullets rica; si viene, tiene prioridad para mostrar */
+  bullets?: string[];
+
+  /** handler para que el contenedor defina la acción (cambiar tab, scroll, tracking) */
+  onClick?: () => void;
 };
 
 export default function PawsExperienceCard({
-  id, title, top, duration, transport, dates, accommodation, extras, description, cta,
+  id,
+  title,
+  cta,
+  top,
+  duration,
+  transport,
+  accommodation,
+  extras,
+  description,
+  bullets,
+  onClick,
 }: Props) {
-  const router = useRouter();
+  const computedBullets =
+    bullets && bullets.length > 0
+      ? bullets
+      : [
+          duration ? `Duración: ${duration}` : undefined,
+          transport ? `Transporte: ${transport}` : undefined,
+          accommodation ? `Alojamiento: ${accommodation}` : undefined,
+          extras ? `Extras: ${extras}` : undefined,
+          description,
+        ].filter(Boolean) as string[];
 
   return (
-    <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col h-full">
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-      <p className="text-2xl font-semibold text-[#D4AF37] mb-4">Hasta {top} USD</p>
-      <ul className="text-gray-700 text-sm mb-6 flex-grow">
-        <li className="mb-1"><strong>Duración:</strong> {duration}</li>
-        <li className="mb-1"><strong>Transporte:</strong> {transport}</li>
-        {dates && <li className="mb-1"><strong>Fechas:</strong> {dates}</li>}
-        <li className="mb-1"><strong>Alojamiento:</strong> {accommodation}</li>
-        <li className="mb-1"><strong>Extras:</strong> {extras}</li>
-      </ul>
-      <p className="text-gray-800 mb-6">{description}</p>
-      <button
-        onClick={() => requireAuth(() => router.push(`/journey/basic-config?type=paws&level=${id}`))}
-        className="mt-auto bg-[#D4AF37] text-gray-900 font-bold py-2 px-4 rounded-full text-center hover:bg-[#EACD65] transition-colors"
-        data-analytics={`cta_paws_${id}`}
-      >
-        {cta}
-      </button>
-    </div>
+    <article
+      id={`paws-card-${id}`}
+      className="group relative flex flex-col justify-between rounded-2xl border border-black/5 bg-white/80 p-6 shadow-sm backdrop-blur transition-all hover:shadow-lg"
+    >
+      <header className="mb-4">
+        <h3 className="font-display text-xl leading-tight">{title}</h3>
+        {typeof top === 'number' && top > 0 && (
+          <p className="mt-1 text-sm text-neutral-600">
+            Presupuesto techo ref.: <span className="font-semibold">USD {top.toLocaleString('en-US')}</span>
+          </p>
+        )}
+      </header>
+
+      {computedBullets.length > 0 && (
+        <ul className="mb-6 space-y-2 text-sm text-neutral-700">
+          {computedBullets.map((b, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="mt-[6px] inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-neutral-400" />
+              <span dangerouslySetInnerHTML={{ __html: b }} />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <footer className="mt-auto">
+        <Link
+          href="/packages/by-type/paws#paws-planner"
+          onClick={(e) => {
+            e.preventDefault();
+            onClick?.();
+          }}
+          className="inline-flex items-center justify-center rounded-full bg-[#D4AF37] px-5 py-2 font-semibold text-neutral-900 transition-colors hover:bg-[#EACD65]"
+        >
+          {cta}
+        </Link>
+      </footer>
+
+      {/* Halo decorativo al hover */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/5 transition group-hover:ring-black/10" />
+    </article>
   );
 }

@@ -7,7 +7,7 @@ import { useUserStore } from '@/store/userStore';
 import AuthModal from '@/components/auth/AuthModal';
 import { ChevronDown, LogOut } from 'lucide-react';
 
-export default function Navbar() {
+export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid' }) {
   const [overlay, setOverlay] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -18,6 +18,7 @@ export default function Navbar() {
 
   // Detectar si estamos sobre el hero
   useEffect(() => {
+    if (variant !== 'auto') return;
     const el = document.getElementById("hero-sentinel");
     if (!el) {
       const onScroll = () => setOverlay(window.scrollY < 1);
@@ -58,10 +59,12 @@ export default function Navbar() {
   }, []);
 
   const headerClass = useMemo(
-    () =>
-      overlay
-        ? "fixed top-0 w-full z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200"
-        : "fixed top-0 w-full z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200",
+    () => {
+      const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
+      return isSolid
+        ? "fixed top-0 w-full z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200"
+        : "fixed top-0 w-full z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200";
+    },
     [overlay]
   );
 

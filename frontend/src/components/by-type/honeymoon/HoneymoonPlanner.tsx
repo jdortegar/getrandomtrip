@@ -6,6 +6,18 @@ import { useRouter } from 'next/navigation';
 
 type Step = 'Presupuesto' | 'Tipo de honeymoon';
 
+type TierData = {
+  key: string;
+  title: string;
+  /** Opcional: no todos los tiers llevan subtítulo */
+  subtitle?: string;
+  priceLabel: string;
+  bullets: string[];
+  priceFootnote?: string;
+  ctaLabel: string;
+  testid?: string;
+};
+
 export default function HoneymoonPlanner() {
   const router = useRouter();
   const [step, setStep] = useState<Step>('Presupuesto');
@@ -20,12 +32,14 @@ export default function HoneymoonPlanner() {
     const s = new URLSearchParams(query || '').get('step');
     if (s === 'budget') {
       setStep('Presupuesto');
-      document.getElementById('honeymoon-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document
+        .getElementById('honeymoon-planner')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
 
-  // --------- TAB 1: Presupuesto (5 tiers) ---------
-  const tiers = useMemo(
+  // --------- TAB 1: Presupuesto (tiers) ---------
+  const tiers: TierData[] = useMemo(
     () => [
       {
         key: 'atelier',
@@ -37,12 +51,13 @@ export default function HoneymoonPlanner() {
           'Fechas: Sin bloqueos.',
           'Alojamiento: Luxury / de autor / cadenas A1.',
           'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium diseñadas a medida para la pareja.',
-          'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas de marcas asociadas.'
+          'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas de marcas asociadas.',
         ],
-        priceFootnote: '📝 Un viaje irrepetible, diseñado como prólogo de una historia que recién comienza.',
+        priceFootnote:
+          '📝 Un viaje irrepetible, diseñado como prólogo de una historia que recién comienza.',
         ctaLabel: 'Creen lo extraordinario →',
         testid: 'hm-tier-atelier',
-      }
+      },
     ],
     []
   );
@@ -92,9 +107,15 @@ export default function HoneymoonPlanner() {
           Pasos cortos, para crear la mejor experiencia.
         </p>
         <ol className="mt-4 flex justify-center gap-3 text-sm text-neutral-500">
-          <li className={step === 'Presupuesto' ? 'font-semibold text-neutral-900' : ''}>Presupuesto</li>
+          <li className={step === 'Presupuesto' ? 'font-semibold text-neutral-900' : ''}>
+            Presupuesto
+          </li>
           <li>·</li>
-          <li className={step === 'Tipo de honeymoon' ? 'font-semibold text-neutral-900' : ''}>Tipo de honeymoon</li>
+          <li
+            className={step === 'Tipo de honeymoon' ? 'font-semibold text-neutral-900' : ''}
+          >
+            Tipo de honeymoon
+          </li>
         </ol>
       </div>
     </div>
@@ -103,12 +124,19 @@ export default function HoneymoonPlanner() {
   return (
     <div className="bg-white">
       {/* Anchor único para scroll + header sticky */}
-      <div id="honeymoon-planner" data-testid="honeymoon-planner" className="h-0 scroll-mt-24" />
+      <div
+        id="honeymoon-planner"
+        data-testid="honeymoon-planner"
+        className="h-0 scroll-mt-24"
+      />
       <Header />
 
       {/* ----- TAB: Presupuesto ----- */}
       {step === 'Presupuesto' && (
-        <section data-testid="hm-tab-presupuesto" className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <section
+          data-testid="hm-tab-presupuesto"
+          className="max-w-7xl mx-auto px-4 md:px-8 py-10"
+        >
           <p className="mb-8 text-center text-neutral-700">
             <span className="mr-1">💡</span>
             En este paso solo definen el presupuesto por persona. Ese será el techo.
@@ -122,13 +150,14 @@ export default function HoneymoonPlanner() {
                 aria-labelledby={`hm-h-${t.key}`}
                 className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
               >
-                <h3 id={`hm-h-${t.key}`} className="font-display text-xl tracking-tightish font-bold">
+                <h3
+                  id={`hm-h-${t.key}`}
+                  className="font-display text-xl tracking-tightish font-bold"
+                >
                   {t.title}
                 </h3>
 
-                {t.subtitle && (
-                  <p className="mt-1 text-sm text-gray-700">{t.subtitle}</p>
-                )}
+                {t.subtitle && <p className="mt-1 text-sm text-gray-700">{t.subtitle}</p>}
 
                 {t.priceLabel && (
                   <>
@@ -157,7 +186,9 @@ export default function HoneymoonPlanner() {
                     onClick={() => {
                       setBudgetTier(t.key);
                       setStep('Tipo de honeymoon');
-                      document.getElementById('honeymoon-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      document
+                        .getElementById('honeymoon-planner')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
                   >
                     {t.ctaLabel} <span aria-hidden>→</span>
@@ -185,7 +216,10 @@ export default function HoneymoonPlanner() {
 
       {/* ----- TAB: Tipo de Honeymoon ----- */}
       {step === 'Tipo de honeymoon' && (
-        <section data-testid="hm-tab-tipo" className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <section
+          data-testid="hm-tab-tipo"
+          className="max-w-7xl mx-auto px-4 md:px-8 py-10"
+        >
           <h3 className="text-center text-lg font-semibold text-neutral-900">
             Elegí el pulso del viaje
           </h3>
