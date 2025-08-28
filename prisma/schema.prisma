@@ -1,0 +1,340 @@
+// prisma/schema.prisma
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User authentication and profile
+model User {
+  id            String   @id @default(cuid())
+  username      String?  @unique
+  email         String?  @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  accounts      Account[]
+  bookings      Booking[]
+  testimonials  Testimonial[]
+  favorites     String[] // Array of destination IDs
+  blogPosts     BlogPost[]
+  blogComments  BlogComment[]
+}
+
+// OAuth accounts for social login
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// Destinations/Cities available for trips
+model Destination {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., 'lisboa', 'madrid'
+  name        String   // e.g., 'Lisboa', 'Madrid'
+  country     String   // e.g., 'Portugal', 'España'
+  label       String   // e.g., '🇵🇹 Lisboa'
+  imageUrl    String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings    Booking[]
+  tripDestinations TripDestination[]
+}
+
+// Trip packages (surprise trips)
+model Trip {
+  id          String   @id @default(cuid())
+  title       String   // e.g., 'ISLA SORPRESA', 'SORPRESA EN EUROPA'
+  description String
+  imageUrl    String
+  link        String   // URL slug
+  category    String   // e.g., 'isla-sorpresa', 'sorpresa-europa'
+  price       Int      // Base price in cents
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings    Booking[]
+  tripDestinations TripDestination[]
+}
+
+// Many-to-many relationship between Trip and Destination
+model TripDestination {
+  id            String   @id @default(cuid())
+  tripId        String
+  destinationId String
+  createdAt     DateTime @default(now())
+
+  // Relations
+  trip          Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  destination   Destination  @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, destinationId])
+}
+
+// Trip types (vuelo_hotel, solo_hotel, experiencia)
+model TripType {
+  id          String   @id @default(cuid())
+  value       String   @unique // e.g., 'vuelo_hotel', 'solo_hotel', 'experiencia'
+  label       String   // e.g., '✈️ Vuelo + Hotel', '🏨 Solo Hotel'
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings    Booking[]
+}
+
+// Main booking entity
+model Booking {
+  id          String   @id @default(cuid())
+  userId      String
+  tripId      String
+  destinationId String
+  tripTypeId  String
+  
+  // Booking details
+  mode        String   // 'reservar' or 'regalar'
+  travelers   Int      // Number of travelers (1-6)
+  startDate   DateTime?
+  endDate     DateTime?
+  
+  // Pricing
+  basePrice   Int      // Base price in cents
+  totalPrice  Int      // Final price with add-ons in cents
+  currency    String   @default("EUR")
+  
+  // Status
+  status      BookingStatus @default(PENDING)
+  
+  // Surprise trip details (revealed 48h before)
+  isRevealed  Boolean  @default(false)
+  revealedAt  DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip        Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  destination Destination  @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  tripType    TripType     @relation(fields: [tripTypeId], references: [id], onDelete: Cascade)
+  addOns      BookingAddOn[]
+  payments    Payment[]
+}
+
+// Add-ons for bookings (extras, insurance, etc.)
+model BookingAddOn {
+  id        String   @id @default(cuid())
+  bookingId String
+  name      String   // e.g., 'Travel Insurance', 'Late Checkout'
+  price     Int      // Price in cents
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  // Relations
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+// Payment tracking
+model Payment {
+  id        String   @id @default(cuid())
+  bookingId String
+  amount    Int      // Amount in cents
+  currency  String   @default("EUR")
+  status    PaymentStatus @default(PENDING)
+  provider  String   // e.g., 'stripe', 'paypal'
+  providerPaymentId String? // External payment ID
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+// Customer testimonials/reviews
+model Testimonial {
+  id             String   @id @default(cuid())
+  userId         String
+  name           String   // Display name
+  avatar         String?
+  rating         Int      // 1-5 stars
+  review         String   // Review text
+  googleReviewUrl String?
+  isApproved     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Newsletter subscriptions
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Blog categories
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., 'Travel Tips', 'Destinations', 'Experiences'
+  slug        String   @unique // e.g., 'travel-tips', 'destinations'
+  description String?
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  posts       BlogPost[]
+}
+
+// Blog posts
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String   // Short description for preview
+  content     String   // Full blog content (can be markdown or HTML)
+  featuredImage String?
+  authorId    String
+  categoryId  String
+  
+  // SEO and metadata
+  metaTitle   String?
+  metaDescription String?
+  keywords    String[] // Array of keywords for SEO
+  
+  // Publishing
+  status      BlogPostStatus @default(DRAFT)
+  publishedAt DateTime?
+  isFeatured  Boolean  @default(false)
+  
+  // Engagement
+  viewCount   Int      @default(0)
+  readTime    Int?     // Estimated reading time in minutes
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category    BlogCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  comments    BlogComment[]
+  tags        BlogPostTag[]
+}
+
+// Blog tags
+model BlogTag {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., 'Lisboa', 'Adventure', 'Food'
+  slug        String   @unique // e.g., 'lisboa', 'adventure', 'food'
+  color       String?  // Hex color for tag display
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  posts       BlogPostTag[]
+}
+
+// Many-to-many relationship between BlogPost and BlogTag
+model BlogPostTag {
+  id        String   @id @default(cuid())
+  postId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag       BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+}
+
+// Blog comments
+model BlogComment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  content   String
+  parentId  String?  // For nested comments/replies
+  
+  // Moderation
+  status    CommentStatus @default(PENDING)
+  isApproved Boolean      @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  post      BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    BlogComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   BlogComment[] @relation("CommentReplies")
+}
+
+// Enums
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
