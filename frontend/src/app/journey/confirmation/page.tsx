@@ -1,104 +1,115 @@
-'use client'
-import TopNav from '@/components/chrome/TopNav'
-import ChatFab from '@/components/chrome/ChatFab'
-import BgCarousel from '@/components/ui/BgCarousel'
-import { useJourneyStore } from '@/store/journeyStore'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { buildICS } from '@/lib/ics'
+'use client';
 
-function useCountdown(target: Date) {
-  const [now, setNow] = useState<Date>(new Date())
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+import ChatFab from '@/components/chrome/ChatFab';
+import BgCarousel from '@/components/ui/BgCarousel';
+import GlassCard from '@/components/ui/GlassCard';
+import { useJourneyStore } from '@/store/journeyStore';
+import { buildICS } from '@/lib/ics';
+
+export default function ConfirmationPage() {
+  const { logistics, type } = useJourneyStore();
+  const [left, setLeft] = useState<string>('—');
+
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000)
-    return () => clearInterval(id)
-  }, [])
-  const diff = Math.max(0, target.getTime() - now.getTime())
-  const s = Math.floor(diff / 1000)
-  const d = Math.floor(s / 86400)
-  const h = Math.floor((s % 86400) / 3600)
-  const m = Math.floor((s % 3600) / 60)
-  const ss = s % 60
-  return { d, h, m, s: ss }
-}
+    const tick = () => {
+      if (!logistics.startDate) return setLeft('—');
+      const now = new Date();
+      const start = new Date(logistics.startDate);
+      const ms = +start - +now;
+      if (ms <= 0) return setLeft('¡Es hoy!');
+      const d = Math.floor(ms / 86400000);
+      const h = Math.floor((ms % 86400000) / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      setLeft(`${d}d ${h}h ${m}m`);
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, [logistics.startDate]);
 
-export default function Confirmation() {
-  const { logistics, basePriceUsd } = useJourneyStore()
-  // reveal = 48h antes de la salida (o 72h desde ahora si no hay fecha)
-  const start = logistics.startDate ? new Date(logistics.startDate) : new Date(Date.now() + 72*3600*1000)
-  const reveal = new Date(start.getTime() - 48*3600*1000)
-  const countdown = useCountdown(reveal)
+  // --- ICS seguro: pasamos Date|string válidos y NO reenvolvemos la data URL ---
+  const startDate =
+    logistics.startDate ? new Date(logistics.startDate) : undefined;
+  const endDate =
+    logistics.endDate
+      ? new Date(logistics.endDate)
+      : startDate
+        ? new Date(startDate.getTime() + (logistics.nights || 1) * 86400000)
+        : undefined;
 
-  const icsHref = buildICS(
-    'Randomtrip: tu viaje',
-    logistics.startDate || new Date().toISOString(),
-    logistics.endDate || new Date(Date.now() + 3*24*3600*1000).toISOString(),
-    logistics.city?.name || ''
-  )
-
-  const shareText = `¡Viaje reservado en Randomtrip! Salida: ${logistics.startDate ?? 'próximamente'} · ${logistics.pax || 1} viajeros · Total aprox: USD ${basePriceUsd}.`
-  const wa = `https://wa.me/?text=${encodeURIComponent(shareText)}`
-  const email = `mailto:?subject=${encodeURIComponent('Mi viaje Randomtrip')}&body=${encodeURIComponent(shareText)}`
-
-  const tryWebShare = async () => {
-    if (typeof navigator !== 'undefined' && (navigator as any).share) {
-      try { await (navigator as any).share({ text: shareText, url: location.origin }) } catch {}
-    } else {
-      alert('Compartir del navegador no disponible en este dispositivo.')
-    }
-  }
+  const title = `${(type || 'randomtrip')}`.toUpperCase() + ' – Viaje confirmado';
+  const location = [logistics.city?.name, logistics.country?.name].filter(Boolean).join(', ');
+  const icsHref = buildICS(title, startDate, endDate, location);
 
   return (
     <>
-      <BgCarousel />
-      <TopNav />
+      <Navbar />
+      <div id="hero-sentinel" aria-hidden className="h-px w-px" />
+      <BgCarousel scrim={0.6} />
+      <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16 max-w-3xl">
+        <GlassCard>
+          <div className="p-6 text-center">
+            <div className="text-2xl font-bold text-neutral-900">¡Viaje reservado!</div>
+            <p className="mt-2 text-neutral-700">
+              Tu destino será revelado 48 h antes del viaje.
+            </p>
+
+            <div className="mt-4 inline-flex items-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-neutral-900">
+              <span className="font-medium">{logistics.city?.name ?? '—'}</span>
+              <span>·</span>
+              <span>{logistics.startDate ?? '—'} → {logistics.endDate ?? '—'}</span>
+            </div>
+
+            <div className="mt-4 text-sm text-neutral-700">
+              Comienza en <span className="font-semibold text-neutral-900">{left}</span>
+            </div>
+
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <a
+                href={icsHref}
+                download="randomtrip.ics"
+                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
+              >
+                Agregar al calendario
+              </a>
+
+              {/* compartir rápido */}
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent('¡Viaje reservado en Randomtrip! 🎒')}`}
+                target="_blank"
+                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
+              >
+                Compartir por WhatsApp
+              </a>
+              <a
+                href={`mailto:?subject=Mi%20Randomtrip&body=${encodeURIComponent('¡Ya tengo mi Randomtrip!')}`}
+                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
+              >
+                Compartir por Email
+              </a>
+            </div>
+
+            <div className="mt-6 flex justify-center gap-3">
+              <Link
+                href="/dashboard"
+                className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
+              >
+                Ir a Mis Viajes
+              </Link>
+              <Link
+                href="/"
+                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
+              >
+                Volver al inicio
+              </Link>
+            </div>
+          </div>
+        </GlassCard>
+      </main>
       <ChatFab />
-      <div className="container mx-auto px-4 pb-20 pt-28">
-        <div className="mx-auto max-w-2xl rounded-3xl bg-white/95 p-6 text-center shadow-sm ring-1 ring-neutral-200 backdrop-blur">
-          <h1 className="text-2xl font-semibold">¡Gracias por confiar en Randomtrip!</h1>
-          <p className="mt-2 text-neutral-600">
-            Tu destino será revelado <strong>48 horas antes</strong> de la salida.
-          </p>
-
-          <div className="mt-6 grid grid-cols-4 gap-3 text-center">
-            {[{
-              label:'Días', val: countdown.d},
-              {label:'Horas', val: countdown.h},
-              {label:'Min',  val: countdown.m},
-              {label:'Seg',  val: countdown.s},
-            ].map(x=>(<div key={x.label} className="rounded-xl bg-neutral-50 p-4 ring-1 ring-neutral-200">
-                <div className="text-2xl font-semibold">{x.val.toString().padStart(2,'0')}</div>
-                <div className="text-xs text-neutral-600">{x.label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 grid gap-2 sm:grid-cols-2">
-            <a href={icsHref} download="randomtrip.ics"
-               className="rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm hover:bg-neutral-50">
-              Añadir al calendario (.ics)
-            </a>
-            <button onClick={tryWebShare}
-              className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-violet-500">
-              Compartir (Web Share)
-            </button>
-          </div>
-
-          <div className="mt-3 flex justify-center gap-2 text-sm">
-            <a className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 hover:bg-neutral-50" href={wa} target="_blank">WhatsApp</a>
-            <a className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 hover:bg-neutral-50" href={email}>Email</a>
-          </div>
-
-          <div className="mt-6 grid gap-2 sm:grid-cols-2">
-            <Link href="/" className="rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm hover:bg-neutral-50">
-              Volver al inicio
-            </Link>
-            <Link href="/dashboard" className="rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800">
-              Ir a Mis Viajes
-            </Link>
-          </div>
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/&gt;
-  )
+    </>
+  );
 }

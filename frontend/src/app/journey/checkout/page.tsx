@@ -1,75 +1,72 @@
-'use client'
-import TopNav from '@/components/chrome/TopNav'
-import ChatFab from '@/components/chrome/ChatFab'
-import BgCarousel from '@/components/ui/BgCarousel'
-import { useState } from 'react'
-import Link from 'next/link'
-import { CreditCard, Wallet, Apple } from 'lucide-react'
+'use client';
 
-type Method = 'mercadopago'|'paypal'|'applepay'|'stripe'
+import Navbar from '@/components/Navbar';
+import ChatFab from '@/components/chrome/ChatFab';
+import BgCarousel from '@/components/ui/BgCarousel';
+import GlassCard from '@/components/ui/GlassCard';
+import { useRouter } from 'next/navigation';
+import { useJourneyStore } from '@/store/journeyStore';
+import { computeAddonsCostPerTrip, computeFiltersCostPerTrip } from '@/lib/pricing';
 
-export default function CheckoutGateway() {
-  const [method, setMethod] = useState<Method>('mercadopago')
+export default function CheckoutPage() {
+  const router = useRouter();
+  const { basePriceUsd, logistics, filters, addons } = useJourneyStore();
+  const pax = logistics.pax || 1;
+
+  const filtersTrip = computeFiltersCostPerTrip(filters, pax);
+  const { totalTrip: addonsTrip } = computeAddonsCostPerTrip(addons.selected, basePriceUsd, filtersTrip, pax);
+  const total = (basePriceUsd + filtersTrip / pax + addonsTrip / pax) * pax;
+
+  const goConfirm = () => router.push('/journey/confirmation');
 
   return (
     <>
-      <BgCarousel />
-      <TopNav />
-      <ChatFab />
-      <div className="container mx-auto px-4 pb-16 pt-28">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-          <div className="space-y-6">
-            <h1 className="text-xl font-semibold">Elegí tu método de pago</h1>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              {[{
-                id:'mercadopago', label:'Mercado Pago', icon:<Wallet size={18}/> },
-                { id:'paypal',      label:'PayPal',       icon:<img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="" className="h-4" /> },
-                { id:'applepay',    label:'Apple Pay',    icon:<Apple size={18}/> },
-                { id:'stripe',      label:'Tarjeta (Stripe)', icon:<CreditCard size={18}/> },
-              ].map(({id,label,icon})=>(<button
-                  key={id}
-                  onClick={()=>setMethod(id as Method)}
-                  className={`flex items-center justify-between rounded-2xl border p-4 text-left shadow-sm backdrop-blur ring-1 ${
-                    method===id ? 'bg-white ring-violet-400' : 'bg-white/85 ring-neutral-200 hover:bg-white'
-                  }`}
-                >
-                  <span className="font-medium">{label}</span>
-                  {icon}
-                </button>
-              ))}
-            </div>
-
-            <div className="rounded-2xl bg-white/90 ring-1 ring-neutral-200 backdrop-blur p-5">
-              <h3 className="text-base font-semibold mb-2">Formulario (dummy)</h3>
-              <p className="text-sm text-neutral-600">
-                Aquí irá el formulario real del proveedor seleccionado. Por ahora es un bosquejo sin conexión.
+      <Navbar />
+      <div id="hero-sentinel" aria-hidden className="h-px w-px" />
+      <BgCarousel scrim={0.65} />
+      <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6">
+        <div className="space-y-4">
+          <GlassCard>
+            <div className="p-5">
+              <h1 className="text-lg font-semibold text-neutral-900 mb-3">Pasarela de pago</h1>
+              <p className="text-sm text-neutral-700">
+                Elegí un método. Todos son <strong>demo</strong> por ahora.
               </p>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                <input className="rounded-lg border border-neutral-300 px-3 py-2" placeholder="Nombre del titular" />
-                <input className="rounded-lg border border-neutral-300 px-3 py-2" placeholder="Email de contacto" />
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                <input className="rounded-lg border border-neutral-300 px-3 py-2" placeholder="Nº tarjeta / ID cuenta" />
-                <input className="rounded-lg border border-neutral-300 px-3 py-2" placeholder="Vencimiento" />
-                <input className="rounded-lg border border-neutral-300 px-3 py-2" placeholder="CVV" />
-              </div>
-              <div className="mt-5 flex gap-2">
-                <Link href="/journey/summary" className="rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-sm hover:bg-neutral-50">← Volver</Link>
-                <Link href="/journey/confirmation" className="rounded-xl bg-violet-600 px-4 py-2.5 text-white text-sm font-medium hover:bg-violet-500">Pagar ahora (dummy)</Link>
-              </div>
-              <p className="mt-2 text-xs text-neutral-500">* Apple Pay sólo disponible en navegadores compatibles.</p>
-            </div>
-          </div>
 
-          <aside className="xl:sticky xl:top-28 h-max">
-            <div className="rounded-2xl bg-white/95 ring-1 ring-neutral-200 backdrop-blur p-5">
-              <h3 className="text-base font-semibold mb-3">Detalle del pago</h3>
-              <p className="text-sm text-neutral-600">Resumen y total del pedido se muestran aquí (reusar tu SummaryCard si preferís).</p>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {['Mercado Pago', 'PayPal', 'Apple Pay', 'Stripe'].map((brand) => (
+                  <button
+                    key={brand}
+                    onClick={goConfirm}
+                    className="rounded-xl border border-neutral-300 bg-white py-4 text-neutral-900 hover:bg-neutral-50"
+                  >
+                    {brand}
+                  </button>
+                ))}
+              </div>
             </div>
-          </aside>
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/&gt;
-  )
+          </GlassCard>
+        </div>
+
+        <aside>
+          <GlassCard>
+            <div className="p-5 space-y-3">
+              <h2 className="text-base font-semibold text-neutral-900">Resumen</h2>
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-700">Total</span>
+                <span className="font-semibold text-neutral-900">USD {total.toFixed(2)}</span>
+              </div>
+              <button
+                onClick={goConfirm}
+                className="w-full rounded-xl bg-violet-600 text-white py-2.5 font-medium hover:bg-violet-500"
+              >
+                Pagar ahora (demo)
+              </button>
+            </div>
+          </GlassCard>
+        </aside>
+      </main>
+      <ChatFab />
+    </>
+  );
 }
