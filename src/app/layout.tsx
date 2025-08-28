@@ -4,6 +4,7 @@ import { Open_Sans, Roboto } from 'next/font/google';
 import './globals.css';
 
 import { Navigation } from '@/components/Navigation';
+import { SessionProvider } from '@/components/providers/SessionProvider';
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -30,8 +31,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={`${openSans.variable} ${roboto.variable} antialiased`}>
-        <Navigation />
-        {children}
+        <SessionProvider>
+          <Navigation />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
