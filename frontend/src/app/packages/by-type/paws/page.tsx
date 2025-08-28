@@ -35,34 +35,34 @@ export default function PawsPage() {
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://getrandomtrip.com';
 
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'BreadcrumbList',
-        'itemListElement': [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `${base}/` },
-          { '@type': 'ListItem', position: 2, name: 'Packages', item: `${base}/packages` },
-          { '@type': 'ListItem', position: 3, name: 'By Type', item: `${base}/packages/by-type/honeymoon` },
-          { '@type': 'ListItem', position: 4, name: 'PAWS', item: `${base}/packages/by-type/paws` },
-        ],
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${base}/` },
+        { '@type': 'ListItem', position: 2, name: 'Packages', item: `${base}/packages` },
+        { '@type': 'ListItem', position: 3, name: 'By Type', item: `${base}/packages/by-type` },
+        { '@type': 'ListItem', position: 4, name: 'PAWS', item: `${base}/packages/by-type/paws` },
+      ],
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${base}/packages/by-type/paws#webpage`,
+      url: `${base}/packages/by-type/paws`,
+      name: 'PAWS© RANDOMTRIP | Viajes con mascotas',
+      inLanguage: 'es',
+      isPartOf: { '@id': `${base}/#website` },
+      description:
+        'Viajar con tu mascota sin estrés: hoteles pet-friendly, actividades al aire libre y logística resuelta.',
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: `${base}/images/journey-types/paws-card.jpg`,
       },
-      {
-        '@type': 'WebPage',
-        '@id': `${base}/packages/by-type/paws#webpage`,
-        url: `${base}/packages/by-type/paws`,
-        name: 'PAWS© RANDOMTRIP | Viajes con mascotas',
-        inLanguage: 'es',
-        isPartOf: { '@id': `${base}/#website` },
-        description:
-          'Viajar con tu mascota sin estrés: hoteles pet-friendly, actividades al aire libre y logística resuelta.',
-        primaryImageOfPage: {
-          '@type': 'ImageObject',
-          url: `${base}/images/journey-types/paws-card.jpg`,
-        },
-        breadcrumb: { '@id': `${base}/packages/by-type/paws#breadcrumb` },
-      },
-    ],
-  };
+      breadcrumb: { '@id': `${base}/packages/by-type/paws#breadcrumb` },
+    },
+  ],
+};
 
   return (
     <main className="relative">
