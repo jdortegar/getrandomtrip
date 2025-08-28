@@ -1,0 +1,13 @@
+# netlify.toml (root of repo)
+[build]
+  base    = "frontend"          # build inside the Next.js app
+  command = "npm ci && npm run build"
+  publish = ".next"             # publish dir relative to 'base'
+
+[build.environment]
+  NODE_VERSION = "20.12.2"      # LTS works well with Next 14
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Use Netlify's Next.js runtime
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
