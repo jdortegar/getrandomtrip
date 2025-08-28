@@ -11,7 +11,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   debug: process.env.NODE_ENV === 'development',
   callbacks: {
-    async signIn({ account }) {
+    async signIn({ account, user }) {
       // Allow OAuth without email verification
       if (account?.provider === 'google') {
         return true;
@@ -26,6 +26,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
     async jwt({ token }) {
       return token;
+    },
+    async redirect({ url, baseUrl }) {
+      // Handle redirects after OAuth
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
   adapter: PrismaAdapter(db),

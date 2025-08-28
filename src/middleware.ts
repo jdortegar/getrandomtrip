@@ -19,10 +19,12 @@ export default auth((req) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
+  // Allow all API auth routes (including callbacks) to pass through
   if (isApiAuthRoute) {
     return;
   }
 
+  // If user is on auth routes and is logged in, redirect to dashboard
   if (isAuthRoute) {
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
@@ -30,12 +32,12 @@ export default auth((req) => {
     return;
   }
 
-  // Redirect unauthenticated users to login for protected routes
+  // If user is not logged in and trying to access protected routes, redirect to login
   if (!isLoggedIn && !isPublicRoute) {
     return Response.redirect(new URL('/auth/login', nextUrl));
   }
 
-  // For any other route that's not explicitly handled, allow it
+  // Allow all other routes
   return;
 });
 
