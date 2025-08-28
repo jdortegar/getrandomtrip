@@ -5,9 +5,21 @@ import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 
 type Step = 'Intro' | 'Presupuesto' | 'Grupo & Alma' | 'Afinar detalles';
 
+/** Compat entre nombres “viejos” (price/cta) y “nuevos” (priceLabel/ctaLabel) */
+type TierData = {
+  key: string;
+  title: string;
+  bullets: string[];
+  price?: string;          // versión vieja
+  priceLabel?: string;     // versión nueva
+  priceFootnote?: string;
+  cta?: string;            // versión vieja
+  ctaLabel?: string;       // versión nueva
+};
+
 const cardBase =
-  "rounded-2xl border border-neutral-200 bg-white shadow-sm p-5 md:p-6 " +
-  "flex flex-col justify-between text-neutral-900";
+  'rounded-2xl border border-neutral-200 bg-white shadow-sm p-5 md:p-6 ' +
+  'flex flex-col justify-between text-neutral-900';
 
 export default function GroupPlanner() {
   const [step, setStep] = useState<Step>('Intro');
@@ -24,7 +36,7 @@ export default function GroupPlanner() {
   }, []);
 
   // --------- TAB 2: Presupuesto ---------
-  const tiers = useMemo(
+  const tiers = useMemo<TierData[]>(
     () => [
       {
         key: 'essenza',
@@ -311,12 +323,12 @@ export default function GroupPlanner() {
                   {t.title}
                 </h4>
 
-                {t.priceLabel && (
+                {(t.priceLabel ?? t.price) && (
                   <>
                     <p className="mt-4 font-display text-3xl text-[var(--rt-terracotta)]">
-                      {t.priceLabel}
+                      {t.priceLabel ?? t.price}
                     </p>
-                    <p className="text-xs text-gray-900">por persona</p>
+                    <p className="text-xs text-gray-900">{t.priceFootnote ?? 'por persona'}</p>
                   </>
                 )}
 
@@ -334,7 +346,7 @@ export default function GroupPlanner() {
                   <button
                     type="button"
                     className="btn-card w-full"
-                    aria-label={t.ctaLabel}
+                    aria-label={t.ctaLabel ?? t.cta}
                     onClick={() => {
                       setBudgetTier(t.key);
                       setStep('Grupo & Alma');
@@ -342,7 +354,7 @@ export default function GroupPlanner() {
                     }}
                     aria-controls="group-soul"
                   >
-                    {t.ctaLabel} <span aria-hidden>→</span>
+                    {t.ctaLabel ?? t.cta} <span aria-hidden>→</span>
                   </button>
                 </div>
               </div>
