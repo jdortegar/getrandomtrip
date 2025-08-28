@@ -1,8 +1,7 @@
-# netlify.toml (en la raíz del repo)
 [build]
   base    = "frontend"
   command = "npm ci && npm run build"
-  publish = "frontend/.next"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20.16.0"  # o 20.x estable
