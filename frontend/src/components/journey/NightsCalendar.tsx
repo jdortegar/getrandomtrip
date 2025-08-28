@@ -9,17 +9,24 @@ import { addDays, fmtISO, toDateOnly } from '@/lib/date';
 import { LevelSlug } from '@/store/journeyStore';
 
 function Chip({
-  active, onClick, children,
-}: { active:boolean; onClick:()=>void; children:React.ReactNode }) {
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
       className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm border transition
-        ${active
-          ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm'
-          : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200'
+        ${
+          active
+            ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm'
+            : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200'
         }`}
     >
       {children}
@@ -28,10 +35,10 @@ function Chip({
 }
 
 const levelNames: Record<LevelSlug, string> = {
-  'essenza': 'Essenza',
+  essenza: 'Essenza',
   'modo-explora': 'Modo Explora',
   'explora-plus': 'Explora+',
-  'bivouac': 'Bivouac',
+  bivouac: 'Bivouac',
   'atelier-getaway': 'Atelier Getaway',
 };
 
@@ -39,11 +46,15 @@ export default function NightsCalendar() {
   const { level, logistics, setPartial } = useJourneyStore();
   const { startDate, nights } = logistics;
 
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(startDate ? toDateOnly(new Date(startDate)) : undefined);
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(
+    startDate ? toDateOnly(new Date(startDate)) : undefined
+  );
   const [error, setError] = useState<string | null>(null);
 
-  const max = getMaxNights(level) === 'custom' ? 14 : (getMaxNights(level) as number);
-  const options = Array.from({length: max}, (_,i)=> i+1); // noches: 1..max
+  // Normalizamos el max: tomamos el valor crudo y derivamos un número seguro
+  const maxRaw = getMaxNights(level); // number | 'custom'
+  const safeMax = typeof maxRaw === 'number' ? maxRaw : 14; // fallback razonable
+  const options = Array.from({ length: safeMax }, (_, i) => i + 1); // noches: 1..safeMax
 
   useEffect(() => {
     if (startDate) {
@@ -52,8 +63,8 @@ export default function NightsCalendar() {
   }, [startDate]);
 
   const handleNightChange = (numNights: number) => {
-    if (max !== 'custom' && numNights > max) {
-      setError(`Con ${levelNames[level]} se permiten hasta ${max} noches.`);
+    if (typeof maxRaw === 'number' && numNights > maxRaw) {
+      setError(`Con ${levelNames[level]} se permiten hasta ${maxRaw} noches.`);
       return;
     }
     setError(null);
@@ -85,9 +96,9 @@ export default function NightsCalendar() {
     <div className="mt-6">
       <h3 className="font-semibold">Duración de la aventura</h3>
       <div className="flex flex-wrap gap-2 mb-3">
-        {options.map(n => (
-          <Chip key={n} active={n===nights} onClick={()=>handleNightChange(n)}>
-            <span className="font-semibold">{n+1} días</span>
+        {options.map((n) => (
+          <Chip key={n} active={n === nights} onClick={() => handleNightChange(n)}>
+            <span className="font-semibold">{n + 1} días</span>
             <span className="opacity-80">/ {n} noches</span>
           </Chip>
         ))}
@@ -97,13 +108,18 @@ export default function NightsCalendar() {
       <div className="p-4 border rounded-lg mt-4">
         <DayPicker
           mode="single"
+          required
           selected={selectedDay}
           onSelect={handleDayClick}
           numberOfMonths={2}
           disabled={{ before: toDateOnly(new Date()) }}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
-          footer={<p className="text-sm text-neutral-500 mt-2">Seleccioná la fecha de salida. Las noches se calculan con el selector superior.</p>}
+          footer={
+            <p className="text-sm text-neutral-500 mt-2">
+              Seleccioná la fecha de salida. Las noches se calculan con el selector superior.
+            </p>
+          }
         />
       </div>
     </div>

@@ -1,10 +1,22 @@
 'use client';
 import type { PropsWithChildren } from 'react';
 
-export default function GlassCard({ children }: PropsWithChildren) {
+type GlassCardProps = PropsWithChildren<{
+  className?: string;
+  /** Opcional: cambiar el tag raíz (div, section, article, etc.) */
+  as?: keyof JSX.IntrinsicElements;
+}>;
+
+export default function GlassCard({
+  children,
+  className = '',
+  as: Tag = 'div',
+}: GlassCardProps) {
   return (
-    <div className="rounded-2xl bg-white/95 backdrop-blur-md ring-1 ring-neutral-200 shadow-sm text-neutral-900">
+    <Tag
+      className={`rounded-2xl bg-white/95 backdrop-blur-md ring-1 ring-neutral-200 shadow-sm text-neutral-900 ${className}`}
+    >
       {children}
-    </div>
+    </Tag>
   );
 }

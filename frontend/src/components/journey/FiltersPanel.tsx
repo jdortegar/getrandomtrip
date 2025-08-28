@@ -9,7 +9,7 @@ export default function FiltersPanel() {
 
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: (typeof filters)[K]) => {
         const newFilters = { ...filters, [key]: value };
-        const filtersCostUsd = computeFiltersCost(newFilters, logistics.pax);
+        const filtersCostUsd = computeFiltersCost(newFilters, logistics, basePriceUsd);
         const totalPerPaxUsd = basePriceUsd + (filtersCostUsd / logistics.pax);
         setPartial({ filters: newFilters, filtersCostUsd, totalPerPaxUsd });
     };

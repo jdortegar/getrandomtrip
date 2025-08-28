@@ -1,6 +1,7 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
-import React, { useMemo, useState } from 'react';
+import React, { Suspense, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type Pace = 'relajado' | 'balanceado' | 'intenso';
@@ -15,7 +16,7 @@ type FiltersPayload = {
   accessibility?: string[];// ['pet-friendly','step-free','quiet']
 };
 
-export default function FiltersPage() {
+function FiltersPageClient() {
   const router = useRouter();
   const sp = useSearchParams();
 
@@ -55,7 +56,7 @@ export default function FiltersPage() {
       <main className="min-h-screen bg-white text-neutral-900 flex items-center justify-center p-8">
         <div className="max-w-xl text-center">
           <h1 className="text-3xl font-bold mb-2">Falta el bookingId</h1>
-          <p className="text-neutral-600">Vuelve atrás y reintenta desde la landing.</p>
+          <p className="text-neutral-600">Volvé atrás y reintentá desde la landing.</p>
         </div>
       </main>
     );
@@ -81,7 +82,7 @@ export default function FiltersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error('PATCH /bookings fallo');
+      if (!res.ok) throw new Error('PATCH /bookings falló');
       router.push(`/journey/basic-config?bookingId=${bookingId}`);
     } catch (e: any) {
       setError(e?.message ?? 'Error inesperado');
@@ -150,8 +151,8 @@ export default function FiltersPage() {
 
           <Box title="Flexibilidad de fechas">
             <div className="flex gap-2 flex-wrap">
-              {['exactas',' +/- 3 días',' +/- 7 días'].map(opt => (
-                <Chip key={opt} on={datesFlex===opt} label={opt} onClick={() => setDatesFlex(opt as any)} />
+              {(['exactas', '+/- 3 días', '+/- 7 días'] as const).map(opt => (
+                <Chip key={opt} on={datesFlex===opt} label={opt} onClick={() => setDatesFlex(opt)} />
               ))}
             </div>
           </Box>
@@ -209,5 +210,13 @@ export default function FiltersPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function FiltersPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-neutral-50 p-8">Cargando filtros…</div>}>
+      <FiltersPageClient />
+    </Suspense>
   );
 }
