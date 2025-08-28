@@ -1,5 +1,8 @@
-// frontend/src/app/packages/by-type/group/page.tsx
+
+
 import type { Metadata } from 'next';
+import React from 'react';
+
 import GroupHero from '@/components/by-type/group/GroupHero';
 import GroupPlanner from '@/components/by-type/group/GroupPlanner';
 import GroupInspiration from '@/components/by-type/group/GroupInspiration';
@@ -30,17 +33,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export default function GroupPage() {
   return (
     <main className="relative">
-      {/* Sección 1: Hero */}
+      {/* Sección 1: Hero + chips + CTAs */}
       <GroupHero />
-      {/* Sección 2: Wizard */}
+
+      {/* Sección 2: Wizard con tabs */}
       <GroupPlanner />
+
       {/* Sección 3: Blog / Inspiración */}
       <GroupInspiration />
+
       {/* Sección 4: Testimonios */}
       <GroupTestimonials />
+
       <FooterLanding />
     </main>
   );

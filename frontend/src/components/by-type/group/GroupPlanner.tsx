@@ -28,78 +28,73 @@ export default function GroupPlanner() {
     () => [
       {
         key: 'essenza',
-        title: 'Essenza — Lo esencial, compartido.',
-        priceLabel: 'Hasta 350 USD · por persona',
+        title: '🌱 Essenza — Lo esencial con estilo',
+        price: '350 USD · por persona',
         bullets: [
-          'Duración: Máximo 2 noches.',
-          'Transporte: Low cost (buses o vuelos off-peak). Asientos, carry-on y bodega no incluidos.',
-          'Fechas: Menor disponibilidad; con restricciones y bloqueos.',
+          'Duración: Máx 2 noches',
+          'Transporte: Low cost (buses o vuelos off-peak). Selección de asiento, carry-on y bodega no incluidos.',
+          'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
           'Alojamiento: Midscale (3★ o equivalentes).',
-          'Extras: Guía esencial para que el grupo disfrute sin complicaciones + recomendaciones simples para moverse juntos.',
+          'Extras: Guía esencial con recomendaciones simples para el grupo.',
+          '📝 Una escapada simple para sincronizar agendas y reírse juntos otra vez.',
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Activen su Essenza',
-        testid: 'cta-tier-essenza',
+        cta: 'Reservar fácil →',
       },
       {
         key: 'explora',
-        title: 'Modo Explora — Activo y flexible, en equipo.',
-        priceLabel: 'Hasta 500 USD · por persona',
+        title: '🌿 Modo Explora — Activo y flexible',
+        price: '500 USD · por persona',
         bullets: [
-          'Duración: Hasta 3 noches.',
-          'Transporte: Multimodal, horarios flexibles. En vuelos: asientos, carry-on y bodega no incluidos.',
-          'Fechas: Mayor disponibilidad; algunos bloqueos en feriados.',
-          'Alojamiento: Mid-to-Upscale.',
-          'Extras: Randomtrip Decode con pistas para descubrir en grupo + sugerencias de actividades para distintos ritmos.',
+          'Duración: Hasta 3 noches',
+          'Transporte: Multimodal, horarios flexibles. Selección de asiento, carry-on y bodega no incluidos.',
+          'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.',
+          'Alojamiento: Midscale – Upper Midscale.',
+          'Extras: Guía Randomtrip Decode con actividades y sugerencias para distintos ritmos dentro del grupo.',
+          '📝 Planes flexibles que funcionan para distintos gustos y energías dentro del grupo.',
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Activen su Modo Explora',
-        testid: 'cta-tier-explora',
+        cta: 'Activen su modo Explora →',
       },
       {
         key: 'exploraPlus',
-        title: 'Explora+ — Más capas, más momentos (en plural).',
-        priceLabel: 'Hasta 850 USD · por persona',
+        title: '💫 Explora+ — Más capas, más momentos',
+        price: '850 USD · por persona',
         bullets: [
-          'Duración: Hasta 4 noches.',
-          'Transporte: Multimodal. En vuelos: asientos, carry-on y bodega no incluidos.',
-          'Fechas: Alta disponibilidad, incluso en feriados (con bloqueos festivos).',
+          'Duración: Hasta 4 noches',
+          'Transporte: Multimodal. Carry-on incluido; selección de asiento y bodega no incluidos.',
+          'Fechas: Alta disponibilidad, incluso en feriados/puentes.',
           'Alojamiento: Upscale asegurado.',
-          'Extras: Decode personalizado + 1 experiencia curada especial para el grupo (ej.: brindis privado, caminata guiada al atardcer).',
+          'Extras: Decode personalizado + 1 experiencia curada para el grupo (ej.: brindis privado o salida guiada).',
+          '📝 Más noches, más brindis, más anécdotas que se vuelven leyenda compartida.',
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Suban de nivel con Explora+',
-        testid: 'cta-tier-exploraplus',
+        cta: 'Suban de nivel →',
       },
       {
         key: 'bivouac',
-        title: 'Bivouac — Curaduría artesanal para su tribu.',
-        priceLabel: 'Hasta 1200 USD · por persona',
+        title: '🔥 Bivouac — Curaduría artesanal',
+        price: '1200 USD · por persona',
         bullets: [
-          'Duración: Hasta 5 noches.',
-          'Transporte: Multimodal. En vuelos: asientos y carry-on incluidos.',
+          'Duración: Hasta 5 noches',
+          'Transporte: Multimodal. Carry-on incluido; selección de asiento/bodega opcional.',
           'Fechas: Sin bloqueos.',
-          'Alojamiento: Upper-Upscale (boutique, diseño, stays con alma).',
-          'Extras: Concierge Advisor + 1 experiencia premium para el grupo (p. ej., mesa del chef / salida privada) + perks (early/late & upgrade sujetos a dispo).',
+          'Alojamiento: Upper Upscale (boutique, diseño, stays con alma).',
+          'Extras: Concierge Advisor + 1 experiencia premium grupal (ej.: mesa del chef, excursión privada) + perks (early/late check-out, upgrades).',
+          '📝 Un viaje artesanal que convierte a cualquier grupo en una tribu.',
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Viajen distinto con Bivouac',
-        testid: 'cta-tier-bivouac',
+        cta: 'Viajen distinto →',
       },
       {
         key: 'atelier',
-        title: 'Atelier Getaway — Distinción, a medida (Group Edition).',
-        priceLabel: 'Desde 1200 USD · por persona',
+        title: '✨ Atelier Getaway — Distinción, sin esfuerzo',
+        price: 'Desde 1200 USD · por persona',
         bullets: [
-          'Duración: Customizable.',
+          'Duración: Customizable',
+          'Transporte: Multimodal / a medida.',
+          'Fechas: Sin bloqueos.',
           'Alojamiento: Luxury / de autor / cadenas A1.',
-          'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7.',
-          'Incluye: 2+ experiencias premium diseñadas a la medida del grupo (celebraciones, milestones, team-bonding).',
-          'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones de marcas asociadas.',
+          'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium a medida para el grupo (celebraciones, milestones, team-bonding). Perks (traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas).',
+          '📝 La experiencia premium que convierte cualquier celebración en inolvidable.',
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'A un clic de lo extraordinario — Atelier',
-        testid: 'cta-tier-atelier',
+        cta: 'A un clic de lo extraordinario →',
       },
     ],
     []
@@ -423,7 +418,7 @@ export default function GroupPlanner() {
               groupAlma: groupAlma ?? '',
               almaOptions: selectedKeys.join(','),
             }).toString();
-            window.location.href = `/journey/experience-level?${q}`;
+            window.location.href = `/journey/basic-config?${q}`;
           }}
         />
       )}
@@ -431,7 +426,7 @@ export default function GroupPlanner() {
       {step === 'Afinar detalles' && !groupAlma && (
         <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
           <div className="rounded-xl border border-neutral-200 bg-white p-6">
-            <p className="text-neutral-700">Elegí primero un grupo en “Grupo & Alma”.</p>
+            <p className="text-neutral-700">Elegí primero un alma del viaje.</p>
           </div>
           <div className="mt-8 text-center">
             <button

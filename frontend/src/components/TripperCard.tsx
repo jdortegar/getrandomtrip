@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 
 type TripperCardProps = {
   name: string;
@@ -10,53 +11,62 @@ type TripperCardProps = {
   bio?: string;
 };
 
-export default function TripperCard({ name, img, slug, bio = 'Bio coming soon.' }: TripperCardProps) {
+export default function TripperCard({ name, img, slug, bio }: TripperCardProps) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const panelId = `bio-panel-${slug}`;
+  const bioId = `bio-${slug}`;
 
   return (
-    <div className="max-w-[280px] w-full mx-auto">
-      {/* Foto + Nombre (clic navega al perfil del tripper) */}
-      <button
-        type="button"
-        onClick={() => router.push(`/packages/${slug}`)}
-        className="block w-full text-left group focus:outline-none"
-        aria-label={`Ir al perfil de ${name}`}
-      >
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-md">
-          <img
+    <div className="group rounded-2xl overflow-hidden shadow-xl bg-white">
+      {/* Foto + nombre: llevan a la landing del tripper */}
+      <Link href={`/packages/${slug}`} className="block">
+        <div className="relative w-full pt-[66%]">
+          <Image
             src={img}
             alt={name}
-            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition"
-            loading="lazy"
+            fill
+            sizes="(min-width:1024px) 220px, (min-width:768px) 33vw, 50vw"
+            className="object-cover transition-all duration-500 filter sepia group-hover:sepia-0"
+            priority={false}
           />
         </div>
-        <div className="mt-3 text-center">
-          <h3 className="text-lg font-serif italic text-gray-900">{name}</h3>
+        <div className="px-4 pt-4 pb-2">
+          <h3 className="text-sm md:text-base font-medium text-gray-900">
+            {name}
+          </h3>
         </div>
-      </button>
+      </Link>
 
-      {/* Separador + READ BIO */}
-      <div className="mt-3 border-t border-gray-200 pt-3">
+      {/* Toggle: BIO + (no navega) */}
+      <div className="px-4 pb-4">
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen((v) => !v);
+          }}
           aria-expanded={open}
-          aria-controls={panelId}
-          className="w-full flex items-center justify-between text-sm tracking-wide text-gray-800 hover:text-gray-900"
+          aria-controls={bioId}
+          className="mt-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-gray-500 hover:text-gray-900"
         >
-          <span className="uppercase">READ BIO</span>
-          <span className="text-xl leading-none select-none">{open ? '–' : '+'}</span>
+          <span>Bio</span>
+          <span
+            className={`transition-transform ${open ? 'rotate-45' : ''}`}
+            aria-hidden
+          >
+            +
+          </span>
         </button>
 
-        {/* Panel del acordeón */}
+        {/* Mini-bio inline */}
         <div
-          id={panelId}
-          className={`overflow-hidden transition-all ${open ? 'mt-3 max-h-96' : 'max-h-0'}`}
+          id={bioId}
+          className={`overflow-hidden transition-all duration-300 ${
+            open ? 'mt-2 max-h-40' : 'max-h-0'
+          }`}
         >
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {bio}
+          <p className="text-sm leading-relaxed text-gray-700">
+            {bio ?? 'Pronto...'}
           </p>
         </div>
       </div>

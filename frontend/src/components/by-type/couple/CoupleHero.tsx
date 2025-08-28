@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function CoupleHero() {
   return (
@@ -17,10 +18,11 @@ export default function CoupleHero() {
           poster="/images/journey-types/couple-traveler.jpg"
           className="w-full h-full object-cover hidden motion-safe:block"
         />
-        <img
+        <Image
           src="/images/journey-types/couple-traveler.jpg"
           alt=""
-          className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
+          fill
+          className="object-cover block motion-reduce:block motion-safe:hidden"
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>

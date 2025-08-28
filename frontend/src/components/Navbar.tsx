@@ -1,12 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useUserStore } from '@/store/userStore';
+import AuthModal from '@/components/auth/AuthModal';
+import { ChevronDown, LogOut } from 'lucide-react';
 
 export default function Navbar() {
   const [overlay, setOverlay] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const { isAuthed, user, signOut, openAuth } = useUserStore();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Detectar si estamos sobre el hero
   useEffect(() => {
@@ -25,13 +33,22 @@ export default function Navbar() {
     return () => io.disconnect();
   }, []);
 
-  // Cerrar dropdown con click afuera / Escape
+  // Cerrar dropdown con click afuera / Escape (for both menus)
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
-      if (!menuRef.current) return;
-      if (!menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
     };
-    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        setProfileMenuOpen(false);
+      }
+    };
     document.addEventListener("click", onDocClick);
     document.addEventListener("keydown", onEsc);
     return () => {
@@ -58,13 +75,11 @@ export default function Navbar() {
             aria-label="Randomtrip"
             className="flex items-center gap-2 shrink-0"
           >
-            <img
+            <Image
               src="/assets/logos/Logo.svg"
               alt="Randomtrip"
-              className="h-16 w-auto md:h-16 sm:h-12"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/logo.svg";
-              }}
+              width={256}
+              height={64}
             />
           </Link>
 
@@ -172,22 +187,84 @@ export default function Navbar() {
               />
             </a>
 
-            <Link
-              href="/login"
-              aria-label="Iniciar sesión"
-              className="p-1 rounded-full hover:bg-white/10"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
+            {isAuthed ? (
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  aria-label="Abrir menú de perfil"
+                  aria-haspopup="menu"
+                  aria-expanded={profileMenuOpen}
+                  onClick={() => setProfileMenuOpen((v) => !v)}
+                  className="p-1 rounded-full hover:bg-white/10 flex items-center justify-center"
+                >
+                  {user?.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      width={24}
+                      height={24}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="h-6 w-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-semibold">
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 'R'}
+                    </div>
+                  )}
+                  <ChevronDown size={16} className="ml-1" />
+                </button>
+
+                {profileMenuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                  >
+                    <Link
+                      role="menuitem"
+                      href="/dashboard"
+                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                      onClick={() => setProfileMenuOpen(false)}
+                    >
+                      Mis viajes
+                    </Link>
+                    <Link
+                      role="menuitem"
+                      href="/login"
+                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                      onClick={() => setProfileMenuOpen(false)}
+                    >
+                      Mi perfil
+                    </Link>
+                    <div className="my-1 h-px bg-neutral-200" />
+                    <button
+                      role="menuitem"
+                      onClick={() => {
+                        signOut();
+                        setProfileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                    >
+                      <LogOut size={16} /> Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                aria-label="Iniciar sesión"
+                className="p-1 rounded-full hover:bg-white/10"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-auth"))}
               >
-                <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" strokeWidth="2" />
-                <path d="M4 20a8 8 0 0116 0" strokeWidth="2" />
-              </svg>
-            </Link>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M12 12a5 5 0 100-10 5 5 0 000 10z" strokeWidth="2" />
+                  <path d="M4 20a8 8 0 0116 0" strokeWidth="2" />
+                </svg>
+              </button>
+            )}
 
             <span
               aria-label="Idioma: Español"
@@ -201,6 +278,8 @@ export default function Navbar() {
 
       {/* Spacer para que el contenido no quede tapado cuando deja de ser overlay */}
       {!overlay && <div aria-hidden className="h-16" />}
+
+      <AuthModal /> {/* Mount AuthModal here */}
     </>
   );
 }

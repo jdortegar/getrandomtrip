@@ -1,87 +1,230 @@
-export type Tier = {
-  id: string;
-  title: string;
-  subtitle?: string; // Added
-  priceLabel: string;    // texto del precio (p.ej. “hasta US$ X”)
-  bullets: string[];  // highlights changed to bullets
-  priceFootnote?: string; // Added
-  ctaLabel?: string; // Added
-};
+export type TierKey = 'essenza' | 'explora' | 'explora-plus' | 'exploraPlus' | 'bivouac' | 'atelier' | 'atelier-getaway' | 'modo-explora';
 
-export const BASE_TIERS: Tier[] = [
+export interface Tier {
+  key: TierKey;
+  title: string;
+  cta: string;
+  tagline?: string;
+  price?: string;
+  bullets: string[];
+  testid?: string;
+}
+
+export const COUPLE_TIERS: Tier[] = [
   {
-    id: 'essenza',
-    title: 'Essenza',
-    subtitle: 'Lo esencial con estilo.',
-    priceLabel: 'Hasta 350 USD',
+    key: 'essenza',
+    title: '🌱 Essenza — Lo esencial con estilo',
+    price: 'Hasta 350 USD · por persona',
     bullets: [
-      'Duración: Máximo 2 noches.',
-      'Transporte: Low cost (buses o vuelos off-peak). Asientos, carry-on y bodega no incluidos.',
-      'Fechas: Menor disponibilidad; con restricciones y bloqueos.',
+      'Duración: Máx 2 noches',
+      'Transporte: Low cost (buses o vuelos off-peak). Selección de asiento, carry-on y bodega no incluidos.',
+      'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
       'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Una guía esencial pensada para explorar juntos sin apuros.',
+      'Extras: Guía esencial diseñada para parejas que buscan la simpleza sin perder el encanto.',
+      '📝 Un escape breve, suficiente para mirarse distinto y recordar por qué empezó todo.',
     ],
-    priceFootnote: '💑 Precio por persona (base doble)',
-    ctaLabel: 'Reservar fácil',
+    cta: 'Den el primer paso →',
   },
   {
-    id: 'modo-explora',
-    title: 'Modo Explora',
-    subtitle: 'Viaje activo y flexible.',
-    priceLabel: 'Hasta 500 USD',
+    key: 'modo-explora',
+    title: '🌿 Modo Explora — Viaje activo y flexible',
+    price: 'Hasta 500 USD · por persona',
     bullets: [
-      'Duración: Hasta 3 noches.',
-      'Transporte: Multimodal, horarios más flexibles. En vuelos: asientos, carry-on y bodega no incluidos.',
-      'Fechas: Mayor disponibilidad; feriados/puentes con bloqueos.',
+      'Duración: Hasta 3 noches',
+      'Transporte: Multimodal, horarios flexibles. Selección de asiento, carry-on y bodega no incluidos.',
+      'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.',
       'Alojamiento: Mid-to-Upscale.',
-      'Extras: Guía curada “Randomtrip Decode” con pistas para descubrir en pareja.',
+      'Extras: Guía Randomtrip Decode con pistas para descubrir juntos.',
+      '📝 Para los que creen que la mejor forma de enamorarse es perderse… y reencontrarse.',
     ],
-    priceFootnote: '💑 Precio por persona (base doble)',
-    ctaLabel: 'Activen su modo',
+    cta: 'Exploren su historia →',
   },
   {
-    id: 'explora-plus',
-    title: 'Explora+',
-    subtitle: 'Más capas, más detalles.',
-    priceLabel: 'Hasta 850 USD',
+    key: 'explora-plus',
+    title: '💫 Explora+ — Más capas, más momentos',
+    price: 'Hasta 850 USD · por persona',
     bullets: [
-      'Duración: Hasta 4 noches.',
-      'Transporte: Multimodal. En vuelos: asientos, carry-on y bodega no incluidos.',
-      'Fechas: Alta disponibilidad, incluso feriados/puentes (con bloqueos festivos).',
-      'Alojamiento: Upscale garantizado.',
-      'Extras: Decode personalizado + 1 experiencia/actividad curada para dos.',
+      'Duración: Hasta 4 noches',
+      'Transporte: Multimodal. Carry-on incluido; selección de asiento y bodega no incluidos.',
+      'Fechas: Alta disponibilidad, incluso en feriados/puentes.',
+      'Alojamiento: Upscale asegurado.',
+      'Extras: Decode personalizado + 1 experiencia especial en pareja.',
+      '📝 Más noches, más sorpresas, más excusas para coleccionar recuerdos a dos voces.',
     ],
-    priceFootnote: '💑 Precio por persona (base doble)',
-    ctaLabel: 'Suban de nivel',
+    cta: 'Suban la apuesta →',
   },
   {
-    id: 'bivouac',
-    title: 'Bivouac',
-    subtitle: 'Curaduría que se siente artesanal.',
-    priceLabel: 'Hasta 1200 USD',
+    key: 'bivouac',
+    title: '🔥 Bivouac — Romance artesanal',
+    price: 'Hasta 1200 USD · por persona',
     bullets: [
-      'Duración: Hasta 5 noches.',
-      'Transporte: Multimodal. En vuelos: asientos y carry-on incluidos; bodega no incluida.',
-      'Fechas: Sin fechas bloqueadas.',
-      'Alojamiento: Upper-Upscale (diseño, boutique, experiencias locales).',
-      'Extras: Concierge Advisors + 1 Experiencia Premium para compartir + perks (early/late & upgrade sujetos a dispo).',
+      'Duración: Hasta 5 noches',
+      'Transporte: Multimodal. Carry-on incluido; selección de asiento/bodega opcional.',
+      'Fechas: Sin bloqueos.',
+      'Alojamiento: Upper Upscale (boutique, diseño, experiencias locales).',
+      'Extras: Concierge Advisor + 1 experiencia premium en pareja + perks exclusivos.',
+      '📝 Un viaje que se cuida como se cuida una relación: con detalle y paciencia.',
     ],
-    priceFootnote: '💑 Precio por persona (base doble)',
-    ctaLabel: 'Viajen distinto',
+    cta: 'Viajen distinto →',
   },
   {
-    id: 'atelier-getaway',
-    title: 'Atelier Getaway',
-    subtitle: 'Distinción, sin esfuerzo.',
-    priceLabel: 'Desde 1200 USD',
+    key: 'atelier-getaway',
+    title: '✨ Atelier Getaway — Amor a medida',
+    price: 'Desde 1200 USD · por persona',
     bullets: [
-      'Duración: Customizable.',
+      'Duración: Customizable',
+      'Transporte: Multimodal / a medida.',
+      'Fechas: Sin bloqueos.',
       'Alojamiento: Luxury / de autor / cadenas A1.',
-      'Extras: Co-creación con Luxury Travel Advisor + equipo 24/7.',
-      'Incluye: 2+ Experiencias Premium a medida, diseñadas para dos.',
-      'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.',
+      'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium diseñadas a medida. Perks (traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas).',
+      '📝 Un lienzo en blanco para crear la escapada que nadie más podrá repetir.',
     ],
-    priceFootnote: '💑 Precio por persona (base doble)',
-    ctaLabel: 'A un clic de lo extraordinario',
+    cta: 'Creen lo irrepetible →',
+  },
+];
+
+export const SOLO_TIERS: Tier[] = [
+  {
+    key: 'essenza',
+    title: '🌱 Essenza — Lo esencial con estilo',
+    price: '455 USD · por persona',
+    bullets: [
+      'Duración: Máx 2 noches',
+      'Transporte: Low cost (buses o vuelos off-peak). Selección de asiento, carry-on y bodega no incluidos.',
+      'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
+      'Alojamiento: Midscale (3★ o equivalentes).',
+      'Extras: Guía esencial para moverte sin complicaciones.',
+      '📝 Un escape breve para perderte en lo simple y encontrarte en lo inesperado.',
+    ],
+    cta: 'Arranca tu Essenza →',
+  },
+  {
+    key: 'explora',
+    title: '🌿 Modo Explora — Activo y flexible',
+    price: '650 USD · por persona',
+    bullets: [
+      'Duración: Hasta 3 noches',
+      'Transporte: Multimodal, horarios flexibles. Selección de asiento, carry-on y bodega no incluidos.',
+      'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.',
+      'Alojamiento: Midscale – Upper Midscale.',
+      'Extras: Guía Randomtrip Decode con pistas para descubrir a tu ritmo.',
+      '📝 Diseñado para quienes viajan livianos y quieren descubrir sin guion.',
+    ],
+    cta: 'Activa tu modo Explora →',
+  },
+  {
+    key: 'exploraPlus',
+    title: '💫 Explora+ — Más capas, más momentos',
+    price: '1105 USD · por persona',
+    bullets: [
+      'Duración: Hasta 4 noches',
+      'Transporte: Multimodal. Carry-on incluido; selección de asiento y bodega no incluidos.',
+      'Fechas: Alta disponibilidad, incluso en feriados/puentes.',
+      'Alojamiento: Upscale asegurado.',
+      'Extras: Decode personalizado + 1 experiencia curada en solitario.',
+      '📝 Más noches, más encuentros inesperados y más razones para volver distinto.',
+    ],
+    cta: 'Sube de nivel →',
+  },
+  {
+    key: 'bivouac',
+    title: '🔥 Bivouac — Curaduría artesanal',
+    price: '1560 USD · por persona',
+    bullets: [
+      'Duración: Hasta 5 noches',
+      'Transporte: Multimodal. Carry-on incluido; selección de asiento/bodega opcional.',
+      'Fechas: Sin bloqueos.',
+      'Alojamiento: Upper Upscale (boutique, diseño, stays con alma).',
+      'Extras: Concierge Advisor + 1 experiencia premium + perks.',
+      '📝 Un viaje íntimo, cuidado al detalle, que convierte la soledad en un lujo personal.',
+    ],
+    cta: 'Viaja distinto →',
+  },
+  {
+    key: 'atelier',
+    title: '✨ Atelier Getaway — Distinción, sin esfuerzo',
+    price: 'Desde 1560 USD · por persona',
+    bullets: [
+      'Duración: Customizable',
+      'Transporte: Multimodal / a medida.',
+      'Fechas: Sin bloqueos.',
+      'Alojamiento: Luxury / de autor / cadenas A1.',
+      'Extras: Co-creación con Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium diseñadas para vos. Perks (traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas).',
+      '📝 El lujo de viajar sin testigos, con experiencias que se vuelven confidenciales.',
+    ],
+    cta: 'Crea lo irrepetible →',
+  },
+];
+
+export const TRIPPERS_TIERS: Tier[] = [
+  {
+    key: 'essenza',
+    title: '🌱 Essenza — Lo esencial con estilo',
+    cta: 'Elige Essenza →',
+    testid: 'cta-tier-essenza',
+    bullets: [
+      'Hasta 350 USD · por persona',
+      'Duración: Máx 2 noches',
+      'Transporte: Low cost (buses o vuelos off-peak).',
+      'Alojamiento: Midscale (3★ o equivalentes).',
+      'Extras: Guía esencial del destino con recomendaciones locales.',
+      '📝 Un escape breve para desconectar y volver con nuevas historias.',
+    ],
+  },
+  {
+    key: 'explora',
+    title: '🌿 Modo Explora — Viaje activo y flexible',
+    cta: 'Elige Explora →',
+    testid: 'cta-tier-explora',
+    bullets: [
+      'Hasta 500 USD · por persona',
+      'Duración: Hasta 3 noches',
+      'Transporte: Multimodal, horarios flexibles.',
+      'Alojamiento: Mid-to-Upscale.',
+      'Extras: Guía Randomtrip Decode con pistas para descubrir a tu ritmo.',
+      '📝 Para quienes creen que la mejor forma de viajar es perderse… y reencontrarse.',
+    ],
+  },
+  {
+    key: 'exploraPlus',
+    title: '💫 Explora+ — Más capas, más momentos',
+    cta: 'Elige Explora+ →',
+    testid: 'cta-tier-exploraplus',
+    bullets: [
+      'Hasta 850 USD · por persona',
+      'Duración: Hasta 4 noches',
+      'Transporte: Multimodal. Carry-on incluido.',
+      'Alojamiento: Upscale asegurado.',
+      'Extras: Decode personalizado + 1 experiencia especial incluida.',
+      '📝 Más noches, más sorpresas, más excusas para coleccionar recuerdos.',
+    ],
+  },
+  {
+    key: 'bivouac',
+    title: '🔥 Bivouac — Curaduría artesanal',
+    cta: 'Elige Bivouac →',
+    testid: 'cta-tier-bivouac',
+    bullets: [
+      'Hasta 1200 USD · por persona',
+      'Duración: Hasta 5 noches',
+      'Transporte: Multimodal. Carry-on incluido.',
+      'Alojamiento: Upper Upscale (boutique, diseño, experiencias locales).',
+      'Extras: Concierge Advisor + 1 experiencia premium + perks exclusivos.',
+      '📝 Un viaje que se cuida con detalle y paciencia.',
+    ],
+  },
+  {
+    key: 'atelier',
+    title: '✨ Atelier Getaway — Experiencia a medida',
+    cta: 'Elige Atelier →',
+    testid: 'cta-tier-atelier',
+    bullets: [
+      'Desde 1200 USD · por persona',
+      'Duración: Customizable',
+      'Transporte: Multimodal / a medida.',
+      'Alojamiento: Luxury / de autor / cadenas A1.',
+      'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium.',
+      '📝 Un lienzo en blanco para crear una escapada que nadie más podrá repetir.',
+    ],
   },
 ];

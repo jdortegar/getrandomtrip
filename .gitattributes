@@ -1,5 +1,7 @@
+﻿# Normalizar a LF en el repo
+* text=auto eol=lf
+
+# Asegurar LF en código
+*.{js,jsx,ts,tsx,css,scss,md,json,yml,yaml} text eol=lf
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.webm filter=lfs diff=lfs merge=lfs -text
-*.{js,jsx,ts,tsx,css,scss,md,json,yml,yaml} text eol=lf
-*.bat text eol=crlf
-* text=auto

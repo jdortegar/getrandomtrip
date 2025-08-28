@@ -8,11 +8,12 @@ export default function ExperienceLevels() {
   return (
     <section id="planes" className="relative scroll-mt-16 bg-white text-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-20">
-        <SectionHeading
-          title="✨ Comiencen a planear su escapada"
-          subtitle="💡 Lo único que definen en este paso es el presupuesto por persona. Ese será su techo. El resto… corre por nuestra cuenta."
-          className="text-white"
-        />
+        <div className="text-white">
+          <SectionHeading
+            title="✨ Comiencen a planear su escapada"
+            subtitle="💡 Lo único que definen en este paso es el presupuesto por persona. Ese será su techo. El resto… corre por nuestra cuenta."
+          />
+        </div>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {COUPLE_LEVELS.map((lvl) => (
@@ -27,7 +28,7 @@ export default function ExperienceLevels() {
                 <div className="font-display text-3xl leading-tight font-bold text-[var(--rt-terracotta)]">
                   {lvl.priceLabel}
                 </div>
-                <span className="block text-xs text-gray-900">por persona</span>
+                <span className="block text-xs text-gray-900">{lvl.priceFootnote}</span>
               </div>
 
               <ul className="mt-5 space-y-2 text-sm">
@@ -36,16 +37,17 @@ export default function ExperienceLevels() {
                 ))}
               </ul>
 
-              {lvl.priceFootnote && (
-                <p className="mt-4 text-xs text-gray-900">{lvl.priceFootnote}</p>
+              {lvl.closingLine && (
+                <p className="mt-3 text-neutral-700 text-sm leading-relaxed">
+                  {lvl.closingLine}
+                </p>
               )}
 
               <Link
-                href={`/journey/experience-level?tier=${lvl.id}&origin=couple`}
+                href={`/journey/basic-config?from=tripper&type=couple&level=${lvl.id}&price=${lvl.priceLabel}`}
                 className="btn-card mt-auto"
               >
-                {lvl.cta}
-                <span className="ml-2 transition-transform group-hover:translate-x-0.5">→</span>
+                {lvl.ctaLabel ?? lvl.cta}
               </Link>
             </article>
           ))}

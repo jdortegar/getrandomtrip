@@ -9,26 +9,30 @@
     "start": "next start",
     "lint": "next lint",
     "test": "echo \"No unit tests configured yet.\" && exit 0",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint:fix": "next lint --fix"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@react-google-maps/api": "^2.20.7",
     "@types/react-datepicker": "^6.2.0",
     "cypress": "^14.5.3",
-    "framer-motion": "^12.23.9",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.12",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.528.0",
     "next": "^14.2.30",
     "openai": "^5.10.2",
     "react": "18.3.1",
     "react-datepicker": "^8.4.0",
+    "react-day-picker": "^9.9.0",
     "react-dom": "18.3.1",
     "react-icons": "^5.5.0",
     "react-leaflet": "^4.2.1",
     "react-leaflet-cluster": "^2.1.0",
     "react-toastify": "^11.0.5",
-    "zustand": "^5.0.7"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^6.0.4",

@@ -284,7 +284,7 @@ const TripBuddyPage: React.FC = () => {
       setMessages([{ id: "initial-greeting", content: initialMessageText, role: "assistant", isSpeaking: true }]);
       queueSpeak(initialMessageText, currentPersonaId);
     }
-  }, [userLocation, error, currentPersonaId, messages.length, placeName, queueSpeak]);
+  }, [userLocation, error, currentPersonaId, messages.length, placeName, queueSpeak, handleSendMessage]);
 
   // --- UI ---
   const demoCards = [

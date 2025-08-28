@@ -1,30 +1,19 @@
-// src/app/packages/(tripper)/[tripper]/page.tsx
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-
-// Hardcode temporal de slugs válidos para evitar depender de content/trippers
-const TRIPPER_SLUGS = [
-  "ale-ramirez",
-  "ilse-seaman",
-  "cinthya-chavez",
-  "horacio-teran",
-  "sara-sanchez",
-  "lucia-ortega",
-  "mateo-campos",
-  "renata-silva",
-  "tomas-ibarra",
-];
+import { notFound, redirect } from "next/navigation";
+import { TRIPPERS, getTripperBySlug } from "@/content/trippers";
+import TripperProfile from "@/components/tripper/TripperProfile";
+import TripperPlanner from "@/components/tripper/TripperPlanner";
+import TripperBlog from "@/components/tripper/TripperBlog";
+import dynamic from "next/dynamic";
+const TripperVisitedMap = dynamic(
+  () => import("@/components/tripper/TripperVisitedMap"),
+  { ssr: false, loading: () => <div className="h-72 rounded-xl bg-gray-100" /> }
+);
+import TripperTestimonials from "@/components/tripper/TripperTestimonials";
+import TripperClosing from "@/components/tripper/TripperClosing";
 
 export function generateStaticParams() {
-  return TRIPPER_SLUGS.map((t) => ({ tripper: t }));
-}
-
-// Utilidad simple para mostrar el nombre legible desde el slug
-function slugToTitle(slug: string) {
-  return slug
-    .split("-")
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" ");
+  return TRIPPERS.map((t) => ({ tripper: t.slug }));
 }
 
 export async function generateMetadata({
@@ -32,83 +21,65 @@ export async function generateMetadata({
 }: {
   params: { tripper: string };
 }): Promise<Metadata> {
-  const titleBase = TRIPPER_SLUGS.includes(params.tripper)
-    ? `${slugToTitle(params.tripper)} | Randomtrip`
-    : "Randomtrip";
-  return { title: titleBase };
+  const t = getTripperBySlug(params.tripper);
+  if (!t) return { title: "Randomtrip" };
+  return {
+    title: `${t.name} | Randomtrip`,
+    openGraph: {
+      title: `${t.name} | Randomtrip`,
+      images: [{ url: t.heroImage || t.avatar, width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default function Page({ params }: { params: { tripper: string } }) {
-  const { tripper } = params;
-  if (!TRIPPER_SLUGS.includes(tripper)) return notFound();
+  // Guard si viene vacío o 'undefined'
+  if (!params?.tripper || params.tripper === "undefined") {
+    redirect("/packages/by-type/group");
+  }
 
-  const displayName = slugToTitle(tripper);
+  const t = getTripperBySlug(params.tripper);
+  if (!t) return notFound();
 
-  // Lienzo en blanco: sin imágenes, sin CTA, sin tiers, sin handlers.
   return (
-    <main className="min-h-screen bg-white text-slate-900">
-      <header className="max-w-5xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-semibold tracking-tight">{displayName}</h1>
-        <p className="mt-2 text-slate-600">
-          Perfil del Tripper — estructura base para empezar desde cero.
-        </p>
-      </header>
+    <main className="bg-white text-slate-900">
+      {/* Perfil */}
+      <TripperProfile t={t} />
 
-      {/* Sección de video (placeholder) */}
-      <section className="max-w-5xl mx-auto px-4 py-8 border-t">
-        <h2 className="text-xl font-medium">Video</h2>
-        <div className="mt-4 h-56 w-full rounded-xl border border-dashed grid place-items-center">
-          <span className="text-sm text-slate-500">Placeholder de video</span>
-        </div>
-      </section>
+      {/* Planner: pasar también el slug para construir rutas del funnel */}
+      <TripperPlanner tripperName={t.name} tripperSlug={t.slug} />
 
-      {/* Sección About (placeholder) */}
-      <section className="max-w-5xl mx-auto px-4 py-8 border-t">
-        <h2 className="text-xl font-medium">Sobre {displayName}</h2>
-        <p className="mt-4 text-slate-600">
-          Aquí irá la bio/descripción del Tripper (pendiente de definir).
-        </p>
-      </section>
+      {/* Blog / inspiración */}
+      <TripperBlog posts={t.posts || []} sectionId="tripper-blog" />
 
-      {/* Travel Specialties (placeholder) */}
-      <section className="max-w-5xl mx-auto px-4 py-8 border-t">
-        <h2 className="text-xl font-medium">Travel Specialties</h2>
-        <ul className="mt-4 list-disc pl-5 text-slate-600">
-          <li>Especialidad 1 (por definir)</li>
-          <li>Especialidad 2 (por definir)</li>
-          <li>Especialidad 3 (por definir)</li>
-        </ul>
-      </section>
+      {/* Mapa (CSR) */}
+      <TripperVisitedMap places={t.visitedPlaces || []} />
 
-      {/* Mapa (placeholder) */}
-      <section className="max-w-5xl mx-auto px-4 py-8 border-t">
-        <h2 className="text-xl font-medium">Mapa de lugares visitados</h2>
-        <div className="mt-4 h-72 w-full rounded-xl border border-dashed grid place-items-center">
-          <span className="text-sm text-slate-500">Placeholder de mapa</span>
-        </div>
-      </section>
+      {/* Opiniones */}
+      <TripperTestimonials testimonials={t.testimonials || []} />
 
-      {/* Niveles (placeholder) */}
-      <section className="max-w-5xl mx-auto px-4 py-8 border-t">
-        <h2 className="text-xl font-medium">Selecciona tu Nivel de Experiencia</h2>
-        <p className="mt-2 text-slate-600">
-          Aquí irán las tarjetas de niveles/paquetes más adelante.
-        </p>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="h-32 rounded-xl border border-dashed grid place-items-center">
-            <span className="text-sm text-slate-500">Tarjeta nivel (placeholder)</span>
-          </div>
-          <div className="h-32 rounded-xl border border-dashed grid place-items-center">
-            <span className="text-sm text-slate-500">Tarjeta nivel (placeholder)</span>
-          </div>
-        </div>
-      </section>
+      {/* Cierre */}
+      <TripperClosing />
 
-      <footer className="max-w-5xl mx-auto px-4 py-16 border-t">
-        <p className="text-sm text-slate-500">
-          Base limpia sin imágenes ni handlers. Lista para diseñar.
-        </p>
+      <footer className="py-12 text-center text-gray-500 border-t">
+        © 2025 Randomtrip. Where the routine ends, the adventure begins.
       </footer>
+
+      {/* JSON-LD SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: t.name,
+            jobTitle: "Travel Advisor",
+            image: t.heroImage || t.avatar,
+            worksFor: t.agency || "Randomtrip",
+            homeLocation: t.location || undefined,
+          }),
+        }}
+      />
     </main>
   );
 }

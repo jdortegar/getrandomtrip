@@ -1,167 +1,46 @@
-'use client';
+// frontend/src/app/journey/add-ons/page.tsx
+'use client'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useJourneyStore } from '@/store/journeyStore'
+import SummaryCard from '@/components/journey/SummaryCard'
+import AddonsGallery from '@/components/journey/addons/AddonsGallery'
+import SelectedAddonsChips from '@/components/journey/addons/SelectedAddonsChips'
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import PrimaryButton from '@/components/PrimaryButton';
-import { Booking } from '@/types';
+export default function AddOnsPage() {
+  const sp = useSearchParams()
+  const router = useRouter()
+  const { logistics } = useJourneyStore()
 
-const addonOptions = [
-  { id: 'insurance_cancellation', label: 'Seguro de cancelación flexible', price: 0.15, type: 'percentage' },
-  { id: 'insurance_travel', label: 'Seguro de Viajes', price: 35, type: 'per_person' },
-  { id: 'seat_selection', label: 'Selección de Asiento', price: 15, type: 'per_person' },
-  { id: 'breakfast', label: 'Desayuno en Hotel', price: 15, type: 'per_person_per_day' },
-  { id: 'airport_pickup', label: 'Recogida en aeropuerto (APU)', price: 30, type: 'per_booking' },
-  { id: 'airport_dropoff', label: 'Traslado al aeropuerto (ADO)', price: 30, type: 'per_booking' },
-  { id: 'car_rental', label: 'Alquiler de vehículo', price: 50, type: 'per_day' },
-];
-
-function AddonsContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const bookingId = searchParams.get('bookingId');
-
-  const [booking, setBooking] = useState<Booking | null>(null);
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (bookingId) {
-      const fetchBooking = async () => {
-        setIsLoading(true);
-        const response = await fetch(`http://localhost:3001/api/bookings/${bookingId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setBooking(data);
-        } else {
-          setError('No se pudo cargar la información de la reserva.');
-        }
-        setIsLoading(false);
-      };
-      fetchBooking();
-    }
-  }, [bookingId]);
-  
-  const handleAddonToggle = (addonId: string) => {
-    setSelectedAddons(prev =>
-      prev.includes(addonId)
-        ? prev.filter(id => id !== addonId)
-        : [...prev, addonId]
-    );
-  };
-
-  const addonsCost = useMemo(() => {
-    if (!booking) return 0;
-    
-    let total = 0;
-    const travelerCount = booking.travelerCount;
-    const durationNights = booking.duration_nights || 1; // Asumimos 1 noche si no está definido
-    const baseTotal = booking.totalPrice; // Usamos el precio total acumulado para el seguro
-
-    for (const addonId of selectedAddons) {
-      const addon = addonOptions.find(a => a.id === addonId);
-      if (!addon) continue;
-
-      switch (addon.type) {
-        case 'percentage':
-          total += baseTotal * addon.price;
-          break;
-        case 'per_person':
-          total += addon.price * travelerCount;
-          break;
-        case 'per_person_per_day':
-          total += addon.price * travelerCount * durationNights;
-          break;
-        case 'per_day':
-          total += addon.price * durationNights;
-          break;
-        case 'per_booking':
-          total += addon.price;
-          break;
-      }
-    }
-    return total;
-  }, [selectedAddons, booking]);
-
-  const handleSubmit = async () => {
-    if (!bookingId) return;
-    setIsLoading(true);
-    try {
-      await fetch(`http://localhost:3001/api/bookings/${bookingId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          selectedAddons: { selected: selectedAddons },
-          addonsCost: addonsCost
-        }),
-      });
-      router.push(`/journey/summary?bookingId=${bookingId}`);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('No se pudieron guardar los add-ons.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading && !booking) {
-    return <div className="bg-[#111827] h-screen text-white flex items-center justify-center">Cargando...</div>;
+  const backToAvoid = () => {
+    const qs = new URLSearchParams(sp.toString())
+    qs.set('tab','avoid')
+    router.push(`/journey/basic-config?${qs.toString()}`)
   }
+  const goCheckout = () => router.push('/journey/summary') // stub
 
   return (
-    <main data-testid="addons-root" className="bg-[#111827] text-white min-h-screen p-8 md:p-16">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Servicios Adicionales</h1>
-        <p className="text-lg text-gray-300 text-center mb-12">Añade esos toques finales que harán tu viaje aún más memorable.</p>
+    <div className="container mx-auto px-4 pb-16 pt-24 md:pt-28 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+      <div>
+        <h1 className="text-xl font-semibold mb-2">Add-ons</h1>
+        <p className="text-sm text-neutral-600 mb-4">
+          Mejorá tu experiencia con servicios extra. Precios orientativos LATAM. ({logistics.pax||1} viajeros)
+        </p>
 
-        <div className="space-y-4">
-          {addonOptions.map(addon => (
-            <div
-              key={addon.id}
-              data-testid={`addon-item-${addon.id}`}
-              onClick={() => handleAddonToggle(addon.id)}
-              className={`p-4 border rounded-lg transition-colors flex items-center justify-between cursor-pointer ${
-                selectedAddons.includes(addon.id)
-                  ? 'bg-[#D4AF37] text-black border-[#D4AF37]'
-                  : 'border-gray-700 hover:border-gray-500'
-              }`}
-            >
-              <div>
-                <p className="font-bold">{addon.label}</p>
-                <p className="text-sm opacity-80">
-                  {addon.type === 'percentage' ? `${addon.price * 100}% del total` : `${addon.price.toFixed(2)} ${addon.type.replace('_', ' ')}`}
-                </p>
-              </div>
-              <div className={`w-6 h-6 rounded-full border-2 ${selectedAddons.includes(addon.id) ? 'bg-black border-black' : 'border-current'}`}/>
-            </div>
-          ))}
-        </div>
-        
-        <div className="mt-12 p-6 bg-gray-800/50 rounded-lg text-center">
-          <p className="text-gray-400">Costo extra por add-ons:</p>
-          <p data-testid="addons-total" className="text-4xl font-bold text-white">${addonsCost.toFixed(2)}</p>
-        </div>
-        
-        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+        <SelectedAddonsChips />
 
-        <div className="text-center mt-8">
-          <PrimaryButton onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? 'Guardando...' : 'Ir al Resumen Final'}
-          </PrimaryButton>
+        <AddonsGallery />
+
+        <div className="mt-6 flex items-center justify-between">
+          <button onClick={backToAvoid} className="px-4 py-2 rounded-xl border border-neutral-300 bg-white hover:bg-neutral-50">
+            Volver a filtros
+          </button>
+          <button onClick={goCheckout} className="px-5 py-2.5 rounded-xl bg-violet-600 text-white hover:bg-violet-500">
+            Continuar a checkout
+          </button>
         </div>
       </div>
-    </main>
-  );
-}
 
-export default function AddonsPage() {
-    return (
-        <Suspense fallback={<div className="bg-[#111827] h-screen text-white flex items-center justify-center">Cargando add-ons...</div>}>
-            <AddonsContent />
-        </Suspense>
-    );
+      <aside><SummaryCard /></aside>
+    </div>
+  )
 }

@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import FamilyIntroStory from './FamilyIntroStory';
 
@@ -17,10 +18,11 @@ export default function FamilyHero(): JSX.Element {
           className="w-full h-full object-cover hidden motion-safe:block"
         />
         {/* Fallback opcional: elimina si no tienes esta imagen */}
-        <img
+        <Image
           src="/images/journey-types/family-traveler.jpg"
           alt=""
-          className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
+          fill
+          className="object-cover block motion-reduce:block motion-safe:hidden"
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
