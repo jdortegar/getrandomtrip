@@ -6,55 +6,55 @@ import Link from 'next/link';
 import FamilyIntroStory from './FamilyIntroStory';
 
 export default function FamilyHero(): JSX.Element {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [videoOk, setVideoOk] = useState(true);
+  const SRC = '/videos/family-hero-video.mp4';
+  const POSTER = '/images/journey-types/family-traveler.jpg';
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
+  const [videoOk, setVideoOk] = React.useState(true);
+  const [reduceMotion, setReduceMotion] = React.useState(false);
+  const vref = React.useRef<HTMLVideoElement | null>(null);
 
-    const onError = () => setVideoOk(false);
-    const onCanPlay = () => setVideoOk(true);
+  React.useEffect(() => {
+    const m = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    const onPref = () => setReduceMotion(!!m?.matches);
+    onPref(); m?.addEventListener?.('change', onPref);
 
-    v.addEventListener('error', onError);
-    v.addEventListener('canplay', onCanPlay);
-
-    // aseguramos autoplay silencioso en navegadores móviles
-    v.muted = true;
-    v.play().catch(() => setVideoOk(false));
-
-    return () => {
-      v.removeEventListener('error', onError);
-      v.removeEventListener('canplay', onCanPlay);
-    };
+    const v = vref.current;
+    if (v) {
+      const onErr = () => setVideoOk(false);
+      const onPlay = () => setVideoOk(true);
+      v.addEventListener('error', onErr);
+      v.addEventListener('canplay', onPlay);
+      v.muted = true;
+      v.play().catch(() => setVideoOk(false));
+      return () => { m?.removeEventListener?.('change', onPref); v.removeEventListener('error', onErr); v.removeEventListener('canplay', onPlay); };
+    }
+    return () => m?.removeEventListener?.('change', onPref);
   }, []);
+
+  const showVideo = videoOk && !reduceMotion;
 
   return (
     <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
       {/* Fondo video + overlay */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 -z-10">
         <video
-          ref={videoRef}
+          ref={vref}
           autoPlay
           loop
           muted
           playsInline
           preload="metadata"
-          poster="/images/journey-types/family-traveler.jpg"
-          className={`w-full h-full object-cover ${videoOk ? 'block' : 'hidden'} motion-safe:block motion-reduce:hidden`}
+          poster={POSTER}
+          className={`w-full h-full object-cover ${showVideo ? 'block' : 'hidden'}`}
         >
-          <source src="/videos/family-hero-video.mp4" type="video/mp4" />
+          <source src={SRC} type="video/mp4" />
         </video>
-
-        {/* Fallback si falla el video o si el usuario prefiere reducir motion */}
-        <Image
-          src="/images/journey-types/family-traveler.jpg"
-          alt="Familia viajando"
-          fill
-          priority
-          className={`object-cover ${videoOk ? 'hidden' : 'block'} motion-reduce:block motion-safe:hidden`}
+        <img
+          src={POSTER}
+          alt=""
+          className={`w-full h-full object-cover ${showVideo ? 'hidden' : 'block'}`}
+          loading="eager"
         />
-
         <div className="absolute inset-0 bg-black/40" />
       </div>
 

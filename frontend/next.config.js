@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/packages/by-type/families',
+        destination: '/packages/by-type/family',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     // Sube/ajusta si necesitás otros tamaños
     deviceSizes: [320, 420, 768, 1024, 1200, 1600],

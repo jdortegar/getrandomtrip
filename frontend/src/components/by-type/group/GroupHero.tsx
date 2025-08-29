@@ -10,7 +10,7 @@ export default function GroupHero() {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   const SRC = '/videos/group-hero-video.mp4';
-  const POSTER = '/images/journey-types/family-traveler.jpg';
+  const POSTER = '/images/journey-types/friends-group.jpg';
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
