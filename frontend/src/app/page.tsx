@@ -3,12 +3,10 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import PrimaryButton from '@/components/PrimaryButton';
 import BlogCard from '@/components/BlogCard';
 import EventFinder from '@/components/EventFinder';
 import TabButton from '@/components/TabButton';
 import TravelerTypeCard from '@/components/TravelerTypeCard';
-import TripperCard from '@/components/TripperCard';
 import RoadtripCard from '@/components/RoadtripCard';
 import DecodeResultCard from '@/components/DecodeResultCard';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -505,7 +503,6 @@ const BlogSection: React.FC = () => {
 
 // --- Section Component: Ready For Adventure ---
 const ReadyForAdventureSection: React.FC = () => {
-  const router = useRouter();
   return (
     <section
       aria-label="Sección final - Listo para la aventura"
@@ -590,29 +587,6 @@ const AppFooter: React.FC = () => {
     ],
   };
 
-  const socialLinks = [
-    {
-      name: 'Instagram',
-      href: '#',
-      icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/instagram.svg'
-    },
-    {
-      name: 'YouTube',
-      href: '#',
-      icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/youtube.svg'
-    },
-    {
-      name: 'LinkedIn',
-      href: '#',
-      icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg'
-    },
-    {
-      name: 'TikTok',
-      href: '#',
-      icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tiktok.svg'
-    }
-  ];
-
   return (
     <footer className="bg-[#0D0D0D] text-gray-400 py-16 px-8">
       <div className="max-w-7xl mx-auto">
@@ -663,10 +637,65 @@ const AppFooter: React.FC = () => {
   );
 };
 
+function HomeHeroBackground() {
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const [videoOk, setVideoOk] = React.useState(true);
+  const [reduceMotion, setReduceMotion] = React.useState(false);
+
+  const SRC = '/videos/hero-video.mp4';
+  const POSTER = '/images/journey-types/friends-group.jpg';
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleChange = () => setReduceMotion(mediaQuery.matches);
+    handleChange(); // Initial check
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  React.useEffect(() => {
+    const video = videoRef.current;
+    if (video && !reduceMotion) {
+      video.muted = true;
+      video.play().catch(() => {
+        console.error("Video playback failed.");
+        setVideoOk(false);
+      });
+    }
+  }, [reduceMotion]);
+
+  return (
+    <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
+      {reduceMotion || !videoOk ? (
+        <img
+          src={POSTER}
+          alt="Friends traveling together"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          poster={POSTER}
+          className="w-full h-full object-cover"
+          onError={() => setVideoOk(false)}
+        >
+          <source src={SRC} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
+      {/* Oscurecedor */}
+      <div className="absolute inset-0 bg-black/40" />
+    </div>
+  );
+}
+
 // --- Main Home Page Component ---
 export default function HomePage() {
-  const router = useRouter();
-
   return (
     <main className="bg-[#111827] text-white">
       {/* HERO */}
@@ -674,17 +703,10 @@ export default function HomePage() {
         id="home-hero"
         className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
       >
-        {/* Sentinel para el navbar (overlay vs sólido) */}
         <div id="hero-sentinel" className="absolute inset-x-0 top-0 h-4 pointer-events-none" />
 
-        {/* Capa de fondo (video o imagen que ya tengas) */}
-        <div className="absolute top-0 left-0 w-full h-full z-0">
-          <video src="/videos/hero-video.mp4" autoPlay loop muted playsInline className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-
-        {/* Oscurecedor */}
-        <div className="absolute inset-0 bg-black/40 z-0" />
+        {/* Fondo con video robusto + poster + fallback */}
+        <HomeHeroBackground />
 
         {/* Contenido del hero */}
         <div className="relative z-10 max-w-5xl mx-auto px-4">
@@ -703,37 +725,17 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Indicador de scroll (unificado) */}
+        {/* Indicador de scroll */}
         <style jsx global>{`
           @keyframes push-pulse {
-            0% {
-              transform: scaleY(0.2);
-              opacity: 0.8;
-            }
-            50% {
-              transform: scaleY(1);
-              opacity: 1;
-            }
-            100% {
-              transform: scaleY(0.2);
-              opacity: 0.8;
-            }
+            0% { transform: scaleY(0.2); opacity: 0.8; }
+            50% { transform: scaleY(1); opacity: 1; }
+            100% { transform: scaleY(0.2); opacity: 0.8; }
           }
-          .scroll-indicator {
-            font-size: 1rem; /* Tamaño de fuente ajustado */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
+          .scroll-indicator { display: flex; flex-direction: column; align-items: center; }
           .scroll-indicator::after {
-            content: '';
-            display: block;
-            width: 2px;
-            height: 40px; /* Altura de la barra */
-            background-color: white;
-            margin-top: 0.75rem;
-            transform-origin: bottom;
-            animation: push-pulse 2s infinite;
+            content: ''; display: block; width: 2px; height: 40px; background-color: white; margin-top: 0.75rem;
+            transform-origin: bottom; animation: push-pulse 2s infinite;
           }
         `}</style>
         <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
