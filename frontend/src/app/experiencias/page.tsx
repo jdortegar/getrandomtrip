@@ -236,7 +236,10 @@ const TripBuddyPage: React.FC = () => {
             if (chunk.functionCall) {
               const { name } = chunk.functionCall;
               const toolCallMessage = `¡Entendido! Simulando la acción: ${name}.`;
-              setMessages((prev) => [...prev, { id: Date.now().toString(), content: toolCallMessage, role: "assistant", isSpeaking: true }]);
+              setMessages((prev) => [
+                ...prev,
+                { id: Date.now().toString(), content: toolCallMessage, role: "assistant", isSpeaking: true },
+              ]);
               queueSpeak(toolCallMessage, currentPersonaId);
             } else {
               currentAIResponse += chunk.text;
@@ -245,9 +248,20 @@ const TripBuddyPage: React.FC = () => {
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last && last.role === "assistant") {
-                  return prev.map((m, i) => (i === prev.length - 1 ? { ...m, text: currentAIResponse, sources: currentSources } : m));
+                  return prev.map((m, i) =>
+                    i === prev.length - 1 ? { ...m, content: currentAIResponse, sources: currentSources } : m
+                  );
                 }
-                return [...prev, { id: Date.now().toString(), content: currentAIResponse, role: "assistant", sources: currentSources, isSpeaking: true }];
+                return [
+                  ...prev,
+                  {
+                    id: Date.now().toString(),
+                    content: currentAIResponse,
+                    role: "assistant",
+                    sources: currentSources,
+                    isSpeaking: true,
+                  },
+                ];
               });
 
               const lastChar = chunk.text.slice(-1);
@@ -284,7 +298,7 @@ const TripBuddyPage: React.FC = () => {
       setMessages([{ id: "initial-greeting", content: initialMessageText, role: "assistant", isSpeaking: true }]);
       queueSpeak(initialMessageText, currentPersonaId);
     }
-  }, [userLocation, error, currentPersonaId, messages.length, placeName, queueSpeak, handleSendMessage]);
+  }, [userLocation, error, currentPersonaId, messages.length, placeName, queueSpeak]);
 
   // --- UI ---
   const demoCards = [
@@ -307,10 +321,11 @@ const TripBuddyPage: React.FC = () => {
           muted
           playsInline
           preload="metadata"
-          poster="/images/journey-types/experiences-card.jpg" {/* TODO: Replace with an actual poster image for bg-experiences.mp4 */}
+          poster="/images/journey-types/experiences-card.jpg"
         >
+          {/* TODO: Replace with an actual poster image for bg-experiences.mp4 */}
           {/* IMPORTANT: .webm should be first for better performance/compatibility */}
-          <source src="/videos/bg-experiences.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/bg-experiences.webm" type="video/webm" />
           <source src="/videos/bg-experiences.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </motion.video>
@@ -336,7 +351,6 @@ const TripBuddyPage: React.FC = () => {
             <button
               onClick={() => {
                 queueSpeak("TripBuddy activado. ¿Listo para descubrir algo inolvidable cerca de ti?", currentPersonaId);
-                // Inicia reconocimiento de voz al activarlo:
                 if (!isListening) setTimeout(() => recognitionRef.current?.start(), 150);
               }}
               className="px-5 py-3 rounded-2xl bg-[#D4AF37] text-black font-semibold shadow-lg hover:shadow-xl transition"
@@ -377,7 +391,9 @@ const TripBuddyPage: React.FC = () => {
         <MicrophoneVisualizer listening={isListening} />
 
         <ChatInput
-          onSend={(text) => { void handleSendMessage(text); }}
+          onSend={(text) => {
+            void handleSendMessage(text);
+          }}
           onVoiceStart={() => recognitionRef.current?.start()}
           onVoiceStop={() => recognitionRef.current?.stop()}
           isListening={isListening}

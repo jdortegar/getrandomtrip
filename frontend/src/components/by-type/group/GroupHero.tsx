@@ -27,11 +27,12 @@ export default function GroupHero() {
           muted
           playsInline
           preload="metadata"
-          poster="/images/journey-types/friends-group.jpg" {/* TODO: Replace with an actual poster image for group-hero-video.mp4 */}
+          poster="/images/journey-types/friends-group.jpg"
           aria-hidden="true"
         >
-          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
-          <source src="/videos/group-hero-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          {/* TODO: Replace with an actual poster image for group-hero-video.mp4 */}
+          {/* WEBM primero por performance/compatibilidad */}
+          <source src="/videos/group-hero-video.webm" type="video/webm" />
           <source src="/videos/group-hero-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>

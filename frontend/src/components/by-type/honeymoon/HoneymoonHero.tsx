@@ -6,7 +6,7 @@ const CHIPS = [
   'Viajes sin coordenadas fijas',
   'Experiencias a medida',
   'Intimidad y magia compartida',
-]
+];
 
 export default function HoneymoonHero() {
   // Respeta prefers-reduced-motion
@@ -30,11 +30,12 @@ export default function HoneymoonHero() {
           muted
           playsInline
           preload="metadata"
-          poster="/images/journey-types/honeymoon-same-sex.jpg" {/* TODO: Replace with an actual poster image for honeymoon-video.mp4 */}
+          poster="/images/journey-types/honeymoon-same-sex.jpg"
           aria-hidden="true"
         >
+          {/* TODO: Replace with an actual poster image for honeymoon-video.mp4 */}
           {/* IMPORTANT: .webm should be first for better performance/compatibility */}
-          <source src="/videos/honeymoon-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/honeymoon-video.webm" type="video/webm" />
           <source src="/videos/honeymoon-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -48,7 +49,10 @@ export default function HoneymoonHero() {
         {/* Columna izquierda */}
         <div className="max-w-2xl">
           <h1 className="font-display text-4xl md:text-6xl leading-tight">
-            <span>NUPTIA<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP
+            <span>
+              NUPTIA<sup className="align-super text-[0.65em] ml-0.5">©</sup>
+            </span>{' '}
+            RANDOMTRIP
           </h1>
           <p className="mt-4 text-lg text-white/85">
             La luna de miel no es un destino, es el primer capítulo de su vida juntos. Nosotros diseñamos la sorpresa; ustedes se encargan de vivirla.
@@ -84,11 +88,7 @@ export default function HoneymoonHero() {
             </a>
 
             {/* CTA secundario -> inspiración (sección 3) */}
-            <a
-              href="#inspiracion-honeymoon"
-              data-testid="cta-hero-secondary"
-              className="btn-secondary"
-            >
+            <a href="#inspiracion-honeymoon" data-testid="cta-hero-secondary" className="btn-secondary">
               Relatos que inspiran →
             </a>
           </div>
