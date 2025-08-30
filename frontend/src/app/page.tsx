@@ -273,7 +273,7 @@ function ExplorationPageContent() {
                         icon={item.icon}
                         description={item.description}
                         bgImage={item.bgImage}
-                        href="/packages/build/basic-config"   // 👈 usamos Link
+                        href="/journey/basic-config"   // 👈 usamos Link
                       />
                     </motion.div>
                   ))}
