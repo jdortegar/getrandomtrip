@@ -1,4 +1,4 @@
-'use client'; 
+'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TopTrippersGrid from '@/components/tripper/TopTrippersGrid';
 import { slugify } from '@/lib/slugify';
 import GetRandomtripCta from '@/components/common/GetRandomtripCta';
-
+import FooterLanding from '@/components/layout/FooterLanding';
 
 // Placeholder for Kai Service, if not implemented yet
 const getKaiSuggestion = async (destination: string, month: string) => {
@@ -273,7 +273,7 @@ function ExplorationPageContent() {
                         icon={item.icon}
                         description={item.description}
                         bgImage={item.bgImage}
-                        onClick={() => router.push('/packages/build/basic-config')}
+                        href="/packages/build/basic-config"   // 👈 usamos Link
                       />
                     </motion.div>
                   ))}
@@ -532,111 +532,6 @@ const ReadyForAdventureSection: React.FC = () => {
   );
 };
 
-const AppFooter: React.FC = () => {
-  const footerLinks = {
-    'USEFUL INFORMATION': [
-      { label: 'About Us', href: '#' },
-      { label: 'Booking Conditions', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Contact Us', href: '#' },
-      { label: 'Frequently Asked Questions', href: '#' },
-      { label: 'Online Enquiry', href: '#' },
-      { label: 'Press Room', href: '#' },
-      { label: 'Privacy Policy', href: '#' },
-      { label: 'Regenerative Travel', href: '#' },
-      { label: 'Sitemap', href: '#' },
-      { label: 'Travel Insurance', href: '#' },
-    ],
-    'POPULAR DESTINATIONS': [
-      { label: 'Argentina', href: '#' },
-      { label: 'Canada', href: '#' },
-      { label: 'Chile', href: '#' },
-      { label: 'Iceland', href: '#' },
-      { label: 'Italy', href: '#' },
-      { label: 'Japan', href: '#' },
-      { label: 'Kenya', href: '#' },
-      { label: 'Morocco', href: '#' },
-      { label: 'Peru', href: '#' },
-      { label: 'Thailand', href: '#' },
-      { label: 'The USA', href: '#' },
-    ],
-    'WHO': [
-      { label: 'Couples', href: '#' },
-      { label: 'Family', href: '#' },
-      { label: 'Group', href: '#' },
-      { label: 'Honeymoons', href: '#' },
-      { label: 'Solo', href: '#' },
-      { label: 'James Bond', href: '#' }, // Example, adapt as needed
-      { label: 'Adventures', href: '#' },
-    ],
-    'WHAT': [
-      { label: 'Pursuit Of Feeling', href: '#' },
-      { label: 'Feelings Engine', href: '#' },
-      { label: 'See You In The Moment', href: '#' },
-      { label: 'Live Me On A Story', href: '#' },
-      { label: 'James Bond', href: '#' }, // Example, adapt as needed
-      { label: 'Adventures', href: '#' },
-      { label: 'Beach', href: '#' },
-      { label: 'Bhutan', href: '#' },
-      { label: 'Eclipse', href: '#' },
-      { label: 'Field Trip', href: '#' },
-      { label: 'Food', href: '#' },
-      { label: 'Get Lost', href: '#' },
-      { label: 'Safari', href: '#' },
-      { label: 'Unusual', href: '#' },
-    ],
-  };
-
-  return (
-    <footer className="bg-[#0D0D0D] text-gray-400 py-16 px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Optional: Add the "SO, READY TO START?" section here if it's part of the footer */}
-        {/* For now, assuming it's part of ReadyForAdventureSection */}
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="text-white text-lg font-semibold mb-4 uppercase" style={{ fontFamily: 'Playfair Display, serif' }}>{category}</h4>
-              <ul className="space-y-2">
-                {links.map(link => (
-                  <li key={link.label}>
-                    <a href={link.href} className="hover:text-white transition-colors text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>{link.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="border-t border-gray-700 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center">
-          {/* NEW SOCIAL SHARE SECTION */}
-          <div className="flex flex-col items-center md:items-start mb-8 md:mb-0">
-            <h3 className="uppercase text-sm tracking-widest mb-4">Comparte tus viajes</h3>
-            <div className="flex space-x-6">
-              <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/instagram.svg" alt="Instagram" className="h-6 w-6 filter-invert" />
-              </a>
-              <a href="#" aria-label="YouTube" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/youtube.svg" alt="YouTube" className="h-6 w-6 filter-invert" />
-              </a>
-              <a href="#" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg" alt="LinkedIn" className="h-6 w-6 filter-invert" />
-              </a>
-              <a href="#" aria-label="TikTok" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/tiktok.svg" alt="TikTok" className="h-6 w-6 filter-invert" />
-              </a>
-            </div>
-          </div>
-          {/* END NEW SOCIAL SHARE SECTION */}
-          <div className="mb-4 md:mb-0">
-            <p className="text-gray-500 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>© 2025 Randomtrip. Where the routine ends, the adventure begins.</p>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-};
-
 function HomeHeroBackground() {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [videoOk, setVideoOk] = React.useState(true);
@@ -754,7 +649,7 @@ export default function HomePage() {
       <Suspense fallback={<PremiumLoader message="Preparando tu aventura..." />}><ExplorationPageContent /></Suspense>
       <EventFinder />
       <ReadyForAdventureSection />
-      <AppFooter />
+      <FooterLanding />
     </main>
   );
 }

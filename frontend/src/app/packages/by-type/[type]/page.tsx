@@ -1,6 +1,7 @@
 import { getTravellerData, getAllTravellerSlugs } from '@/lib/travellerTypes';
 import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
+import { redirect } from 'next/navigation';
 
 // Generales
 import Hero from '@/components/by-type/Hero';
@@ -16,14 +17,36 @@ import CouplePage from '../../(by-type)/couple/page';
 import SoloHero from '@/components/by-type/solo/SoloHero';
 import SoloInspiration from '@/components/by-type/solo/SoloInspiration';
 import SoloTestimonials from '@/components/by-type/solo/SoloTestimonials';
-import FamilyHero from '@/components/by-type/family/FamilyHero';
 
-// --- Canonicalización de tipos ---
+/**
+ * Canonicalización local SOLO para este archivo:
+ * (no tiene que coincidir con las claves del JSON; esto es para slug/UI)
+ */
 const ALIAS: Record<string, string> = {
+  // family
   families: 'family',
   familia: 'family',
+
+  // honeymoon
+  honeymoons: 'honeymoon',
+
+  // group
+  groups: 'group',
+  grupo: 'group',
+
+  // parejas → couple
+  parejas: 'couple',
+  pareja: 'couple',
+  couples: 'couple',
 };
-const canonicalType = (raw: string) => ALIAS[raw] ?? raw;
+
+const canonicalType = (raw: string) => {
+  const k = raw?.toLowerCase?.();
+  return (ALIAS[k] ?? k) as string;
+};
+
+// Slugs con página dedicada (NO renderizar aquí; redirigir)
+const DEDICATED: Set<string> = new Set(['family', 'honeymoon', 'group']);
 
 // --- Metadata ---
 export async function generateMetadata(
@@ -34,26 +57,36 @@ export async function generateMetadata(
     couple: 'En Pareja | Randomtrip',
     solo: 'Solo | Randomtrip',
     family: 'En Familia | Randomtrip',
+    honeymoon: 'Honeymoon | Randomtrip',
+    group: 'En Grupo | Randomtrip',
   };
   return { title: map[type] ?? 'Randomtrip' };
 }
 
 // --- Pre-render ---
+// IMPORTANT: solo generamos los slugs que deben vivir en la dinámica.
 export function generateStaticParams() {
-  // Mantén tu fuente actual; si incluye alias, no pasa nada
-  return getAllTravellerSlugs().map((type) => ({ type }));
+  return getAllTravellerSlugs()
+    // Blindaje extra por si alguien deja un slug dedicado en la lista
+    .filter((t) => !DEDICATED.has(canonicalType(t)))
+    .map((type) => ({ type }));
 }
 
 // --- Página ---
 export default function Page({ params }: { params: { type: string } }) {
   const type = canonicalType(params.type);
 
-  // Caso especial: pareja usa su página propia
+  // Si el slug corresponde a una página dedicada, redirigimos a ella
+  if (DEDICATED.has(type)) {
+    redirect(`/packages/by-type/${type}`);
+  }
+
+  // Caso especial: pareja usa su página propia (componente dedicado embebido aquí)
   if (type === 'couple') {
     return <CouplePage />;
   }
 
-  // Datos base y paleta
+  // Datos base y paleta (para los tipos genéricos)
   const data = getTravellerData(type) ?? {
     slug: type,
     heroTitle: 'Ruta con Alma',
@@ -69,7 +102,7 @@ export default function Page({ params }: { params: { type: string } }) {
     '--rt-text': data.palette.text,
   } as CSSProperties;
 
-  // Caso especial: SOLO (tiene layout distinto)
+  // Caso especial: SOLO (layout distinto)
   if (type === 'solo') {
     return (
       <main style={style}>
@@ -86,24 +119,7 @@ export default function Page({ params }: { params: { type: string } }) {
     );
   }
 
-  // Caso especial: FAMILY -> usar tu landing específica (FamilyHero) + secciones comunes
-  if (type === 'family') {
-    return (
-      <main style={style}>
-        <FamilyHero />
-        <IntroBlock type="family" palette={data.palette} />
-        <ImageMosaic type="family" />
-        <BenefitGrid type="family" palette={data.palette} />
-        <section className="bg-white text-slate-900">
-          <LevelsSection type="family" palette={data.palette} />
-        </section>
-        <CtaBand palette={data.palette} />
-        <FooterLanding />
-      </main>
-    );
-  }
-
-  // Resto de tipos -> flujo genérico existente
+  // Resto de tipos → flujo genérico
   return (
     <main style={style}>
       <Hero data={data} />
