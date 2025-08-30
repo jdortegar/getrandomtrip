@@ -24,15 +24,20 @@ export default function HoneymoonHero() {
       {/* Video de fondo */}
       {!reduceMotion && (
         <video
-          src="/videos/honeymoon-video.mp4"
           className="absolute inset-0 h-full w-full object-cover pointer-events-none"
           autoPlay
           loop
           muted
           playsInline
           preload="metadata"
+          poster="/images/journey-types/honeymoon-same-sex.jpg" {/* TODO: Replace with an actual poster image for honeymoon-video.mp4 */}
           aria-hidden="true"
-        />
+        >
+          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
+          <source src="/videos/honeymoon-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/honeymoon-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       )}
 
       {/* Overlay para contraste */}

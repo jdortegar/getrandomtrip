@@ -21,15 +21,20 @@ export default function GroupHero() {
       {/* Video de fondo */}
       {!reduceMotion && (
         <video
-          src="/videos/group-hero-video.mp4"
           className="absolute inset-0 h-full w-full object-cover pointer-events-none"
           autoPlay
           loop
           muted
           playsInline
           preload="metadata"
+          poster="/images/journey-types/friends-group.jpg" {/* TODO: Replace with an actual poster image for group-hero-video.mp4 */}
           aria-hidden="true"
-        />
+        >
+          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
+          <source src="/videos/group-hero-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/group-hero-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       )}
 
       {/* Gradiente */}

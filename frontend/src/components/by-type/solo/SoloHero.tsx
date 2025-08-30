@@ -8,14 +8,19 @@ export default function SoloHero() {
       {/* Fondo video + overlay */}
       <div className="absolute inset-0 z-0">
         <video
-          src="/videos/solo-hero-video.mp4"
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
           poster="/images/journey-types/solo-traveler.jpg"
           className="w-full h-full object-cover hidden motion-safe:block"
-        />
+        >
+          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
+          <source src="/videos/solo-hero-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/solo-hero-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         <img
           src="/images/journey-types/solo-traveler.jpg"
           alt=""

@@ -10,13 +10,19 @@ export default function FamilyHero(): JSX.Element {
       {/* Fondo video + overlay */}
       <div className="absolute inset-0 z-0">
         <video
-          src="/videos/family-hero-video.mp4"
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
+          poster="/images/journey-types/family-traveler.jpg"
           className="w-full h-full object-cover hidden motion-safe:block"
-        />
+        >
+          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
+          <source src="/videos/family-hero-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/family-hero-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         {/* Fallback opcional: elimina si no tienes esta imagen */}
         <Image
           src="/images/journey-types/family-traveler.jpg"

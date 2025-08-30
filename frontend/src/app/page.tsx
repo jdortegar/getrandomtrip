@@ -684,6 +684,8 @@ function HomeHeroBackground() {
           className="w-full h-full object-cover"
           onError={() => setVideoOk(false)}
         >
+          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
+          <source src={SRC.replace('.mp4', '.webm')} type="video/webm" /> {/* Ensure this file exists! */}
           <source src={SRC} type="video/mp4" />
           Your browser does not support the video tag.
         </video>

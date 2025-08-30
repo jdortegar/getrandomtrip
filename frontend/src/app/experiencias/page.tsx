@@ -306,8 +306,14 @@ const TripBuddyPage: React.FC = () => {
           loop
           muted
           playsInline
-          src="/videos/bg-experiences.mp4"
-        />
+          preload="metadata"
+          poster="/images/journey-types/experiences-card.jpg" {/* TODO: Replace with an actual poster image for bg-experiences.mp4 */}
+        >
+          {/* IMPORTANT: .webm should be first for better performance/compatibility */}
+          <source src="/videos/bg-experiences.webm" type="video/webm" /> {/* Ensure this file exists! */}
+          <source src="/videos/bg-experiences.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </motion.video>
       </div>
       <div className="absolute inset-0 bg-black/50 z-10" />
 
