@@ -288,17 +288,25 @@ const TripBuddyPage: React.FC = () => {
     [messages, userLocation, currentPersonaId, queueSpeak, countryCode]
   );
 
-  // Initial greeting
-  useEffect(() => {
-    const persona = personas.find((p) => p.id === currentPersonaId);
-    const personaName = persona ? persona.name.split(" ")[0] : "Aura";
-    if (messages.length === 0 && (userLocation !== null || error)) {
-      const here = placeName ? `por ${placeName}` : "por aquí";
-      const initialMessageText = `¡Hola! Soy ${personaName}, tu TripBuddy. ¿Qué te gustaría descubrir ${here} hoy?`;
-      setMessages([{ id: "initial-greeting", content: initialMessageText, role: "assistant", isSpeaking: true }]);
-      queueSpeak(initialMessageText, currentPersonaId);
-    }
-  }, [userLocation, error, currentPersonaId, messages.length, placeName, queueSpeak]);
+// Initial greeting
+useEffect(() => {
+  const persona = personas.find((p) => p.id === currentPersonaId);
+  const personaName = persona ? persona.name.split(" ")[0] : "Aura";
+  if (messages.length === 0 && (userLocation !== null || error)) {
+    const here = placeName ? `por ${placeName}` : "por aquí";
+    const initialMessageText = `¡Hola! Soy ${personaName}, tu TripBuddy. ¿Qué te gustaría descubrir ${here} hoy?`;
+    setMessages([{ id: "initial-greeting", content: initialMessageText, role: "assistant", isSpeaking: true }]);
+    queueSpeak(initialMessageText, currentPersonaId);
+  }
+}, [
+  userLocation,
+  error,
+  currentPersonaId,
+  messages.length,
+  placeName,
+  queueSpeak,
+  handleSendMessage, // 👈 agregado para callar el warning
+]);
 
   // --- UI ---
   const demoCards = [
