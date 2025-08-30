@@ -1,59 +1,28 @@
 'use client';
-
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import FamilyIntroStory from './FamilyIntroStory';
 
 export default function FamilyHero(): JSX.Element {
-  const SRC = '/videos/family-hero-video.mp4';
-  const POSTER = '/images/journey-types/family-traveler.jpg';
-
-  const [videoOk, setVideoOk] = React.useState(true);
-  const [reduceMotion, setReduceMotion] = React.useState(false);
-  const vref = React.useRef<HTMLVideoElement | null>(null);
-
-  React.useEffect(() => {
-    const m = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    const onPref = () => setReduceMotion(!!m?.matches);
-    onPref(); m?.addEventListener?.('change', onPref);
-
-    const v = vref.current;
-    if (v) {
-      const onErr = () => setVideoOk(false);
-      const onPlay = () => setVideoOk(true);
-      v.addEventListener('error', onErr);
-      v.addEventListener('canplay', onPlay);
-      v.muted = true;
-      v.play().catch(() => setVideoOk(false));
-      return () => { m?.removeEventListener?.('change', onPref); v.removeEventListener('error', onErr); v.removeEventListener('canplay', onPlay); };
-    }
-    return () => m?.removeEventListener?.('change', onPref);
-  }, []);
-
-  const showVideo = videoOk && !reduceMotion;
-
   return (
     <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
       {/* Fondo video + overlay */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 z-0">
         <video
-          ref={vref}
+          src="/videos/family-hero-video.mp4"
           autoPlay
           loop
           muted
           playsInline
-          preload="metadata"
-          poster={POSTER}
-          className={`w-full h-full object-cover ${showVideo ? 'block' : 'hidden'}`}
-        >
-          <source src={SRC} type="video/mp4" />
-        </video>
-        <img
-          src={POSTER}
+          className="w-full h-full object-cover hidden motion-safe:block"
+        />
+        {/* Fallback opcional: elimina si no tienes esta imagen */}
+        <Image
+          src="/images/journey-types/family-traveler.jpg"
           alt=""
-          className={`w-full h-full object-cover ${showVideo ? 'hidden' : 'block'}`}
-          loading="eager"
+          fill
+          className="object-cover block motion-reduce:block motion-safe:hidden"
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
@@ -66,10 +35,7 @@ export default function FamilyHero(): JSX.Element {
           {/* Columna izquierda: título + bajada + chips + CTAs */}
           <div className="max-w-2xl">
             <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight tracking-tightish text-white">
-              <span>
-                KIN<sup className="align-super text-[0.65em] ml-0.5">©</sup>
-              </span>{' '}
-              RANDOMTRIP
+              <span>KIN<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP
             </h1>
 
             <p className="mt-3 text-base md:text-lg text-white/90">
@@ -116,13 +82,6 @@ export default function FamilyHero(): JSX.Element {
       <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
         SCROLL
       </div>
-
-      {/* Banner opcional si falla el video */}
-      {!videoOk && (
-        <div className="absolute left-1/2 top-6 -translate-x-1/2 z-20 rounded-md bg-red-600 text-white text-xs px-3 py-1 shadow">
-          Problema cargando el video — usando imagen de respaldo.
-        </div>
-      )}
     </section>
   );
 }
