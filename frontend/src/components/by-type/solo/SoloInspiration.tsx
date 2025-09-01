@@ -76,7 +76,7 @@ const SoloInspiration: React.FC = () => {
                     href="#planes"
                     className="btn-primary"
                 >
-                    👉 ACTIVAR MI RANDOMTRIP SOLUM
+                    RANDOMTRIP-me! →
                 </Link>
             </div>
         </section>

@@ -1,41 +1,145 @@
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
-import GetRandomtripCta from '@/components/common/GetRandomtripCta';
+import BlogCard from '@/components/BlogCard';
 
-export default function PawsInspiration() {
+const PawsInspiration: React.FC = () => {
+  const posts = [
+    {
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+      category: 'Patagonia',
+      title: 'Patagonia con tu mejor amigo',
+      slug: 'patagonia-paws',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
+      category: 'Hoteles',
+      title: 'Hoteles pet-friendly en la costa',
+      slug: 'hoteles-costa-paws',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1526312426976-593c2d0a3d5b',
+      category: 'Actividades',
+      title: 'Actividades al aire libre dog-friendly',
+      slug: 'actividades-paws',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1510626176961-4fbad03',
+      category: 'Viajes',
+      title: 'Viajes en auto con mascotas',
+      slug: 'viajes-auto-paws',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
+      category: 'Salud',
+      title: 'Salud y seguridad en viajes con mascotas',
+      slug: 'salud-seguridad-paws',
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063',
+      category: 'Destinos',
+      title: 'Destinos internacionales pet-friendly',
+      slug: 'destinos-internacionales-paws',
+    },
+  ];
+
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const delta = el.clientWidth * 0.8;
+    el.scrollBy({ left: direction === 'right' ? delta : -delta, behavior: 'smooth' });
+  };
+
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-4xl font-bold text-gray-800 mb-4">Historias con huellas</h2>
-        <p className="text-lg text-gray-600 mb-10 max-w-3xl mx-auto">
-          Descubre relatos de viajeros y sus compañeros de cuatro patas. Destinos, consejos y aventuras para inspirarte a viajar juntos.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
-          <div className="bg-gray-100 p-6 rounded-lg shadow">
-            <h3 className="text-xl font-semibold mb-2">Patagonia con tu mejor amigo</h3>
-            <p className="text-gray-700 text-sm">Lagos y senderos del sur argentino con perro: logística y momentos clave.</p>
-            <Link href="/blog/patagonia-paws" className="text-[#D4AF37] hover:underline mt-3 inline-block">
-              Leer más →
-            </Link>
-          </div>
-          <div className="bg-gray-100 p-6 rounded-lg shadow">
-            <h3 className="text-xl font-semibold mb-2">Hoteles pet-friendly en la costa</h3>
-            <p className="text-gray-700 text-sm">Alojamientos que realmente reciben a tu mascota (y tips de check-in).</p>
-            <Link href="/blog/hoteles-costa-paws" className="text-[#D4AF37] hover:underline mt-3 inline-block">
-              Leer más →
-            </Link>
-          </div>
-          <div className="bg-gray-100 p-6 rounded-lg shadow">
-            <h3 className="text-xl font-semibold mb-2">Actividades al aire libre dog-friendly</h3>
-            <p className="text-gray-700 text-sm">De caminatas a kayak: ideas para que ambos disfruten al máximo.</p>
-            <Link href="/blog/actividades-paws" className="text-[#D4AF37] hover:underline mt-3 inline-block">
-              Leer más →
-            </Link>
+    <section id="inspiracion-paws" className="py-20 px-8 bg-[#111827] text-white">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        {/* Columna izquierda: título + copy + flechas */}
+        <div className="md:col-span-1 text-left">
+          <h2
+            className="text-5xl font-bold"
+            style={{ fontFamily: 'Playfair Display, serif' }}
+          >
+            Historias con huellas
+          </h2>
+          <p className="text-lg text-gray-300 mt-4">
+            Inspiración para diseñar el primer capítulo juntos.
+          </p>
+          <div className="flex space-x-4 mt-8">
+            <button
+              onClick={() => handleScroll('left')}
+              className="border border-gray-600 rounded-full p-3 hover:border-white transition-colors"
+              aria-label="Scroll hacia la izquierda"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <button
+              onClick={() => handleScroll('right')}
+              className="border border-gray-600 rounded-full p-3 hover:border-white transition-colors"
+              aria-label="Scroll hacia la derecha"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <GetRandomtripCta align="center" />
+        {/* Columna derecha: carrusel horizontal */}
+        <div className="md:col-span-2">
+          <div
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto space-x-8 pb-8 hide-scrollbar"
+          >
+            {posts.map((post) => (
+              <BlogCard key={post.title} post={post} />
+            ))}
+
+            {/* Tarjeta "View All" */}
+            <Link href="/blogs/paws">
+              <div className="bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center p-6 w-80 flex-shrink-0 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700">
+                <div className="w-16 h-16 border-2 border-gray-500 rounded-full flex items-center justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
+                       fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                          d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  View All
+                </h3>
+                <p className="text-gray-400 mt-2">Ir al Blog</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA al final (consistente con otras landings) */}
+      <div className="text-center mt-12">
+        <a
+          href="#paws-planner"
+          className="btn-primary"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.hash = 'paws-planner';
+            document.getElementById('paws-planner')?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }}
+        >
+          🐾 RANDOMTRIP-paws! →
+        </a>
       </div>
     </section>
   );
-}
+};
+
+export default PawsInspiration;

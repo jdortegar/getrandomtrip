@@ -27,79 +27,99 @@ export default function GroupPlanner() {
   const tiers = useMemo(
     () => [
       {
-        key: 'essenza',
-        title: 'Essenza — Lo esencial, compartido.',
-        priceLabel: 'Hasta 350 USD · por persona',
-        bullets: [
-          'Duración: Máximo 2 noches.',
-          'Transporte: Low cost (buses o vuelos off-peak). Asientos, carry-on y bodega no incluidos.',
-          'Fechas: Menor disponibilidad; con restricciones y bloqueos.',
-          'Alojamiento: Midscale (3★ o equivalentes).',
-          'Extras: Guía esencial para que el grupo disfrute sin complicaciones + recomendaciones simples para moverse juntos.',
+        id: 'essenza',
+        name: 'Essenza',
+        subtitle: 'Lo esencial, compartido.',
+        priceLabel: 'Hasta 350 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Máximo 2 noches.' },
+          {
+            text: 'Transporte: Low cost (buses o vuelos off-peak).',
+            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+          },
+          { text: 'Fechas: Menor disponibilidad; con restricciones y bloqueos.' },
+          { text: 'Alojamiento: Midscale (3★ o equivalentes).',
+          },
+          { text: 'Extras: Guía esencial con recomendaciones simples para el grupo.' },
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Activen su Essenza',
-        testid: 'cta-tier-essenza',
+        closingLine: '📝 Una escapada simple para sincronizar agendas, para que solo se preocupen por disfrutar juntos.',
+        ctaLabel: 'Activen su Essenza →',
       },
       {
-        key: 'explora',
-        title: 'Modo Explora — Activo y flexible, en equipo.',
-        priceLabel: 'Hasta 500 USD · por persona',
-        bullets: [
-          'Duración: Hasta 3 noches.',
-          'Transporte: Multimodal, horarios flexibles. En vuelos: asientos, carry-on y bodega no incluidos.',
-          'Fechas: Mayor disponibilidad; algunos bloqueos en feriados.',
-          'Alojamiento: Mid-to-Upscale.',
-          'Extras: Randomtrip Decode con pistas para descubrir en grupo + sugerencias de actividades para distintos ritmos.',
+        id: 'explora',
+        name: 'Modo Explora',
+        subtitle: 'Activo y flexible, en equipo.',
+        priceLabel: 'Hasta 500 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Hasta 3 noches.' },
+          {
+            text: 'Transporte: Multimodal, horarios flexibles.',
+            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+          },
+          { text: 'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.' },
+          { text: 'Alojamiento: : Midscale – Upper Midscale.' },
+          { text: 'Extras: Guia Randomtrip con actividades y sugerencias para distintos ritmos dentro del grupo.' },
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Activen su Modo Explora',
-        testid: 'cta-tier-explora',
+        closingLine: '📝 Para grupos que quieren explorar a su ritmo, con la flexibilidad que necesitan.',
+        ctaLabel: 'Activen su Modo Explora →',
       },
       {
-        key: 'exploraPlus',
-        title: 'Explora+ — Más capas, más momentos (en plural).',
-        priceLabel: 'Hasta 850 USD · por persona',
-        bullets: [
-          'Duración: Hasta 4 noches.',
-          'Transporte: Multimodal. En vuelos: asientos, carry-on y bodega no incluidos.',
-          'Fechas: Alta disponibilidad, incluso en feriados (con bloqueos festivos).',
-          'Alojamiento: Upscale asegurado.',
-          'Extras: Decode personalizado + 1 experiencia curada especial para el grupo (ej.: brindis privado, caminata guiada al atardcer).',
+        id: 'exploraPlus',
+        name: 'Explora+',
+        subtitle: 'Más capas, más momentos.',
+        priceLabel: 'Hasta 850 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Hasta 4 noches.' },
+          {
+            text: 'Transporte: Multimodal.',
+            footnote: 'Carry-on incluido; selección de asiento y bodega no incluidos.',
+          },
+          { text: 'Fechas: Alta disponibilidad, incluso en feriados/puentes.' },
+          { text: 'Alojamiento: Upscale asegurado.' },
+          { text: '**Decode personalizado**: hagan de esta experiencia su propia aventura.' },
+          { text: 'Extras: 1 experiencia curada especial para el grupo (ej.: brindis privado, caminata guiada al atardecer).' },
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Suban de nivel con Explora+',
-        testid: 'cta-tier-exploraplus',
+        closingLine: '📝 Más días, más actividades, más anécdotas que se vuelven leyenda compartida.',
+        ctaLabel: 'Suban de nivel con Explora+ →',
       },
       {
-        key: 'bivouac',
-        title: 'Bivouac — Curaduría artesanal para su tribu.',
-        priceLabel: 'Hasta 1200 USD · por persona',
-        bullets: [
-          'Duración: Hasta 5 noches.',
-          'Transporte: Multimodal. En vuelos: asientos y carry-on incluidos.',
-          'Fechas: Sin bloqueos.',
-          'Alojamiento: Upper-Upscale (boutique, diseño, stays con alma).',
-          'Extras: Concierge Advisor + 1 experiencia premium para el grupo (p. ej., mesa del chef / salida privada) + perks (early/late & upgrade sujetos a dispo).',
+        id: 'bivouac',
+        name: 'Bivouac',
+        subtitle: 'Curaduría artesanal para su tribu.',
+        priceLabel: 'Hasta 1200 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Hasta 5 noches.' },
+          {
+            text: 'Transporte: Multimodal.',
+            footnote: 'Carry-on incluido; selección de asiento/bodega opcional.',
+          },
+          { text: 'Fechas: Sin bloqueos.' },
+          { text: 'Alojamiento: Upper-Upscale (boutique, diseño, stays con alma).',
+          },
+          { text: 'Extras: **Concierge Advisor** + 1 experiencia premium grupal (ej.: mesa del chef, excursión privada) + perks.' },
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'Viajen distinto con Bivouac',
-        testid: 'cta-tier-bivouac',
+        closingLine: '📝 Una experiencia grupal única, con detalles que marcan la diferencia.',
+        ctaLabel: 'Viajen distinto con Bivouac →',
       },
       {
-        key: 'atelier',
-        title: 'Atelier Getaway — Distinción, a medida (Group Edition).',
-        priceLabel: 'Desde 1200 USD · por persona',
-        bullets: [
-          'Duración: Customizable.',
-          'Alojamiento: Luxury / de autor / cadenas A1.',
-          'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7.',
-          'Incluye: 2+ experiencias premium diseñadas a la medida del grupo (celebraciones, milestones, team-bonding).',
-          'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones de marcas asociadas.',
+        id: 'atelier',
+        name: 'Atelier Getaway',
+        subtitle: 'Distinción, a medida (Group Edition).',
+        priceLabel: 'Desde 1200 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Customizable.' },
+          { text: 'Transporte: Multimodal / a medida.' },
+          { text: 'Fecha: Sin bloqueos.' },
+          { text: 'Alojamiento: Luxury / de autor / Cadenas Hoteleras A1.' },
+          { text: 'Extras: **Co-creación con un Luxury Travel Advisor + equipo 24/7**. Incluye 2+ experiencias de lujo diseñadas a medida. Atelier Perks.'},
         ],
-        priceFootnote: '👥 Precio por persona (base grupo).',
-        ctaLabel: 'A un clic de lo extraordinario — Atelier',
-        testid: 'cta-tier-atelier',
+        closingLine: '📝 La experiencia que convierte cualquier celebración en inolvidable.',
+        ctaLabel: 'A un clic de lo extraordinario →',
       },
     ],
     []
@@ -301,53 +321,67 @@ export default function GroupPlanner() {
               data-testid="tab2-title"
               className="text-center text-xl font-semibold text-neutral-900"
             >
-              💡 Lo único que definen acá es el presupuesto por persona. Ese será su techo. Del resto… nos ocupamos nosotros.
+             💡 Lo único que definen acá es el presupuesto por persona para pasaje y alojamiento. Ese será su techo. Del resto… nos ocupamos nosotros.
             </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {tiers.map((t) => (
               <div
-                key={t.key}
+                key={t.id}
                 role="group"
-                aria-labelledby={`h-${t.key}`}
+                aria-labelledby={`h-${t.id}`}
                 className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
               >
-                <h4 id={`h-${t.key}`} className="font-display text-xl tracking-tightish font-bold">
-                  {t.title}
-                </h4>
+                {/* Contenido: columna flexible para alinear el closingLine abajo */}
+                <div className="flex-1 flex flex-col">
+                  <h4 id={`h-${t.id}`} className="font-display text-xl tracking-tightish font-bold text-gray-900">
+                    {t.name}
+                  </h4>
 
-                {t.priceLabel && (
-                  <>
-                    <p className="mt-4 font-display text-3xl text-[var(--rt-terracotta)]">
+                  <p className="text-gray-800 text-sm">{t.subtitle}</p>
+
+                  <div className="mt-6">
+                    <div className="font-display text-3xl leading-tight font-bold text-[var(--rt-terracotta)]">
                       {t.priceLabel}
-                    </p>
-                    <p className="text-xs text-gray-900">por persona</p>
-                  </>
-                )}
+                    </div>
+                    <span className="block text-xs text-gray-900">{t.priceFootnote}</span>
+                  </div>
 
-                <ul className="mt-4 list-disc pl-5 text-sm text-neutral-700 leading-relaxed space-y-1">
-                  {t.bullets.map((b, i) => (
-                    <li key={i}>{b}</li>
-                  ))}
-                </ul>
+                  <ul className="mt-5 space-y-2 text-sm text-gray-800">
+                    {(t.features ?? []).map((f, i) => (
+                      <li key={i} className="leading-snug">
+                        • {f.text.split('**').map((part, index) => (
+                            index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+                          ))}
+                        {f.footnote && (
+                          <span className="block pl-4 text-xs text-gray-600">* {f.footnote}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
 
-                {t.priceFootnote && (
-                  <div className="mt-3 text-xs text-gray-900">{t.priceFootnote}</div>
-                )}
+                  {t.closingLine && (
+                    <div className="mt-auto py-4 border-y border-gray-200">
+                      <p className="text-neutral-800 text-sm leading-relaxed text-center">
+                        {t.closingLine}
+                      </p>
+                    </div>
+                  )}
+                </div>
 
-                <div className="mt-4">
+                {/* CTA */}
+                <div>
                   <button
                     type="button"
-                    className="btn-card w-full"
+                    className="btn-card w-full mt-6"
                     aria-label={t.ctaLabel}
                     onClick={() => {
-                      setBudgetTier(t.key);
+                      setBudgetTier(t.id);
                       setStep('Grupo & Alma');
                       document.getElementById('group-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    aria-controls="group-soul"
                   >
-                    {t.ctaLabel} <span aria-hidden>→</span>
+                    {t.ctaLabel}
                   </button>
                 </div>
               </div>

@@ -49,9 +49,8 @@ export default function PawsHero() {
           className={`w-full h-full object-cover ${videoOk ? 'block' : 'hidden'}`}
         >
           {/* IMPORTANTE: el mp4 debe estar en H.264 + AAC */}
+          <source src="/videos/paws-hero-video.webm" type="video/webm" />
           <source src="/videos/paws-hero-video.mp4" type="video/mp4" />
-          {/* si agregas un .webm, descomenta: */}
-          {/* <source src="/videos/paws-hero-video.webm" type="video/webm" /> */}
         </video>
 
         {/* Fallback a imagen si el video no puede cargarse/reproducirse */}
@@ -65,7 +64,7 @@ export default function PawsHero() {
       </div>
 
       {/* overlay / gradiente para legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/10" />
+      <div className="absolute inset-0 bg-black/40" />
 
       {/* copy + CTAs */}
       <div className="relative z-10 mx-auto h-full max-w-7xl px-4">
@@ -94,16 +93,32 @@ export default function PawsHero() {
               <Link
                 href="/packages/by-type/paws#paws-planner"
                 aria-label="Ir al planner PAWS para empezar su RANDOMTRIP"
-                onClick={() => track('cta_click', { area: 'paws_hero', label: 'randomtrip_paws' })}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.hash = 'paws-planner';
+                  document.getElementById('paws-planner')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                  track('cta_click', { area: 'paws_hero', label: 'randomtrip_paws' });
+                }}
                 className="btn-primary"
                 data-analytics="cta_paws_planner_hero"
               >
                 🐾 RANDOMTRIP-paws! →
               </Link>
               <Link
-                href="/blog"
+                href="#inspiracion-paws"
                 aria-label="Ver relatos que inspiran de viajes con mascotas"
-                onClick={() => track('cta_click', { area: 'paws_hero', label: 'relatos' })}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.hash = 'inspiracion-paws';
+                  document.getElementById('inspiracion-paws')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                  track('cta_click', { area: 'paws_hero', label: 'relatos' });
+                }}
                 className="btn-secondary"
                 data-analytics="cta_paws_blog_hero"
               >
@@ -137,8 +152,9 @@ export default function PawsHero() {
       </div>
 
       {/* Indicador de scroll */}
-      <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
-        SCROLL
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none text-white/70 select-none flex flex-col items-center">
+        <span className="text-[10px] tracking-[0.35em]">SCROLL</span>
+        <span className="mt-1 h-6 w-px bg-white/60 animate-pulse" />
       </div>
 
       {/* Aviso si el video falló (útil en dev para detectar codec/LFS) */}

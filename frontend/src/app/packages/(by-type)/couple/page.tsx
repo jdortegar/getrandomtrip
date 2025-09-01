@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import CoupleHero from "@/components/by-type/couple/CoupleHero";
-import ExperienceLevels from "@/components/by-type/couple/ExperienceLevels";
+import CouplePlanner from "@/components/by-type/couple/CouplePlanner";
 import CoupleInspiration from "@/components/by-type/couple/CoupleInspiration";
 import Testimonials from "@/components/by-type/couple/Testimonials";
 import FooterLanding from "@/components/layout/FooterLanding";
@@ -15,7 +15,7 @@ export default function CouplePage() {
     <main className="relative">
       
       <CoupleHero />
-      <ExperienceLevels />
+      <CouplePlanner />
       <CoupleInspiration />
       <Testimonials />
       <FooterLanding />

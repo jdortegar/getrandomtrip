@@ -10,78 +10,7 @@ export interface Tier {
   testid?: string;
 }
 
-export const COUPLE_TIERS: Tier[] = [
-  {
-    key: 'essenza',
-    title: '🌱 Essenza — Lo esencial con estilo',
-    price: 'Hasta 350 USD · por persona',
-    bullets: [
-      'Duración: Máx 2 noches',
-      'Transporte: Low cost (buses o vuelos off-peak). Selección de asiento, carry-on y bodega no incluidos.',
-      'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
-      'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Guía esencial diseñada para parejas que buscan la simpleza sin perder el encanto.',
-      '📝 Un escape breve, suficiente para mirarse distinto y recordar por qué empezó todo.',
-    ],
-    cta: 'Den el primer paso →',
-  },
-  {
-    key: 'modo-explora',
-    title: '🌿 Modo Explora — Viaje activo y flexible',
-    price: 'Hasta 500 USD · por persona',
-    bullets: [
-      'Duración: Hasta 3 noches',
-      'Transporte: Multimodal, horarios flexibles. Selección de asiento, carry-on y bodega no incluidos.',
-      'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.',
-      'Alojamiento: Mid-to-Upscale.',
-      'Extras: Guía Randomtrip Decode con pistas para descubrir juntos.',
-      '📝 Para los que creen que la mejor forma de enamorarse es perderse… y reencontrarse.',
-    ],
-    cta: 'Exploren su historia →',
-  },
-  {
-    key: 'explora-plus',
-    title: '💫 Explora+ — Más capas, más momentos',
-    price: 'Hasta 850 USD · por persona',
-    bullets: [
-      'Duración: Hasta 4 noches',
-      'Transporte: Multimodal. Carry-on incluido; selección de asiento y bodega no incluidos.',
-      'Fechas: Alta disponibilidad, incluso en feriados/puentes.',
-      'Alojamiento: Upscale asegurado.',
-      'Extras: Decode personalizado + 1 experiencia especial en pareja.',
-      '📝 Más noches, más sorpresas, más excusas para coleccionar recuerdos a dos voces.',
-    ],
-    cta: 'Suban la apuesta →',
-  },
-  {
-    key: 'bivouac',
-    title: '🔥 Bivouac — Romance artesanal',
-    price: 'Hasta 1200 USD · por persona',
-    bullets: [
-      'Duración: Hasta 5 noches',
-      'Transporte: Multimodal. Carry-on incluido; selección de asiento/bodega opcional.',
-      'Fechas: Sin bloqueos.',
-      'Alojamiento: Upper Upscale (boutique, diseño, experiencias locales).',
-      'Extras: Concierge Advisor + 1 experiencia premium en pareja + perks exclusivos.',
-      '📝 Un viaje que se cuida como se cuida una relación: con detalle y paciencia.',
-    ],
-    cta: 'Viajen distinto →',
-  },
-  {
-    key: 'atelier-getaway',
-    title: '✨ Atelier Getaway — Amor a medida',
-    price: 'Desde 1200 USD · por persona',
-    bullets: [
-      'Duración: Customizable',
-      'Transporte: Multimodal / a medida.',
-      'Fechas: Sin bloqueos.',
-      'Alojamiento: Luxury / de autor / cadenas A1.',
-      'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7. Incluye 2+ experiencias premium diseñadas a medida. Perks (traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas).',
-      '📝 Un lienzo en blanco para crear la escapada que nadie más podrá repetir.',
-    ],
-    cta: 'Creen lo irrepetible →',
-  },
-];
+
 
 export const SOLO_TIERS: Tier[] = [
   {

@@ -3,8 +3,14 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function PawsPlanner() {
+export default function SoloPlanner() {
   const router = useRouter();
+
+  // Helper para renderizar **negritas** dentro de strings
+  const renderRich = (s: string) =>
+    s.split('**').map((part, i) =>
+      i % 2 === 1 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>
+    );
 
   const tiers = useMemo(
     () => [
@@ -12,8 +18,8 @@ export default function PawsPlanner() {
         id: 'essenza',
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
-        priceLabel: 'Hasta 460 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
+        priceLabel: '455 USD',
+        priceFootnote: '· por persona',
         features: [
           { text: 'Duración: Máx 2 noches' },
           {
@@ -21,18 +27,19 @@ export default function PawsPlanner() {
             footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
           },
           { text: 'Fechas: Menor disponibilidad, con restricciones y bloqueos.' },
-          { text: 'Alojamiento: Midscale (3★ o equivalentes, pet-friendly).' },
-          { text: 'Extras: Guía esencial con mapa pet-friendly.' },
+          { text: 'Alojamiento: Midscale (3★ o equivalentes).' },
+          { text: 'Extras: Guía esencial para moverte sin complicaciones.' },
         ],
-        closingLine: '📝 Un escape simple, donde tu mascota no es un extra, sino parte del plan.',
-        ctaLabel: 'Empiecen con lo básico →',
+        closingLine:
+          '📝 Un escape breve para perderte en lo simple y encontrarte en lo inesperado.',
+        ctaLabel: 'Arranca tu Essenza',
       },
       {
         id: 'explora',
         name: 'Modo Explora',
-        subtitle: 'Viaje activo y flexible',
-        priceLabel: 'Hasta 650 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
+        subtitle: 'Activo y flexible',
+        priceLabel: '650 USD',
+        priceFootnote: '· por persona',
         features: [
           { text: 'Duración: Hasta 3 noches' },
           {
@@ -40,18 +47,19 @@ export default function PawsPlanner() {
             footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
           },
           { text: 'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.' },
-          { text: 'Alojamiento: Midscale – Upper Midscale pet-friendly.' },
-          { text: 'Extras: Guía Randomtrip con rutas, spots de juego y actividades pet-friendly.' },
+          { text: 'Alojamiento: Midscale – Upper Midscale.' },
+          { text: 'Extras: Guía Randomtrip diseñada para descubrir a tu ritmo.' },
         ],
-        closingLine: '📝 Senderos y rincones pensados para descubrir junto a tu compañer@, con libertad y sin estrés.',
-        ctaLabel: 'Exploren a cuatro patas →',
+        closingLine:
+          '📝 Diseñado para quienes viajan livianos y quieren descubrir sin guion.',
+        ctaLabel: 'Activa tu Modo Explora',
       },
       {
         id: 'exploraPlus',
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
-        priceLabel: 'Hasta 1100 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
+        priceLabel: '1105 USD',
+        priceFootnote: '· por persona',
         features: [
           { text: 'Duración: Hasta 4 noches' },
           {
@@ -59,18 +67,20 @@ export default function PawsPlanner() {
             footnote: 'Carry-on incluido; selección de asiento y bodega no incluidos.',
           },
           { text: 'Fechas: Alta disponibilidad, incluso en feriados/puentes.' },
-          { text: 'Alojamiento: : Upscale asegurado, habitaciones pet-friendly premium.' },
-          { text: 'Extras: **Decode personalizado** + 1 experiencia curada (ej.: trail o day trip pet-friendly).' },
+          { text: 'Alojamiento: Upscale asegurado.' },
+          { text: '**Decode personalizado**: haz de esta experiencia tu propia aventura.' },
+          { text: 'Extras: 1 experiencia curada en solitario.' },
         ],
-        closingLine: '📝 Más días, más juegos, más huellas en la arena y en la memoria.',
-        ctaLabel: 'Suban la aventura →',
+        closingLine:
+          '📝 Más noches, más encuentros inesperados y más razones para volver distinto.',
+        ctaLabel: 'Sube de nivel →',
       },
       {
         id: 'bivouac',
         name: 'Bivouac',
         subtitle: 'Curaduría artesanal',
-        priceLabel: 'Hasta 1550 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
+        priceLabel: '1560 USD',
+        priceFootnote: '· por persona',
         features: [
           { text: 'Duración: Hasta 5 noches' },
           {
@@ -78,39 +88,45 @@ export default function PawsPlanner() {
             footnote: 'Carry-on incluido; selección de asiento/bodega opcional.',
           },
           { text: 'Fechas: Sin bloqueos.' },
-          { text: 'Alojamiento: Upper Upscale pet-friendly. (boutique, diseño, experiencias locales).' },
-          { text: 'Extras: **Concierge Advisor** + 1 experiencia premium + perks exclusivos.' },
+          { text: 'Alojamiento: Upper Upscale (boutique, diseño, stays con alma).' },
+          { text: 'Extras: **Concierge Advisor** + 1 experiencia premium en pareja + perks exclusivos.' },
         ],
-        closingLine: '📝 Un viaje premium, curado al detalle para vos y tu compañero de cuatro patas.',
-        ctaLabel: 'Viajen con huellas Bivouac →',
+        closingLine:
+          '📝 Un viaje íntimo, cuidado al detalle, que convierte la soledad en un lujo personal.',
+        ctaLabel: 'Viaja distinto →',
       },
       {
         id: 'atelier',
         name: 'Atelier Getaway',
-        subtitle: 'Experiencia a medida',
-        priceLabel: 'Desde 1550 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
+        subtitle: 'Distinción, sin esfuerzo',
+        priceLabel: 'Desde 1560 USD',
+        priceFootnote: '· por persona',
         features: [
           { text: 'Duración: Customizable' },
           { text: 'Transporte: Multimodal / a medida.' },
           { text: 'Fechas: Sin bloqueos.' },
-          { text: 'Alojamiento: Luxury / de autor / Cadenas Hoteleras A1 pet-friendly.' },
-          { text: 'Extras: **Co-creación con un Luxury Travel Advisor + equipo 24/7**. Incluye 2+ experiencias a medida. Perks top.' },
+          { text: 'Alojamiento: Luxury / de autor / Cadenas Hoteleras A1.' },
+          {
+            text:
+              'Extras: **Co-creación con un Luxury Travel Advisor + equipo 24/7**. Incluye 2+ experiencias premium diseñadas a medida. Atelier Perks.',
+          },
         ],
-        closingLine: '📝Una experiencia exclusiva donde cada momento está diseñado para ambos.',
-        ctaLabel: 'Creen lo extraordinario →',
+        closingLine:
+          '📝 El lujo de viajar sin testigos, con experiencias que se vuelven confidenciales.',
+        ctaLabel: 'Crea lo irrepetible →',
       },
     ],
     []
   );
 
   return (
-    <section id="paws-planner" className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+    <section id="planes" className="max-w-7xl mx-auto px-4 md:px-8 py-10">
       <div className="text-center mb-8">
         <h3 className="text-center text-xl font-semibold text-neutral-900">
-          💡 Lo único que definís acá es el presupuesto para vos y para tu compañer@ de cuatro patas para pasaje y alojamiento. Ese será su techo. Del resto… nos ocupamos nosotros.
+          💡 Lo único que definís acá es el presupuesto para pasaje y alojamiento. Ese será tu techo. Del resto… nos ocupamos nosotros.
         </h3>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {tiers.map((t) => (
           <div
@@ -119,7 +135,7 @@ export default function PawsPlanner() {
             aria-labelledby={`h-${t.id}`}
             className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
           >
-            {/* Contenido: columna flexible para alinear el closingLine abajo */}
+            {/* Contenido principal: columna flexible */}
             <div className="flex-1 flex flex-col">
               <h4 id={`h-${t.id}`} className="font-display text-xl tracking-tightish font-bold text-gray-900">
                 {t.name}
@@ -137,9 +153,7 @@ export default function PawsPlanner() {
               <ul className="mt-5 space-y-2 text-sm text-gray-800">
                 {(t.features ?? []).map((f, i) => (
                   <li key={i} className="leading-snug">
-                    • {f.text.split('**').map((part, index) => (
-                        index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-                      ))}
+                    • {renderRich(f.text)}
                     {f.footnote && (
                       <span className="block pl-4 text-xs text-gray-600">* {f.footnote}</span>
                     )}
@@ -156,17 +170,18 @@ export default function PawsPlanner() {
               )}
             </div>
 
-            {/* CTA */}
-            <div>
+            {/* CTA con altura uniforme para no desalinear el closingLine */}
+            <div className="mt-6 min-h-[64px] flex items-end">
               <button
                 type="button"
-                className="btn-card w-full mt-6"
+                className="btn-card w-full"
                 aria-label={t.ctaLabel}
                 onClick={() => {
-                  router.push(`/journey/basic-config?from=paws&tier=${t.id}`);
+                  router.push(`/journey/basic-config?from=solo&tier=${t.id}`);
                 }}
               >
                 {t.ctaLabel}
+                {!t.ctaLabel.includes('→') && <span aria-hidden>→</span>}
               </button>
             </div>
           </div>

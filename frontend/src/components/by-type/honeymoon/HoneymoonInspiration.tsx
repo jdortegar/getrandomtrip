@@ -118,9 +118,20 @@ const HoneymoonInspiration: React.FC = () => {
 
       {/* CTA al final (consistente con otras landings) */}
       <div className="text-center mt-12">
-        <Link href="#honeymoon-planner" className="btn-primary">
-          A diseñar la luna de miel
-        </Link>
+        <a
+          href="#honeymoon-planner"
+          className="btn-primary"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.hash = 'honeymoon-planner';
+            document.getElementById('honeymoon-planner')?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }}
+        >
+          RANDOMTRIP-us! →
+        </a>
       </div>
     </section>
   );

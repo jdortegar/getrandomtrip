@@ -33,69 +33,97 @@ export default function FamilyPlanner() {
   const tiers = useMemo(
     () => [
       {
-        key: 'essenza',
-        title: 'Essenza - Lo esencial con estilo',
-        cta: '👉 Reserven fácil →',
-        bullets: [
-          'Hasta 350 USD · por persona',
-          'Duración: Máximo 2 noches.',
-          'Transporte: Low cost (buses o vuelos off-peak). *Seleccion de asiento, carry-on y bodega - no incluido.',
-          'Fechas: Menor disponibilidad; con restricciones y bloqueos.',
-          'Alojamiento: Midscale (3★ o equivalentes)',
-          'Extras: Guía esencial para que el grupo disfrute sin complicaciones.',
+        id: 'essenza',
+        name: 'Essenza',
+        subtitle: 'Lo esencial con estilo',
+        priceLabel: 'Hasta 350 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Máx 2 noches' },
+          {
+            text: 'Transporte: Low cost (buses o vuelos off-peak).',
+            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+          },
+          { text: 'Fechas: Menor disponibilidad, con restricciones y bloqueos.' },
+          { text: 'Alojamiento: Midscale (3★ o equivalentes).' },
+          { text: 'Extras: Guía esencial para que todos disfruten sin complicaciones.' },
         ],
+        closingLine: '📝 Una escapada familiar con lo esencial, sin estrés, para que todos disfruten.',
+        ctaLabel: 'Reserven fácil →',
       },
       {
-        key: 'explora',
-        title: 'Modo Explora — Viaje activo y flexible.',
-        cta: 'Activen su modo →',
-        bullets: [
-          'Hasta 500 USD · por persona',
-          'Duración: Hasta 3 noches.',
-          'Transporte: Multimodal, horarios flexibles. En vuelos: asientos, carry-on y bodega no incluidos.',
-          'Fechas: Mayor disponibilidad, con algunos bloqueos en feriados/puentes.',
-          'Alojamiento: Mid-to-Upscale.',
-          'Extras: Guía curada “Randomtrip Decode” con actividades para todas las edades.',
+        id: 'explora',
+        name: 'Modo Explora',
+        subtitle: 'Viaje activo y flexible',
+        priceLabel: 'Hasta 500 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Hasta 3 noches' },
+          {
+            text: 'Transporte: Multimodal, horarios flexibles.',
+            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+          },
+          { text: 'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.' },
+          { text: 'Alojamiento: Midscale – Upper Midscale' },
+          { text: 'Extras: Guía Randomtrip con actividades para todas las edades.' },
         ],
+        closingLine: '📝 Para familias que quieren explorar a su ritmo, con la flexibilidad que necesitan.',
+        ctaLabel: 'Activen su Modo Explora →',
       },
       {
-        key: 'exploraPlus',
-        title: 'Explora+ — Más capas, más descubrimientos.',
-        cta: 'Suban de nivel →',
-        bullets: [
-          'Hasta 850 USD · por persona',
-          'Duración: Hasta 4 noches.',
-          'Transporte: Multimodal. En vuelos: asientos, carry-on y bodega no incluidos.',
-          'Fechas: Alta disponibilidad, incluso en feriados (con bloqueos festivos). ',
-          'Alojamiento: Upscale asegurado.',
-          'Extras: Decode personalizado + 1 experiencia curada familiar.',
+        id: 'explora-plus',
+        name: 'Explora+',
+        subtitle: 'Más capas, más descubrimientos',
+        priceLabel: 'Hasta 850 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Hasta 4 noches' },
+          {
+            text: 'Transporte: Multimodal.',
+            footnote: 'Carry-on incluido; selección de asiento y bodega no incluidos.',
+          },
+          { text: 'Fechas: Alta disponibilidad, incluso en feriados/puentes.' },
+          { text: 'Alojamiento: Upscale asegurado.' },
+          { text: '**Decode personalizado**: hagan de esta experiencia su propia aventura.'},
+          { text: 'Extras: 1 experiencia curada familiar.' },
         ],
+        closingLine: '📝 Más días, más actividades, más recuerdos imborrables para toda la familia.',
+        ctaLabel: 'Suban de nivel →',
       },
       {
-        key: 'bivouac',
-        title: 'Bivouac — Curaduría que se siente artesanal.',
-        cta: 'Viajen distinto →',
-        bullets: [
-          'Hasta 1200 USD · por persona',
-          'Duración: Hasta 5 noches.',
-          'Transporte: Multimodal. En vuelos: asientos y carry-on incluidos; bodega no incluida.',
-          'Fechas: Sin fechas bloqueadas.',
-          'Alojamiento: Upper-Upscale (boutique, diseño, experiencias locales).',
-          'Extras: Concierge Advisors + 1 experiencia premium familiar + perks.',
+        id: 'bivouac',
+        name: 'Bivouac',
+        subtitle: 'Curaduría artesanal',
+        priceLabel: 'Hasta 1200 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Hasta 5 noches' },
+          {
+            text: 'Transporte: Multimodal.',
+            footnote: 'Carry-on incluido; selección de asiento/bodega opcional.',
+          },
+          { text: 'Fechas: Sin bloqueos.' },
+          { text: 'Alojamiento: Upper-Upscale (boutique, diseño, experiencias locales).' },
+          { text: 'Extras: **Concierge Advisor** + 1 experiencia premium familiar + perks.' },
         ],
+        closingLine: '📝 Una experiencia familiar única, con detalles que marcan la diferencia.',
+        ctaLabel: 'Viajen distinto →',
       },
       {
-        key: 'atelier',
-        title: 'Atelier Getaway — Distinción, sin esfuerzo.',
-        cta: 'A un clic de lo inolvidable →',
-        bullets: [
-          'Desde 1200 USD · por persona',
-          'Duración: A medida.',
-          'Alojamiento: Luxury / de autor / cadenas A1.',
-          'Extras: Co-creación con Luxury Travel Advisor + equipo 24/7.',
-          'Incluye: 2+ experiencias premium a medida.',
-          'Perks: Traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.',
+        id: 'atelier',
+        name: 'Atelier Getaway',
+        subtitle: 'Distinción, sin esfuerzo',
+        priceLabel: 'Desde 1200 USD',
+        priceFootnote: '· por persona',
+        features: [
+          { text: 'Duración: Customizable.' },
+          { text: 'Transporte: Multimodal / a medida.' },
+          { text: 'Fecha: Sin bloqueos.' },
+          { text: 'Alojamiento: Luxury / de autor / Cadenas Hoteleras A1.' },
+          { text: 'Extras: **Co-creación con un Luxury Travel Advisor + equipo 24/7**. Incluye 2+ experiencias premium diseñadas a medida. Atelier Perks.'},  
         ],
+        closingLine: '📝  Una experiencia a medida donde la familia entera viaja como protagonista.',
+        ctaLabel: 'A un clic de lo inolvidable →',
       },
     ],
     [] // <- DEP ARRAY correcto
@@ -239,45 +267,70 @@ export default function FamilyPlanner() {
   const Presupuesto = () => (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-10" data-testid="tab-presupuesto">
       <Header />
-      <h3 className="mt-8 text-center text-lg font-semibold text-neutral-900">
-        💡 Lo único que definen acá es el presupuesto por persona. Ese será su techo. Del resto… nos ocupamos nosotros.
+      <h3 className="mt-8 mb-8 text-center text-lg font-semibold text-neutral-900">
+        💡 Lo único que definen acá es el presupuesto por persona para pasaje y alojamiento. Ese será su techo. Del resto… nos ocupamos nosotros.
       </h3>
 
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {tiers.map((t) => (
           <div
-            key={t.key}
+            key={t.id}
             role="group"
-            aria-labelledby={`h-${t.key}`}
-            className="h-full flex flex-col rounded-2xl border border-neutral-200 bg-white p-5 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition will-change-transform"
+            aria-labelledby={`h-${t.id}`}
+            className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
           >
-            <h4 id={`h-${t.key}`} className="font-display text-xl tracking-tightish font-bold">
-              {t.title}
-            </h4>
+            {/* Contenido: columna flexible para alinear el closingLine abajo */}
+            <div className="flex-1 flex flex-col">
+              <h4 id={`h-${t.id}`} className="font-display text-xl tracking-tightish font-bold text-gray-900">
+                {t.name}
+              </h4>
 
-            {Array.isArray(t?.bullets) && t.bullets.length > 0 && (
-              <ul className="mt-4 space-y-1 text-sm text-neutral-700 leading-relaxed">
-                {t.bullets.map((b, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span>•</span>
-                    <span>{b}</span>
+              <p className="text-gray-800 text-sm">{t.subtitle}</p>
+
+              <div className="mt-6">
+                <div className="font-display text-3xl leading-tight font-bold text-[var(--rt-terracotta)]">
+                  {t.priceLabel}
+                </div>
+                <span className="block text-xs text-gray-900">{t.priceFootnote}</span>
+              </div>
+
+              <ul className="mt-5 space-y-2 text-sm text-gray-800">
+                {(t.features ?? []).map((f, i) => (
+                  <li key={i} className="leading-snug">
+                    • {f.text.split('**').map((part, index) => (
+                        index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+                      ))}
+                    {f.footnote && (
+                      <span className="block pl-4 text-xs text-gray-600">* {f.footnote}</span>
+                    )}
                   </li>
                 ))}
               </ul>
-            )}
 
-            <div className="mt-6 pt-4 border-t border-neutral-200 md:mt-auto">
+              {t.closingLine && (
+                <div className="mt-auto py-4 border-y border-gray-200">
+                  <p className="text-neutral-800 text-sm leading-relaxed text-center">
+                    {t.closingLine}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* CTA */}
+            <div>
               <button
-                className="btn-card mt-6 inline-flex items-center justify-center"
+                type="button"
+                className="btn-card w-full mt-6"
+                aria-label={t.ctaLabel}
                 onClick={() => {
-                  setBudgetTier(t.key);
+                  setBudgetTier(t.id);
                   setStep('Tipo de viaje');
                   document
                     .getElementById('planner')
                     ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
               >
-                Elegir
+                {t.ctaLabel}
               </button>
             </div>
           </div>

@@ -14,9 +14,6 @@ import FooterLanding from '@/components/layout/FooterLanding';
 
 // Páginas/Secciones específicas
 import CouplePage from '../../(by-type)/couple/page';
-import SoloHero from '@/components/by-type/solo/SoloHero';
-import SoloInspiration from '@/components/by-type/solo/SoloInspiration';
-import SoloTestimonials from '@/components/by-type/solo/SoloTestimonials';
 
 /**
  * Canonicalización local SOLO para este archivo:
@@ -38,6 +35,12 @@ const ALIAS: Record<string, string> = {
   parejas: 'couple',
   pareja: 'couple',
   couples: 'couple',
+
+  // solo
+  solos: 'solo',
+
+  // paws
+  paw: 'paws',
 };
 
 const canonicalType = (raw: string) => {
@@ -46,7 +49,7 @@ const canonicalType = (raw: string) => {
 };
 
 // Slugs con página dedicada (NO renderizar aquí; redirigir)
-const DEDICATED: Set<string> = new Set(['family', 'honeymoon', 'group']);
+const DEDICATED: Set<string> = new Set(['family', 'honeymoon', 'group', 'solo', 'paws']);
 
 // --- Metadata ---
 export async function generateMetadata(
@@ -59,6 +62,7 @@ export async function generateMetadata(
     family: 'En Familia | Randomtrip',
     honeymoon: 'Honeymoon | Randomtrip',
     group: 'En Grupo | Randomtrip',
+    paws: 'Paws | Randomtrip',
   };
   return { title: map[type] ?? 'Randomtrip' };
 }
@@ -101,23 +105,6 @@ export default function Page({ params }: { params: { type: string } }) {
     '--rt-accent': data.palette.accent,
     '--rt-text': data.palette.text,
   } as CSSProperties;
-
-  // Caso especial: SOLO (layout distinto)
-  if (type === 'solo') {
-    return (
-      <main style={style}>
-        <SoloHero />
-        <section id="planes" className="relative scroll-mt-16 bg-neutral-950 text-white">
-          <div className="mx-auto max-w-7xl px-4 py-20">
-            <LevelsSection type="solo" palette={data.palette} />
-          </div>
-        </section>
-        <SoloInspiration />
-        <SoloTestimonials />
-        <FooterLanding />
-      </main>
-    );
-  }
 
   // Resto de tipos → flujo genérico
   return (
