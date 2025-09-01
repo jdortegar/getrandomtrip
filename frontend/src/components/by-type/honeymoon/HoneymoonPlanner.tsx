@@ -45,7 +45,7 @@ export default function HoneymoonPlanner() {
           muted
           loop
           playsInline
-          poster="images\journey-types\honeymoon-poster.jpeg"
+          poster="/images/journey-types/honeymoon-poster.jpeg"
         >
           <source src={videoWebm} type="video/webm" />
           <source src={videoMp4} type="video/mp4" />
