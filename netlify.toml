@@ -1,11 +1,10 @@
 [build]
-  base    = "frontend"
-  command = "npm ci && npm run build"
-  publish = ".next"
+  base = "frontend"
+  command = "npm run build"
+  publish = ".next"            # Para Next.js en Netlify con plugin
 
 [build.environment]
-  NODE_VERSION = "20.16.0"
-  NEXT_TELEMETRY_DISABLED = "1"
+  NODE_VERSION = "20"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

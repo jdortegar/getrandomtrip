@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import { COUPLE_TIERS } from "@/content/tiers";
+import { TRIPPERS_TIERS as COUPLE_TIERS } from "@/content/tiers";
 
 type Props = {
   onSelect: (packageId: string) => void;

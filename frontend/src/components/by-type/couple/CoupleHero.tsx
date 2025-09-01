@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function CoupleHero() {
+  const router = useRouter();
+
   return (
     <section
       className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden"
@@ -16,7 +19,7 @@ export default function CoupleHero() {
           playsInline
           preload="metadata"
           poster="/images/journey-types/couple-traveler.jpg"
-          className="w-full h-full object-cover hidden motion-safe:block"
+          className="w-full h-full object-cover block motion-reduce:hidden"
         >
           {/* IMPORTANT: .webm should be first for better performance/compatibility */}
           <source src="/videos/couple-hero-video.webm" type="video/webm" /> {/* Ensure this file exists! */}
@@ -27,12 +30,11 @@ export default function CoupleHero() {
           src="/images/journey-types/couple-traveler.jpg"
           alt=""
           fill
-          className="object-cover block motion-reduce:block motion-safe:hidden"
+          className="object-cover hidden motion-reduce:block"
         />
-        <div className="absolute inset-0 bg-black/40" />
       </div>
       {/* overlay / gradiente para legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/40 to-black/10" />
+      <div className="absolute inset-0 bg-black/40" />
 
       <div className="relative z-10 mx-auto h-full max-w-7xl px-4">
         <div className="grid h-full items-center gap-8 md:grid-cols-2">
@@ -61,11 +63,17 @@ export default function CoupleHero() {
             {/* CTAs — más notorios */}
             <div className="mt-8 flex flex-wrap gap-3">
               {/* Primario */}
-              <div className="mt-8 flex flex-wrap gap-3">
-              {/* Primario */}
               <Link
                 href="#planes"
                 className="btn-primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.hash = 'planes';
+                  document.getElementById('planes')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                }}
               >
                 RANDOMTRIP-us! →
               </Link>
@@ -74,10 +82,17 @@ export default function CoupleHero() {
               <Link
                 href="#inspiracion-couples"
                 className="btn-secondary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.hash = 'inspiracion-couples';
+                  document.getElementById('inspiracion-couples')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                }}
               >
                 Relatos que inspiran →
               </Link>
-            </div>
             </div>
 
             
@@ -91,7 +106,7 @@ export default function CoupleHero() {
               </h3>
               <div className="mt-6 space-y-4 text-sm md:text-base leading-relaxed md:leading-8 text-white/90">
                 <p>
-                  Nadie sabrá dónde están. Ni siquiera ustedes… todavía. Y créanme: eso está
+                  Nadie sabrá dónde estarán. Ni siquiera ustedes… todavía. Y créanme: eso está
                   buenísimo. Porque si algo mata la magia de un viaje es ese Excel de horarios
                   que se arma el primo que “sabe organizar”.
                 </p>
@@ -123,8 +138,9 @@ export default function CoupleHero() {
         </div>
       </div>
     {/* Indicador de scroll (unificado) */}
-      <div className="scroll-indicator pointer-events-none select-none z-10" aria-hidden="true">
-        SCROLL
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none text-white/70 select-none flex flex-col items-center">
+        <span className="text-[10px] tracking-[0.35em]">SCROLL</span>
+        <span className="mt-1 h-6 w-px bg-white/60 animate-pulse" />
       </div>
     </section>
   );

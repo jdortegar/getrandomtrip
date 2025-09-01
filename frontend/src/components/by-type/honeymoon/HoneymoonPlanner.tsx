@@ -15,24 +15,24 @@ export default function HoneymoonPlanner() {
       priceLabel: 'Desde 1800 USD',
       priceFootnote: '· por persona',
       features: [
-        { text: 'Duración: Customizable' },
-        { text: 'Transporte: Multimodal / a medida.' },
-        { text: 'Fechas: Sin bloqueos.' },
-        { text: 'Alojamiento: Luxury / de autor / cadenas A1.' },
-        { text: 'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7' },
-        { text: 'Incluye: 2+ experiencias premium diseñadas para la pareja' },
-        { text: 'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas' },
+        { text: '📍 Duración: Customizable' },
+        { text: '✈️ Transporte: Multimodal / a medida.' },
+        { text: '🗓️ Fechas: Sin bloqueos.' },
+        { text: '🛏️ Alojamiento: Luxury / de autor / Cadenas Hoteleras A1.' },
+        { text: '🎁 Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7' },
+        { text: '🌟 Incluye: 2+ experiencias premium diseñadas para la pareja' },
+        { text: '💎 Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones exclusivas' },
       ],
       closingLine:
         '“Un viaje irrepetible, diseñado como prólogo de una historia que recién comienza.”',
-      cta: '✨ Crear lo extraordinario',
+      cta: '✨ Crear lo extraordinario →',
     }),
     []
   );
 
   // videos en /public (escapamos espacios)
-  const videoWebm = '/videos/honeymoon-video%20(seccion%202).webm';
-  const videoMp4  = '/videos/honeymoon-video%20(seccion%202).mp4';
+  const videoWebm = '/videos/honeymoon-video-(seccion-2).webm';
+  const videoMp4  = '/videos/honeymoon-video-(seccion-2).mp4';
 
   return (
     // Sección full-width con video de fondo (tipo hero SOLO para esta sección)
