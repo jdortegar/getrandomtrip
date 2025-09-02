@@ -139,16 +139,38 @@ export default function CouplePlanner() {
     if (s === 'budget') setStep('Presupuesto');
   }, []);
 
+  // ------------ BG Wrapper ------------
+  const BG_IMG =
+    'https://images.unsplash.com/photo-1513279922550-250c2129b13a?auto=format&fit=crop&w=2000&q=80';
+
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <section
+      className="relative isolate"
+      style={{
+        backgroundImage: `url('${BG_IMG}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      {/* overlay para contraste general */}
+      <div className="absolute inset-0 bg-white/72 backdrop-blur-[2px]" />
+      {/* contenido */}
+      <div className="relative">{children}</div>
+    </section>
+  );
+
+  // --------- Header ----------
   const Header = () => (
     <div className="sticky top-0 z-[1] bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 text-center">
         <h2 className="font-display text-3xl md:text-4xl text-neutral-900">
           Diseñen su Randomtrip en pareja
         </h2>
-        <p className="mt-1 text-sm text-neutral-600">
+        <p className="mt-1 text-sm text-neutral-700">
           👉 Tres pasos sencillos para vivir una historia que nadie más podrá contar.
         </p>
-        <ol className="mt-4 flex justify-center gap-3 text-sm text-neutral-500">
+        <ol className="mt-4 flex justify-center gap-3 text-sm text-neutral-600">
           <li className={step === 'Presupuesto' ? 'font-semibold text-neutral-900' : ''}>Presupuesto</li>
           <li>·</li>
           <li className={step === '🌟 La Excusa' ? 'font-semibold text-neutral-900' : ''}>🌟 La Excusa</li>
@@ -159,14 +181,15 @@ export default function CouplePlanner() {
     </div>
   );
 
+  // --------- Intro ----------
   const Intro = () => (
     <section data-testid="couple-planner" className="max-w-7xl mx-auto px-4 md:px-8 py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
         <div>
           <h3 className="text-xl font-semibold text-neutral-900">
-            Viajar en pareja tiene sus códigos <span className="text-neutral-500">(y los entendemos)</span>
+            Viajar en pareja tiene sus códigos <span className="text-neutral-600">(y los entendemos)</span>
           </h3>
-          <p className="mt-3 text-neutral-700">
+          <p className="mt-3 text-neutral-800">
             Sin planillas, sin discusiones eternas: ustedes traen la historia; nosotros ponemos el escenario.
             Lo básico se resuelve en minutos. Lo inolvidable, lo viven ustedes.
           </p>
@@ -178,7 +201,10 @@ export default function CouplePlanner() {
               '🎭 Sorpresa bien diseñada',
               '🌟 Destination Decoded (exclusivo en Explora+, Bivouac y Atelier)',
             ].map((t) => (
-              <span key={t} className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-sm text-neutral-800">
+              <span
+                key={t}
+                className="rounded-full border border-neutral-300/70 bg-white/80 backdrop-blur px-4 py-2 text-sm text-neutral-900"
+              >
                 {t}
               </span>
             ))}
@@ -199,7 +225,7 @@ export default function CouplePlanner() {
             </a>
           </div>
 
-          <details className="mt-8 rounded-lg border bg-white p-4 text-neutral-800">
+          <details className="mt-8 rounded-lg border bg-white/85 backdrop-blur p-4 text-neutral-900">
             <summary className="cursor-pointer font-medium">¿Cómo funciona?</summary>
             <ol className="mt-3 space-y-2 list-decimal list-inside text-sm">
               <li>Ustedes cuentan lo básico.</li>
@@ -210,33 +236,32 @@ export default function CouplePlanner() {
           </details>
         </div>
 
-        <aside className="md:pl-6 text-neutral-700 leading-relaxed">
+        <aside className="md:pl-6 text-neutral-900 leading-relaxed">
           <p className="mb-3">
             Diseñamos viajes que funcionan para parejas reales: con tiempos distintos, presupuestos mezclados y ganas de sorprenderse en común.
           </p>
           <p className="mb-3">
             Ustedes traen la historia; nosotros la transformamos en escenario: sin fricciones logísticas, con experiencias que conectan y la dosis justa de misterio.
           </p>
-          <p className="mb-3">
-            Porque cuando lo compartido se diseña bien, cada recuerdo se escribe en mayúsculas.
-          </p>
+          <p className="mb-3">Porque cuando lo compartido se diseña bien, cada recuerdo se escribe en mayúsculas.</p>
         </aside>
       </div>
     </section>
   );
 
-  // 8 tarjetas (4x4)
+  // 8 tarjetas (4x4) para "La Excusa"
   const COUPLES_CARDS = [
     { key: 'romantic-getaway', title: 'Escapada Romántica 💞', img: 'https://images.unsplash.com/photo-1639748399660-734ae9ec2f8a' },
     { key: 'adventure-duo', title: 'Dúo de Aventura 🏔️', img: 'https://images.unsplash.com/photo-1562337635-a4d98d22c1d2' },
     { key: 'foodie-lovers', title: 'Foodie Lovers 🍷🍝', img: 'https://images.unsplash.com/photo-1663428710477-c7c838be76b5' },
     { key: 'culture-tradition', title: 'Cultura & Tradición 🎭🏘️', img: 'https://images.unsplash.com/photo-1717801556175-3a22bd4a0360' },
     { key: 'wellness-retreat', title: 'Wellness Retreat 🧘‍♀️✨', img: 'https://images.unsplash.com/photo-1687875495230-96dfea96d9da' },
-    { key: 'celebrations', title: 'Celebraciones 🎂🥂', img: 'https://plus.unsplash.com/premium_photo-1661288506865-5fe114f44ac8' },
-    { key: 'beach-dunes', title: 'Playa & Dunas 🌊🏖️', img: 'https://plus.unsplash.com/premium_photo-1664115470176-c3f8dad11cab' },
+    { key: 'celebrations', title: 'Celebraciones 🎂🥂', img: 'https://images.unsplash.com/photo-1746559893894-92e3318393bc' },
+    { key: 'beach-dunes', title: 'Playa & Dunas 🌊🏖️', img: 'https://images.unsplash.com/photo-1756506606876-e0ed2a999616' },
     { key: 'urban-getaway', title: 'Escapada Urbana 🏙️🍸', img: 'https://images.unsplash.com/photo-1634452584863-e6590064b4d3' },
   ] as const;
 
+  // Flip card de La Excusa
   function CoupleFlipCard({
     item,
     onChoose,
@@ -314,8 +339,19 @@ export default function CouplePlanner() {
     );
   }
 
+  // CTA handler: 2 primeros tiers van directo al basic-config
+  const handleTierCTA = (tierId: string) => {
+    if (tierId === 'essenza' || tierId === 'modo-explora') {
+      router.push(`/journey/basic-config?from=couple&tier=${tierId}`);
+      return;
+    }
+    setBudgetTier(tierId);
+    setStep('🌟 La Excusa');
+    document.getElementById('couple-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
-    <div className="bg-white">
+    <Wrapper>
       <div id="couple-planner" className="h-0 scroll-mt-24" />
       <Header />
 
@@ -325,7 +361,8 @@ export default function CouplePlanner() {
         <section data-testid="tab-presupuesto" className="max-w-7xl mx-auto px-4 md:px-8 py-10">
           <div className="text-center mb-8">
             <h3 data-testid="tab2-title" className="text-center text-xl font-semibold text-neutral-900">
-              💡 Lo único que definen acá es el presupuesto por persona para pasaje y alojamiento. Ese será su techo. Del resto… nos ocupamos nosotros.
+              💡 Lo único que definen acá es el presupuesto por persona para pasaje y alojamiento. Ese será su techo. Del resto… nos
+              ocupamos nosotros.
             </h3>
           </div>
 
@@ -335,8 +372,9 @@ export default function CouplePlanner() {
                 key={t.id}
                 role="group"
                 aria-labelledby={`h-${t.id}`}
-                className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
+                className="h-full flex flex-col rounded-2xl bg-white/75 backdrop-blur-md p-6 border border-gray-200/70 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
               >
+                {/* Contenido: columna flexible para alinear el closingLine abajo */}
                 <div className="flex-1 flex flex-col">
                   <h4 id={`h-${t.id}`} className="font-display text-xl tracking-tightish font-bold text-gray-900">
                     {t.name}
@@ -366,28 +404,19 @@ export default function CouplePlanner() {
                   </ul>
 
                   {t.closingLine && (
-                    <div className="mt-auto py-4 border-y border-gray-200">
+                    <div className="mt-auto py-4 border-y border-gray-200/70">
                       <p className="text-neutral-800 text-sm leading-relaxed text-center">{t.closingLine}</p>
                     </div>
                   )}
                 </div>
 
+                {/* CTA */}
                 <div>
                   <button
                     type="button"
                     className="btn-card w-full mt-6"
                     aria-label={t.ctaLabel}
-                    onClick={() => {
-                      setBudgetTier(t.id);
-                      // ✅ Redirección directa SOLO para Essenza y Modo Explora
-                      if (t.id === 'essenza' || t.id === 'modo-explora') {
-                        router.push(`/journey/basic-config?from=couple&tier=${t.id}`);
-                        return;
-                      }
-                      // ✅ Las demás siguen al Tab "🌟 La Excusa"
-                      setStep('🌟 La Excusa');
-                      document.getElementById('couple-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}
+                    onClick={() => handleTierCTA(t.id)}
                   >
                     {t.ctaLabel}
                   </button>
@@ -399,10 +428,12 @@ export default function CouplePlanner() {
           <div className="mt-8 text-center">
             <button
               data-testid="cta-volver-intro"
-              className="text-neutral-800 underline decoration-neutral-400 hover:decoration-neutral-800"
+              className="text-neutral-900 underline decoration-neutral-400 hover:decoration-neutral-800"
               onClick={() => {
                 setStep('Intro');
-                document.getElementById('couple-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document
+                  .getElementById('couple-planner')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
             >
               ← Volver
@@ -419,7 +450,7 @@ export default function CouplePlanner() {
             </h3>
             <p
               data-testid="tab3-tagline"
-              className="mt-2 text-center text-sm text-neutral-700 max-w-3xl mx-auto"
+              className="mt-2 text-center text-sm text-neutral-800 max-w-3xl mx-auto"
             >
               Toda escapada tiene su “porque sí”. Armando el 🌟 Destination Decoded.
             </p>
@@ -433,7 +464,9 @@ export default function CouplePlanner() {
                 onChoose={(key) => {
                   setCoupleAlma(key);
                   setStep('Afinar detalles');
-                  document.getElementById('couple-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  document
+                    .getElementById('couple-planner')
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
               />
             ))}
@@ -442,7 +475,7 @@ export default function CouplePlanner() {
           <div className="mt-8 text-center">
             <button
               data-testid="cta-back-to-tab2"
-              className="text-neutral-800 underline decoration-neutral-400 hover:decoration-neutral-800"
+              className="text-neutral-900 underline decoration-neutral-400 hover:decoration-neutral-800"
               onClick={() => setStep('Presupuesto')}
             >
               ← Volver
@@ -457,7 +490,9 @@ export default function CouplePlanner() {
           budgetTier={budgetTier}
           onBack={() => {
             setStep('🌟 La Excusa');
-            document.getElementById('couple-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document
+              .getElementById('couple-planner')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
           onContinue={(selectedKeys) => {
             const q = new URLSearchParams({
@@ -473,11 +508,11 @@ export default function CouplePlanner() {
 
       {step === 'Afinar detalles' && !coupleAlma && (
         <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
-            <p className="text-neutral-700">Por favor, seleccionen un alma de viaje primero.</p>
+          <div className="rounded-xl border border-neutral-200 bg-white/85 backdrop-blur p-6">
+            <p className="text-neutral-800">Por favor, seleccionen un alma de viaje primero.</p>
             <div className="mt-8 text-center">
               <button
-                className="text-neutral-800 underline decoration-neutral-400 hover:decoration-neutral-800"
+                className="text-neutral-900 underline decoration-neutral-400 hover:decoration-neutral-800"
                 onClick={() => setStep('🌟 La Excusa')}
               >
                 ← Volver
@@ -486,6 +521,6 @@ export default function CouplePlanner() {
           </div>
         </section>
       )}
-    </div>
+    </Wrapper>
   );
 }

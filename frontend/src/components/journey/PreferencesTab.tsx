@@ -3,7 +3,7 @@
 import SelectedFiltersChips from './SelectedFiltersChips';
 import StepperNav from './StepperNav';
 import { useJourneyStore } from '@/store/journeyStore';
-import { useMemo } from 'react';
+import { useQuerySync } from '@/hooks/useQuerySync';
 
 const Seg = ({options,value,onChange}:{options:string[];value:string;onChange:(v:string)=>void}) => (
   <div className="inline-flex flex-wrap gap-2">
@@ -22,10 +22,13 @@ const Seg = ({options,value,onChange}:{options:string[];value:string;onChange:(v
 );
 
 export default function PreferencesTab(){
-  const { filters, logistics, setPartial } = useJourneyStore();
+  const { filters, setPartial } = useJourneyStore();
+  const sync = useQuerySync();
 
-  const setF = (patch: Partial<typeof filters>) =>
+  const setAndSync = (patch: Partial<typeof filters>) => {
     setPartial({ filters: { ...filters, ...patch } });
+    sync(patch as Record<string, string>);
+  };
 
   return (
     <div className="space-y-6">
@@ -42,7 +45,7 @@ export default function PreferencesTab(){
         <Seg
           options={['avion','bus','tren','barco']}
           value={filters.transport}
-          onChange={(v)=>setF({ transport: v as any })}
+          onChange={(v)=>setAndSync({ transport: v as any })}
         />
         <p className="text-xs text-neutral-500">Tren y Barco/Crucero podrían requerir traslados extra.</p>
       </section>
@@ -53,7 +56,7 @@ export default function PreferencesTab(){
         <Seg
           options={['indistinto','calido','frio','templado']}
           value={filters.climate}
-          onChange={(v)=>setF({ climate: v as any })}
+          onChange={(v)=>setAndSync({ climate: v as any })}
         />
       </section>
 
@@ -63,7 +66,7 @@ export default function PreferencesTab(){
         <Seg
           options={['sin-limite','3h','5h','8h']}
           value={filters.maxTravelTime}
-          onChange={(v)=>setF({ maxTravelTime: v as any })}
+          onChange={(v)=>setAndSync({ maxTravelTime: v as any })}
         />
       </section>
 
@@ -76,7 +79,7 @@ export default function PreferencesTab(){
             <Seg
               options={['indistinto','manana','tarde','noche']}
               value={filters.departPref}
-              onChange={(v)=>setF({ departPref: v as any })}
+              onChange={(v)=>setAndSync({ departPref: v as any })}
             />
           </div>
           <div>
@@ -84,7 +87,7 @@ export default function PreferencesTab(){
             <Seg
               options={['indistinto','manana','tarde','noche']}
               value={filters.arrivePref}
-              onChange={(v)=>setF({ arrivePref: v as any })}
+              onChange={(v)=>setAndSync({ arrivePref: v as any })}
             />
           </div>
         </div>
