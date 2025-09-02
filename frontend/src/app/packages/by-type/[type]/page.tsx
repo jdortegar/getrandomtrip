@@ -15,6 +15,11 @@ import FooterLanding from '@/components/layout/FooterLanding';
 // Páginas/Secciones específicas
 import CouplePage from '../../(by-type)/couple/page';
 
+// SOLO: importa las 3 secciones
+import SoloHero from '@/components/by-type/solo/SoloHero';
+import SoloIntro from '@/components/by-type/solo/SoloIntro';
+import SoloPlanner from '@/components/by-type/solo/SoloPlanner';
+
 /**
  * Canonicalización local SOLO para este archivo:
  * (no tiene que coincidir con las claves del JSON; esto es para slug/UI)
@@ -49,7 +54,7 @@ const canonicalType = (raw: string) => {
 };
 
 // Slugs con página dedicada (NO renderizar aquí; redirigir)
-const DEDICATED: Set<string> = new Set(['family', 'honeymoon', 'group', 'solo', 'paws']);
+const DEDICATED: Set<string> = new Set(['family', 'honeymoon', 'group', 'paws']);
 
 // --- Metadata ---
 export async function generateMetadata(
@@ -88,6 +93,17 @@ export default function Page({ params }: { params: { type: string } }) {
   // Caso especial: pareja usa su página propia (componente dedicado embebido aquí)
   if (type === 'couple') {
     return <CouplePage />;
+  }
+
+  // Caso especial: SOLO → Hero + Intro + Planner (el planner arranca en Presupuesto)
+  if (type === 'solo') {
+    return (
+      <main>
+        <SoloHero />
+        <SoloIntro />
+        <SoloPlanner />
+      </main>
+    );
   }
 
   // Datos base y paleta (para los tipos genéricos)

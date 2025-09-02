@@ -14,9 +14,7 @@ export default function SoloPage() {
     <main>
       <SoloHero />
       <section id="planes" className="relative scroll-mt-16">
-        <div className="mx-auto max-w-7xl px-4 py-20">
-          <SoloPlanner />
-        </div>
+        <SoloPlanner />
       </section>
       <SoloInspiration />
       <SoloTestimonials />

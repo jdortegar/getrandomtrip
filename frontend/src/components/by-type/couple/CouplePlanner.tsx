@@ -26,7 +26,10 @@ export default function CouplePlanner() {
           },
           { text: '🗓️ Fechas: Menor disponibilidad, con restricciones y bloqueos.' },
           { text: '🛏️ Alojamiento: Midscale (3★ o equivalentes).' },
-          { text: '🎁 Extras: Guía esencial del destino.' },
+          {
+            text:
+              '🎁 Extras: Guía esencial del destino.',
+          },
         ],
         closingLine:
           '📝 Un escape breve, suficiente para mirarse distinto y recordar por qué empezó todo.',
@@ -67,10 +70,7 @@ export default function CouplePlanner() {
           { text: '🗓️ Fechas: Alta disponibilidad, incluso en feriados/puentes.' },
           { text: '🛏️ Alojamiento: Upscale asegurado.' },
           { text: '🎁 Extras: 1 experiencia especial en pareja.' },
-          {
-            text:
-              '🌟 **Destination Decoded**: guia personalizada para que cada día sea una sorpresa curada.',
-          },
+          { text: '🌟 **Destination Decoded**: guia personalizada para que cada día sea una sorpresa curada.' },
         ],
         closingLine:
           '📝 Más noches, más sorpresas, más excusas para coleccionar recuerdos a dos voces.',
@@ -90,14 +90,8 @@ export default function CouplePlanner() {
           },
           { text: '🗓️ Fechas: Sin bloqueos.' },
           { text: '🛏️ Alojamiento: Upper Upscale (boutique, diseño, experiencias locales).' },
-          {
-            text:
-              '🎁 Extras: **Concierge Advisor** + 1 experiencia premium en pareja + perks exclusivos.',
-          },
-          {
-            text:
-              '🌟 **Destination Decoded**: guia curada por nuestros Concierge Advisors, con claves que pocos conocen.',
-          },
+          { text: '🎁 Extras: **Concierge Advisor** + 1 experiencia premium en pareja + perks exclusivos.' },
+          { text: '🌟 **Destination Decoded**: guia curada por nuestros Concierge Advisors, con claves que pocos conocen.' },          
         ],
         closingLine:
           '📝 Un viaje que se cuida como se cuida una relación: con detalle y paciencia.',
@@ -124,7 +118,7 @@ export default function CouplePlanner() {
         ctaLabel: 'Creen lo irrepetible →',
       },
     ],
-    []
+    [],
   );
 
   const [step, setStep] = useState<Step>('Intro');
