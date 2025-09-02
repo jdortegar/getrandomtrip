@@ -73,8 +73,16 @@ const CoupleInspiration: React.FC = () => {
             {/* CTA al final */}
             <div className="text-center mt-12">
                 <Link
-                    href="#planes"
+                    href="#couple-planner?step=budget"
                     className="btn-primary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.hash = 'couple-planner?step=budget';
+                      document.getElementById('couple-planner')?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                      });
+                    }}
                 >
                     RANDOMTRIP-us!
                 </Link>

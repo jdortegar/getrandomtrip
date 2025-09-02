@@ -64,12 +64,12 @@ export default function CoupleHero() {
             <div className="mt-8 flex flex-wrap gap-3">
               {/* Primario */}
               <Link
-                href="#planes"
+                href="#couple-planner?step=budget"
                 className="btn-primary"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.hash = 'planes';
-                  document.getElementById('planes')?.scrollIntoView({
+                  window.location.hash = 'couple-planner?step=budget';
+                  document.getElementById('couple-planner')?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start',
                   });
