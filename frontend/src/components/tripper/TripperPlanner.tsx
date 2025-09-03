@@ -1,21 +1,30 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import Image from 'next/image';
 import clsx from 'clsx';
-import { SOLO_TIERS } from '@/content/tiers';
+import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 import { ALMA_OPTIONS } from '@/components/by-type/group/almaOptions';
 import type { Tripper } from '@/content/trippers';
 
 type Step =
   | 'Presentación'
-  | 'Presupuesto'
   | 'By Traveller'
-  | 'Alma del viaje'
-  | 'Afinar detalles';
+  | 'Presupuesto'
+  | 'Destination Decoded'
+  | 'Tipo de escapada';
 
 type Props = {
   t: Tripper;
+};
+
+const travellerTypeMap: Record<string, keyof typeof ALL_TIERS_CONTENT> = {
+  pareja: 'couple',
+  solo: 'solo',
+  familia: 'family',
+  grupo: 'group',
+  honeymoon: 'honeymoon',
 };
 
 export default function TripperPlanner({ t }: Props) {
@@ -24,7 +33,7 @@ export default function TripperPlanner({ t }: Props) {
   const [travellerType, setTravellerType] = useState<string | null>(null);
   const [groupAlma, setGroupAlma] = useState<string | null>(null);
 
-  const tabs: Step[] = ['Presentación', 'Presupuesto', 'By Traveller', 'Alma del viaje', 'Afinar detalles'];
+  const tabs: Step[] = ['Presentación', 'By Traveller', 'Presupuesto', 'Destination Decoded', 'Tipo de escapada'];
 
   const previewChips = useMemo(() => {
     return t.interests?.map(interest => ({
@@ -33,7 +42,49 @@ export default function TripperPlanner({ t }: Props) {
     })) || [];
   }, [t.interests]);
 
-  const tiers = SOLO_TIERS;
+  const tiers = useMemo(() => {
+    const selectedKey = travellerType ? travellerTypeMap[travellerType] : 'solo';
+    const selectedTiers = ALL_TIERS_CONTENT[selectedKey];
+
+    if (!selectedTiers) return [];
+
+    const emojiMap: { [key: string]: string } = {
+      'Duración': '🗓️',
+      'Transporte': '✈️',
+      'Fechas': '🗓️',
+      'Alojamiento': '🛏️',
+      'Extras': '🎁',
+      'Incluye': '🌟',
+      'Perks': '💎',
+    };
+
+    return Object.entries(selectedTiers).map(([key, content]: [string, any]) => {
+      const titleParts = content.title.split('—');
+      const name = titleParts[0] ? titleParts[0].trim() : content.title;
+      const subtitle = titleParts[1] ? titleParts[1].trim() : '';
+
+      const features = content.bullets.map((bullet: string) => {
+        const prefix = Object.keys(emojiMap).find(p => bullet.startsWith(p));
+        const emoji = prefix ? emojiMap[prefix] : '•';
+        // Avoid duplicating the emoji if it's already there
+        if (bullet.startsWith(emoji)) {
+            return { text: bullet };
+        }
+        return { text: `${emoji} ${bullet}` };
+      });
+
+      return {
+        key,
+        name: name,
+        subtitle: subtitle,
+        priceLabel: content.priceLabel,
+        priceFootnote: content.priceFootnote,
+        features: features,
+        closingLine: content.closingLine,
+        cta: content.ctaLabel,
+      };
+    });
+  }, [travellerType]);
 
   const allTravellerOptions = [
     { key: 'pareja',    title: 'En Pareja',   img: '/images/journey-types/couple-hetero.jpg' },
@@ -81,10 +132,10 @@ export default function TripperPlanner({ t }: Props) {
         setTimeout(scrollPlanner, 0);
       }
     };
-    if (target === 'Presentación' || target === 'Presupuesto') return doSet(target);
-    if (target === 'By Traveller' && budgetTier) return doSet(target);
-    if (target === 'Alma del viaje' && budgetTier && travellerType) return doSet(target);
-    if (target === 'Afinar detalles' && budgetTier && travellerType && groupAlma) return doSet(target);
+    if (target === 'Presentación' || target === 'By Traveller') return doSet(target);
+    if (target === 'Presupuesto' && travellerType) return doSet(target);
+    if (target === 'Destination Decoded' && travellerType && budgetTier) return doSet(target);
+    if (target === 'Tipo de escapada' && travellerType && budgetTier && groupAlma) return doSet(target);
   };
 
   function FlipCard({
@@ -139,12 +190,11 @@ export default function TripperPlanner({ t }: Props) {
         >
           {/* Frente */}
           <div className="absolute inset-0" style={faceStyle}>
-            <img
+            <Image
               src={item.img}
               alt={item.title}
+              fill
               className="h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
             <div className="absolute inset-x-0 bottom-0 p-4">
@@ -153,7 +203,7 @@ export default function TripperPlanner({ t }: Props) {
           </div>
           {/* Dorso */}
           <div className="absolute inset-0" style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>
-            <img src={item.img} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+            <Image src={item.img} alt="" fill className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-between">
               <p className="text-sm leading-relaxed">
                 {copy[item.key] ?? 'La razón que les mueve, convertida en aventura bien diseñada.'}
@@ -240,10 +290,10 @@ export default function TripperPlanner({ t }: Props) {
               <button
                 className="inline-flex items-center rounded-full bg-[#E4A687] text-white px-5 py-3 text-sm font-semibold shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E4A687]"
                 onClick={() => {
-                  setStep('Presupuesto');
+                  setStep('By Traveller');
                   setTimeout(scrollPlanner, 0);
                 }}
-                aria-label="GetRandomtrip! Ir a Presupuesto"
+                aria-label="GetRandomtrip! Ir a By Traveller"
               >
                 GetRandomtrip! →
               </button>
@@ -251,51 +301,7 @@ export default function TripperPlanner({ t }: Props) {
           </div>
         )}
 
-        {/* STEP 2: Presupuesto */}
-        {step === 'Presupuesto' && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h3 className="text-center text-2xl font-semibold">✨ Comiencen a planear su escapada</h3>
-            <p className="mt-2 text-center text-sm text-white/80 max-w-3xl mx-auto">
-              💡 Lo único que se define acá en este paso es el presupuesto por persona. Ese será su techo.
-              El resto… dejalo en manos de tu Tripper.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
-              {tiers.map((tier) => (
-                <div
-                  key={tier.key}
-                  className={clsx(
-                    'h-full flex flex-col rounded-2xl border border-white/20 bg-white/10 p-5 text-left shadow-sm transition',
-                    budgetTier === tier.key ? 'ring-2 ring-white' : 'hover:shadow-md hover:-translate-y-0.5'
-                  )}
-                >
-                  <h4 className="font-semibold">{tier.title}</h4>
-                  <ul className="mt-3 text-sm list-disc pl-5 space-y-1 flex-1">
-                    {tier.bullets.map((b, i) => (
-                      <li key={i}>{b}</li>
-                    ))}
-                  </ul>
-                  <div className="mt-6 pt-4 border-t border-white/20 md:mt-auto">
-                    <button
-                      className="w-full inline-flex items-center justify-center rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold shadow-sm hover:bg-gray-200"
-                      onClick={() => {
-                        setBudgetTier(tier.key);
-                        setStep('By Traveller');
-                        setTimeout(scrollPlanner, 0);
-                      }}
-                      aria-pressed={budgetTier === tier.key}
-                      aria-label={`Elegir ${tier.title}`}
-                    >
-                      {tier.cta || 'Elegir este nivel →'}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: By Traveller */}
+        {/* STEP 2: By Traveller */}
         {step === 'By Traveller' && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
             <h3 className="text-center text-2xl font-semibold">
@@ -314,12 +320,11 @@ export default function TripperPlanner({ t }: Props) {
                   aria-pressed={travellerType === opt.key}
                   tabIndex={0}
                 >
-                  <img
+                  <Image
                     src={opt.img}
                     alt={opt.title}
+                    fill
                     className="absolute inset-0 h-full w-full object-cover"
-                    loading="lazy"
-                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
                   <div className="absolute bottom-0 p-4 text-white">
@@ -334,11 +339,11 @@ export default function TripperPlanner({ t }: Props) {
               <button
                 className="inline-flex items-center rounded-full bg-[#E4A687] text-white px-5 py-3 text-sm font-semibold shadow-sm disabled:opacity-50"
                 onClick={() => {
-                  setStep('Alma del viaje');
+                  setStep('Presupuesto');
                   setTimeout(scrollPlanner, 0);
                 }}
                 disabled={!travellerType}
-                aria-label="Continuar a Alma del viaje"
+                aria-label="Continuar a Presupuesto"
               >
                 Continuar →
               </button>
@@ -346,8 +351,90 @@ export default function TripperPlanner({ t }: Props) {
           </div>
         )}
 
-        {/* STEP 4: Alma del viaje */}
-        {step === 'Alma del viaje' && (
+        {/* STEP 3: Presupuesto */}
+        {step === 'Presupuesto' && (
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
+            <h3 className="text-center text-2xl font-semibold">✨ Comiencen a planear su escapada</h3>
+            <p className="mt-2 text-center text-sm text-white/80 max-w-3xl mx-auto">
+              💡 Lo único que se define acá en este paso es el presupuesto por persona. Ese será su techo.
+              El resto… dejalo en manos de tu Tripper.
+            </p>
+
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${tiers.length === 1 ? 'lg:grid-cols-1 max-w-md mx-auto' : 'lg:grid-cols-5'} gap-6 mt-8`}>
+              {tiers.map((tier) => (
+                <div
+                  key={tier.key}
+                  role="group"
+                  aria-labelledby={`tier-title-${tier.key}`}
+                  className={clsx(
+                    "w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/25 shadow-xl transition hover:shadow-2xl h-full flex flex-col",
+                    budgetTier === tier.key ? 'ring-2 ring-white' : ''
+                  )}
+                >
+                  <div className="p-6 md:p-8 h-full flex flex-col">
+                    {/* Título + subtítulo */}
+                    <h3
+                      id={`tier-title-${tier.key}`}
+                      className="text-2xl font-bold text-white"
+                      style={{ fontFamily: 'Playfair Display, serif' }}
+                    >
+                      {tier.name}
+                    </h3>
+                    <p className="text-neutral-200 text-sm">{tier.subtitle}</p>
+
+                    {/* Precio */}
+                    <div className="mt-6">
+                      <div 
+                        className="text-3xl leading-tight font-bold text-[var(--rt-terracotta)] drop-shadow"
+                        style={{ fontFamily: 'Playfair Display, serif' }}
+                      >
+                        {tier.priceLabel}
+                      </div>
+                      <span className="block text-xs text-neutral-100">
+                        {tier.priceFootnote}
+                      </span>
+                    </div>
+
+                    {/* Bullets */}
+                    <ul className="mt-5 space-y-2 text-sm text-neutral-100 flex-1">
+                      {tier.features.map((f: any, i: number) => (
+                        <li key={i} className="leading-snug">{f.text}</li>
+                      ))}
+                    </ul>
+
+                    {/* Cita */}
+                    {tier.closingLine && (
+                      <div className="mt-6 py-4 border-y border-white/20">
+                        <p className="text-neutral-50 text-sm leading-relaxed text-center">
+                          &ldquo;{tier.closingLine}&rdquo;
+                        </p>
+                      </div>
+                    )}
+
+                    {/* CTA */}
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        className="btn-card w-full"
+                        aria-label={tier.cta}
+                        onClick={() => {
+                          setBudgetTier(tier.key);
+                          setStep('Destination Decoded');
+                          setTimeout(scrollPlanner, 0);
+                        }}
+                      >
+                        {tier.cta}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: Destination Decoded */}
+        {step === 'Destination Decoded' && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
             <h3 className="text-center text-2xl font-semibold">
               Viajamos por muchas razones, ¿cuál los mueve hoy?
@@ -360,7 +447,7 @@ export default function TripperPlanner({ t }: Props) {
                   item={it}
                   onChoose={(k) => {
                     setGroupAlma(k);
-                    setStep('Afinar detalles');
+                    setStep('Tipo de escapada');
                     setTimeout(scrollPlanner, 0);
                   }}
                 />
@@ -369,14 +456,14 @@ export default function TripperPlanner({ t }: Props) {
           </div>
         )}
 
-        {/* STEP 5: Afinar detalles */}
-        {step === 'Afinar detalles' && groupAlma && (
+        {/* STEP 5: Tipo de escapada */}
+        {step === 'Tipo de escapada' && groupAlma && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
             <AlmaDetails
               groupKey={groupAlma}
               budgetTier={budgetTier}
               onBack={() => {
-                setStep('Alma del viaje');
+                setStep('Destination Decoded');
                 setTimeout(scrollPlanner, 0);
               }}
               onContinue={(_selectedKeys) => {
@@ -386,14 +473,14 @@ export default function TripperPlanner({ t }: Props) {
           </div>
         )}
 
-        {step === 'Afinar detalles' && !groupAlma && (
+        {step === 'Tipo de escapada' && !groupAlma && (
           <div className="rounded-xl border border-white/20 bg-white/10 p-6 mt-8">
             <p>Elegí primero un alma del viaje.</p>
             <div className="mt-4">
               <button
                 className="inline-flex items-center rounded-full border px-4 py-2 text-sm hover:bg-white/20"
                 onClick={() => {
-                  setStep('Alma del viaje');
+                  setStep('Destination Decoded');
                   setTimeout(scrollPlanner, 0);
                 }}
               >
