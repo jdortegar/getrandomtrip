@@ -1,4 +1,4 @@
-# Randomtrip Design & Style Guidelines
+# Randomtrip Design & Style Guidelines "Hola"
 
 **Last Updated:** 2024-07-24
 
