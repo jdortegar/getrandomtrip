@@ -14,6 +14,7 @@ import TopTrippersGrid from '@/components/tripper/TopTrippersGrid';
 import { slugify } from '@/lib/slugify';
 import GetRandomtripCta from '@/components/common/GetRandomtripCta';
 import FooterLanding from '@/components/layout/FooterLanding';
+import { BudgetBandsSection } from './BudgetBandsSection';
 
 // Placeholder for Kai Service, if not implemented yet
 const getKaiSuggestion = async (destination: string, month: string) => {
@@ -355,81 +356,173 @@ function ExplorationPageContent() {
   );
 }
 
-// --- Section Component: How It Works ---
+// --- Section Component: How It Works (v2) ---
 const HowItWorksSection: React.FC = () => {
   const steps = [
     {
+      num: '1',
+      title: 'Planificá',
+      description:
+        'Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-[#D97E4A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 2a2 2 0 0 0-2 2v1h16V4a2 2 0 0 0-2-2H6Z" />
+          <path d="M20 7H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7ZM8 10h5v2H8v-2Z" />
         </svg>
       ),
-      title: '1. Planificá',
-      description: 'Elegí fechas, ciudad de origen, duración y presupuesto. Añadí filtros si querés.',
     },
     {
+      num: '2',
+      title: 'Recibí la sorpresa',
+      description:
+        'Confirmá tu viaje. Te revelamos el destino 48 h antes y te enviamos la guía para ese mood.',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-[#D97E4A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 10h.01M15 10h.01M10 14h.01M14 14h.01M9 18h6" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-2h2Zm1.07-7.75-.9.92A2.51 2.51 0 0 0 12.5 12h-1v-1a1.5 1.5 0 0 1 .44-1.06l1.24-1.25a1.75 1.75 0 1 0-2.97-1.24H8a3.75 3.75 0 1 1 6.07 2.8Z"/>
         </svg>
       ),
-      title: '2. Sorprendete',
-      description: 'Confirmá tu viaje. Te revelaremos tu destino 48 horas antes de partir.',
     },
     {
+      num: '3',
+      title: 'Viajá sin estrés',
+      description:
+        'Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-[#D97E4A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M2 7h20v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7Zm5-3h10v2H7V4Z" />
         </svg>
       ),
-      title: '3. Disfrutá',
-      description: 'Hacé las valijas y preparate para una aventura inolvidable. ¡Nosotros nos encargamos del resto!',
     },
   ];
 
   return (
-    <section className="py-20 px-8 bg-white text-black">
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-gray-800" style={{ fontFamily: 'Playfair Display, serif' }}>¿Cómo funciona?</h2>
-        <div className="grid md:grid-cols-3 gap-10">
-          {steps.map(step => (
-            <div key={step.title} className="text-center flex flex-col items-center">
-              <div className="flex justify-center mb-6">{step.icon}</div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>{step.title}</h3>
-              <p className="text-gray-600 max-w-xs">{step.description}</p>
-            </div>
+    <section className="py-20 px-6 sm:px-8 bg-white text-neutral-900">
+      <div className="max-w-7xl mx-auto">
+        <header className="text-center mb-14">
+          <h2
+            className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900"
+            style={{ fontFamily: 'Playfair Display, serif' }}
+          >
+            ¿Cómo funciona?
+          </h2>
+          <p className="mt-3 text-neutral-600">
+            Tres pasos. Cero estrés. Más descubrimiento.
+          </p>
+        </header>
+
+        <ol className="grid md:grid-cols-3 gap-8" role="list">
+          {steps.map((s) => (
+            <li
+              key={s.title}
+              className="relative rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="absolute -top-4 left-6 inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-full bg-neutral-900 text-white text-sm font-semibold shadow">
+                {s.num}
+              </div>
+
+              <div className="mt-4 flex items-center gap-3 text-[#D97E4A]">
+                {s.icon}
+                <h3
+                  className="text-xl md:text-2xl font-bold text-neutral-900"
+                  style={{ fontFamily: 'Playfair Display, serif' }}
+                >
+                  {s.title}
+                </h3>
+              </div>
+
+              <p className="mt-3 text-neutral-600">{s.description}</p>
+            </li>
           ))}
+        </ol>
+
+        <p className="mt-6 text-xs text-neutral-500 text-center">
+          * El destino se revela 48 horas antes para preservar la sorpresa. Se envía guía y checklist.
+        </p>
+
+        <div className="mt-10 flex justify-center">
+          <GetRandomtripCta align="center" />
+        </div>
+
+        {/* Trust bar opcional (logos reales luego) */}
+        <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 opacity-70">
+          {['Confiado por viajeros', 'Atención humana 24/7', 'Pagos seguros', 'Pet-friendly ready'].map(
+            (t) => (
+              <div key={t} className="text-center text-sm text-neutral-600 border rounded-lg py-3">
+                {t}
+              </div>
+            )
+          )}
         </div>
       </div>
     </section>
   );
 };
 
-// --- Section Component: Key Benefits ---
+// --- Section Component: Key Benefits (v2) ---
 const BenefitsSection: React.FC = () => {
-    const benefits = [
-        { title: 'Sin Estrés', description: 'Olvidate de horas planeando. Nosotros lo hacemos por vos.'},
-        { title: 'Todo Resuelto', description: 'Vuelos y alojamiento adaptados a tu presupuesto.' },
-        { title: 'Descubrimiento Auténtico', description: 'Viví la emoción de lo inesperado.' }
-    ];
-    return (
-        <section className="py-20 bg-white text-black px-8 border-t border-gray-200">
-             <div className="max-w-7xl mx-auto text-center">
-                <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-800" style={{ fontFamily: 'Playfair Display, serif' }}>Beneficios Clave</h2>
-                <div className="grid md:grid-cols-3 gap-10">
-                    {benefits.map(benefit => (
-                           <div key={benefit.title} className="text-center px-4">
-                               <h3 className="text-2xl font-bold mb-3 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>{benefit.title}</h3>
-                               <p className="text-gray-600">{benefit.description}</p>
-                           </div>
-                    ))}
-                </div>
-                <GetRandomtripCta align="center" />
-             </div>
-        </section>
-    )
-}
+  const benefits = [
+    {
+      title: 'Sin estrés y Flexible',
+      description: 'Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.',
+    },
+    {
+      title: 'Todo resuelto',
+      description: 'Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.',
+    },
+    {
+      title: 'Descubrimiento auténtico',
+      description: 'Viví la emoción de lo inesperado con curaduría real, no al azar.',
+    },
+    // Podés activar estos dos si querés 5 columnas:
+    // { title: 'Soporte humano', description: 'Personas (no bots) disponibles cuando las necesitás.' },
+    // { title: 'Flexible', description: 'Opciones y filtros para adaptar la sorpresa a vos.' },
+  ];
+
+  return (
+    <section className="py-20 bg-white text-neutral-900 px-6 sm:px-8 border-t border-neutral-200">
+      <div className="max-w-7xl mx-auto">
+        <header className="text-center mb-12">
+          <h2
+            className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900"
+            style={{ fontFamily: 'Playfair Display, serif' }}
+          >
+            Beneficios clave
+          </h2>
+          <p className="mt-3 text-neutral-600">
+            Lo difícil es planificar. Lo inolvidable es viajar.
+          </p>
+        </header>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {benefits.map((b) => (
+            <div key={b.title} className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+              <h3
+                className="text-xl md:text-2xl font-bold mb-2 text-neutral-900"
+                style={{ fontFamily: 'Playfair Display, serif' }}
+              >
+                {b.title}
+              </h3>
+              <p className="text-neutral-600">{b.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <GetRandomtripCta align="center" />
+        </div>
+
+        {/* Agregar la sección de bandas aquí */}
+        <div className="mt-16">
+          <BudgetBandsSection />
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <GetRandomtripCta align="center" />
+        </div>
+      </div>
+    </section>
+  );
+};
 
 // --- Section Component: Blog ---
 const BlogSection: React.FC = () => {

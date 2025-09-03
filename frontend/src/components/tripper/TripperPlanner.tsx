@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { SOLO_TIERS } from '@/content/tiers';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 import { ALMA_OPTIONS } from '@/components/by-type/group/almaOptions';
+import type { Tripper } from '@/content/trippers';
 
 type Step =
   | 'Presentación'
@@ -14,11 +15,10 @@ type Step =
   | 'Afinar detalles';
 
 type Props = {
-  tripperName: string;
-  tripperSlug: string;
+  t: Tripper;
 };
 
-export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
+export default function TripperPlanner({ t }: Props) {
   const [step, setStep] = useState<Step>('Presentación');
   const [budgetTier, setBudgetTier] = useState<string | null>(null);
   const [travellerType, setTravellerType] = useState<string | null>(null);
@@ -26,25 +26,27 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
 
   const tabs: Step[] = ['Presentación', 'Presupuesto', 'By Traveller', 'Alma del viaje', 'Afinar detalles'];
 
-  const previewChips = [
-    { title: 'Ritmo & Descubrimiento', core: 'Explorar sin correr. Sorpresas bien curadas.' },
-    { title: 'Sabores & Lugares', core: 'Cocina local y escenarios auténticos.' },
-    { title: 'Naturaleza & Movimiento', core: 'Aire libre, senderos y cielos enormes.' },
-    { title: 'Diseño & Boutique', core: 'Stays con carácter, detalles que elevan.' },
-  ];
+  const previewChips = useMemo(() => {
+    return t.interests?.map(interest => ({
+      title: interest,
+      core: `Un viaje centrado en ${interest.toLowerCase()}.`
+    })) || [];
+  }, [t.interests]);
 
   const tiers = SOLO_TIERS;
 
-  const travellerOptions = [
+  const allTravellerOptions = [
     { key: 'pareja',    title: 'En Pareja',   img: '/images/journey-types/couple-hetero.jpg' },
-    { key: 'solo',      title: 'Solo',        img: '/images/journey-types/solo-traveler.jpg' }, // <— antes .mp4
+    { key: 'solo',      title: 'Solo',        img: '/images/journey-types/solo-traveler.jpg' },
     { key: 'familia',   title: 'En Familia',  img: '/images/journey-types/family-vacation.jpg' },
     { key: 'grupo',     title: 'En Grupo',    img: '/images/journey-types/friends-group.jpg' },
     { key: 'honeymoon', title: 'Honeymoon',   img: '/images/journey-types/honeymoon-same-sex.jpg' },
   ];
 
+  const travellerOptions = allTravellerOptions;
+
   const almaOptionsList = useMemo(() => {
-    return Object.entries(ALMA_OPTIONS as Record<string, any>).map(([key, val]) => ({
+    const options = Object.entries(ALMA_OPTIONS as Record<string, any>).map(([key, val]) => ({
       key,
       title: val?.title ?? key,
       img:
@@ -52,16 +54,18 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
         val?.img ||
         'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     }));
-  }, []);
+    if (!t.interests) {
+      return options;
+    }
+    return options.filter(opt => t.interests!.some(interest => opt.title.toLowerCase().includes(interest.toLowerCase())));
+  }, [t.interests]);
 
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Scroll helper: lo llamamos SOLO tras interacciones del usuario
   const scrollPlanner = () => {
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Si vienen con hash explícito al planner, respetarlo una sola vez
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const h = window.location.hash;
@@ -70,13 +74,10 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
     }
   }, []);
 
-  // Gating + scroll manual (no automático en mount)
   const go = (target: Step) => {
     const doSet = (next: Step) => {
       setStep(next);
-      // scrolleo solo si NO es 'Presentación'
       if (next !== 'Presentación') {
-        // Esperar al commit del state:
         setTimeout(scrollPlanner, 0);
       }
     };
@@ -86,7 +87,6 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
     if (target === 'Afinar detalles' && budgetTier && travellerType && groupAlma) return doSet(target);
   };
 
-  // --- FlipCard local
   function FlipCard({
     item,
     onChoose,
@@ -175,48 +175,61 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
   }
 
   return (
-    <section id="planner" ref={sectionRef} className="bg-white text-neutral-900 py-16 scroll-mt-24">
-      {/* Ancla oculta por compatibilidad con enlaces antiguos */}
-      <span id="start-your-journey-anchor" className="sr-only" />
+    <section 
+      id="planner" 
+      ref={sectionRef} 
+      className="bg-cover bg-center text-white py-16 scroll-mt-24"
+      style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80')" }}
+    >
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
+        {/* Carátula personalizada */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Diseña tu Aventura con {t.name}
+          </h2>
+          <p className="mt-4 text-lg max-w-3xl mx-auto text-white/90">
+            {t.name} se especializa en crear experiencias inolvidables. Sigue estos pasos para empezar a construir tu próximo gran viaje.
+          </p>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Tabs header con gating */}
         <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-8" role="tablist" aria-label="Planificador Randomtrip">
-          {tabs.map((t) => (
+          {tabs.map((tab) => (
             <button
-              key={t}
-              onClick={() => go(t)}
+              key={tab}
+              onClick={() => go(tab)}
               className={clsx(
-                'px-3 py-2 rounded-full text-sm ring-1 ring-black/10 transition hover:-translate-y-0.5 hover:shadow-lg',
-                step === t ? 'bg-black text-white' : 'bg-white text-neutral-700'
+                'px-4 py-2 rounded-full text-sm font-semibold transition hover:-translate-y-0.5 hover:shadow-lg',
+                step === tab ? 'bg-white text-slate-900' : 'bg-white/10 text-white ring-1 ring-white/20'
               )}
               role="tab"
-              aria-selected={step === t}
-              aria-current={step === t ? 'step' : undefined}
+              aria-selected={step === tab}
+              aria-current={step === tab ? 'step' : undefined}
             >
-              {t}
+              {tab}
             </button>
           ))}
         </div>
 
         {/* STEP 1: Presentación */}
         {step === 'Presentación' && (
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold text-neutral-900">Una muestra del estilo</h2>
-            <p className="mt-2 text-sm text-neutral-600">
-              Deslizá sobre las tarjetas para sentir la vibra. Cuando quieras, activá tu Randomtrip.
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
+            <h2 className="text-2xl md:text-3xl font-semibold">Una muestra del estilo de {t.name.split(' ')[0]}</h2>
+            <p className="mt-2 text-sm text-white/80">
+              Estas son algunas de las experiencias que {t.name.split(' ')[0]} ama crear.
             </p>
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {previewChips.map((c) => (
                 <div
                   key={c.title}
-                  className="group rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+                  className="group rounded-2xl border border-white/20 bg-white/10 p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition text-center"
                   role="group"
                   aria-label={c.title}
                 >
-                  <div className="text-center font-semibold text-neutral-900">{c.title}</div>
-                  <div className="mt-4 text-sm text-neutral-700 opacity-0 group-hover:opacity-100 transition">
+                  <div className="font-semibold">{c.title}</div>
+                  <div className="mt-4 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition">
                     {c.core}
                   </div>
                 </div>
@@ -240,40 +253,40 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
 
         {/* STEP 2: Presupuesto */}
         {step === 'Presupuesto' && (
-          <div>
-            <h3 className="text-center text-2xl font-semibold text-neutral-900">✨ Comiencen a planear su escapada</h3>
-            <p className="mt-2 text-center text-sm text-neutral-700 max-w-3xl mx-auto">
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
+            <h3 className="text-center text-2xl font-semibold">✨ Comiencen a planear su escapada</h3>
+            <p className="mt-2 text-center text-sm text-white/80 max-w-3xl mx-auto">
               💡 Lo único que se define acá en este paso es el presupuesto por persona. Ese será su techo.
               El resto… dejalo en manos de tu Tripper.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
-              {tiers.map((t) => (
+              {tiers.map((tier) => (
                 <div
-                  key={t.key}
+                  key={tier.key}
                   className={clsx(
-                    'h-full flex flex-col rounded-2xl border border-neutral-200 bg-white p-5 text-left shadow-sm transition',
-                    budgetTier === t.key ? 'ring-2 ring-neutral-900' : 'hover:shadow-md hover:-translate-y-0.5'
+                    'h-full flex flex-col rounded-2xl border border-white/20 bg-white/10 p-5 text-left shadow-sm transition',
+                    budgetTier === tier.key ? 'ring-2 ring-white' : 'hover:shadow-md hover:-translate-y-0.5'
                   )}
                 >
-                  <h4 className="font-semibold text-neutral-900">{t.title}</h4>
-                  <ul className="mt-3 text-sm text-neutral-800 list-disc pl-5 space-y-1 flex-1">
-                    {t.bullets.map((b, i) => (
+                  <h4 className="font-semibold">{tier.title}</h4>
+                  <ul className="mt-3 text-sm list-disc pl-5 space-y-1 flex-1">
+                    {tier.bullets.map((b, i) => (
                       <li key={i}>{b}</li>
                     ))}
                   </ul>
-                  <div className="mt-6 pt-4 border-t border-neutral-200 md:mt-auto">
+                  <div className="mt-6 pt-4 border-t border-white/20 md:mt-auto">
                     <button
-                      className="w-full inline-flex items-center justify-center rounded-full bg-neutral-900 text-white px-4 py-2 text-sm font-semibold shadow-sm hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 focus:ring-offset-white"
+                      className="w-full inline-flex items-center justify-center rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold shadow-sm hover:bg-gray-200"
                       onClick={() => {
-                        setBudgetTier(t.key);
+                        setBudgetTier(tier.key);
                         setStep('By Traveller');
                         setTimeout(scrollPlanner, 0);
                       }}
-                      aria-pressed={budgetTier === t.key}
-                      aria-label={`Elegir ${t.title}`}
+                      aria-pressed={budgetTier === tier.key}
+                      aria-label={`Elegir ${tier.title}`}
                     >
-                      {t.cta || 'Elegir este nivel →'}
+                      {tier.cta || 'Elegir este nivel →'}
                     </button>
                   </div>
                 </div>
@@ -284,8 +297,8 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
 
         {/* STEP 3: By Traveller */}
         {step === 'By Traveller' && (
-          <div>
-            <h3 className="text-center text-2xl font-semibold text-neutral-900">
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
+            <h3 className="text-center text-2xl font-semibold">
               ¿Qué tipo de viaje estás pensando?
             </h3>
 
@@ -295,25 +308,19 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
                   key={opt.key}
                   onClick={() => setTravellerType(opt.key)}
                   className={clsx(
-                    'group relative h-[420px] rounded-2xl overflow-hidden border border-neutral-200 bg-white text-left focus:outline-none focus:ring-2 focus:ring-neutral-900 transition',
-                    travellerType === opt.key && 'ring-2 ring-neutral-900'
+                    'group relative h-[420px] rounded-2xl overflow-hidden border border-white/20 bg-white text-left focus:outline-none focus:ring-2 focus:ring-white transition',
+                    travellerType === opt.key && 'ring-2 ring-white'
                   )}
                   aria-pressed={travellerType === opt.key}
                   tabIndex={0}
                 >
-                  {opt.img.endsWith('.mp4') ? (
-                    <div className="absolute inset-0 grid place-items-center bg-neutral-200 text-neutral-600 text-sm">
-                      Video preview
-                    </div>
-                  ) : (
-                    <img
-                      src={opt.img}
-                      alt={opt.title}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  )}
+                  <img
+                    src={opt.img}
+                    alt={opt.title}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
                   <div className="absolute bottom-0 p-4 text-white">
                     <div className="text-2xl font-extrabold drop-shadow">{opt.title}</div>
@@ -341,26 +348,13 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
 
         {/* STEP 4: Alma del viaje */}
         {step === 'Alma del viaje' && (
-          <div>
-            <h3 className="text-center text-2xl font-semibold text-neutral-900">
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
+            <h3 className="text-center text-2xl font-semibold">
               Viajamos por muchas razones, ¿cuál los mueve hoy?
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
-              {almaOptionsList.slice(0, 5).map((it) => (
-                <FlipCard
-                  key={it.key}
-                  item={it}
-                  onChoose={(k) => {
-                    setGroupAlma(k);
-                    setStep('Afinar detalles');
-                    setTimeout(scrollPlanner, 0);
-                  }}
-                />
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-6">
-              {almaOptionsList.slice(5).map((it) => (
+              {almaOptionsList.map((it) => (
                 <FlipCard
                   key={it.key}
                   item={it}
@@ -377,28 +371,27 @@ export default function TripperPlanner({ tripperName, tripperSlug }: Props) {
 
         {/* STEP 5: Afinar detalles */}
         {step === 'Afinar detalles' && groupAlma && (
-          <AlmaDetails
-            groupKey={groupAlma}
-            budgetTier={budgetTier}
-            onBack={() => {
-              setStep('Alma del viaje');
-              setTimeout(scrollPlanner, 0);
-            }}
-            onContinue={(_selectedKeys) => {
-              // The original implementation passed a lot of query params.
-              // The new destination is a generic starting point for a new journey,
-              // so we are navigating there directly without the old context.
-              window.location.href = '/journey/basic-config';
-            }}
-          />
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
+            <AlmaDetails
+              groupKey={groupAlma}
+              budgetTier={budgetTier}
+              onBack={() => {
+                setStep('Alma del viaje');
+                setTimeout(scrollPlanner, 0);
+              }}
+              onContinue={(_selectedKeys) => {
+                window.location.href = `/packages/${t.slug}/basic-config`;
+              }}
+            />
+          </div>
         )}
 
         {step === 'Afinar detalles' && !groupAlma && (
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 mt-8">
-            <p className="text-neutral-700">Elegí primero un alma del viaje.</p>
+          <div className="rounded-xl border border-white/20 bg-white/10 p-6 mt-8">
+            <p>Elegí primero un alma del viaje.</p>
             <div className="mt-4">
               <button
-                className="inline-flex items-center rounded-full border px-4 py-2 text-sm hover:bg-neutral-50"
+                className="inline-flex items-center rounded-full border px-4 py-2 text-sm hover:bg-white/20"
                 onClick={() => {
                   setStep('Alma del viaje');
                   setTimeout(scrollPlanner, 0);

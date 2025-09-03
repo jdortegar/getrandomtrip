@@ -36,9 +36,9 @@ export default function TripperVisitedMap({ places = [] as VisitedPlace[] }: { p
     hasPlaces ? [places[0].lat, places[0].lng] : [0, 0];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+    <section className="bg-gray-900 text-white max-w-7xl mx-auto px-4 md:px-8 py-12">
       {!hasPlaces ? (
-        <div className="rounded-xl border border-neutral-200 bg-white p-6 text-neutral-700">
+        <div className="rounded-xl border border-gray-700 bg-gray-800 p-6 text-gray-300">
           Aún no hay lugares visitados para mostrar.
         </div>
       ) : (
@@ -50,7 +50,7 @@ export default function TripperVisitedMap({ places = [] as VisitedPlace[] }: { p
               return (
                 <button
                   key={key}
-                  className="rounded-full border px-3 py-1 text-sm hover:bg-gray-50 transition"
+                  className="rounded-full border border-gray-600 px-3 py-1 text-sm hover:bg-gray-700 transition"
                   onClick={() => {
                     const m = mapRef.current;
                     if (!m) return;

@@ -5,7 +5,7 @@ export default function TripperClosing() {
     { t: 'Sorpresa bien diseñada', d: 'Momentos memorables, sin improvisación.' },
   ];
   return (
-    <section className="py-16 bg-white text-black border-t border-neutral-200">
+    <section className="py-16 bg-gray-900 text-white border-t border-gray-700">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-10" style={{ fontFamily: 'Playfair Display, serif' }}>
           ¿Por qué Randomtrip?
@@ -14,7 +14,7 @@ export default function TripperClosing() {
           {benefits.map(b => (
             <div key={b.t} className="text-center">
               <h3 className="text-xl font-semibold mb-2">{b.t}</h3>
-              <p className="text-neutral-600">{b.d}</p>
+              <p className="text-gray-400">{b.d}</p>
             </div>
           ))}
         </div>

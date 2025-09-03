@@ -1,7 +1,8 @@
+// frontend/src/app/packages/(tripper)/[tripper]/page.tsx
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { TRIPPERS, getTripperBySlug } from "@/content/trippers";
-import TripperProfile from "@/components/tripper/TripperProfile";
+import TripperHero from "@/components/tripper/TripperHero";
 import TripperPlanner from "@/components/tripper/TripperPlanner";
 import TripperBlog from "@/components/tripper/TripperBlog";
 import dynamic from "next/dynamic";
@@ -11,6 +12,9 @@ const TripperVisitedMap = dynamic(
 );
 import TripperTestimonials from "@/components/tripper/TripperTestimonials";
 import TripperClosing from "@/components/tripper/TripperClosing";
+
+// 👇 Modal de video (client component)
+import TripperIntroVideoGate from "@/components/tripper/TripperIntroVideoGate";
 
 export function generateStaticParams() {
   return TRIPPERS.map((t) => ({ tripper: t.slug }));
@@ -32,7 +36,13 @@ export async function generateMetadata({
   };
 }
 
-export default function Page({ params }: { params: { tripper: string } }) {
+export default function Page({
+  params,
+  searchParams,
+}: {
+  params: { tripper: string };
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === "undefined") {
     redirect("/packages/by-type/group");
@@ -41,13 +51,32 @@ export default function Page({ params }: { params: { tripper: string } }) {
   const t = getTripperBySlug(params.tripper);
   if (!t) return notFound();
 
+  // QA: permitir forzar el video con ?forcevideo=1
+  const forceVideo =
+    (typeof searchParams?.forcevideo === "string" && searchParams?.forcevideo === "1") ||
+    (Array.isArray(searchParams?.forcevideo) && searchParams?.forcevideo?.[0] === "1");
+
+  // Clave específica por tripper para que no se mezcle el “no volver a mostrar”
+  const storageKey = `rt_tripper_intro_seen:${t.slug}`;
+
   return (
     <main className="bg-white text-slate-900">
-      {/* Perfil */}
-      <TripperProfile t={t} />
+      {/* 🔔 Modal de intro. 
+          Se muestra si el usuario entra directo (referrer externo) y no marcó “no volver a mostrar”.
+          - Se puede forzar con ?forcevideo=1
+          - Se puede bloquear con ?novideo=1 (lo maneja el propio componente)
+      */}
+      <TripperIntroVideoGate
+        youtubeId="1d4OiltwQYs"
+        storageKey={storageKey}
+        forceShow={!!forceVideo}
+      />
+
+      {/* Hero */}
+      <TripperHero t={t} />
 
       {/* Planner: pasar también el slug para construir rutas del funnel */}
-      <TripperPlanner tripperName={t.name} tripperSlug={t.slug} />
+      <TripperPlanner t={t} />
 
       {/* Blog / inspiración */}
       <TripperBlog posts={t.posts || []} sectionId="tripper-blog" />
