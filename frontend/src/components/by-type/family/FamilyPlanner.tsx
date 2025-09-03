@@ -8,14 +8,15 @@ import TravelerGroupCard from '@/components/by-type/family/TravelerGroupCard';
 import PhotoTileCard from '@/components/by-type/family/PhotoTileCard';
 import { usePlannerStore } from '@/stores/planner';
 
-type Step = 'Intro' | 'Presupuesto' | 'Tipo de viaje' | 'Tipo de escapada';
+type Step = 'Intro' | 'Presupuesto' | '🌟 Destination Decoded' | 'Tipo de escapada';
+
+const BG_IMG = 'https://images.unsplash.com/photo-1559054109-82d938dac629';
 
 export default function FamilyPlanner() {
   const router = useRouter();
   const { budgetTier, familyType, setBudgetTier, setFamilyType, setEscapeType } = usePlannerStore();
   const [step, setStep] = useState<Step>('Intro');
 
-  // lee ?step del hash (#planner?step=budget)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const h = window.location.hash;
@@ -23,13 +24,11 @@ export default function FamilyPlanner() {
     if (q.get('step') === 'budget') setStep('Presupuesto');
   }, []);
 
-  // gating
   useEffect(() => {
-    if (step === 'Tipo de viaje' && !budgetTier) setStep('Presupuesto');
-    if (step === 'Tipo de escapada' && !familyType) setStep('Tipo de viaje');
+    if (step === '🌟 Destination Decoded' && !budgetTier) setStep('Presupuesto');
+    if (step === 'Tipo de escapada' && !familyType) setStep('🌟 Destination Decoded');
   }, [step, budgetTier, familyType]);
 
-  // ---------- Presupuesto ----------
   const tiers = useMemo(
     () => [
       {
@@ -127,10 +126,9 @@ export default function FamilyPlanner() {
         ctaLabel: 'A un clic de lo inolvidable →',
       },
     ],
-    [] // <- DEP ARRAY correcto
+    []
   );
 
-  // ---------- Tipo de viaje ----------
   const familyItems = [
     {
       key: 'toddlers',
@@ -159,7 +157,6 @@ export default function FamilyPlanner() {
     },
   ];
 
-  // ---------- Tipo de escapada ----------
   const escapes = [
     { key: 'aventura', title: 'Aventura en familia', img: '/images/journey-types/aventura-familiar.jpg' },
     { key: 'naturaleza', title: 'Naturaleza & fauna', img: '/images/journey-types/naturaleza-y-fauna.jpg' },
@@ -169,7 +166,6 @@ export default function FamilyPlanner() {
     { key: 'duos', title: 'Escapadas Madre-hij@ / Padre-hij@', img: '/images/journey-types/Escapadas%20madre-hija%20-%20padre-hijo.jpg' },
   ];
 
-  // ---------- Header fijo (título + subtítulo + indicadores) ----------
   const Header = () => (
     <div className="text-center">
       <h2 className="font-display text-3xl md:text-4xl text-neutral-900">
@@ -195,14 +191,14 @@ export default function FamilyPlanner() {
           <li>·</li>
           <li
             className={
-              step === 'Tipo de viaje'
+              step === '🌟 Destination Decoded'
                 ? 'font-semibold text-neutral-900'
                 : familyType
                 ? 'text-neutral-900'
                 : ''
             }
           >
-            Tipo de viaje
+            🌟 Destination Decoded
           </li>
           <li>·</li>
           <li className={step === 'Tipo de escapada' ? 'font-semibold text-neutral-900' : ''}>
@@ -213,7 +209,6 @@ export default function FamilyPlanner() {
     </div>
   );
 
-  // ---------- Secciones ----------
   const Intro = () => (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
       <Header />
@@ -264,7 +259,6 @@ export default function FamilyPlanner() {
     </section>
   );
 
-  // ---------- Presupuesto (CTA al fondo de cada tarjeta) ----------
   const Presupuesto = () => (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-10" data-testid="tab-presupuesto">
       <Header />
@@ -278,9 +272,8 @@ export default function FamilyPlanner() {
             key={t.id}
             role="group"
             aria-labelledby={`h-${t.id}`}
-            className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
+            className="h-full flex flex-col rounded-2xl bg-white/70 p-6 border border-gray-200/70 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
           >
-            {/* Contenido: columna flexible para alinear el closingLine abajo */}
             <div className="flex-1 flex flex-col">
               <h4 id={`h-${t.id}`} className="font-display text-xl tracking-tightish font-bold text-gray-900">
                 {t.name}
@@ -317,15 +310,18 @@ export default function FamilyPlanner() {
               )}
             </div>
 
-            {/* CTA */}
             <div>
               <button
                 type="button"
                 className="btn-card w-full mt-6"
                 aria-label={t.ctaLabel}
                 onClick={() => {
+                  if (t.id === 'essenza' || t.id === 'explora') {
+                    router.push(`/journey/basic-config?from=family&tier=${t.id}`);
+                    return;
+                  }
                   setBudgetTier(t.id);
-                  setStep('Tipo de viaje');
+                  setStep('🌟 Destination Decoded');
                   document
                     .getElementById('planner')
                     ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -338,7 +334,6 @@ export default function FamilyPlanner() {
         ))}
       </div>
 
-      {/* Footer: Volver */}
       <div className="mt-10 flex justify-center">
         <button
           className="text-neutral-800 underline decoration-neutral-400 hover:decoration-neutral-800"
@@ -350,7 +345,7 @@ export default function FamilyPlanner() {
     </section>
   );
 
-  const TipoDeViaje = () => (
+  const DestinationDecodedStep = () => (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-10" data-testid="tab-tipo-viaje">
       <Header />
       <h3 className="mt-8 text-center text-lg font-semibold text-neutral-900">
@@ -413,22 +408,35 @@ export default function FamilyPlanner() {
         ))}
       </div>
 
-      {/* Footer: Volver */}
       <div className="mt-10 flex justify-center">
-        <button className="text-neutral-900 underline" onClick={() => setStep('Tipo de viaje')}>
+        <button className="text-neutral-900 underline" onClick={() => setStep('🌟 Destination Decoded')}>
           ← Volver
         </button>
       </div>
     </section>
   );
 
-  // ---------- Render ----------
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <section
+      className="relative isolate"
+      style={{
+        backgroundImage: `url('${BG_IMG}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <div className="absolute inset-0 bg-white/72 backdrop-blur-[2px]" />
+      <div className="relative">{children}</div>
+    </section>
+  );
+
   return (
-    <div className="bg-white">
+    <Wrapper>
       {step === 'Intro' && <Intro />}
       {step === 'Presupuesto' && <Presupuesto />}
-      {step === 'Tipo de viaje' && <TipoDeViaje />}
+      {step === '🌟 Destination Decoded' && <DestinationDecodedStep />}
       {step === 'Tipo de escapada' && <TipoDeEscapada />}
-    </div>
+    </Wrapper>
   );
 }

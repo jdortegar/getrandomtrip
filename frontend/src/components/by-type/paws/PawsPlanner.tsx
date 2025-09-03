@@ -1,179 +1,296 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import PawsExperienceCard from './PawsExperienceCard';
+import PawsPetConfiguratorTab from './PawsPetConfiguratorTab';
+import PawsEscapeTypeTab from './PawsEscapeTypeTab';
+
+type Step = 'levels' | 'interactive' | 'escape';
+
+const BG_IMG = 'https://plus.unsplash.com/premium_photo-1723557630893-fc4796266248';
+
+// Simplified data for the experience cards, matching PawsExperienceCard props
+const LEVELS = [
+  {
+    id: 'essenza',
+    name: 'Essenza',
+    subtitle: 'Lo esencial con estilo',
+    priceLabel: 'Hasta 460 USD',
+    priceFootnote: '· por persona + compañer@ de 4 patas',
+    features: [
+      { text: '📍 Duración: Máx 2 noches' },
+      {
+        text: '✈️ Transporte: Low cost (buses o vuelos off-peak).',
+        footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+      },
+      { text: '🗓️ Fechas: Menor disponibilidad, con restricciones y bloqueos.' },
+      { text: '🛏️ Alojamiento: Midscale (3★ o equivalentes, pet-friendly).' },
+      { text: '🎁 Extras: Guía esencial con mapa pet-friendly.' },
+    ],
+    closingLine: '📝 Un escape simple, donde tu mascota no es un extra, sino parte del plan.',
+    ctaLabel: 'Empiecen con lo básico →',
+  },
+  {
+    id: 'explora',
+    name: 'Modo Explora',
+    subtitle: 'Viaje activo y flexible',
+    priceLabel: 'Hasta 650 USD',
+    priceFootnote: '· por persona + compañer@ de 4 patas',
+    features: [
+      { text: '📍 Duración: Hasta 3 noches' },
+      {
+        text: '✈️ Transporte: Multimodal, horarios flexibles.',
+        footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+      },
+      { text: '🗓️ Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.' },
+      { text: '🛏️ Alojamiento: Midscale – Upper Midscale pet-friendly.' },
+      { text: '🎁 Extras: Guía Randomtrip con rutas, spots de juego y actividades pet-friendly.' },
+    ],
+    closingLine: '📝 Senderos y rincones pensados para descubrir junto a tu compañer@, con libertad y sin estrés.',
+    ctaLabel: 'Exploren a cuatro patas →',
+  },
+  {
+    id: 'exploraPlus',
+    name: 'Explora+',
+    subtitle: 'Más capas, más momentos',
+    priceLabel: 'Hasta 1100 USD',
+    priceFootnote: '· por persona + compañer@ de 4 patas',
+    features: [
+      { text: '📍 Duración: Hasta 4 noches' },
+      {
+        text: '✈️ Transporte: Multimodal.',
+        footnote: 'Carry-on incluido; selección de asiento y bodega no incluidos.',
+      },
+      { text: '🗓️ Fechas: Alta disponibilidad, incluso en feriados/puentes.' },
+      { text: '🛏️ Alojamiento: : Upscale asegurado, habitaciones pet-friendly premium.' },
+      { text: '🎁 Extras: 1 experiencia curada (ej.: trail o day trip pet-friendly).' },
+      { text: '🌟 **Destination Decoded**: guia personalizada para que cada día sea una sorpresa curada.' },
+    ],
+    closingLine: '📝 Más días, más juegos, más huellas en la arena y en la memoria.',
+    ctaLabel: 'Suban la aventura →',
+  },
+  {
+    id: 'bivouac',
+    name: 'Bivouac',
+    subtitle: 'Curaduría artesanal',
+    priceLabel: 'Hasta 1550 USD',
+    priceFootnote: '· por persona + compañer@ de 4 patas',
+    features: [
+      { text: '📍 Duración: Hasta 5 noches' },
+      {
+        text: '✈️ Transporte: Multimodal.',
+        footnote: 'Carry-on incluido; selección de asiento/bodega opcional.',
+      },
+      { text: '🗓️ Fechas: Sin bloqueos.' },
+      { text: '🛏️ Alojamiento: Upper Upscale pet-friendly. (boutique, diseño, experiencias locales).' },
+      { text: '🎁 Extras: **Concierge Advisor** + 1 experiencia premium + perks (late check-out, upgrade, amenities pet).' },
+      { text: '🌟 **Destination Decoded**: guia curada por nuestros Concierge Advisors, con claves que pocos conocen.' },
+    ],
+    closingLine: '📝 Un viaje premium, curado al detalle para vos y tu compañero de cuatro patas.',
+    ctaLabel: 'Viajen con huellas Bivouac →',
+  },
+  {
+    id: 'atelier',
+    name: 'Atelier Getaway',
+    subtitle: 'Experiencia a medida',
+    priceLabel: 'Desde 1550 USD',
+    priceFootnote: '· por persona + compañer@ de 4 patas',
+    features: [
+      { text: '📍 Duración: Customizable' },
+      { text: '✈️ Transporte: Multimodal / a medida.' },
+      { text: '🗓️ Fechas: Sin bloqueos.' },
+      { text: '🛏️ Alojamiento: Luxury / de autor / Cadenas Hoteleras A1 pet-friendly.' },
+      { text: '💎 Extras: **Co-creación con un Luxury Travel Advisor + equipo 24/7**. Incluye 2+ experiencias premium diseñadas a medida. Atelier Perks.' },
+    ],
+    closingLine: '📝Una experiencia exclusiva donde cada momento está diseñado para ambos.',
+    ctaLabel: 'Creen lo extraordinario →',
+  },
+];
+
+function normalizeLevel(id: string) {
+  return id === 'exploraPlus' ? 'explora-plus' : id;
+}
+function isPremium(levelId: string | null) {
+  if (!levelId) return false;
+  const norm = normalizeLevel(levelId);
+  return norm === 'explora-plus' || norm === 'bivouac' || norm === 'atelier';
+}
 
 export default function PawsPlanner() {
-  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<Step>('levels');
 
-  const tiers = useMemo(
-    () => [
-      {
-        id: 'essenza',
-        name: 'Essenza',
-        subtitle: 'Lo esencial con estilo',
-        priceLabel: 'Hasta 460 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
-        features: [
-          { text: '📍 Duración: Máx 2 noches' },
-          {
-            text: '✈️ Transporte: Low cost (buses o vuelos off-peak).',
-            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
-          },
-          { text: '🗓️ Fechas: Menor disponibilidad, con restricciones y bloqueos.' },
-          { text: '🛏️ Alojamiento: Midscale (3★ o equivalentes, pet-friendly).' },
-          { text: '🎁 Extras: Guía esencial con mapa pet-friendly.' },
-        ],
-        closingLine: '📝 Un escape simple, donde tu mascota no es un extra, sino parte del plan.',
-        ctaLabel: 'Empiecen con lo básico →',
-      },
-      {
-        id: 'explora',
-        name: 'Modo Explora',
-        subtitle: 'Viaje activo y flexible',
-        priceLabel: 'Hasta 650 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
-        features: [
-          { text: '📍 Duración: Hasta 3 noches' },
-          {
-            text: '✈️ Transporte: Multimodal, horarios flexibles.',
-            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
-          },
-          { text: '🗓️ Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.' },
-          { text: '🛏️ Alojamiento: Midscale – Upper Midscale pet-friendly.' },
-          { text: '🎁 Extras: Guía Randomtrip con rutas, spots de juego y actividades pet-friendly.' },
-        ],
-        closingLine: '📝 Senderos y rincones pensados para descubrir junto a tu compañer@, con libertad y sin estrés.',
-        ctaLabel: 'Exploren a cuatro patas →',
-      },
-      {
-        id: 'exploraPlus',
-        name: 'Explora+',
-        subtitle: 'Más capas, más momentos',
-        priceLabel: 'Hasta 1100 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
-        features: [
-          { text: '📍 Duración: Hasta 4 noches' },
-          {
-            text: '✈️ Transporte: Multimodal.',
-            footnote: 'Carry-on incluido; selección de asiento y bodega no incluidos.',
-          },
-          { text: '🗓️ Fechas: Alta disponibilidad, incluso en feriados/puentes.' },
-          { text: '🛏️ Alojamiento: : Upscale asegurado, habitaciones pet-friendly premium.' },
-          { text: '🎁 Extras: 1 experiencia curada (ej.: trail o day trip pet-friendly).' },
-          { text: '🌟 **Destination Decoded**: guia personalizada para que cada día sea una sorpresa curada.' },
-        ],
-        closingLine: '📝 Más días, más juegos, más huellas en la arena y en la memoria.',
-        ctaLabel: 'Suban la aventura →',
-      },
-      {
-        id: 'bivouac',
-        name: 'Bivouac',
-        subtitle: 'Curaduría artesanal',
-        priceLabel: 'Hasta 1550 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
-        features: [
-          { text: '📍 Duración: Hasta 5 noches' },
-          {
-            text: '✈️ Transporte: Multimodal.',
-            footnote: 'Carry-on incluido; selección de asiento/bodega opcional.',
-          },
-          { text: '🗓️ Fechas: Sin bloqueos.' },
-          { text: '🛏️ Alojamiento: Upper Upscale pet-friendly. (boutique, diseño, experiencias locales).' },
-          { text: '🎁 Extras: **Concierge Advisor** + 1 experiencia premium + perks (late check-out, upgrade, amenities pet).' },
-          { text: '🌟 **Destination Decoded**: guia curada por nuestros Concierge Advisors, con claves que pocos conocen.' },
-        ],
-        closingLine: '📝 Un viaje premium, curado al detalle para vos y tu compañero de cuatro patas.',
-        ctaLabel: 'Viajen con huellas Bivouac →',
-      },
-      {
-        id: 'atelier',
-        name: 'Atelier Getaway',
-        subtitle: 'Experiencia a medida',
-        priceLabel: 'Desde 1550 USD',
-        priceFootnote: '· por persona + compañer@ de 4 patas',
-        features: [
-          { text: '📍 Duración: Customizable' },
-          { text: '✈️ Transporte: Multimodal / a medida.' },
-          { text: '🗓️ Fechas: Sin bloqueos.' },
-          { text: '🛏️ Alojamiento: Luxury / de autor / Cadenas Hoteleras A1 pet-friendly.' },
-          { text: '💎 Extras: **Co-creación con un Luxury Travel Advisor + equipo 24/7**. Incluye 2+ experiencias premium diseñadas a medida. Atelier Perks.'},
-        ],
-        closingLine: '📝Una experiencia exclusiva donde cada momento está diseñado para ambos.',
-        ctaLabel: 'Creen lo extraordinario →',
-      },
-    ],
-    []
+  // hasta que el usuario no elija, no hay Tab 2
+  const [levelId, setLevelId] = useState<string | null>(null);
+
+  // habilita Tab 3 (solo premium) cuando se completa Tab 2
+  const [step2Complete, setStep2Complete] = useState(false);
+
+  const premium = isPremium(levelId);
+
+  // helper para actualizar querystring sin navegar
+  const setTab = (tab: Step) => {
+    setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', tab);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
+  const handleLevelSelect = (selectedLevelId: string) => {
+    setLevelId(selectedLevelId);
+    setStep2Complete(false); // si cambian de nivel, reinicia paso 2
+    setTab('interactive');
+    document.getElementById('paws-planner-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // guard de navegación: evita entrar a tabs bloqueadas (incluye acceso directo por URL)
+  useEffect(() => {
+    if (activeTab === 'interactive' && !levelId) {
+      setTab('levels');
+    }
+    if (activeTab === 'escape') {
+      if (!premium) {
+        setTab(levelId ? 'interactive' : 'levels');
+      } else if (!step2Complete) {
+        setTab('interactive');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, premium, step2Complete, levelId]);
+
+  // lectura inicial de ?tab=... respetando el gating
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const qsTab = url.searchParams.get('tab') as Step | null;
+    if (!qsTab) return;
+
+    if (qsTab === 'levels') setTab('levels');
+    else if (qsTab === 'interactive') setTab(levelId ? 'interactive' : 'levels');
+    else if (qsTab === 'escape') {
+      if (premium && step2Complete) setTab('escape');
+      else if (levelId) setTab('interactive');
+      else setTab('levels');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelId, premium, step2Complete]);
+
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <section
+      className="relative isolate"
+      style={{
+        backgroundImage: `url('${BG_IMG}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-md" />
+      <div className="relative">{children}</div>
+    </section>
+  );
+
+  const Header = () => {
+    const canGoInteractive = Boolean(levelId);
+    const canGoEscape = Boolean(premium && step2Complete);
+
+    const tabBtnClass = (enabled: boolean, active: boolean) =>
+      `whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
+        active
+          ? 'border-indigo-500 text-indigo-600'
+          : enabled
+          ? 'border-transparent text-neutral-500 hover:border-neutral-300 hover:text-neutral-700'
+          : 'border-transparent text-neutral-300 cursor-not-allowed'
+      }`;
+
+    return (
+      <div className="text-center pt-10">
+        <h2 className="font-display text-3xl md:text-4xl text-neutral-900">Planifica tu PAWSTRIP</h2>
+        <div className="mt-6 border-b border-neutral-300 flex justify-center">
+          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            {/* Tab 1: siempre habilitada */}
+            <button onClick={() => setTab('levels')} className={tabBtnClass(true, activeTab === 'levels')}>
+              🐾 Niveles de Experiencia
+            </button>
+
+            {/* Tab 2: habilitada SOLO si hay nivel seleccionado */}
+            <button
+              onClick={() => {
+                if (canGoInteractive) setTab('interactive');
+              }}
+              aria-disabled={!canGoInteractive}
+              className={tabBtnClass(canGoInteractive, activeTab === 'interactive')}
+            >
+              Más detalles
+            </button>
+
+            {/* Tab 3: habilitada SOLO si premium y step2Complete */}
+            {premium && (
+              <button
+                onClick={() => {
+                  if (canGoEscape) setTab('escape');
+                }}
+                aria-disabled={!canGoEscape}
+                className={tabBtnClass(canGoEscape, activeTab === 'escape')}
+              >
+                🌟 Tipo de escapada
+              </button>
+            )}
+          </nav>
+        </div>
+      </div>
+    );
+  };
+
+  const LevelsStep = () => (
+    <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+      <p className="text-center text-gray-700 mb-8 italic">
+        💡 Definís el presupuesto de pasaje y alojamiento para ti + tu compañer@. Del resto… nos ocupamos nosotros.
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        {LEVELS.map((level) => (
+          <PawsExperienceCard key={level.id} {...level} onClick={() => handleLevelSelect(level.id)} />
+        ))}
+      </div>
+      <p className="text-xs text-center text-gray-600 mt-6">
+        * Sujeto a disponibilidad y políticas pet-friendly de cada proveedor. Pueden aplicar requisitos (certificados sanitarios, vacunas, microchip, etc.).
+      </p>
+    </div>
   );
 
   return (
-    <section id="paws-planner" className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-      <div className="text-center mb-8">
-        <h3 className="text-center text-xl font-semibold text-neutral-900">
-          💡 Lo único que definís acá es el presupuesto para vos y para tu compañer@ de cuatro patas para pasaje y alojamiento. Ese será su techo. Del resto… nos ocupamos nosotros.
-        </h3>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        {tiers.map((t) => (
-          <div
-            key={t.id}
-            role="group"
-            aria-labelledby={`h-${t.id}`}
-            className="h-full flex flex-col rounded-2xl bg-white p-6 border border-gray-200 shadow-md transition hover:shadow-lg hover:scale-[1.02]"
-          >
-            {/* Contenido: columna flexible para alinear el closingLine abajo */}
-            <div className="flex-1 flex flex-col">
-              <h4 id={`h-${t.id}`} className="font-display text-xl tracking-tightish font-bold text-gray-900">
-                {t.name}
-              </h4>
+    <Wrapper>
+      <div id="paws-planner-top" className="scroll-mt-24" />
+      <section id="paws-planner">
+        <Header />
 
-              <p className="text-gray-800 text-sm">{t.subtitle}</p>
+        {activeTab === 'levels' && <LevelsStep />}
 
-              <div className="mt-6">
-                <div className="font-display text-3xl leading-tight font-bold text-[var(--rt-terracotta)]">
-                  {t.priceLabel}
-                </div>
-                <span className="block text-xs text-gray-900">{t.priceFootnote}</span>
-              </div>
+        {activeTab === 'interactive' && levelId && (
+          <PawsPetConfiguratorTab
+            levelId={levelId as any}
+            onBackToLevels={() => setTab('levels')}
+            onNextToEscape={() => {
+              if (!premium) return;        // sólo premium puede avanzar a Tab 3
+              setStep2Complete(true);
+              setTab('escape');
+              document.getElementById('paws-planner-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+          />
+        )}
 
-              <ul className="mt-5 space-y-2 text-sm text-gray-800">
-                {(t.features ?? []).map((f, i) => (
-                  <li key={i} className="leading-snug">
-                    • {f.text.split('**').map((part, index) => (
-                        index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-                      ))}
-                    {f.footnote && (
-                      <span className="block pl-4 text-xs text-gray-600">* {f.footnote}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-
-              {t.closingLine && (
-                <div className="mt-auto py-4 border-y border-gray-200">
-                  <p className="text-neutral-800 text-sm leading-relaxed text-center">
-                    {t.closingLine}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* CTA */}
-            <div>
-              <button
-                type="button"
-                className="btn-card w-full mt-6"
-                aria-label={t.ctaLabel}
-                onClick={() => {
-                  router.push(`/journey/basic-config?from=paws&tier=${t.id}`);
-                }}
-              >
-                {t.ctaLabel}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+        {/* Tab 3 solo visible si premium y Step 2 completo */}
+        {premium && step2Complete && activeTab === 'escape' && levelId && (
+          <PawsEscapeTypeTab
+            levelId={levelId as any}
+            onBackToInteractive={() => {
+              setTab('interactive');
+              document.getElementById('paws-planner-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+          />
+        )}
+      </section>
+    </Wrapper>
   );
 }
