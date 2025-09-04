@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type LevelId = 'essenza' | 'explora' | 'explora-plus' | 'exploraPlus' | 'bivouac' | 'atelier';
 
@@ -56,25 +57,21 @@ const ESCAPES = [
   },
 ] as const;
 
-function normalizeLevel(id: LevelId): 'essenza' | 'explora' | 'explora-plus' | 'bivouac' | 'atelier' {
-  if (id === 'exploraPlus') return 'explora-plus';
-  return id as any;
-}
-
 export default function PawsEscapeTypeTab({
   levelId,
+  priceLabel,
   onBackToInteractive,
 }: {
   levelId: LevelId;
+  priceLabel: string;
   onBackToInteractive?: () => void;
 }) {
   const isPremium = useMemo(() => {
-    const norm = normalizeLevel(levelId);
+    const norm = normalizeTierId(levelId);
     return norm === 'explora-plus' || norm === 'bivouac' || norm === 'atelier';
   }, [levelId]);
 
   if (!isPremium) {
-    // Seguridad: si alguien llega directo por URL y no es premium, no mostrar nada relevante.
     return (
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-10">
         <div className="rounded-xl border bg-white p-6 text-center">
@@ -88,7 +85,6 @@ export default function PawsEscapeTypeTab({
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-8 py-10">
-      {/* Back to Tab 2 */}
       <div className="mb-6">
         <button
           type="button"
@@ -108,7 +104,7 @@ export default function PawsEscapeTypeTab({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {ESCAPES.map((card) => (
-          <CardFlip key={card.key} item={card} levelId={levelId} />
+          <CardFlip key={card.key} item={card} levelId={levelId} priceLabel={priceLabel} />
         ))}
       </div>
     </div>
@@ -118,19 +114,24 @@ export default function PawsEscapeTypeTab({
 function CardFlip({
   item,
   levelId,
+  priceLabel,
 }: {
   item: { key: string; title: string; img: string; copy: string };
   levelId: LevelId;
+  priceLabel: string;
 }) {
-  // Construimos la URL a basic-config con el escapeType
-  const href = (() => {
-    const params = new URLSearchParams({
-      from: 'paws',
-      level: String(levelId),
-      escapeType: item.key,
+  const router = useRouter();
+
+  const handleContinue = () => {
+    gotoBasicConfig(router, {
+      fromOrType: 'paws',
+      tierId: levelId,
+      priceLabel: priceLabel,
+      extra: {
+        escapeType: item.key,
+      },
     });
-    return `/journey/basic-config?${params.toString()}`;
-  })();
+  };
 
   return (
     <div className="group [perspective:1200px]">
@@ -147,12 +148,13 @@ function CardFlip({
         {/* BACK */}
         <div className="absolute inset-0 rounded-2xl bg-white p-4 flex flex-col justify-between [transform:rotateY(180deg)] [backface-visibility:hidden]">
           <p className="text-sm text-neutral-700">{item.copy}</p>
-          <Link
-            href={href}
+          <button
+            type="button"
+            onClick={handleContinue}
             className="mt-4 inline-flex h-10 items-center justify-center rounded-lg bg-neutral-900 text-white text-sm font-semibold hover:bg-neutral-800"
           >
             Continuar →
-          </Link>
+          </button>
         </div>
       </div>
     </div>

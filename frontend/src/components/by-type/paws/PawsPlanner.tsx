@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import PawsExperienceCard from './PawsExperienceCard';
 import PawsPetConfiguratorTab from './PawsPetConfiguratorTab';
 import PawsEscapeTypeTab from './PawsEscapeTypeTab';
+import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type Step = 'levels' | 'interactive' | 'escape';
 
 const BG_IMG = 'https://plus.unsplash.com/premium_photo-1723557630893-fc4796266248';
 
-// Simplified data for the experience cards, matching PawsExperienceCard props
 const LEVELS = [
   {
     id: 'essenza',
@@ -107,27 +108,21 @@ const LEVELS = [
   },
 ];
 
-function normalizeLevel(id: string) {
-  return id === 'exploraPlus' ? 'explora-plus' : id;
-}
 function isPremium(levelId: string | null) {
   if (!levelId) return false;
-  const norm = normalizeLevel(levelId);
+  const norm = normalizeTierId(levelId);
   return norm === 'explora-plus' || norm === 'bivouac' || norm === 'atelier';
 }
 
 export default function PawsPlanner() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<Step>('levels');
-
-  // hasta que el usuario no elija, no hay Tab 2
   const [levelId, setLevelId] = useState<string | null>(null);
-
-  // habilita Tab 3 (solo premium) cuando se completa Tab 2
+  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(null);
   const [step2Complete, setStep2Complete] = useState(false);
 
   const premium = isPremium(levelId);
 
-  // helper para actualizar querystring sin navegar
   const setTab = (tab: Step) => {
     setActiveTab(tab);
     if (typeof window !== 'undefined') {
@@ -137,14 +132,21 @@ export default function PawsPlanner() {
     }
   };
 
-  const handleLevelSelect = (selectedLevelId: string) => {
+  const handleLevelSelect = (selectedLevelId: string, priceLabel: string) => {
+    const level = normalizeTierId(selectedLevelId);
+
+    if (level === 'essenza' || level === 'modo-explora') {
+      gotoBasicConfig(router, { fromOrType: 'paws', tierId: selectedLevelId, priceLabel });
+      return;
+    }
+
     setLevelId(selectedLevelId);
-    setStep2Complete(false); // si cambian de nivel, reinicia paso 2
+    setPendingPriceLabel(priceLabel);
+    setStep2Complete(false);
     setTab('interactive');
     document.getElementById('paws-planner-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // guard de navegación: evita entrar a tabs bloqueadas (incluye acceso directo por URL)
   useEffect(() => {
     if (activeTab === 'interactive' && !levelId) {
       setTab('levels');
@@ -156,10 +158,8 @@ export default function PawsPlanner() {
         setTab('interactive');
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, premium, step2Complete, levelId]);
 
-  // lectura inicial de ?tab=... respetando el gating
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
@@ -173,7 +173,6 @@ export default function PawsPlanner() {
       else if (levelId) setTab('interactive');
       else setTab('levels');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelId, premium, step2Complete]);
 
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -209,12 +208,9 @@ export default function PawsPlanner() {
         <h2 className="font-display text-3xl md:text-4xl text-neutral-900">Planifica tu PAWSTRIP</h2>
         <div className="mt-6 border-b border-neutral-300 flex justify-center">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {/* Tab 1: siempre habilitada */}
             <button onClick={() => setTab('levels')} className={tabBtnClass(true, activeTab === 'levels')}>
               🐾 Niveles de Experiencia
             </button>
-
-            {/* Tab 2: habilitada SOLO si hay nivel seleccionado */}
             <button
               onClick={() => {
                 if (canGoInteractive) setTab('interactive');
@@ -224,8 +220,6 @@ export default function PawsPlanner() {
             >
               Más detalles
             </button>
-
-            {/* Tab 3: habilitada SOLO si premium y step2Complete */}
             {premium && (
               <button
                 onClick={() => {
@@ -250,7 +244,11 @@ export default function PawsPlanner() {
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {LEVELS.map((level) => (
-          <PawsExperienceCard key={level.id} {...level} onClick={() => handleLevelSelect(level.id)} />
+          <PawsExperienceCard
+            key={level.id}
+            {...level}
+            onClick={() => handleLevelSelect(level.id, level.priceLabel)}
+          />
         ))}
       </div>
       <p className="text-xs text-center text-gray-600 mt-6">
@@ -264,26 +262,23 @@ export default function PawsPlanner() {
       <div id="paws-planner-top" className="scroll-mt-24" />
       <section id="paws-planner">
         <Header />
-
         {activeTab === 'levels' && <LevelsStep />}
-
         {activeTab === 'interactive' && levelId && (
           <PawsPetConfiguratorTab
             levelId={levelId as any}
             onBackToLevels={() => setTab('levels')}
             onNextToEscape={() => {
-              if (!premium) return;        // sólo premium puede avanzar a Tab 3
+              if (!premium) return;
               setStep2Complete(true);
               setTab('escape');
               document.getElementById('paws-planner-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }}
           />
         )}
-
-        {/* Tab 3 solo visible si premium y Step 2 completo */}
         {premium && step2Complete && activeTab === 'escape' && levelId && (
           <PawsEscapeTypeTab
             levelId={levelId as any}
+            priceLabel={pendingPriceLabel!}
             onBackToInteractive={() => {
               setTab('interactive');
               document.getElementById('paws-planner-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });

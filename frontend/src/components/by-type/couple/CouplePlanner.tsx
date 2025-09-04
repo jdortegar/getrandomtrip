@@ -1,9 +1,9 @@
-// frontend/src/components/by-type/couple/CouplePlanner.tsx
 'use client';
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import CoupleAlmaDetails from '@/components/by-type/couple/CoupleAlmaDetails';
+import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type Step = 'Intro' | 'Presupuesto' | '🌟 La Excusa' | 'Afinar detalles';
 
@@ -91,7 +91,7 @@ export default function CouplePlanner() {
           { text: '🗓️ Fechas: Sin bloqueos.' },
           { text: '🛏️ Alojamiento: Upper Upscale (boutique, diseño, experiencias locales).' },
           { text: '🎁 Extras: **Concierge Advisor** + 1 experiencia premium en pareja + perks exclusivos.' },
-          { text: '🌟 **Destination Decoded**: guia curada por nuestros Concierge Advisors, con claves que pocos conocen.' },          
+          { text: '🌟 **Destination Decoded**: guia curada por nuestros Concierge Advisors, con claves que pocos conocen.' },
         ],
         closingLine:
           '📝 Un viaje que se cuida como se cuida una relación: con detalle y paciencia.',
@@ -123,6 +123,7 @@ export default function CouplePlanner() {
 
   const [step, setStep] = useState<Step>('Intro');
   const [budgetTier, setBudgetTier] = useState<string | null>(null);
+  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(null);
   const [coupleAlma, setCoupleAlma] = useState<string | null>(null);
 
   useEffect(() => {
@@ -333,13 +334,19 @@ export default function CouplePlanner() {
     );
   }
 
-  // CTA handler: 2 primeros tiers van directo al basic-config
-  const handleTierCTA = (tierId: string) => {
-    if (tierId === 'essenza' || tierId === 'modo-explora') {
-      router.push(`/journey/basic-config?from=couple&tier=${tierId}`);
+  // CTA handler: conditional logic as requested
+  const handleTierCTA = (tierId: string, priceLabel: string) => {
+    const level = normalizeTierId(tierId);
+
+    // Low tiers go directly to basic-config
+    if (level === 'essenza' || level === 'modo-explora') {
+      gotoBasicConfig(router, { fromOrType: 'couple', tierId, priceLabel });
       return;
     }
+
+    // Higher tiers: save tier info and proceed to the next step
     setBudgetTier(tierId);
+    setPendingPriceLabel(priceLabel);
     setStep('🌟 La Excusa');
     document.getElementById('couple-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -410,7 +417,7 @@ export default function CouplePlanner() {
                     type="button"
                     className="btn-card w-full mt-6"
                     aria-label={t.ctaLabel}
-                    onClick={() => handleTierCTA(t.id)}
+                    onClick={() => handleTierCTA(t.id, t.priceLabel)}
                   >
                     {t.ctaLabel}
                   </button>
@@ -489,13 +496,16 @@ export default function CouplePlanner() {
               ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
           onContinue={(selectedKeys) => {
-            const q = new URLSearchParams({
-              from: 'couple',
-              budgetTier: budgetTier ?? '',
-              coupleAlma: coupleAlma ?? '',
-              almaOptions: selectedKeys.join(','),
-            }).toString();
-            window.location.href = `/journey/experience-level?${q}`;
+            // Final navigation for higher tiers
+            gotoBasicConfig(router, {
+              fromOrType: 'couple',
+              tierId: budgetTier!,
+              priceLabel: pendingPriceLabel!,
+              extra: {
+                coupleAlma: coupleAlma!,
+                almaOptions: selectedKeys.join(','),
+              },
+            });
           }}
         />
       )}

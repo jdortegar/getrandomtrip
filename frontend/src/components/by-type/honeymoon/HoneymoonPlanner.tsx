@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { gotoBasicConfig } from '@/lib/linking';
 
 export default function HoneymoonPlanner() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function HoneymoonPlanner() {
 
   // videos en /public (escapamos espacios)
   const videoWebm = '/videos/honeymoon-video-(seccion-2).webm';
-  const videoMp4  = '/videos/honeymoon-video-(seccion-2).mp4';
+  const videoMp4  = '/videos/ honeymoon-video-(seccion-2).mp4';
 
   return (
     // Sección full-width con video de fondo (tipo hero SOLO para esta sección)
@@ -125,7 +126,11 @@ export default function HoneymoonPlanner() {
                   className="btn-card w-full"
                   aria-label={tier.cta}
                   onClick={() =>
-                    router.push(`/journey/basic-config?from=honeymoon&tier=${tier.id}`)
+                    gotoBasicConfig(router, {
+                      fromOrType: 'honeymoon',
+                      tierId: tier.id,
+                      priceLabel: tier.priceLabel,
+                    })
                   }
                 >
                   {tier.cta}

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useMemo, useEffect, type CSSProperties } from 'react';
+import { useRouter } from 'next/navigation';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
+import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type Step = 'Intro' | 'Presupuesto' | 'Grupo & Alma' | 'Afinar detalles';
 
@@ -10,8 +12,10 @@ const cardBase =
   "flex flex-col justify-between text-neutral-900";
 
 export default function GroupPlanner() {
+  const router = useRouter();
   const [step, setStep] = useState<Step>('Intro');
   const [budgetTier, setBudgetTier] = useState<string | null>(null);
+  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(null);
   const [groupAlma, setGroupAlma] = useState<string | null>(null);
 
   // Lee hash inicial para abrir directamente el presupuesto: #group-planner?step=budget
@@ -139,6 +143,20 @@ export default function GroupPlanner() {
     { key: 'students', title: 'Estudiantes', img: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b' },
     { key: 'music-festivals', title: 'Música & Festivales', img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063' },
   ];
+
+  const handleTierCTA = (tierId: string, priceLabel: string) => {
+    const level = normalizeTierId(tierId);
+
+    if (level === 'essenza' || level === 'modo-explora') {
+      gotoBasicConfig(router, { fromOrType: 'group', tierId, priceLabel });
+      return;
+    }
+
+    setBudgetTier(tierId);
+    setPendingPriceLabel(priceLabel);
+    setStep('Grupo & Alma');
+    document.getElementById('group-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // --------- Header ----------
   const Header = () => (
@@ -376,11 +394,7 @@ export default function GroupPlanner() {
                     type="button"
                     className="btn-card w-full mt-6"
                     aria-label={t.ctaLabel}
-                    onClick={() => {
-                      setBudgetTier(t.id);
-                      setStep('Grupo & Alma');
-                      document.getElementById('group-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}
+                    onClick={() => handleTierCTA(t.id, t.priceLabel)}
                   >
                     {t.ctaLabel}
                   </button>
@@ -452,13 +466,15 @@ export default function GroupPlanner() {
             document.getElementById('group-planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
           onContinue={(selectedKeys) => {
-            const q = new URLSearchParams({
-              from: 'group',
-              budgetTier: budgetTier ?? '',
-              groupAlma: groupAlma ?? '',
-              almaOptions: selectedKeys.join(','),
-            }).toString();
-            window.location.href = `/journey/experience-level?${q}`;
+            gotoBasicConfig(router, {
+              fromOrType: 'group',
+              tierId: budgetTier!,
+              priceLabel: pendingPriceLabel!,
+              extra: {
+                groupAlma: groupAlma!,
+                almaOptions: selectedKeys.join(','),
+              },
+            });
           }}
         />
       )}

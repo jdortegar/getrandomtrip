@@ -7,6 +7,7 @@ import EmpathyCard from '@/components/by-type/family/EmpathyCard';
 import TravelerGroupCard from '@/components/by-type/family/TravelerGroupCard';
 import PhotoTileCard from '@/components/by-type/family/PhotoTileCard';
 import { usePlannerStore } from '@/stores/planner';
+import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type Step = 'Intro' | 'Presupuesto' | '🌟 Destination Decoded' | 'Tipo de escapada';
 
@@ -16,6 +17,7 @@ export default function FamilyPlanner() {
   const router = useRouter();
   const { budgetTier, familyType, setBudgetTier, setFamilyType, setEscapeType } = usePlannerStore();
   const [step, setStep] = useState<Step>('Intro');
+  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -166,6 +168,20 @@ export default function FamilyPlanner() {
     { key: 'duos', title: 'Escapadas Madre-hij@ / Padre-hij@', img: '/images/journey-types/Escapadas%20madre-hija%20-%20padre-hijo.jpg' },
   ];
 
+  const handleTierCTA = (tierId: string, priceLabel: string) => {
+    const level = normalizeTierId(tierId);
+
+    if (level === 'essenza' || level === 'modo-explora') {
+      gotoBasicConfig(router, { fromOrType: 'family', tierId, priceLabel });
+      return;
+    }
+
+    setBudgetTier(tierId);
+    setPendingPriceLabel(priceLabel);
+    setStep('🌟 Destination Decoded');
+    document.getElementById('planner')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const Header = () => (
     <div className="text-center">
       <h2 className="font-display text-3xl md:text-4xl text-neutral-900">
@@ -315,17 +331,7 @@ export default function FamilyPlanner() {
                 type="button"
                 className="btn-card w-full mt-6"
                 aria-label={t.ctaLabel}
-                onClick={() => {
-                  if (t.id === 'essenza' || t.id === 'explora') {
-                    router.push(`/journey/basic-config?from=family&tier=${t.id}`);
-                    return;
-                  }
-                  setBudgetTier(t.id);
-                  setStep('🌟 Destination Decoded');
-                  document
-                    .getElementById('planner')
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
+                onClick={() => handleTierCTA(t.id, t.priceLabel)}
               >
                 {t.ctaLabel}
               </button>
@@ -396,13 +402,15 @@ export default function FamilyPlanner() {
             src={e.img}
             onClick={() => {
               setEscapeType(e.key);
-              const q = new URLSearchParams({
-                from: 'families',
-                budgetTier: budgetTier ?? '',
-                familyType: familyType ?? '',
-                escapeType: e.key,
-              }).toString();
-              router.push(`/journey/experience-level?${q}`);
+              gotoBasicConfig(router, {
+                fromOrType: 'family',
+                tierId: budgetTier!,
+                priceLabel: pendingPriceLabel!,
+                extra: {
+                  familyType: familyType!,
+                  escapeType: e.key,
+                },
+              });
             }}
           />
         ))}
@@ -419,6 +427,7 @@ export default function FamilyPlanner() {
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <section
       className="relative isolate"
+      id="planner"
       style={{
         backgroundImage: `url('${BG_IMG}')`,
         backgroundSize: 'cover',

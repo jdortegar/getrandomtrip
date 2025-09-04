@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import SoloAlmaDetails from '@/components/by-type/solo/SoloAlmaDetails';
+import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type Step = 'Intro' | 'Presupuesto' | '🌟 La Excusa' | 'Afinar detalles';
 
@@ -121,6 +122,7 @@ export default function SoloPlanner() {
 
   const [step, setStep] = useState<Step>('Intro');
   const [budgetTier, setBudgetTier] = useState<string | null>(null);
+  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(null);
   const [soloAlma, setSoloAlma] = useState<string | null>(null);
 
   useEffect(() => {
@@ -309,6 +311,23 @@ export default function SoloPlanner() {
     );
   }
 
+  // CTA handler: conditional logic
+  const handleTierCTA = (tierId: string, priceLabel: string) => {
+    const level = normalizeTierId(tierId);
+
+    // Low tiers go directly to basic-config
+    if (level === 'essenza' || level === 'modo-explora') {
+      gotoBasicConfig(router, { fromOrType: 'solo', tierId, priceLabel });
+      return;
+    }
+
+    // Higher tiers: save tier info and proceed to the next step
+    setBudgetTier(tierId);
+    setPendingPriceLabel(priceLabel);
+    setStep('🌟 La Excusa');
+    document.getElementById('planes')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <Wrapper>
       <div id="planes" className="h-0 scroll-mt-24" />
@@ -371,15 +390,7 @@ export default function SoloPlanner() {
                     type="button"
                     className="btn-card w-full mt-6"
                     aria-label={t.ctaLabel}
-                    onClick={() => {
-                      if (t.id === 'essenza' || t.id === 'modo-explora') {
-                        router.push(`/journey/basic-config?from=solo&budgetTier=${t.id}`);
-                        return;
-                      }
-                      setBudgetTier(t.id);
-                      document.getElementById('planes')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      setStep('🌟 La Excusa');
-                    }}
+                    onClick={() => handleTierCTA(t.id, t.priceLabel)}
                   >
                     {t.ctaLabel}
                   </button>
@@ -453,13 +464,15 @@ export default function SoloPlanner() {
             document.getElementById('planes')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
           onContinue={(selectedKeys) => {
-            const q = new URLSearchParams({
-              from: 'solo',
-              budgetTier: budgetTier ?? '',
-              coupleAlma: soloAlma ?? '',
-              almaOptions: selectedKeys.join(','),
-            }).toString();
-            window.location.href = `/journey/experience-level?${q}`;
+            gotoBasicConfig(router, {
+              fromOrType: 'solo',
+              tierId: budgetTier!,
+              priceLabel: pendingPriceLabel!,
+              extra: {
+                soloAlma: soloAlma!,
+                almaOptions: selectedKeys.join(','),
+              },
+            });
           }}
         />
       )}
