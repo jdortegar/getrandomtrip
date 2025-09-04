@@ -12,10 +12,4 @@ export default function SelectionsBar() {
       {label}
     </span>
   );
-
-  return (
-    <div className="mb-4 flex flex-wrap gap-2">
-      <Chip label={`Precio base: ${displayPrice}`} />
-    </div>
-  );
 }

@@ -32,7 +32,7 @@ export default function Page({ searchParams }: { searchParams: Record<string, st
             />
           </div>
 
-          <aside className="lg:sticky lg:top-[96px]">
+          <aside className="sticky top-[96px]"> {/* Removed lg: to make it sticky on all screen sizes */}
             <SummaryCard />
           </aside>
         </div>

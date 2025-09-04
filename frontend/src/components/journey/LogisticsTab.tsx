@@ -52,6 +52,7 @@ export default function LogisticsTab() {
             onClick={decPax}
             className="h-8 w-8 rounded-full border border-neutral-600 flex items-center justify-center"
             aria-label="Disminuir viajeros"
+            disabled={(logistics.pax ?? 1) <= 1}
           >
             −
           </button>
@@ -61,20 +62,18 @@ export default function LogisticsTab() {
             onClick={incPax}
             className="h-8 w-8 rounded-full border border-neutral-600 flex items-center justify-center"
             aria-label="Aumentar viajeros"
+            disabled={(logistics.pax ?? 1) >= 8}
           >
             +
           </button>
         </div>
-        <p className="mt-1 text-xs text-neutral-400">Precio por persona. Pueden editarlo en cualquier momento.</p>
+        <p className="mt-1 text-xs text-neutral-400">Precio por persona.</p>
       </div>
 
       {/* Calendario + Noches */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Duración de la aventura</h3>
         <NightsCalendar />
-        <p className="mt-2 text-xs text-neutral-400">
-          Seleccioná la fecha de salida. Las noches se calculan con el selector superior.
-        </p>
       </div>
 
       <StepperNav />

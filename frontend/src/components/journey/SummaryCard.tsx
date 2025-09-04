@@ -30,7 +30,7 @@ export default function SummaryCard(){
       <h4 className="font-semibold mb-3">Resumen del Viaje</h4>
       <div className="space-y-1 text-sm">
         <div className="flex justify-between">
-          <span>Precio base por persona</span>
+          <span>Precio base tope por persona</span>
           <span>{safeDisplay}</span>
         </div>
         <div className="flex justify-between">
