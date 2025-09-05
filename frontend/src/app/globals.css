@@ -73,6 +73,11 @@ body {
   filter: brightness(0) invert(1);
 }
 
+:root {
+  /* Fallback inicial del alto del header del sitio (ajusta si tu header real es otro) */
+  --rt-header-h: 64px;
+}
+
 /* Custom scrollbar for the Blog Section */
 .custom-scrollbar-container {
   position: relative;

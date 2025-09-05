@@ -70,7 +70,7 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
 
   return (
     <>
-      <header className={headerClass}>
+      <header data-site-header style={{ height: 'auto' }} className={headerClass}>
         <nav className="mx-auto h-16 max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Marca */}
           <Link
