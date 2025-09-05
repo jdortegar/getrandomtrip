@@ -62,10 +62,10 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
     () => {
       const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
       return isSolid
-        ? "fixed top-0 w-full z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200"
-        : "fixed top-0 w-full z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200";
+        ? "fixed top-0 inset-x-0 z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200"
+        : "fixed top-0 inset-x-0 z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200";
     },
-    [overlay]
+    [overlay, variant]
   );
 
   return (

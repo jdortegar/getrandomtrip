@@ -1,3 +1,5 @@
+import { formatUSD } from '@/lib/format';
+
 export type ExperienceLevelId = 'essenza' | 'explora' | 'explora-plus' | 'bivouac' | 'atelier';
 export type TravellerSegmentId = 'solo' | 'couples' | 'families' | 'groups' | 'honeymoons' | 'paws';
 
@@ -153,7 +155,7 @@ export function getExperienceLevelsForSegment(segmentId: TravellerSegmentId) {
   return levelsToProcess.map(level => {
     const adjustedPriceCap = Math.round(level.priceCap * markup);
     const pricePrefix = level.id === 'atelier' ? 'Desde' : 'Hasta';
-    const adjustedPriceRange = `${pricePrefix} ${adjustedPriceCap.toLocaleString('en-US')} USD`;
+    const adjustedPriceRange = `${pricePrefix} ${formatUSD(adjustedPriceCap)}`;
 
     return {
       ...level,

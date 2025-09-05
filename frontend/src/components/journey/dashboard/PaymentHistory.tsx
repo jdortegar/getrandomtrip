@@ -1,6 +1,8 @@
 'use client'
 
 import GlassCard from '@/components/ui/GlassCard'
+import { formatUSDWithCents } from '@/lib/format'
+import { formatDateISO } from '@/lib/datetime'
 import { PaymentItem } from './types'
 
 export default function PaymentHistory({ items }: { items: PaymentItem[] }) {
@@ -21,9 +23,9 @@ export default function PaymentHistory({ items }: { items: PaymentItem[] }) {
             <tbody>
               {items.map(p => (
                 <tr key={p.id} className="border-t border-neutral-200">
-                  <td className="py-2 pr-4">{new Date(p.dateISO).toLocaleDateString()}</td>
+                  <td className="py-2 pr-4">{formatDateISO(p.dateISO)}</td>
                   <td className="py-2 pr-4">{p.description}</td>
-                  <td className="py-2 pr-4 font-medium">USD {p.amountUsd.toFixed(2)}</td>
+                  <td className="py-2 pr-4 font-medium">{formatUSDWithCents(p.amountUsd)}</td>
                   <td className="py-2">
                     <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1
                       ${p.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
