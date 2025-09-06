@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import Img from '@/components/common/Img'; // Added import
 
 interface HeroProps {
   data: {
@@ -50,10 +51,12 @@ export default function Hero({ data, videoSrc, posterSrc, titleOverride, subtitl
             className="w-full h-full object-cover hidden motion-safe:block"
           />
           {posterSrc && (
-            <img
+            <Img
               src={posterSrc}
               alt=""
               className="w-full h-full object-cover block motion-reduce:block motion-safe:hidden"
+              width={1920} // Assuming a common hero image width
+              height={1080} // Assuming a common hero image height
             />
           )}
           <div className="absolute inset-0 bg-black/40" />

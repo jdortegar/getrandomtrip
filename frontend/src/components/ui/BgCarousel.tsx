@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Img from '@/components/common/Img'; // Added import
 
 type Props = {
   images?: string[];
@@ -30,13 +31,15 @@ export default function BgCarousel({
   return (
     <div className="pointer-events-none fixed inset-0 -z-10">
       {images.map((src, i) => (
-        <img
+        <Img
           key={src + i}
           src={src}
           alt=""
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ${
             i === idx ? 'opacity-100' : 'opacity-0'
           }`}
+          width={1920} // Assuming a common background image width
+          height={1080} // Assuming a common background image height
         />
       ))}
 

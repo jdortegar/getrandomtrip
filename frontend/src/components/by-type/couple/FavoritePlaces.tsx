@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import SectionHeading from "@/components/ui/SectionHeading"; // Import SectionHeading
+import Img from '@/components/common/Img'; // Added import
 
 const INSPIRATION_CARDS = [
   { title: "Valle de Uco", image: "/images/inspo/uco.jpg", href: "/blogs/couple#valle-de-uco" },
@@ -32,7 +33,7 @@ export default function FavoritePlaces() {
               className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5"
             >
               <div className="aspect-[4/3] w-full bg-black/20">
-                <img src={item.image} alt={item.title} className="h-full w-full object-cover opacity-90 transition group-hover:scale-105" />
+                <Img src={item.image} alt={item.title} className="h-full w-full object-cover opacity-90 transition group-hover:scale-105" width={400} height={300} />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />
               <div className="absolute inset-x-0 bottom-0 p-4">

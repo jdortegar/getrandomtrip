@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import Img from '@/components/common/Img'; // Added import
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import BlogCard from '@/components/BlogCard';
@@ -655,10 +656,12 @@ function HomeHeroBackground() {
   return (
     <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
       {reduceMotion || !videoOk ? (
-        <img
+        <Img
           src={POSTER}
           alt="Friends traveling together"
           className="w-full h-full object-cover"
+          width={1200} // Assuming a reasonable default width
+          height={675} // Assuming a reasonable default height
         />
       ) : (
         <video

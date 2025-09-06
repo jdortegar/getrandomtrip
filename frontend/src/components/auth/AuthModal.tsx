@@ -88,11 +88,6 @@ export default function AuthModal() {
   if (!open) return null;
 
   // 7) Handlers
-  const doSignIn = () => {
-    // demo sign-in -> deja usuario “logueado”
-    signInDemo?.();
-    setStep(1);
-  };
 
   const toggleIn = (v: string) =>
     setInterests((curr) => (curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v]));
@@ -149,29 +144,16 @@ export default function AuthModal() {
                   </p>
                   <div className="grid gap-2">
                     <button
-                      onClick={doSignIn}
+                      onClick={() => signInDemo('client')}
                       className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
                     >
-                      Continuar con Google (demo)
+                      Continuar con email (demo) - User
                     </button>
                     <button
-                      onClick={doSignIn}
+                      onClick={() => signInDemo('tripper')}
                       className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
                     >
-                      Continuar con Apple (demo)
-                    </button>
-                    <button
-                      onClick={doSignIn}
-                      className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-                    >
-                      Continuar con Facebook (demo)
-                    </button>
-                    <div className="h-px bg-neutral-200 my-2" />
-                    <button
-                      onClick={doSignIn}
-                      className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
-                    >
-                      Continuar con email (demo)
+                      Continuar con email (demo) - Tripper
                     </button>
                   </div>
                 </div>
@@ -306,7 +288,7 @@ export default function AuthModal() {
               {step === 0 && (
                 <div className="flex gap-2">
                   <button
-                    onClick={doSignIn}
+                    onClick={() => signInDemo('client')}
                     className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
                   >
                     Continuar

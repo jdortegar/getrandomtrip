@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Img from '@/components/common/Img'; // Added import
 import { useRouter } from 'next/navigation';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
@@ -138,7 +139,7 @@ function CardFlip({
       <div className="relative h-64 w-full rounded-2xl shadow-lg transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
         {/* FRONT */}
         <div className="absolute inset-0 overflow-hidden rounded-2xl [backface-visibility:hidden]">
-          <img src={item.img} alt={item.title} className="h-full w-full object-cover" />
+          <Img src={item.img} alt={item.title} className="h-full w-full object-cover" width={400} height={256} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <h4 className="text-white font-semibold drop-shadow">{item.title}</h4>

@@ -2,6 +2,7 @@
 
 import Image, { ImageProps } from 'next/image';
 import { useMemo, useState } from 'react';
+import Img from '@/components/common/Img'; // Added import
 
 type Props = {
   src?: string | null;
@@ -108,15 +109,14 @@ export default function SafeImage({
   }
 
   return (
-    <img
+    <Img
       src={current!}
       alt={alt}
       className={className}
       width={width}
       height={height}
       onError={handleError}
-      loading="lazy"
-      decoding="async"
+      unoptimized={true} // Since this is a fallback, we don't want Next.js optimization
       style={fill ? { width: '100%', height: '100%', objectFit: 'cover' } : undefined}
     />
   );

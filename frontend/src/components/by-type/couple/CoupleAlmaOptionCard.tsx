@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Img from '@/components/common/Img'; // Added import
 
 export default function CoupleAlmaOptionCard({
   opKey,
@@ -38,15 +39,15 @@ export default function CoupleAlmaOptionCard({
         selected ? 'ring-2 ring-white/80' : 'ring-0',
       ].join(' ')}
     >
-      <img
+      <Img
         src={
           img ||
           'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80'
         }
         alt={label}
         className="absolute inset-0 h-full w-full object-cover"
-        loading="lazy"
-        decoding="async"
+        width={1200} // Assuming a reasonable default width
+        height={1500} // Assuming a reasonable default height (aspect-[4/5])
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
       {/* Marco en esquinas */}

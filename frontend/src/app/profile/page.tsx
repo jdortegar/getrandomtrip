@@ -7,6 +7,7 @@ import SectionCard from '@/components/user/SectionCard';
 import StatCard from '@/components/user/StatCard';
 import { formatUSD } from '@/lib/format';
 import { ShieldCheck, Edit3, Link as LinkIcon, MapPin } from 'lucide-react';
+import { useUserStore } from '@/store/userStore';
 
 const mockUser = {
   name: 'Santiago Senega',
@@ -20,24 +21,61 @@ const mockUser = {
 };
 
 export default function ProfilePage() {
+  const { user, isAuthed } = useUserStore();
+
+  // Normalización (si no hay user, usa el mock existente)
+  const data = user ? {
+    name: user.name,
+    handle: user.handle ?? 'usuario',
+    country: user.prefs?.country ?? '—',
+    avatar: user.avatar ?? 'https://placehold.co/128x128',
+    verified: !!user.prefs?.verified,
+    bio: user.prefs?.bio ?? '',
+    metrics: {
+      bookings: user.metrics?.bookings ?? 0,
+      spendUSD: user.metrics?.spendUSD ?? 0,
+      reviews: user.metrics?.reviews ?? 0,
+      favs: user.metrics?.favs ?? 0,
+    },
+    socials: user.socials ?? {},
+    publicProfile: !!user.prefs?.publicProfile,
+  } : {
+    ...mockUser,
+    publicProfile: true,
+  };
   return (
     <PageContainer>
+      {isAuthed && (
+        <div className="mb-4 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 px-4 py-2 text-sm">
+          Estás viendo la <strong>vista pública</strong> de tu perfil. {data.publicProfile ? 'Actualmente es público.' : 'Actualmente es privado.'} <Link href="/profile/edit" className="underline ml-2">Editar visibilidad</Link>
+          {data.publicProfile && data.handle && (
+            <Link href={`/u/${data.handle}`} className="underline ml-2">Ver perfil público</Link>
+          )}
+        </div>
+      )}
+
+      {!isAuthed && data.publicProfile === false && (
+        <SectionCard>
+          <p className="text-sm text-neutral-700">Este perfil es privado.</p>
+        </SectionCard>
+      )}
+
       {/* Header */}
       <SectionCard>
         <div className="flex items-start gap-4">
-          <Image src={mockUser.avatar} alt="" width={96} height={96} className="rounded-full border border-neutral-200" />
+          <Image src={data.avatar} alt="" width={96} height={96} className="rounded-full border border-neutral-200" />
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold">{mockUser.name}</h1>
-              {mockUser.verified && <span className="rt-badge rt-badge--ok"><ShieldCheck size={14}/> Verificado</span>}
+              <h1 className="text-2xl font-semibold">{data.name}</h1>
+              {data.verified && <span className="rt-badge rt-badge--ok"><ShieldCheck size={14}/> Verificado</span>}
             </div>
-            <div className="rt-subtle mt-1">@{mockUser.handle} · <MapPin className="inline -mt-1" size={14}/> {mockUser.country}</div>
-            <p className="text-neutral-800 mt-3">{mockUser.bio}</p>
+            <div className="rt-subtle mt-1">@{data.handle} · <MapPin className="inline -mt-1" size={14}/> {data.country}</div>
+            <p className="text-neutral-800 mt-3">{data.bio}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link href="/profile/edit" className="rt-btn rt-btn--ghost"><Edit3 size={16}/> Editar perfil</Link>
-              <Link href={`https://instagram.com/${mockUser.socials.ig}`} target="_blank" className="rt-btn rt-btn--ghost"><LinkIcon size={16}/> Instagram</Link>
-              <Link href={`https://youtube.com/${mockUser.socials.yt}`} target="_blank" className="rt-btn rt-btn--ghost"><LinkIcon size={16}/> YouTube</Link>
-              <Link href={`https://${mockUser.socials.web}`} target="_blank" className="rt-btn rt-btn--ghost"><LinkIcon size={16}/> Web</Link>
+              <Link href={`https://instagram.com/${data.socials.ig}`} target="_blank" className="rt-btn rt-btn--ghost"><LinkIcon size={16}/> Instagram</Link>
+              <Link href={`https://youtube.com/${data.socials.yt}`} target="_blank" className="rt-btn rt-btn--ghost"><LinkIcon size={16}/> YouTube</Link>
+              <Link href={`https://${data.socials.web}`} target="_blank" className="rt-btn rt-btn--ghost"><LinkIcon size={16}/> Web</Link>
             </div>
           </div>
         </div>
@@ -45,10 +83,10 @@ export default function ProfilePage() {
 
       {/* Stats */}
       <section className="rt-stats my-6">
-        <StatCard label="Reservas (12m)" value={mockUser.metrics.bookings} />
-        <StatCard label="Gasto total" value={formatUSD(mockUser.metrics.spendUSD)} />
-        <StatCard label="Reseñas" value={mockUser.metrics.reviews} />
-        <StatCard label="Favoritos" value={mockUser.metrics.favs} />
+        <StatCard label="Reservas (12m)" value={data.metrics.bookings} />
+        <StatCard label="Gasto total" value={formatUSD(data.metrics.spendUSD)} />
+        <StatCard label="Reseñas" value={data.metrics.reviews} />
+        <StatCard label="Favoritos" value={data.metrics.favs} />
       </section>
 
       {/* Preferencias & Historial */}

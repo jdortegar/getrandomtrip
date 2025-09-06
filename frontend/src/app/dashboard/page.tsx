@@ -7,6 +7,7 @@ import SectionCard from '@/components/user/SectionCard';
 import StatCard from '@/components/user/StatCard';
 import { formatUSD } from '@/lib/format';
 import { CalendarClock, MessageSquareText, Compass } from 'lucide-react';
+import { useUserStore } from '@/store/userStore'; // Added import
 
 const mock = {
   bookingsMonth: 3,
@@ -25,6 +26,7 @@ const mock = {
 };
 
 export default function ClientDashboardPage() {
+  const { user } = useUserStore(); // Added line
   const kpis = useMemo(() => ([
     { label: 'Reservas (mes)', value: mock.bookingsMonth },
     { label: 'Gasto estimado', value: formatUSD(mock.spendMonthUSD) },
@@ -34,7 +36,14 @@ export default function ClientDashboardPage() {
 
   return (
     <PageContainer>
-      <h1 className="rt-h1 mb-4">Tu Panel</h1>
+      <h1 className="rt-h1 mb-4">Bitácoras de Viajes</h1>
+
+      {user?.role === 'tripper' && (
+        <div className="mb-3 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 px-4 py-2 text-sm">
+          Tienes acceso al <strong>Tripper OS</strong>. ¿Prefieres gestionarlo ahí?
+          <Link href="/tripper" className="underline ml-2">Ir a Tripper</Link>
+        </div>
+      )}
 
       {/* KPIs */}
       <section className="rt-stats mb-6">

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import PrimaryButton from './PrimaryButton';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import Img from '@/components/common/Img'; // Added import
 
 interface Event {
   id: string;
@@ -60,10 +61,12 @@ const EventFinder: React.FC = () => {
       {/* Fondo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-black/50" />
-        <img
+        <Img
           src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"
           alt="Concierto"
           className="w-full h-full object-cover"
+          width={1920} // Assuming a common background image width
+          height={1080} // Assuming a common background image height
         />
       </div>
 
@@ -74,10 +77,13 @@ const EventFinder: React.FC = () => {
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
           Descubre tu próxima experiencia con
-          <img
+          <Img
             src="/images/ticketmaster-logo.svg"
             alt="Ticketmaster"
             className="h-12 ml-4 mt-4 md:mt-0 inline-block"
+            width={100} // Approximate width based on h-12
+            height={48} // h-12 is 48px
+            unoptimized={true} // It's an SVG logo
           />
         </h2>
 
@@ -139,10 +145,12 @@ const EventFinder: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-colors backdrop-blur-sm"
               >
-                <img
+                <Img
                   src={event.image}
                   alt={event.name}
                   className="w-40 h-24 object-cover"
+                  width={160} // w-40 is 160px
+                  height={96} // h-24 is 96px
                 />
                 <div className="p-4">
                   <h3 className="font-bold">{event.name}</h3>

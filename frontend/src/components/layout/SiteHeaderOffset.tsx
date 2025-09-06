@@ -3,16 +3,14 @@ import { useEffect } from 'react';
 
 export default function SiteHeaderOffset() {
   useEffect(() => {
-    const el = document.querySelector<HTMLElement>('[data-site-header]');
-    const h = el?.offsetHeight ?? 64;
-    document.documentElement.style.setProperty('--rt-header-h', `${h}px`);
-
-    const onResize = () => {
-      const nh = el?.offsetHeight ?? 64;
-      document.documentElement.style.setProperty('--rt-header-h', `${nh}px`);
+    const header = document.querySelector<HTMLElement>('[data-site-header]');
+    const set = () => {
+      const h = header?.offsetHeight ?? 64;
+      document.documentElement.style.setProperty('--rt-header-h', `${h}px`);
     };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    set();
+    window.addEventListener('resize', set);
+    return () => window.removeEventListener('resize', set);
   }, []);
   return null;
 }

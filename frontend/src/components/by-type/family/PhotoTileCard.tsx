@@ -1,4 +1,5 @@
 'use client';
+import Img from '@/components/common/Img'; // Added import
 
 export default function PhotoTileCard({
   title, src, onClick,
@@ -8,7 +9,7 @@ export default function PhotoTileCard({
       onClick={onClick}
       className="relative group w-full h-48 md:h-56 overflow-hidden rounded-2xl text-left focus:outline-none focus:ring-2 focus:ring-neutral-900"
     >
-      <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <Img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" width={768} height={224} />
       <div className="absolute inset-0 bg-black/35 group-hover:bg-black/45 transition-colors" />
       <div className="relative z-10 p-4">
         <h4 className="text-white font-semibold drop-shadow">{title}</h4>

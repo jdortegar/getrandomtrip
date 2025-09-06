@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import Img from '@/components/common/Img'; // Added import
 import { SOLO_ALMA_OPTIONS } from './soloAlmaOptions';
 import SoloAlmaOptionCard from './SoloAlmaOptionCard';
 
@@ -46,12 +47,12 @@ export default function SoloAlmaDetails({
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
       {/* HERO superior (igual concepto que en couple) */}
       <div className="rounded-3xl overflow-hidden relative h-56 md:h-64">
-        <img
+        <Img
           src={spec.heroImg || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80'}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-          decoding="async"
+          width={1600} // Assuming a reasonable default width
+          height={224} // Assuming a reasonable default height (h-56)
         />
         <div className={`absolute inset-0 ${spec.tint || 'bg-neutral-900/30'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
