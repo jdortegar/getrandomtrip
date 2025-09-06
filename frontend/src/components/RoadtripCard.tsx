@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Img from '@/components/common/Img'; // Added import
 
 interface RoadtripCardProps {
   title: string;
@@ -37,12 +38,12 @@ const CardInner: React.FC<{
     }
     aria-label={`Abrir ${title}`}
   >
-    <img
+    <Img
       src={bgImage}
       alt={title}
       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-      loading="lazy"
-      decoding="async"
+      width={1200} // Assuming a reasonable default width
+      height={960} // Assuming a reasonable default height (h-96)
     />
     <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-gradient-to-t from-black/80 to-transparent text-center">
       {icon ? <div className="text-5xl mb-2">{icon}</div> : null}

@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Img from '@/components/common/Img'; // Added import
 
 export default function TripperBlog({
   sectionId = 'tripper-blog',
@@ -24,7 +25,7 @@ export default function TripperBlog({
             {items.map((p: { title: string; image: string; category: string }) => (
               <div key={p.title} className="w-80 flex-shrink-0 transition hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="h-48 rounded-lg overflow-hidden">
-                  <img src={p.image} alt={p.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                  <Img src={p.image} alt={p.title} className="w-full h-full object-cover" width={320} height={192} />
                 </div>
                 <p className="mt-3 text-sm text-gray-400 uppercase">{p.category}</p>
                 <h3 className="text-xl font-bold">{p.title}</h3>

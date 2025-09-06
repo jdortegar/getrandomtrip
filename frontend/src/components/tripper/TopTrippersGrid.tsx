@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import TripperCard from "@/components/TripperCard";
 import { TRIPPERS } from "@/content/trippers";
+import Img from '@/components/common/Img'; // Added import
 
 export default function TopTrippersGrid() {
   const router = useRouter();
@@ -116,10 +117,12 @@ export default function TopTrippersGrid() {
 
           {tripperSearchState === "found" && foundTripper && (
             <div className="flex flex-col items-center text-center">
-              <img
+              <Img
                 src={foundTripper.img}
                 alt={foundTripper.name}
                 className="w-24 h-24 rounded-full border-4 border-[#D4AF37]"
+                width={96} // w-24 is 96px
+                height={96} // h-24 is 96px
               />
               <h3 className="mt-2 font-semibold text-gray-900">{foundTripper.name}</h3>
               <p className="text-xs text-[#D4AF37]">¡Tripper encontrado!</p>

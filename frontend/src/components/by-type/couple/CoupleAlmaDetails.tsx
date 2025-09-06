@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Img from '@/components/common/Img'; // Added import
 import CoupleAlmaOptionCard from './CoupleAlmaOptionCard';
 import { COUPLE_ALMA_OPTIONS } from './coupleAlmaOptions';
 
@@ -73,15 +74,15 @@ export default function CoupleAlmaDetails({
     >
       {/* HERO */}
       <div className="relative overflow-hidden rounded-3xl">
-        <img
+        <Img
           src={
             spec.heroImg ||
             'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80'
           }
           alt={spec.title}
           className="h-64 w-full object-cover md:h-80"
-          loading="lazy"
-          decoding="async"
+          width={1600} // Assuming a reasonable default width
+          height={320} // Assuming a reasonable default height (h-64)
         />
         <div className={`absolute inset-0 ${spec.tint || 'bg-black/30'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />

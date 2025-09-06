@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import clsx from "clsx";
+import Img from '@/components/common/Img'; // Added import
 
 type Traveller = {
   key: "couple" | "solo" | "family" | "group" | "honeymoon" | "paws";
@@ -50,14 +51,13 @@ export default function ByTravellerRow() {
                     srcSet={`/images/journey-types/${t.base}.webp`}
                     type="image/webp"
                   />
-                  <img
+                  <Img
                     src={`/images/journey-types/${t.base}.jpg`}
                     alt={t.alt}
-                    loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = FALLBACK;
-                    }}
+                    width={300} // lg:w-[300px]
+                    height={420} // lg:h-[420px]
+                    sizes="(min-width: 1024px) 300px, 260px" // Based on w-[260px] lg:w-[300px]
                   />
                 </picture>
 

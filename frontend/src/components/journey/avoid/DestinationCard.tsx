@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Img from '@/components/common/Img'; // Added import
 import { useJourneyStore } from '@/store/journeyStore';
 import type { AvoidSuggestion } from '@/data/avoid-suggestions';
 import { Check } from 'lucide-react';
@@ -47,14 +48,12 @@ export default function DestinationCard({ suggestion }: { suggestion: AvoidSugge
 
       {/* Imagen si existe */}
       {suggestion.image ? (
-        <img
+        <Img
           src={suggestion.image}
           alt={suggestion.name}
           className="absolute inset-0 h-full w-full object-cover"
-          onError={(e) => {
-            // si falla, ocultamos la imagen y se ve el fallback de atrás
-            (e.currentTarget as HTMLImageElement).style.display = 'none';
-          }}
+          width={400} // Assuming a reasonable default width for aspect-[4/5]
+          height={500} // Assuming a reasonable default height for aspect-[4/5]
         />
       ) : null}
 

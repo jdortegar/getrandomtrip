@@ -4,6 +4,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Img from '@/components/common/Img'; // Added import
 
 // =====================================
 // Types
@@ -126,10 +127,12 @@ export default function PawsPetConfiguratorTab({ levelId, onBackToLevels, onNext
     <section className="relative overflow-hidden">
       {/* Cinematic background + DARKER overlay for contrast */}
       <div className="absolute inset-0 -z-10">
-        <img
+        <Img
           src="/images/bg/paws-cinematic.jpg"
           alt="Cinematic background"
           className="h-full w-full object-cover"
+          width={1920} // Assuming a common cinematic background width
+          height={1080} // Assuming a common cinematic background height
         />
         <div className="absolute inset-0 bg-black/45" />
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" />

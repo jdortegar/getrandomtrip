@@ -1,6 +1,8 @@
 import "./globals.css";
+import "@/styles/rt.css";
 import { Inter, Fraunces } from "next/font/google";
 import HeaderGate from "@/components/layout/HeaderGate";
+import SiteHeaderOffset from "@/components/layout/SiteHeaderOffset";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const fraunces = Fraunces({
@@ -23,7 +25,12 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="font-sans antialiased text-neutral-900">
+      <head>
+        <meta name="color-scheme" content="light" />
+        <meta name="theme-color" content="#fafafa" />
+      </head>
+      <body className="font-sans bg-neutral-50 text-neutral-900 antialiased">
+        <SiteHeaderOffset />
         <HeaderGate />
         {children}
       </body>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PremiumPackage } from '@/lib/premiumPackages';
 import Link from 'next/link';
+import { formatUSD } from '@/lib/format';
 
 interface PremiumCardProps {
   pkg: PremiumPackage;
@@ -18,7 +19,7 @@ const PremiumCard: React.FC<PremiumCardProps> = ({ pkg, isSolo, href }) => {
         <p className="text-gray-600 text-sm mb-4">{pkg.tagline}</p>
         <div className="mb-4">
           <p className="text-xl font-semibold text-indigo-600">
-            ${adjustedBudget.toLocaleString('en-US')} USD
+            {formatUSD(adjustedBudget)}
           </p>
           {isSolo && (
             <p className="text-xs text-gray-500 mt-1">Precios ajustados por cantidad de pasajero.</p>

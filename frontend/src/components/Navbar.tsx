@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import Img from '@/components/common/Img'; // Added import
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUserStore } from '@/store/userStore';
 import AuthModal from '@/components/auth/AuthModal';
@@ -32,7 +33,7 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [variant]); // Added variant to dependency array
 
   // Cerrar dropdown con click afuera / Escape (for both menus)
   useEffect(() => {
@@ -62,11 +63,13 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
     () => {
       const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
       return isSolid
-        ? "fixed top-0 w-full z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200"
-        : "fixed top-0 w-full z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200";
+        ? "fixed top-0 inset-x-0 z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200"
+        : "fixed top-0 inset-x-0 z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200";
     },
-    [overlay]
+    [overlay, variant]
   );
+
+  const avatarSrc = user?.avatar ?? 'https://placehold.co/64x64'; // Added line
 
   return (
     <>
@@ -183,10 +186,13 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
               aria-label="WhatsApp"
               className="p-1 rounded-full hover:bg-white/10"
             >
-              <img
+              <Img
                 src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
                 alt="WhatsApp"
                 className="h-7 w-7"
+                width={28} // h-7 is 28px
+                height={28} // w-7 is 28px
+                unoptimized={true} // It's an SVG logo
               />
             </a>
 
@@ -199,13 +205,13 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
                   onClick={() => setProfileMenuOpen((v) => !v)}
                   className="p-1 rounded-full hover:bg-white/10 flex items-center justify-center"
                 >
-                  {user?.avatarUrl ? (
+                  {user?.avatar ? (
                     <Image
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      width={24}
-                      height={24}
-                      className="rounded-full"
+                      src={avatarSrc}
+                      alt={user?.name ?? 'avatar'}
+                      width={32}
+                      height={32}
+                      className="h-8 w-8 rounded-full border border-neutral-200"
                     />
                   ) : (
                     <div className="h-6 w-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-semibold">
@@ -222,19 +228,37 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
                   >
                     <Link
                       role="menuitem"
+                      href="/profile"
+                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                      onClick={() => setProfileMenuOpen(false)}
+                    >
+                      Mi perfil público
+                    </Link>
+                    <Link
+                      role="menuitem"
+                      href="/profile/edit"
+                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                      onClick={() => setProfileMenuOpen(false)}
+                    >
+                      Editar perfil
+                    </Link>
+                    {user?.role === 'tripper' && (
+                      <Link
+                        role="menuitem"
+                        href="/tripper"
+                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                        onClick={() => setProfileMenuOpen(false)}
+                      >
+                        Tripper OS
+                      </Link>
+                    )}
+                    <Link
+                      role="menuitem"
                       href="/dashboard"
                       className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
                       onClick={() => setProfileMenuOpen(false)}
                     >
-                      Mis viajes
-                    </Link>
-                    <Link
-                      role="menuitem"
-                      href="/login"
-                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-                      onClick={() => setProfileMenuOpen(false)}
-                    >
-                      Mi perfil
+                      Bitácoras de Viajes
                     </Link>
                     <div className="my-1 h-px bg-neutral-200" />
                     <button

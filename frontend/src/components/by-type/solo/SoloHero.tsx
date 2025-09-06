@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Img from '@/components/common/Img'; // Added import
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -34,10 +35,12 @@ export default function SoloHero() {
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img
+          <Img
             src="/images/journey-types/solo-traveler.jpg"
             alt=""
             className="w-full h-full object-cover"
+            width={1920} // Assuming a common hero image width
+            height={1080} // Assuming a common hero image height
           />
         )}
         <div className="absolute inset-0 bg-black/40" />

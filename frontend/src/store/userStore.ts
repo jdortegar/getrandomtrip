@@ -1,32 +1,60 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type UserPrefs = {
-  travelerType?: 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa'
-  interests: string[] // p.ej. ['playa','montaña','gastronomía','vida-nocturna','cultura','naturaleza']
-  dislikes: string[] // p.ej. ['frío','multitudes']
-  budget?: 'low' | 'mid' | 'high'
+export type TravelerType = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa';
+export type BudgetLevel = 'low' | 'mid' | 'high';
+
+export interface UserPrefs {
+  travelerType?: TravelerType;
+  interests: string[];
+  dislikes: string[];
+  budget?: BudgetLevel;
+  // nuevos opcionales
+  country?: string;
+  verified?: boolean;
+  bio?: string;
+  publicProfile?: boolean;
 }
 
-type User = {
-  id: string
-  name: string
-  email: string
-  avatarUrl?: string | null
-  createdAt: string
-  prefs: UserPrefs
+export interface UserSocials {
+  ig?: string;
+  yt?: string;
+  web?: string;
 }
 
-interface UserStore {
-  isAuthed: boolean
-  user: User | null
-  authModalOpen: boolean
-  authModalStep: 'signin' | 'onboarding' | 'review'
-  openAuth: (initialStep?: 'signin' | 'onboarding') => void
-  closeAuth: () => void
-  signInDemo: (email?: string) => void
-  signOut: () => void
-  upsertPrefs: (patch: Partial<UserPrefs>) => void
+export interface UserMetrics {
+  bookings?: number;
+  spendUSD?: number;
+  reviews?: number;
+  favs?: number;
+}
+
+export type UserRole = 'client' | 'tripper' | 'admin';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role?: UserRole;        // <-- agregado
+  handle?: string;        // <-- agregado
+  avatar?: string;        // <-- agregado
+  prefs: UserPrefs;
+  socials?: UserSocials;  // <-- agregado
+  metrics?: UserMetrics;  // <-- agregado
+}
+
+// En la interfaz del store, agrega estas firmas:
+export interface UserStore {
+  isAuthed: boolean;
+  user: User | null;
+  authModalOpen: boolean;
+  authModalStep: 'signin' | 'onboarding' | 'review';
+  openAuth: (initialStep?: 'signin' | 'onboarding') => void;
+  closeAuth: () => void;
+  signInDemo: (role: UserRole, email?: string) => void;
+  signOut: () => void;
+  updateAccount?: (name?: string, email?: string) => void; // <-- NUEVO
+  upsertPrefs: (partial: Partial<UserPrefs>) => void;      // asegúrate de que existe
 }
 
 export const useUserStore = create<UserStore>()(
@@ -40,12 +68,12 @@ export const useUserStore = create<UserStore>()(
       openAuth: (initialStep = 'signin') => set({ authModalOpen: true, authModalStep: initialStep }),
       closeAuth: () => set({ authModalOpen: false }),
 
-      signInDemo: (email?: string) => {
+      signInDemo: (role: UserRole, email?: string) => {
         const newUser: User = {
           id: 'demo-user',
           name: 'Randomtripper',
           email: email || 'demo@randomtrip.com',
-          createdAt: new Date().toISOString(),
+          role: role, // Assign the role
           prefs: {
             interests: [],
             dislikes: [],
@@ -56,19 +84,26 @@ export const useUserStore = create<UserStore>()(
 
       signOut: () => set({ isAuthed: false, user: null }),
 
-      upsertPrefs: (patch: Partial<UserPrefs>) => {
-        set(state => ({
-          user: state.user
-            ? {
-                ...state.user,
-                prefs: {
-                  ...state.user.prefs,
-                  ...patch,
-                },
-              }
-            : state.user,
-        }))
-      },
+      updateAccount: (name?: string, email?: string) => set((s) => {
+        if (!s.user) return {};
+        return {
+          user: {
+            ...s.user,
+            name: name ?? s.user.name,
+            email: email ?? s.user.email,
+          }
+        };
+      }),
+
+      upsertPrefs: (partial) => set((s) => {
+        if (!s.user) return {};
+        return {
+          user: {
+            ...s.user,
+            prefs: { ...s.user.prefs, ...partial },
+          }
+        };
+      }),
     }),
     {
       name: 'rt-user',

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, type CSSProperties } from 'react';
+import Img from '@/components/common/Img'; // Added import
 import { useRouter } from 'next/navigation';
 import AlmaDetails from '@/components/by-type/group/AlmaDetails';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
@@ -296,7 +297,7 @@ export default function GroupPlanner() {
           className="h-full w-full"
         >
           <div className="absolute inset-0" style={faceStyle}>
-            <img src={item.img} alt={item.title} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+            <Img src={item.img} alt={item.title} className="h-full w-full object-cover" width={420} height={420} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
             <div className="absolute inset-x-0 bottom-0 p-4">
               <h3 className="text-lg font-semibold">{item.title}</h3>
@@ -304,7 +305,7 @@ export default function GroupPlanner() {
           </div>
 
           <div className="absolute inset-0" style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>
-            <img src={item.img} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+            <Img src={item.img} alt="" className="h-full w-full object-cover" width={420} height={420} />
             <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-between">
               <p className="text-sm leading-relaxed">{supportCopy[item.key]}</p>
               <button
