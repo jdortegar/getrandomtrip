@@ -1,106 +1,87 @@
-# Deployment and Rollback Runbook
+# Deployment & Rollback Runbook (Actualizado)
 
-This document outlines the procedures for deploying the Randomtrip web application to staging and production environments, managing environment variables, setting up monitoring, and performing emergency rollbacks.
+Este runbook estandariza **entornos, branching, CI/CD, variables de entorno, monitoreo y rollback** para Randomtrip.
 
-## Table of Contents
-1.  [Deployment Process](#1-deployment-process)
-    *   [Staging Environment](#11-staging-environment)
-    *   [Production Environment](#11-production-environment)
-2.  [Environment Variables](#2-environment-variables)
-3.  [Monitoring Setup](#3-monitoring-setup)
-4.  [Emergency Rollback Procedures](#4-emergency-rollback-procedures)
+## 1) Entornos y branching
 
----
+| Entorno | Rama | URL | Propósito |
+|---|---|---|---|
+| **Local** | feature/* | `http://localhost:3001` | Desarrollo local, hot‑reload |
+| **Preview** | PR a `develop` | Vercel Preview | QA rápido por PR |
+| **Staging** | `develop` | staging.<dominio> | Ensayos integrales previos a prod |
+| **Production** | `main` | https://getrandomtrip.netlify.app/ o prod vercel | Público final |
 
-## 1. Deployment Process
+**Reglas**  
+- Feature → PR a `develop` (Preview).  
+- `develop` → staging estable.  
+- `main` = release; **solo** desde `develop` con squash/merge y etiqueta de versión.
 
-### 1.1 Staging Environment
+## 2) CI/CD (GitHub Actions + Vercel)
 
-The staging environment is used for testing new features and changes before they are deployed to production.
+**Jobs clave**  
+- **lint+typecheck** en PR.  
+- **build** (Next.js) + pruebas de humo.  
+- **deploy preview** al abrir/actualizar PR.  
+- **deploy staging** al merge a `develop`.  
+- **deploy prod** al merge a `main` + **release notes** automáticas.
 
-**Platform:** Vercel (or similar CI/CD platform configured for staging deployments)
+## 3) Variables de entorno
 
-**Steps:**
-1.  Ensure all changes are merged into the `develop` branch.
-2.  A pull request from `feature` branch to `develop` branch will trigger an automatic deployment to the staging environment via Vercel's Git integration.
-3.  Verify the deployment status in the Vercel dashboard.
-4.  Perform thorough testing on the staging environment.
+> Definir por entorno en Vercel/Netlify; nunca commitear secretos.
 
-### 1.2 Production Environment
+- `NEXT_PUBLIC_BACKEND_API_URL`  
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`  
+- `MERCADOPAGO_ACCESS_TOKEN`  
+- `DATABASE_URL`  
+- `FRONTEND_URL`  
+- `BACKEND_URL`
 
-The production environment hosts the live application accessible to users.
+Mantener claves separadas para **Preview/Staging/Prod**. Rotación semestral o ante incidencia.
 
-**Platform:** Vercel (or similar CI/CD platform configured for production deployments)
+## 4) Observabilidad
 
-**Steps:**
-1.  Ensure all changes have been thoroughly tested and approved in the staging environment.
-2.  Merge the `develop` branch into the `main` branch.
-3.  A push to the `main` branch will trigger an automatic production deployment via Vercel's Git integration.
-4.  Monitor the deployment status in the Vercel dashboard.
-5.  Perform a quick smoke test on the live production environment to ensure basic functionality.
+**Herramientas**  
+- Vercel Analytics/Logs (básico).  
+- **Sentry**: errores front/back + performance.  
+- **UptimeRobot** (o similar) para health‑checks públicos.
 
----
+**Métricas**  
+- Uptime y latencia.  
+- Error rate (cliente/servidor).  
+- LCP/CLS/TTFB en páginas críticas.  
+- Éxito de pago y webhooks.
 
-## 2. Environment Variables
+## 5) Checklist de release
 
-Environment variables are crucial for configuring the application for different environments (development, staging, production).
+1) PRs aprobadas y **green** en CI.  
+2) CHANGELOG/Release notes listos.  
+3) Migraciones (si las hay) revisadas en staging.  
+4) Flags/entitlements correctos.  
+5) Plan de rollback listo.  
+6) Smoke test post‑deploy (home, login redirect, /dashboard, /tripper con guard, /u/[handle], checkout sandbox).
 
-**Required Environment Variables:**
+## 6) Rollback (emergencia)
 
-*   `NEXT_PUBLIC_BACKEND_API_URL`: The URL of the backend API.
-*   `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: Google Maps API Key for frontend services.
-*   `MERCADOPAGO_ACCESS_TOKEN`: Mercado Pago access token for payment processing (backend).
-*   `DATABASE_URL`: Database connection string (backend).
-*   `FRONTEND_URL`: The URL of the frontend application (backend).
-*   `BACKEND_URL`: The URL of the backend application (backend).
+1. **Detectar**: alertas Sentry/Uptime y reportes.  
+2. **Elegir build estable** en Vercel/Netlify y **Redeploy/Rollback**.  
+3. **Verificar** con smoke test.  
+4. **Comunicar** en Slack/issue.  
+5. **Post‑mortem**: causa raíz, acción preventiva y plan de re‑release.
 
-**Management in Vercel:**
-1.  Go to your project settings in Vercel.
-2.  Navigate to "Environment Variables".
-3.  Add each variable, specifying whether it applies to "Development", "Preview" (Staging), or "Production" environments.
-4.  Ensure sensitive keys are not exposed in public repositories.
+## 7) Rendimiento, A11y y seguridad (gates)
 
----
+- **Performance budgets**: LCP < 2.5s; bundle compartido < 95 kB inicial; imágenes optimizadas.  
+- **A11y**: contraste AA, foco visible, labels/alt, traps evitados.  
+- **Seguridad**: redirects server‑safe, sanitización de inputs, política de imágenes remotas, protección de rutas por rol.
 
-## 3. Monitoring Setup
+## 8) Troubleshooting rápido
 
-Effective monitoring is essential for identifying and resolving issues quickly.
-
-**Recommended Tools:**
-
-*   **Vercel Analytics/Logs:** Built-in Vercel features provide basic analytics and access to deployment logs.
-*   **Sentry (or similar error tracking):** For real-time error reporting and performance monitoring.
-    *   Integrate Sentry SDKs into both frontend and backend applications.
-    *   Configure appropriate DSNs for each environment.
-*   **UptimeRobot (or similar uptime monitoring):** To monitor the availability of the application endpoints.
-    *   Set up alerts for downtime.
-
-**Key Metrics to Monitor:**
-
-*   Application uptime and response times.
-*   Error rates (server-side and client-side).
-*   API request latency.
-*   Database connection and query performance.
-*   Resource utilization (CPU, memory).
+- **CSR hooks en /login**: envolver `useSearchParams()` con `<Suspense>` o usar guardas condicionales para evitar “CSR bailout” en SSG.  
+- **Imágenes externas**: añadir dominios permitidos en `next.config.js`.  
+- **Builds lentos**: revisar imágenes enormes, dependencias, o desactivar sourcemaps en prod si aplica.
 
 ---
 
-## 4. Emergency Rollback Procedures
-
-In case of critical issues in production, a quick rollback to a stable version is necessary.
-
-**Procedure:**
-
-1.  **Identify the Problem:** Confirm the issue is critical and requires an immediate rollback. Check monitoring alerts and user reports.
-2.  **Identify Stable Deployment:** In Vercel, go to your project's "Deployments" tab. Identify the last known stable deployment.
-3.  **Initiate Rollback:**
-    *   Click on the stable deployment.
-    *   Click the "Redeploy" or "Rollback" button (Vercel typically allows redeploying a previous successful build).
-    *   Confirm the rollback.
-4.  **Monitor Rollback:** Observe the deployment status in Vercel.
-5.  **Verify Stability:** Once the rollback is complete, perform a smoke test on the application to ensure the issue is resolved and the application is stable.
-6.  **Post-Rollback Analysis:**
-    *   Investigate the root cause of the issue that necessitated the rollback.
-    *   Create a post-mortem document.
-    *   Implement preventative measures to avoid recurrence.
-    *   Plan a fix for the rolled-back features in a new development cycle.
+> **Notas**  
+> - Mantener documentación viva en el repo (`/docs`) y enlaces desde README.  
+> - Automatizar lo repetitivo (plantillas de PR, issue, release).
