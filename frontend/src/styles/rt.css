@@ -1,3 +1,5 @@
+@reference "../app/globals.css";
+
 /* Cards / superficies */
 .rt-card { @apply bg-white rounded-2xl border border-neutral-200/60 shadow-sm; }
 .rt-card-body { @apply p-4 sm:p-5; }
