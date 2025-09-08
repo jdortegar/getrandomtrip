@@ -26,7 +26,7 @@
 
 /* Grid KPIs */
 .rt-stats { @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-4; }
-.rt-stat { @apply rt-card; }
+.rt-stat { @apply bg-white rounded-2xl border border-neutral-200/60 shadow-sm; }
 .rt-stat .k { @apply text-2xl font-semibold; }
 .rt-stat .l { @apply text-sm text-neutral-500; }
 
@@ -37,3 +37,4 @@
 
 /* Página con offset bajo el header del sitio */
 .rt-page { @apply max-w-7xl mx-auto px-6 py-6 pt-[var(--rt-header-h,64px)]; }
+
