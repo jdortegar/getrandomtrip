@@ -23,6 +23,13 @@ function LoginContent() {
   // Auto-redirect por rol o ?returnTo=
   useEffect(() => {
     if (!isAuthed) return;
+
+    // Prevent redirect if already on /profile or /u/
+    const currentPath = window.location.pathname;
+    if (currentPath.startsWith('/profile') || currentPath.startsWith('/u/')) {
+      return;
+    }
+
     const role = (user?.role as UserRole) ?? 'client';
     const dest = search.get('returnTo') ?? dashboardPathFromRole(role);
     router.replace(dest);
