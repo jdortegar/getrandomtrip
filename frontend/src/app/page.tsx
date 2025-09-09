@@ -208,7 +208,7 @@ function ExplorationPageContent() {
     <main className="bg-white text-gray-900 min-h-screen py-16 px-4 md:px-8">
       <div id="start-your-journey-anchor" />
       <section data-testid="journey-section" aria-label="Comienza tu Viaje" className="max-w-7xl mx-auto text-center">
-        <h2 data-testid="journey-title" tabIndex={-1} className="text-5xl md:text-7xl font-bold mb-2 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Nuestros Puntos de Partida</h2>
+        <h2 data-testid="journey-title" tabIndex={-1} className="text-2xl md:text-4xl font-bold mb-2 text-gray-900" style={{ fontFamily: 'Playfair Display, serif' }}>Nuestros Puntos de Partida</h2>
         <p className="text-lg text-gray-800 mt-4 mb-12" style={{ fontFamily: 'Inter, sans-serif' }}>Elige cómo quieres empezar a dar forma a tu aventura.</p>
 
         <div className="flex justify-center space-x-4 md:space-x-8 border-b border-gray-300 mb-12">
@@ -535,11 +535,14 @@ export default function HomePage() {
 
         {/* Contenido del hero */}
         <div className="relative z-10 max-w-5xl mx-auto px-4">
-          <h1 className="text-6xl md:text-8xl font-bold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Serendipia Diseñada. Tu Próxima Transformación Espera.
-          </h1>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Serendipia Diseñada.
+          </h2>
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>
             La espontaneidad es un arte. La improvisación, un riesgo. Abraza la autenticidad de lo desconocido.
+          </p>
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Wonder • Wander • Repeat
           </p>
           <Link
             href="/?tab=By%20Traveller#start-your-journey-anchor"
