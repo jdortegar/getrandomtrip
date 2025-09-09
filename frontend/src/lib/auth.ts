@@ -17,3 +17,16 @@ export async function getCurrentUserServer(): Promise<SessionUser | null> {
 export function getUserRole(): string | null {
   return null;
 }
+
+import { notFound } from 'next/navigation';
+
+// TODO: Implement real tripper assertion based on user role
+export async function assertTripper() {
+  // For now, always throw notFound to simulate permission check
+  // In a real app, you'd check:
+  // const user = await getCurrentUserServer();
+  // if (!user || user.role !== 'tripper') {
+  //   notFound();
+  // }
+  notFound();
+}
