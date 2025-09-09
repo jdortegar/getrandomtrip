@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BlogPost } from "@/types/blog";
+import Image from "next/image";
+import type { BlogPost } from "@/components/tripper/blog/types";
 
 interface BlogListProps {
   posts: BlogPost[];
@@ -17,21 +18,29 @@ export default function BlogList({ posts }: BlogListProps) {
       ) : (
         posts.map((post) => (
           <div key={post.id} className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
-            {post.coverUrl && (
-              <div className="h-48 w-full bg-neutral-100 flex items-center justify-center text-neutral-400">
-                <img src={post.coverUrl} alt={post.title} className="w-full h-full object-cover" />
-              </div>
-            )}
+            <div className="relative w-full h-40">
+              <Image
+                src={post.coverUrl ?? "/images/placeholders/cover-1.jpg"}
+                alt={post.title}
+                width={640}
+                height={360}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="p-5">
               <h3 className="text-lg font-semibold text-neutral-800 mb-2">{post.title}</h3>
               <p className="text-sm text-neutral-600 mb-3">{post.subtitle}</p>
               <div className="flex flex-wrap gap-2 mb-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                  {post.status === 'published' ? 'Publicado' : 'Borrador'}
-                </span>
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {post.format}
-                </span>
+                {post.status && (
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                    {post.status === 'published' ? 'Publicado' : 'Borrador'}
+                  </span>
+                )}
+                {post.tags?.map(tag => (
+                  <span key={tag} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {tag}
+                  </span>
+                ))}
               </div>
               <div className="flex space-x-3">
                 <Link href={`/tripper/blogs/${post.id}/edit`} className="rt-btn rt-btn--secondary rt-btn--sm">Editar</Link>

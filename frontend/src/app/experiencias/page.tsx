@@ -176,42 +176,6 @@ const TripBuddyPage: React.FC = () => {
     }
   }, []);
 
-  // STT init
-  useEffect(() => {
-    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current!.continuous = false;
-      recognitionRef.current!.interimResults = false;
-
-      const persona = personas.find((p) => p.id === currentPersonaId) as any;
-      const recLang = persona?.sttLang || persona?.ttsLang || persona?.lang || (countryCode === "US" ? "en-US" : "es-ES");
-      recognitionRef.current!.lang = recLang;
-
-      recognitionRef.current!.onstart = () => {
-        setIsListening(true);
-        if (speechSynthesisRef.current?.speaking) speechSynthesisRef.current.cancel();
-        setIsSpeaking(false);
-      };
-      recognitionRef.current!.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = Array.from(event.results).map((r: any) => r[0].transcript).join("");
-        setIsListening(false);
-        handleSendMessage(transcript);
-      };
-      recognitionRef.current!.onerror = (event: any) => {
-        console.error("Speech recognition error:", event.error);
-        setError(`Error de reconocimiento de voz: ${event.error}`);
-        setIsListening(false);
-      };
-      recognitionRef.current!.onend = () => setIsListening(false);
-    } else {
-      setError("Tu navegador no soporta reconocimiento de voz.");
-    }
-  }, [currentPersonaId, countryCode]);
-
-  const handleVoiceStart = () => recognitionRef.current?.start();
-  const handleVoiceStop = () => recognitionRef.current?.stop();
-
   const handleSendMessage = useCallback(
     async (text: string) => {
       if (!text.trim()) return;
@@ -276,7 +240,7 @@ const TripBuddyPage: React.FC = () => {
           { systemStyle, country: countryCode }
         );
 
-        if (currentAIResponse && !/[.!?…]$/.test(currentAIResponse)) queueSpeak(currentAIResponse, currentPersonaId);
+        if (currentAIResponse && !/[.!?…]/.test(currentAIResponse)) queueSpeak(currentAIResponse, currentPersonaId);
       } catch (err: any) {
         setError(err.message);
         queueSpeak("Lo siento, hubo un error inesperado.", currentPersonaId);
@@ -287,6 +251,42 @@ const TripBuddyPage: React.FC = () => {
     },
     [messages, userLocation, currentPersonaId, queueSpeak, countryCode]
   );
+
+  // STT init
+  useEffect(() => {
+    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current!.continuous = false;
+      recognitionRef.current!.interimResults = false;
+
+      const persona = personas.find((p) => p.id === currentPersonaId) as any;
+      const recLang = persona?.sttLang || persona?.ttsLang || persona?.lang || (countryCode === "US" ? "en-US" : "es-ES");
+      recognitionRef.current!.lang = recLang;
+
+      recognitionRef.current!.onstart = () => {
+        setIsListening(true);
+        if (speechSynthesisRef.current?.speaking) speechSynthesisRef.current.cancel();
+        setIsSpeaking(false);
+      };
+      recognitionRef.current!.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = Array.from(event.results).map((r: any) => r[0].transcript).join("");
+        setIsListening(false);
+        handleSendMessage(transcript);
+      };
+      recognitionRef.current!.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setError(`Error de reconocimiento de voz: ${event.error}`);
+        setIsListening(false);
+      };
+      recognitionRef.current!.onend = () => setIsListening(false);
+    } else {
+      setError("Tu navegador no soporta reconocimiento de voz.");
+    }
+  }, [currentPersonaId, countryCode, handleSendMessage]);
+
+  const handleVoiceStart = () => recognitionRef.current?.start();
+  const handleVoiceStop = () => recognitionRef.current?.stop();
 
 // Initial greeting
 useEffect(() => {
@@ -402,8 +402,8 @@ useEffect(() => {
           onSend={(text) => {
             void handleSendMessage(text);
           }}
-          onVoiceStart={() => recognitionRef.current?.start()}
-          onVoiceStop={() => recognitionRef.current?.stop()}
+          onVoiceStart={handleVoiceStart}
+          onVoiceStop={handleVoiceStop}
           isListening={isListening}
           isLoading={isLoading}
         />

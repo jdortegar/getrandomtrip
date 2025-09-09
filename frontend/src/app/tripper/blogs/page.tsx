@@ -1,6 +1,7 @@
 import { assertTripper } from "@/lib/auth";
 import BlogList from "@/components/tripper/blog/BlogList";
 import Link from "next/link";
+import { demoPosts } from "@/components/tripper/blog/mock";
 
 export default async function TripperBlogListPage() {
   await assertTripper();
@@ -11,7 +12,7 @@ export default async function TripperBlogListPage() {
         <h1 className="text-3xl font-bold text-neutral-800">Mis Posts</h1>
         <Link href="/tripper/blogs/new" className="rt-btn rt-btn--primary">Crear Nuevo Post</Link>
       </div>
-      <BlogList />
+      <BlogList posts={demoPosts} />
     </div>
   );
 }

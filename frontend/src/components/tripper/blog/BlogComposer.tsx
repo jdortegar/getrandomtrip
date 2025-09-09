@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Image as ImageIcon, Video, Type, Quote, Link as LinkIcon, PlusCircle, Save, Sparkles } from "lucide-react";
-import { BlogPost } from "@/types/blog";
+import type { BlogPost } from "@/components/tripper/blog/types";
 
 interface BlogComposerProps {
   post: Partial<BlogPost>;
