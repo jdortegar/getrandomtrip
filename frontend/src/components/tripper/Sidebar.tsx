@@ -2,16 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Route, DollarSign, Users, Settings, Calendar, BarChart2, MessageSquare } from "lucide-react";
+import { Home, Route, DollarSign, Users, Settings, Calendar, Book, PlusCircle } from "lucide-react";
 import Image from "next/image";
 
-const navItems = [
-  { name: "Tripper OS", href: "/tripper", icon: Home },
-  { name: "Mis Rutas", href: "/tripper/routes", icon: Route },
-  { name: "Reservas", href: "/tripper/bookings", icon: Calendar },
-  { name: "Ingresos", href: "/tripper/earnings", icon: DollarSign },
-  { name: "Comunidad", href: "/tripper/community", icon: Users },
-  { name: "Configuración", href: "/tripper/settings", icon: Settings },
+const navGroups = [
+  {
+    name: "General",
+    items: [
+      { name: "Tripper OS", href: "/tripper", icon: Home },
+      { name: "Mis Rutas", href: "/tripper/routes", icon: Route },
+      { name: "Reservas", href: "/tripper/bookings", icon: Calendar },
+      { name: "Ingresos", href: "/tripper/earnings", icon: DollarSign },
+      { name: "Comunidad", href: "/tripper/community", icon: Users },
+      { name: "Configuración", href: "/tripper/settings", icon: Settings },
+    ],
+  },
+  {
+    name: "Contenido",
+    items: [
+      { name: "Mis Posts", href: "/tripper/blogs", icon: Book },
+      { name: "Crear Post", href: "/tripper/blogs/new", icon: PlusCircle, isButton: true },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -26,23 +38,31 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1">
-        <ul className="space-y-2">
-          {navItems.map((item) => (
-            <li key={item.name}>
-              <Link
-                href={item.href}
-                className={`flex items-center p-3 rounded-lg transition-colors
-                  ${pathname === item.href
-                    ? "bg-neutral-700 text-white"
-                    : "hover:bg-neutral-800 text-neutral-300 hover:text-white"}
-                `}
-              >
-                <item.icon size={20} className="mr-3" />
-                <span className="text-sm font-medium">{item.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {navGroups.map((group) => (
+          <div key={group.name} className="mb-6">
+            {group.name !== "General" && (
+              <h3 className="text-xs font-semibold text-neutral-500 uppercase mb-2 px-3">{group.name}</h3>
+            )}
+            <ul className="space-y-2">
+              {group.items.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center p-3 rounded-lg transition-colors
+                      ${pathname === item.href
+                        ? "bg-neutral-700 text-white"
+                        : "hover:bg-neutral-800 text-neutral-300 hover:text-white"}
+                      ${item.isButton ? "bg-blue-600 hover:bg-blue-700 text-white font-bold" : ""}
+                    `}
+                  >
+                    <item.icon size={20} className="mr-3" />
+                    <span className="text-sm font-medium">{item.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </nav>
 
       {/* Footer/User Info (Optional) */}
