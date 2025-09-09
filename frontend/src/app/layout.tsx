@@ -3,6 +3,7 @@ import "@/styles/rt.css";
 import { Inter, Fraunces } from "next/font/google";
 import HeaderGate from "@/components/layout/HeaderGate";
 import SiteHeaderOffset from "@/components/layout/SiteHeaderOffset";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const fraunces = Fraunces({
@@ -10,6 +11,9 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   style: ["normal"],
 });
+
+// Carga del client component sin SSR
+const NewsletterBar = dynamic(() => import("@/components/newsletter/NewsletterBar"), { ssr: false });
 
 export const metadata = {
   title: "Randomtrip",
@@ -33,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeaderOffset />
         <HeaderGate />
         {children}
+        <NewsletterBar /> {/* 👈 persistente en todo el sitio */}
       </body>
     </html>
   );
