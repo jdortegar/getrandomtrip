@@ -139,7 +139,7 @@ export default function SoloHero() {
                   como ese libro que releés sabiendo que la segunda vez lo vas a entender mejor.
                 </p>
                 <p>
-                 --- RANDOMTIRP. Wonder. Wander. Repeat. ---
+                 --- RANDOMTRIP. Wonder. Wander. Repeat. ---
                 </p>
               </div>
             </div>

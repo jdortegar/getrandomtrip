@@ -130,7 +130,7 @@ export default function CoupleHero() {
                   como cuando una canción que nos gusta termina y uno aprieta “otra vez”.
                 </p>
                 <p>
-                  --- RANDOMTIRP. Wonder. Wander. Repeat. ---
+                  --- RANDOMTRIP. Wonder. Wander. Repeat. ---
                 </p>
               </div>
             </div>

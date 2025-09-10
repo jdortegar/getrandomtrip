@@ -25,7 +25,7 @@ export default function FamilyIntroStory(): JSX.Element {
           Porque las escapadas terminan, pero las historias quedan.
         </p>
         <p>
-          --- RANDOMTIRP. Wonder. Wander. Repeat. ---
+          --- RANDOMTRIP. Wonder. Wander. Repeat. ---
         </p>        
       </div>
     </>
