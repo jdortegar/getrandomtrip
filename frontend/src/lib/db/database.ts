@@ -91,7 +91,7 @@ export interface CreateBookingData {
   filtersCost: number;
   addonsCost: number;
   totalPrice: number;
-  displayPrice: number;
+  displayPrice: string;
   activeTab?: string;
   selectedAddons?: string[]; // legacy field
 }
