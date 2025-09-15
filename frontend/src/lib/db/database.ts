@@ -61,6 +61,7 @@ export type BlogPostWithDetails = Prisma.BlogPostGetPayload<{
 export interface CreateUserData {
   email: string;
   name: string;
+  password?: string;
   avatarUrl?: string;
   travelerType?: string;
   interests?: string[];

@@ -7,22 +7,26 @@ import GlassCard from '@/components/ui/GlassCard';
 import { useUserStore } from '@/store/userStore';
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import type { UserRole } from '@/store/userStore';
 import { dashboardPathFromRole } from '@/lib/roles';
 
 function LoginContent() {
-  const { isAuthed, user, openAuth } = useUserStore();
+  const { data: session, status } = useSession();
+  const { openAuth } = useUserStore();
   const router = useRouter();
   const search = useSearchParams();
 
   // Abrir modal si no hay sesión
   useEffect(() => {
-    if (!isAuthed) openAuth('signin');
-  }, [isAuthed, openAuth]);
+    if (status === 'unauthenticated') {
+      openAuth('signin');
+    }
+  }, [status, openAuth]);
 
   // Auto-redirect por rol o ?returnTo=
   useEffect(() => {
-    if (!isAuthed) return;
+    if (status !== 'authenticated' || !session) return;
 
     // Prevent redirect if already on /profile or /u/
     const currentPath = window.location.pathname;
@@ -30,10 +34,14 @@ function LoginContent() {
       return;
     }
 
-    const role = (user?.role as UserRole) ?? 'client';
-    const dest = search.get('returnTo') ?? dashboardPathFromRole(role);
-    router.replace(dest);
-  }, [isAuthed, user?.role, router, search]);
+    const role = (session.user?.role as UserRole) ?? 'client';
+    const returnTo = search.get('returnTo');
+    const dest = returnTo ?? dashboardPathFromRole(role);
+
+    // Decode the returnTo URL if it exists
+    const finalDest = returnTo ? decodeURIComponent(returnTo) : dest;
+    router.replace(finalDest);
+  }, [status, session, router, search]);
 
   // Mensaje breve mientras redirige
   return (
