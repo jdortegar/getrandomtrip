@@ -11,7 +11,15 @@
     "lint:fix": "next lint --fix",
     "cypress": "cypress open",
     "test": "echo \"No unit tests configured yet.\" && exit 0",
-    "test:e2e": "npm run build && start-server-and-test \"npm run start\" http://localhost:3000 \"cypress run --e2e --browser chrome\""
+    "test:e2e": "npm run build && start-server-and-test \"npm run start\" http://localhost:3000 \"cypress run --e2e --browser chrome\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "npx tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -37,6 +45,7 @@
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^6.0.4",
     "@eslint/eslintrc": "2.1.4",
+    "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/google.maps": "^3.58.1",
     "@types/leaflet": "^1.9.20",
@@ -49,12 +58,18 @@
     "eslint-config-next": "14.2.3",
     "happy-dom": "^18.0.1",
     "postcss": "^8.5.6",
+    "prettier": "^3.3.3",
+    "prisma": "^5.22.0",
     "start-server-and-test": "^2.0.0",
     "tailwindcss": "^4.1.12",
     "ts-loader": "9.5.2",
+    "tsx": "^4.19.2",
     "typescript": "5.8.3",
     "vitest": "^3.2.4",
     "wait-on": "^7.0.1",
     "webpack": "^5.100.2"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
   }
 }
