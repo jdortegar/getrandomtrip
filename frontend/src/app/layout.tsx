@@ -3,6 +3,7 @@ import '@/styles/rt.css';
 import { Inter, Fraunces } from 'next/font/google';
 import HeaderGate from '@/components/layout/HeaderGate';
 import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
+import SessionProvider from '@/components/providers/SessionProvider';
 import dynamic from 'next/dynamic';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -45,10 +46,12 @@ export default function RootLayout({
         <meta name="theme-color" content="#fafafa" />
       </head>
       <body className="font-sans bg-neutral-50 text-neutral-900 antialiased">
-        <SiteHeaderOffset />
-        <HeaderGate />
-        {children}
-        <NewsletterBar /> {/* 👈 persistente en todo el sitio */}
+        <SessionProvider>
+          <SiteHeaderOffset />
+          <HeaderGate />
+          {children}
+          <NewsletterBar /> {/* 👈 persistente en todo el sitio */}
+        </SessionProvider>
       </body>
     </html>
   );
