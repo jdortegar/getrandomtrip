@@ -1,7 +1,7 @@
 'use client';
 import { useJourneyStore } from '@/store/journeyStore';
 import { Input } from '@/components/ui/input';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Country {
   name: string;
@@ -160,68 +160,74 @@ export function CityInput() {
   const selectedCountryCode = logistics.country?.code;
 
   // Fetch cities using a free API or fallback to local data
-  const fetchCities = async (query: string) => {
-    if (query.length < 2) {
-      setSuggestions([]);
-      return;
-    }
+  const fetchCities = useCallback(
+    async (query: string) => {
+      if (query.length < 2) {
+        setSuggestions([]);
+        return;
+      }
 
-    // If no country is selected, show a message
-    if (!selectedCountryCode) {
-      setSuggestions([{ name: 'Selecciona un país primero', country: '' }]);
-      return;
-    }
+      // If no country is selected, show a message
+      if (!selectedCountryCode) {
+        setSuggestions([{ name: 'Selecciona un país primero', country: '' }]);
+        return;
+      }
 
-    setLoading(true);
-    try {
-      // Try using a free cities API (no API key required)
-      const response = await fetch(
-        `https://api.teleport.org/api/cities/?search=${encodeURIComponent(query)}&limit=20`,
-      );
+      setLoading(true);
+      try {
+        // Try using a free cities API (no API key required)
+        const response = await fetch(
+          `https://api.teleport.org/api/cities/?search=${encodeURIComponent(query)}&limit=20`,
+        );
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data._embedded && data._embedded['city:search-results']) {
-          const cities = data._embedded['city:search-results']
-            .map((result: any) => ({
-              name: result.matching_full_name,
-              country: result.matching_full_name.split(', ').pop() || '',
-              countryCode: result.matching_full_name.split(', ').pop() || '',
-            }))
-            .filter((city: any) => {
-              // Filter by selected country if available
-              if (selectedCountryCode) {
-                return (
-                  city.countryCode === selectedCountryCode ||
-                  city.country
-                    .toLowerCase()
-                    .includes(logistics.country?.name?.toLowerCase() || '')
-                );
-              }
-              return true;
-            })
-            .slice(0, 10);
+        if (response.ok) {
+          const data = await response.json();
+          if (data._embedded && data._embedded['city:search-results']) {
+            const cities = data._embedded['city:search-results']
+              .map((result: any) => ({
+                name: result.matching_full_name,
+                country: result.matching_full_name.split(', ').pop() || '',
+                countryCode: result.matching_full_name.split(', ').pop() || '',
+              }))
+              .filter((city: any) => {
+                // Filter by selected country if available
+                if (selectedCountryCode) {
+                  return (
+                    city.countryCode === selectedCountryCode ||
+                    city.country
+                      .toLowerCase()
+                      .includes(logistics.country?.name?.toLowerCase() || '')
+                  );
+                }
+                return true;
+              })
+              .slice(0, 10);
 
-          setSuggestions(cities);
+            setSuggestions(cities);
+          } else {
+            // Fallback to local cities list filtered by country
+            const fallbackCities = getFallbackCities(
+              query,
+              selectedCountryCode,
+            );
+            setSuggestions(fallbackCities);
+          }
         } else {
-          // Fallback to local cities list filtered by country
+          // Fallback to a simple cities list if API fails
           const fallbackCities = getFallbackCities(query, selectedCountryCode);
           setSuggestions(fallbackCities);
         }
-      } else {
-        // Fallback to a simple cities list if API fails
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+        // Fallback to a simple cities list
         const fallbackCities = getFallbackCities(query, selectedCountryCode);
         setSuggestions(fallbackCities);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching cities:', error);
-      // Fallback to a simple cities list
-      const fallbackCities = getFallbackCities(query, selectedCountryCode);
-      setSuggestions(fallbackCities);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [selectedCountryCode, logistics.country?.name],
+  );
 
   // Fallback cities list for when API is not available
   const getFallbackCities = (query: string, countryCode?: string): City[] => {
@@ -309,7 +315,13 @@ export function CityInput() {
         });
       }
     }
-  }, [selectedCountryCode, logistics.country?.name]);
+  }, [
+    selectedCountryCode,
+    logistics.country?.name,
+    logistics.city?.name,
+    logistics,
+    setPartial,
+  ]);
 
   // Debounced search
   useEffect(() => {
@@ -318,7 +330,7 @@ export function CityInput() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [value, selectedCountryCode]);
+  }, [value, selectedCountryCode, fetchCities]);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

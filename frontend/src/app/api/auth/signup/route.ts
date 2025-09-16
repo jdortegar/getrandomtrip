@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/db-utils';
+import { prisma } from '@/lib/db/prisma';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: NextRequest) {
@@ -34,10 +34,9 @@ export async function POST(request: NextRequest) {
       data: {
         email,
         name,
-        role: role || 'client',
+        password: hashedPassword,
         interests: [],
         dislikes: [],
-        isAuthed: true,
       },
     });
 
