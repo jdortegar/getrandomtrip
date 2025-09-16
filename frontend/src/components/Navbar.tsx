@@ -5,8 +5,9 @@ import Image from 'next/image';
 import Img from '@/components/common/Img'; // Added import
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useUserStore } from '@/store/userStore';
-import AuthModal from '@/components/auth/AuthModal';
+import EnhancedAuthModal from '@/components/auth/EnhancedAuthModal';
 import { ChevronDown, LogOut } from 'lucide-react';
+import AuthModal from './auth/AuthModal';
 
 export default function Navbar({
   variant = 'auto',

@@ -17,6 +17,7 @@ import type {
 export async function createUser(data: {
   email: string;
   name: string;
+  password?: string;
   avatarUrl?: string;
   travelerType?: string;
   interests?: string[];
@@ -26,11 +27,24 @@ export async function createUser(data: {
     data: {
       email: data.email,
       name: data.name,
+      password: data.password,
       avatarUrl: data.avatarUrl,
       travelerType: data.travelerType,
       interests: data.interests || [],
       dislikes: data.dislikes || [],
     },
+  });
+}
+
+export async function getUserByEmail(email: string) {
+  return prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+export async function getUserById(id: string) {
+  return prisma.user.findUnique({
+    where: { id },
   });
 }
 
