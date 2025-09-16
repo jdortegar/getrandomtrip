@@ -18,9 +18,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'placehold.co' },
     ],
   },
-  experimental: {
-    optimizeCss: false, // Disable CSS optimization to avoid lightningcss issues
-  },
 };
 
 module.exports = nextConfig;
