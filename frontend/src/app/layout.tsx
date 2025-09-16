@@ -45,7 +45,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light" />
         <meta name="theme-color" content="#fafafa" />
       </head>
-      <body className="font-sans bg-neutral-50 text-neutral-900 antialiased">
+      <body className="font-sans bg-neutral-50 text-neutral-900 antialiased pt-[var(--rt-header-h)]">
         <SessionProvider>
           <SiteHeaderOffset />
           <HeaderGate />
