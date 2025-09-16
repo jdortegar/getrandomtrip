@@ -137,8 +137,6 @@ export async function createBookingWithFilters(
         data: {
           bookingId: booking.id,
           filterId: filter.id,
-          value: selection.value,
-          price: selection.price || 0,
         },
       });
     }),
@@ -699,7 +697,7 @@ export async function createPayment(data: {
 
 export async function updatePaymentStatus(
   id: string,
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED',
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'REFUNDED',
   paidAt?: Date,
   failedAt?: Date,
   refundedAt?: Date,
@@ -758,7 +756,7 @@ export async function createBlogPost(data: {
       relatedTripType: data.relatedTripType,
       experienceLevel: data.experienceLevel,
     },
-    include: { tripper: true, comments: true },
+    include: { tripper: true, blog_comments: true },
   });
 }
 
@@ -783,7 +781,7 @@ export async function getBlogPosts(params: SearchParams = {}) {
         ],
       }),
     },
-    include: { tripper: true, comments: true },
+    include: { tripper: true, blog_comments: true },
     orderBy: { [sortBy]: sortOrder },
     skip,
     take: limit,
@@ -793,23 +791,21 @@ export async function getBlogPosts(params: SearchParams = {}) {
 export async function getBlogPostBySlug(slug: string) {
   return prisma.blogPost.findUnique({
     where: { slug },
-    include: { tripper: true, comments: { where: { isApproved: true } } },
+    include: { tripper: true, blog_comments: { where: { isApproved: true } } },
   });
 }
 
 export async function createBlogComment(data: {
   postId: string;
   authorName: string;
-  authorEmail?: string;
-  authorWebsite?: string;
+  authorEmail: string;
   content: string;
 }) {
   return prisma.blogComment.create({
     data: {
-      postId: data.postId,
+      blogPostId: data.postId,
       authorName: data.authorName,
       authorEmail: data.authorEmail,
-      authorWebsite: data.authorWebsite,
       content: data.content,
     },
   });

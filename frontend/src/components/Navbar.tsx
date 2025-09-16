@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Img from '@/components/common/Img'; // Added import
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useUserStore } from '@/store/userStore';
+import { signOut as nextAuthSignOut } from 'next-auth/react';
 import EnhancedAuthModal from '@/components/auth/EnhancedAuthModal';
 import { ChevronDown, LogOut } from 'lucide-react';
 
@@ -17,7 +18,7 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const { isAuthed, user, signOut, openAuth } = useUserStore();
+  const { isAuthed, user, signOut, openAuth, session } = useUserStore();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -70,7 +71,7 @@ export default function Navbar({
     const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
     return isSolid
       ? 'fixed top-0 inset-x-0 z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200'
-      : 'fixed top-0 inset-x-0 z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200';
+      : 'fixed top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-colors duration-200';
   }, [overlay, variant]);
 
   const avatarSrc = user?.avatar ?? 'https://placehold.co/64x64'; // Added line
@@ -82,18 +83,22 @@ export default function Navbar({
         style={{ height: 'auto' }}
         className={headerClass}
       >
-        <nav className="mx-auto h-16 max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <nav className="mx-auto h-20 max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Marca */}
           <Link
             href="/"
             aria-label="Randomtrip"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-2 shrink-0 py-2"
           >
             <Image
-              src="/assets/logos/Logo.svg"
+              src={
+                overlay
+                  ? '/assets/logos/logo_getrandomtrip_white.png'
+                  : '/assets/logos/logo_getrandomtrip.png'
+              }
               alt="Randomtrip"
-              width={256}
-              height={64}
+              width={200}
+              height={50}
             />
           </Link>
 
@@ -279,7 +284,11 @@ export default function Navbar({
                     <button
                       role="menuitem"
                       onClick={() => {
-                        signOut();
+                        if (session) {
+                          nextAuthSignOut({ callbackUrl: '/' });
+                        } else {
+                          signOut();
+                        }
                         setProfileMenuOpen(false);
                       }}
                       className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50"
@@ -293,9 +302,7 @@ export default function Navbar({
               <button
                 aria-label="Iniciar sesión"
                 className="p-1 rounded-full hover:bg-white/10"
-                onClick={() =>
-                  window.dispatchEvent(new CustomEvent('open-auth'))
-                }
+                onClick={() => openAuth()}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

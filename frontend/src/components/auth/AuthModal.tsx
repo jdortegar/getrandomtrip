@@ -90,10 +90,14 @@ export default function AuthModal() {
   // 7) Handlers
 
   const toggleIn = (v: string) =>
-    setInterests((curr) => (curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v]));
+    setInterests((curr) =>
+      curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v],
+    );
 
   const toggleDis = (v: string) =>
-    setDislikes((curr) => (curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v]));
+    setDislikes((curr) =>
+      curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v],
+    );
 
   const savePrefs = () => {
     upsertPrefs?.({
@@ -166,27 +170,35 @@ export default function AuthModal() {
                       ¿Cómo viajás normalmente?
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {(['solo', 'pareja', 'familia', 'amigos', 'empresa'] as Traveler[]).map(
-                        (t) => (
-                          <button
-                            key={t}
-                            onClick={() => setTravelerType(t)}
-                            className={
-                              'rounded-full border px-3 py-1 text-sm ' +
-                              (travelerType === t
-                                ? 'border-violet-300 bg-violet-50 text-violet-900'
-                                : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50')
-                            }
-                          >
-                            {t}
-                          </button>
-                        ),
-                      )}
+                      {(
+                        [
+                          'solo',
+                          'pareja',
+                          'familia',
+                          'amigos',
+                          'empresa',
+                        ] as Traveler[]
+                      ).map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setTravelerType(t)}
+                          className={
+                            'rounded-full border px-3 py-1 text-sm ' +
+                            (travelerType === t
+                              ? 'border-violet-300 bg-violet-50 text-violet-900'
+                              : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50')
+                          }
+                        >
+                          {t}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-sm font-medium text-neutral-900 mb-2">¿Qué te gusta?</div>
+                    <div className="text-sm font-medium text-neutral-900 mb-2">
+                      ¿Qué te gusta?
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {ALL_INTERESTS.map((v) => (
                         <button
@@ -207,7 +219,9 @@ export default function AuthModal() {
                   </div>
 
                   <div>
-                    <div className="text-sm font-medium text-neutral-900 mb-2">¿Qué evitás?</div>
+                    <div className="text-sm font-medium text-neutral-900 mb-2">
+                      ¿Qué evitás?
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {ALL_DISLIKES.map((v) => (
                         <button
@@ -265,11 +279,16 @@ export default function AuthModal() {
                     {interests.length ? interests.join(', ') : '—'}
                   </div>
                   <div>
-                    <span className="font-medium text-neutral-900">Dislikes:</span>{' '}
+                    <span className="font-medium text-neutral-900">
+                      Dislikes:
+                    </span>{' '}
                     {dislikes.length ? dislikes.join(', ') : '—'}
                   </div>
                   <div>
-                    <span className="font-medium text-neutral-900">Budget:</span> {budget || '—'}
+                    <span className="font-medium text-neutral-900">
+                      Budget:
+                    </span>{' '}
+                    {budget || '—'}
                   </div>
                 </div>
               )}

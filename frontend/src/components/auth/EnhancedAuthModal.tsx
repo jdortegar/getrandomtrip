@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { signIn } from 'next-auth/react';
 import { useUserStore } from '@/store/userStore';
-import type { TravelerType, BudgetLevel } from '@/store/userStore';
+import { signIn, signOut } from 'next-auth/react';
+import type { TravelerType, BudgetLevel, UserRole } from '@/store/userStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { Eye, EyeOff, Mail, Lock, User, Calendar, MapPin } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const ALL_INTERESTS = [
 const ALL_DISLIKES = ['frío', 'calor-extremo', 'multitudes', 'madrugar'];
 
 export default function EnhancedAuthModal() {
-  const { isAuthed, user, closeAuth, upsertPrefs, authModalOpen } =
+  const { isAuthed, user, closeAuth, upsertPrefs, authModalOpen, signInDemo } =
     useUserStore();
 
   const open = authModalOpen;
@@ -33,6 +33,7 @@ export default function EnhancedAuthModal() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('client');
 
   // Form data
   const [email, setEmail] = useState('');
@@ -89,16 +90,6 @@ export default function EnhancedAuthModal() {
     };
   }, [open, closeAuth]);
 
-  // Global event listener
-  useEffect(() => {
-    const h = () => {
-      const { openAuth } = useUserStore.getState();
-      if (typeof openAuth === 'function') openAuth();
-    };
-    window.addEventListener('open-auth', h);
-    return () => window.removeEventListener('open-auth', h);
-  }, []);
-
   if (!open) return null;
 
   // Auth handlers
@@ -111,6 +102,7 @@ export default function EnhancedAuthModal() {
       const result = await signIn('credentials', {
         email,
         password,
+        role: selectedRole,
         redirect: false,
       });
 
@@ -146,7 +138,10 @@ export default function EnhancedAuthModal() {
         ? decodeURIComponent(returnTo)
         : '/dashboard';
 
-      await signIn('google', { callbackUrl });
+      await signIn('google', {
+        callbackUrl,
+        role: selectedRole,
+      });
     } catch (error) {
       setAuthError('Error al iniciar sesión con Google');
       setIsLoading(false);
@@ -168,7 +163,7 @@ export default function EnhancedAuthModal() {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email, password, name, role: selectedRole }),
       });
 
       if (response.ok) {
@@ -176,6 +171,7 @@ export default function EnhancedAuthModal() {
         const result = await signIn('credentials', {
           email,
           password,
+          role: selectedRole,
           redirect: false,
         });
 
@@ -238,7 +234,7 @@ export default function EnhancedAuthModal() {
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div ref={dialogRef} className="w-full max-w-lg">
-        <GlassCard>
+        <div className="bg-white rounded-xl shadow-lg ring-1 ring-black/5">
           <div className="p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -260,11 +256,168 @@ export default function EnhancedAuthModal() {
             {/* Step 0: Authentication */}
             {step === 0 && (
               <div className="space-y-6">
+                {/* Role Selection - Only show during signup */}
+                {isSignUp && (
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-900 mb-3">
+                      Tipo de cuenta
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRole('client')}
+                        className={`p-3 text-sm rounded-lg border transition-colors ${
+                          selectedRole === 'client'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-neutral-200 hover:border-neutral-300 text-neutral-900'
+                        }`}
+                      >
+                        <div className="font-medium">Viajero</div>
+                        <div className="text-xs text-neutral-500">
+                          Planifica viajes
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRole('tripper')}
+                        className={`p-3 text-sm rounded-lg border transition-colors ${
+                          selectedRole === 'tripper'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-neutral-200 hover:border-neutral-300 text-neutral-900'
+                        }`}
+                      >
+                        <div className="font-medium">Tripper</div>
+                        <div className="text-xs text-neutral-500">
+                          Crea experiencias
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Auth Form */}
+                <form
+                  onSubmit={isSignUp ? handleSignUp : handleSignIn}
+                  className="space-y-4"
+                >
+                  {isSignUp && (
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-900 mb-1">
+                        Nombre completo
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-600 w-4 h-4" />
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required={isSignUp}
+                          className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900 placeholder-neutral-500"
+                          placeholder="Tu nombre completo"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-900 mb-1">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-600 w-4 h-4" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900 placeholder-neutral-500"
+                        placeholder="tu@email.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-900 mb-1">
+                      Contraseña
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-600 w-4 h-4" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="w-full pl-10 pr-12 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900 placeholder-neutral-500"
+                        placeholder="••••••••"
+                        style={{ colorScheme: 'light' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-600 hover:text-neutral-800"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isSignUp && (
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-900 mb-1">
+                        Confirmar contraseña
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-600 w-4 h-4" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required={isSignUp}
+                          className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-neutral-900 placeholder-neutral-500"
+                          placeholder="••••••••"
+                          style={{ colorScheme: 'light' }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {authError && (
+                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                      {authError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading
+                      ? 'Cargando...'
+                      : isSignUp
+                        ? 'Crear cuenta'
+                        : 'Iniciar sesión'}
+                  </button>
+                </form>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-neutral-200" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-neutral-500">o</span>
+                  </div>
+                </div>
+
                 {/* Google Sign In */}
                 <button
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50 text-neutral-900"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -286,122 +439,6 @@ export default function EnhancedAuthModal() {
                   </svg>
                   Continuar con Google
                 </button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-neutral-200" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-neutral-500">o</span>
-                  </div>
-                </div>
-
-                {/* Auth Form */}
-                <form
-                  onSubmit={isSignUp ? handleSignUp : handleSignIn}
-                  className="space-y-4"
-                >
-                  {isSignUp && (
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-1">
-                        Nombre completo
-                      </label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          required={isSignUp}
-                          className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Tu nombre completo"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      Email
-                    </label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="tu@email.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
-                      Contraseña
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-12 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="••••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {isSignUp && (
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-1">
-                        Confirmar contraseña
-                      </label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          required={isSignUp}
-                          className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="••••••••"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {authError && (
-                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                      {authError}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading
-                      ? 'Cargando...'
-                      : isSignUp
-                      ? 'Crear cuenta'
-                      : 'Iniciar sesión'}
-                  </button>
-                </form>
 
                 <div className="text-center">
                   <button
@@ -567,22 +604,36 @@ export default function EnhancedAuthModal() {
 
                 <div className="bg-neutral-50 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Tipo de viajero:</span>
-                    <span className="font-medium">{travelerType}</span>
+                    <span className="text-neutral-800 font-medium">
+                      Tipo de viajero:
+                    </span>
+                    <span className="font-semibold text-neutral-900">
+                      {travelerType}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Intereses:</span>
-                    <span className="font-medium">{interests.join(', ')}</span>
+                    <span className="text-neutral-800 font-medium">
+                      Intereses:
+                    </span>
+                    <span className="font-semibold text-neutral-900">
+                      {interests.join(', ')}
+                    </span>
                   </div>
                   {dislikes.length > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-neutral-600">Evitar:</span>
-                      <span className="font-medium">{dislikes.join(', ')}</span>
+                      <span className="text-neutral-800 font-medium">
+                        Evitar:
+                      </span>
+                      <span className="font-semibold text-neutral-900">
+                        {dislikes.join(', ')}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-neutral-600">Presupuesto:</span>
-                    <span className="font-medium">
+                    <span className="text-neutral-800 font-medium">
+                      Presupuesto:
+                    </span>
+                    <span className="font-semibold text-neutral-900">
                       {budget === 'low' && '$500-1,500'}
                       {budget === 'mid' && '$1,500-3,000'}
                       {budget === 'high' && '$3,000+'}
@@ -599,7 +650,7 @@ export default function EnhancedAuthModal() {
               </div>
             )}
           </div>
-        </GlassCard>
+        </div>
       </div>
     </div>
   );

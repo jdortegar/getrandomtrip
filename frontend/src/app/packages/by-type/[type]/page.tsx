@@ -13,7 +13,7 @@ import CtaBand from '@/components/by-type/CtaBand';
 import FooterLanding from '@/components/layout/FooterLanding';
 
 // Páginas/Secciones específicas
-import CouplePage from '../../(by-type)/couple/page';
+import CouplePage from '../couple/page';
 
 // SOLO: importa las 3 secciones
 import SoloHero from '@/components/by-type/solo/SoloHero';
@@ -54,12 +54,19 @@ const canonicalType = (raw: string) => {
 };
 
 // Slugs con página dedicada (NO renderizar aquí; redirigir)
-const DEDICATED: Set<string> = new Set(['family', 'honeymoon', 'group', 'paws']);
+const DEDICATED: Set<string> = new Set([
+  'family',
+  'honeymoon',
+  'group',
+  'paws',
+]);
 
 // --- Metadata ---
-export async function generateMetadata(
-  { params }: { params: { type: string } }
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { type: string };
+}): Promise<Metadata> {
   const type = canonicalType(params.type);
   const map: Record<string, string> = {
     couple: 'En Pareja | Randomtrip',
@@ -75,10 +82,12 @@ export async function generateMetadata(
 // --- Pre-render ---
 // IMPORTANT: solo generamos los slugs que deben vivir en la dinámica.
 export function generateStaticParams() {
-  return getAllTravellerSlugs()
-    // Blindaje extra por si alguien deja un slug dedicado en la lista
-    .filter((t) => !DEDICATED.has(canonicalType(t)))
-    .map((type) => ({ type }));
+  return (
+    getAllTravellerSlugs()
+      // Blindaje extra por si alguien deja un slug dedicado en la lista
+      .filter((t) => !DEDICATED.has(canonicalType(t)))
+      .map((type) => ({ type }))
+  );
 }
 
 // --- Página ---
@@ -111,7 +120,12 @@ export default function Page({ params }: { params: { type: string } }) {
     slug: type,
     heroTitle: 'Ruta con Alma',
     subcopy: 'Preparamos la sorpresa; tú te quedas con la historia.',
-    palette: { primary: '#FFF', secondary: '#0A2240', accent: '#F2C53D', text: '#212121' },
+    palette: {
+      primary: '#FFF',
+      secondary: '#0A2240',
+      accent: '#F2C53D',
+      text: '#212121',
+    },
     images: { hero: '' },
   };
 
