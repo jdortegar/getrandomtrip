@@ -1,14 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 import Img from '@/components/common/Img'; // Added import
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useUserStore } from '@/store/userStore';
 import AuthModal from '@/components/auth/AuthModal';
 import { ChevronDown, LogOut } from 'lucide-react';
 
-export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid' }) {
+export default function Navbar({
+  variant = 'auto',
+}: {
+  variant?: 'auto' | 'solid';
+}) {
   const [overlay, setOverlay] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -20,16 +24,16 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
   // Detectar si estamos sobre el hero
   useEffect(() => {
     if (variant !== 'auto') return;
-    const el = document.getElementById("hero-sentinel");
+    const el = document.getElementById('hero-sentinel');
     if (!el) {
       const onScroll = () => setOverlay(window.scrollY < 1);
       onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
-      return () => window.removeEventListener("scroll", onScroll);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => window.removeEventListener('scroll', onScroll);
     }
     const io = new IntersectionObserver(
       ([entry]) => setOverlay(entry.isIntersecting),
-      { rootMargin: "-1px 0px 0px 0px", threshold: [0, 1] }
+      { rootMargin: '-1px 0px 0px 0px', threshold: [0, 1] },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -41,51 +45,59 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
       }
-      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(e.target as Node)
+      ) {
         setProfileMenuOpen(false);
       }
     };
     const onEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         setMenuOpen(false);
         setProfileMenuOpen(false);
       }
     };
-    document.addEventListener("click", onDocClick);
-    document.addEventListener("keydown", onEsc);
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onEsc);
     return () => {
-      document.removeEventListener("click", onDocClick);
-      document.removeEventListener("keydown", onEsc);
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onEsc);
     };
   }, []);
 
-  const headerClass = useMemo(
-    () => {
-      const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
-      return isSolid
-        ? "fixed top-0 inset-x-0 z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200"
-        : "fixed top-0 inset-x-0 z-50 bg-white/10 text-white backdrop-blur-md transition-colors duration-200";
-    },
-    [overlay, variant]
-  );
+  const headerClass = useMemo(() => {
+    const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
+    return isSolid
+      ? 'fixed top-0 inset-x-0 z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-colors duration-200'
+      : 'fixed top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-colors duration-200';
+  }, [overlay, variant]);
 
   const avatarSrc = user?.avatar ?? 'https://placehold.co/64x64'; // Added line
 
   return (
     <>
-      <header data-site-header style={{ height: 'auto' }} className={headerClass}>
-        <nav className="mx-auto h-16 max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <header
+        data-site-header
+        style={{ height: 'auto' }}
+        className={headerClass}
+      >
+        <nav className="mx-auto h-20 max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Marca */}
           <Link
             href="/"
             aria-label="Randomtrip"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-2 shrink-0 py-2"
           >
             <Image
-              src="/assets/logos/Logo.svg"
+              src={
+                overlay
+                  ? '/assets/logos/logo_getrandomtrip_white.png'
+                  : '/assets/logos/logo_getrandomtrip.png'
+              }
               alt="Randomtrip"
-              width={256}
-              height={64}
+              width={200}
+              height={50}
             />
           </Link>
 
@@ -97,7 +109,7 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
               className="p-2 rounded-full hover:bg-white/10"
               aria-label="Buscar"
               onClick={() =>
-                window.dispatchEvent(new CustomEvent("open-search"))
+                window.dispatchEvent(new CustomEvent('open-search'))
               }
             >
               <svg
@@ -118,10 +130,17 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
             >
               Trippers’ Finder
             </Link>
-            <Link href="/#inspiration" prefetch={false} className="hover:underline underline-offset-4">
+            <Link
+              href="/#inspiration"
+              prefetch={false}
+              className="hover:underline underline-offset-4"
+            >
               Trippers’ Inspiration
             </Link>
-            <Link href="/nosotros" className="hover:underline underline-offset-4">
+            <Link
+              href="/nosotros"
+              className="hover:underline underline-offset-4"
+            >
               Nosotros
             </Link>
 
@@ -278,7 +297,9 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
               <button
                 aria-label="Iniciar sesión"
                 className="p-1 rounded-full hover:bg-white/10"
-                onClick={() => window.dispatchEvent(new CustomEvent("open-auth"))}
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent('open-auth'))
+                }
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -302,10 +323,8 @@ export default function Navbar({ variant = 'auto' }: { variant?: 'auto' | 'solid
           </div>
         </nav>
       </header>
-
       {/* Spacer para que el contenido no quede tapado cuando deja de ser overlay */}
       {!overlay && <div aria-hidden className="h-16" />}
-
       <AuthModal /> {/* Mount AuthModal here */}
     </>
   );

@@ -1,10 +1,22 @@
 // Simple stub SSR; reemplazar por integración real más adelante
 export type SessionUser = {
-  name: string; email: string;
-  handle?: string; avatar?: string;
-  prefs?: { country?: string; bio?: string; verified?: boolean; publicProfile?: boolean };
+  name: string;
+  email: string;
+  handle?: string;
+  avatar?: string;
+  prefs?: {
+    country?: string;
+    bio?: string;
+    verified?: boolean;
+    publicProfile?: boolean;
+  };
   socials?: { ig?: string; yt?: string; web?: string };
-  metrics?: { bookings?: number; spendUSD?: number; reviews?: number; favs?: number };
+  metrics?: {
+    bookings?: number;
+    spendUSD?: number;
+    reviews?: number;
+    favs?: number;
+  };
 };
 
 // TODO: leer cookies/jwt cuando esté la auth real.
