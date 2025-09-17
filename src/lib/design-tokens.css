@@ -14,7 +14,7 @@
   /* ============================================================================
      LIGHT THEME COLORS
   ============================================================================ */
-  
+
   /* Base Colors */
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -22,22 +22,22 @@
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  
-  /* Primary Colors */
-  --primary: 199 89% 48%;
-  --primary-foreground: 210 40% 98%;
-  --primary-50: 204 100% 97%;
-  --primary-100: 204 100% 94%;
-  --primary-200: 201 100% 89%;
-  --primary-300: 199 100% 81%;
-  --primary-400: 199 100% 71%;
-  --primary-500: 199 89% 48%;
-  --primary-600: 200 98% 39%;
-  --primary-700: 201 96% 32%;
-  --primary-800: 201 90% 27%;
-  --primary-900: 202 80% 24%;
-  --primary-950: 204 100% 15%;
-  
+
+  /* Primary Colors - Adventure Blue (inspired by ocean depths) */
+  --primary: 210 100% 25%;
+  --primary-foreground: 0 0% 100%;
+  --primary-50: 210 100% 98%;
+  --primary-100: 210 100% 95%;
+  --primary-200: 210 100% 90%;
+  --primary-300: 210 100% 80%;
+  --primary-400: 210 100% 65%;
+  --primary-500: 210 100% 25%;
+  --primary-600: 210 100% 20%;
+  --primary-700: 210 100% 15%;
+  --primary-800: 210 100% 12%;
+  --primary-900: 210 100% 8%;
+  --primary-950: 210 100% 5%;
+
   /* Secondary Colors */
   --secondary: 210 40% 96%;
   --secondary-foreground: 222.2 84% 4.9%;
@@ -52,7 +52,7 @@
   --secondary-800: 217 33% 17%;
   --secondary-900: 222 84% 5%;
   --secondary-950: 229 84% 5%;
-  
+
   /* UI Colors */
   --muted: 210 40% 96%;
   --muted-foreground: 215.4 16.3% 46.9%;
@@ -116,6 +116,45 @@
   --info-700: 201 96% 32%;
   --info-800: 201 90% 27%;
   --info-900: 202 80% 24%;
+
+  /* ============================================================================
+     TRAVEL & ADVENTURE THEME COLORS
+  ============================================================================ */
+
+  /* Coastal Escape Palette */
+  --coastal-deep: 210 30% 18%; /* Deep Blue */
+  --coastal-soft: 220 50% 70%; /* Soft Pastel Blue */
+  --coastal-sandy: 30 40% 75%; /* Sandy Beige */
+  --coastal-crisp: 0 0% 95%; /* Crisp White */
+  --coastal-teal: 160 40% 35%; /* Muted Teal */
+
+  /* Desert Sunset Palette */
+  --desert-earth: 20 35% 35%; /* Warm Earthy Brown */
+  --desert-gold: 45 100% 50%; /* Golden Yellow */
+  --desert-peach: 25 70% 80%; /* Soft Peach */
+  --desert-red: 0 50% 50%; /* Deep Red */
+  --desert-orange: 30 60% 60%; /* Muted Orange */
+
+  /* Mountain Retreat Palette */
+  --mountain-rich: 120 40% 35%; /* Rich Green */
+  --mountain-soft: 120 30% 70%; /* Soft Muted Green */
+  --mountain-earth: 20 35% 35%; /* Earthy Brown */
+  --mountain-beige: 35 50% 80%; /* Light Beige */
+  --mountain-forest: 180 30% 25%; /* Deep Forest Green */
+
+  /* Urban Vibes Palette */
+  --urban-charcoal: 220 15% 20%; /* Deep Charcoal */
+  --urban-vibrant: 0 50% 50%; /* Vibrant Red */
+  --urban-lavender: 250 50% 70%; /* Soft Lavender */
+  --urban-crisp: 0 0% 95%; /* Crisp White */
+  --urban-taupe: 30 20% 70%; /* Muted Taupe */
+
+  /* Tropical Paradise Palette */
+  --tropical-coral: 10 100% 65%; /* Vibrant Coral */
+  --tropical-mint: 150 50% 70%; /* Soothing Mint Green */
+  --tropical-yellow: 45 90% 65%; /* Soft Yellow */
+  --tropical-white: 0 0% 95%; /* Crisp White */
+  --tropical-teal: 160 50% 35%; /* Deep Teal */
 }
 
 /* ============================================================================
@@ -129,7 +168,7 @@
   --card-foreground: 210 40% 98%;
   --popover: 222.2 84% 4.9%;
   --popover-foreground: 210 40% 98%;
-  
+
   /* Primary Colors */
   --primary: 199 89% 48%;
   --primary-foreground: 222.2 84% 4.9%;
@@ -144,7 +183,7 @@
   --primary-800: 201 100% 89%;
   --primary-900: 204 100% 94%;
   --primary-950: 204 100% 97%;
-  
+
   /* Secondary Colors */
   --secondary: 217.2 32.6% 17.5%;
   --secondary-foreground: 210 40% 98%;
@@ -159,7 +198,7 @@
   --secondary-800: 210 40% 96%;
   --secondary-900: 210 40% 98%;
   --secondary-950: 0 0% 100%;
-  
+
   /* UI Colors */
   --muted: 217.2 32.6% 17.5%;
   --muted-foreground: 215 20.2% 65.1%;

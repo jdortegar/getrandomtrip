@@ -130,12 +130,49 @@ export default {
           800: 'hsl(var(--info-800))',
           900: 'hsl(var(--info-900))',
         },
+        // Travel & Adventure Theme Colors
+        coastal: {
+          deep: 'hsl(var(--coastal-deep))',
+          soft: 'hsl(var(--coastal-soft))',
+          sandy: 'hsl(var(--coastal-sandy))',
+          crisp: 'hsl(var(--coastal-crisp))',
+          teal: 'hsl(var(--coastal-teal))',
+        },
+        desert: {
+          earth: 'hsl(var(--desert-earth))',
+          gold: 'hsl(var(--desert-gold))',
+          peach: 'hsl(var(--desert-peach))',
+          red: 'hsl(var(--desert-red))',
+          orange: 'hsl(var(--desert-orange))',
+        },
+        mountain: {
+          rich: 'hsl(var(--mountain-rich))',
+          soft: 'hsl(var(--mountain-soft))',
+          earth: 'hsl(var(--mountain-earth))',
+          beige: 'hsl(var(--mountain-beige))',
+          forest: 'hsl(var(--mountain-forest))',
+        },
+        urban: {
+          charcoal: 'hsl(var(--urban-charcoal))',
+          vibrant: 'hsl(var(--urban-vibrant))',
+          lavender: 'hsl(var(--urban-lavender))',
+          crisp: 'hsl(var(--urban-crisp))',
+          taupe: 'hsl(var(--urban-taupe))',
+        },
+        tropical: {
+          coral: 'hsl(var(--tropical-coral))',
+          mint: 'hsl(var(--tropical-mint))',
+          yellow: 'hsl(var(--tropical-yellow))',
+          white: 'hsl(var(--tropical-white))',
+          teal: 'hsl(var(--tropical-teal))',
+        },
       },
       // Design System Typography
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        serif: ['Georgia', 'serif'],
+        sans: ['Inter', 'Helvetica Neue', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'Times New Roman', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        display: ['Playfair Display', 'Times New Roman', 'serif'],
       },
       fontSize: {
         xs: ['0.75rem', { lineHeight: '1rem' }],
