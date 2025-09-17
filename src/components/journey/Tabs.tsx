@@ -1,12 +1,12 @@
 'use client';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 
 type TabId = 'logistics'|'preferences'|'avoid';
 
 export function JourneyTabs({
   logistics, preferences, avoid,
 }:{ logistics: React.ReactNode; preferences: React.ReactNode; avoid: React.ReactNode }) {
-  const { activeTab, setPartial } = useJourneyStore();
+  const { activeTab, setPartial } = useStore();
   const setTab = (t:TabId) => setPartial({ activeTab: t });
 
   const Btn = ({id,label}:{id:TabId;label:string}) => {

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import GlassCard from '@/components/ui/GlassCard';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 
 type Budget = 'low' | 'mid' | 'high' | '';
 type Traveler = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa' | '';

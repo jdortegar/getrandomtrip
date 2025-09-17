@@ -1,6 +1,7 @@
 
 'use client';
-import { useJourneyStore, countOptionalFilters } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
+import { countOptionalFilters } from '@/store/slices/journeyStore';
 import { useRouter } from 'next/navigation';
 import AvoidGrid from './avoid/AvoidGrid';
 
@@ -12,7 +13,7 @@ const calculateFilterCost = (filterCount: number): number => {
 
 export default function FiltersTab() {
   const router = useRouter();
-  const { filters, setPartial, basePriceUsd, logistics } = useJourneyStore();
+  const { filters, setPartial, basePriceUsd, logistics } = useStore();
 
   const handleFilterChange = <K extends keyof typeof filters>(key: K, value: (typeof filters)[K]) => {
     const newFilters = { ...filters, [key]: value };

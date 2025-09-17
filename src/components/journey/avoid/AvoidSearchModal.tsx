@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { useQuerySync } from '@/hooks/useQuerySync';
 
 type Props = { open: boolean; onClose: () => void };
 
 export default function AvoidSearchModal({ open, onClose }: Props) {
-  const { filters, setPartial } = useJourneyStore();
+  const { filters, setPartial } = useStore();
   const sync = useQuerySync();
   const [query, setQuery] = useState('');
   const [local, setLocal] = useState<string[]>([]);

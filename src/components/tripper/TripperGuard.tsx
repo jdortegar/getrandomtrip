@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 
 export default function TripperGuard({ children }: { children: React.ReactNode }) {
   const { isAuthed, user } = useUserStore();

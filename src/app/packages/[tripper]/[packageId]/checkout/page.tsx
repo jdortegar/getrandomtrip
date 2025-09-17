@@ -37,7 +37,7 @@ export default function CheckoutPage() {
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Resumen de tu Viaje</h2>
           <div className="space-y-4 text-gray-700 mb-6">
             <p className="text-lg"><span className="font-semibold">Paquete:</span> {pkg.title}</p>
-            <p className="text-lg"><span className="font-semibold">Noches:</span> {pkg.nights}</p>
+            <p className="text-lg"><span className="font-semibold">Noches:</span> {pkg.maxNights}</p>
             <p className="text-lg"><span className="font-semibold">Nº de Viajeros:</span> {travelers}</p>
             <div className="border-t border-gray-200 pt-4 mt-4">
               <p className="text-xl font-semibold text-gray-800">Precio por persona: ${pricePerPerson.toFixed(2)} USD</p>

@@ -1,10 +1,10 @@
 'use client';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { computeFiltersCostPerTrip, computeAddonsCostPerTrip } from '@/lib/pricing';
 import { ADDONS } from '@/data/addons-catalog';
 
 export default function SummaryCard(){
-  const { displayPrice, basePriceUsd, logistics, filters, addons, activeTab, setPartial } = useJourneyStore();
+  const { displayPrice, basePriceUsd, logistics, filters, addons, activeTab, setPartial } = useStore();
 
   const pax = logistics.pax || 1;
 

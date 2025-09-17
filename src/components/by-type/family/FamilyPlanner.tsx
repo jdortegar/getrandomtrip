@@ -6,7 +6,7 @@ import Image from 'next/image';
 import EmpathyCard from '@/components/by-type/family/EmpathyCard';
 import TravelerGroupCard from '@/components/by-type/family/TravelerGroupCard';
 import PhotoTileCard from '@/components/by-type/family/PhotoTileCard';
-import { usePlannerStore } from '@/stores/planner';
+import { useStore } from '@/store/store';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
 type Step = 'Intro' | 'Presupuesto' | '🌟 Destination Decoded' | 'Tipo de escapada';
@@ -15,7 +15,7 @@ const BG_IMG = 'https://images.unsplash.com/photo-1559054109-82d938dac629';
 
 export default function FamilyPlanner() {
   const router = useRouter();
-  const { budgetTier, familyType, setBudgetTier, setFamilyType, setEscapeType } = usePlannerStore();
+  const { budgetTier, familyType, setBudgetTier, setFamilyType, setEscapeType } = useStore();
   const [step, setStep] = useState<Step>('Intro');
   const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(null);
 

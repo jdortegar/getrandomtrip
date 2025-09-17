@@ -1,6 +1,6 @@
 // frontend/src/lib/pricing.ts
 import { ADDONS, Addon } from '@/data/addons-catalog';
-import { countOptionalFilters } from '@/store/journeyStore';
+import { countOptionalFilters } from '@/store/slices/journeyStore';
 
 export function computeFiltersCostPerTrip(filters: any, pax: number): number {
   const optional = countOptionalFilters(filters);

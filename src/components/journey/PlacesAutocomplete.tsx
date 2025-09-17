@@ -1,6 +1,6 @@
 'use client';
-import { useJourneyStore } from '@/store/journeyStore';
-import { Input } from '@/components/ui/input';
+import { useStore } from '@/store/store';
+import { Input } from '@/components/ui/Input';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Country {
@@ -15,7 +15,7 @@ interface City {
 }
 
 export function CountryInput() {
-  const { logistics, setPartial } = useJourneyStore();
+  const { logistics, setPartial } = useStore();
   const [value, setValue] = useState(logistics.country?.name ?? '');
   const [suggestions, setSuggestions] = useState<Country[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -148,7 +148,7 @@ export function CountryInput() {
 }
 
 export function CityInput() {
-  const { logistics, setPartial } = useJourneyStore();
+  const { logistics, setPartial } = useStore();
   const [value, setValue] = useState(logistics.city?.name ?? '');
   const [suggestions, setSuggestions] = useState<City[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);

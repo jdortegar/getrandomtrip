@@ -1,5 +1,5 @@
 'use client';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 
 const LABELS = {
   transport: { avion: 'Avión', bus: 'Bus', tren: 'Tren', barco: 'Barco/Crucero' } as const,
@@ -23,7 +23,7 @@ function Chip({ children, muted }: { children: React.ReactNode; muted?: boolean 
 }
 
 export default function TopFiltersSummary() {
-  const { filters, setPartial } = useJourneyStore();
+  const { filters, setPartial } = useStore();
   const goPrefs = () => setPartial({ activeTab: 'preferences' as const });
   const goAvoid = () => setPartial({ activeTab: 'avoid' as const });
 

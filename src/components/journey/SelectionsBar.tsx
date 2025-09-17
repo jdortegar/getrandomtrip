@@ -1,8 +1,8 @@
 'use client';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 
 export default function SelectionsBar() {
-  const { displayPrice } = useJourneyStore();
+  const { displayPrice } = useStore();
 
   // Si no hay precio para mostrar, no renderizamos nada.
   if (!displayPrice) return null;

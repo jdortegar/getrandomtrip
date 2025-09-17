@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/ui/BgCarousel';
+import BgCarousel from '@/components/media/BgCarousel';
 import GlassCard from '@/components/ui/GlassCard';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { buildICS } from '@/lib/ics';
 
 export default function ConfirmationPage() {
-  const { logistics, type } = useJourneyStore();
+  const { logistics, type } = useStore();
   const [left, setLeft] = useState<string>('—');
 
   useEffect(() => {

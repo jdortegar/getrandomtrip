@@ -1,7 +1,12 @@
-import { create } from 'zustand';
-import { TripperRoute, Earning, RouteStatus, TripperLevel } from '../types/tripper';
+import { create, StateCreator } from 'zustand';
+import {
+  TripperRoute,
+  Earning,
+  RouteStatus,
+  TripperLevel,
+} from '../../types/tripper';
 
-interface TripperState {
+export interface TripperState {
   routes: TripperRoute[];
   earnings: Earning[];
   // Add other state properties as needed
@@ -88,7 +93,7 @@ const mockEarnings: Earning[] = [
   },
 ];
 
-export const useTripperStore = create<TripperState>(() => ({
+export const createTripperSlice: StateCreator<TripperState> = () => ({
   routes: mockRoutes,
   earnings: mockEarnings,
-}));
+});

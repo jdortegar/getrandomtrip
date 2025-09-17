@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useTripperStore } from '../../../store/tripperStore';
+import { useStore } from '@/store/store';
 import Link from 'next/link';
 import { RouteStatus, TripperLevel } from '../../../types/tripper';
 
 export default function TripperRoutesPage() {
-  const { routes } = useTripperStore();
+  const { routes } = useStore();
   const [selectedStatus, setSelectedStatus] = useState<RouteStatus | 'all'>('all');
   const [selectedLevel, setSelectedLevel] = useState<TripperLevel | 'all'>('all');
 

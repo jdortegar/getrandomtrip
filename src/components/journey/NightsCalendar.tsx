@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { getMaxNights } from '@/lib/levels';
 import { addDays, fmtISO, toDateOnly } from '@/lib/date';
-import { LevelSlug } from '@/store/journeyStore';
+import { LevelSlug } from '@/store/slices/journeyStore';
 
 function Chip({
   active,
@@ -43,7 +43,7 @@ const levelNames: Record<LevelSlug, string> = {
 };
 
 export default function NightsCalendar() {
-  const { level, logistics, setPartial } = useJourneyStore();
+  const { level, logistics, setPartial } = useStore();
   const { startDate, nights } = logistics;
 
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(

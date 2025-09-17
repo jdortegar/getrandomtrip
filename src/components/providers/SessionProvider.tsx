@@ -3,7 +3,7 @@
 import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useUserStore, type UserRole } from '@/store/userStore';
+import { useUserStore, type UserRole } from '@/store/slices/userStore';
 
 function SessionSync() {
   const { data: session, status } = useSession();

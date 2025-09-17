@@ -1,11 +1,11 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTripperStore } from '@/store/tripperStore';
+import { useStore } from '@/store/store';
 import { formatUSD } from '@/lib/format';
 
 export default function TripperEarningsPage() {
-  const earnings = useTripperStore(s => s.earnings);
+  const earnings = useStore(s => s.earnings);
 
   const current = earnings[0];
   const lastSix = earnings.slice(0, 6);

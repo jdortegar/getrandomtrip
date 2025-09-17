@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 import { signIn, signOut } from 'next-auth/react';
-import type { TravelerType, BudgetLevel, UserRole } from '@/store/userStore';
+import type { TravelerType, BudgetLevel, UserRole } from '@/store/slices/userStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { Eye, EyeOff, Mail, Lock, User, Calendar, MapPin } from 'lucide-react';
 

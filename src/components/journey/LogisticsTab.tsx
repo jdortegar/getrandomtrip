@@ -1,12 +1,12 @@
 'use client';
 
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { CountryInput, CityInput } from './PlacesAutocomplete';
 import NightsCalendar from './NightsCalendar';
 import StepperNav from './StepperNav';
 
 export default function LogisticsTab() {
-  const { logistics, setPartial } = useJourneyStore();
+  const { logistics, setPartial } = useStore();
 
   const decPax = () =>
     setPartial({ logistics: { ...logistics, pax: Math.max(1, (logistics.pax || 1) - 1) } });

@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar';
 import GlassCard from '@/components/ui/GlassCard';
-import BgCarousel from '@/components/ui/BgCarousel';
+import BgCarousel from '@/components/media/BgCarousel';
 import Link from 'next/link';
 
 export default function UnauthorizedPage() {

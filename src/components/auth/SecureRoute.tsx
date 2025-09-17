@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 import GlassCard from '@/components/ui/GlassCard';
-import BgCarousel from '@/components/ui/BgCarousel';
+import BgCarousel from '@/components/media/BgCarousel';
 
 interface SecureRouteProps {
   children: React.ReactNode;

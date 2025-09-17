@@ -8,7 +8,7 @@ import Hero from '@/components/landing/Hero';
 import ExplorationPageContent from '@/components/landing/ExplorationPageContent';
 import BlogSection from '@/components/landing/BlogSection';
 import ReadyForAdventureSection from '@/components/landing/ReadyForAdventureSection';
-import PremiumLoader from '@/components/ui/feedback/PremiumLoader';
+import PremiumLoader from '@/components/feedback/PremiumLoader';
 
 // --- Main Home Page Component ---
 export default function HomePage() {

@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useTripperStore } from '@/store/tripperStore';
+import { useStore } from '@/store/store';
 
 export default function RouteDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id?.toString() ?? '';
-  const route = useTripperStore(s => s.routes.find(r => r.id === id));
+  const route = useStore(s => s.routes.find(r => r.id === id));
 
   if (!route) {
     return (

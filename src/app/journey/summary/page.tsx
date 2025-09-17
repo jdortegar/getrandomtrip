@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 
 import Navbar from '@/components/Navbar';
 import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/ui/BgCarousel';
+import BgCarousel from '@/components/media/BgCarousel';
 import GlassCard from '@/components/ui/GlassCard';
 
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { ADDONS } from '@/data/addons-catalog';
 import { computeAddonsCostPerTrip, computeFiltersCostPerTrip } from '@/lib/pricing';
 
@@ -16,7 +16,7 @@ const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
 export default function SummaryPage() {
   const router = useRouter();
-  const { basePriceUsd, displayPrice, logistics, filters, addons, level, type } = useJourneyStore();
+  const { basePriceUsd, displayPrice, logistics, filters, addons, level, type } = useStore();
 
   const pax = logistics.pax || 1;
   const basePerPax = basePriceUsd || 0;

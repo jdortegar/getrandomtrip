@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 import TripperGuard from '@/components/tripper/TripperGuard'; // Added import
 
 export default function TripperLayout({ children }: { children: React.ReactNode }) {

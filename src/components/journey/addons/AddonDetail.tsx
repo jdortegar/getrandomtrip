@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { ADDONS } from '@/data/addons-catalog'
-import { useJourneyStore } from '@/store/journeyStore'
+import { useStore } from '@/store/store'
 import { X, Minus, Plus } from 'lucide-react'
 
 export default function AddonDetail({
@@ -12,7 +12,7 @@ export default function AddonDetail({
   activeId: string | null
   onClose: () => void
 }) {
-  const { addons, setAddon, removeAddon, logistics } = useJourneyStore()
+  const { addons, setAddon, removeAddon, logistics } = useStore()
   const sel = addons.selected.find((s) => s.id === activeId)
 
   const [qty, setQty] = useState(sel?.qty || 1)

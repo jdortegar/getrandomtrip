@@ -1,18 +1,18 @@
 'use client';
-import { create } from 'zustand';
 
-export type FromGate = 'couple'|'solo'|'family'|'group'|'honeymoon'|'paws'|'tripper';
-export type Tier =
-  | 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier';
+import { StateCreator } from 'zustand';
 
-type JourneyState = {
+export type FromGate = 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws' | 'tripper';
+export type Tier = 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier';
+
+export interface JourneyStoreState {
   from?: FromGate;
   type?: FromGate;
   tier?: Tier;
-  level?: Tier;          // por compatibilidad
+  level?: Tier;
   tripperId?: string;
-  priceKey?: string;     // p.ej. byTraveller.couple.essenza
-  pbp?: number;          // override directo desde la card (precio base por persona)
+  priceKey?: string;
+  pbp?: number;
 
   currency: string;
   basePricePerPerson: number;
@@ -20,9 +20,9 @@ type JourneyState = {
   seedFromParams: (search: URLSearchParams) => void;
   setBasePrice: (price: number) => void;
   setCurrency: (c: string) => void;
-};
+}
 
-export const useJourneyStore = create<JourneyState>((set) => ({
+export const createJourneyStore: StateCreator<JourneyStoreState> = (set) => ({
   currency: 'USD',
   basePricePerPerson: 0,
 
@@ -50,4 +50,4 @@ export const useJourneyStore = create<JourneyState>((set) => ({
 
   setBasePrice: (price) => set({ basePricePerPerson: price }),
   setCurrency: (c) => set({ currency: c }),
-}));
+});

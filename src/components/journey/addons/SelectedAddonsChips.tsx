@@ -1,12 +1,12 @@
 'use client'
 
 import React from 'react'
-import { useJourneyStore } from '@/store/journeyStore'
+import { useStore } from '@/store/store'
 import { ADDONS } from '@/data/addons-catalog'
 import { X } from 'lucide-react'
 
 export default function SelectedAddonsChips() {
-  const { addons, removeAddon } = useJourneyStore()
+  const { addons, removeAddon } = useStore()
   const sel = addons?.selected ?? []
   if (!sel.length) return null
 

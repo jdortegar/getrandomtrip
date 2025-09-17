@@ -2,7 +2,7 @@
 
 import SelectedFiltersChips from './SelectedFiltersChips';
 import StepperNav from './StepperNav';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { useQuerySync } from '@/hooks/useQuerySync';
 
 const Seg = ({options,value,onChange}:{options:string[];value:string;onChange:(v:string)=>void}) => (
@@ -22,7 +22,7 @@ const Seg = ({options,value,onChange}:{options:string[];value:string;onChange:(v
 );
 
 export default function PreferencesTab(){
-  const { filters, setPartial } = useJourneyStore();
+  const { filters, setPartial } = useStore();
   const sync = useQuerySync();
 
   const setAndSync = (patch: Partial<typeof filters>) => {

@@ -1,5 +1,5 @@
 // frontend/src/data/addons-catalog.ts
-import type { AddonUnit } from '@/store/journeyStore'
+import type { AddonUnit } from '@/store/slices/journeyStore'
 
 export type Addon = {
   id: string

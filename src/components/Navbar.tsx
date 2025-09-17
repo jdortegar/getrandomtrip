@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Img from '@/components/common/Img'; // Added import
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 import { signOut as nextAuthSignOut } from 'next-auth/react';
 import EnhancedAuthModal from '@/components/auth/EnhancedAuthModal';
 import { ChevronDown, LogOut } from 'lucide-react';

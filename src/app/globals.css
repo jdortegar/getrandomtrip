@@ -1,13 +1,23 @@
-@import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+@import '../styles/design-system.css';
 
 /* globals.css */
 :root {
   --rhythm: 8px;
 }
-html { scroll-behavior: smooth; }
-:focus-visible { outline: 2px dashed currentColor; outline-offset: 3px; }
-h1,h2,h3 { letter-spacing: var(--tracking, -0.01em); }
+html {
+  scroll-behavior: smooth;
+}
+:focus-visible {
+  outline: 2px dashed currentColor;
+  outline-offset: 3px;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: var(--tracking, -0.01em);
+}
 
 :root {
   --background: #ffffff;
@@ -15,15 +25,15 @@ h1,h2,h3 { letter-spacing: var(--tracking, -0.01em); }
 }
 
 :root {
-  --rt-primary: #0A2240;
-  --rt-terracotta: #D97E4A;
-  --rt-accent: #F2C53D;
-  --rt-neutral: #F5F5F5;
+  --rt-primary: #0a2240;
+  --rt-terracotta: #d97e4a;
+  --rt-accent: #f2c53d;
+  --rt-neutral: #f5f5f5;
   --rt-text: #212121;
 }
 
 .theme-scope {
-  background: var(--bg, #FFF);
+  background: var(--bg, #fff);
   color: var(--fg, #212121);
 }
 .theme-card {
@@ -31,7 +41,7 @@ h1,h2,h3 { letter-spacing: var(--tracking, -0.01em); }
   border: 1px solid color-mix(in oklab, var(--fg), transparent 85%);
 }
 .theme-accent {
-  color: var(--accent, #F2C53D);
+  color: var(--accent, #f2c53d);
 }
 
 @theme inline {
@@ -55,8 +65,27 @@ body {
 }
 
 /* Estilos para el indicador de Scroll */
-.scroll-indicator{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);font-size:.75rem;letter-spacing:.3em;opacity:.9;animation:scrollPulse 1.8s infinite ease-in-out}
-@keyframes scrollPulse{0%,100%{opacity:.25;transform:translateX(-50%) translateY(0)}50%{opacity:1;transform:translateX(-50%) translateY(-4px)}}
+.scroll-indicator {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  opacity: 0.9;
+  animation: scrollPulse 1.8s infinite ease-in-out;
+}
+@keyframes scrollPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
 
 /* Hide scrollbar for webkit-based browsers like Chrome, Safari */
 .hide-scrollbar::-webkit-scrollbar {
@@ -65,8 +94,8 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .filter-invert {
@@ -90,14 +119,14 @@ body {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #4B5563; /* Gray track */
+  background-color: #4b5563; /* Gray track */
 }
 
 .custom-scrollbar-thumb {
   position: absolute;
   top: 0;
   height: 100%;
-  background-color: #FFFFFF; /* White thumb for contrast */
+  background-color: #ffffff; /* White thumb for contrast */
   cursor: grab;
 }
 
@@ -113,26 +142,44 @@ body {
   }
 
   /* Cuando el header esté en overlay (sobre hero), invertimos el logo oscuro */
-  [data-overlay="true"] .logo-auto {
+  [data-overlay='true'] .logo-auto {
     filter: invert(1) hue-rotate(180deg) contrast(1.05) brightness(1.1);
   }
 }
 /* === TIPOGRAFÍA GLOBAL (más compacta y fluida) ================ */
 @layer base {
   /* De ~14px a ~16px según viewport */
-  html { font-size: clamp(14px, 0.9vw + 10px, 16px); }
-  body { line-height: 1.6; }
+  html {
+    font-size: clamp(14px, 0.9vw + 10px, 16px);
+  }
+  body {
+    line-height: 1.6;
+  }
 
   /* Escala por defecto para headings (más chica) */
-  h1 { @apply text-4xl md:text-5xl lg:text-6xl leading-tight; }
-  h2 { @apply text-3xl md:text-4xl leading-snug; }
-  h3 { @apply text-2xl md:text-3xl leading-snug; }
-  h4 { @apply text-xl md:text-2xl; }
-  h5 { @apply text-lg md:text-xl; }
-  h6 { @apply text-base md:text-lg; }
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl leading-tight;
+  }
+  h2 {
+    @apply text-3xl md:text-4xl leading-snug;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl leading-snug;
+  }
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  h5 {
+    @apply text-lg md:text-xl;
+  }
+  h6 {
+    @apply text-base md:text-lg;
+  }
 
   /* Párrafos más chicos y legibles */
-  p  { @apply text-[0.98rem] md:text-[1.05rem] leading-relaxed; }
+  p {
+    @apply text-[0.98rem] md:text-[1.05rem] leading-relaxed;
+  }
 }
 
 /* === COMPONENTES: CTAs consistentes en todo el sitio =========== */
@@ -143,21 +190,32 @@ body {
            text-base font-bold text-white shadow-lg ring-1 transition;
     background: var(--rt-terracotta);
   }
-  .btn-primary:hover { transform: translateY(-2px); filter: brightness(0.95); }
-  .btn-primary:focus { outline: none; box-shadow: 0 0 0 2px var(--rt-terracotta); }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.95);
+  }
+  .btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--rt-terracotta);
+  }
 
   /* Botón secundario (outline translúcido + blur) */
   .btn-secondary {
     @apply inline-flex items-center justify-center rounded-lg px-7 py-3.5
            text-base font-semibold text-white backdrop-blur-sm shadow-md ring-1 ring-white/30
            transition;
-    background: rgba(255,255,255,.15);
+    background: rgba(255, 255, 255, 0.15);
   }
-  .btn-secondary:hover { background: rgba(255,255,255,.25); }
-  .btn-secondary:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,.5); }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+  .btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+  }
 
   /* Botón de cards (Sección 3) */
-    .btn-card {
+  .btn-card {
     @apply inline-flex items-center justify-center rounded-lg px-5 py-3
            font-semibold shadow-md ring-1 ring-white/40
            transition;
@@ -174,5 +232,3 @@ body {
     box-shadow: 0 0 0 2px var(--rt-terracotta);
   }
 }
-
-

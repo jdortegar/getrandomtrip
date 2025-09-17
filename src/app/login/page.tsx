@@ -2,13 +2,13 @@
 
 import Navbar from '@/components/Navbar';
 import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/ui/BgCarousel';
+import BgCarousel from '@/components/media/BgCarousel';
 import GlassCard from '@/components/ui/GlassCard';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import type { UserRole } from '@/store/userStore';
+import type { UserRole } from '@/store/slices/userStore';
 import { dashboardPathFromRole } from '@/lib/roles';
 
 function LoginContent() {

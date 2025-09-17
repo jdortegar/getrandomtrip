@@ -2,15 +2,15 @@
 
 import Navbar from '@/components/Navbar';
 import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/ui/BgCarousel';
+import BgCarousel from '@/components/media/BgCarousel';
 import GlassCard from '@/components/ui/GlassCard';
 import { useRouter } from 'next/navigation';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { computeAddonsCostPerTrip, computeFiltersCostPerTrip } from '@/lib/pricing';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { basePriceUsd, logistics, filters, addons } = useJourneyStore();
+  const { basePriceUsd, logistics, filters, addons } = useStore();
   const pax = logistics.pax || 1;
 
   const filtersTrip = computeFiltersCostPerTrip(filters, pax);

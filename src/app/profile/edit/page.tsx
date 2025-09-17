@@ -3,10 +3,10 @@
 import PageContainer from '@/components/user/PageContainer';
 import SectionCard from '@/components/user/SectionCard';
 import GlassCard from '@/components/ui/GlassCard';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/store/slices/userStore';
 import { useEffect, useState } from 'react';
 import Link from 'next/link'; // Added import
-import type { TravelerType, BudgetLevel } from '@/store/userStore';
+import type { TravelerType, BudgetLevel } from '@/store/slices/userStore';
 
 export default function EditProfilePage() {
   const { isAuthed, user, openAuth, updateAccount, upsertPrefs } = useUserStore();

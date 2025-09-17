@@ -1,6 +1,6 @@
 'use client';
 import { X, Lock } from 'lucide-react';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 
 const LABELS = {
   transport: { avion: 'Avión', bus: 'Bus', tren: 'Tren', barco: 'Barco/Crucero' },
@@ -36,7 +36,7 @@ function Chip({ item }: { item: Item }) {
 }
 
 export default function SelectedFiltersChips() {
-  const { filters, setPartial } = useJourneyStore();
+  const { filters, setPartial } = useStore();
 
   const items: Item[] = [];
 

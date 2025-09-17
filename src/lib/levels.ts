@@ -1,4 +1,4 @@
-import type { LevelSlug } from '@/store/journeyStore';
+import type { LevelSlug } from '@/store/slices/journeyStore';
 
 export const MAX_NIGHTS: Record<LevelSlug, number | 'custom'> = {
   essenza: 2,

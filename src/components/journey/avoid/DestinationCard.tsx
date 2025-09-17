@@ -3,13 +3,13 @@
 
 import React from 'react';
 import Img from '@/components/common/Img'; // Added import
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import type { AvoidSuggestion } from '@/data/avoid-suggestions';
 import { Check } from 'lucide-react';
 import { useQuerySync } from '@/hooks/useQuerySync';
 
 export default function DestinationCard({ suggestion }: { suggestion: AvoidSuggestion }) {
-  const { filters, setPartial } = useJourneyStore();
+  const { filters, setPartial } = useStore();
   const sync = useQuerySync();
 
   const selected = filters.avoidDestinations ?? [];

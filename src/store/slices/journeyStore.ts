@@ -1,5 +1,5 @@
 // frontend/src/store/journeyStore.ts
-import { create } from 'zustand';
+import { create, StateCreator } from 'zustand';
 
 export type LevelSlug =
   | 'essenza'
@@ -11,11 +11,11 @@ export type LevelSlug =
 export type Logistics = {
   country?: { name: string; code?: string };
   city?: { name: string; placeId?: string };
-  origin?: string;       // <-- agregado
-  startDate?: string;    // ISO
-  endDate?: string;      // ISO
-  nights: number;        // default 1
-  pax: number;           // default 2
+  origin?: string; // <-- agregado
+  startDate?: string; // ISO
+  endDate?: string; // ISO
+  nights: number; // default 1
+  pax: number; // default 2
 };
 
 export type Filters = {
@@ -33,7 +33,7 @@ export type AddonsState = {
   selected: AddonSelection[]; // sólo los elegidos
 };
 
-type JourneyState = {
+export type JourneyState = {
   from: 'tripper' | '';
   type: 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws';
   level: LevelSlug;
@@ -43,7 +43,7 @@ type JourneyState = {
   filters: Filters;
   addons: AddonsState;
   filtersCostUsd: number; // por viaje (total)
-  addonsCostUsd: number;  // por viaje (total)
+  addonsCostUsd: number; // por viaje (total)
   totalPerPaxUsd: number;
   activeTab: 'logistics' | 'preferences' | 'avoid';
   setPartial: (patch: Partial<JourneyState>) => void;
@@ -62,7 +62,7 @@ export function countOptionalFilters(f: Filters): number {
   return n;
 }
 
-export const useJourneyStore = create<JourneyState>((set, get) => ({
+export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
   from: '',
   type: 'couple',
   level: 'modo-explora',
@@ -101,4 +101,4 @@ export const useJourneyStore = create<JourneyState>((set, get) => ({
     set({ addons: { selected: next } });
   },
   resetAddons: () => set({ addons: { selected: [] } }),
-}));
+});

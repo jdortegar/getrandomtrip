@@ -1,13 +1,13 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 
 const order: Array<'logistics'|'preferences'|'avoid'> = ['logistics','preferences','avoid'];
 
 export default function StepperNav() {
   const router = useRouter();
   const sp = useSearchParams();
-  const { activeTab, setPartial, type, level } = useJourneyStore();
+  const { activeTab, setPartial, type, level } = useStore();
 
   const idx = order.indexOf(activeTab as any);
   const prev = order[Math.max(0, idx-1)];

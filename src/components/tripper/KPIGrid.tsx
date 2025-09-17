@@ -1,10 +1,10 @@
 'use client';
 
 import { formatUSD } from '@/lib/format';
-import { useTripperStore } from '@/store/tripperStore';
+import { useStore } from '@/store/store';
 
 export default function KPIGrid() {
-  const { routes, earnings } = useTripperStore();
+  const { routes, earnings } = useStore();
   const published = routes.filter(r => r.status === 'published');
   const latest = earnings[0];
 

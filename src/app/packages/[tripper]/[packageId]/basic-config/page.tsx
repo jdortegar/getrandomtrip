@@ -133,7 +133,7 @@ const BasicConfigPage = () => {
             <div>
               <label className={`block text-sm font-medium mb-1 ${theme.textColor}`}>Duración</label>
               <p className={`mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-base ${theme.inputBg} ${theme.inputTextColor}`}>
-                {pkg.nights} noches
+                {pkg.maxNights} noches
               </p>
             </div>
             <div>

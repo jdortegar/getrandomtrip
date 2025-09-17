@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { StateCreator } from 'zustand';
 
-type PlannerState = {
+export interface PlannerState {
   budgetTier: string | null;
   familyType: 'toddlers' | 'teens' | 'adults' | 'multigen' | null;
   escapeType: string | null;
@@ -10,7 +10,7 @@ type PlannerState = {
   reset: () => void;
 };
 
-export const usePlannerStore = create<PlannerState>((set) => ({
+export const createPlannerSlice: StateCreator<PlannerState> = (set) => ({
   budgetTier: null,
   familyType: null,
   escapeType: null,
@@ -18,4 +18,4 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   setFamilyType: (v) => set({ familyType: v }),
   setEscapeType: (v) => set({ escapeType: v }),
   reset: () => set({ budgetTier: null, familyType: null, escapeType: null }),
-}));
+});

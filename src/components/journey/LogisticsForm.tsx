@@ -1,12 +1,12 @@
 // frontend/src/components/journey/LogisticsForm.tsx
 'use client';
 
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { getMaxNights, validateNights } from '@/lib/levels';
 import { useState } from 'react';
 
 export default function LogisticsForm() {
-  const { logistics, setPartial, level } = useJourneyStore();
+  const { logistics, setPartial, level } = useStore();
   const [error, setError] = useState<string | null>(null);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {

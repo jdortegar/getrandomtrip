@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import SummaryCard from '@/components/journey/SummaryCard';
 import AddonsGallery from '@/components/journey/addons/AddonsGallery';
 import SelectedAddonsChips from '@/components/journey/addons/SelectedAddonsChips';
@@ -12,7 +12,7 @@ import SelectedAddonsChips from '@/components/journey/addons/SelectedAddonsChips
 function AddOnsContent() {
   const sp = useSearchParams();
   const router = useRouter();
-  const { logistics } = useJourneyStore();
+  const { logistics } = useStore();
 
   const backToAvoid = () => {
     const qs = new URLSearchParams(sp.toString());

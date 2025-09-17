@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo } from 'react';
-import { useJourneyStore } from '@/store/journeyStore';
+import { useStore } from '@/store/store';
 import { parseBasePrice } from '@/lib/levels';
 import pricingCatalog from '@/data/pricing-catalog.json' assert { type: 'json' };
 
@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default function InitClient({ searchParams, displayPrice }: Props) {
-  const setPartial = useJourneyStore((s) => s.setPartial);
+  const setPartial = useStore((s) => s.setPartial);
 
   // 1) Leemos y normalizamos parámetros de entrada
   const params = useMemo(() => {
