@@ -5,6 +5,7 @@ import HeaderGate from '@/components/layout/HeaderGate';
 import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
 import SessionProvider from '@/components/providers/SessionProvider';
 import dynamic from 'next/dynamic';
+import Navbar from '@/components/Navbar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const fraunces = Fraunces({
@@ -47,10 +48,11 @@ export default function RootLayout({
       </head>
       <body className="font-sans bg-neutral-50 text-neutral-900 antialiased ">
         <SessionProvider>
-          <SiteHeaderOffset />
-          <HeaderGate />
+          {/* <SiteHeaderOffset /> */}
+          {/* <HeaderGate /> */}
+          <Navbar />
           {children}
-          <NewsletterBar /> {/* 👈 persistente en todo el sitio */}
+          {/* <NewsletterBar /> 👈 persistente en todo el sitio */}
         </SessionProvider>
       </body>
     </html>
