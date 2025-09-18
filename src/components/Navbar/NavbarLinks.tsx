@@ -12,7 +12,7 @@ export function NavbarLinks() {
           href={link.href}
           aria-label={link.ariaLabel}
           // prefetch={link.prefetch}
-          // className={link.className}
+          className="hover:underline underline-offset-4"
         >
           {link.label}
         </Link>

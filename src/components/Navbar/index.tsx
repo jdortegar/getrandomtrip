@@ -26,8 +26,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
     <>
       <header
         data-site-header
-        style={{ height: 'auto' }}
-        className={headerClass}
+        className={`${headerClass} ${NAVBAR_CONSTANTS.HEIGHT}`}
       >
         <nav
           className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT} ${NAVBAR_CONSTANTS.MAX_WIDTH} ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between`}
@@ -37,7 +36,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <NavbarSearch isOverlay={overlay} />
             <NavbarLinks />
-            <NavbarMenu />
+            {/* <NavbarMenu /> */}
           </div>
 
           <div className="flex items-center gap-4">
@@ -54,9 +53,9 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
         </nav>
       </header>
 
-      {!overlay && (
+      {/* {!overlay && (
         <div aria-hidden className={NAVBAR_CONSTANTS.SPACER_HEIGHT} />
-      )}
+      )} */}
       <EnhancedAuthModal />
     </>
   );

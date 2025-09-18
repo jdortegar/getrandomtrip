@@ -15,7 +15,7 @@ const buttonVariants = cva(
   // Base styles
   [
     'inline-flex items-center justify-center gap-2',
-    'font-semibold transition-all duration-200',
+    'font-light transition-all duration-200',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
     'disabled:pointer-events-none disabled:opacity-50',
     'relative overflow-hidden',
@@ -23,23 +23,35 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Primary: Deep ocean blue
         primary: [
-          'bg-primary-500 text-white',
-          'hover:bg-primary-600 active:bg-primary-700',
-          'focus-visible:ring-primary-500',
-          'shadow-sm hover:shadow-md',
+          'bg-[#003366] text-white',
+          'hover:bg-[#002244] active:bg-[#001122]',
+          'focus-visible:ring-[#003366]',
+          'shadow-lg hover:shadow-xl transition-all duration-300',
         ],
+        // Secondary: Inverted (white background, deep ocean blue text)
         secondary: [
-          'bg-gray-100 text-gray-900',
-          'hover:bg-gray-200 active:bg-gray-300',
-          'focus-visible:ring-gray-500',
-          'border border-gray-200',
+          'bg-white text-[#003366]',
+          'hover:bg-gray-50 active:bg-gray-100',
+          'focus-visible:ring-[#003366]',
+          'border-2 border-[#003366] hover:border-[#002244]',
+          'shadow-md hover:shadow-lg transition-all duration-300',
         ],
+        // Tertiary: Transparent with deep ocean blue text
+        tertiary: [
+          'bg-transparent text-[#003366]',
+          'hover:bg-[#003366]/10 active:bg-[#003366]/20',
+          'focus-visible:ring-[#003366]',
+          'border border-transparent hover:border-[#003366]/30',
+          'transition-all duration-300',
+        ],
+        // Legacy variants for backward compatibility
         outline: [
-          'bg-transparent text-primary-600',
-          'hover:bg-primary-50 active:bg-primary-100',
-          'focus-visible:ring-primary-500',
-          'border border-primary-200 hover:border-primary-300',
+          'bg-transparent text-[#0066CC]',
+          'hover:bg-[#0066CC]/10 active:bg-[#0066CC]/20',
+          'focus-visible:ring-[#0066CC]',
+          'border border-[#0066CC] hover:border-[#0052A3]',
         ],
         ghost: [
           'bg-transparent text-gray-700',
@@ -71,11 +83,11 @@ const buttonVariants = cva(
         ],
       },
       size: {
-        sm: 'h-8 px-3 text-sm rounded-md',
-        md: 'h-10 px-4 text-sm rounded-lg',
-        lg: 'h-12 px-6 text-base rounded-lg',
-        xl: 'h-14 px-8 text-lg rounded-xl',
-        icon: 'h-10 w-10 rounded-lg',
+        sm: 'h-8 px-3 text-sm rounded-sm',
+        md: 'h-10 px-4 text-sm rounded-sm',
+        lg: 'h-12 px-6 text-base rounded-sm',
+        xl: 'h-14 px-8 text-lg rounded-sm',
+        icon: 'h-10 w-10 rounded-sm',
       },
       fullWidth: {
         true: 'w-full',
@@ -134,6 +146,10 @@ export interface ButtonProps
    * Accessibility label
    */
   'aria-label'?: string;
+  /**
+   * Render as child component (for Link components)
+   */
+  asChild?: boolean;
 }
 
 // ============================================================================
@@ -181,26 +197,50 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       loadingSpinner,
       disabled,
       type = 'button',
+      asChild = false,
       ...props
     },
     ref,
   ) => {
     const isDisabled = disabled || loading;
+    const buttonClasses = cn(
+      buttonVariants({
+        variant,
+        size,
+        fullWidth,
+        loading,
+        className,
+      }),
+    );
+
+    if (asChild) {
+      return (
+        <span className={buttonClasses}>
+          {/* Loading Spinner */}
+          {loading && (
+            <span className="absolute inset-0 flex items-center justify-center">
+              {loadingSpinner || <LoadingSpinner />}
+            </span>
+          )}
+
+          {/* Button Content */}
+          <span
+            className={cn('flex items-center gap-2', loading && 'opacity-0')}
+          >
+            {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
+            {children}
+            {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
+          </span>
+        </span>
+      );
+    }
 
     return (
       <button
         ref={ref}
         type={type}
         disabled={isDisabled}
-        className={cn(
-          buttonVariants({
-            variant,
-            size,
-            fullWidth,
-            loading,
-            className,
-          }),
-        )}
+        className={buttonClasses}
         {...props}
       >
         {/* Loading Spinner */}

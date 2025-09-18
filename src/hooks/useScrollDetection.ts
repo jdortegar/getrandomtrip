@@ -19,15 +19,28 @@ export function useScrollDetection({
     const heroElement = document.getElementById('hero-sentinel');
 
     if (!heroElement) {
-      const handleScroll = () => setOverlay(window.scrollY < threshold);
+      // Fallback to scroll-based detection
+      const handleScroll = () => {
+        const isOverlay = window.scrollY < threshold;
+        setOverlay(isOverlay);
+      };
+
+      // Set initial state
       handleScroll();
+
       window.addEventListener('scroll', handleScroll, { passive: true });
       return () => window.removeEventListener('scroll', handleScroll);
     }
 
+    // Use Intersection Observer for better performance
     const observer = new IntersectionObserver(
-      ([entry]) => setOverlay(entry.isIntersecting),
-      { rootMargin: '-1px 0px 0px 0px', threshold: [0, 1] },
+      ([entry]) => {
+        setOverlay(entry.isIntersecting);
+      },
+      {
+        rootMargin: '-1px 0px 0px 0px',
+        threshold: [0, 1],
+      },
     );
 
     observer.observe(heroElement);

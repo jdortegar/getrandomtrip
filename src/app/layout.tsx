@@ -1,18 +1,10 @@
 import './globals.css';
 import '@/styles/rt.css';
-import { Inter, Fraunces } from 'next/font/google';
 import HeaderGate from '@/components/layout/HeaderGate';
 import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
 import SessionProvider from '@/components/providers/SessionProvider';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-fraunces',
-  style: ['normal'],
-});
 
 // Carga del client component sin SSR
 const NewsletterBar = dynamic(
@@ -41,12 +33,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="es">
       <head>
         <meta name="color-scheme" content="light" />
         <meta name="theme-color" content="#fafafa" />
       </head>
-      <body className="font-sans bg-neutral-50 text-neutral-900 antialiased ">
+      <body className="bg-neutral-50 text-neutral-900 antialiased">
         <SessionProvider>
           {/* <SiteHeaderOffset /> */}
           {/* <HeaderGate /> */}

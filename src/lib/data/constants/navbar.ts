@@ -1,29 +1,37 @@
 export const NAVBAR_CONSTANTS = {
-  HEIGHT: 'h-14',
+  HEIGHT: 'h-16', // Increased height for better spacing
   MAX_WIDTH: 'max-w-7xl',
   PADDING: 'px-4 sm:px-6 lg:px-8',
-  SPACER_HEIGHT: 'h-16',
+  SPACER_HEIGHT: 'h-16', // Match navbar height
 } as const;
 
 export const NAVBAR_LINKS = [
   {
     href: '/?tab=Top%20Trippers#start-your-journey-anchor',
-    label: "Trippers' Finder",
+    label: 'Trippers',
     ariaLabel:
       "Ir a la sección 'Comienza tu Viaje' con la tab 'Top Trippers' seleccionada",
   },
   {
     href: '/#inspiration',
-    label: "Trippers' Inspiration",
+    label: 'Inspiración',
     ariaLabel: 'Ir a la sección de inspiración',
     prefetch: false,
-    className: 'hover:underline underline-offset-4',
   },
   {
     href: '/nosotros',
     label: 'Nosotros',
     ariaLabel: 'Ir a la página sobre nosotros',
-    className: 'hover:underline underline-offset-4',
+  },
+  {
+    href: '/tripbuddy',
+    label: 'IA TripBuddy',
+    ariaLabel: 'Ir a IA TripBuddy',
+  },
+  {
+    href: '/bitacoras',
+    label: 'Off the Record: Bitácoras del Continente',
+    ariaLabel: 'Ir a Off the Record: Bitácoras del Continente',
   },
 ] as const;
 
