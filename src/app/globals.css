@@ -2,3 +2,69 @@
 @import 'leaflet/dist/leaflet.css';
 
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Gruppo&family=Shadows+Into+Light&display=swap');
+
+@theme {
+  --font-jost: Jost, sans-serif;
+  --font-caveat: Caveat, cursive;
+}
+/* Scroll Indicator Styles*/
+.scroll-indicator {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  opacity: 0.9;
+  animation: scrollPulse 1.8s infinite ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.scroll-indicator::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 40px;
+  background-color: white;
+  margin-top: 0.75rem;
+  transform-origin: bottom;
+  animation: push-pulse 2s infinite;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@keyframes scrollPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+@keyframes push-pulse {
+  0% {
+    transform: scaleY(0.2);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.2);
+    opacity: 0.8;
+  }
+}
