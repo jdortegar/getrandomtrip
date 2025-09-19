@@ -21,9 +21,9 @@ export function HeroContent() {
 
       <Button
         asChild
-        variant="primary"
+        variant="outline"
         size="lg"
-        className="mt-8 uppercase tracking-wider animate-pulse-once"
+        className="mt-8 uppercase tracking-wider animate-pulse-once border-white text-white hover:bg-white hover:text-gray-900 font-bold"
       >
         <Link
           href={HERO_CONTENT.CTA_HREF}

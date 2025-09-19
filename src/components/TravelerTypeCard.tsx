@@ -19,7 +19,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 }) => (
   <Link
     href={href}
-    className="relative h-[60vh] w-80 flex-shrink-0 cursor-pointer group overflow-hidden rounded-2xl block hover:scale-110 transition-all duration-300 origin-center"
+    className="relative h-[40vh] w-60 flex-shrink-0 cursor-pointer group overflow-hidden rounded-md block hover:scale-105 transition-all duration-300 origin-center"
   >
     <Image
       src={imageUrl}
@@ -31,16 +31,10 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
     />
     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10 rounded-2xl" />
     <div className="absolute bottom-0 left-0 p-6 text-white w-full z-20 text-left rounded-b-2xl">
-      <h3
-        className="text-2xl font-bold text-left"
-        style={{ fontFamily: 'Playfair Display, serif' }}
-      >
-        {title}
-      </h3>
-      <p className="mt-2 text-sm text-gray-200 text-left">{description}</p>
-      {/* <button className="mt-4 text-left font-bold text-white uppercase text-sm tracking-widest border-b border-white pb-1">
-        Explore Trip
-      </button> */}
+      <h3 className="text-2xl font-bold text-left font-caveat">{title}</h3>
+      <p className=" text-sm text-gray-200 text-left font-jost">
+        {description}
+      </p>
     </div>
   </Link>
 );
