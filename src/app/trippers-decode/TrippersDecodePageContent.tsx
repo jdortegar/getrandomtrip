@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation';
 import { TrippersDecodeSearch } from '@/components/landing/exploration/TrippersDecodeSearch';
-import { TrippersDecodeResults } from '@/components/landing/exploration/TrippersDecodeResults';
 import { TRIPPERS_DECODE_CONSTANTS } from '@/lib/data/constants/trippers-decode';
 
 export function TrippersDecodePageContent() {
@@ -38,9 +37,6 @@ export function TrippersDecodePageContent() {
             initialQuery={searchQuery}
           />
         </div>
-
-        {/* Results Section */}
-        <TrippersDecodeResults />
       </div>
     </div>
   );

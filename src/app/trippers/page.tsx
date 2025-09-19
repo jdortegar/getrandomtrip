@@ -29,7 +29,7 @@ export default function TrippersPage() {
     if (tripper) {
       setFoundTripper({
         name: tripper.name,
-        img: tripper.img,
+        img: tripper.avatar,
         slug: tripper.slug,
         bio: tripper.bio,
       });
@@ -165,7 +165,7 @@ export default function TrippersPage() {
             >
               <div className="relative w-full h-64">
                 <Image
-                  src={tripper.img}
+                  src={tripper.avatar}
                   alt={tripper.name}
                   fill
                   sizes="(min-width:1024px) 220px, (min-width:768px) 33vw, 50vw"
