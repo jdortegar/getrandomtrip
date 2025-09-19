@@ -72,7 +72,7 @@ export function ExplorationSection() {
   };
 
   return (
-    <main className="bg-white text-gray-900 min-h-screen py-16 px-4 md:px-8">
+    <main className="bg-white text-gray-900 py-16 px-4 md:px-8">
       <div id="start-your-journey-anchor" />
       <section
         data-testid="journey-section"
@@ -103,11 +103,15 @@ export function ExplorationSection() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="w-full mt-12"
+            initial={{ opacity: 0, y: 20, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
+            transition={{
+              duration: 0.5,
+              ease: 'easeInOut',
+              height: { duration: 0.4, ease: 'easeInOut' },
+            }}
+            className="w-full mt-6 overflow-hidden min-h-[300px]"
           >
             {renderActiveTab()}
           </motion.div>

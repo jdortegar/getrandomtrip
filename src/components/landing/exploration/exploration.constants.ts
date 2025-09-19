@@ -1,8 +1,6 @@
 export const EXPLORATION_CONSTANTS = {
-  TITLE: 'Start your Journey',
-  SUBTITLE:
-    'El mundo es vasto, lleno de maravillas. Pero la información nos abruma. Nosotros te preguntamos cómo quieres sentirte.',
-
+  TITLE: 'Puntos de Partida',
+  SUBTITLE: 'Elige cómo quieres empezar a dar forma a tu aventura.',
   TABS: [
     {
       id: 'By Traveller',
@@ -12,7 +10,8 @@ export const EXPLORATION_CONSTANTS = {
     {
       id: 'Top Trippers',
       label: 'Top Trippers',
-      description: 'Nuestros expertos más destacados',
+      description: 'Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?',
+      href: '/trippers',
     },
     {
       id: 'Roadtrips',
@@ -24,12 +23,14 @@ export const EXPLORATION_CONSTANTS = {
       label: 'Trippers Decode',
       description:
         'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',
+      href: '/trippers-decode',
     },
   ] as const,
 
   TAB_DESCRIPTIONS: {
     'By Traveller': '¿Con quién vas a escribir tu próxima historia?',
-    'Top Trippers': 'Nuestros expertos más destacados',
+    'Top Trippers':
+      'Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?',
     Roadtrips: 'Libertad sobre ruedas. Tú eliges el ritmo.',
     'Trippers Decode':
       'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',

@@ -33,7 +33,7 @@ export function ExplorationTabNavigation({
             {tab.label}
             {activeTab === tab.id && (
               <motion.div
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                 layoutId="activeTab"
                 transition={{
                   type: 'spring',

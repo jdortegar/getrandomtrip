@@ -7,13 +7,12 @@ export const NAVBAR_CONSTANTS = {
 
 export const NAVBAR_LINKS = [
   {
-    href: '/?tab=Top%20Trippers#start-your-journey-anchor',
+    href: '/trippers',
     label: 'Trippers',
-    ariaLabel:
-      "Ir a la sección 'Comienza tu Viaje' con la tab 'Top Trippers' seleccionada",
+    ariaLabel: 'Ir a la página de Trippers',
   },
   {
-    href: '/#inspiration',
+    href: '/blog',
     label: 'Inspiración',
     ariaLabel: 'Ir a la sección de inspiración',
     prefetch: false,

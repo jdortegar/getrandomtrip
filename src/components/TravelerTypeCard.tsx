@@ -19,7 +19,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 }) => (
   <Link
     href={href}
-    className="relative h-[40vh] w-60 flex-shrink-0 cursor-pointer group overflow-hidden rounded-md block hover:scale-105 transition-all duration-300 origin-center"
+    className="relative h-[40vh] w-60 flex-shrink-0 cursor-pointer group overflow-hidden rounded-md block  transition-all duration-300 origin-center"
   >
     <Image
       src={imageUrl}
