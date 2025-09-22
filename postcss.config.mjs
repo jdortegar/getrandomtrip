@@ -1,4 +1,4 @@
-// Standard Tailwind CSS PostCSS config
+// Tailwind CSS v4 - PostCSS config
 export default {
   plugins: {
     tailwindcss: {},
