@@ -1,5 +1,5 @@
 export const HERO_CONTENT = {
-  TITLE: 'Serendipia Diseñada.',
+  TITLE: 'Serendipia Diseñada',
   SUBTITLE:
     'La espontaneidad es un arte. La improvisación, un riesgo. Abraza la autenticidad de lo desconocido.',
   TAGLINE: 'Wonder • Wander • Repeat',

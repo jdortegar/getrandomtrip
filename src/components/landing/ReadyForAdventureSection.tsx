@@ -7,7 +7,7 @@ const ReadyForAdventureSection: React.FC = () => {
   return (
     <section
       aria-label="Sección final - Listo para la aventura"
-      className="call-to-action-background h-[320px] text-white"
+      className="call-to-action-background h-[320px] text-white py-16 px-4 md:px-8"
     >
       {/* Overlay oscuro para legibilidad */}
       <div className="absolute inset-0 bg-primary/40" />
@@ -24,7 +24,7 @@ const ReadyForAdventureSection: React.FC = () => {
         <Link
           href="/?tab=By%20Traveller#start-your-journey-anchor"
           aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8"
+          className="inline-flex items-center justify-center whitespace-nowrap r text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8 font-semibold"
         >
           RANDOMTRIPME!
         </Link>

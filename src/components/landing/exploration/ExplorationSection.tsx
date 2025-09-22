@@ -72,51 +72,48 @@ export function ExplorationSection() {
   };
 
   return (
-    <main className="bg-white text-gray-900 py-16 px-4 md:px-8">
-      <div id="start-your-journey-anchor" />
-      <section
-        data-testid="journey-section"
-        aria-label="Comienza tu Viaje"
-        className="max-w-7xl mx-auto text-center"
-      >
-        {/* Header Section - Inspired by Black Tomato */}
-        <div className="mb-8">
-          <h2
-            data-testid="journey-title"
-            tabIndex={-1}
-            className="font-caveat text-6xl md:text-7xl font-bold mb-6 text-gray-900"
-          >
-            {EXPLORATION_CONSTANTS.TITLE}
-          </h2>
-          <p className="font-jost text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            {EXPLORATION_CONSTANTS.SUBTITLE}
-          </p>
-        </div>
+    <section
+      data-testid="journey-section"
+      aria-label="Comienza tu Viaje"
+      className="max-w-7xl mx-auto text-center bg-white text-gray-900 py-16 px-4 md:px-8"
+    >
+      {/* Header Section - Inspired by Black Tomato */}
+      <div className="mb-8">
+        <h2
+          data-testid="journey-title"
+          tabIndex={-1}
+          className="font-caveat text-6xl md:text-5xl font-bold mb-6 text-gray-900"
+        >
+          {EXPLORATION_CONSTANTS.TITLE}
+        </h2>
+        <p className="font-jost text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+          {EXPLORATION_CONSTANTS.SUBTITLE}
+        </p>
+      </div>
 
-        {/* Tab Navigation */}
-        <ExplorationTabNavigation
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+      {/* Tab Navigation */}
+      <ExplorationTabNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-        {/* Tab Content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -20, height: 0 }}
-            transition={{
-              duration: 0.5,
-              ease: 'easeInOut',
-              height: { duration: 0.4, ease: 'easeInOut' },
-            }}
-            className="w-full mt-6 overflow-hidden min-h-[300px]"
-          >
-            {renderActiveTab()}
-          </motion.div>
-        </AnimatePresence>
-      </section>
-    </main>
+      {/* Tab Content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 20, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          exit={{ opacity: 0, y: -20, height: 0 }}
+          transition={{
+            duration: 0.5,
+            ease: 'easeInOut',
+            height: { duration: 0.4, ease: 'easeInOut' },
+          }}
+          className="w-full mt-6 overflow-hidden min-h-[300px]"
+        >
+          {renderActiveTab()}
+        </motion.div>
+      </AnimatePresence>
+    </section>
   );
 }

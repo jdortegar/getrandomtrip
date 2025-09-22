@@ -29,7 +29,8 @@ export const NAVBAR_LINKS = [
   },
   {
     href: '/bitacoras',
-    label: 'Off the Record: Bitácoras del Continente',
+    label: 'Off the Record',
+    // label: 'Off the Record: Bitácoras del Continente',
     ariaLabel: 'Ir a Off the Record: Bitácoras del Continente',
   },
 ] as const;

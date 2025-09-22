@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 
 import { useSession } from 'next-auth/react';
-import { useUserStore } from '@/store/slices';
+import { useUserStore } from '@/store/slices/userStore';
 import Navbar from '@/components/Navbar';
 import SecureRoute from '@/components/auth/SecureRoute';
 import GlassCard from '@/components/ui/GlassCard';

@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { HERO_CONFIG } from '@/lib/data/constants/hero';
+import React, { useState, useRef, useEffect } from 'react';
+import { HERO_CONTENT, HERO_CONFIG } from '@/lib/data/constants/hero';
+import { Button } from '@/components/ui/Button';
 
-export function HeroVideoBackground() {
+// HeroVideoBackground Component
+function HeroVideoBackground() {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  console.log('HeroVideoBackground render:', { isVideoReady, hasError });
 
   // Preload video for better performance
   useEffect(() => {
@@ -91,3 +91,50 @@ export function HeroVideoBackground() {
     </div>
   );
 }
+
+// Main Hero Component
+const Hero: React.FC = () => {
+  return (
+    <section
+      id="home-hero"
+      className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
+    >
+      <HeroVideoBackground />
+      <div className="relative z-10 max-w-5xl mx-auto px-4">
+        <h2 className="font-caveat text-7xl font-bold leading-tight text-white mb-4">
+          {HERO_CONTENT.TITLE}
+        </h2>
+
+        <p className="font-jost text-xl font-normal leading-relaxed text-gray-300 max-w-4xl mx-auto mb-8">
+          {HERO_CONTENT.SUBTITLE}
+        </p>
+
+        <p className="font-jost text-lg font-normal leading-relaxed text-gray-300 max-w-2xl mx-auto mb-8">
+          {HERO_CONTENT.TAGLINE}
+        </p>
+
+        <Button
+          href={HERO_CONTENT.CTA_HREF}
+          ariaLabel={HERO_CONTENT.CTA_ARIA_LABEL}
+          variant="outline"
+          size="lg"
+          className="mt-8 uppercase tracking-wider animate-pulse-once"
+        >
+          {HERO_CONTENT.CTA_TEXT}
+        </Button>
+      </div>
+
+      {/* Scroll Indicator positioned at bottom */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <div
+          className="scroll-indicator pointer-events-none select-none z-10 text-white"
+          aria-hidden="true"
+        >
+          {HERO_CONTENT.SCROLL_TEXT}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Hero;
