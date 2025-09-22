@@ -1,6 +1,5 @@
 'use client';
 import { useStore } from '@/store/store';
-import { Input } from '@/components/ui/Input';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Country {
@@ -112,9 +111,10 @@ export function CountryInput() {
 
   return (
     <div className="relative">
-      <Input
+      <input
         ref={inputRef}
         value={value}
+        className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         onChange={handleInputChange}
         onFocus={() => setShowSuggestions(true)}
         placeholder="País de salida"
@@ -384,9 +384,10 @@ export function CityInput() {
 
   return (
     <div className="relative">
-      <Input
+      <input
         ref={inputRef}
         value={value}
+        className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         onChange={handleInputChange}
         onFocus={() => setShowSuggestions(true)}
         placeholder={

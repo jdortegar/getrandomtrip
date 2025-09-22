@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
 
 const ReadyForAdventureSection: React.FC = () => {
   return (
@@ -22,14 +21,13 @@ const ReadyForAdventureSection: React.FC = () => {
           Tu próximo recuerdo inolvidable está a un solo click de distancia. No
           lo pienses más.
         </p>
-        <Button asChild variant="outline" size="lg">
-          <Link
-            href="/?tab=By%20Traveller#start-your-journey-anchor"
-            aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
-          >
-            RANDOMTRIPME!
-          </Link>
-        </Button>
+        <Link
+          href="/?tab=By%20Traveller#start-your-journey-anchor"
+          aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8"
+        >
+          RANDOMTRIPME!
+        </Link>
       </div>
     </section>
   );

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
 import { HERO_CONTENT } from '@/lib/data/constants/hero';
 
 export function HeroContent() {
@@ -19,19 +18,13 @@ export function HeroContent() {
         {HERO_CONTENT.TAGLINE}
       </p>
 
-      <Button
-        asChild
-        variant="outline"
-        size="lg"
-        className="mt-8 uppercase tracking-wider animate-pulse-once border-white text-white hover:bg-white hover:text-gray-900 font-bold"
+      <Link
+        href={HERO_CONTENT.CTA_HREF}
+        aria-label={HERO_CONTENT.CTA_ARIA_LABEL}
+        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8 mt-8 uppercase tracking-wider animate-pulse-once border-white text-white hover:bg-white hover:text-gray-900 font-bold"
       >
-        <Link
-          href={HERO_CONTENT.CTA_HREF}
-          aria-label={HERO_CONTENT.CTA_ARIA_LABEL}
-        >
-          {HERO_CONTENT.CTA_TEXT}
-        </Link>
-      </Button>
+        {HERO_CONTENT.CTA_TEXT}
+      </Link>
     </div>
   );
 }
