@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,24 +19,17 @@
     ],
     "baseUrl": "src",
     "paths": {
-      "@/*": [
-        "*"
-      ]
+      "@/*": ["*"]
     },
-    "types": [
-      "node",
-      "@types/google.maps"
-    ],
+    "types": ["node", "@types/google.maps"],
     "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "next.config.JS"  ],
-  "exclude": [
-    "node_modules",
-    "src/backup/**"
-  ]
+    ".next/types/**/*.ts",
+    "next.config.js"
+  ],
+  "exclude": ["node_modules", "src/backup/**"]
 }
