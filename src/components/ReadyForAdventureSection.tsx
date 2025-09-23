@@ -1,16 +1,16 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 
 const ReadyForAdventureSection: React.FC = () => {
   return (
     <section
-      aria-label="Sección final - Listo para la aventura"
-      className="call-to-action-background h-[320px] text-white py-16 px-4 md:px-8"
+      aria-label="Listo para la aventura"
+      className="call-to-action-background h-[320px] text-white py-16 px-4 md:px-8 relative"
     >
       {/* Overlay oscuro para legibilidad */}
-      <div className="absolute inset-0 bg-primary/40" />
+      <div className="absolute inset-0 bg-primary" />
 
       {/* Contenido centrado */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
@@ -21,13 +21,15 @@ const ReadyForAdventureSection: React.FC = () => {
           Tu próximo recuerdo inolvidable está a un solo click de distancia. No
           lo pienses más.
         </p>
-        <Link
+        <Button
           href="/?tab=By%20Traveller#start-your-journey-anchor"
+          variant="outline"
+          size="lg"
+          className="px-8"
           aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
-          className="inline-flex items-center justify-center whitespace-nowrap r text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8 font-semibold"
         >
           RANDOMTRIPME!
-        </Link>
+        </Button>
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import GetRandomtripCta from '@/components/common/GetRandomtripCta';
+import Link from 'next/link';
 
 type BudgetBandsSectionProps = {
   variant?: 'default' | 'compact';
@@ -17,10 +17,10 @@ type Band = {
 };
 
 const TRANSPORT_STOPS = [
-  { key: 'bus',   label: 'Bus',             emoji: '🚌', pos: 0.00 },
-  { key: 'train', label: 'Tren',            emoji: '🚂', pos: 0.30 },
-  { key: 'ferry', label: 'Ferry / Barco',   emoji: '🚢', pos: 0.60 },
-  { key: 'plane', label: 'Avión',           emoji: '✈️', pos: 0.95 },
+  { key: 'bus', label: 'Bus', emoji: '🚌', pos: 0.0 },
+  { key: 'train', label: 'Tren', emoji: '🚂', pos: 0.3 },
+  { key: 'ferry', label: 'Ferry / Barco', emoji: '🚢', pos: 0.6 },
+  { key: 'plane', label: 'Avión', emoji: '✈️', pos: 0.95 },
 ] as const;
 
 const BANDS: Band[] = [
@@ -42,43 +42,57 @@ const BANDS: Band[] = [
   },
 ];
 
-const legendText = ' * El transporte puede variar según destino y fechas, pero la experiencia Randomtrip es constante: humana, curada y sin estrés.';
+const legendText =
+  ' * El transporte puede variar según destino y fechas, pero la experiencia Randomtrip es constante: humana, curada y sin estrés.';
 
-export function BudgetBandsSection({ variant = 'default', defaultOpenDetails = true }: BudgetBandsSectionProps) {
+export function BudgetBandsSection({
+  variant = 'default',
+  defaultOpenDetails = true,
+}: BudgetBandsSectionProps) {
   const isCompact = variant === 'compact';
 
   return (
     <section className={isCompact ? 'py-6 md:py-8' : 'py-10 md:py-14'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className={isCompact ? 'text-center mb-4 md:mb-6' : 'text-center mb-10'}>
-          <h3
-            className={isCompact ? 'text-xl md:text-2xl font-bold' : 'text-3xl md:text-4xl font-bold'}
-            style={{ fontFamily: 'Playfair Display, serif' }}
-          >
-            Bandas de presupuesto & modos de viaje
-          </h3>
+        <header
+          className={
+            isCompact ? 'text-center mb-4 md:mb-6' : 'text-center mb-10'
+          }
+        >
           <p
             className={
-              isCompact
-                ? 'mt-1 text-xs md:text-sm text-neutral-600 max-w-2xl mx-auto'
-                : 'mt-2 text-neutral-600 max-w-3xl mx-auto'
+              'text-center text-gray-600  italic font-jost text-lg mb-6'
             }
           >
-            {isCompact
-              ? 'Tu presupuesto marca el punto de partida…'
-              : 'Tu presupuesto marca el punto de partida. Nosotros transformamos cada dólar en kilómetros de sorpresa. Desde un bus que abre camino, hasta un vuelo que abre horizontes: la magia está en la curaduría Randomtrip, no (solo) en el medio.'}
+            Tu presupuesto marca el punto de partida. Nosotros transformamos
+            cada dólar en kilómetros de sorpresa. Desde un bus que abre camino,
+            hasta un vuelo que abre horizontes: la magia está en la curaduría
+            Randomtrip, no (solo) en el medio.
           </p>
         </header>
 
-        <div className={isCompact ? 'grid md:grid-cols-2 gap-4 lg:gap-6 items-start' : 'space-y-10'}>
+        <div
+          className={
+            isCompact
+              ? 'grid md:grid-cols-2 gap-4 lg:gap-6 items-start'
+              : 'space-y-10'
+          }
+        >
           {BANDS.map((band) => (
-            <BandCard key={band.id} band={band} compact={isCompact} defaultOpenDetails={defaultOpenDetails} />
+            <BandCard
+              key={band.id}
+              band={band}
+              compact={isCompact}
+              defaultOpenDetails={defaultOpenDetails}
+            />
           ))}
         </div>
 
         <div
           className={
-            isCompact ? 'mt-4 text-xs text-neutral-600 text-center' : 'mt-12 text-sm text-neutral-500'
+            isCompact
+              ? 'mt-4 text-xs text-neutral-600 text-center'
+              : 'mt-12 text-sm text-neutral-500'
           }
         >
           {isCompact ? (
@@ -87,7 +101,10 @@ export function BudgetBandsSection({ variant = 'default', defaultOpenDetails = t
             <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-center gap-4">
                 {TRANSPORT_STOPS.map((s) => (
-                  <span key={s.key} className="inline-flex items-center gap-2 text-neutral-700">
+                  <span
+                    key={s.key}
+                    className="inline-flex items-center gap-2 text-neutral-700"
+                  >
                     <span className="text-base">{s.emoji}</span>
                     <span className="hidden sm:inline">{s.label}</span>
                   </span>
@@ -98,8 +115,17 @@ export function BudgetBandsSection({ variant = 'default', defaultOpenDetails = t
           )}
         </div>
 
-        <div className={isCompact ? "mt-6 flex justify-center" : "mt-10 flex justify-center"}>
-            <GetRandomtripCta align="center" />
+        <div
+          className={
+            isCompact ? 'mt-6 flex justify-center' : 'mt-10 flex justify-center'
+          }
+        >
+          <Link
+            href="/?tab=By%20Traveller#start-your-journey-anchor"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
+          >
+            RANDOMTRIPME!
+          </Link>
         </div>
       </div>
     </section>
@@ -112,7 +138,11 @@ type BandCardProps = {
   defaultOpenDetails?: boolean;
 };
 
-const BandCard: React.FC<BandCardProps> = ({ band, compact = false, defaultOpenDetails = false }) => {
+const BandCard: React.FC<BandCardProps> = ({
+  band,
+  compact = false,
+  defaultOpenDetails = false,
+}) => {
   const [value, setValue] = useState<number>(band.min);
 
   const ratio = useMemo(() => {
@@ -137,12 +167,17 @@ const BandCard: React.FC<BandCardProps> = ({ band, compact = false, defaultOpenD
           {band.note}
         </p>
       )}
-      <div className="text-sm text-neutral-700" aria-live="polite" aria-atomic="true">
+      <div
+        className="text-sm text-neutral-700"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         Probable logística: <strong>{activeStop.label}</strong>
       </div>
       <p className="text-sm text-neutral-700">
-        Ya sea <strong>US$ {band.min}</strong> o <strong>US$ {band.max}</strong>, tu viaje tiene nuestra{' '}
-        <strong>curaduría</strong>, selección de alojamientos y recomendaciones únicas.
+        Ya sea <strong>US$ {band.min}</strong> o <strong>US$ {band.max}</strong>
+        , tu viaje tiene nuestra <strong>curaduría</strong>, selección de
+        alojamientos y recomendaciones únicas.
       </p>
     </div>
   );
@@ -160,19 +195,33 @@ const BandCard: React.FC<BandCardProps> = ({ band, compact = false, defaultOpenD
       <div className="flex items-start justify-between gap-4">
         <div>
           <h4
-            className={compact ? 'text-lg font-bold mb-2' : 'text-xl md:text-2xl font-bold text-neutral-900'}
-            style={{ fontFamily: 'Playfair Display, serif' }}
+            className={
+              'text-xl md:text-2xl font-bold text-neutral-900 font-caveat'
+            }
           >
             {band.title}
           </h4>
-          {!compact && <p className="text-sm text-neutral-600">{band.subtitle}</p>}
+          {!compact && (
+            <p className="text-sm text-neutral-600">{band.subtitle}</p>
+          )}
         </div>
         <div className="text-right flex-shrink-0">
-          <div className={compact ? 'text-xs text-neutral-500' : 'text-sm text-neutral-500'}>
+          <div
+            className={
+              compact ? 'text-xs text-neutral-500' : 'text-sm text-neutral-500'
+            }
+          >
             Rango p/p
           </div>
-          <div className={compact ? 'font-semibold text-neutral-900 text-sm' : 'font-semibold text-neutral-900'}>
-            US$ {band.min} <span className="text-neutral-400">—</span> US$ {band.max}
+          <div
+            className={
+              compact
+                ? 'font-semibold text-neutral-900 text-sm'
+                : 'font-semibold text-neutral-900'
+            }
+          >
+            US$ {band.min} <span className="text-neutral-400">—</span> US${' '}
+            {band.max}
           </div>
         </div>
       </div>
@@ -195,7 +244,9 @@ const BandCard: React.FC<BandCardProps> = ({ band, compact = false, defaultOpenD
                   compact ? 'h-3 w-3' : 'h-5 w-5'
                 }`}
               />
-              <div className="mt-1 text-[10px] text-neutral-600 select-none">US$ {value}</div>
+              <div className="mt-1 text-[10px] text-neutral-600 select-none">
+                US$ {value}
+              </div>
             </div>
           </div>
           {TRANSPORT_STOPS.map((stop, i) => {
@@ -237,12 +288,20 @@ const BandCard: React.FC<BandCardProps> = ({ band, compact = false, defaultOpenD
           />
         </div>
 
-        <div className={compact ? 'mt-2 text-xs text-neutral-600' : 'mt-3 text-sm text-neutral-700'}>
+        <div
+          className={
+            compact
+              ? 'mt-2 text-xs text-neutral-600'
+              : 'mt-3 text-sm text-neutral-700'
+          }
+        >
           {compact ? (
             <>
               <p>Optimizado para la mejor relación valor/experiencia.</p>
               <details className="mt-1" open={defaultOpenDetails}>
-                <summary className="cursor-pointer underline">Más detalles</summary>
+                <summary className="cursor-pointer underline">
+                  Más detalles
+                </summary>
                 <div className="mt-1 space-y-1">
                   <OriginalText />
                 </div>

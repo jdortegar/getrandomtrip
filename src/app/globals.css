@@ -1,12 +1,48 @@
 @import 'tailwindcss';
 @import 'leaflet/dist/leaflet.css';
 
+/* Infinite scroll animation */
+@keyframes infinite-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-infinite-scroll {
+  animation: infinite-scroll 20s linear infinite;
+}
+
+/* Custom slider styles */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #003366;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #003366;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 @theme {
   --font-jost: Jost, sans-serif;
   --font-caveat: Caveat, cursive;
 
   /* Primary Ocean Deep Blue Color */
-  --color-primary: #003366;
+  --color-primary: #0a335d;
   --color-primary-foreground: #ffffff;
   --color-primary-50: #f0f4f8;
   --color-primary-100: #d9e2ec;

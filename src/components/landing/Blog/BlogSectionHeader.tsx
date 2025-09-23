@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BLOG_CONSTANTS } from '@/lib/data/constants/blog';
+import { Button } from '@/components/ui/Button';
 
 interface BlogSectionHeaderProps {
   onScroll: (direction: 'left' | 'right') => void;
@@ -9,13 +10,15 @@ interface BlogSectionHeaderProps {
 
 export function BlogSectionHeader({ onScroll }: BlogSectionHeaderProps) {
   return (
-    <div className="md:col-span-1 text-left">
-      <h2 className="font-caveat text-5xl font-bold text-white">
-        {BLOG_CONSTANTS.SECTION.TITLE}
-      </h2>
-      <p className="font-jost text-lg text-gray-300 mt-4">
-        {BLOG_CONSTANTS.SECTION.SUBTITLE}
-      </p>
+    <div className="md:col-span-1 text-left flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        <h2 className="font-caveat text-5xl font-bold text-white">
+          {BLOG_CONSTANTS.SECTION.TITLE}
+        </h2>
+        <p className="font-jost text-lg text-gray-300 ">
+          {BLOG_CONSTANTS.SECTION.SUBTITLE}
+        </p>
+      </div>
 
       <div className="flex space-x-4 mt-8">
         <button

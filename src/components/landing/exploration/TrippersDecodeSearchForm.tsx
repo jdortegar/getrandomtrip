@@ -37,7 +37,7 @@ export function TrippersDecodeSearchForm({
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
               onMonthChange(e.target.value)
             }
-            className="flex h-10 w-full rounded-md border border-gray-200 bg-white pl-3 pr-8 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+            className="min-w-[200px] flex h-10 w-full rounded-md border border-gray-200 bg-white pl-3 pr-8 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
           >
             <option value="">Cualquier Mes</option>
             {TRIPPERS_DECODE_CONSTANTS.MONTHS.map((monthOption: string) => (

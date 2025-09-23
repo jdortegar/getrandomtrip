@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import PrimaryButton from './PrimaryButton';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
 import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import Img from '@/components/common/Img'; // Added import
+import 'react-datepicker/dist/react-datepicker.css';
+import Img from '@/components/common/Img';
 
 interface Event {
   id: string;
@@ -37,8 +38,8 @@ const EventFinder: React.FC = () => {
     try {
       const response = await fetch(
         `http://localhost:3001/api/events?city=${encodeURIComponent(
-          city
-        )}&startDate=${startDateString}&endDate=${endDateString}`
+          city,
+        )}&startDate=${startDateString}&endDate=${endDateString}`,
       );
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
@@ -71,35 +72,37 @@ const EventFinder: React.FC = () => {
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto text-center">
-        {/* Título con logo */}
-        <h2
-          className="text-4xl md:text-6xl font-bold mb-4 flex flex-col md:flex-row items-center justify-center"
-          style={{ fontFamily: 'Playfair Display, serif' }}
-        >
-          Descubre tu próxima experiencia con
-          <Img
-            src="/images/ticketmaster-logo.svg"
-            alt="Ticketmaster"
-            className="h-12 ml-4 mt-4 md:mt-0 inline-block"
-            width={100} // Approximate width based on h-12
-            height={48} // h-12 is 48px
-            unoptimized={true} // It's an SVG logo
-          />
-        </h2>
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 flex flex-col items-center justify-center font-caveat">
+            Descubre tu próxima experiencia
+          </h2>
+          <div>
+            Powered by
+            <Img
+              src="/images/ticketmaster-logo.svg"
+              alt="Ticketmaster"
+              className="h-12 ml-2 inline-block mb-1"
+              width={100} // Approximate width based on h-12
+              height={48} // h-12 is 48px
+              unoptimized={true} // It's an SVG logo
+            />
+          </div>
+        </div>
 
         {/* Subtítulo */}
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          Conquista conciertos, festivales y eventos únicos. Boletos al instante, aventuras inolvidables. Solo elige tu ciudad y tus fechas.
+        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-jost">
+          Conquista conciertos, festivales y eventos únicos. Boletos al
+          instante, aventuras inolvidables. Solo elige tu ciudad y tus fechas.
         </p>
 
         {/* Formulario de búsqueda */}
         <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg flex flex-col md:flex-row items-center gap-4 border border-gray-700 max-w-2xl mx-auto">
-          <input
+          <Input
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Ingresa una ciudad…"
-            className="w-full bg-gray-900/70 text-white p-3 rounded-md border-none outline-none focus:ring-2 focus:ring-[#E51A2C]"
+            className="w-full h-11 bg-gray-900/70 text-white border border-white rounded-md px-3"
           />
           <DatePicker
             selectsRange
@@ -111,20 +114,21 @@ const EventFinder: React.FC = () => {
             }}
             isClearable
             placeholderText="Selecciona tus fechas…"
-            className="w-full bg-gray-900/70 text-white p-3 rounded-md border-none outline-none focus:ring-2 focus:ring-[#E51A2C]"
+            className="w-full h-11 bg-gray-900/70 text-white border border-white outline-none rounded-md px-3 min-w-[200px]"
           />
         </div>
 
         {/* Botón CTA */}
         <div className="mt-8">
-          <PrimaryButton
+          <Button
             onClick={handleSearch}
             disabled={isLoading}
-            className="bg-[#E51A2C] text-white hover:bg-[#CC1626]"
+            variant="outline"
+            size="lg"
           >
             {isLoading ? 'Buscando…' : 'Explorar eventos'}
-          </PrimaryButton>
-          <p className="text-sm text-gray-400 mt-4">
+          </Button>
+          <p className="text-sm text-white mt-4 font-jost  ">
             Sorpresa, sí. Estrés, nunca. Solo define tus fechas y déjate llevar.
           </p>
         </div>

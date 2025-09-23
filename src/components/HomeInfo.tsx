@@ -2,39 +2,68 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HomeInfoCarouselProps } from './HomeInfoCarousel/HomeInfoCarousel.types';
-import { HOME_INFO_CAROUSEL_CONSTANTS } from './HomeInfoCarousel/HomeInfoCarousel.constants';
-import { HomeInfoCarouselContent } from './HomeInfoCarousel/HomeInfoCarousel.Content';
-import { HomeInfoTabNavigation } from './HomeInfoCarousel/HomeInfoCarousel.TabNavigation';
-import { TrustSignals } from './TrustSignals';
-import { TabSelector } from '../ui/TabSelector';
+import { TabSelector } from './ui/TabSelector';
+import TrustSignals from './TrustSignals';
 import { BudgetBandsSection } from '@/components/BudgetBandsSection';
-import BenefitsCardsOnly from '../BenefitsCardsOnly';
-import HowItWorksSection from './HowItWorks';
+import BenefitsCardsOnly from './BenefitsCardsOnly';
+import HowItWorks from './HowItWorks';
+import { Button } from './ui/Button';
+import BudgetSlider from './BudgetSlider';
 
-export default function HomeInfoCarousel({
+// Types
+export interface HomeInfoProps {
+  className?: string;
+  variant?: 'default' | 'compact';
+}
+
+// Constants
+const HOME_INFO_CONSTANTS = {
+  TITLE: '¿Qué es Random Trip?',
+  SUBTITLE:
+    'La plataforma que conecta viajeros auténticos con aventureros que buscan experiencias únicas. Descubre destinos a través de los ojos de quienes los conocen mejor.',
+  TABS: [
+    {
+      id: 'how',
+      label: '¿Cómo funciona?',
+      contentKey: 'howItWorks',
+    },
+    {
+      id: 'benefits',
+      label: 'Beneficios clave',
+      contentKey: 'benefits',
+    },
+    {
+      id: 'bands',
+      label: 'Bandas & modos de viaje',
+      contentKey: 'budgetBands',
+    },
+  ] as const,
+  SECTION_ARIA_LABEL: 'Información sobre Random Trip',
+} as const;
+
+export default function HomeInfo({
   className = '',
   variant = 'default',
-}: HomeInfoCarouselProps) {
+}: HomeInfoProps) {
   const [activeTab, setActiveTab] = useState<string>(
-    HOME_INFO_CAROUSEL_CONSTANTS.TABS[0].id,
+    HOME_INFO_CONSTANTS.TABS[0].id,
   );
 
   const renderActiveTab = () => {
-    const currentTab = HOME_INFO_CAROUSEL_CONSTANTS.TABS.find(
+    const currentTab = HOME_INFO_CONSTANTS.TABS.find(
       (tab) => tab.id === activeTab,
     );
     if (!currentTab) return null;
 
     switch (currentTab.contentKey) {
       case 'howItWorks':
-        return <HowItWorksSection variant={variant} />;
+        return <HowItWorks />;
 
       case 'benefits':
         return <BenefitsCardsOnly />;
 
       case 'budgetBands':
-        return <BudgetBandsSection variant={variant} defaultOpenDetails />;
+        return <BudgetSlider />;
 
       default:
         return null;
@@ -43,8 +72,8 @@ export default function HomeInfoCarousel({
 
   return (
     <section
-      aria-label={HOME_INFO_CAROUSEL_CONSTANTS.SECTION_ARIA_LABEL}
-      className={`bg-white text-gray-900 py-16 px-4 md:px-8`}
+      aria-label={HOME_INFO_CONSTANTS.SECTION_ARIA_LABEL}
+      className={`bg-white text-gray-900 py-16 px-4 md:px-8 ${className}`.trim()}
     >
       {/* Header Section */}
       <div className="mb-8">
@@ -53,16 +82,16 @@ export default function HomeInfoCarousel({
           tabIndex={-1}
           className="font-caveat text-6xl md:text-5xl font-bold mb-6 text-gray-900 text-center"
         >
-          {HOME_INFO_CAROUSEL_CONSTANTS.TITLE}
+          {HOME_INFO_CONSTANTS.TITLE}
         </h2>
         <p className="font-jost text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          {HOME_INFO_CAROUSEL_CONSTANTS.SUBTITLE}
+          {HOME_INFO_CONSTANTS.SUBTITLE}
         </p>
       </div>
 
       {/* Tab Navigation */}
       <TabSelector
-        tabs={HOME_INFO_CAROUSEL_CONSTANTS.TABS}
+        tabs={HOME_INFO_CONSTANTS.TABS}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         layoutId="activeTabHomeInfo"
@@ -85,6 +114,17 @@ export default function HomeInfoCarousel({
           {renderActiveTab()}
         </motion.div>
       </AnimatePresence>
+
+      {/* CTA */}
+      <div className={'mt-8 flex justify-center'}>
+        <Button
+          href="/?tab=By%20Traveller#start-your-journey-anchor"
+          variant="primary"
+          size="lg"
+        >
+          RANDOMTRIPME!
+        </Button>
+      </div>
       {/* Trust Signals */}
       <TrustSignals variant="compact" />
     </section>
