@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Button } from './ui/Button';
 import { PACKAGE_TIERS, PACKAGE_ICONS } from '@/lib/data/packages';
 import { MapPin, Plane, Bed, Gift } from 'lucide-react';
 

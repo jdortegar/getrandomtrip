@@ -7,7 +7,7 @@ import TrustSignals from './TrustSignals';
 import { BudgetBandsSection } from '@/components/BudgetBandsSection';
 import BenefitsCardsOnly from './BenefitsCardsOnly';
 import HowItWorks from './HowItWorks';
-import { Button } from './ui/Button';
+import { Button } from '@/components/ui/Button';
 import BudgetSlider from './BudgetSlider';
 
 // Types
