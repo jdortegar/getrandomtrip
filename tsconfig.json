@@ -17,19 +17,16 @@
         "name": "next"
       }
     ],
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
-    },
-    "types": ["node", "@types/google.maps"],
-    "target": "ES2017"
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "next.config.js"
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "src/backup/**"]
+  "exclude": ["node_modules"]
 }
