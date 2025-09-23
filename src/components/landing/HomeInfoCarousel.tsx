@@ -2,20 +2,43 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HomeInfoCarouselProps } from './HomeInfoCarousel/HomeInfoCarousel.types';
-import { HOME_INFO_CAROUSEL_CONSTANTS } from './HomeInfoCarousel/HomeInfoCarousel.constants';
-import { HomeInfoCarouselContent } from './HomeInfoCarousel/HomeInfoCarousel.Content';
-import { HomeInfoTabNavigation } from './HomeInfoCarousel/HomeInfoCarousel.TabNavigation';
-import { TrustSignals } from './TrustSignals';
+import TrustSignals from '../TrustSignals';
 import { TabSelector } from '../ui/TabSelector';
 import { BudgetBandsSection } from '@/components/BudgetBandsSection';
 import BenefitsCardsOnly from '../BenefitsCardsOnly';
-import HowItWorksSection from './HowItWorks';
+import HowItWorksSection from '../HowItWorks';
+
+const HOME_INFO_CAROUSEL_CONSTANTS = {
+  SECTION_ARIA_LABEL: 'Información del viaje',
+  TITLE: 'Tu aventura te espera',
+  SUBTITLE:
+    'Descubre cómo funciona Random Trip y por qué miles de viajeros confían en nosotros para sus aventuras.',
+  TABS: [
+    {
+      id: 'how',
+      label: '¿Cómo funciona?',
+      contentKey: 'howItWorks',
+    },
+    {
+      id: 'benefits',
+      label: 'Beneficios clave',
+      contentKey: 'benefits',
+    },
+    {
+      id: 'budget',
+      label: 'Presupuestos',
+      contentKey: 'budgetBands',
+    },
+  ],
+};
 
 export default function HomeInfoCarousel({
   className = '',
   variant = 'default',
-}: HomeInfoCarouselProps) {
+}: {
+  className?: string;
+  variant?: 'default' | 'compact';
+} = {}) {
   const [activeTab, setActiveTab] = useState<string>(
     HOME_INFO_CAROUSEL_CONSTANTS.TABS[0].id,
   );
@@ -28,7 +51,7 @@ export default function HomeInfoCarousel({
 
     switch (currentTab.contentKey) {
       case 'howItWorks':
-        return <HowItWorksSection variant={variant} />;
+        return <HowItWorksSection />;
 
       case 'benefits':
         return <BenefitsCardsOnly />;

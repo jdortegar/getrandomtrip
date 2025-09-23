@@ -1,12 +1,11 @@
 'use client';
 
 import React from 'react';
-import { HowItWorksProps } from './landing/HowItWorks/HowItWorks.types';
 import { HOW_IT_WORKS_CONSTANTS } from '@/lib/data/how-it-works';
-import { HowItWorksStep } from './HowItWorks.Step';
 import { Button } from '@/components/ui/Button';
+import { HowItWorksStep } from './HowItWorks.Step';
 
-export default function HowItWorksSection({}: HowItWorksProps) {
+export default function HowItWorksSection() {
   return (
     <section
       aria-label={HOW_IT_WORKS_CONSTANTS.SECTION_ARIA_LABEL}

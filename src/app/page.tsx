@@ -17,7 +17,15 @@ export default function HomePage() {
       <Hero />
       <HomeInfo />
       <ReadyForAdventureSection />
-      <ExplorationSection />
+      <Suspense
+        fallback={
+          <div className="min-h-[300px] flex items-center justify-center">
+            Loading...
+          </div>
+        }
+      >
+        <ExplorationSection />
+      </Suspense>
       <Blog />
       <EventFinder />
       <FooterLanding />
