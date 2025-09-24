@@ -85,7 +85,7 @@ export default function TravelDesignSystemPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="text-center space-y-4">
               <h3 className="font-semibold">Primary</h3>
-              <TravelButton variant="primary">Primary</TravelButton>
+              <TravelButton variant="secondary">Primary</TravelButton>
             </div>
 
             <div className="text-center space-y-4">
@@ -146,7 +146,7 @@ export default function TravelDesignSystemPage() {
                 </p>
               </TravelCardContent>
               <TravelCardFooter>
-                <TravelButton variant="primary" size="sm">
+                <TravelButton variant="secondary" size="sm">
                   Learn More
                 </TravelButton>
               </TravelCardFooter>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { HOW_IT_WORKS_CONSTANTS } from '@/lib/data/how-it-works';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { HowItWorksStep } from './HowItWorks.Step';
 
 export default function HowItWorksSection() {

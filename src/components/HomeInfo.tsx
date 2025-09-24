@@ -7,7 +7,8 @@ import TrustSignals from './TrustSignals';
 import { BudgetBandsSection } from '@/components/BudgetBandsSection';
 import BenefitsCardsOnly from './BenefitsCardsOnly';
 import HowItWorks from './HowItWorks';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import BudgetSlider from './BudgetSlider';
 
 // Types
@@ -118,11 +119,13 @@ export default function HomeInfo({
       {/* CTA */}
       <div className={'mt-8 flex justify-center'}>
         <Button
-          href="/?tab=By%20Traveller#start-your-journey-anchor"
-          variant="primary"
+          asChild
+          variant="default"
           size="lg"
         >
-          RANDOMTRIPME!
+          <Link href="/?tab=By%20Traveller#start-your-journey-anchor">
+            RANDOMTRIPME!
+          </Link>
         </Button>
       </div>
       {/* Trust Signals */}

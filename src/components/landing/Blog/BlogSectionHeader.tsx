@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { BLOG_CONSTANTS } from '@/lib/data/constants/blog';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 
 interface BlogSectionHeaderProps {
   onScroll: (direction: 'left' | 'right') => void;

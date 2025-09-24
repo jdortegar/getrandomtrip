@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { HERO_CONTENT, HERO_CONFIG } from '@/lib/data/constants/hero';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // HeroVideoBackground Component
 function HeroVideoBackground() {
@@ -114,13 +115,15 @@ const Hero: React.FC = () => {
         </p>
 
         <Button
-          href={HERO_CONTENT.CTA_HREF}
-          ariaLabel={HERO_CONTENT.CTA_ARIA_LABEL}
+          asChild
+          aria-label={HERO_CONTENT.CTA_ARIA_LABEL}
           variant="outline"
           size="lg"
           className="mt-8 uppercase tracking-wider animate-pulse-once"
         >
-          {HERO_CONTENT.CTA_TEXT}
+          <Link href={HERO_CONTENT.CTA_HREF}>
+            {HERO_CONTENT.CTA_TEXT}
+          </Link>
         </Button>
       </div>
 

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const ReadyForAdventureSection: React.FC = () => {
   return (
@@ -22,13 +23,15 @@ const ReadyForAdventureSection: React.FC = () => {
           lo pienses más.
         </p>
         <Button
-          href="/?tab=By%20Traveller#start-your-journey-anchor"
+          asChild
           variant="outline"
           size="lg"
           className="px-8"
           aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
         >
-          RANDOMTRIPME!
+          <Link href="/?tab=By%20Traveller#start-your-journey-anchor">
+            RANDOMTRIPME!
+          </Link>
         </Button>
       </div>
     </section>
