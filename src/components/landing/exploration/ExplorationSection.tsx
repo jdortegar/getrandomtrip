@@ -27,34 +27,34 @@ function normalizeTab(input: string | null): string | null {
 }
 
 export function ExplorationSection() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const rawTab = searchParams.get('tab');
-  const safeTab = normalizeTab(rawTab);
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
+  // const rawTab = searchParams.get('tab');
+  // const safeTab = normalizeTab(rawTab);
 
-  const [activeTab, setActiveTab] = useState(safeTab || 'By Traveller');
+  const [activeTab, setActiveTab] = useState('By Traveller');
 
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab) {
-      setActiveTab(tab);
-      const el = document.getElementById('start-your-journey-anchor');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const heading = document.querySelector(
-          'section[aria-label="Comienza tu Viaje"] h2',
-        ) as HTMLElement | null;
-        if (heading)
-          setTimeout(() => heading.focus({ preventScroll: true }), 350);
-      }
-    } else if (
-      typeof window !== 'undefined' &&
-      window.location.hash === '#start-your-journey-anchor'
-    ) {
-      const el = document.getElementById('start-your-journey-anchor');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [searchParams]);
+  // useEffect(() => {
+  //   const tab = searchParams.get('tab');
+  //   if (tab) {
+  //     setActiveTab(tab);
+  //     const el = document.getElementById('start-your-journey-anchor');
+  //     if (el) {
+  //       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  //       const heading = document.querySelector(
+  //         'section[aria-label="Comienza tu Viaje"] h2',
+  //       ) as HTMLElement | null;
+  //       if (heading)
+  //         setTimeout(() => heading.focus({ preventScroll: true }), 350);
+  //     }
+  //   } else if (
+  //     typeof window !== 'undefined' &&
+  //     window.location.hash === '#start-your-journey-anchor'
+  //   ) {
+  //     const el = document.getElementById('start-your-journey-anchor');
+  //     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  //   }
+  // }, [searchParams]);
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -75,7 +75,7 @@ export function ExplorationSection() {
     <section
       data-testid="journey-section"
       aria-label="Comienza tu Viaje"
-      className="max-w-7xl mx-auto text-center bg-white text-gray-900 py-16 px-4 md:px-8"
+      className="text-center bg-white text-gray-900 py-16 "
     >
       {/* Header Section - Inspired by Black Tomato */}
       <div className="mb-8">
@@ -109,7 +109,7 @@ export function ExplorationSection() {
             ease: 'easeInOut',
             height: { duration: 0.4, ease: 'easeInOut' },
           }}
-          className="w-full mt-6 overflow-hidden min-h-[300px]"
+          className="w-full mt-6 overflow-hidden min-h-[300px] max-w-5xl mx-auto"
         >
           {renderActiveTab()}
         </motion.div>

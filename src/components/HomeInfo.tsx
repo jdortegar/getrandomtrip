@@ -74,7 +74,7 @@ export default function HomeInfo({
   return (
     <section
       aria-label={HOME_INFO_CONSTANTS.SECTION_ARIA_LABEL}
-      className={`bg-white text-gray-900 py-16 px-4 md:px-8 ${className}`.trim()}
+      className={`bg-white text-gray-900 py-16 px-4 md:px-8 `}
     >
       {/* Header Section */}
       <div className="mb-8">
@@ -110,7 +110,7 @@ export default function HomeInfo({
             ease: 'easeInOut',
             height: { duration: 0.4, ease: 'easeInOut' },
           }}
-          className="w-full overflow-hidden min-h-[300px]"
+          className="w-full overflow-hidden min-h-[300px] max-w-5xl mx-auto"
         >
           {renderActiveTab()}
         </motion.div>
@@ -118,11 +118,7 @@ export default function HomeInfo({
 
       {/* CTA */}
       <div className={'mt-8 flex justify-center'}>
-        <Button
-          asChild
-          variant="default"
-          size="lg"
-        >
+        <Button asChild variant="default" size="lg">
           <Link href="/?tab=By%20Traveller#start-your-journey-anchor">
             RANDOMTRIPME!
           </Link>

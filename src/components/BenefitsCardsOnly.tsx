@@ -22,7 +22,7 @@ const benefits = [
 
 export default function BenefitsCardsOnly() {
   return (
-    <div className="py-6">
+    <div className="py-6 max-w-5xl mx-auto">
       <header className="text-center mb-8">
         <p className="text-center text-gray-600  italic font-jost text-lg mb-6">
           Lo difícil es planificar. Lo inolvidable es viajar.
