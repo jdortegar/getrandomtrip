@@ -10,6 +10,7 @@ export default function HowItWorksSection() {
     <section
       aria-label={HOW_IT_WORKS_CONSTANTS.SECTION_ARIA_LABEL}
       className="mt-4"
+      data-testid="how-it-works"
     >
       <div className="max-w-7xl mx-auto py-6">
         <p className="text-center text-gray-600 italic font-jost text-lg mb-6">

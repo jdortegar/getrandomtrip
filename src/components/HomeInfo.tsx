@@ -11,12 +11,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import BudgetSlider from './BudgetSlider';
 
-// Types
-export interface HomeInfoProps {
-  className?: string;
-  variant?: 'default' | 'compact';
-}
-
 // Constants
 const HOME_INFO_CONSTANTS = {
   TITLE: '¿Qué es Random Trip?',
@@ -42,10 +36,7 @@ const HOME_INFO_CONSTANTS = {
   SECTION_ARIA_LABEL: 'Información sobre Random Trip',
 } as const;
 
-export default function HomeInfo({
-  className = '',
-  variant = 'default',
-}: HomeInfoProps) {
+export default function HomeInfo() {
   const [activeTab, setActiveTab] = useState<string>(
     HOME_INFO_CONSTANTS.TABS[0].id,
   );
