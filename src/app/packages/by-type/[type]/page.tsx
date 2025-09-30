@@ -1,24 +1,43 @@
 import { getTravellerData, getAllTravellerSlugs } from '@/lib/travellerTypes';
-import type { Metadata } from 'next';
 import type { CSSProperties } from 'react';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
-// Generales
-import Hero from '@/components/by-type/Hero';
-import IntroBlock from '@/components/by-type/IntroBlock';
-import ImageMosaic from '@/components/by-type/ImageMosaic';
-import BenefitGrid from '@/components/by-type/BenefitGrid';
-import LevelsSection from '@/components/by-type/LevelsSection';
-import CtaBand from '@/components/by-type/CtaBand';
-import FooterLanding from '@/components/layout/FooterLanding';
+// Dynamic imports for better code splitting
+import dynamic from 'next/dynamic';
 
-// Páginas/Secciones específicas
-import CouplePage from '../couple/page';
+// Component mapping for dynamic imports
+const COMPONENT_MAP = {
+  // Generic components
+  Hero: dynamic(() => import('@/components/by-type/Hero'), { ssr: true }),
+  IntroBlock: dynamic(() => import('@/components/by-type/IntroBlock'), {
+    ssr: true,
+  }),
+  ImageMosaic: dynamic(() => import('@/components/by-type/ImageMosaic'), {
+    ssr: false,
+  }),
+  BenefitGrid: dynamic(() => import('@/components/by-type/BenefitGrid'), {
+    ssr: true,
+  }),
+  LevelsSection: dynamic(() => import('@/components/by-type/LevelsSection'), {
+    ssr: true,
+  }),
+  CtaBand: dynamic(() => import('@/components/by-type/CtaBand'), { ssr: true }),
 
-// SOLO: importa las 3 secciones
-import SoloHero from '@/components/by-type/solo/SoloHero';
-import SoloIntro from '@/components/by-type/solo/SoloIntro';
-import SoloPlanner from '@/components/by-type/solo/SoloPlanner';
+  // Specific pages
+  CouplePage: dynamic(() => import('../couple/page'), { ssr: true }),
+
+  // Solo sections
+  SoloHero: dynamic(() => import('@/components/by-type/solo/SoloHero'), {
+    ssr: true,
+  }),
+  SoloIntro: dynamic(() => import('@/components/by-type/solo/SoloIntro'), {
+    ssr: true,
+  }),
+  SoloPlanner: dynamic(() => import('@/components/by-type/solo/SoloPlanner'), {
+    ssr: false,
+  }),
+} as const;
 
 /**
  * Canonicalización local SOLO para este archivo:
@@ -61,73 +80,56 @@ const DEDICATED: Set<string> = new Set([
   'paws',
 ]);
 
-// --- Metadata ---
-export async function generateMetadata({
-  params,
-}: {
-  params: { type: string };
-}): Promise<Metadata> {
-  const type = canonicalType(params.type);
-  const map: Record<string, string> = {
-    couple: 'En Pareja | Randomtrip',
-    solo: 'Solo | Randomtrip',
-    family: 'En Familia | Randomtrip',
-    honeymoon: 'Honeymoon | Randomtrip',
-    group: 'En Grupo | Randomtrip',
-    paws: 'Paws | Randomtrip',
-  };
-  return { title: map[type] ?? 'Randomtrip' };
+// --- Enhanced Static Generation ---
+export async function generateStaticParams() {
+  const slugs = getAllTravellerSlugs();
+
+  // Generate params for dynamic routes only
+  const dynamicSlugs = slugs
+    .filter((t) => !DEDICATED.has(canonicalType(t)))
+    .map((type) => ({ type }));
+
+  // Add fallback for common aliases
+  const aliasParams = Object.entries(ALIAS)
+    .filter(([alias, canonical]) => !DEDICATED.has(canonical))
+    .map(([alias, canonical]) => ({ type: alias }));
+
+  return [...dynamicSlugs, ...aliasParams];
 }
 
-// --- Pre-render ---
-// IMPORTANT: solo generamos los slugs que deben vivir en la dinámica.
-export function generateStaticParams() {
+// --- Loading Component ---
+function LoadingSkeleton() {
   return (
-    getAllTravellerSlugs()
-      // Blindaje extra por si alguien deja un slug dedicado en la lista
-      .filter((t) => !DEDICATED.has(canonicalType(t)))
-      .map((type) => ({ type }))
+    <div className="animate-pulse">
+      <div className="h-96 bg-gray-200 rounded-lg mb-8"></div>
+      <div className="space-y-4">
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+      </div>
+    </div>
   );
 }
 
-// --- Página ---
-export default function Page({ params }: { params: { type: string } }) {
-  const type = canonicalType(params.type);
-
-  // Si el slug corresponde a una página dedicada, redirigimos a ella
-  if (DEDICATED.has(type)) {
-    redirect(`/packages/by-type/${type}`);
-  }
-
-  // Caso especial: pareja usa su página propia (componente dedicado embebido aquí)
+// --- Component Mapping Function ---
+function renderPageByType(type: string, data?: any) {
+  // Special case: Couple page
   if (type === 'couple') {
-    return <CouplePage />;
+    return <COMPONENT_MAP.CouplePage />;
   }
 
-  // Caso especial: SOLO → Hero + Intro + Planner (el planner arranca en Presupuesto)
+  // Special case: Solo page
   if (type === 'solo') {
     return (
       <main>
-        <SoloHero />
-        <SoloIntro />
-        <SoloPlanner />
+        <COMPONENT_MAP.SoloHero />
+        <COMPONENT_MAP.SoloIntro />
+        <COMPONENT_MAP.SoloPlanner />
       </main>
     );
   }
 
-  // Datos base y paleta (para los tipos genéricos)
-  const data = getTravellerData(type) ?? {
-    slug: type,
-    heroTitle: 'Ruta con Alma',
-    subcopy: 'Preparamos la sorpresa; tú te quedas con la historia.',
-    palette: {
-      primary: '#FFF',
-      secondary: '#0A2240',
-      accent: '#F2C53D',
-      text: '#212121',
-    },
-    images: { hero: '' },
-  };
+  // Generic flow for other types
+  if (!data) return null;
 
   const style = {
     '--rt-primary': data.palette.primary,
@@ -136,18 +138,106 @@ export default function Page({ params }: { params: { type: string } }) {
     '--rt-text': data.palette.text,
   } as CSSProperties;
 
-  // Resto de tipos → flujo genérico
   return (
     <main style={style}>
-      <Hero data={data} />
-      <IntroBlock type={data.slug} palette={data.palette} />
-      <ImageMosaic type={data.slug} />
-      <BenefitGrid type={data.slug} palette={data.palette} />
+      <COMPONENT_MAP.Hero data={data} />
+      <COMPONENT_MAP.IntroBlock type={data.slug} palette={data.palette} />
+      <COMPONENT_MAP.ImageMosaic type={data.slug} />
+      <COMPONENT_MAP.BenefitGrid type={data.slug} palette={data.palette} />
       <section className="bg-white text-slate-900">
-        <LevelsSection type={data.slug} palette={data.palette} />
+        <COMPONENT_MAP.LevelsSection type={data.slug} palette={data.palette} />
       </section>
-      <CtaBand palette={data.palette} />
-      <FooterLanding />
+      <COMPONENT_MAP.CtaBand palette={data.palette} />
+    </main>
+  );
+}
+
+// --- Main Page Component ---
+export default async function Page({ params }: { params: { type: string } }) {
+  const type = canonicalType(params.type);
+
+  // // Redirect to dedicated pages
+  // if (DEDICATED.has(type)) {
+  //   redirect(`/packages/by-type/${type}`);
+  // }
+
+  // // Special case: Couple page
+  // if (type === 'couple') {
+  //   return (
+  //     <Suspense fallback={<LoadingSkeleton />}>{/* <CouplePage /> */}</Suspense>
+  //   );
+  // }
+
+  // // Special case: Solo page with optimized structure
+  // if (type === 'solo') {
+  //   return (
+  //     <main>
+  //       <Suspense fallback={<LoadingSkeleton />}>
+  //         <COMPONENT_MAP.SoloHero />
+  //       </Suspense>
+  //       <Suspense fallback={<LoadingSkeleton />}>
+  //         <COMPONENT_MAP.SoloIntro />
+  //       </Suspense>
+  //       <Suspense fallback={<LoadingSkeleton />}>
+  //         <COMPONENT_MAP.SoloPlanner />
+  //       </Suspense>
+  //     </main>
+  //   );
+  // }
+
+  // // Get data with error handling
+  // const data = getTravellerData(type) ?? {
+  //   slug: type,
+  //   heroTitle: 'Ruta con Alma',
+  //   subcopy: 'Preparamos la sorpresa; tú te quedas con la historia.',
+  //   palette: {
+  //     primary: '#FFF',
+  //     secondary: '#0A2240',
+  //     accent: '#F2C53D',
+  //     text: '#212121',
+  //   },
+  //   images: { hero: '' },
+  // };
+
+  // const style = {
+  //   '--rt-primary': data.palette.primary,
+  //   '--rt-secondary': data.palette.secondary,
+  //   '--rt-accent': data.palette.accent,
+  //   '--rt-text': data.palette.text,
+  // } as CSSProperties;
+
+  return <LoadingSkeleton />;
+  // Generic flow with optimized loading
+  return (
+    <main>
+      {/* <Suspense fallback={<LoadingSkeleton />}>
+        <COMPONENT_MAP.Hero data={data} />
+      </Suspense>
+      <Suspense fallback={<LoadingSkeleton />}>
+        <COMPONENT_MAP.IntroBlock type={data.slug} palette={data.palette} />
+      </Suspense>
+      <Suspense
+        fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg" />}
+      >
+        <COMPONENT_MAP.ImageMosaic type={data.slug} />
+      </Suspense>
+      <Suspense fallback={<LoadingSkeleton />}>
+        <COMPONENT_MAP.BenefitGrid type={data.slug} palette={data.palette} />
+      </Suspense>
+      <section className="bg-white text-slate-900">
+        <Suspense fallback={<LoadingSkeleton />}>
+          <COMPONENT_MAP.LevelsSection
+            type={data.slug}
+            palette={data.palette}
+          />
+        </Suspense>
+      </section>
+      <Suspense fallback={<LoadingSkeleton />}>
+        <COMPONENT_MAP.CtaBand palette={data.palette} />
+      </Suspense> */}
+      <Suspense fallback={<LoadingSkeleton />}>
+        {/* <COMPONENT_MAP.FooterLanding /> */}
+      </Suspense>
     </main>
   );
 }

@@ -52,13 +52,19 @@ export default function HoneymoonTestimonials() {
   const len = testimonials.length;
   const perPage = 3;
 
-  const visible = Array.from({ length: perPage }, (_, i) => testimonials[(start + i) % len]);
+  const visible = Array.from(
+    { length: perPage },
+    (_, i) => testimonials[(start + i) % len],
+  );
 
   const prev = () => setStart((s) => (s - perPage + len) % len);
   const next = () => setStart((s) => (s + perPage) % len);
 
   return (
-    <section id="testimonios-honeymoon" className="py-20 px-8 bg-white text-neutral-900">
+    <section
+      id="testimonios-honeymoon"
+      className="py-20 px-8 bg-white text-neutral-900"
+    >
       <div className="max-w-7xl mx-auto">
         <h2
           className="text-5xl font-bold text-center mb-12"
@@ -89,9 +95,16 @@ export default function HoneymoonTestimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {visible.map((testimonial, index) => (
-            <div key={`${testimonial.author}-${index}`} className="bg-neutral-100 p-8 rounded-lg shadow-lg">
-              <p className="text-lg italic text-neutral-700 mb-4">&quot;{testimonial.quote}&quot;</p>
-              <p className="font-semibold text-neutral-900">{testimonial.author}</p>
+            <div
+              key={`${testimonial.author}-${index}`}
+              className="bg-neutral-100 p-8 rounded-lg shadow-lg"
+            >
+              <p className="text-lg italic text-neutral-700 mb-4">
+                &quot;{testimonial.quote}&quot;
+              </p>
+              <p className="font-semibold text-neutral-900">
+                {testimonial.author}
+              </p>
               <p className="text-sm text-neutral-600">{testimonial.city}</p>
             </div>
           ))}

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Img from '@/components/common/Img'; // Added import
 import CoupleAlmaOptionCard from './CoupleAlmaOptionCard';
 import { COUPLE_ALMA_OPTIONS } from './coupleAlmaOptions';
+import { Button } from '@/components/ui/button';
 
 const BORDER_COLOR: Record<string, string> = {
   'romantic-getaway': 'border-rose-400',
@@ -37,43 +38,22 @@ export default function CoupleAlmaDetails({
 
   const toggle = (key: string) =>
     setSelected((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
 
   const liveText = useMemo(
     () => `Seleccionadas: ${selected.length}`,
-    [selected.length]
+    [selected.length],
   );
-
-  if (!spec) {
-    return (
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
-          <p className="text-neutral-700">
-            Elegí primero un alma de viaje válida en “La Excusa”.
-          </p>
-        </div>
-        <div className="mt-8 text-center">
-          <button
-            data-testid="cta-back-to-tab3"
-            className="text-neutral-800 underline decoration-neutral-400 hover:decoration-neutral-800"
-            onClick={onBack}
-          >
-            ← Volver
-          </button>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section
       id="couple-planner"
       data-testid="tab-afinar-detalles"
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10"
+      className="max-w-7xl mx-auto"
     >
       {/* HERO */}
-      <div className="relative overflow-hidden rounded-3xl">
+      <div className="relative overflow-hidden rounded-md">
         <Img
           src={
             spec.heroImg ||
@@ -86,21 +66,28 @@ export default function CoupleAlmaDetails({
         />
         <div className={`absolute inset-0 ${spec.tint || 'bg-black/30'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />
-        <div className={`pointer-events-none absolute left-6 top-6 h-12 w-12 border-t-4 border-l-4 ${borderClass}`} />
-        <div className={`pointer-events-none absolute right-6 bottom-6 h-12 w-12 border-b-4 border-r-4 ${borderClass}`} />
+
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
-          <h3 className="font-display text-2xl md:text-3xl drop-shadow">{spec.title}</h3>
-          <p data-testid="tab4-core" className="mt-2 max-w-3xl text-white/90">{spec.core}</p>
+          <h3 className="font-display text-2xl md:text-4xl drop-shadow font-caveat">
+            {spec.title}
+          </h3>
+          <p
+            data-testid="tab4-core"
+            className="mt-2 max-w-3xl text-white/90 font-jost"
+          >
+            {spec.core}
+          </p>
           {budgetTier && (
-            <p className="mt-2 text-sm text-white/75">
-              Presupuesto elegido: <span className="font-semibold">{budgetTier}</span>
+            <p className="mt-2 text-sm text-white/75 font-jost">
+              Presupuesto elegido:{' '}
+              <span className="font-semibold">{budgetTier}</span>
             </p>
           )}
         </div>
       </div>
 
       {/* GRID opciones */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
         {spec.options.map((op) => (
           <CoupleAlmaOptionCard
             key={op.key}
@@ -122,27 +109,14 @@ export default function CoupleAlmaDetails({
 
       {/* Acciones */}
       <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
-        <button
+        <Button
           data-testid="cta-alma-continue"
           disabled={!canContinue}
-          className={[
-            'inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-sm',
-            canContinue
-              ? 'bg-neutral-900 text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 focus:ring-offset-white'
-              : 'bg-neutral-200 text-neutral-500 cursor-not-allowed',
-          ].join(' ')}
           onClick={() => canContinue && onContinue(selected)}
+          size="lg"
         >
           {spec.ctaLabel}
-        </button>
-
-        <button
-          data-testid="cta-back-to-tab3"
-          className="text-neutral-800 underline decoration-neutral-400 hover:decoration-neutral-800"
-          onClick={onBack}
-        >
-          ← Volver
-        </button>
+        </Button>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@ import FamilyHero from '@/components/by-type/family/FamilyHero';
 import FamilyPlanner from '@/components/by-type/family/FamilyPlanner';
 import FamilyInspiration from '@/components/by-type/family/FamilyInspiration';
 import FamilyTestimonials from '@/components/by-type/family/FamilyTestimonials';
-import FooterLanding from "@/components/layout/FooterLanding";
+import FooterLanding from '@/components/layout/FooterLanding';
 
 export const metadata: Metadata = {
   title: 'En Familia | Randomtrip',

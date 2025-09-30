@@ -1,11 +1,7 @@
 export const BLOG_CONSTANTS = {
-  SECTION: {
-    TITLE: 'Explora las historias de nuestros Trippers',
-    SUBTITLE: 'Experiencias memorables para inspirar tu mente.',
-    ID: 'trippers-inspiration',
-  },
-
-  POSTS: [
+  title: 'Explora las historias de nuestros Trippers',
+  subtitle: 'Experiencias memorables para inspirar tu mente.',
+  posts: [
     {
       image: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
       category: 'Inspiración',
@@ -31,15 +27,10 @@ export const BLOG_CONSTANTS = {
       category: 'Aventura',
       title: 'Recorriendo la Carretera Austral',
     },
-  ] as const,
-
-  VIEW_ALL: {
-    TITLE: 'Más Historias',
-    SUBTITLE: 'Descubre todas nuestras aventuras y experiencias únicas',
-    HREF: '/blog',
-  },
-
-  SCROLL: {
-    AMOUNT: 0.8, // 80% of container width
+  ],
+  viewAll: {
+    title: 'Más Historias',
+    subtitle: 'Descubre todas nuestras aventuras y experiencias únicas',
+    href: '/blog',
   },
 } as const;

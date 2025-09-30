@@ -1,17 +1,21 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import EventFinder from '@/components/EventFinder';
-import FooterLanding from '@/components/layout/FooterLanding';
 import HomeInfo from '@/components/HomeInfo';
 import Hero from '@/components/landing/Hero';
 import { ExplorationSection } from '@/components/landing/exploration';
 import ReadyForAdventureSection from '@/components/ReadyForAdventureSection';
-import PremiumLoader from '@/components/feedback/PremiumLoader';
-import Blog from '@/components/landing/Blog';
+import Blog from '@/components/Blog';
+import { BLOG_CONSTANTS } from '@/lib/data/constants/blog';
 
 // --- Main Home Page Component ---
 export default function HomePage() {
+  const blogData = {
+    ...BLOG_CONSTANTS,
+    posts: [...BLOG_CONSTANTS.posts],
+  };
+
   return (
     <main className="overflow-hidden">
       <Hero />
@@ -20,9 +24,8 @@ export default function HomePage() {
 
       <ExplorationSection />
 
-      <Blog />
+      <Blog content={blogData} sectionId="home-blog" />
       <EventFinder />
-      <FooterLanding />
     </main>
   );
 }

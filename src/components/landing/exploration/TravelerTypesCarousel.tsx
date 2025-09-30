@@ -107,7 +107,7 @@ export function TravelerTypesCarousel() {
         {/* Carousel Container */}
         <div ref={scrollContainerRef} className="relative py-8">
           <div
-            className="flex space-x-4 pb-4 transition-transform duration-500 ease-in-out"
+            className="flex space-x-4 pb-4 transition-transform duration-500 ease-in-out overflow-x-visible"
             style={{ transform: `translateX(${translateX}px)` }}
           >
             {initialTravellerTypes.map((type) => (

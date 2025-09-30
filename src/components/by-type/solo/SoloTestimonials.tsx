@@ -34,14 +34,12 @@ const testimonials: Testimonial[] = [
     city: 'Córdoba',
   },
   {
-    quote:
-      'La curaduría me hizo sentir protagonista del viaje, no espectador.',
+    quote: 'La curaduría me hizo sentir protagonista del viaje, no espectador.',
     author: 'Tomás L.',
     city: 'Mendoza',
   },
   {
-    quote:
-      'Volví con historias que me dieron ganas de seguir viajando solo.',
+    quote: 'Volví con historias que me dieron ganas de seguir viajando solo.',
     author: 'Ivana Q.',
     city: 'Rosario',
   },
@@ -51,13 +49,19 @@ export default function SoloTestimonials() {
   const [start, setStart] = React.useState(0);
   const len = testimonials.length;
 
-  const visible = Array.from({ length: 3 }, (_, i) => testimonials[(start + i) % len]);
+  const visible = Array.from(
+    { length: 3 },
+    (_, i) => testimonials[(start + i) % len],
+  );
 
   const prev = () => setStart((s) => (s - 3 + len) % len);
   const next = () => setStart((s) => (s + 3) % len);
 
   return (
-    <section id="testimonios-solo" className="py-20 px-8 bg-white text-neutral-900">
+    <section
+      id="testimonios-solo"
+      className="py-20 px-8 bg-white text-neutral-900"
+    >
       <div className="max-w-7xl mx-auto">
         <h2
           className="text-5xl font-bold text-center mb-12"
@@ -88,8 +92,13 @@ export default function SoloTestimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {visible.map((t, idx) => (
-            <div key={`${t.author}-${idx}`} className="bg-neutral-100 p-8 rounded-lg shadow-lg">
-              <p className="text-lg italic text-neutral-700 mb-4">&quot;{t.quote}&quot;</p>
+            <div
+              key={`${t.author}-${idx}`}
+              className="bg-neutral-100 p-8 rounded-lg shadow-lg"
+            >
+              <p className="text-lg italic text-neutral-700 mb-4">
+                &quot;{t.quote}&quot;
+              </p>
               <p className="font-semibold text-neutral-900">{t.author}</p>
               <p className="text-sm text-neutral-600">{t.city}</p>
             </div>

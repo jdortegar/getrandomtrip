@@ -18,7 +18,12 @@ export default function PawsPage() {
     slug: type,
     heroTitle: 'Ruta con Alma',
     subcopy: 'Preparamos la sorpresa; tú te quedas con la historia.',
-    palette: { primary: '#FFF', secondary: '#0A2240', accent: '#F2C53D', text: '#212121' },
+    palette: {
+      primary: '#FFF',
+      secondary: '#0A2240',
+      accent: '#F2C53D',
+      text: '#212121',
+    },
     images: { hero: '' },
   };
 
