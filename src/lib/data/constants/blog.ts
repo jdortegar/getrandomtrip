@@ -33,4 +33,7 @@ export const BLOG_CONSTANTS = {
     subtitle: 'Descubre todas nuestras aventuras y experiencias únicas',
     href: '/blog',
   },
-} as const;
+  SCROLL: {
+    AMOUNT: 0.5,
+  },
+};
