@@ -9,6 +9,7 @@ import { TopTrippersGrid } from './TopTrippersGrid';
 import { RoadtripsGrid } from './RoadtripsGrid';
 import { TrippersDecodeSearch } from './TrippersDecodeSearch';
 import { EXPLORATION_CONSTANTS } from './exploration.constants';
+import Section from '@/components/layout/Section';
 
 const ALLOWED_TABS = new Set([
   'By Traveller',
@@ -72,25 +73,10 @@ export function ExplorationSection() {
   };
 
   return (
-    <section
-      data-testid="journey-section"
-      aria-label="Comienza tu Viaje"
-      className="text-center bg-white text-gray-900 py-16 "
+    <Section
+      title={EXPLORATION_CONSTANTS.TITLE}
+      subtitle={EXPLORATION_CONSTANTS.SUBTITLE}
     >
-      {/* Header Section - Inspired by Black Tomato */}
-      <div className="mb-8">
-        <h2
-          data-testid="journey-title"
-          tabIndex={-1}
-          className="font-caveat text-6xl md:text-5xl font-bold mb-6 text-gray-900"
-        >
-          {EXPLORATION_CONSTANTS.TITLE}
-        </h2>
-        <p className="font-jost text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          {EXPLORATION_CONSTANTS.SUBTITLE}
-        </p>
-      </div>
-
       {/* Tab Navigation */}
       <ExplorationTabNavigation
         activeTab={activeTab}
@@ -114,6 +100,6 @@ export function ExplorationSection() {
           {renderActiveTab()}
         </motion.div>
       </AnimatePresence>
-    </section>
+    </Section>
   );
 }

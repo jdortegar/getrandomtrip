@@ -21,9 +21,7 @@ export default function HomePage() {
       <Hero />
       <HomeInfo />
       <ReadyForAdventureSection />
-
       <ExplorationSection />
-
       <Blog content={blogData} sectionId="home-blog" />
       <EventFinder />
     </main>

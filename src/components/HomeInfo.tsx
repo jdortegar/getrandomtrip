@@ -10,6 +10,7 @@ import HowItWorks from './HowItWorks';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import BudgetSlider from './BudgetSlider';
+import Section from './layout/Section';
 
 // Constants
 const HOME_INFO_CONSTANTS = {
@@ -63,24 +64,10 @@ export default function HomeInfo() {
   };
 
   return (
-    <section
-      aria-label={HOME_INFO_CONSTANTS.SECTION_ARIA_LABEL}
-      className={`bg-white text-gray-900 py-16 px-4 md:px-8 `}
+    <Section
+      title={HOME_INFO_CONSTANTS.TITLE}
+      subtitle={HOME_INFO_CONSTANTS.SUBTITLE}
     >
-      {/* Header Section */}
-      <div className="mb-8">
-        <h2
-          data-testid="journey-title"
-          tabIndex={-1}
-          className="font-caveat text-6xl md:text-5xl font-bold mb-6 text-gray-900 text-center"
-        >
-          {HOME_INFO_CONSTANTS.TITLE}
-        </h2>
-        <p className="font-jost text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          {HOME_INFO_CONSTANTS.SUBTITLE}
-        </p>
-      </div>
-
       {/* Tab Navigation */}
       <TabSelector
         tabs={HOME_INFO_CONSTANTS.TABS}
@@ -117,6 +104,6 @@ export default function HomeInfo() {
       </div>
       {/* Trust Signals */}
       <TrustSignals variant="compact" />
-    </section>
+    </Section>
   );
 }
