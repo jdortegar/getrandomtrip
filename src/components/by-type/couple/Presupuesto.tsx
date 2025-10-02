@@ -32,9 +32,9 @@ export default function Presupuesto({
     }
 
     // Higher tiers: save tier info and proceed to the next step
-    setBudgetTier(tierId);
+    setBudgetTier(tiers.find((t) => t.id === tierId)?.name || '');
     setPendingPriceLabel(priceLabel);
-    setStep(1); // Go to next step (La Excusa)
+    setStep(2); // Go to next step (La Excusa)
     document
       .getElementById('couple-planner')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -50,7 +50,7 @@ export default function Presupuesto({
           data-testid="tab3-title"
           className="text-center text-xl font-semibold text-neutral-900"
         >
-          Placeholder
+          Cuánto quieres gastar?
         </h3>
         <p
           data-testid="tab3-tagline"

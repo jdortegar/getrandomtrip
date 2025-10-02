@@ -192,17 +192,7 @@ export default function LaExcusa({ setCoupleAlma, setStep }: LaExcusaProps) {
       data-testid="tab-pareja-alma"
       className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"
     >
-      <div className="mt-8 text-center absolute top-5 left-0">
-        <Button
-          data-testid="cta-back-to-tab2"
-          variant="link"
-          className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
-          onClick={() => setStep(0)}
-        >
-          ← Volver
-        </Button>
-      </div>
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 relative">
         <h3
           data-testid="tab3-title"
           className="text-center text-xl font-semibold text-neutral-900"
@@ -215,6 +205,16 @@ export default function LaExcusa({ setCoupleAlma, setStep }: LaExcusaProps) {
         >
           Toda escapada tiene su "porque sí". Armando el Destination Decoded.
         </p>
+        <div className="text-center absolute top-1/2 -translate-y-1/2">
+          <Button
+            data-testid="cta-back-to-tab2"
+            variant="link"
+            className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
+            onClick={() => setStep(1)}
+          >
+            ← Volver
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
@@ -224,7 +224,7 @@ export default function LaExcusa({ setCoupleAlma, setStep }: LaExcusaProps) {
             item={it}
             onChoose={(key) => {
               setCoupleAlma(key);
-              setStep(2); // Go to next step (Afinar detalles)
+              setStep(3); // Go to next step (Afinar detalles)
               document
                 .getElementById('couple-planner')
                 ?.scrollIntoView({ behavior: 'smooth', block: 'start' });

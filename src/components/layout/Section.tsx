@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 
 type SectionProps = {
   children: React.ReactNode;
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   className?: string;
   variant?: 'default' | 'light' | 'dark';
 };
@@ -19,12 +19,11 @@ const Section = ({
 }: SectionProps) => {
   return (
     <section
-      className={cn('text-center py-18 ', className, {
+      className={cn('text-center py-18 relative', className, {
         'bg-white text-gray-900': variant === 'default',
         'bg-gray-50 text-gray-900': variant === 'light',
         'bg-primary text-white': variant === 'dark',
       })}
-      id={slugify(title)}
     >
       <div className="mb-8 max-w-3xl mx-auto">
         <h2

@@ -38,22 +38,23 @@ export default function AfinarDetalles({
         >
           Elijan las opciones que les gustan para crear su viaje.
         </p>
-        <div className="mt-8 text-center absolute left-0 top-1/2 -translate-y-1/2">
+        <div className="text-center absolute left-0 top-1/2 -translate-y-1/2">
           <Button
             data-testid="cta-back-to-tab2"
             variant="link"
             className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
-            onClick={() => setStep(0)}
+            onClick={() => setStep(2)}
           >
             ← Volver
           </Button>
         </div>
       </div>
+
       <CoupleAlmaDetails
         coupleKey={coupleAlma!}
         budgetTier={budgetTier}
         onBack={() => {
-          setStep(1); // Go back to La Excusa
+          setStep(2); // Go back to La Excusa
           document
             .getElementById('couple-planner')
             ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -72,21 +73,5 @@ export default function AfinarDetalles({
         }}
       />
     </section>
-    // <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-    //   <div className="rounded-xl border border-neutral-200 bg-white/85 backdrop-blur p-6">
-    //     <p className="text-neutral-800">
-    //       Por favor, seleccionen un alma de viaje primero.
-    //     </p>
-    //     <div className="mt-8 text-center">
-    //       <Button
-    //         variant="link"
-    //         className="text-neutral-900 underline decoration-neutral-400 hover:decoration-neutral-800"
-    //         onClick={() => setStep(1)}
-    //       >
-    //         ← Volver
-    //       </Button>
-    //     </div>
-    //   </div>
-    // </section>
   );
 }

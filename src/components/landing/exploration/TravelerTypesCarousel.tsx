@@ -45,8 +45,7 @@ export function TravelerTypesCarousel() {
   const visibleCards = Math.floor(containerWidth / totalCardWidth);
 
   const canScrollLeft = currentIndex > 0;
-  const canScrollRight =
-    currentIndex < initialTravellerTypes.length - visibleCards;
+  const canScrollRight = currentIndex < initialTravellerTypes.length - 4;
 
   return (
     <div className="py-4">

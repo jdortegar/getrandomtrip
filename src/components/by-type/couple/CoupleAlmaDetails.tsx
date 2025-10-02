@@ -60,9 +60,9 @@ export default function CoupleAlmaDetails({
             'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80'
           }
           alt={spec.title}
-          className="h-64 w-full object-cover md:h-80"
+          className="h-64 w-full object-cover md:h-40"
           width={1600} // Assuming a reasonable default width
-          height={320} // Assuming a reasonable default height (h-64)
+          height={160} // Assuming a reasonable default height (h-64)
         />
         <div className={`absolute inset-0 ${spec.tint || 'bg-black/30'}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />

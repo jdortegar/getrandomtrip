@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import Section from './layout/Section';
 
 export interface TestimonialData {
   quote: string;
@@ -36,64 +37,53 @@ export default function Testimonials({
   }, [testimonials]);
 
   return (
-    <section
-      className="min-h-[70vh] bg-gray-100 py-16 px-4 md:px-8 relative flex items-center justify-center"
-      data-testid={'testimonials'}
+    <Section
+      title={title}
+      subtitle="Tu próximo recuerdo inolvidable está a un solo click de distancia.
+            No lo pienses más."
+      className=""
     >
-      <div className="w-full max-w-5xl mx-auto">
-        {/* Header Section - 20% of available space */}
-        <header className="text-center mb-12 text-gray-900">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 font-caveat">
-            {title}
-          </h2>
-          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto font-jost text-gray-700">
-            Tu próximo recuerdo inolvidable está a un solo click de distancia.
-            No lo pienses más.
-          </p>
-        </header>
-
-        {/* Carousel Section - 70% of available space */}
-        <div className="flex-1 flex items-center justify-center relative">
-          <Carousel
-            opts={{
-              align: 'center',
-              loop: true,
-            }}
-            className="w-full max-w-6xl mx-auto"
-          >
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {testimonialGroups.map((group, groupIndex) => (
-                <CarouselItem key={groupIndex} className="pl-2 md:pl-4">
-                  <div className="grid md:grid-cols-3 gap-6 px-4">
-                    {group.map((testimonial, index) => (
-                      <div
-                        key={`${testimonial.author}-${index}`}
-                        className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm text-primary h-full flex flex-col justify-between"
-                      >
-                        <div className="flex-1">
-                          <p className="text-md text-neutral-700 leading-relaxed font-jost italic mb-6">
-                            &quot;{testimonial.quote}&quot;
-                          </p>
-                        </div>
-                        <div className="mt-auto">
-                          <h4 className="text-xl md:text-2xl font-bold font-caveat">
-                            {testimonial.author}
-                          </h4>
-                          <p className="text-sm text-neutral-600 font-jost">
-                            {testimonial.city}
-                          </p>
-                        </div>
+      {/* Carousel Section - 70% of available space */}
+      <div className="flex-1 flex items-center justify-center relative">
+        <Carousel
+          opts={{
+            align: 'center',
+            loop: true,
+          }}
+          className="w-full max-w-6xl mx-auto"
+        >
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {testimonialGroups.map((group, groupIndex) => (
+              <CarouselItem key={groupIndex} className="pl-2 md:pl-4">
+                <div className="grid md:grid-cols-3 gap-6 px-4">
+                  {group.map((testimonial, index) => (
+                    <div
+                      key={`${testimonial.author}-${index}`}
+                      className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm text-primary h-full flex flex-col justify-between"
+                    >
+                      <div className="flex-1">
+                        <p className="text-md text-neutral-700 leading-relaxed font-jost italic mb-6">
+                          &quot;{testimonial.quote}&quot;
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="hidden md:flex" />
-            <CarouselNext className="hidden md:flex" />
-          </Carousel>
-        </div>
+                      <div className="mt-auto">
+                        <h4 className="text-xl md:text-2xl font-bold font-caveat">
+                          {testimonial.author}
+                        </h4>
+                        <p className="text-sm text-neutral-600 font-jost">
+                          {testimonial.city}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
+        </Carousel>
       </div>
-    </section>
+    </Section>
   );
 }

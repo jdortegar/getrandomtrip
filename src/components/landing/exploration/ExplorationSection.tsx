@@ -95,7 +95,7 @@ export function ExplorationSection() {
             ease: 'easeInOut',
             height: { duration: 0.4, ease: 'easeInOut' },
           }}
-          className="w-full mt-6 overflow-hidden min-h-[300px] max-w-5xl mx-auto"
+          className="w-full mt-6 min-h-[300px] max-w-5xl mx-auto"
         >
           {renderActiveTab()}
         </motion.div>
