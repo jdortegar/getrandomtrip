@@ -1,67 +1,75 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export interface HeroContent {
   title: string;
   subtitle: string;
   tagline?: string;
-  features: Array<{
-    highlight: string;
+  scrollText: string;
+  videoSrc: string;
+  fallbackImage: string;
+  tags?: {
     label: string;
-  }>;
-  primaryCta: {
+    value: string;
+  }[];
+  primaryCta?: {
     text: string;
     href: string;
-    sectionId: string;
+    ariaLabel: string;
   };
   secondaryCta?: {
     text: string;
     href: string;
-    sectionId: string;
+    ariaLabel: string;
   };
-}
-
-interface HeroVideoConfig {
-  webmSrc: string;
-  mp4Src: string;
-  fallbackImage: string;
-  poster: string;
 }
 
 interface HeroProps {
   content: HeroContent;
-  videoConfig: HeroVideoConfig;
-  id: string;
+  id?: string;
   className?: string;
+  titleClassName?: string;
+  scrollIndicator?: boolean;
 }
 
-// Hero Video Background Component
-function HeroVideoBackground({
-  videoConfig,
-}: {
-  videoConfig: HeroVideoConfig;
-}) {
+function HeroVideoBackground({ content }: { content: HeroContent }) {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Preload video for better performance
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const handleCanPlay = () => setIsVideoReady(true);
-    const handleLoadedData = () => setIsVideoReady(true);
-    const handleError = () => setHasError(true);
+    const handleCanPlay = () => {
+      console.log('Video can play - setting ready');
+      setIsVideoReady(true);
+    };
 
+    const handleLoadedData = () => {
+      console.log('Video loaded data - setting ready');
+      setIsVideoReady(true);
+    };
+
+    const handleError = (e: Event) => {
+      console.log('Video error:', e);
+      setHasError(true);
+    };
+
+    // Add multiple event listeners for better compatibility
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('loadeddata', handleLoadedData);
     video.addEventListener('error', handleError);
 
+    // Fallback: set ready after 2 seconds if no events fire
     const fallbackTimer = setTimeout(() => {
       if (!isVideoReady && !hasError) {
+        console.log('Video fallback - setting ready after timeout');
         setIsVideoReady(true);
       }
     }, 2000);
@@ -76,16 +84,14 @@ function HeroVideoBackground({
 
   return (
     <div className="absolute inset-0 w-full h-full">
-      {/* Fallback Image */}
+      {/* Fallback Image - Always visible as background */}
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url(${videoConfig.fallbackImage})`,
-        }}
+        style={{ backgroundImage: `url(${content.fallbackImage})` }}
       />
 
-      {/* Video Overlay */}
-      {!hasError && (
+      {/* Video Overlay - Only when ready */}
+      {!hasError && content.videoSrc && (
         <video
           ref={videoRef}
           autoPlay
@@ -96,10 +102,18 @@ function HeroVideoBackground({
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
             isVideoReady ? 'opacity-100' : 'opacity-0'
           }`}
-          poster={videoConfig.poster}
+          poster={content.fallbackImage}
+          onLoadStart={() => console.log('Video load started')}
+          onLoadedMetadata={() => console.log('Video metadata loaded')}
+          onCanPlay={() => console.log('Video can play event')}
+          onLoadedData={() => console.log('Video loaded data event')}
+          onError={(e) => console.log('Video error event:', e)}
         >
-          <source src={videoConfig.webmSrc} type="video/webm" />
-          <source src={videoConfig.mp4Src} type="video/mp4" />
+          <source
+            src={content.videoSrc.replace('.mp4', '.webm')}
+            type="video/webm"
+          />
+          <source src={content.videoSrc} type="video/mp4" />
         </video>
       )}
 
@@ -109,92 +123,97 @@ function HeroVideoBackground({
   );
 }
 
-export default function Hero({
+// Main Hero Component
+const Hero: React.FC<HeroProps> = ({
   content,
-  videoConfig,
   id,
   className,
-}: HeroProps) {
-  const handleScrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
+  scrollIndicator = true,
+  titleClassName,
+}) => {
   return (
     <section
-      id={id}
-      className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden"
+      id={id || 'home-hero'}
+      className={`relative h-screen flex flex-col items-center justify-center text-center overflow-hidden ${className || ''}`}
     >
-      <HeroVideoBackground videoConfig={videoConfig} />
-
-      {/* Main Content - Centered like home page */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-        <h1 className="font-caveat text-7xl font-bold leading-tight text-white mb-6">
+      <HeroVideoBackground content={content} />
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-16">
+        <h2
+          className={cn(
+            'font-caveat text-7xl font-bold leading-tight text-white mb-4',
+            titleClassName,
+          )}
+        >
           {content.title}
-        </h1>
+        </h2>
 
-        <p className="font-jost text-xl font-normal leading-relaxed text-white max-w-4xl mx-auto mb-6">
+        <p className="font-jost text-xl font-normal leading-relaxed text-gray-300 max-w-4xl mx-auto mb-8">
           {content.subtitle}
         </p>
 
-        {/* {content.tagline && (
+        {content.tagline && (
           <p className="font-jost text-lg font-normal leading-relaxed text-gray-300 max-w-2xl mx-auto mb-8">
             {content.tagline}
           </p>
-        )} */}
+        )}
 
-        {/* Feature Highlights */}
-        <div className="flex flex-wrap gap-8 mb-8 justify-center">
-          {content.features.map((feature) => (
-            <div
-              className="font-jost text-sm text-white text-center"
-              key={feature.label}
+        {/* Tags/Chips */}
+        {content.tags && content.tags.length > 0 && (
+          <div className="flex flex-wrap flex-col justify-center items-center gap-2 mb-8">
+            {content.tags.map((tag, index) => (
+              <span
+                key={`${tag.label}-${index}`}
+                className="inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold uppercase text-white"
+              >
+                {tag.label}: {tag.value}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-4 justify-center">
+          {content.primaryCta && (
+            <Button
+              asChild
+              aria-label={content.primaryCta.ariaLabel}
+              variant="default"
+              size="lg"
+              className="mt-8 uppercase tracking-wider animate-pulse-once"
             >
-              {feature.label}
-            </div>
-          ))}
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button
-            asChild
-            size="lg"
-            onClick={() => handleScrollToSection(content.primaryCta.sectionId)}
-          >
-            <Link href={content.primaryCta.href}>
-              {content.primaryCta.text} →
-            </Link>
-          </Button>
-
+              <Link href={content.primaryCta.href}>
+                {content.primaryCta.text}
+              </Link>
+            </Button>
+          )}
           {content.secondaryCta && (
             <Button
               asChild
+              aria-label={content.secondaryCta.ariaLabel}
               variant="outline"
               size="lg"
-              onClick={() =>
-                handleScrollToSection(content.secondaryCta!.sectionId)
-              }
+              className="mt-8 uppercase tracking-wider animate-pulse-once"
             >
               <Link href={content.secondaryCta.href}>
-                {content.secondaryCta.text} →
+                {content.secondaryCta.text}
               </Link>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-        <div
-          className="scroll-indicator pointer-events-none select-none z-10 text-white"
-          aria-hidden="true"
-        >
-          SCROLL
+      {/* Scroll Indicator positioned at bottom */}
+      {scrollIndicator && (
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+          <div
+            className="scroll-indicator pointer-events-none select-none z-10 text-white"
+            aria-hidden="true"
+          >
+            {content.scrollText}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
-}
+};
+
+export default Hero;

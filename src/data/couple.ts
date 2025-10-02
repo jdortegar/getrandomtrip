@@ -5,28 +5,24 @@ export const coupleHeroContent: HeroContent = {
   subtitle:
     'El viaje debe ser tan único como ustedes. Descubran destinos secretos juntos.',
   tagline: 'Sorpresa para ustedes. Sin spoilers.',
-  features: [
-    { highlight: 'Revelación', label: '48h antes se revela' },
-    { highlight: 'Flexibilidad', label: 'Flex reprogramación' },
-    { highlight: 'Seguridad', label: 'Pago seguro' },
-  ],
+  // tags: [
+  //   { label: 'Revelación', value: '48h antes se revela' },
+  //   { label: 'Flexibilidad', value: 'Flex reprogramación' },
+  //   { label: 'Seguridad', value: 'Pago seguro' },
+  // ],
+  scrollText: 'SCROLL',
+  videoSrc: '/videos/couple-hero-video.mp4',
+  fallbackImage: '/images/journey-types/couple-traveler.jpg',
   primaryCta: {
     text: 'RANDOMTRIP-us!',
     href: '#couple-planner',
-    sectionId: 'couple-planner',
+    ariaLabel: 'Ir a la sección de planificación de viaje',
   },
   secondaryCta: {
     text: 'Relatos que inspiran',
     href: '#couple-blog',
-    sectionId: 'couple-blog',
+    ariaLabel: 'Ir a la sección de blog',
   },
-};
-
-export const coupleVideoConfig = {
-  webmSrc: '/videos/couple-hero-video.webm',
-  mp4Src: '/videos/couple-hero-video.mp4',
-  fallbackImage: '/images/journey-types/couple-traveler.jpg',
-  poster: '/images/journey-types/couple-traveler.jpg',
 };
 
 export const coupleStoryContent = {

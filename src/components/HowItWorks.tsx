@@ -7,7 +7,7 @@ import { HowItWorksStep } from './HowItWorks.Step';
 
 export default function HowItWorksSection() {
   return (
-    <section
+    <div
       aria-label={HOW_IT_WORKS_CONSTANTS.SECTION_ARIA_LABEL}
       className="mt-4"
       data-testid="how-it-works"
@@ -29,6 +29,6 @@ export default function HowItWorksSection() {
           {HOW_IT_WORKS_CONSTANTS.NOTE}
         </p>
       </div>
-    </section>
+    </div>
   );
 }

@@ -63,10 +63,10 @@ export default function Presupuesto({
 
       <div className="flex no-wrap rounded-md overflow-hidden">
         {/* Categories Header Card */}
-        <div className="bg-gradient-to-r from-primary-50 to-primary-100 p-6 min-w-[200px]">
+        <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-12 min-w-[200px]">
           <div className="">
             {/* Plan Name */}
-            <div className="h-[80px]">
+            <div className="h-[80px] text-left">
               <h3 className="text-2xl font-bold text-primary-700 font-jost">
                 Planes
               </h3>
@@ -76,7 +76,7 @@ export default function Presupuesto({
             </div>
 
             {/* Pricing Category */}
-            <div className="h-[80px]">
+            <div className="h-[60px] text-left">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Precio por persona
               </h4>
@@ -133,7 +133,7 @@ export default function Presupuesto({
               key={tier.id}
               className={`relative bg-gray-100 transition-all duration-200 min-w-[300px]`}
             >
-              <div className="p-6">
+              <div className="py-12 px-6">
                 {/* Plan Name */}
                 <div className="text-center h-[80px]">
                   <h3 className="text-3xl font-bold text-gray-900 font-caveat">
@@ -145,7 +145,7 @@ export default function Presupuesto({
                 </div>
 
                 {/* Pricing */}
-                <div className="text-center h-[80px]">
+                <div className="text-center h-[60px]">
                   <div className="font-bold text-xl text-primary-700 font-jost">
                     {tier.priceLabel}
                   </div>
