@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @import 'leaflet/dist/leaflet.css';
 
+/* Global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Infinite scroll animation */
 @keyframes infinite-scroll {
   0% {

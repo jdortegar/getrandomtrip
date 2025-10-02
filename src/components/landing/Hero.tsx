@@ -121,9 +121,7 @@ const Hero: React.FC = () => {
           size="lg"
           className="mt-8 uppercase tracking-wider animate-pulse-once"
         >
-          <Link href={HERO_CONTENT.CTA_HREF} scroll={true}>
-            {HERO_CONTENT.CTA_TEXT}
-          </Link>
+          <Link href={HERO_CONTENT.CTA_HREF}>{HERO_CONTENT.CTA_TEXT}</Link>
         </Button>
       </div>
 
