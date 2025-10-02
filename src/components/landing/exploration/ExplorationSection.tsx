@@ -76,6 +76,7 @@ export function ExplorationSection() {
     <Section
       title={EXPLORATION_CONSTANTS.TITLE}
       subtitle={EXPLORATION_CONSTANTS.SUBTITLE}
+      id="exploration-section"
     >
       {/* Tab Navigation */}
       <ExplorationTabNavigation

@@ -21,7 +21,7 @@ const ReadyForAdventureSection: React.FC = () => {
         className="px-8"
         aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
       >
-        <Link href="/?tab=By%20Traveller#start-your-journey-anchor">
+        <Link href="#exploration-section" scroll={true}>
           RANDOMTRIPME!
         </Link>
       </Button>

@@ -8,6 +8,7 @@ type SectionProps = {
   subtitle?: string;
   className?: string;
   variant?: 'default' | 'light' | 'dark';
+  id?: string;
 };
 
 const Section = ({
@@ -16,9 +17,11 @@ const Section = ({
   subtitle,
   className,
   variant = 'default',
+  id,
 }: SectionProps) => {
   return (
     <section
+      id={id}
       className={cn('text-center py-18 relative', className, {
         'bg-white text-gray-900': variant === 'default',
         'bg-gray-50 text-gray-900': variant === 'light',

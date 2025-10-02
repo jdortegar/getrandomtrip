@@ -17,7 +17,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="overflow-hidden">
+    <main>
       <Hero />
       <HomeInfo />
       <ReadyForAdventureSection />

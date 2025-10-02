@@ -97,7 +97,7 @@ export default function HomeInfo() {
       {/* CTA */}
       <div className={'mt-8 flex justify-center'}>
         <Button asChild variant="default" size="lg">
-          <Link href="/?tab=By%20Traveller#start-your-journey-anchor">
+          <Link href="#exploration-section" scroll={true}>
             RANDOMTRIPME!
           </Link>
         </Button>

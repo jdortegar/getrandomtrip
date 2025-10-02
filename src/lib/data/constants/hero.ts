@@ -4,7 +4,7 @@ export const HERO_CONTENT = {
     'La espontaneidad es un arte. La improvisación, un riesgo. Abraza la autenticidad de lo desconocido.',
   TAGLINE: 'Wonder • Wander • Repeat',
   CTA_TEXT: 'RandomtripME!',
-  CTA_HREF: '/?tab=By%20Traveller#start-your-journey-anchor',
+  CTA_HREF: '#exploration-section',
   CTA_ARIA_LABEL:
     "Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
   SCROLL_TEXT: 'SCROLL',
