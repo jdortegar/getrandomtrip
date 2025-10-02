@@ -31,7 +31,7 @@ export default function CouplePage() {
       />
       <Paragraph content={coupleStoryContent} id="couple-story" />
       <CouplePlanner />
-      <Blog content={blogData} sectionId="couple-blog" />
+      <Blog content={blogData} id="couple-blog" />
       <Testimonials testimonials={testimonials} title={title} />
     </main>
   );

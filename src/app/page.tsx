@@ -17,12 +17,12 @@ export default function HomePage() {
   };
 
   return (
-    <main>
+    <main style={{ scrollBehavior: 'smooth' }}>
       <Hero />
       <HomeInfo />
       <ReadyForAdventureSection />
       <ExplorationSection />
-      <Blog content={blogData} sectionId="home-blog" />
+      <Blog content={blogData} id="home-blog" />
       <EventFinder />
     </main>
   );

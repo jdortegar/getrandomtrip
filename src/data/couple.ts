@@ -12,7 +12,7 @@ export const coupleHeroContent: HeroContent = {
   ],
   primaryCta: {
     text: 'RANDOMTRIP-us!',
-    href: '#couple-planner?step=budget',
+    href: '#couple-planner',
     sectionId: 'couple-planner',
   },
   secondaryCta: {

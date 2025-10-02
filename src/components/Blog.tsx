@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import Link from 'next/link';
 import BlogCard from '@/components/BlogCard';
+import Section from './layout/Section';
 
 interface BlogPost {
   image: string;
@@ -24,14 +25,14 @@ interface BlogContent {
 
 interface BlogProps {
   content: BlogContent;
-  sectionId?: string;
+  id?: string;
   className?: string;
   showViewAll?: boolean;
 }
 
 export default function Blog({
   content,
-  sectionId,
+  id,
   className = '',
   showViewAll = true,
 }: BlogProps) {
@@ -41,7 +42,11 @@ export default function Blog({
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const scrollAmount = container.clientWidth * 0.8; // 80% of container width
+    // Calculate scroll amount based on card width (w-72 = 288px) + spacing (space-x-8 = 32px)
+    const cardWidth = 288; // w-72 = 288px
+    const spacing = 32; // space-x-8 = 32px
+    const scrollAmount = cardWidth + spacing; // 320px total per card
+
     container.scrollBy({
       left: direction === 'right' ? scrollAmount : -scrollAmount,
       behavior: 'smooth',
@@ -49,10 +54,7 @@ export default function Blog({
   };
 
   return (
-    <section
-      id={sectionId}
-      className={`py-20 px-8 bg-[#111827] text-white ${className}`}
-    >
+    <Section id={id} variant="dark">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
         {/* Header Section */}
         <div className="md:col-span-1 text-left flex flex-col gap-4">
@@ -124,7 +126,7 @@ export default function Blog({
             {/* View All Card */}
             {showViewAll && content.viewAll && (
               <Link href={content.viewAll.href}>
-                <div className="group relative h-[60vh] w-80 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg bg-white text-gray-900 flex flex-col items-center justify-center p-6 hover:scale-[1.03] transition-all duration-300 shadow-xl hover:shadow-2xl">
+                <div className="group relative h-[50vh] w-72 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg bg-white text-gray-900 flex flex-col items-center justify-center p-6 hover:scale-[1.03] transition-all duration-300 shadow-xl hover:shadow-2xl">
                   <div className="text-center">
                     <h3 className="font-caveat text-2xl font-bold mb-2 text-primary">
                       {content.viewAll.title}
@@ -155,6 +157,6 @@ export default function Blog({
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

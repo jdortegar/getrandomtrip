@@ -98,7 +98,7 @@ export default function HomeInfo() {
       <div className={'mt-8 flex justify-center'}>
         <Button asChild variant="default" size="lg">
           <Link href="#exploration-section" scroll={true}>
-            RANDOMTRIPME!
+            RANDOMTRIP-ME!
           </Link>
         </Button>
       </div>
