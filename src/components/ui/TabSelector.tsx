@@ -28,7 +28,7 @@ export function TabSelector({
       className={`flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 ${className}`.trim()}
     >
       <div className="relative flex flex-wrap justify-center gap-8 md:gap-12">
-        {tabs.map((tab) => (
+        {tabs.map((tab, index) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
@@ -41,6 +41,7 @@ export function TabSelector({
               }
             `}
             aria-label={`Switch to ${tab.label} tab`}
+            disabled={index > 0}
           >
             {tab.label}
             {activeTab === tab.id && (

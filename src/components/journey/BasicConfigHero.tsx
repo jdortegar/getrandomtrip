@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Hero from '@/components/Hero';
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
@@ -205,7 +206,11 @@ export default function BasicConfigHero() {
     const opciones: string[] = [];
 
     // 1. Buscar la experiencia principal (el "alma" o "escape type")
-    const mainExperienceKey = sp.get('coupleAlma') || sp.get('soloAlma') || sp.get('escapeType') || sp.get('groupAlma');
+    const mainExperienceKey =
+      sp.get('coupleAlma') ||
+      sp.get('soloAlma') ||
+      sp.get('escapeType') ||
+      sp.get('groupAlma');
     if (mainExperienceKey && mapping[mainExperienceKey]) {
       experiencia = mapping[mainExperienceKey];
     }
@@ -216,7 +221,9 @@ export default function BasicConfigHero() {
       opciones.push(mapping[familyTypeKey]);
     }
 
-    const almaOptionsKeys = (sp.get('almaOptions') ?? '').split(',').filter(Boolean);
+    const almaOptionsKeys = (sp.get('almaOptions') ?? '')
+      .split(',')
+      .filter(Boolean);
     almaOptionsKeys.forEach((key) => {
       if (mapping[key]) {
         opciones.push(mapping[key]);
@@ -226,46 +233,46 @@ export default function BasicConfigHero() {
     return { experienciaPrincipal: experiencia, opcionesPreferentes: opciones };
   }, [sp, travellerType]);
 
+  // Create hero content for basic config
+  const heroContent = {
+    title: 'Cada viaje es un relato. Este empieza aquí.',
+    subtitle: 'Marquen desde dónde parten y prepárense para lo inesperado.',
+    tagline: '',
+    ctaText: 'Continuar Configuración',
+    ctaHref: '#journey-config',
+    ctaAriaLabel: 'Continuar con la configuración del viaje',
+    scrollText: 'SCROLL',
+    videoSrc: '/videos/basic-config-video-hero.mp4',
+    fallbackImage: '/images/basic-config-hero-fallback.jpg',
+    // Add tags as part of the content
+    tags: [
+      ...(travellerType && FROM_LABEL[travellerType]
+        ? [{ label: 'Tipo de viaje', value: FROM_LABEL[travellerType] }]
+        : []),
+      ...(level && TIER_LABEL[level]
+        ? [{ label: 'Nivel', value: TIER_LABEL[level] }]
+        : []),
+      ...(experienciaPrincipal
+        ? [{ label: 'Experiencia', value: experienciaPrincipal }]
+        : []),
+      ...(opcionesPreferentes.length > 0
+        ? [
+            {
+              label: 'Opciones preferentes',
+              value: opcionesPreferentes.join(', '),
+            },
+          ]
+        : []),
+    ],
+  };
+
   return (
-    <div className="relative min-h-[260px] md:min-h-[320px]">
-      {/* Vídeo de fondo */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <video
-          className="h-full w-full object-cover motion-reduce:hidden"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          poster="/images/basic-config-hero-fallback.jpg"
-        >
-          <source src="/videos/basic-config-video-hero.webm" type="video/webm" />
-          <source src="/videos/basic-config-video-hero.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/60" />
-      </div>
-
-      {/* Contenido */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-16 pb-6 text-center text-white">
-        <h2 className="font-display text-3xl md:text-4xl">Cada viaje es un relato. Este empieza aquí.</h2>
-        <p className="mt-1 text-sm text-white/90">
-          Marquen desde dónde parten y prepárense para lo inesperado..
-        </p>
-
-        <div className="mt-4 flex flex-wrap justify-center items-center gap-2">
-          {travellerType && FROM_LABEL[travellerType] && <Chip>Tipo de viaje: {FROM_LABEL[travellerType]}</Chip>}
-          {level && TIER_LABEL[level] && <Chip>Nivel: {TIER_LABEL[level]}</Chip>}
-
-          {experienciaPrincipal && <Chip>Experiencia: {experienciaPrincipal}</Chip>}
-
-          {opcionesPreferentes.length > 0 && (
-            <Chip>
-              Opciones preferentes: {opcionesPreferentes.join(', ')}
-            </Chip>
-          )}
-        </div>
-      </div>
-    </div>
+    <Hero
+      content={heroContent}
+      id="basic-config-hero"
+      className="!h-[50vh]"
+      titleClassName="!text-4xl"
+      scrollIndicator={false}
+    />
   );
 }

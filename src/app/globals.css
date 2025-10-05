@@ -122,3 +122,16 @@ html {
     opacity: 0.8;
   }
 }
+
+/* DayPicker */
+
+.rdp-root {
+  --rdp-accent-color: #111827;
+  --rdp-accent-color-dark: #111827;
+  --rdp-today-color: #111827;
+  --rdp-accent-color: #111827;
+
+  .rdp-months {
+    margin: 0 auto;
+  }
+}

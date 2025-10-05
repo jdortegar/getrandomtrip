@@ -109,7 +109,7 @@ export function TravelerTypesCarousel() {
             className="flex space-x-4 pb-4 transition-transform duration-500 ease-in-out overflow-x-visible"
             style={{ transform: `translateX(${translateX}px)` }}
           >
-            {initialTravellerTypes.map((type) => (
+            {initialTravellerTypes.map((type, index) => (
               <motion.div
                 key={type.title}
                 className="flex-shrink-0"
@@ -123,6 +123,7 @@ export function TravelerTypesCarousel() {
                   description={type.description}
                   imageUrl={type.imageUrl}
                   href={`/packages/by-type/${slugify(type.travelType)}`}
+                  disabled={index > 0}
                 />
               </motion.div>
             ))}

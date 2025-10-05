@@ -1,103 +1,100 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useStore } from '@/store/store';
-import { getMaxNights } from '@/lib/levels';
-import { addDays, fmtISO, toDateOnly } from '@/lib/date';
-import { LevelSlug } from '@/store/slices/journeyStore';
+import { useFormContext } from 'react-hook-form';
+import { getMaxNights, getLevelName, Level } from '@/lib/data/levels';
+import { es } from 'react-day-picker/locale';
+import Chip from '@/components/Chip';
 
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm border transition
-        ${
-          active
-            ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm'
-            : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200'
-        }`}
-    >
-      {children}
-    </button>
-  );
+interface NightsCalendarProps {
+  level: Level;
 }
 
-const levelNames: Record<LevelSlug, string> = {
-  essenza: 'Essenza',
-  'modo-explora': 'Modo Explora',
-  'explora-plus': 'Explora+',
-  bivouac: 'Bivouac',
-  'atelier-getaway': 'Atelier Getaway',
-};
-
-export default function NightsCalendar() {
-  const { level, logistics, setPartial } = useStore();
-  const { startDate, nights } = logistics;
+export default function NightsCalendar({ level }: NightsCalendarProps) {
+  const { setValue, watch } = useFormContext();
+  const watchedValues = watch();
 
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(
-    startDate ? toDateOnly(new Date(startDate)) : undefined
+    watchedValues.startDate ? new Date(watchedValues.startDate) : undefined,
   );
+  const [selectedNights, setSelectedNights] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
 
-  // Normalizamos el max: tomamos el valor crudo y derivamos un número seguro
-  const maxRaw = getMaxNights(level); // number | 'custom'
-  const safeMax = typeof maxRaw === 'number' ? maxRaw : 14; // fallback razonable
-  const options = Array.from({ length: safeMax }, (_, i) => i + 1); // noches: 1..safeMax
+  // Get max nights for the level
+  const maxNights = level.maxNights;
+  const options = Array.from({ length: maxNights }, (_, i) => i + 1);
 
-  useEffect(() => {
-    if (startDate) {
-      setSelectedDay(toDateOnly(new Date(startDate)));
-    }
-  }, [startDate]);
+  // useEffect(() => {
+  //   if (watchedValues.startDate) {
+  //     setSelectedDay(new Date(watchedValues.startDate));
+  //   }
+  // }, [watchedValues.startDate]);
 
   const handleNightChange = (numNights: number) => {
-    if (typeof maxRaw === 'number' && numNights > maxRaw) {
-      setError(`Con ${levelNames[level]} se permiten hasta ${maxRaw} noches.`);
-      return;
-    }
     setError(null);
-    const newEndDate = selectedDay ? fmtISO(addDays(selectedDay, numNights)) : undefined;
-    setPartial({ logistics: { ...logistics, nights: numNights, endDate: newEndDate } });
+    // setValue('nights', numNights);
+
+    if (selectedDay) {
+      const endDate = new Date(selectedDay);
+      endDate.setDate(endDate.getDate() + numNights);
+      const newEndDate = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+      // setValue('endDate', newEndDate);
+    }
   };
 
   const handleDayClick = (day: Date) => {
-    const today = toDateOnly(new Date());
+    const today = new Date();
     if (day < today) return;
 
+    // Create a local date to avoid timezone issues
     setSelectedDay(day);
-    const newStartDate = fmtISO(day);
-    const newEndDate = fmtISO(addDays(day, nights));
-    setPartial({ logistics: { ...logistics, startDate: newStartDate, endDate: newEndDate } });
+
+    setValue('startDate', day);
+
+    if (selectedNights) {
+      const endDate = new Date(day);
+      endDate.setDate(endDate.getDate() + selectedNights);
+      setValue('endDate', endDate);
+    }
   };
 
   const modifiers = {
     selected: selectedDay,
-    range: selectedDay ? { from: selectedDay, to: addDays(selectedDay, nights) } : undefined,
+    range:
+      selectedDay && selectedNights
+        ? {
+            from: new Date(selectedDay),
+            to: (() => {
+              const endDate = new Date(selectedDay);
+              endDate.setDate(endDate.getDate() + selectedNights);
+              return endDate;
+            })(),
+          }
+        : undefined,
   };
 
   const modifiersStyles = {
-    selected: { backgroundColor: '#D97706', color: 'white' },
-    range: { backgroundColor: '#FEF3C7' },
+    range: {
+      backgroundColor: '#111827',
+      color: 'white',
+      fontWeight: 'bold',
+      borderRadius: '100%',
+    },
   };
 
   return (
-    <div className="mt-6">
-      <h3 className="font-semibold">Duración de la aventura</h3>
+    <div>
+      {/* <h3 className="font-semibold">Duración de la aventura</h3> */}
       <div className="flex flex-wrap gap-2 mb-3">
         {options.map((n) => (
-          <Chip key={n} active={n === nights} onClick={() => handleNightChange(n)}>
+          <Chip
+            key={n}
+            active={n === selectedNights}
+            onClick={() => setSelectedNights(n)}
+            variant="outline"
+            size="md"
+          >
             <span className="font-semibold">{n + 1} días</span>
             <span className="opacity-80">/ {n} noches</span>
           </Chip>
@@ -105,21 +102,23 @@ export default function NightsCalendar() {
       </div>
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-      <div className="p-4 border rounded-lg mt-4">
+      <div className="p-4 border border-gray-300 rounded-lg mt-4 bg-white ring-0 focus-visible:ring-0 text-center">
         <DayPicker
           mode="single"
           required
           selected={selectedDay}
           onSelect={handleDayClick}
           numberOfMonths={2}
-          disabled={{ before: toDateOnly(new Date()) }}
+          disabled={{ before: new Date() }}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
-          footer={
-            <p className="text-sm text-neutral-500 mt-2">
-              Seleccioná la fecha de salida. Las noches se calculan con el selector superior.
-            </p>
-          }
+          locale={es}
+          classNames={{
+            today: `border-primary`,
+            selected: `bg-primary border-primary text-white rounded-full`,
+            day: 'text-gray-500',
+            chevron: `fill-primary`,
+          }}
         />
       </div>
     </div>
