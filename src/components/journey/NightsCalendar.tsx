@@ -2,45 +2,59 @@
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useFormContext } from 'react-hook-form';
 import { getMaxNights, getLevelName, Level } from '@/lib/data/levels';
 import { es } from 'react-day-picker/locale';
 import Chip from '@/components/Chip';
+import { useStore } from '@/store/store';
 
 interface NightsCalendarProps {
   level: Level;
 }
 
 export default function NightsCalendar({ level }: NightsCalendarProps) {
-  const { setValue, watch } = useFormContext();
-  const watchedValues = watch();
+  const { logistics, setPartial } = useStore();
 
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(
-    watchedValues.startDate ? new Date(watchedValues.startDate) : undefined,
+    logistics.startDate ? new Date(logistics.startDate) : undefined,
   );
-  const [selectedNights, setSelectedNights] = useState<number>(1);
+  const [selectedNights, setSelectedNights] = useState<number>(
+    logistics.nights || 1,
+  );
   const [error, setError] = useState<string | null>(null);
 
   // Get max nights for the level
   const maxNights = level.maxNights;
   const options = Array.from({ length: maxNights }, (_, i) => i + 1);
 
-  // useEffect(() => {
-  //   if (watchedValues.startDate) {
-  //     setSelectedDay(new Date(watchedValues.startDate));
-  //   }
-  // }, [watchedValues.startDate]);
+  // Update local state when store changes
+  useEffect(() => {
+    if (logistics.startDate) {
+      setSelectedDay(new Date(logistics.startDate));
+    }
+    if (logistics.nights) {
+      setSelectedNights(logistics.nights);
+    }
+  }, [logistics.startDate, logistics.nights]);
 
   const handleNightChange = (numNights: number) => {
     setError(null);
-    // setValue('nights', numNights);
+    setSelectedNights(numNights);
 
+    // Calculate end date if we have a selected day
+    let endDate: Date | undefined;
     if (selectedDay) {
-      const endDate = new Date(selectedDay);
+      endDate = new Date(selectedDay);
       endDate.setDate(endDate.getDate() + numNights);
-      const newEndDate = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
-      // setValue('endDate', newEndDate);
     }
+
+    // Update both nights and endDate in a single setPartial call
+    setPartial({
+      logistics: {
+        ...logistics,
+        nights: numNights,
+        endDate: endDate,
+      },
+    });
   };
 
   const handleDayClick = (day: Date) => {
@@ -50,13 +64,21 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
     // Create a local date to avoid timezone issues
     setSelectedDay(day);
 
-    setValue('startDate', day);
-
+    // Calculate end date if we have selected nights
+    let endDate: Date | undefined;
     if (selectedNights) {
-      const endDate = new Date(day);
+      endDate = new Date(day);
       endDate.setDate(endDate.getDate() + selectedNights);
-      setValue('endDate', endDate);
     }
+
+    // Update both startDate and endDate in a single setPartial call
+    setPartial({
+      logistics: {
+        ...logistics,
+        startDate: day,
+        endDate: endDate,
+      },
+    });
   };
 
   const modifiers = {
@@ -91,7 +113,7 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
           <Chip
             key={n}
             active={n === selectedNights}
-            onClick={() => setSelectedNights(n)}
+            onClick={() => handleNightChange(n)}
             variant="outline"
             size="md"
           >

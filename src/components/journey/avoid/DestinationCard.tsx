@@ -4,23 +4,36 @@
 import React from 'react';
 import Img from '@/components/common/Img'; // Added import
 import { useStore } from '@/store/store';
-import type { AvoidSuggestion } from '@/data/avoid-suggestions';
+// Updated to work with countries data and landmarks
+interface AvoidSuggestion {
+  slug: string;
+  name: string;
+  image: string;
+  landmark?: string;
+  description?: string;
+}
 import { Check } from 'lucide-react';
 import { useQuerySync } from '@/hooks/useQuerySync';
 
-export default function DestinationCard({ suggestion }: { suggestion: AvoidSuggestion }) {
+export default function DestinationCard({
+  suggestion,
+}: {
+  suggestion: AvoidSuggestion;
+}) {
   const { filters, setPartial } = useStore();
   const sync = useQuerySync();
 
   const selected = filters.avoidDestinations ?? [];
   const isSelected = selected.some(
-    (n) => n.toLowerCase() === suggestion.name.toLowerCase()
+    (n) => n.toLowerCase() === suggestion.name.toLowerCase(),
   );
 
   const toggle = () => {
     let next = selected;
     if (isSelected) {
-      next = selected.filter((n) => n.toLowerCase() !== suggestion.name.toLowerCase());
+      next = selected.filter(
+        (n) => n.toLowerCase() !== suggestion.name.toLowerCase(),
+      );
     } else {
       if (selected.length >= 15) return; // límite duro
       next = [...selected, suggestion.name];
@@ -39,8 +52,8 @@ export default function DestinationCard({ suggestion }: { suggestion: AvoidSugge
       type="button"
       onClick={toggle}
       aria-pressed={isSelected}
-      className={`relative overflow-hidden rounded-2xl shadow-sm ring-1 ring-neutral-200 bg-white aspect-[4/5] text-left group ${
-        isSelected ? 'ring-2 ring-[--terracotta,#D97E4A]' : ''
+      className={`relative overflow-hidden rounded-sm shadow-sm ring-1 ring-neutral-200 bg-white aspect-square text-left group cursor-pointer ${
+        isSelected ? 'ring-2 ring-primary' : ''
       }`}
     >
       {/* Fallback (queda debajo por orden) */}
@@ -51,23 +64,23 @@ export default function DestinationCard({ suggestion }: { suggestion: AvoidSugge
         <Img
           src={suggestion.image}
           alt={suggestion.name}
-          className="absolute inset-0 h-full w-full object-cover"
-          width={400} // Assuming a reasonable default width for aspect-[4/5]
-          height={500} // Assuming a reasonable default height for aspect-[4/5]
+          className="absolute inset-0 h-full w-full object-cover aspect-square"
+          width={300} // Assuming a reasonable default width for aspect-[4/5]
+          height={300} // Assuming a reasonable default height for aspect-[4/5]
         />
       ) : null}
 
       {/* Overlay para legibilidad */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
 
-      {/* Nombre */}
-      <div className="absolute bottom-2 left-2 right-2 text-white font-semibold drop-shadow">
-        {suggestion.name}
+      {/* Nombre y Landmark */}
+      <div className="absolute bottom-2 left-2 right-2 text-white drop-shadow">
+        <div className="font-semibold text-sm">{suggestion.name}</div>
       </div>
 
       {/* Indicador seleccionado */}
       {isSelected && (
-        <div className="absolute top-2 right-2 h-7 w-7 rounded-full bg-[--terracotta,#D97E4A] text-white flex items-center justify-center shadow">
+        <div className="absolute top-2 right-2 h-7 w-7 rounded-full bg-primary text-white flex items-center justify-center shadow">
           <Check size={16} />
         </div>
       )}

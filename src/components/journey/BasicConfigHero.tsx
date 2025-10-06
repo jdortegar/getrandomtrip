@@ -242,7 +242,8 @@ export default function BasicConfigHero() {
     ctaHref: '#journey-config',
     ctaAriaLabel: 'Continuar con la configuración del viaje',
     scrollText: 'SCROLL',
-    videoSrc: '/videos/basic-config-video-hero.mp4',
+    videoSrc:
+      'https://ocqketmaavn5dczt.public.blob.vercel-storage.com/videos/basic-config-video-hero.mp4',
     fallbackImage: '/images/basic-config-hero-fallback.jpg',
     // Add tags as part of the content
     tags: [

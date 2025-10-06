@@ -13,6 +13,8 @@ const ReadyForAdventureSection: React.FC = () => {
         'Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.'
       }
       variant="dark"
+      background="/images/bg-playa-mexico.jpg"
+      className="h-[50vh] flex items-center justify-center flex-col"
     >
       <Button
         asChild

@@ -18,7 +18,7 @@ export default function Paragraph({
   className = '',
 }: ParagraphProps) {
   return (
-    <Section className={`py-16 px-4 md:px-8 bg-gray-100! w-full ${className}`}>
+    <Section className={`px-4 md:px-8 bg-gray-100! w-full ${className}`}>
       <div className="max-w-4xl mx-auto bg-white rounded-lg p-8" id={id}>
         <header className="text-center mb-12">
           <h2 className="text-5xl font-bold mb-6 font-caveat text-gray-900">

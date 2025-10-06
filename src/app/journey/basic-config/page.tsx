@@ -1,15 +1,20 @@
+'use client';
+
 import SelectionsBar from '@/components/journey/SelectionsBar';
 import { JourneyForm } from '@/components/journey/JourneyForm';
 import SummaryCard from '@/components/journey/SummaryCard';
 import InitClient from '@/components/journey/InitClient';
 import BasicConfigHero from '@/components/journey/BasicConfigHero';
 import Section from '@/components/layout/Section';
+import { useStore } from '@/store/store';
+import { Info } from 'lucide-react';
 
 export default function Page({
   searchParams,
 }: {
   searchParams: Record<string, string>;
 }) {
+  const { activeTab } = useStore();
   const displayPrice = decodeURIComponent(searchParams.price || '');
 
   return (
@@ -29,8 +34,32 @@ export default function Page({
             <JourneyForm />
           </div>
 
-          <aside className="sticky top-0">
+          <aside className="sticky top-20 self-start w-80 flex-shrink-0 max-w-[200px]">
             <SummaryCard />
+
+            {activeTab === 'preferences' && (
+              <div className="mt-4 rounded-sm bg-primary p-4 text-sm text-white flex flex-col items-start gap-2">
+                <div className="flex items-center gap-2 font-bold">
+                  <Info className="w-6 h-6 text-white flex-shrink-0 mt-0.5" />{' '}
+                  IMPORTANTE
+                </div>
+                <div className="flex flex-col gap-1 text-left w-[200px]">
+                  <ul className="list-disc pl-4 space-y-2 text-wrap">
+                    <li>Transporte es obligatorio y no suma costo.</li>
+                    <li>
+                      <strong>Freemium:</strong> el primer filtro opcional es{' '}
+                      <strong>gratis</strong>.
+                    </li>
+                    <li>
+                      2–3 filtros: <strong>USD 18</strong> c/u.
+                    </li>
+                    <li>
+                      4+ filtros: <strong>USD 25</strong> c/u.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </aside>
         </div>
       </Section>

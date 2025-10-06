@@ -31,17 +31,19 @@ export function TabSelector({
         {tabs.map((tab, index) => (
           <button
             key={tab.id}
-            onClick={() => onTabChange(tab.id)}
+            onClick={() => !tab.disabled && onTabChange(tab.id)}
             className={`
               relative px-4 py-3 font-jost font-medium transition-all duration-300 text-lg
               ${
-                activeTab === tab.id
-                  ? 'text-gray-900'
-                  : 'text-gray-500 hover:text-gray-700'
+                tab.disabled
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : activeTab === tab.id
+                    ? 'text-gray-900'
+                    : 'text-gray-500 hover:text-gray-700'
               }
             `}
             aria-label={`Switch to ${tab.label} tab`}
-            disabled={index > 0}
+            disabled={tab.disabled}
           >
             {tab.label}
             {activeTab === tab.id && (

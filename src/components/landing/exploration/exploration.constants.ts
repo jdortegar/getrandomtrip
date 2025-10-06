@@ -12,11 +12,13 @@ export const EXPLORATION_CONSTANTS = {
       label: 'Top Trippers',
       description: 'Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?',
       href: '/trippers',
+      disabled: true,
     },
     {
       id: 'Roadtrips',
       label: 'Roadtrips',
       description: 'Libertad sobre ruedas. Tú eliges el ritmo.',
+      disabled: true,
     },
     {
       id: 'Trippers Decode',
@@ -24,6 +26,7 @@ export const EXPLORATION_CONSTANTS = {
       description:
         'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',
       href: '/trippers-decode',
+      disabled: true,
     },
   ] as const,
 

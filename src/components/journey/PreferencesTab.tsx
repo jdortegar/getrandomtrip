@@ -1,29 +1,34 @@
 'use client';
 
 import SelectedFiltersChips from './SelectedFiltersChips';
-import StepperNav from './StepperNav';
 import { useStore } from '@/store/store';
 import { useQuerySync } from '@/hooks/useQuerySync';
+import { Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { FILTER_OPTIONS, FilterOption } from '@/store/slices/journeyStore';
+import AvoidGrid from './avoid/AvoidGrid';
 
 const Seg = ({
   options,
   value,
   onChange,
+  className,
 }: {
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
+  options: FilterOption[];
+  value: FilterOption['key'];
+  onChange: (v: FilterOption['key']) => void;
+  className?: string;
 }) => (
-  <div className="inline-flex flex-wrap gap-2">
+  <div className={cn('inline-flex flex-wrap gap-2', className)}>
     {options.map((opt) => (
       <button
-        key={opt}
+        key={opt.key}
         type="button"
-        onClick={() => onChange(opt)}
+        onClick={() => onChange(opt.key)}
         className={`px-3 py-1.5 rounded-full text-sm border transition
-          ${value === opt ? 'bg-neutral-900 text-white border-neutral-900' : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200'}`}
+          ${value === opt.key ? 'bg-primary-900 text-white border-primary-900' : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200'}`}
       >
-        {opt}
+        {opt.label}
       </button>
     ))}
   </div>
@@ -31,80 +36,91 @@ const Seg = ({
 
 export default function PreferencesTab() {
   const { filters, setPartial } = useStore();
-  const sync = useQuerySync();
+  // const sync = useQuerySync();
 
   const setAndSync = (patch: Partial<typeof filters>) => {
     setPartial({ filters: { ...filters, ...patch } });
-    sync(patch as Record<string, string>);
+    // sync(patch as Record<string, string>);
   };
 
   return (
-    <div className="space-y-6">
-      <SelectedFiltersChips />
-      <div className="rounded-xl bg-neutral-50 text-neutral-700 p-3 text-sm">
-        <strong>Freemium:</strong> el primer filtro opcional es{' '}
-        <strong>gratis</strong>. 2–3 filtros: <strong>USD 18</strong> c/u. 4+
-        filtros: <strong>USD 25</strong> c/u. Transporte es obligatorio y no
-        suma costo.
-      </div>
-
+    <div className="space-y-10 font-jost">
       {/* Transporte (obligatorio) */}
-      <section className="space-y-2">
-        <h3 className="font-medium">Transporte preferido (obligatorio)</h3>
-        <Seg
-          options={['avion', 'bus', 'tren', 'barco']}
-          value={filters.transport}
-          onChange={(v) => setAndSync({ transport: v as any })}
-        />
-        <p className="text-xs text-neutral-500">
-          Tren y Barco/Crucero podrían requerir traslados extra.
-        </p>
-      </section>
-
-      {/* Clima */}
-      <section className="space-y-2">
-        <h3 className="font-medium">Clima preferencial</h3>
-        <Seg
-          options={['indistinto', 'calido', 'frio', 'templado']}
-          value={filters.climate}
-          onChange={(v) => setAndSync({ climate: v as any })}
-        />
-      </section>
-
-      {/* Tiempo máximo de viaje */}
-      <section className="space-y-2">
-        <h3 className="font-medium">Tiempo máximo de viaje</h3>
-        <Seg
-          options={['sin-limite', '3h', '5h', '8h']}
-          value={filters.maxTravelTime}
-          onChange={(v) => setAndSync({ maxTravelTime: v as any })}
-        />
-      </section>
-
-      {/* Horarios */}
-      <section className="space-y-2">
+      <div className="space-y-6 bg-white p-4 rounded-lg border border-gray-200">
+        <div className="flex justify-center">
+          <div className="flex flex-col gap-1 space-y-6">
+            <h3 className="font-medium text-center">
+              Transporte preferido (obligatorio)
+            </h3>
+            <Seg
+              options={FILTER_OPTIONS.transport.options}
+              value={filters.transport}
+              onChange={(v) => setAndSync({ transport: v })}
+              className="justify-center"
+            />
+            <p className="text-xs text-neutral-500 text-center">
+              Tren y Barco/Crucero podrían requerir traslados extra.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="space-y-6">
         <h3 className="font-medium">Horarios preferidos</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="mb-1 text-sm">Salida</div>
+          <div className="flex flex-col gap-1 text-left ">
+            <div className="text-sm mb-1">Salida</div>
             <Seg
-              options={['indistinto', 'manana', 'tarde', 'noche']}
+              options={FILTER_OPTIONS.departPref.options}
               value={filters.departPref}
-              onChange={(v) => setAndSync({ departPref: v as any })}
+              onChange={(v) => setAndSync({ departPref: v })}
             />
           </div>
-          <div>
-            <div className="mb-1 text-sm">Llegada</div>
+          <div className="flex flex-col gap-1 text-left ">
+            <div className="text-sm mb-1">Llegada</div>
             <Seg
-              options={['indistinto', 'manana', 'tarde', 'noche']}
+              options={FILTER_OPTIONS.arrivePref.options}
               value={filters.arrivePref}
-              onChange={(v) => setAndSync({ arrivePref: v as any })}
+              onChange={(v) => setAndSync({ arrivePref: v })}
             />
           </div>
         </div>
-      </section>
+        <div className="border-t border-gray-200 my-2"></div>
+      </div>
 
-      <StepperNav />
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1 space-y-6">
+            <h3 className="font-medium text-left">Tiempo máximo de viaje</h3>
+            <Seg
+              options={FILTER_OPTIONS.maxTravelTime.options}
+              value={filters.maxTravelTime}
+              onChange={(v) => setAndSync({ maxTravelTime: v })}
+            />
+          </div>
+          <div className="flex flex-col gap-1 space-y-6">
+            <h3 className="font-medium text-left">Clima preferencial</h3>
+            <Seg
+              options={FILTER_OPTIONS.climate.options}
+              value={filters.climate}
+              onChange={(v) => setAndSync({ climate: v })}
+            />
+          </div>
+        </div>
+        <div className="border-t border-gray-200 my-2"></div>
+      </div>
+      <div className="space-y-6">
+        <div className="flex justify-center">
+          <div className="flex flex-col w-full  ">
+            <h3 className="font-medium text-left">
+              Destinos a evitar (opcional)
+            </h3>
+            <p className="text-sm text-neutral-500 text-left mb-6">
+              Seleccioná hasta 15
+            </p>
+            <AvoidGrid />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

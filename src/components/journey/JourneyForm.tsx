@@ -1,60 +1,36 @@
 'use client';
-import { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
 import { WizardHeader } from '@/components/WizardHeader';
 import LogisticsTab from './LogisticsTab';
 import PreferencesTab from './PreferencesTab';
 import AvoidTab from './AvoidTab';
+import StepperNav from './StepperNav';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Level, LEVELS } from '@/lib/data/levels';
-import { LevelSlug } from '@/store/slices/journeyStore';
 import { useSearchParams } from 'next/navigation';
-
-// Form data interface
-interface JourneyFormData {
-  // Step 1: Logistics
-  country: string;
-  city: string;
-  startDate: string;
-  nights: number;
-  pax: number;
-
-  // Step 2: Preferences
-  transport: string;
-  climate: string;
-  maxTravelTime: string;
-  departPref: string;
-  arrivePref: string;
-
-  // Step 3: Avoid
-  avoidCountries: string[];
-  avoidCities: string[];
-}
+import { useStore } from '@/store/store';
 
 export function JourneyForm() {
-  const [step, setStep] = useState(1);
+  const { activeTab, setPartial } = useStore();
   const searchParams = useSearchParams();
 
   // Get level from searchParams or use default
   const levelParam = searchParams.get('level');
   const level: Level = LEVELS.find((l) => l.id === levelParam) || LEVELS[0];
 
-  const methods = useForm<JourneyFormData>({
-    defaultValues: {
-      country: '',
-      city: '',
-      startDate: '',
-      nights: 1,
-      pax: 1,
-      transport: '',
-      climate: '',
-      maxTravelTime: '',
-      departPref: '',
-      arrivePref: '',
-      avoidCountries: [],
-      avoidCities: [],
-    },
-  });
+  // Map string tabs to numbers for component logic
+  const tabToNumber = {
+    logistics: 1,
+    preferences: 2,
+    avoid: 3,
+  } as const;
+
+  const numberToTab: Record<number, 'logistics' | 'preferences' | 'avoid'> = {
+    1: 'logistics',
+    2: 'preferences',
+    3: 'avoid',
+  };
+
+  const currentStep = tabToNumber[activeTab];
 
   const steps = [
     { step: 1, label: 'Planificá tu Aventura Sorpresa' },
@@ -62,27 +38,23 @@ export function JourneyForm() {
     { step: 3, label: 'Destinos a evitar' },
   ];
 
+  // Get store data for validation
+  const { logistics, filters } = useStore();
+
   // Validation function to check if a step is complete
   const isStepComplete = (stepNumber: number): boolean => {
-    const formValues = methods.getValues();
-
     switch (stepNumber) {
       case 1:
         return Boolean(
-          formValues.country?.trim() &&
-            formValues.city?.trim() &&
-            formValues.startDate?.trim() &&
-            formValues.nights > 0 &&
-            formValues.pax > 0,
+          logistics.country.length > 0 &&
+            logistics.city.length > 0 &&
+            logistics.startDate &&
+            logistics.endDate &&
+            logistics.nights > 0 &&
+            logistics.pax > 0,
         );
       case 2:
-        return Boolean(
-          formValues.transport?.trim() &&
-            formValues.climate?.trim() &&
-            formValues.maxTravelTime?.trim() &&
-            formValues.departPref?.trim() &&
-            formValues.arrivePref?.trim(),
-        );
+        return true;
       case 3:
         // Step 3 is optional, so it's always considered complete
         return true;
@@ -94,7 +66,7 @@ export function JourneyForm() {
   // Check if user can navigate to a specific step
   const canNavigateToStep = (targetStep: number): boolean => {
     // Can always go back to previous steps
-    if (targetStep <= step) return true;
+    if (targetStep <= currentStep) return true;
 
     // Can only go forward if all previous steps are complete
     for (let i = 1; i < targetStep; i++) {
@@ -106,49 +78,59 @@ export function JourneyForm() {
 
   const handleStepClick = (targetStep: number) => {
     if (canNavigateToStep(targetStep)) {
-      setStep(targetStep);
+      setPartial({ activeTab: numberToTab[targetStep] });
     }
   };
 
   const renderActiveTab = () => {
-    switch (step) {
-      case 1:
+    switch (activeTab) {
+      case 'logistics':
         return <LogisticsTab level={level} />;
-      case 2:
+      case 'preferences':
         return <PreferencesTab />;
-      case 3:
+      case 'avoid':
         return <AvoidTab />;
+      default:
+        return null;
     }
   };
+
+  console.log('logistics', logistics);
+  console.log('filters', filters);
 
   return (
     <div className="bg-gray-100 p-4 rounded-md max-w-4xl mx-auto mb-12 border border-gray-200 py-6">
       <WizardHeader
         steps={steps}
-        currentStep={step}
+        currentStep={currentStep}
         canNavigateToStep={canNavigateToStep}
         onStepClick={handleStepClick}
         hideProgressBar={true}
       />
 
-      <FormProvider {...methods}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 20, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -20, height: 0 }}
-            transition={{
-              duration: 0.5,
-              ease: 'easeInOut',
-              height: { duration: 0.4, ease: 'easeInOut' },
-            }}
-            className="w-full overflow-hidden min-h-[300px] max-w-5xl mx-auto"
-          >
-            {renderActiveTab()}
-          </motion.div>
-        </AnimatePresence>
-      </FormProvider>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 20, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          exit={{ opacity: 0, y: -20, height: 0 }}
+          transition={{
+            duration: 0.5,
+            ease: 'easeInOut',
+            height: { duration: 0.4, ease: 'easeInOut' },
+          }}
+          className="w-full overflow-hidden min-h-[300px] max-w-5xl mx-auto"
+        >
+          {renderActiveTab()}
+        </motion.div>
+      </AnimatePresence>
+
+      <StepperNav
+        steps={steps}
+        currentStep={currentStep}
+        isStepComplete={isStepComplete}
+        onStepChange={(step) => setPartial({ activeTab: numberToTab[step] })}
+      />
     </div>
   );
 }

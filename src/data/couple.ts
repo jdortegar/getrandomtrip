@@ -11,7 +11,8 @@ export const coupleHeroContent: HeroContent = {
   //   { label: 'Seguridad', value: 'Pago seguro' },
   // ],
   scrollText: 'SCROLL',
-  videoSrc: '/videos/couple-hero-video.mp4',
+  videoSrc:
+    'https://ocqketmaavn5dczt.public.blob.vercel-storage.com/videos/couple-hero-video.mp4',
   fallbackImage: '/images/journey-types/couple-traveler.jpg',
   primaryCta: {
     text: 'RANDOMTRIP-us!',

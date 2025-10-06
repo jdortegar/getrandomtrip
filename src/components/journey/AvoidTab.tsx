@@ -6,9 +6,7 @@ import SelectedFiltersChips from './SelectedFiltersChips';
 export default function AvoidTab() {
   return (
     <div className="space-y-6">
-      <SelectedFiltersChips />
       <AvoidGrid />
-      <StepperNav />
     </div>
   );
 }

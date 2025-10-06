@@ -9,6 +9,7 @@ type SectionProps = {
   className?: string;
   variant?: 'default' | 'light' | 'dark';
   id?: string;
+  background?: string;
 };
 
 const Section = ({
@@ -18,17 +19,24 @@ const Section = ({
   className,
   variant = 'default',
   id,
+  background,
 }: SectionProps) => {
   return (
     <section
       id={id}
-      className={cn('text-center py-18 relative', className, {
-        'bg-white text-gray-900': variant === 'default',
-        'bg-gray-50 text-gray-900': variant === 'light',
-        'bg-primary text-white': variant === 'dark',
-      })}
+      className={cn(
+        'text-center py-18 relative bg-cover bg-center',
+        className,
+        {
+          'bg-white text-gray-900': variant === 'default',
+          'bg-gray-50 text-gray-900': variant === 'light',
+          'bg-primary text-white': variant === 'dark',
+        },
+      )}
+      style={{ backgroundImage: `url(${background})` }}
     >
-      <div className="mb-8 max-w-3xl mx-auto">
+      {background && <div className="absolute inset-0 bg-black/50" />}
+      <div className="mb-8 max-w-3xl mx-auto relative z-10">
         <h2
           data-testid="section-title"
           className={cn('font-caveat md:text-5xl font-bold mb-6', {
@@ -52,7 +60,7 @@ const Section = ({
           {subtitle}
         </p>
       </div>
-      <div className="max-w-5xl mx-auto">{children}</div>
+      <div className="max-w-5xl mx-auto relative z-10">{children}</div>
     </section>
   );
 };

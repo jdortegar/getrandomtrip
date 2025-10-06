@@ -1,132 +1,81 @@
 'use client';
-import { X, Lock } from 'lucide-react';
 import { useStore } from '@/store/store';
+import { FILTER_OPTIONS, Filters } from '@/store/slices/journeyStore';
+import { AMERICAN_COUNTRIES } from '@/lib/data/countries';
+import Chip from '@/components/badge';
 
-const LABELS = {
-  transport: { avion: 'Avión', bus: 'Bus', tren: 'Tren', barco: 'Barco/Crucero' },
-  climate: { indistinto: 'Indistinto', calido: 'Cálido', frio: 'Frío', templado: 'Templado' },
-  maxTravelTime: { 'sin-limite': 'Sin límite', '3h': 'Hasta 3h', '5h': 'Hasta 5h', '8h': 'Hasta 8h' },
-  daypart: { indistinto: 'Indistinto', manana: 'Mañana', tarde: 'Tarde', noche: 'Noche' },
+type Item = {
+  key: string;
+  label: string;
+  value: string | string[];
+  locked?: boolean;
+  onRemove?: () => void;
 };
-
-type Item = { key: string; label: string; locked?: boolean; onRemove?: () => void };
-
-function Chip({ item }: { item: Item }) {
-  const base =
-    item.locked
-      ? 'bg-neutral-200 text-neutral-700'
-      : 'bg-violet-50 text-violet-800 border border-violet-200 hover:bg-violet-100';
-  return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm ${base}`}>
-      {item.label}
-      {item.locked ? (
-        <Lock size={14} className="opacity-60" />
-      ) : (
-        <button
-          type="button"
-          aria-label={`Quitar ${item.label}`}
-          onClick={item.onRemove}
-          className="ml-1 -mr-1 rounded p-0.5 hover:bg-violet-200"
-        >
-          <X size={14} />
-        </button>
-      )}
-    </span>
-  );
-}
 
 export default function SelectedFiltersChips() {
   const { filters, setPartial } = useStore();
 
   const items: Item[] = [];
 
-  // Transporte (obligatorio, sin cargo) -> chip bloqueado
-  items.push({
-    key: 'transport',
-    label: `Transporte: ${LABELS.transport[filters.transport]}`,
-    locked: true,
+  // Handle regular filters
+  Object.keys(filters).forEach((key) => {
+    if (key === 'avoidDestinations') return; // Handle separately
+
+    const value = filters[key as keyof Filters];
+    const filterConfig = FILTER_OPTIONS[key as keyof typeof FILTER_OPTIONS];
+    const valueLabel =
+      filterConfig?.options?.find((opt: any) => opt.key === value)?.label ||
+      value;
+
+    if (value !== 'indistinto' && value !== 'sin-limite') {
+      items.push({
+        key,
+        value: valueLabel,
+        label: filterConfig?.label,
+        locked: key === 'transport',
+        onRemove: () =>
+          setPartial({ filters: { ...filters, [key]: 'indistinto' } }),
+      });
+    }
   });
 
-  // Clima
-  if (filters.climate !== 'indistinto') {
-    items.push({
-      key: 'climate',
-      label: `Clima: ${LABELS.climate[filters.climate]}`,
-      onRemove: () => setPartial({ filters: { ...filters, climate: 'indistinto' } }),
+  // Handle avoid destinations using countries data
+  if (filters.avoidDestinations && filters.avoidDestinations.length > 0) {
+    filters.avoidDestinations.forEach((destination) => {
+      // Find the country or city in our countries data
+      const country = AMERICAN_COUNTRIES.find(
+        (c) =>
+          c.name.toLowerCase() === destination.toLowerCase() ||
+          c.cities.some(
+            (city) => city.toLowerCase() === destination.toLowerCase(),
+          ),
+      );
+
+      items.push({
+        key: `avoid-${destination.toLowerCase()}`,
+        value: destination,
+        label: 'Evitar',
+        onRemove: () =>
+          setPartial({
+            filters: {
+              ...filters,
+              avoidDestinations: filters.avoidDestinations.filter(
+                (d) => d.toLowerCase() !== destination.toLowerCase(),
+              ),
+            },
+          }),
+      });
     });
   }
-
-  // Tiempo máx viaje
-  if (filters.maxTravelTime !== 'sin-limite') {
-    items.push({
-      key: 'max',
-      label: `Máx viaje: ${LABELS.maxTravelTime[filters.maxTravelTime]}`,
-      onRemove: () => setPartial({ filters: { ...filters, maxTravelTime: 'sin-limite' } }),
-    });
-  }
-
-  // Horarios
-  if (filters.departPref !== 'indistinto') {
-    items.push({
-      key: 'depart',
-      label: `Salida: ${LABELS.daypart[filters.departPref]}`,
-      onRemove: () => setPartial({ filters: { ...filters, departPref: 'indistinto' } }),
-    });
-  }
-  if (filters.arrivePref !== 'indistinto') {
-    items.push({
-      key: 'arrive',
-      label: `Llegada: ${LABELS.daypart[filters.arrivePref]}`,
-      onRemove: () => setPartial({ filters: { ...filters, arrivePref: 'indistinto' } }),
-    });
-  }
-
-  // Destinos a evitar
-  (filters.avoidDestinations || []).forEach((name) => {
-    items.push({
-      key: `avoid-${name.toLowerCase()}`,
-      label: `Evitar: ${name}`,
-      onRemove: () =>
-        setPartial({
-          filters: {
-            ...filters,
-            avoidDestinations: (filters.avoidDestinations || []).filter(
-              (n) => n.toLowerCase() !== name.toLowerCase(),
-            ),
-          },
-        }),
-    });
-  });
-
-  // Valores por defecto para "Limpiar todo"
-  const defaults = {
-    transport: filters.transport, // obligatorio, mantener el actual
-    climate: 'indistinto' as const,
-    maxTravelTime: 'sin-limite' as const,
-    departPref: 'indistinto' as const,
-    arrivePref: 'indistinto' as const,
-    avoidDestinations: [] as string[],
-  };
-
-  const clearAll = () => setPartial({ filters: { ...filters, ...defaults } });
-
-  if (items.length === 1) return null; // sólo transporte (locked) -> ocultar barra
 
   return (
-    <div className="mb-4 rounded-xl bg-neutral-50 ring-1 ring-neutral-200 p-3">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-medium text-neutral-700">
-          Tus filtros ({items.length - 1})
+    <div className="max-w-[200px] mx-auto">
+      <div className="mb-2 flex items-center justify-center w-full mx-auto">
+        <span className="text-xs text-neutral-600 font-medium">
+          Filtros Premium ({items.length - 1})
         </span>
-        <button
-          type="button"
-          onClick={clearAll}
-          className="text-sm px-3 py-1 rounded-lg border border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-50"
-        >
-          Limpiar todo
-        </button>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 justify-center py-2">
         {items.map((it) => (
           <Chip key={it.key} item={it} />
         ))}

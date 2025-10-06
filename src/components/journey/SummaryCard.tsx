@@ -5,6 +5,7 @@ import {
   computeAddonsCostPerTrip,
 } from '@/lib/pricing';
 import { ADDONS } from '@/data/addons-catalog';
+import SelectedFiltersChips from './SelectedFiltersChips';
 
 export default function SummaryCard() {
   const {
@@ -48,9 +49,7 @@ export default function SummaryCard() {
           <div className="text-base font-semibold">{safeDisplay}</div>
         </div>
         <div className="space-y-1">
-          <label className="text-xs text-neutral-600 font-medium">
-            Filtros Premium
-          </label>
+          {activeTab !== 'logistics' && <SelectedFiltersChips />}
           <div className="text-base">{`USD ${filtersPerPax.toFixed(2)}`}</div>
         </div>
         <div className="space-y-1">
@@ -75,7 +74,7 @@ export default function SummaryCard() {
         </div>
       </div>
 
-      {activeTab === 'preferences' && (
+      {/* {activeTab === 'preferences' && (
         <button
           type="button"
           onClick={() => setPartial({ activeTab: 'avoid' })}
@@ -83,7 +82,7 @@ export default function SummaryCard() {
         >
           Ir a Destinos a evitar
         </button>
-      )}
+      )} */}
     </div>
   );
 }

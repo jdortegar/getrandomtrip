@@ -10,7 +10,8 @@ export const HERO_CONTENT = {
       "Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
   },
   scrollText: 'SCROLL',
-  videoSrc: '/videos/hero-video.mp4',
+  videoSrc:
+    'https://ocqketmaavn5dczt.public.blob.vercel-storage.com/videos/hero-video.mp4',
   fallbackImage: '/images/bg-playa-mexico.jpg',
   overlayOpacity: 0.4,
   location: 'MEXICO',

@@ -9,22 +9,79 @@ export type LevelSlug =
   | 'atelier-getaway';
 
 export type Logistics = {
-  country?: { name: string; code?: string };
-  city?: { name: string; placeId?: string };
-  origin?: string; // <-- agregado
-  startDate?: string; // ISO
-  endDate?: string; // ISO
+  country: string;
+  city: string;
+  startDate?: Date; // ISO
+  endDate?: Date; // ISO
   nights: number; // default 1
   pax: number; // default 2
 };
 
+export type FilterOption = {
+  key: string;
+  label: string;
+};
+
 export type Filters = {
-  transport: 'avion' | 'bus' | 'tren' | 'barco';
-  climate: 'indistinto' | 'calido' | 'frio' | 'templado';
-  maxTravelTime: 'sin-limite' | '3h' | '5h' | '8h';
-  departPref: 'indistinto' | 'manana' | 'tarde' | 'noche';
-  arrivePref: 'indistinto' | 'manana' | 'tarde' | 'noche';
+  transport: FilterOption['key'];
+  climate: FilterOption['key'];
+  maxTravelTime: FilterOption['key'];
+  departPref: FilterOption['key'];
+  arrivePref: FilterOption['key'];
   avoidDestinations: string[]; // máx 15 (cada uno cuenta 1 filtro)
+};
+
+// Available filter options
+export const FILTER_OPTIONS = {
+  transport: {
+    label: 'Transporte',
+    options: [
+      { key: 'avion', label: 'Avión' },
+      { key: 'bus', label: 'Bus' },
+      { key: 'tren', label: 'Tren' },
+      { key: 'barco', label: 'Barco/Crucero' },
+    ],
+  },
+  climate: {
+    label: 'Clima',
+    options: [
+      { key: 'indistinto', label: 'Indistinto' },
+      { key: 'calido', label: 'Cálido' },
+      { key: 'frio', label: 'Frío' },
+      { key: 'templado', label: 'Templado' },
+    ],
+  },
+  maxTravelTime: {
+    label: 'Tiempo máximo de viaje',
+    options: [
+      { key: 'sin-limite', label: 'Sin límite' },
+      { key: '3h', label: 'Hasta 3h' },
+      { key: '5h', label: 'Hasta 5h' },
+      { key: '8h', label: 'Hasta 8h' },
+    ],
+  },
+  departPref: {
+    label: 'Salida',
+    options: [
+      { key: 'indistinto', label: 'Indistinto' },
+      { key: 'manana', label: 'Mañana' },
+      { key: 'tarde', label: 'Tarde' },
+      { key: 'noche', label: 'Noche' },
+    ],
+  },
+  arrivePref: {
+    label: 'Llegada',
+    options: [
+      { key: 'indistinto', label: 'Indistinto' },
+      { key: 'manana', label: 'Mañana' },
+      { key: 'tarde', label: 'Tarde' },
+      { key: 'noche', label: 'Noche' },
+    ],
+  },
+  avoidDestinations: {
+    label: 'Destinos a evitar',
+    options: [],
+  },
 };
 
 export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
@@ -68,7 +125,14 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
   level: 'modo-explora',
   displayPrice: '',
   basePriceUsd: 0,
-  logistics: { nights: 1, pax: 2, origin: '' }, // <-- origin por defecto
+  logistics: {
+    nights: 1,
+    pax: 1,
+    city: '',
+    country: '',
+    startDate: undefined,
+    endDate: undefined,
+  },
   filters: {
     transport: 'avion',
     climate: 'indistinto',

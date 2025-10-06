@@ -77,6 +77,7 @@ export default function CouplePlanner() {
     <Section
       title="Diseñen su Randomtrip en pareja"
       subtitle="Tres pasos sencillos para vivir una historia que nadie más podrá contar."
+      className="py-20"
     >
       <div className="relative">
         <div id="couple-planner" className="h-0 scroll-mt-24" />

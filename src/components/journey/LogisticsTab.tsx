@@ -1,63 +1,63 @@
 'use client';
 
-import { useFormContext } from 'react-hook-form';
 import { useState } from 'react';
 import NightsCalendar from './NightsCalendar';
 import StepperNav from './StepperNav';
 import CountrySelector from './CountrySelector';
 import CitySelector from './CitySelector';
 import { Level } from '@/lib/data/levels';
+import { useStore } from '@/store/store';
 
 interface LogisticsTabProps {
   level: Level;
 }
 
 export default function LogisticsTab({ level }: LogisticsTabProps) {
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useFormContext();
-
-  const watchedValues = watch();
+  const { logistics, setPartial } = useStore();
 
   // Local state for form values
-  const [countryValue, setCountryValue] = useState(watchedValues.country || '');
-  const [cityValue, setCityValue] = useState(watchedValues.city || '');
+  const [countryValue, setCountryValue] = useState(logistics.country || '');
+  const [cityValue, setCityValue] = useState(logistics.city || '');
 
   const decPax = () => {
-    const currentPax = watchedValues.pax || 1;
-    setValue('pax', Math.max(1, currentPax - 1));
+    const currentPax = logistics.pax || 1;
+    setPartial({
+      logistics: { ...logistics, pax: Math.max(1, currentPax - 1) },
+    });
   };
 
   const incPax = () => {
-    const currentPax = watchedValues.pax || 1;
-    setValue('pax', Math.min(8, currentPax + 1));
+    const currentPax = logistics.pax || 1;
+    setPartial({
+      logistics: { ...logistics, pax: Math.min(8, currentPax + 1) },
+    });
   };
-
-  const countryOk = Boolean(watchedValues.country?.trim());
-  const cityOk = Boolean(watchedValues.city?.trim());
-  const dateOk = Boolean(watchedValues.startDate?.trim());
-  const paxOk = (watchedValues.pax ?? 0) >= 1;
-
-  const canContinue = countryOk && cityOk && dateOk && paxOk;
 
   // Handle country change
   const handleCountryChange = (value: string) => {
     setCountryValue(value);
-    setValue('country', value);
+    setPartial({
+      logistics: {
+        ...logistics,
+        country: value,
+        city: '', // Clear city when country changes
+      },
+    });
     // Clear city when country changes
     if (value !== countryValue) {
       setCityValue('');
-      setValue('city', '');
     }
   };
 
   // Handle city change
   const handleCityChange = (value: string) => {
     setCityValue(value);
-    setValue('city', value);
+    setPartial({
+      logistics: {
+        ...logistics,
+        city: value,
+      },
+    });
   };
 
   return (
@@ -90,36 +90,8 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
           />
         </div>
       </div>
-      {/* <div>
-    //     <label className="block text-sm font-medium mb-2">Viajeros</label>
-    //     <div className="inline-flex items-center gap-4">
-    //       <button
-    //         type="button"
-    //         onClick={decPax}
-    //         className="h-8 w-8 rounded-full border border-neutral-600 flex items-center justify-center"
-    //         aria-label="Disminuir viajeros"
-    //         disabled={(logistics.pax ?? 1) <= 1}
-    //       >
-    //         −
-    //       </button>
-    //       <span className="min-w-[2ch] text-center">{logistics.pax ?? 1}</span>
-    //       <button
-    //         type="button"
-    //         onClick={incPax}
-    //         className="h-8 w-8 rounded-full border border-neutral-600 flex items-center justify-center"
-    //         aria-label="Aumentar viajeros"
-    //         disabled={(logistics.pax ?? 1) >= 8}
-    //       >
-    //         +
-    //       </button>
-    //     </div>
-    //     <p className="mt-1 text-xs text-neutral-400">Precio por persona.</p>
-    //   </div> */}
-      {/* Calendario + Noches */}
 
       <NightsCalendar level={level} />
-
-      <StepperNav />
     </div>
   );
 }

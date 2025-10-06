@@ -16,6 +16,7 @@ interface CountrySelectorProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function CountrySelector({
@@ -24,6 +25,7 @@ export default function CountrySelector({
   placeholder = 'País de salida',
   className = '',
   disabled = false,
+  onKeyDown,
 }: CountrySelectorProps) {
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(false);
@@ -77,7 +79,7 @@ export default function CountrySelector({
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className={`relative ${className}`} ref={ref}>
       <Input
         value={value}
         onChange={(e) => {
@@ -85,11 +87,12 @@ export default function CountrySelector({
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
+        onKeyDown={onKeyDown}
         type="text"
         placeholder={placeholder}
         autoComplete="off"
         disabled={disabled}
-        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${className}`}
+        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0`}
       />
 
       {open && (
