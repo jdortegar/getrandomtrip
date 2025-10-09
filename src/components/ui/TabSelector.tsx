@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 export interface Tab {
   readonly id: string;
   readonly label: string;
+  readonly disabled?: boolean;
 }
 
 interface TabSelectorProps {

@@ -2,13 +2,39 @@
 import { useStore } from '@/store/store';
 
 const LABELS = {
-  transport: { avion: 'Avión', bus: 'Bus', tren: 'Tren', barco: 'Barco/Crucero' } as const,
-  climate: { indistinto: 'Indistinto', calido: 'Cálido', frio: 'Frío', templado: 'Templado' } as const,
-  maxTravelTime: { 'sin-limite': 'Sin límite', '3h': 'Hasta 3h', '5h': 'Hasta 5h', '8h': 'Hasta 8h' } as const,
-  daypart: { indistinto: 'Indistinto', manana: 'Mañana', tarde: 'Tarde', noche: 'Noche' } as const,
+  transport: {
+    avion: 'Avión',
+    bus: 'Bus',
+    tren: 'Tren',
+    barco: 'Barco/Crucero',
+  } as const,
+  climate: {
+    indistinto: 'Indistinto',
+    calido: 'Cálido',
+    frio: 'Frío',
+    templado: 'Templado',
+  } as const,
+  maxTravelTime: {
+    'sin-limite': 'Sin límite',
+    '3h': 'Hasta 3h',
+    '5h': 'Hasta 5h',
+    '8h': 'Hasta 8h',
+  } as const,
+  daypart: {
+    indistinto: 'Indistinto',
+    manana: 'Mañana',
+    tarde: 'Tarde',
+    noche: 'Noche',
+  } as const,
 };
 
-function Chip({ children, muted }: { children: React.ReactNode; muted?: boolean }) {
+function Chip({
+  children,
+  muted,
+}: {
+  children: React.ReactNode;
+  muted?: boolean;
+}) {
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-sm border ${
@@ -25,21 +51,37 @@ function Chip({ children, muted }: { children: React.ReactNode; muted?: boolean 
 export default function TopFiltersSummary() {
   const { filters, setPartial } = useStore();
   const goPrefs = () => setPartial({ activeTab: 'preferences' as const });
-  const goAvoid = () => setPartial({ activeTab: 'avoid' as const });
+  const goAvoid = () => setPartial({ activeTab: 'addons' as const });
 
-  const items: Array<{ key: string; node: React.ReactNode; onClick?: () => void }> = [];
+  const items: Array<{
+    key: string;
+    node: React.ReactNode;
+    onClick?: () => void;
+  }> = [];
 
   // Transporte (siempre)
   items.push({
     key: 'transport',
-    node: <Chip>Transporte: {LABELS.transport[filters.transport]}</Chip>,
+    node: (
+      <Chip>
+        Transporte:{' '}
+        {LABELS.transport[filters.transport as keyof typeof LABELS.transport] ||
+          filters.transport}
+      </Chip>
+    ),
   });
 
   // Clima
   if (filters.climate !== 'indistinto') {
     items.push({
       key: 'climate',
-      node: <Chip>Clima: {LABELS.climate[filters.climate]}</Chip>,
+      node: (
+        <Chip>
+          Clima:{' '}
+          {LABELS.climate[filters.climate as keyof typeof LABELS.climate] ||
+            filters.climate}
+        </Chip>
+      ),
       onClick: goPrefs,
     });
   }
@@ -48,7 +90,14 @@ export default function TopFiltersSummary() {
   if (filters.maxTravelTime !== 'sin-limite') {
     items.push({
       key: 'max',
-      node: <Chip>Máx viaje: {LABELS.maxTravelTime[filters.maxTravelTime]}</Chip>,
+      node: (
+        <Chip>
+          Máx viaje:{' '}
+          {LABELS.maxTravelTime[
+            filters.maxTravelTime as keyof typeof LABELS.maxTravelTime
+          ] || filters.maxTravelTime}
+        </Chip>
+      ),
       onClick: goPrefs,
     });
   }
@@ -57,14 +106,26 @@ export default function TopFiltersSummary() {
   if (filters.departPref !== 'indistinto') {
     items.push({
       key: 'depart',
-      node: <Chip>Salida: {LABELS.daypart[filters.departPref]}</Chip>,
+      node: (
+        <Chip>
+          Salida:{' '}
+          {LABELS.daypart[filters.departPref as keyof typeof LABELS.daypart] ||
+            filters.departPref}
+        </Chip>
+      ),
       onClick: goPrefs,
     });
   }
   if (filters.arrivePref !== 'indistinto') {
     items.push({
       key: 'arrive',
-      node: <Chip>Llegada: {LABELS.daypart[filters.arrivePref]}</Chip>,
+      node: (
+        <Chip>
+          Llegada:{' '}
+          {LABELS.daypart[filters.arrivePref as keyof typeof LABELS.daypart] ||
+            filters.arrivePref}
+        </Chip>
+      ),
       onClick: goPrefs,
     });
   }

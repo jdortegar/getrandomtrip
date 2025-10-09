@@ -31,17 +31,19 @@ export default function ConfirmationPage() {
   }, [logistics.startDate]);
 
   // --- ICS seguro: pasamos Date|string válidos y NO reenvolvemos la data URL ---
-  const startDate =
-    logistics.startDate ? new Date(logistics.startDate) : undefined;
-  const endDate =
-    logistics.endDate
-      ? new Date(logistics.endDate)
-      : startDate
-        ? new Date(startDate.getTime() + (logistics.nights || 1) * 86400000)
-        : undefined;
+  const startDate = logistics.startDate
+    ? new Date(logistics.startDate)
+    : undefined;
+  const endDate = logistics.endDate
+    ? new Date(logistics.endDate)
+    : startDate
+      ? new Date(startDate.getTime() + (logistics.nights || 1) * 86400000)
+      : undefined;
 
-  const title = `${(type || 'randomtrip')}`.toUpperCase() + ' – Viaje confirmado';
-  const location = [logistics.city?.name, logistics.country?.name].filter(Boolean).join(', ');
+  const title = `${type || 'randomtrip'}`.toUpperCase() + ' – Viaje confirmado';
+  const location = [logistics.city, logistics.country]
+    .filter(Boolean)
+    .join(', ');
   const icsHref = buildICS(title, startDate, endDate, location);
 
   return (
@@ -52,19 +54,25 @@ export default function ConfirmationPage() {
       <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16 max-w-3xl">
         <GlassCard>
           <div className="p-6 text-center">
-            <div className="text-2xl font-bold text-neutral-900">¡Viaje reservado!</div>
+            <div className="text-2xl font-bold text-neutral-900">
+              ¡Viaje reservado!
+            </div>
             <p className="mt-2 text-neutral-700">
               Tu destino será revelado 48 h antes del viaje.
             </p>
 
             <div className="mt-4 inline-flex items-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-neutral-900">
-              <span className="font-medium">{logistics.city?.name ?? '—'}</span>
+              <span className="font-medium">{logistics.city ?? '—'}</span>
               <span>·</span>
-              <span>{logistics.startDate ?? '—'} → {logistics.endDate ?? '—'}</span>
+              <span>
+                {startDate ? startDate.toLocaleDateString() : '—'} →{' '}
+                {endDate ? endDate.toLocaleDateString() : '—'}
+              </span>
             </div>
 
             <div className="mt-4 text-sm text-neutral-700">
-              Comienza en <span className="font-semibold text-neutral-900">{left}</span>
+              Comienza en{' '}
+              <span className="font-semibold text-neutral-900">{left}</span>
             </div>
 
             <div className="mt-6 flex flex-wrap justify-center gap-3">
