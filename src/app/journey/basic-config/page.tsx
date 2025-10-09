@@ -43,17 +43,19 @@ export default function Page({
                   <Info className="w-6 h-6 text-white flex-shrink-0 mt-0.5" />{' '}
                   IMPORTANTE
                 </div>
-                <div className="flex flex-col gap-1 text-left w-[200px]">
-                  <ul className="list-disc pl-4 space-y-2 text-wrap">
-                    <li>Transporte es obligatorio y no suma costo.</li>
-                    <li>
+                <div className="flex flex-col gap-1 text-left w-full">
+                  <ul className="list-disc pl-4 space-y-2 break-words">
+                    <li className="break-words">
+                      Transporte es obligatorio y no suma costo.
+                    </li>
+                    <li className="break-words">
                       <strong>Freemium:</strong> el primer filtro opcional es{' '}
                       <strong>gratis</strong>.
                     </li>
-                    <li>
+                    <li className="break-words">
                       2–3 filtros: <strong>USD 18</strong> c/u.
                     </li>
-                    <li>
+                    <li className="break-words">
                       4+ filtros: <strong>USD 25</strong> c/u.
                     </li>
                   </ul>

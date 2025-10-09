@@ -1,102 +1,109 @@
 // frontend/src/components/journey/addons/AddonsGallery.tsx
-'use client'
+'use client';
 
-import { useMemo, useState, useRef } from 'react'
-import { ADDONS, Addon } from '@/data/addons-catalog'
-import AddonDetail from './AddonDetail'
-import AnimatedDeckCard from './AnimatedDeckCard'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { useMemo, useState } from 'react';
+import { ADDONS, Addon } from '@/data/addons-catalog';
+import AnimatedDeckCard from './AnimatedDeckCard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
 export default function AddonsGallery() {
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const [seed, setSeed] = useState(0) // para shuffle
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const [seed] = useState(0); // para shuffle
 
   const grouped = useMemo(() => {
     // shuffle estable por seed
     const arr = [...ADDONS].sort((a, b) => {
-      const ka = (a.id + b.id + seed).length % 7
-      const kb = (b.id + a.id + seed).length % 7
-      return ka - kb
-    })
-    const m: Record<string, Addon[]> = {}
-    arr.forEach((a) => (m[a.category] ??= []).push(a))
-    return m
-  }, [seed])
+      const ka = (a.id + b.id + seed).length % 7;
+      const kb = (b.id + a.id + seed).length % 7;
+      return ka - kb;
+    });
+    const m: Record<string, Addon[]> = {};
+    arr.forEach((a) => (m[a.category] ??= []).push(a));
+    return m;
+  }, [seed]);
 
-  const categories = Object.keys(grouped)
+  const categories = Object.keys(grouped);
 
-  const container = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.05 } },
-  } as const;
-
-  const item = {
-    hidden: { opacity: 0, y: 12 },
-    show: { opacity: 1, y: 0 },
-  } as const;
-
-  // Parallax suave del panel de detalle
-  const panelRef = useRef<HTMLDivElement | null>(null)
-  const { scrollYProgress } = useScroll({
-    target: panelRef,
-    offset: ['start 0.9', 'end 0.1'],
-  })
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -32])
+  const toggleCategory = (category: string) => {
+    setOpenCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
-      {/* izquierda: grilla / deck */}
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Elegí tus add-ons</h2>
-          <button
-            type="button"
-            onClick={() => setSeed((s) => s + 1)}
-            className="text-sm px-3 py-1 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50"
-          >
-            Shuffle
-          </button>
-        </div>
-
-        {categories.map((cat) => (
-          <section key={cat}>
-            <h3 className="mb-3 text-base font-semibold">{cat}</h3>
-            <motion.div
-              variants={container}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {grouped[cat].map((a) => (
-                <motion.div key={a.id} variants={item}>
-                  <AnimatedDeckCard
-                    addon={a}
-                    active={activeId === a.id}
-                    onClick={() => setActiveId(a.id)}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-          </section>
-        ))}
+    <div className="font-jost space-y-4" data-testid="addons-gallery">
+      <div className="max-w-7xl mx-auto py-6">
+        <p className="text-center text-gray-600 italic text-lg">
+          Elegí tus add-ons
+        </p>
       </div>
 
-      {/* derecha: panel de detalle con parallax */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          ref={panelRef}
-          key={activeId ?? 'empty'}
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 16 }}
-          transition={{ type: 'spring', stiffness: 150, damping: 16 }}
-          style={{ y: parallaxY }}
-          className="xl:sticky xl:top-24"
-        >
-          <AddonDetail activeId={activeId} onClose={() => setActiveId(null)} />
-        </motion.div>
-      </AnimatePresence>
+      <div className="space-y-3">
+        {categories.map((cat) => {
+          const isOpen = openCategories.has(cat);
+          return (
+            <div
+              key={cat}
+              className="border border-gray-200 rounded-lg overflow-hidden bg-white"
+            >
+              {/* Category Header */}
+              <button
+                type="button"
+                onClick={() => toggleCategory(cat)}
+                aria-expanded={isOpen}
+                className="w-full flex items-center justify-between p-4 text-left transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <h3 className="text-base font-semibold text-neutral-900">
+                  {cat}
+                  <span className="ml-2 text-sm text-neutral-500 font-normal">
+                    ({grouped[cat].length})
+                  </span>
+                </h3>
+                <motion.div
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown className="w-5 h-5 text-neutral-500" />
+                </motion.div>
+              </button>
+
+              {/* Category Content */}
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 space-y-3 border-t border-gray-100">
+                      {grouped[cat].map((addon) => (
+                        <AnimatedDeckCard
+                          key={addon.id}
+                          addon={addon}
+                          active={activeId === addon.id}
+                          onClick={() =>
+                            setActiveId(activeId === addon.id ? null : addon.id)
+                          }
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
     </div>
-  )
+  );
 }

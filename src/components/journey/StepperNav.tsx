@@ -24,14 +24,21 @@ export default function StepperNav({
     onStepChange(currentStep - 1);
   };
 
+  const isLastStep = currentStep === steps.length;
+
   const goNext = () => {
     // Check if current step is complete before allowing next
     if (isStepComplete(currentStep)) {
-      onStepChange(currentStep + 1);
+      if (isLastStep) {
+        // Redirect to summary page on last step
+        router.push('/journey/summary');
+      } else {
+        onStepChange(currentStep + 1);
+      }
     }
   };
 
-  const nextLabel = 'Continuar';
+  const nextLabel = isLastStep ? 'Revisar' : 'Continuar';
   const prevLabel = 'Volver';
 
   const canGoNext = isStepComplete(currentStep);

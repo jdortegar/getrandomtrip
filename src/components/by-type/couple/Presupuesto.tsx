@@ -43,7 +43,7 @@ export default function Presupuesto({
   return (
     <section
       data-testid="tab-presupuesto"
-      className="w-full mx-auto px-4 md:px-8 py-10 text-gray-900"
+      className="w-full px-4 md:px-8 py-10 text-gray-900 -mr-[8px] md:pr-0"
     >
       <div className="text-center mb-8">
         <h3
@@ -80,45 +80,45 @@ export default function Presupuesto({
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Precio por persona
               </h4>
-              <div className="text-xs text-primary-600 font-jost">
+              <div className="text-sm text-primary-600 font-jost">
                 Incluye vuelo y alojamiento
               </div>
             </div>
 
-            <div className="h-[30px] flex items-center">
+            <div className="h-[40px] flex items-center">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Duración del viaje
               </h4>
             </div>
             <div className="border-t border-primary-200 my-2"></div>
 
-            <div className="h-[30px] items-center flex">
+            <div className="h-[40px] items-center flex">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Transporte
               </h4>
             </div>
             <div className="border-t border-primary-200 my-2"></div>
 
-            <div className="h-[30px] items-center flex">
+            <div className="h-[40px] items-center flex">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Alojamiento
               </h4>
             </div>
             <div className="border-t border-primary-200 my-2"></div>
 
-            <div className="h-[30px] items-center flex">
+            <div className="h-[40px] items-center flex">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Experiencias únicas
               </h4>
             </div>
             <div className="border-t border-primary-200 my-2"></div>
-            <div className="h-[30px] items-center flex">
+            <div className="h-[40px] items-center flex">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Extras
               </h4>
             </div>
             <div className="border-t border-primary-200 my-2"></div>
-            <div className="h-[30px] items-center flex">
+            <div className="h-[40px] items-center flex">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Destination Decoded
               </h4>
@@ -154,8 +154,8 @@ export default function Presupuesto({
                 {/* Features */}
                 {tier.features.map((feature, featureIndex) => (
                   <div key={featureIndex}>
-                    <div className="flex items-center h-[30px] justify-center">
-                      <span className="text-xs text-gray-700 font-jost text-center">
+                    <div className="flex items-center h-[40px] justify-center">
+                      <span className="text-sm text-gray-700 font-jost text-center">
                         {feature.text}
                       </span>
                     </div>

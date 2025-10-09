@@ -1,109 +1,190 @@
-'use client'
+'use client';
 
-import React, { useEffect } from 'react'
-import {
-  motion,
-  useMotionValue,
-  useTransform,
-  useSpring,
-  useReducedMotion,
-  useInView,
-  animate,
-} from 'framer-motion'
-import type { Addon } from '@/data/addons-catalog'
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Minus, Plus, Check } from 'lucide-react';
+import type { Addon } from '@/data/addons-catalog';
+import { useStore } from '@/store/store';
 
 // Helper simple para clases
 const cn = (...c: Array<string | false | null | undefined>) =>
-  c.filter(Boolean).join(' ')
+  c.filter(Boolean).join(' ');
 
 type Props = {
-  addon: Addon
-  active?: boolean
-  onClick?: () => void
-}
+  addon: Addon;
+  active?: boolean;
+  onClick?: () => void;
+};
 
 export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
-  const prefersReduced = useReducedMotion()
+  const { addons, setAddon, removeAddon, logistics } = useStore();
+  const sel = addons.selected.find((s) => s.id === addon.id);
 
-  // Tilt 3D
-  const mx = useMotionValue(0)
-  const my = useMotionValue(0)
-  const rX = useTransform(my, [-0.5, 0.5], [8, -8])
-  const rY = useTransform(mx, [-0.5, 0.5], [-8, 8])
-  const rx = useSpring(rX, { stiffness: 180, damping: 18 })
-  const ry = useSpring(rY, { stiffness: 180, damping: 18 })
+  const [qty, setQty] = useState(sel?.qty || 1);
+  const [opt, setOpt] = useState<string | undefined>(sel?.optionId);
 
-  // Autotilt al entrar en viewport
-  const ref = React.useRef<HTMLButtonElement | null>(null)
-  const inView = useInView(ref, { amount: 0.3, once: true })
+  // Re-sincroniza controles al cambiar de add-on
   useEffect(() => {
-    if (prefersReduced || !inView) return
-    const a1 = animate(my, [-0.12, 0.1, 0], { duration: 1.2, ease: 'easeInOut' })
-    const a2 = animate(mx, [0.14, -0.08, 0], { duration: 1.2, ease: 'easeInOut' })
-    return () => {
-      a1.stop()
-      a2.stop()
-    }
-  }, [inView, prefersReduced, mx, my])
+    setQty(sel?.qty || 1);
+    setOpt(sel?.optionId);
+  }, [sel, addon.id]);
 
-  function onPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
-    if (prefersReduced) return
-    const el = e.currentTarget.getBoundingClientRect()
-    const px = (e.clientX - el.left) / el.width - 0.5
-    const py = (e.clientY - el.top) / el.height - 0.5
-    mx.set(px)
-    my.set(py)
-  }
-  function onLeave() {
-    mx.set(0)
-    my.set(0)
-  }
+  const inc = () => setQty((q) => q + 1);
+  const dec = () => setQty((q) => Math.max(1, q - 1));
+  const pax = logistics.pax || 1;
 
+  const handleAdd = () => {
+    setAddon({ id: addon.id, qty, optionId: opt });
+  };
+
+  const handleRemove = () => {
+    removeAddon(addon.id);
+  };
+
+  const isSelected = !!sel;
   return (
-    <motion.button
-      ref={ref}
-      type="button"
-      onPointerMove={onPointerMove}
-      onPointerLeave={onLeave}
-      onClick={onClick}
-      aria-pressed={!!active}
-      className={cn(
-        'group relative overflow-hidden rounded-2xl ring-1 ring-neutral-200 bg-white aspect-[4/5] p-4 text-left shadow-sm',
-        'transition will-change-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500',
-        active ? 'ring-2 ring-violet-400' : ''
-      )}
-      style={{
-        transform: prefersReduced
-          ? undefined
-          : `perspective(900px) rotateX(${rx.get()}deg) rotateY(${ry.get()}deg) translateZ(0)`,
-      }}
-      initial={{ opacity: 0, y: 16, rotateZ: -0.3 }}
-      whileInView={{ opacity: 1, y: 0, rotateZ: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      whileHover={prefersReduced ? {} : { scale: 1.02 }}
-      transition={{ type: 'spring', stiffness: 120, damping: 14 }}
-    >
-      {/* “Stack” de color detrás */}
-      <div className="pointer-events-none absolute -right-4 -bottom-3 w-24 h-24 rounded-xl bg-gradient-to-tr from-violet-200 to-emerald-200 rotate-[14deg] opacity-40" />
-      <div className="pointer-events-none absolute -right-10 -bottom-10 w-28 h-28 rounded-xl bg-gradient-to-tr from-orange-200 to-pink-200 rotate-[18deg] opacity-30" />
-      <div className="pointer-events-none absolute -right-16 -bottom-16 w-32 h-32 rounded-xl bg-gradient-to-tr from-sky-200 to-fuchsia-200 rotate-[22deg] opacity-25" />
+    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+      {/* Accordion Header */}
+      <button
+        type="button"
+        onClick={onClick}
+        aria-expanded={active}
+        className={cn(
+          'w-full flex items-center justify-between p-4 text-left transition-colors',
+          'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          active ? 'bg-gray-50' : '',
+        )}
+      >
+        <div className="flex items-center gap-3 flex-1">
+          <div className="flex-1">
+            <h4 className="font-semibold text-neutral-900">{addon.title}</h4>
+            <p className="text-sm text-neutral-600 mt-0.5">{addon.short}</p>
+          </div>
+        </div>
 
-      <span className="inline-flex items-center rounded-full bg-neutral-100 text-neutral-700 text-xs px-2 py-0.5 border border-neutral-200">
-        {addon.category}
-      </span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-neutral-900">
+            {addon.unit === 'percent_total'
+              ? '15% del subtotal'
+              : `desde USD ${addon.priceUsd}`}
+          </span>
+          <motion.div
+            animate={{ rotate: active ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronDown className="w-5 h-5 text-neutral-500" />
+          </motion.div>
+        </div>
+      </button>
 
-      <div className="mt-3">
-        <h4 className="font-semibold leading-snug text-neutral-900">
-          {addon.title}
-        </h4>
-        <p className="text-sm text-neutral-600 mt-1">{addon.short}</p>
-      </div>
+      {/* Accordion Content */}
+      <AnimatePresence initial={false}>
+        {active && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="p-4  border-t border-gray-100 space-y-4">
+              <p className="text-sm text-neutral-600">{addon.description}</p>
 
-      <div className="absolute left-4 bottom-4 text-sm font-medium text-neutral-900">
-        {addon.unit === 'percent_total'
-          ? '15% del subtotal'
-          : `desde USD ${addon.priceUsd}`}
-      </div>
-    </motion.button>
-  )
+              {/* Options */}
+              {addon.options && addon.options.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Opciones:
+                  </label>
+                  <div className="space-y-2">
+                    {addon.options.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setOpt(option.id)}
+                        className={cn(
+                          'w-full flex items-center justify-between p-3 rounded-md border transition-colors text-left',
+                          opt === option.id
+                            ? 'border-primary bg-primary/5'
+                            : 'border-gray-200 hover:border-gray-300',
+                        )}
+                      >
+                        <span className="text-sm text-neutral-700">
+                          {option.label}
+                        </span>
+                        <span className="text-sm font-medium text-neutral-900">
+                          {option.deltaUsd
+                            ? `+USD ${option.deltaUsd}`
+                            : 'Incluido'}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity */}
+              {addon.unit === 'per_pax' && logistics.pax === 1 ? null : (
+                <div className="flex items-center gap-3 justify-between">
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Cantidad{addon.unit === 'per_pax' && ` (por ${pax} pax)`}:
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={dec}
+                      className="h-8 w-8 rounded-sm border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    >
+                      <Minus className="w-3 h-4" />
+                    </button>
+                    <span className="text-lg font-medium min-w-[3ch] text-center">
+                      {qty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={inc}
+                      className="h-8 w-8 rounded-sm border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-2">
+                {isSelected ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleRemove}
+                      className="flex-1 px-4 py-2 rounded-md border border-gray-300 text-sm font-medium text-neutral-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Quitar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAdd}
+                      className="flex-1 px-4 py-2 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Check className="w-4 h-4" />
+                      Actualizar
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleAdd}
+                    className="w-full px-4 py-2 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+                  >
+                    Agregar
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }

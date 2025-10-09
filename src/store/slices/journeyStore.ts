@@ -102,7 +102,7 @@ export type JourneyState = {
   filtersCostUsd: number; // por viaje (total)
   addonsCostUsd: number; // por viaje (total)
   totalPerPaxUsd: number;
-  activeTab: 'logistics' | 'preferences' | 'avoid';
+  activeTab: 'logistics' | 'preferences' | 'addons';
   setPartial: (patch: Partial<JourneyState>) => void;
   setAddon: (sel: AddonSelection | undefined) => void;
   removeAddon: (id: string) => void;

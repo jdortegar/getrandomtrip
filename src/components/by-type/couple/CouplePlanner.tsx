@@ -78,6 +78,7 @@ export default function CouplePlanner() {
       title="Diseñen su Randomtrip en pareja"
       subtitle="Tres pasos sencillos para vivir una historia que nadie más podrá contar."
       className="py-20"
+      fullWidth={true}
     >
       <div className="relative">
         <div id="couple-planner" className="h-0 scroll-mt-24" />
@@ -98,7 +99,7 @@ export default function CouplePlanner() {
               ease: 'easeInOut',
               height: { duration: 0.4, ease: 'easeInOut' },
             }}
-            className="w-full overflow-hidden min-h-[300px] max-w-5xl mx-auto"
+            className="w-full overflow-hidden min-h-[300px] "
           >
             {renderActiveTab()}
           </motion.div>

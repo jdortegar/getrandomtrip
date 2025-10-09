@@ -13,7 +13,7 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
   return (
-    <div className="relative h-[50vh] w-72 flex-shrink-0 cursor-pointer group overflow-hidden rounded-lg">
+    <div className="relative h-[50vh] w-72 flex-shrink-0 cursor-pointer group overflow-hidden rounded-lg text-left">
       <Image
         src={post.image}
         alt={post.title}

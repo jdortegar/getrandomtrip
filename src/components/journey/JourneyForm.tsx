@@ -2,12 +2,12 @@
 import { WizardHeader } from '@/components/WizardHeader';
 import LogisticsTab from './LogisticsTab';
 import PreferencesTab from './PreferencesTab';
-import AvoidTab from './AvoidTab';
 import StepperNav from './StepperNav';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Level, LEVELS } from '@/lib/data/levels';
 import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
+import AddonsGallery from './addons/AddonsGallery';
 
 export function JourneyForm() {
   const { activeTab, setPartial } = useStore();
@@ -18,16 +18,16 @@ export function JourneyForm() {
   const level: Level = LEVELS.find((l) => l.id === levelParam) || LEVELS[0];
 
   // Map string tabs to numbers for component logic
-  const tabToNumber = {
+  const tabToNumber: Record<string, number> = {
     logistics: 1,
     preferences: 2,
-    avoid: 3,
-  } as const;
+    addons: 3,
+  };
 
-  const numberToTab: Record<number, 'logistics' | 'preferences' | 'avoid'> = {
+  const numberToTab: Record<number, 'logistics' | 'preferences' | 'addons'> = {
     1: 'logistics',
     2: 'preferences',
-    3: 'avoid',
+    3: 'addons',
   };
 
   const currentStep = tabToNumber[activeTab];
@@ -35,7 +35,7 @@ export function JourneyForm() {
   const steps = [
     { step: 1, label: 'Planificá tu Aventura Sorpresa' },
     { step: 2, label: 'Preferencias y Filtros' },
-    { step: 3, label: 'Destinos a evitar' },
+    { step: 3, label: 'Extras' },
   ];
 
   // Get store data for validation
@@ -88,15 +88,14 @@ export function JourneyForm() {
         return <LogisticsTab level={level} />;
       case 'preferences':
         return <PreferencesTab />;
-      case 'avoid':
-        return <AvoidTab />;
+      case 'addons':
+        return <AddonsGallery />;
       default:
-        return null;
+        return <LogisticsTab level={level} />;
     }
   };
 
   console.log('logistics', logistics);
-  console.log('filters', filters);
 
   return (
     <div className="bg-gray-100 p-4 rounded-md max-w-4xl mx-auto mb-12 border border-gray-200 py-6">

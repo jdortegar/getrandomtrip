@@ -10,6 +10,7 @@ type SectionProps = {
   variant?: 'default' | 'light' | 'dark';
   id?: string;
   background?: string;
+  fullWidth?: boolean;
 };
 
 const Section = ({
@@ -20,6 +21,7 @@ const Section = ({
   variant = 'default',
   id,
   background,
+  fullWidth = false,
 }: SectionProps) => {
   return (
     <section
@@ -36,31 +38,35 @@ const Section = ({
       style={{ backgroundImage: `url(${background})` }}
     >
       {background && <div className="absolute inset-0 bg-black/50" />}
-      <div className="mb-8 max-w-3xl mx-auto relative z-10">
-        <h2
-          data-testid="section-title"
-          className={cn('font-caveat md:text-5xl font-bold mb-6', {
-            'text-gray-900': variant === 'default',
-            'text-gray-50': variant === 'light',
-            'text-white': variant === 'dark',
-          })}
-        >
-          {title}
-        </h2>
-        <p
-          className={cn(
-            'font-jost text-xl text-gray-700 mx-auto leading-relaxed',
-            {
-              'text-gray-700': variant === 'default',
-              'text-gray-900': variant === 'light',
+      {title && (
+        <div className="mb-8 max-w-3xl mx-auto relative z-10">
+          <h2
+            data-testid="section-title"
+            className={cn('font-caveat md:text-5xl font-bold mb-6', {
+              'text-gray-900': variant === 'default',
+              'text-gray-50': variant === 'light',
               'text-white': variant === 'dark',
-            },
-          )}
-        >
-          {subtitle}
-        </p>
+            })}
+          >
+            {title}
+          </h2>
+          <p
+            className={cn(
+              'font-jost text-xl text-gray-700 mx-auto leading-relaxed',
+              {
+                'text-gray-700': variant === 'default',
+                'text-gray-900': variant === 'light',
+                'text-white': variant === 'dark',
+              },
+            )}
+          >
+            {subtitle}
+          </p>
+        </div>
+      )}
+      <div className={cn('mx-auto relative z-10', !fullWidth && 'max-w-5xl')}>
+        {children}
       </div>
-      <div className="max-w-5xl mx-auto relative z-10">{children}</div>
     </section>
   );
 };
