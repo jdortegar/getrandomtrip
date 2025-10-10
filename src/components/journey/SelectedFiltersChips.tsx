@@ -77,7 +77,7 @@ export default function SelectedFiltersChips() {
       </div>
       <div className="flex flex-wrap gap-2 justify-center py-2">
         {items.map((it) => (
-          <Chip key={it.key} item={it} />
+          <Chip key={it.key} item={it} color="primary" />
         ))}
       </div>
     </div>

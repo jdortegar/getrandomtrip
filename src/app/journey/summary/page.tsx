@@ -3,17 +3,21 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import Navbar from '@/components/Navbar';
 import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/media/BgCarousel';
-import GlassCard from '@/components/ui/GlassCard';
 
 import { useStore } from '@/store/store';
 import { ADDONS } from '@/data/addons-catalog';
+import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import {
   computeAddonsCostPerTrip,
   computeFiltersCostPerTrip,
 } from '@/lib/pricing';
+import Section from '@/components/layout/Section';
+import Hero from '@/components/Hero';
+import { getTravelerTypeLabel, getLevelLabel } from '@/lib/data/journey-labels';
+import Chip from '@/components/badge';
+import { Button } from '@/components/ui/button';
+import { usePlanData } from '@/hooks/usePlanData';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
@@ -41,20 +45,86 @@ export default function SummaryPage() {
   );
 
   const filtersPerPax = filtersTrip / pax || 0;
-  const addonsPerPax = addonsTrip / pax || 0;
-  const totalPerPax = basePerPax + filtersPerPax + addonsPerPax;
-  const totalTrip = totalPerPax * pax;
 
-  const chips: string[] = [];
-  if (filters.climate !== 'indistinto')
-    chips.push(`Clima: ${labelCL(filters.climate)}`);
-  if (filters.maxTravelTime !== 'sin-limite')
-    chips.push(`Máx: ${labelTT(filters.maxTravelTime)}`);
-  if (filters.departPref !== 'indistinto')
-    chips.push(`Salida: ${labelDP(filters.departPref)}`);
-  if (filters.arrivePref !== 'indistinto')
-    chips.push(`Llegada: ${labelDP(filters.arrivePref)}`);
-  (filters.avoidDestinations || []).forEach((n) => chips.push(`Evitar: ${n}`));
+  // Generate filter chips using FILTER_OPTIONS
+  const filterChips: Array<{ key: string; label: string; value: string }> = [];
+
+  // Transport (always shown)
+  const transportOption = FILTER_OPTIONS.transport.options.find(
+    (opt) => opt.key === filters.transport,
+  );
+  if (transportOption) {
+    filterChips.push({
+      key: 'transport',
+      label: FILTER_OPTIONS.transport.label,
+      value: transportOption.label,
+    });
+  }
+
+  // Climate
+  if (filters.climate !== 'indistinto') {
+    const climateOption = FILTER_OPTIONS.climate.options.find(
+      (opt) => opt.key === filters.climate,
+    );
+    if (climateOption) {
+      filterChips.push({
+        key: 'climate',
+        label: FILTER_OPTIONS.climate.label,
+        value: climateOption.label,
+      });
+    }
+  }
+
+  // Max Travel Time
+  if (filters.maxTravelTime !== 'sin-limite') {
+    const maxTravelTimeOption = FILTER_OPTIONS.maxTravelTime.options.find(
+      (opt) => opt.key === filters.maxTravelTime,
+    );
+    if (maxTravelTimeOption) {
+      filterChips.push({
+        key: 'maxTravelTime',
+        label: FILTER_OPTIONS.maxTravelTime.label,
+        value: maxTravelTimeOption.label,
+      });
+    }
+  }
+
+  // Depart Preference
+  if (filters.departPref !== 'indistinto') {
+    const departOption = FILTER_OPTIONS.departPref.options.find(
+      (opt) => opt.key === filters.departPref,
+    );
+    if (departOption) {
+      filterChips.push({
+        key: 'departPref',
+        label: 'Salida',
+        value: departOption.label,
+      });
+    }
+  }
+
+  // Arrive Preference
+  if (filters.arrivePref !== 'indistinto') {
+    const arriveOption = FILTER_OPTIONS.arrivePref.options.find(
+      (opt) => opt.key === filters.arrivePref,
+    );
+    if (arriveOption) {
+      filterChips.push({
+        key: 'arrivePref',
+        label: 'Llegada',
+        value: arriveOption.label,
+      });
+    }
+  }
+
+  // Avoid Destinations
+  (filters.avoidDestinations || []).forEach((dest) => {
+    filterChips.push({
+      key: `avoid-${dest}`,
+      label: 'Evitar',
+      value: dest,
+    });
+  });
 
   const addonRows = addons.selected
     .map((s) => {
@@ -82,70 +152,115 @@ export default function SummaryPage() {
     })
     .filter(Boolean) as { id: string; title: string; total: number }[];
 
-  const backToAddons = () => router.push('/journey/add-ons');
+  // Calculate addonsPerPax based on individual addon rows to match the display
+  const addonsPerPax =
+    (addonRows.reduce((sum, row) => sum + row.total, 0) + cancelCost) / pax ||
+    0;
+  const totalPerPax = basePerPax + filtersPerPax + addonsPerPax;
+  const totalTrip = totalPerPax * pax;
+
+  // Build URL with params
+  const buildUrlWithParams = (path: string) => {
+    const params = new URLSearchParams();
+    params.set('type', type);
+    params.set('level', level);
+    if (basePriceUsd > 0) {
+      params.set('pbp', basePriceUsd.toString());
+    }
+    return `${path}?${params.toString()}`;
+  };
+
+  const backToConfig = () =>
+    router.push(buildUrlWithParams('/journey/basic-config'));
   const payNow = () => router.push('/journey/checkout');
+
+  const { tags } = usePlanData();
+
+  const ItemBlock = ({ title, value }: { title: string; value: string }) => (
+    <div className="text-neutral-600 text-sm  flex flex-col px-2 py-1">
+      <span className="font-medium text-neutral-900 uppercase">{title}</span>
+      <p className="font-bold text-neutral-900 text-xl">{value}</p>
+    </div>
+  );
 
   return (
     <>
-      <Navbar />
-      <div id="hero-sentinel" aria-hidden className="h-px w-px" />
-      <BgCarousel scrim={0.65} />
+      <Hero
+        content={{
+          title: 'Resumen del viaje',
+          subtitle: 'Revisa tu viaje y confirma los detalles',
+          scrollText: '',
+          videoSrc: '/videos/hero-video.mp4',
+          fallbackImage: '/images/bg-playa-mexico.jpg',
+          tags,
+        }}
+        className="!h-[40vh]"
+        scrollIndicator={false}
+      />
+      <Section>
+        {/* <Navbar /> */}
+        {/* <div id="hero-sentinel" aria-hidden className="h-px w-px" /> */}
+        {/* <BgCarousel scrim={0.65} /> */}
 
-      <main className="container mx-auto px-4 pb-16 pt-28 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
-        {/* Columna izquierda */}
-        <div className="space-y-4">
-          <GlassCard>
-            <div className="p-4 md:p-5">
-              <h1 className="text-lg font-semibold text-neutral-900 mb-2">
-                Resumen del viaje
-              </h1>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                <div>
-                  <div className="text-neutral-600">Ciudad</div>
-                  <div className="font-medium text-neutral-900">
-                    {logistics.city ?? '—'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-neutral-600">Fechas</div>
-                  <div className="font-medium text-neutral-900">
-                    {logistics.startDate
+        <div className="flex gap-6 w-full font-jost">
+          {/* Columna izquierda */}
+          <div className="flex-1 space-y-4">
+            <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-8">
+                Logística de tu viaje
+              </h2>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm font-jost">
+                <ItemBlock
+                  title="País de Salida"
+                  value={logistics.country ?? '—'}
+                />
+                <ItemBlock
+                  title="Ciudad de Salida"
+                  value={logistics.city ?? '—'}
+                />
+                <ItemBlock
+                  title="Fecha de inicio"
+                  value={
+                    logistics.startDate
                       ? new Date(logistics.startDate).toLocaleDateString()
-                      : '—'}{' '}
-                    →{' '}
-                    {logistics.endDate
+                      : '—'
+                  }
+                />
+                <ItemBlock
+                  title="Fecha de fin"
+                  value={
+                    logistics.endDate
                       ? new Date(logistics.endDate).toLocaleDateString()
-                      : '—'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-neutral-600">Viajeros</div>
-                  <div className="font-medium text-neutral-900">{pax}</div>
-                </div>
-                <div>
-                  <div className="text-neutral-600">Tipo</div>
-                  <div className="font-medium text-neutral-900">
-                    {type} • {level}
-                  </div>
-                </div>
+                      : '—'
+                  }
+                />
+                <ItemBlock
+                  title="Noches"
+                  value={
+                    logistics.nights > 0 ? logistics.nights.toString() : '—'
+                  }
+                />
+                <ItemBlock title="Viajeros" value={pax.toString()} />
               </div>
             </div>
-          </GlassCard>
 
-          <GlassCard>
-            <div className="p-4 md:p-5">
+            <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
               <h2 className="text-base font-semibold text-neutral-900 mb-3">
-                Filtros premium
+                Filtros y Preferencias
               </h2>
               <div className="flex flex-wrap gap-2">
-                {chips.length ? (
-                  chips.map((c) => (
-                    <span
-                      key={c}
-                      className="inline-flex items-center rounded-full bg-violet-50 text-violet-900 border border-violet-200 px-3 py-1 text-sm"
-                    >
-                      {c}
-                    </span>
+                {filterChips.length ? (
+                  filterChips.map((chip) => (
+                    <Chip
+                      key={chip.key}
+                      item={{
+                        key: chip.key,
+                        label: chip.label,
+                        value: chip.value,
+                      }}
+                      color="primary"
+                      size="md"
+                    />
                   ))
                 ) : (
                   <span className="text-sm text-neutral-600">
@@ -154,14 +269,12 @@ export default function SummaryPage() {
                 )}
               </div>
             </div>
-          </GlassCard>
 
-          <GlassCard>
-            <div className="p-4 md:p-5">
+            <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
               <h2 className="text-base font-semibold text-neutral-900 mb-3">
-                Tus add-ons
+                Tus add-ons ({addonRows.length + (cancelCost > 0 ? 1 : 0)})
               </h2>
-              <div className="divide-y divide-neutral-200/90">
+              <div className="divide-y divide-neutral-200">
                 {addonRows.length ? (
                   addonRows.map((r) => (
                     <div
@@ -178,11 +291,11 @@ export default function SummaryPage() {
                   ))
                 ) : (
                   <div className="text-sm text-neutral-700 py-2">
-                    Aún no agregaste add-ons.
+                    No agregaste add-ons.
                   </div>
                 )}
-                {cancelCost > 0 && (
-                  <div className="flex items-center justify-between py-3 bg-amber-50/80 px-3 rounded-lg mt-2">
+                {/* {cancelCost > 0 && (
+                  <div className="flex items-center justify-between py-3 bg-amber-50 px-3 rounded-lg mt-2">
                     <div className="text-neutral-900 font-medium">
                       Seguro de cancelación · 15% del subtotal
                     </div>
@@ -190,122 +303,80 @@ export default function SummaryPage() {
                       {usd(cancelCost)}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
-          </GlassCard>
-        </div>
+          </div>
 
-        {/* Columna derecha */}
-        <aside>
-          <GlassCard>
-            <div className="p-4 md:p-5 space-y-3">
-              <h3 className="text-base font-semibold text-neutral-900">
+          {/* Columna derecha */}
+          <aside className="sticky top-20 self-start w-80 flex-shrink-0">
+            <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
+              <h3 className="text-xl  font-semibold text-neutral-900 mb-4">
                 Precio
               </h3>
 
-              <Row
-                label="Base por persona"
-                value={displayPrice || usd(basePerPax)}
-              />
-              <Row label="Filtros premium" value={usd(filtersPerPax)} />
-              <Row label="Add-ons" value={usd(addonsPerPax)} />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-700">Base por persona</span>
+                  <span className="font-medium text-neutral-900">
+                    {displayPrice || usd(basePerPax)}
+                  </span>
+                </div>
 
-              <div className="h-px bg-neutral-200/90 my-1" />
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-700">
+                    Filtros premium ({filterChips.length})
+                  </span>
+                  <span className="font-medium text-neutral-900">
+                    {usd(filtersPerPax)}
+                  </span>
+                </div>
 
-              <Row label="Total por persona" value={usd(totalPerPax)} bold />
-              <Row label={`Total (x${pax})`} value={usd(totalTrip)} bold />
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-700">
+                    Add-ons ({addonRows.length + (cancelCost > 0 ? 1 : 0)})
+                  </span>
+                  <span className="font-medium text-neutral-900">
+                    {usd(addonsPerPax)}
+                  </span>
+                </div>
 
-              <button
-                onClick={backToAddons}
-                className="w-full rounded-xl border border-neutral-300 bg-white text-neutral-900 py-2 hover:bg-neutral-50"
-              >
-                ← Volver a add-ons
-              </button>
+                <div className="h-px bg-neutral-200 my-1" />
 
-              <button
-                onClick={payNow}
-                className="w-full rounded-xl bg-violet-600 text-white py-2.5 font-medium hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-              >
-                Continuar a pago
-              </button>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-700">
+                    Total por persona ({pax})
+                  </span>
+                  <span className="font-semibold text-neutral-900">
+                    {usd(totalPerPax)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-700">Total (x{pax})</span>
+                  <span className="font-semibold text-neutral-900">
+                    {usd(totalTrip)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <Button asChild variant="secondary" className="w-full">
+                  <Link href={buildUrlWithParams('/journey/basic-config')}>
+                    ← Volver a editar
+                  </Link>
+                </Button>
+
+                <Button onClick={payNow} className="w-full">
+                  Continuar a pago
+                </Button>
+              </div>
             </div>
-          </GlassCard>
-        </aside>
-      </main>
+          </aside>
+        </div>
 
-      <ChatFab />
+        <ChatFab />
+      </Section>
     </>
   );
-}
-
-function Row({
-  label,
-  value,
-  bold = false,
-}: {
-  label: string;
-  value: string;
-  bold?: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-neutral-700">{label}</span>
-      <span
-        className={
-          bold
-            ? 'font-semibold text-neutral-900'
-            : 'font-medium text-neutral-900'
-        }
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-/** Helpers tipados para evitar indexar con `any` */
-function labelCL(v: unknown): string {
-  switch (String(v)) {
-    case 'calido':
-      return 'Cálido';
-    case 'frio':
-      return 'Frío';
-    case 'templado':
-      return 'Templado';
-    case 'indistinto':
-      return 'Indistinto';
-    default:
-      return String(v ?? '');
-  }
-}
-
-function labelTT(v: unknown): string {
-  switch (String(v)) {
-    case '3h':
-      return '3h';
-    case '5h':
-      return '5h';
-    case '8h':
-      return '8h';
-    case 'sin-limite':
-      return 'Sin límite';
-    default:
-      return String(v ?? '');
-  }
-}
-
-function labelDP(v: unknown): string {
-  switch (String(v)) {
-    case 'manana':
-      return 'mañana';
-    case 'tarde':
-      return 'tarde';
-    case 'noche':
-      return 'noche';
-    case 'indistinto':
-      return 'indistinto';
-    default:
-      return String(v ?? '');
-  }
 }

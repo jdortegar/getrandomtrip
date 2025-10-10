@@ -9,7 +9,7 @@ export interface HeroContent {
   title: string;
   subtitle: string;
   tagline?: string;
-  scrollText: string;
+  scrollText?: string;
   videoSrc: string;
   fallbackImage: string;
   tags?: {
@@ -159,14 +159,21 @@ const Hero: React.FC<HeroProps> = ({
 
         {/* Tags/Chips */}
         {content.tags && content.tags.length > 0 && (
-          <div className="flex flex-wrap flex-col justify-center items-center gap-2 mb-8">
-            {content.tags.map((tag, index) => (
-              <span
-                key={`${tag.label}-${index}`}
-                className="inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold uppercase text-white"
-              >
-                {tag.label}: {tag.value}
-              </span>
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-8">
+            {content.tags?.map((tag, index) => (
+              <div key={`${tag.label}-${index}`} className="flex items-center">
+                <div className="rounded-sm px-6 py-2 flex flex-col">
+                  <span className="text-xs uppercase text-white mb-2">
+                    {tag.label}
+                  </span>
+                  <p className="text-3xl font-semibold text-white font-caveat">
+                    {tag.value}
+                  </p>
+                </div>
+                {index < (content.tags?.length ?? 0) - 1 && (
+                  <div className="h-16 w-px bg-white/70 mx-2" />
+                )}
+              </div>
             ))}
           </div>
         )}

@@ -16,12 +16,16 @@ type ColorVariant =
   | 'warning'
   | 'danger';
 
+type SizeVariant = 'sm' | 'md' | 'lg';
+
 export default function Chip({
   item,
   color = 'default',
+  size = 'sm',
 }: {
   item: Item;
   color?: ColorVariant;
+  size?: SizeVariant;
 }) {
   const getColorClasses = (color: ColorVariant, locked: boolean) => {
     if (locked) {
@@ -63,12 +67,26 @@ export default function Chip({
     }
   };
 
+  const getSizeClasses = (size: SizeVariant) => {
+    switch (size) {
+      case 'sm':
+        return 'px-3 py-1 text-xs';
+      case 'md':
+        return 'px-4 py-1.5 text-sm';
+      case 'lg':
+        return 'px-5 py-2 text-base';
+      default:
+        return 'px-3 py-1 text-xs';
+    }
+  };
+
   const base = getColorClasses(color, item.locked || false);
+  const sizeClasses = getSizeClasses(size);
 
   if (item.key === 'indistinto' || item.key === 'sin-limite') return null;
   return (
     <span
-      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs ${base}`}
+      className={`inline-flex items-center gap-1 rounded-full ${sizeClasses} ${base}`}
     >
       {item.label === 'Evitar'
         ? `${item.label}: ${item.value}`

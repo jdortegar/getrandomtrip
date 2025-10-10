@@ -135,9 +135,6 @@ export default function CitySelector({
                 disabled={city.name === 'Selecciona un país primero'}
               >
                 <div className="font-medium">{city.name}</div>
-                {city.country && (
-                  <div className="text-xs text-gray-500">{city.country}</div>
-                )}
               </button>
             ))
           )}

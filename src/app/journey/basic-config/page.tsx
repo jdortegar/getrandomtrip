@@ -3,11 +3,11 @@
 import SelectionsBar from '@/components/journey/SelectionsBar';
 import { JourneyForm } from '@/components/journey/JourneyForm';
 import SummaryCard from '@/components/journey/SummaryCard';
-import InitClient from '@/components/journey/InitClient';
 import BasicConfigHero from '@/components/journey/BasicConfigHero';
 import Section from '@/components/layout/Section';
 import { useStore } from '@/store/store';
 import { Info } from 'lucide-react';
+import { useInitJourney } from '@/hooks/useInitJourney';
 
 export default function Page({
   searchParams,
@@ -17,17 +17,18 @@ export default function Page({
   const { activeTab } = useStore();
   const displayPrice = decodeURIComponent(searchParams.price || '');
 
+  // Initialize journey state from URL params
+  useInitJourney(searchParams, displayPrice);
+
   return (
     <>
       <BasicConfigHero />
 
       <Section>
-        <InitClient searchParams={searchParams} displayPrice={displayPrice} />
-
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <SelectionsBar />
-          {/* Chips estáticos eliminados: <TopFiltersSummary /> */}
-        </div>
+          Chips estáticos eliminados: <TopFiltersSummary />
+        </div> */}
 
         <div className="flex gap-6 w-full space-between">
           <div className="flex-1">

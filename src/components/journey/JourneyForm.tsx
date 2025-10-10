@@ -46,8 +46,8 @@ export function JourneyForm() {
     switch (stepNumber) {
       case 1:
         return Boolean(
-          logistics.country.length > 0 &&
-            logistics.city.length > 0 &&
+          logistics.country?.length > 0 &&
+            logistics.city?.length > 0 &&
             logistics.startDate &&
             logistics.endDate &&
             logistics.nights > 0 &&

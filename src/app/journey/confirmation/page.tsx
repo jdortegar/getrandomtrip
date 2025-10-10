@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/media/BgCarousel';
-import GlassCard from '@/components/ui/GlassCard';
 import { useStore } from '@/store/store';
 import { buildICS } from '@/lib/ics';
+import Section from '@/components/layout/Section';
+import Hero from '@/components/Hero';
+import { Button } from '@/components/ui/button';
+import { Calendar, Share2, Mail } from 'lucide-react';
 
 export default function ConfirmationPage() {
   const { logistics, type } = useStore();
@@ -30,7 +31,6 @@ export default function ConfirmationPage() {
     return () => clearInterval(id);
   }, [logistics.startDate]);
 
-  // --- ICS seguro: pasamos Date|string válidos y NO reenvolvemos la data URL ---
   const startDate = logistics.startDate
     ? new Date(logistics.startDate)
     : undefined;
@@ -48,75 +48,137 @@ export default function ConfirmationPage() {
 
   return (
     <>
-      <Navbar />
-      <div id="hero-sentinel" aria-hidden className="h-px w-px" />
-      <BgCarousel scrim={0.6} />
-      <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16 max-w-3xl">
-        <GlassCard>
-          <div className="p-6 text-center">
-            <div className="text-2xl font-bold text-neutral-900">
-              ¡Viaje reservado!
+      <Hero
+        content={{
+          title: '¡Reserva Confirmada!',
+          subtitle: 'Tu aventura sorpresa está a punto de comenzar',
+          videoSrc: '/videos/hero-video.mp4',
+          fallbackImage: '/images/bg-playa-mexico.jpg',
+        }}
+      />
+
+      <Section>
+        <div className="max-w-4xl mx-auto">
+          {/* Success Card */}
+          <div className="bg-white p-8 rounded-md border border-gray-200 shadow-sm text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
             </div>
-            <p className="mt-2 text-neutral-700">
-              Tu destino será revelado 48 h antes del viaje.
+
+            <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+              ¡Viaje reservado con éxito!
+            </h1>
+            <p className="text-neutral-600 mb-6">
+              Tu destino será revelado <strong>48 horas</strong> antes del
+              viaje.
             </p>
 
-            <div className="mt-4 inline-flex items-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-neutral-900">
-              <span className="font-medium">{logistics.city ?? '—'}</span>
-              <span>·</span>
-              <span>
-                {startDate ? startDate.toLocaleDateString() : '—'} →{' '}
-                {endDate ? endDate.toLocaleDateString() : '—'}
-              </span>
+            {/* Trip Details */}
+            <div className="inline-flex items-center gap-4 px-6 py-4 rounded-md border border-gray-300 bg-gray-50 mb-6">
+              <div className="text-left">
+                <div className="text-xs text-neutral-500 uppercase tracking-wider mb-1">
+                  Destino
+                </div>
+                <div className="font-semibold text-neutral-900">
+                  {logistics.city ?? '—'}
+                </div>
+              </div>
+
+              <div className="w-px h-12 bg-gray-300" />
+
+              <div className="text-left">
+                <div className="text-xs text-neutral-500 uppercase tracking-wider mb-1">
+                  Fechas
+                </div>
+                <div className="font-semibold text-neutral-900 whitespace-nowrap">
+                  {startDate ? startDate.toLocaleDateString() : '—'} →{' '}
+                  {endDate ? endDate.toLocaleDateString() : '—'}
+                </div>
+              </div>
+
+              <div className="w-px h-12 bg-gray-300" />
+
+              <div className="text-left">
+                <div className="text-xs text-neutral-500 uppercase tracking-wider mb-1">
+                  Comienza en
+                </div>
+                <div className="font-semibold text-green-600">{left}</div>
+              </div>
             </div>
 
-            <div className="mt-4 text-sm text-neutral-700">
-              Comienza en{' '}
-              <span className="font-semibold text-neutral-900">{left}</span>
-            </div>
+            {/* Actions */}
+            <div className="space-y-3">
+              <div className="flex flex-wrap justify-center gap-3">
+                <Button variant="outline" size="default" asChild>
+                  <a href={icsHref} download="randomtrip.ics">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Agregar al calendario
+                  </a>
+                </Button>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <a
-                href={icsHref}
-                download="randomtrip.ics"
-                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-              >
-                Agregar al calendario
-              </a>
+                <Button variant="outline" size="default" asChild>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent('¡Viaje reservado en Randomtrip! 🎒')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Compartir por WhatsApp
+                  </a>
+                </Button>
 
-              {/* compartir rápido */}
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent('¡Viaje reservado en Randomtrip! 🎒')}`}
-                target="_blank"
-                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-              >
-                Compartir por WhatsApp
-              </a>
-              <a
-                href={`mailto:?subject=Mi%20Randomtrip&body=${encodeURIComponent('¡Ya tengo mi Randomtrip!')}`}
-                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-              >
-                Compartir por Email
-              </a>
-            </div>
+                <Button variant="outline" size="default" asChild>
+                  <a
+                    href={`mailto:?subject=Mi%20Randomtrip&body=${encodeURIComponent('¡Ya tengo mi Randomtrip!')}`}
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Compartir por Email
+                  </a>
+                </Button>
+              </div>
 
-            <div className="mt-6 flex justify-center gap-3">
-              <Link
-                href="/dashboard"
-                className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
-              >
-                Ir a Mis Viajes
-              </Link>
-              <Link
-                href="/"
-                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-              >
-                Volver al inicio
-              </Link>
+              <div className="flex justify-center gap-3 pt-4">
+                <Button size="lg" asChild>
+                  <Link href="/dashboard">Ir a Mis Viajes</Link>
+                </Button>
+                <Button variant="secondary" size="lg" asChild>
+                  <Link href="/">Volver al inicio</Link>
+                </Button>
+              </div>
             </div>
           </div>
-        </GlassCard>
-      </main>
+
+          {/* Info Card */}
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-6">
+            <h3 className="font-semibold text-blue-900 mb-2">
+              📧 ¿Qué sigue ahora?
+            </h3>
+            <ul className="text-sm text-blue-800 space-y-2">
+              <li>
+                • Recibirás un email de confirmación con todos los detalles
+              </li>
+              <li>• Te notificaremos 48h antes con tu destino sorpresa</li>
+              <li>
+                • Podrás gestionar tu viaje desde "Mis Viajes" en cualquier
+                momento
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Section>
+
       <ChatFab />
     </>
   );

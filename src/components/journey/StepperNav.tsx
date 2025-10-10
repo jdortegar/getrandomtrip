@@ -1,6 +1,7 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useStore } from '@/store/store';
 
 interface StepperNavProps {
   steps: Array<{ step: number; label: string }>;
@@ -16,6 +17,8 @@ export default function StepperNav({
   onStepChange,
 }: StepperNavProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { type, level, basePriceUsd } = useStore();
 
   const goPrev = () => {
     if (currentStep === 0) {
@@ -30,8 +33,14 @@ export default function StepperNav({
     // Check if current step is complete before allowing next
     if (isStepComplete(currentStep)) {
       if (isLastStep) {
-        // Redirect to summary page on last step
-        router.push('/journey/summary');
+        // Redirect to summary page on last step, preserving URL params
+        const params = new URLSearchParams();
+        params.set('type', type);
+        params.set('level', level);
+        if (basePriceUsd > 0) {
+          params.set('pbp', basePriceUsd.toString());
+        }
+        router.push(`/journey/summary?${params.toString()}`);
       } else {
         onStepChange(currentStep + 1);
       }

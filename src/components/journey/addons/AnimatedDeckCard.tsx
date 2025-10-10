@@ -20,25 +20,65 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
   const { addons, setAddon, removeAddon, logistics } = useStore();
   const sel = addons.selected.find((s) => s.id === addon.id);
 
-  const [qty, setQty] = useState(sel?.qty || 1);
+  const [qty, setQty] = useState(sel?.qty || 0);
   const [opt, setOpt] = useState<string | undefined>(sel?.optionId);
 
   // Re-sincroniza controles al cambiar de add-on
   useEffect(() => {
-    setQty(sel?.qty || 1);
+    setQty(sel?.qty || 0);
     setOpt(sel?.optionId);
   }, [sel, addon.id]);
 
-  const inc = () => setQty((q) => q + 1);
-  const dec = () => setQty((q) => Math.max(1, q - 1));
-  const pax = logistics.pax || 1;
+  // Set default "Incluido" option when component mounts
+  useEffect(() => {
+    if (!sel?.optionId && addon.options && addon.options.length > 0) {
+      const includedOption = addon.options.find(
+        (option) => !option.deltaUsd || option.deltaUsd === 0,
+      );
+      if (includedOption) {
+        setOpt(includedOption.id);
+      }
+    }
+  }, [addon.options, sel?.optionId]);
 
-  const handleAdd = () => {
-    setAddon({ id: addon.id, qty, optionId: opt });
+  const inc = () => {
+    const newQty = qty + 1;
+    setQty(newQty);
+
+    // Auto-select "Incluido" option if no option is selected and there are options
+    let selectedOptionId = opt;
+    if (!selectedOptionId && addon.options && addon.options.length > 0) {
+      const includedOption = addon.options.find(
+        (option) => !option.deltaUsd || option.deltaUsd === 0,
+      );
+      selectedOptionId = includedOption?.id || addon.options[0].id;
+      setOpt(selectedOptionId);
+    }
+
+    // Auto-add when incrementing from 0
+    setAddon({ id: addon.id, qty: newQty, optionId: selectedOptionId });
   };
 
-  const handleRemove = () => {
-    removeAddon(addon.id);
+  const dec = () => {
+    const newQty = Math.max(0, qty - 1);
+    setQty(newQty);
+    if (newQty === 0) {
+      // Remove addon when quantity reaches 0
+      removeAddon(addon.id);
+    } else {
+      // Update addon quantity
+      setAddon({ id: addon.id, qty: newQty, optionId: opt });
+    }
+  };
+
+  const pax = logistics.pax || 1;
+
+  const handleOptionChange = (optionId: string) => {
+    setOpt(optionId);
+    // Auto-update if addon is already selected
+    if (qty > 0) {
+      setAddon({ id: addon.id, qty, optionId });
+    }
   };
 
   const isSelected = !!sel;
@@ -101,7 +141,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
                       <button
                         key={option.id}
                         type="button"
-                        onClick={() => setOpt(option.id)}
+                        onClick={() => handleOptionChange(option.id)}
                         className={cn(
                           'w-full flex items-center justify-between p-3 rounded-md border transition-colors text-left',
                           opt === option.id
@@ -150,37 +190,6 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
                   </div>
                 </div>
               )}
-
-              {/* Actions */}
-              <div className="flex gap-2 pt-2">
-                {isSelected ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={handleRemove}
-                      className="flex-1 px-4 py-2 rounded-md border border-gray-300 text-sm font-medium text-neutral-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Quitar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleAdd}
-                      className="flex-1 px-4 py-2 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <Check className="w-4 h-4" />
-                      Actualizar
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleAdd}
-                    className="w-full px-4 py-2 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
-                  >
-                    Agregar
-                  </button>
-                )}
-              </div>
             </div>
           </motion.div>
         )}

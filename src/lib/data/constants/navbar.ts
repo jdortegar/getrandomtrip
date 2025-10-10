@@ -37,7 +37,7 @@ export const NAVBAR_LINKS = [
 
 export const NAVBAR_STYLES = {
   SOLID:
-    'fixed top-0 inset-x-0 z-50 bg-white/70 text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-all duration-500 ease-in-out',
+    'fixed top-0 inset-x-0 z-50 bg-white text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-all duration-500 ease-in-out',
   OVERLAY:
     'fixed top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out',
 } as const;
