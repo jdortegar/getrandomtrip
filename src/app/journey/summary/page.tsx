@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 import ChatFab from '@/components/chrome/ChatFab';
 
@@ -18,11 +20,70 @@ import { getTravelerTypeLabel, getLevelLabel } from '@/lib/data/journey-labels';
 import Chip from '@/components/badge';
 import { Button } from '@/components/ui/button';
 import { usePlanData } from '@/hooks/usePlanData';
+import { useSaveTrip } from '@/hooks/useSaveTrip';
+import { useUserStore } from '@/store/slices/userStore';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
 export default function SummaryPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const { isAuthed } = useUserStore();
+  const { saveTrip, isLoading: isSaving, error: saveError } = useSaveTrip();
+  const [savedTripId, setSavedTripId] = useState<string | null>(null);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (!session && !isAuthed) {
+      // Save current path to return after login
+      const currentPath = window.location.pathname + window.location.search;
+      router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
+    }
+  }, [session, isAuthed, status, router]);
+
+  // Auto-save trip when user arrives (if authenticated)
+  useEffect(() => {
+    if ((session || isAuthed) && !savedTripId && !isSaving) {
+      handleSaveTrip();
+    }
+  }, [session, isAuthed]);
+
+  const handleSaveTrip = async () => {
+    try {
+      const trip = await saveTrip(savedTripId || undefined);
+      setSavedTripId(trip.id);
+    } catch (error) {
+      console.error('Failed to save trip:', error);
+    }
+  };
+
+  // Show loading while checking auth
+  if (status === 'loading') {
+    return (
+      <>
+        <Hero
+          content={{
+            title: 'Cargando...',
+            subtitle: 'Verificando tu sesión',
+            videoSrc: '/videos/hero-video.mp4',
+            fallbackImage: '/images/bg-playa-mexico.jpg',
+          }}
+        />
+        <Section>
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </Section>
+      </>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!session && !isAuthed) {
+    return null;
+  }
   const {
     basePriceUsd,
     displayPrice,
@@ -172,7 +233,18 @@ export default function SummaryPage() {
 
   const backToConfig = () =>
     router.push(buildUrlWithParams('/journey/basic-config'));
-  const payNow = () => router.push('/journey/checkout');
+
+  const payNow = async () => {
+    // Update trip status to PENDING_PAYMENT before checkout
+    if (savedTripId) {
+      try {
+        await saveTrip(savedTripId);
+      } catch (error) {
+        console.error('Failed to update trip:', error);
+      }
+    }
+    router.push('/journey/checkout');
+  };
 
   const { tags } = usePlanData();
 
@@ -311,9 +383,27 @@ export default function SummaryPage() {
           {/* Columna derecha */}
           <aside className="sticky top-20 self-start w-80 flex-shrink-0">
             <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
-              <h3 className="text-xl  font-semibold text-neutral-900 mb-4">
-                Precio
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-neutral-900">
+                  Precio
+                </h3>
+                {savedTripId && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Guardado
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">

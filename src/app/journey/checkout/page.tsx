@@ -1,6 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import ChatFab from '@/components/chrome/ChatFab';
 import { useStore } from '@/store/store';
 import {
@@ -10,11 +12,50 @@ import {
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
+import { useUserStore } from '@/store/slices/userStore';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const { isAuthed } = useUserStore();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (!session && !isAuthed) {
+      const currentPath = window.location.pathname + window.location.search;
+      router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
+    }
+  }, [session, isAuthed, status, router]);
+
+  // Show loading while checking auth
+  if (status === 'loading') {
+    return (
+      <>
+        <Hero
+          content={{
+            title: 'Cargando...',
+            subtitle: 'Verificando tu sesión',
+            videoSrc: '/videos/hero-video.mp4',
+            fallbackImage: '/images/bg-playa-mexico.jpg',
+          }}
+        />
+        <Section>
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </Section>
+      </>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!session && !isAuthed) {
+    return null;
+  }
   const { basePriceUsd, logistics, filters, addons } = useStore();
   const pax = logistics.pax || 1;
 

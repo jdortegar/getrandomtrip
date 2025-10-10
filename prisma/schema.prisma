@@ -1,3 +1,10 @@
+// ============================================================================
+// RANDOMTRIP - Clean Prisma Schema
+// ============================================================================
+// Fresh start with Trip-focused model
+// Backup of old schema: schema.backup.prisma
+// ============================================================================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,275 +14,92 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  password      String?
-  avatarUrl     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  travelerType  String?
-  interests     String[]
-  dislikes      String[]
-  isAuthed      Boolean   @default(false)
-  authModalOpen Boolean   @default(false)
-  authModalStep String?
-  bookings      Booking[]
-  reviews       Review[]
+// ============================================================================
+// CORE MODELS
+// ============================================================================
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String?
+  avatarUrl String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // User preferences
+  travelerType  String?
+  interests     String[] @default([])
+  dislikes      String[] @default([])
+  
+  // Relations
+  trips   Trip[]
+  reviews Review[]
+  
   @@map("users")
 }
 
-model Booking {
-  id                     String                 @id @default(cuid())
-  userId                 String
-  status                 BookingStatus          @default(PENDING)
-  from                   String
-  travelType             String
-  experienceLevel        String
-  origin                 String
-  originCity             String
-  startDate              DateTime
-  endDate                DateTime?
-  nights                 Int?
-  durationNights         Int?
-  travelerCount          Int
-  destination            String?
-  destinationCountry     String?
-  destinationCity        String?
-  basePrice              Float
-  filtersCost            Float
-  addonsCost             Float
-  totalPrice             Float
-  displayPrice           String?
-  selectedAddons         String[]
-  activeTab              String?
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  addonSelections        BookingAddon[]
-  selectedFilters        BookingFilter[]
-  selectedPremiumFilters BookingPremiumFilter[]
-  user                   User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  payment                Payment?
-  tripSegments           TripSegment[]
-
-  @@map("bookings")
-}
-
-model BookingAddon {
-  id        String  @id @default(cuid())
-  bookingId String
-  addonId   String
-  qty       Int     @default(1)
-  addon     Addon   @relation(fields: [addonId], references: [id])
-  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-
-  @@unique([bookingId, addonId])
-  @@map("booking_addons")
-}
-
-model TripSegment {
-  id        String    @id @default(cuid())
-  bookingId String
-  type      String
-  name      String
-  location  String?
+model Trip {
+  id     String     @id @default(cuid())
+  userId String
+  status TripStatus @default(DRAFT)
+  
+  // Journey metadata
+  from  String? // 'tripper' | ''
+  type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
+  level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+  
+  // Logistics
+  country   String
+  city      String
   startDate DateTime?
   endDate   DateTime?
-  details   Json?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-
-  @@map("trip_segments")
-}
-
-model Filter {
-  id             String          @id @default(cuid())
-  key            String          @unique
-  name           String
-  description    String?
-  category       String
-  price          Float?
-  currency       String          @default("USD")
-  icon           String?
-  options        Json?
-  isActive       Boolean         @default(true)
-  sortOrder      Int             @default(0)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  bookingFilters BookingFilter[]
-
-  @@map("filters")
-}
-
-model PremiumFilter {
-  id                    String                 @id @default(cuid())
-  key                   String                 @unique
-  name                  String
-  description           String?
-  category              String
-  price                 Float
-  currency              String                 @default("USD")
-  icon                  String?
-  options               Json?
-  isActive              Boolean                @default(true)
-  sortOrder             Int                    @default(0)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  bookingPremiumFilters BookingPremiumFilter[]
-
-  @@map("premium_filters")
-}
-
-model BookingFilter {
-  id        String  @id @default(cuid())
-  bookingId String
-  filterId  String
-  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  filter    Filter  @relation(fields: [filterId], references: [id])
-
-  @@unique([bookingId, filterId])
-  @@map("booking_filters")
-}
-
-model BookingPremiumFilter {
-  id              String        @id @default(cuid())
-  bookingId       String
-  premiumFilterId String
-  booking         Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  premiumFilter   PremiumFilter @relation(fields: [premiumFilterId], references: [id])
-
-  @@unique([bookingId, premiumFilterId])
-  @@map("booking_premium_filters")
-}
-
-model Tripper {
-  id           String        @id @default(cuid())
-  name         String
-  slug         String        @unique
-  description  String?
-  avatar       String?
-  coverImage   String?
-  tierLevel    String
-  destinations String[]
-  interests    String[]
-  languages    String[]
-  isActive     Boolean       @default(true)
-  sortOrder    Int           @default(0)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  blogPosts    BlogPost[]
-  tiers        TripperTier[]
-
-  @@map("trippers")
-}
-
-model TripperTier {
-  id        String   @id @default(cuid())
-  tripperId String
-  name      String
-  price     Float
-  features  String[]
-  isActive  Boolean  @default(true)
+  nights    Int      @default(1)
+  pax       Int      @default(1)
+  
+  // Filters
+  transport         String   @default("avion")
+  climate           String   @default("indistinto")
+  maxTravelTime     String   @default("sin-limite")
+  departPref        String   @default("indistinto")
+  arrivePref        String   @default("indistinto")
+  avoidDestinations String[] @default([])
+  
+  // Addons (JSON for flexibility)
+  addons Json? // Array of { id: string, qty: number, optionId?: string }
+  
+  // Pricing
+  basePriceUsd   Float  @default(0)
+  displayPrice   String @default("")
+  filtersCostUsd Float  @default(0)
+  addonsCostUsd  Float  @default(0)
+  totalPerPaxUsd Float  @default(0)
+  totalTripUsd   Float  @default(0)
+  
+  // Completed trip data (optional - populated after trip completion)
+  actualDestination     String?   // Revealed destination
+  destinationRevealedAt DateTime? // When destination was revealed (48h before)
+  completedAt           DateTime? // When trip was marked as completed
+  customerRating        Int?      // 1-5 star rating
+  customerFeedback      String?   // Customer review/feedback
+  tripPhotos            Json?     // Array of photo URLs from the trip
+  
+  // Timestamps
   createdAt DateTime @default(now())
-  tripper   Tripper  @relation(fields: [tripperId], references: [id], onDelete: Cascade)
-
-  @@map("tripper_tiers")
-}
-
-model BlogPost {
-  id              String        @id @default(cuid())
-  tripperId       String
-  title           String
-  slug            String        @unique
-  excerpt         String?
-  content         String
-  featuredImage   String?
-  gallery         Json?
-  metaTitle       String?
-  metaDescription String?
-  tags            String[]
-  category        String?
-  readTime        Int?
-  destination     String?
-  country         String?
-  city            String?
-  relatedTripType String?
-  experienceLevel String?
-  isPublished     Boolean       @default(false)
-  publishedAt     DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  blog_comments   BlogComment[]
-  tripper         Tripper       @relation(fields: [tripperId], references: [id], onDelete: Cascade)
-
-  @@map("blog_posts")
-}
-
-model BlogComment {
-  id          String   @id @default(cuid())
-  blogPostId  String
-  authorName  String
-  authorEmail String
-  content     String
-  isApproved  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  blog_posts  BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-
-  @@map("blog_comments")
-}
-
-model Addon {
-  id            String         @id @default(cuid())
-  name          String
-  description   String?
-  category      String
-  price         Float
-  currency      String         @default("USD")
-  unit          String?
-  providerId    String
-  image         String?
-  icon          String?
-  tags          String[]
-  serviceType   String?
-  duration      String?
-  location      String?
-  isActive      Boolean        @default(true)
-  sortOrder     Int            @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  provider      Provider       @relation(fields: [providerId], references: [id])
-  bookingAddons BookingAddon[]
-
-  @@map("addons")
-}
-
-model Provider {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  email       String?
-  phone       String?
-  website     String?
-  companyType String?
-  country     String?
-  city        String?
-  logo        String?
-  tags        String[]
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  addons      Addon[]
-
-  @@map("providers")
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment Payment?
+  
+  @@map("trips")
 }
 
 model Payment {
   id                   String        @id @default(cuid())
-  bookingId            String        @unique
+  tripId               String        @unique
   provider             String
   providerPaymentId    String?
   providerPreferenceId String?
@@ -287,68 +111,46 @@ model Payment {
   cardBrand            String?
   status               PaymentStatus @default(PENDING)
   providerResponse     Json?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
   @@map("payments")
 }
 
-model PremiumPackage {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  currency    String   @default("USD")
-  features    String[]
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("premium_packages")
-}
-
 model Review {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   userId      String
   rating      Int
   title       String
   content     String
   tripType    String
   destination String
-  isApproved  Boolean  @default(false)
-  isPublic    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  isApproved  Boolean @default(false)
+  isPublic    Boolean @default(true)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   @@map("reviews")
 }
 
-model Bitacora {
-  id              String    @id @default(cuid())
-  title           String
-  slug            String    @unique
-  excerpt         String?
-  content         String
-  featuredImage   String?
-  destination     String?
-  country         String?
-  city            String?
-  tripType        String?
-  experienceLevel String?
-  tags            String[]
-  isPublished     Boolean   @default(false)
-  publishedAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+// ============================================================================
+// ENUMS
+// ============================================================================
 
-  @@map("bitacoras")
-}
-
-enum BookingStatus {
-  PENDING
+enum TripStatus {
+  DRAFT
+  SAVED
+  PENDING_PAYMENT
   CONFIRMED
   REVEALED
   COMPLETED
