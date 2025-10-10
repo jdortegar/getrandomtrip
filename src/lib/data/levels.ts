@@ -113,7 +113,7 @@ export const LEVELS: Level[] = [
 ];
 
 // Helper functions for backward compatibility
-export const getMaxNights = (level: LevelSlug) => {
+export const getMaxNights = (level: string) => {
   const levelData = LEVELS.find((l) => l.id === level);
   return levelData?.maxNights || 2;
 };

@@ -91,9 +91,9 @@ export type AddonsState = {
 };
 
 export type JourneyState = {
-  from: 'tripper' | '';
-  type: 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws';
-  level: LevelSlug;
+  from: string;
+  type: string;
+  level: string;
   displayPrice: string;
   basePriceUsd: number;
   logistics: Logistics;

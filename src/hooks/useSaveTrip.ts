@@ -20,6 +20,7 @@ export function useSaveTrip() {
   const store = useStore();
 
   const saveTrip = async (tripId?: string) => {
+    console.log('🚀 useSaveTrip: Starting save trip...', { tripId });
     setIsLoading(true);
     setError(null);
 
@@ -37,6 +38,13 @@ export function useSaveTrip() {
         addonsCostUsd,
         totalPerPaxUsd,
       } = store;
+
+      console.log('📦 Store data:', {
+        type,
+        level,
+        country: logistics.country,
+        city: logistics.city,
+      });
 
       // Calculate total trip cost
       const totalTripUsd = totalPerPaxUsd * logistics.pax;
@@ -68,6 +76,8 @@ export function useSaveTrip() {
         status: tripId ? 'SAVED' : 'DRAFT',
       };
 
+      console.log('📤 Sending to API:', payload);
+
       const response = await fetch('/api/trips', {
         method: 'POST',
         headers: {
@@ -76,12 +86,16 @@ export function useSaveTrip() {
         body: JSON.stringify(payload),
       });
 
+      console.log('📥 API Response status:', response.status);
+
       if (!response.ok) {
         const errorData: SaveTripError = await response.json();
+        console.error('❌ API Error:', errorData);
         throw new Error(errorData.error || 'Failed to save trip');
       }
 
       const data: SaveTripResponse = await response.json();
+      console.log('✅ Trip saved successfully:', data.trip);
       return data.trip;
     } catch (err) {
       const errorMessage =

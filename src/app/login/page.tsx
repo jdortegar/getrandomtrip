@@ -1,78 +1,85 @@
 'use client';
 
-import Navbar from '@/components/Navbar';
-import ChatFab from '@/components/chrome/ChatFab';
-import BgCarousel from '@/components/media/BgCarousel';
-import GlassCard from '@/components/ui/GlassCard';
-import { useUserStore } from '@/store/slices/userStore';
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useUserStore } from '@/store/slices/userStore';
+import AuthModal from '@/components/auth/AuthModal';
+import Hero from '@/components/Hero';
+import Section from '@/components/layout/Section';
 import type { UserRole } from '@/store/slices/userStore';
 import { dashboardPathFromRole } from '@/lib/roles';
 
 function LoginContent() {
   const { data: session, status } = useSession();
-  const { openAuth } = useUserStore();
+  const { isAuthed } = useUserStore();
   const router = useRouter();
   const search = useSearchParams();
 
-  // Abrir modal si no hay sesión
+  // Auto-redirect if authenticated
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      openAuth('signin');
-    }
-  }, [status, openAuth]);
+    if (status !== 'authenticated' && !isAuthed) return;
 
-  // Auto-redirect por rol o ?returnTo=
-  useEffect(() => {
-    if (status !== 'authenticated' || !session) return;
-
-    // Prevent redirect if already on /profile or /u/
-    const currentPath = window.location.pathname;
-    if (currentPath.startsWith('/profile') || currentPath.startsWith('/u/')) {
-      return;
-    }
-
-    const role = (session.user?.role as UserRole) ?? 'client';
+    const role = (session?.user?.role as UserRole) ?? 'client';
     const returnTo = search.get('returnTo');
-    const dest = returnTo ?? dashboardPathFromRole(role);
+    const dest = returnTo
+      ? decodeURIComponent(returnTo)
+      : dashboardPathFromRole(role);
 
-    // Decode the returnTo URL if it exists
-    const finalDest = returnTo ? decodeURIComponent(returnTo) : dest;
-    router.replace(finalDest);
-  }, [status, session, router, search]);
+    router.replace(dest);
+  }, [status, session, isAuthed, router, search]);
 
-  // Mensaje breve mientras redirige
+  // Show auth modal if not authenticated
+  const showModal = status !== 'loading' && !session && !isAuthed;
+
   return (
-    <main className="container mx-auto max-w-5xl px-4 pt-24 md:pt-28 pb-16">
-      <GlassCard>
-        <div className="p-6 text-center text-neutral-700">Redirigiendo…</div>
-      </GlassCard>
-    </main>
+    <>
+      <Hero
+        content={{
+          title: 'Bienvenido a Randomtrip',
+          subtitle: 'Inicia sesión para continuar tu aventura',
+          videoSrc: '/videos/hero-video.mp4',
+          fallbackImage: '/images/bg-playa-mexico.jpg',
+        }}
+      />
+      <Section>
+        <div className="flex justify-center items-center min-h-[400px]">
+          {status === 'loading' ? (
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          ) : (
+            <div className="text-center text-neutral-700">
+              {session || isAuthed ? 'Redirigiendo...' : 'Cargando...'}
+            </div>
+          )}
+        </div>
+      </Section>
+      <AuthModal isOpen={showModal} onClose={() => {}} defaultMode="login" />
+    </>
   );
 }
 
 export default function LoginPage() {
   return (
-    <>
-      <Navbar />
-      <div id="hero-sentinel" aria-hidden className="h-px w-px" />
-      <BgCarousel scrim={0.75} />
-
-      <Suspense
-        fallback={
-          <main className="container mx-auto max-w-5xl px-4 pt-24 md:pt-28 pb-16">
-            <GlassCard>
-              <div className="p-6 text-center text-neutral-700">Cargando…</div>
-            </GlassCard>
-          </main>
-        }
-      >
-        <LoginContent />
-      </Suspense>
-
-      <ChatFab />
-    </>
+    <Suspense
+      fallback={
+        <>
+          <Hero
+            content={{
+              title: 'Cargando...',
+              subtitle: '',
+              videoSrc: '/videos/hero-video.mp4',
+              fallbackImage: '/images/bg-playa-mexico.jpg',
+            }}
+          />
+          <Section>
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          </Section>
+        </>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

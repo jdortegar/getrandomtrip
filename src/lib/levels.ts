@@ -8,7 +8,8 @@ export const MAX_NIGHTS: Record<LevelSlug, number | 'custom'> = {
   'atelier-getaway': 'custom',
 };
 
-export const getMaxNights = (level: LevelSlug) => MAX_NIGHTS[level];
+export const getMaxNights = (level: string) =>
+  MAX_NIGHTS[level as LevelSlug] || MAX_NIGHTS['essenza'];
 
 export function parseBasePrice(displayPrice: string): number {
   const m = displayPrice?.match(/(\d{2,5})/);
@@ -23,7 +24,7 @@ export function parseBasePrice(displayPrice: string): number {
 export function validateNights(
   start?: string | Date,
   end?: string | Date,
-  level?: LevelSlug
+  level?: string,
 ): boolean {
   if (!start || !end || !level) return true; // si falta info, no bloquea
 
@@ -37,7 +38,10 @@ export function validateNights(
 
   // noches = diferencia de días
   const msPerDay = 24 * 60 * 60 * 1000;
-  const diff = Math.max(0, Math.round((ed.getTime() - sd.getTime()) / msPerDay));
+  const diff = Math.max(
+    0,
+    Math.round((ed.getTime() - sd.getTime()) / msPerDay),
+  );
   const max = getMaxNights(level);
 
   if (max === 'custom') return true;

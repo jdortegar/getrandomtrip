@@ -49,15 +49,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
+    console.log('Finding user by email:', session.user.email);
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
 
     if (!user) {
+      console.error('User not found:', session.user.email);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    console.log('User found:', user.id);
     const body = await request.json();
+    console.log('Trip data received:', body);
     const {
       id, // If provided, update existing trip
       from,
@@ -124,15 +128,19 @@ export async function POST(request: NextRequest) {
     let trip;
     if (id) {
       // Update existing trip
+      console.log('Updating trip:', id);
       trip = await prisma.trip.update({
         where: { id },
         data: tripData,
       });
+      console.log('Trip updated:', trip.id);
     } else {
       // Create new trip
+      console.log('Creating new trip for user:', user.id);
       trip = await prisma.trip.create({
         data: tripData,
       });
+      console.log('Trip created:', trip.id);
     }
 
     return NextResponse.json({ trip }, { status: id ? 200 : 201 });

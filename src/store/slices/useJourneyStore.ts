@@ -2,14 +2,26 @@
 
 import { StateCreator } from 'zustand';
 
-export type FromGate = 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws' | 'tripper';
-export type Tier = 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier';
+export type FromGate =
+  | 'couple'
+  | 'solo'
+  | 'family'
+  | 'group'
+  | 'honeymoon'
+  | 'paws'
+  | 'tripper';
+export type Tier =
+  | 'essenza'
+  | 'modo-explora'
+  | 'explora-plus'
+  | 'bivouac'
+  | 'atelier';
 
 export interface JourneyStoreState {
-  from?: FromGate;
-  type?: FromGate;
-  tier?: Tier;
-  level?: Tier;
+  from?: string;
+  type?: string;
+  tier?: string;
+  level?: string;
   tripperId?: string;
   priceKey?: string;
   pbp?: number;
@@ -44,7 +56,7 @@ export const createJourneyStore: StateCreator<JourneyStoreState> = (set) => ({
       level: level || tier || prev.level,
       tripperId,
       priceKey,
-      pbp
+      pbp,
     }));
   },
 

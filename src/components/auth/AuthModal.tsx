@@ -1,340 +1,266 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import GlassCard from '@/components/ui/GlassCard';
-import { useUserStore } from '@/store/slices/userStore';
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { X, Mail, Lock, User } from 'lucide-react';
 
-type Budget = 'low' | 'mid' | 'high' | '';
-type Traveler = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa' | '';
-type Step = 0 | 1 | 2;
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  defaultMode?: 'login' | 'register';
+}
 
-const ALL_INTERESTS = [
-  'playa',
-  'montaña',
-  'gastronomía',
-  'vida-nocturna',
-  'cultura',
-  'naturaleza',
-  'ciudad',
-  'pueblos',
-];
+export default function AuthModal({
+  isOpen,
+  onClose,
+  defaultMode = 'login',
+}: AuthModalProps) {
+  const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-const ALL_DISLIKES = ['frío', 'calor-extremo', 'multitudes', 'madrugar'];
+  // Form state
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-export default function AuthModal() {
-  // 1) Hooks del store SIEMPRE al tope
-  const {
-    isAuthed,
-    user,
-    closeAuth,
-    signInDemo,
-    upsertPrefs,
-    authModalOpen, // flag del modal en el store
-  } = useUserStore();
+  if (!isOpen) return null;
 
-  const open = authModalOpen;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
-  // 2) Hooks locales SIEMPRE, con valores neutros
-  const [step, setStep] = useState<Step>(0); // 0: sign, 1: preguntas, 2: review
-  const [travelerType, setTravelerType] = useState<Traveler>('');
-  const [interests, setInterests] = useState<string[]>([]);
-  const [dislikes, setDislikes] = useState<string[]>([]);
-  const [budget, setBudget] = useState<Budget>('');
+    try {
+      if (mode === 'register') {
+        // Register new user
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password }),
+        });
 
-  const dialogRef = useRef<HTMLDivElement | null>(null);
+        const data = await response.json();
 
-  // 3) Al abrir el modal, hidratar desde user (si existe) y decidir step inicial
-  useEffect(() => {
-    if (!open) return;
+        if (!response.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
 
-    // si ya está logueado, vamos directo a preguntas; si no, step 0
-    setStep(isAuthed ? 1 : 0);
+        // Auto-login after successful registration
+        const result = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        });
 
-    // hidratar desde user si hay datos
-    setTravelerType((user?.prefs?.travelerType as Traveler) ?? '');
-    setInterests(user?.prefs?.interests ?? []);
-    setDislikes(user?.prefs?.dislikes ?? []);
-    setBudget((user?.prefs?.budget as Budget) ?? '');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, isAuthed]);
+        if (result?.error) {
+          throw new Error('Login failed after registration');
+        }
 
-  // 4) Cerrar con Escape / click afuera (sin hooks condicionales)
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeAuth();
-    const onClick = (e: MouseEvent) => {
-      if (!dialogRef.current) return;
-      if (!dialogRef.current.contains(e.target as Node)) closeAuth();
-    };
-    document.addEventListener('keydown', onKey);
-    document.addEventListener('mousedown', onClick);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.removeEventListener('mousedown', onClick);
-    };
-  }, [open, closeAuth]);
+        // Clear form and close modal
+        setName('');
+        setEmail('');
+        setPassword('');
+        onClose();
+        window.location.reload(); // Refresh to update session
+      } else {
+        // Login existing user
+        const result = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        });
 
-  // 5) Listener global "open-auth" (compatibilidad sin @ts-ignore/@ts-expect-error)
-  useEffect(() => {
-    const h = () => {
-      const { openAuth } = useUserStore.getState() as any;
-      if (typeof openAuth === 'function') openAuth();
-    };
-    (window as any).addEventListener('open-auth', h);
-    return () => (window as any).removeEventListener('open-auth', h);
-  }, []);
+        if (result?.error) {
+          throw new Error('Invalid email or password');
+        }
 
-  // 6) Si está cerrado, retornar null (después de todos los hooks declarados)
-  if (!open) return null;
-
-  // 7) Handlers
-
-  const toggleIn = (v: string) =>
-    setInterests((curr) =>
-      curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v],
-    );
-
-  const toggleDis = (v: string) =>
-    setDislikes((curr) =>
-      curr.includes(v) ? curr.filter((i) => i !== v) : [...curr, v],
-    );
-
-  const savePrefs = () => {
-    upsertPrefs?.({
-      travelerType: travelerType || undefined,
-      interests,
-      dislikes,
-      budget: (budget || undefined) as any,
-    });
-    setStep(2);
+        // Clear form and close modal
+        setEmail('');
+        setPassword('');
+        onClose();
+        window.location.reload(); // Refresh to update session
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const finish = () => {
-    try {
-      if (location.pathname.includes('/journey/basic-config')) {
-        console.info('¡Listo! Preferencias guardadas 👌');
-      }
-    } catch {}
-    closeAuth();
+  const handleGoogleSignIn = async () => {
+    await signIn('google', { callbackUrl: window.location.href });
+  };
+
+  const toggleMode = () => {
+    setMode(mode === 'login' ? 'register' : 'login');
+    setError('');
   };
 
   return (
-    <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div ref={dialogRef} className="w-full max-w-lg">
-        <GlassCard>
-          <div className="p-5">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-neutral-900">
-                {step === 0 && 'Bienvenido/a'}
-                {step === 1 && 'Cuéntanos sobre tus gustos'}
-                {step === 2 && '¡Todo listo!'}
-              </h2>
-              <button
-                aria-label="Cerrar"
-                onClick={closeAuth}
-                className="rounded-lg p-2 hover:bg-neutral-100"
-              >
-                ✕
-              </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors z-10"
+          aria-label="Cerrar"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="p-8">
+          {/* Header */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-neutral-900 font-jost">
+              {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+            </h2>
+            <p className="text-sm text-neutral-600 mt-2">
+              {mode === 'login'
+                ? 'Ingresa a tu cuenta para continuar'
+                : 'Crea tu cuenta para empezar'}
+            </p>
+          </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Name field (only for register) */}
+            {mode === 'register' && (
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Nombre completo
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                  <Input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10"
+                    placeholder="Juan Pérez"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Email field */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                  placeholder="tu@email.com"
+                  required
+                />
+              </div>
             </div>
 
-            {/* Body */}
-            <div className="mt-4">
-              {step === 0 && (
-                <div className="space-y-4">
-                  <p className="text-sm text-neutral-700">
-                    Inicia sesión o crea tu cuenta (demo).
-                  </p>
-                  <div className="grid gap-2">
-                    <button
-                      onClick={() => signInDemo('client')}
-                      className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-                    >
-                      Continuar con email (demo) - User
-                    </button>
-                    <button
-                      onClick={() => signInDemo('tripper')}
-                      className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50"
-                    >
-                      Continuar con email (demo) - Tripper
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {step === 1 && (
-                <div className="space-y-6">
-                  <div>
-                    <div className="text-sm font-medium text-neutral-900 mb-2">
-                      ¿Cómo viajás normalmente?
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {(
-                        [
-                          'solo',
-                          'pareja',
-                          'familia',
-                          'amigos',
-                          'empresa',
-                        ] as Traveler[]
-                      ).map((t) => (
-                        <button
-                          key={t}
-                          onClick={() => setTravelerType(t)}
-                          className={
-                            'rounded-full border px-3 py-1 text-sm ' +
-                            (travelerType === t
-                              ? 'border-violet-300 bg-violet-50 text-violet-900'
-                              : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50')
-                          }
-                        >
-                          {t}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-sm font-medium text-neutral-900 mb-2">
-                      ¿Qué te gusta?
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {ALL_INTERESTS.map((v) => (
-                        <button
-                          type="button"
-                          key={v}
-                          onClick={() => toggleIn(v)}
-                          className={
-                            'rounded-full border px-3 py-1 text-sm ' +
-                            (interests.includes(v)
-                              ? 'border-violet-300 bg-violet-50 text-violet-900'
-                              : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50')
-                          }
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-sm font-medium text-neutral-900 mb-2">
-                      ¿Qué evitás?
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {ALL_DISLIKES.map((v) => (
-                        <button
-                          type="button"
-                          key={v}
-                          onClick={() => toggleDis(v)}
-                          className={
-                            'rounded-full border px-3 py-1 text-sm ' +
-                            (dislikes.includes(v)
-                              ? 'border-amber-300 bg-amber-50 text-amber-900'
-                              : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50')
-                          }
-                        >
-                          {v}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-sm font-medium text-neutral-900 mb-2">
-                      Presupuesto típico
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {(['low', 'mid', 'high'] as Budget[]).map((b) => (
-                        <button
-                          key={b}
-                          onClick={() => setBudget(b)}
-                          className={
-                            'rounded-full border px-3 py-1 text-sm ' +
-                            (budget === b
-                              ? 'border-violet-300 bg-violet-50 text-violet-900'
-                              : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-50')
-                          }
-                        >
-                          {b}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-2 text-sm">
-                  <div className="text-neutral-700">
-                    Listo, {user?.name ?? 'Randomtripper'}.
-                  </div>
-                  <div>
-                    <span className="font-medium text-neutral-900">Tipo:</span>{' '}
-                    {travelerType || '—'}
-                  </div>
-                  <div>
-                    <span className="font-medium text-neutral-900">Likes:</span>{' '}
-                    {interests.length ? interests.join(', ') : '—'}
-                  </div>
-                  <div>
-                    <span className="font-medium text-neutral-900">
-                      Dislikes:
-                    </span>{' '}
-                    {dislikes.length ? dislikes.join(', ') : '—'}
-                  </div>
-                  <div>
-                    <span className="font-medium text-neutral-900">
-                      Budget:
-                    </span>{' '}
-                    {budget || '—'}
-                  </div>
-                </div>
-              )}
+            {/* Password field */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10"
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                />
+              </div>
             </div>
 
-            {/* Footer */}
-            <div className="mt-6 flex justify-between">
-              <button
-                className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-neutral-900 hover:bg-neutral-50 disabled:opacity-50"
-                onClick={() => setStep((s) => (s > 0 ? ((s - 1) as Step) : 0))}
-                disabled={step === 0}
-              >
-                Atrás
-              </button>
+            {/* Submit button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full"
+              size="lg"
+            >
+              {isLoading
+                ? 'Cargando...'
+                : mode === 'login'
+                  ? 'Iniciar Sesión'
+                  : 'Crear Cuenta'}
+            </Button>
+          </form>
 
-              {step === 0 && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => signInDemo('client')}
-                    className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
-                  >
-                    Continuar
-                  </button>
-                </div>
-              )}
-
-              {step === 1 && (
-                <button
-                  onClick={savePrefs}
-                  className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
-                >
-                  Guardar preferencias
-                </button>
-              )}
-
-              {step === 2 && (
-                <button
-                  onClick={finish}
-                  className="rounded-xl bg-violet-600 px-4 py-2 text-white hover:bg-violet-500"
-                >
-                  Terminar
-                </button>
-              )}
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-4 text-neutral-500">
+                o continúa con
+              </span>
             </div>
           </div>
-        </GlassCard>
+
+          {/* Google Sign In */}
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full text-primary"
+            size="lg"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+          >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="currentColor"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="currentColor"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              />
+              <path
+                fill="currentColor"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              />
+            </svg>
+            Continuar con Google
+          </Button>
+
+          {/* Toggle mode */}
+          <div className="mt-6 text-center text-sm">
+            <span className="text-neutral-600">
+              {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+            </span>{' '}
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-primary hover:text-primary/90 font-medium transition-colors"
+            >
+              {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

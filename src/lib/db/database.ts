@@ -4,53 +4,17 @@ import type { Prisma } from '@prisma/client';
 // ENHANCED TYPES WITH RELATIONS
 // ========================================
 
-export type UserWithBookings = Prisma.UserGetPayload<{
+export type UserWithTrips = Prisma.UserGetPayload<{
   include: {
-    bookings: true;
+    trips: true;
     reviews: true;
   };
 }>;
 
-export type BookingWithDetails = Prisma.BookingGetPayload<{
+export type TripWithDetails = Prisma.TripGetPayload<{
   include: {
     user: true;
-    addonSelections: {
-      include: {
-        addon: true;
-      };
-    };
-    bookingFilters: {
-      include: {
-        filter: true;
-      };
-    };
-    bookingPremiumFilters: {
-      include: {
-        premiumFilter: true;
-      };
-    };
     payment: true;
-    tripSegments: true;
-  };
-}>;
-
-export type TripperWithTiers = Prisma.TripperGetPayload<{
-  include: {
-    tiers: true;
-    blogPosts: true;
-  };
-}>;
-
-export type AddonWithProvider = Prisma.AddonGetPayload<{
-  include: {
-    provider: true;
-  };
-}>;
-
-export type BlogPostWithDetails = Prisma.BlogPostGetPayload<{
-  include: {
-    tripper: true;
-    comments: true;
   };
 }>;
 
@@ -74,27 +38,30 @@ export interface UpdateUserPrefsData {
   dislikes?: string[];
 }
 
-export interface CreateBookingData {
-  from: string;
-  travelType: string;
-  experienceLevel: string;
-  origin: string;
-  originCity: string;
-  startDate: string;
-  endDate?: string;
-  nights?: number;
-  durationNights?: number;
-  travelerCount: number;
-  destination?: string;
-  destinationCountry?: string;
-  destinationCity?: string;
-  basePrice: number;
-  filtersCost: number;
-  addonsCost: number;
-  totalPrice: number;
-  displayPrice: string;
-  activeTab?: string;
-  selectedAddons?: string[]; // legacy field
+export interface CreateTripData {
+  from?: string;
+  type: string;
+  level: string;
+  country: string;
+  city: string;
+  startDate?: Date;
+  endDate?: Date;
+  nights: number;
+  pax: number;
+  transport?: string;
+  climate?: string;
+  maxTravelTime?: string;
+  departPref?: string;
+  arrivePref?: string;
+  avoidDestinations?: string[];
+  addons?: any;
+  basePriceUsd: number;
+  displayPrice?: string;
+  filtersCostUsd?: number;
+  addonsCostUsd?: number;
+  totalPerPaxUsd?: number;
+  totalTripUsd?: number;
+  status?: string;
 }
 
 export interface CreateReviewData {
@@ -105,68 +72,10 @@ export interface CreateReviewData {
   destination: string;
 }
 
-export interface CreateProviderData {
-  name: string;
-  description?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
-  companyType?: string;
-  country?: string;
-  city?: string;
-  logo?: string;
-  tags?: string[];
-}
-
-export interface CreateAddonData {
-  name: string;
-  description?: string;
-  category: string;
-  price: number;
-  currency?: string;
-  unit?: string;
-  providerId: string;
-  image?: string;
-  icon?: string;
-  tags?: string[];
-  serviceType?: string;
-  duration?: string;
-  location?: string;
-}
-
-export interface CreateFilterData {
-  key: string;
-  name: string;
-  description?: string;
-  category: string;
-  price?: number;
-  currency?: string;
-  icon?: string;
-  options?: any[];
-}
-
-export interface CreateBlogPostData {
-  tripperId: string;
-  title: string;
-  slug: string;
-  excerpt?: string;
-  content: string;
-  featuredImage?: string;
-  gallery?: any[];
-  metaTitle?: string;
-  metaDescription?: string;
-  tags?: string[];
-  category?: string;
-  readTime?: number;
-  destination?: string;
-  country?: string;
-  city?: string;
-  relatedTripType?: string;
-  experienceLevel?: string;
-}
+// Legacy model interfaces removed - no longer in schema
 
 export interface CreatePaymentData {
-  bookingId: string;
+  tripId: string;
   provider: string;
   providerPaymentId?: string;
   providerPreferenceId?: string;
@@ -183,21 +92,15 @@ export interface CreatePaymentData {
 // FILTER TYPES
 // ========================================
 
-export interface BookingFilters {
+export interface TripFilters {
   status?: string[];
-  travelType?: string[];
-  experienceLevel?: string[];
+  type?: string[];
+  level?: string[];
   dateFrom?: string;
   dateTo?: string;
   minPrice?: number;
   maxPrice?: number;
-}
-
-export interface TripperFilters {
-  tierLevel?: string[];
-  destinations?: string[];
-  interests?: string[];
-  languages?: string[];
+  country?: string;
 }
 
 // ========================================
@@ -216,11 +119,11 @@ export interface SearchParams {
 // STATISTICS TYPES
 // ========================================
 
-export interface BookingStats {
+export interface TripStats {
   total: number;
   byStatus: Record<string, number>;
-  byTravelType: Record<string, number>;
-  byExperienceLevel: Record<string, number>;
+  byType: Record<string, number>;
+  byLevel: Record<string, number>;
   revenue: {
     total: number;
     average: number;
@@ -235,7 +138,7 @@ export interface UserStats {
   total: number;
   active: number;
   newThisMonth: number;
-  withBookings: number;
+  withTrips: number;
 }
 
 // ========================================

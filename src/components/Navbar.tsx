@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { Phone, User, Search } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
 import { useScrollDetection } from '@/hooks/useScrollDetection';
-import EnhancedAuthModal from '@/components/auth/EnhancedAuthModal';
+import AuthModal from '@/components/auth/AuthModal';
+import { useAuthModal } from '@/hooks/useAuthModal';
 import { NavbarProfile } from './NavbarProfile';
 import {
   NAVBAR_CONSTANTS,
@@ -24,7 +25,8 @@ export interface NavbarProps {
 // Main Navbar Component
 export default function Navbar({ variant = 'auto' }: NavbarProps) {
   const overlay = useScrollDetection({ variant });
-  const { isAuthed, user, signOut, openAuth, session } = useUserStore();
+  const { isAuthed, user, signOut, session } = useUserStore();
+  const { isOpen, mode, close, openLogin } = useAuthModal();
 
   const headerClass = useMemo(() => {
     const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
@@ -89,7 +91,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
                 <button
                   aria-label="Iniciar sesión"
                   className="p-2 rounded-lg hover:bg-white/10"
-                  onClick={() => openAuth()}
+                  onClick={() => openLogin()}
                 >
                   <User className="h-5 w-5" />
                 </button>
@@ -107,7 +109,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
         </nav>
       </header>
 
-      <EnhancedAuthModal />
+      <AuthModal isOpen={isOpen} onClose={close} defaultMode={mode} />
     </>
   );
 }

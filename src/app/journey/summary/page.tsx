@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 
 import ChatFab from '@/components/chrome/ChatFab';
@@ -25,19 +25,31 @@ import { useUserStore } from '@/store/slices/userStore';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
-export default function SummaryPage() {
+function SummaryPageContent() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { isAuthed } = useUserStore();
   const { saveTrip, isLoading: isSaving, error: saveError } = useSaveTrip();
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
 
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const {
+    basePriceUsd,
+    displayPrice,
+    logistics,
+    filters,
+    addons,
+    level,
+    type,
+  } = useStore();
+
+  const { tags } = usePlanData();
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (status === 'loading') return;
 
     if (!session && !isAuthed) {
-      // Save current path to return after login
       const currentPath = window.location.pathname + window.location.search;
       router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
     }
@@ -84,16 +96,8 @@ export default function SummaryPage() {
   if (!session && !isAuthed) {
     return null;
   }
-  const {
-    basePriceUsd,
-    displayPrice,
-    logistics,
-    filters,
-    addons,
-    level,
-    type,
-  } = useStore();
 
+  // Calculate pricing (after auth check)
   const pax = logistics.pax || 1;
   const basePerPax = basePriceUsd || 0;
 
@@ -245,8 +249,6 @@ export default function SummaryPage() {
     }
     router.push('/journey/checkout');
   };
-
-  const { tags } = usePlanData();
 
   const ItemBlock = ({ title, value }: { title: string; value: string }) => (
     <div className="text-neutral-600 text-sm  flex flex-col px-2 py-1">
@@ -468,5 +470,31 @@ export default function SummaryPage() {
         <ChatFab />
       </Section>
     </>
+  );
+}
+
+export default function SummaryPage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Hero
+            content={{
+              title: 'Cargando...',
+              subtitle: '',
+              videoSrc: '/videos/hero-video.mp4',
+              fallbackImage: '/images/bg-playa-mexico.jpg',
+            }}
+          />
+          <Section>
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          </Section>
+        </>
+      }
+    >
+      <SummaryPageContent />
+    </Suspense>
   );
 }
