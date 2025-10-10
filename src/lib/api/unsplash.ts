@@ -1,55 +1,148 @@
-// Predefined landmark images for American countries (using Pexels free images)
-export const LANDMARK_IMAGES: Record<string, string> = {
-  // North America
-  US: 'https://images.pexels.com/photos/64271/queen-of-liberty-statue-of-liberty-new-york-liberty-statue-64271.jpeg?auto=compress&cs=tinysrgb&w=800', // Statue of Liberty NY
-  CA: 'https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&cs=tinysrgb&w=800', // CN Tower Toronto
-  MX: 'https://images.pexels.com/photos/2412609/pexels-photo-2412609.jpeg?auto=compress&cs=tinysrgb&w=800', // Chichen Itza
+// Unsplash API configuration
+const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || '';
 
-  // South America
-  BR: 'https://images.pexels.com/photos/351283/pexels-photo-351283.jpeg?auto=compress&cs=tinysrgb&w=800', // Christ the Redeemer Rio
-  AR: 'https://images.pexels.com/photos/4388164/pexels-photo-4388164.jpeg?auto=compress&cs=tinysrgb&w=800', // Buenos Aires Obelisco
-  PE: 'https://images.pexels.com/photos/2356059/pexels-photo-2356059.jpeg?auto=compress&cs=tinysrgb&w=800', // Machu Picchu
-  CL: 'https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=800', // Torres del Paine
-  CO: 'https://images.pexels.com/photos/3299905/pexels-photo-3299905.jpeg?auto=compress&cs=tinysrgb&w=800', // Cartagena Colombia
-  UY: 'https://images.pexels.com/photos/7414068/pexels-photo-7414068.jpeg?auto=compress&cs=tinysrgb&w=800', // Montevideo
-  VE: 'https://images.pexels.com/photos/12944976/pexels-photo-12944976.jpeg?auto=compress&cs=tinysrgb&w=800', // Angel Falls Venezuela
-  EC: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800', // Quito Ecuador
-  BO: 'https://images.pexels.com/photos/2583852/pexels-photo-2583852.jpeg?auto=compress&cs=tinysrgb&w=800', // Salar de Uyuni Bolivia
-  PY: 'https://images.pexels.com/photos/16128621/pexels-photo-16128621.jpeg?auto=compress&cs=tinysrgb&w=800', // Asunción Paraguay
-  GY: 'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=800', // Kaieteur Falls Guyana
-  SR: 'https://images.pexels.com/photos/1172064/pexels-photo-1172064.jpeg?auto=compress&cs=tinysrgb&w=800', // Paramaribo Suriname
-  GF: 'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=800', // Kourou French Guiana
-
-  // Central America & Caribbean
-  GT: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800', // Tikal Guatemala
-  BZ: 'https://images.pexels.com/photos/1430676/pexels-photo-1430676.jpeg?auto=compress&cs=tinysrgb&w=800', // Great Blue Hole Belize
-  SV: 'https://images.pexels.com/photos/2166711/pexels-photo-2166711.jpeg?auto=compress&cs=tinysrgb&w=800', // El Salvador volcano
-  HN: 'https://images.pexels.com/photos/1430676/pexels-photo-1430676.jpeg?auto=compress&cs=tinysrgb&w=800', // Roatán Honduras
-  NI: 'https://images.pexels.com/photos/2166711/pexels-photo-2166711.jpeg?auto=compress&cs=tinysrgb&w=800', // Granada Nicaragua
-  CR: 'https://images.pexels.com/photos/2166711/pexels-photo-2166711.jpeg?auto=compress&cs=tinysrgb&w=800', // Arenal Volcano Costa Rica
-  PA: 'https://images.pexels.com/photos/2351702/pexels-photo-2351702.jpeg?auto=compress&cs=tinysrgb&w=800', // Panama Canal
-  CU: 'https://images.pexels.com/photos/2373203/pexels-photo-2373203.jpeg?auto=compress&cs=tinysrgb&w=800', // Havana Cuba
-  JM: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Dunn's River Falls Jamaica
-  HT: 'https://images.pexels.com/photos/1430676/pexels-photo-1430676.jpeg?auto=compress&cs=tinysrgb&w=800', // Citadelle Laferrière Haiti
-  DO: 'https://images.pexels.com/photos/1430676/pexels-photo-1430676.jpeg?auto=compress&cs=tinysrgb&w=800', // Punta Cana Dominican Republic
-  TT: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Maracas Beach Trinidad
-  BB: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Harrison's Cave Barbados
-  LC: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // The Pitons Saint Lucia
-  VC: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // La Soufrière St. Vincent
-  GD: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Grand Anse Beach Grenada
-  AG: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Nelson's Dockyard Antigua
-  KN: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Brimstone Hill St. Kitts
-  DM: 'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=800', // Boiling Lake Dominica
-  BS: 'https://images.pexels.com/photos/3155666/pexels-photo-3155666.jpeg?auto=compress&cs=tinysrgb&w=800', // Pink Sands Beach Bahamas
-};
-
-// Get landmark image for a country
-export function getLandmarkImageForCountry(countryCode: string): string {
-  return LANDMARK_IMAGES[countryCode] || LANDMARK_IMAGES['US']; // Fallback to US image
+interface UnsplashPhoto {
+  id: string;
+  urls: {
+    regular: string;
+    small: string;
+  };
+  alt_description?: string;
 }
 
-// Legacy exports for backward compatibility
-export const getLandmarkForCountry = (countryCode: string) => ({
-  landmark: 'Iconic Landmark',
-  description: `Beautiful landmark in ${countryCode}`,
-});
+interface UnsplashSearchResponse {
+  results: UnsplashPhoto[];
+  total: number;
+}
+
+// Cache for images to avoid repeated API calls
+const imageCache: Record<string, string> = {};
+
+// Fallback images by country (using Pexels free images)
+const FALLBACK_IMAGES: Record<string, string> = {
+  US: 'https://images.pexels.com/photos/64271/queen-of-liberty-statue-of-liberty-new-york-liberty-statue-64271.jpeg?auto=compress&cs=tinysrgb&w=800',
+  CA: 'https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&cs=tinysrgb&w=800',
+  MX: 'https://images.pexels.com/photos/2412609/pexels-photo-2412609.jpeg?auto=compress&cs=tinysrgb&w=800',
+  BR: 'https://images.pexels.com/photos/351283/pexels-photo-351283.jpeg?auto=compress&cs=tinysrgb&w=800',
+  AR: 'https://images.pexels.com/photos/4388164/pexels-photo-4388164.jpeg?auto=compress&cs=tinysrgb&w=800',
+  PE: 'https://images.pexels.com/photos/2356059/pexels-photo-2356059.jpeg?auto=compress&cs=tinysrgb&w=800',
+  CL: 'https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=800',
+  CO: 'https://images.pexels.com/photos/3299905/pexels-photo-3299905.jpeg?auto=compress&cs=tinysrgb&w=800',
+  // Add more countries as needed
+  GT: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  BZ: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  SV: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  HN: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  NI: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  CR: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  PA: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  CU: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  JM: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  HT: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  DO: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  TT: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  BB: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  LC: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  VC: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  GD: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  AG: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  KN: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  DM: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  BS: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  VE: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  GY: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  SR: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  GF: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  EC: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  BO: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  UY: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+  PY: 'https://images.pexels.com/photos/2232/landscape-nature-man-person.jpg?auto=compress&cs=tinysrgb&w=800',
+};
+
+/**
+ * Search for city images using Unsplash API
+ */
+async function searchCityImage(
+  cityName: string,
+  countryCode: string,
+): Promise<string> {
+  const cacheKey = `${cityName}-${countryCode}`;
+
+  console.log(`🔍 Searching image for: ${cityName}, ${countryCode}`);
+
+  // Return cached image if available
+  if (imageCache[cacheKey]) {
+    console.log(`📦 Using cached image for: ${cityName}`);
+    return imageCache[cacheKey];
+  }
+
+  // Check if API key is available
+  if (!UNSPLASH_ACCESS_KEY) {
+    console.warn(
+      `⚠️ No Unsplash API key found for ${cityName}, using fallback`,
+    );
+    const fallback = FALLBACK_IMAGES[countryCode] || FALLBACK_IMAGES['US'];
+    imageCache[cacheKey] = fallback;
+    return fallback;
+  }
+
+  try {
+    const query = `${cityName} ${countryCode} landmark`;
+    console.log(`🌐 Unsplash API query: "${query}"`);
+
+    const url = new URL('https://api.unsplash.com/search/photos');
+    url.searchParams.set('query', query);
+    url.searchParams.set('per_page', '1');
+    url.searchParams.set('orientation', 'landscape');
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+        'Accept-Version': 'v1',
+      },
+    });
+
+    console.log(`📡 Unsplash API response status: ${response.status}`);
+
+    if (!response.ok) {
+      throw new Error(`Unsplash API error: ${response.status}`);
+    }
+
+    const data: UnsplashSearchResponse = await response.json();
+    console.log(
+      `📊 Unsplash API results: ${data.results?.length || 0} images found`,
+    );
+
+    if (data.results && data.results.length > 0) {
+      const imageUrl = data.results[0].urls.regular;
+      console.log(`✅ Found Unsplash image for ${cityName}: ${imageUrl}`);
+      imageCache[cacheKey] = imageUrl;
+      return imageUrl;
+    }
+  } catch (error) {
+    console.warn(`❌ Failed to fetch image for ${cityName}:`, error);
+  }
+
+  // Fallback to country image
+  const fallback = FALLBACK_IMAGES[countryCode] || FALLBACK_IMAGES['US'];
+  console.log(`🔄 Using fallback image for ${cityName}: ${fallback}`);
+  imageCache[cacheKey] = fallback;
+  return fallback;
+}
+
+/**
+ * Get image for a city (async)
+ */
+export async function getCityImage(
+  cityName: string,
+  countryCode: string,
+): Promise<string> {
+  return await searchCityImage(cityName, countryCode);
+}
+
+/**
+ * Get landmark image for a country (fallback/sync)
+ */
+export function getLandmarkImageForCountry(countryCode: string): string {
+  return FALLBACK_IMAGES[countryCode] || FALLBACK_IMAGES['US'];
+}

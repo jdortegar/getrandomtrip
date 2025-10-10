@@ -76,7 +76,7 @@ export default function Presupuesto({
             </div>
 
             {/* Pricing Category */}
-            <div className="h-[60px] text-left">
+            <div className="h-[80px] text-left">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Precio por persona
               </h4>
@@ -85,44 +85,24 @@ export default function Presupuesto({
               </div>
             </div>
 
-            <div className="h-[40px] flex items-center">
-              <h4 className="font-semibold text-primary-700 font-jost text-sm">
-                Duración del viaje
-              </h4>
-            </div>
-            <div className="border-t border-primary-200 my-2"></div>
-
-            <div className="h-[40px] items-center flex">
-              <h4 className="font-semibold text-primary-700 font-jost text-sm">
-                Transporte
-              </h4>
-            </div>
-            <div className="border-t border-primary-200 my-2"></div>
-
-            <div className="h-[40px] items-center flex">
-              <h4 className="font-semibold text-primary-700 font-jost text-sm">
-                Alojamiento
-              </h4>
-            </div>
-            <div className="border-t border-primary-200 my-2"></div>
-
-            <div className="h-[40px] items-center flex">
-              <h4 className="font-semibold text-primary-700 font-jost text-sm">
-                Experiencias únicas
-              </h4>
-            </div>
-            <div className="border-t border-primary-200 my-2"></div>
-            <div className="h-[40px] items-center flex">
-              <h4 className="font-semibold text-primary-700 font-jost text-sm">
-                Extras
-              </h4>
-            </div>
-            <div className="border-t border-primary-200 my-2"></div>
-            <div className="h-[40px] items-center flex">
-              <h4 className="font-semibold text-primary-700 font-jost text-sm">
-                Destination Decoded
-              </h4>
-            </div>
+            {[
+              'Duración del viaje',
+              'Destinos',
+              'Transporte',
+              'Alojamiento',
+              'Experiencias únicas',
+              'Extras',
+              'Destination Decoded',
+            ].map((feature) => (
+              <div key={feature}>
+                <div className="h-[40px] flex items-center">
+                  <h4 className="font-semibold text-primary-700 font-jost text-sm">
+                    {feature}
+                  </h4>
+                </div>
+                <div className="border-t border-primary-200 my-2"></div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -145,7 +125,7 @@ export default function Presupuesto({
                 </div>
 
                 {/* Pricing */}
-                <div className="text-center h-[60px]">
+                <div className="text-center h-[80px]">
                   <div className="font-bold text-xl text-primary-700 font-jost">
                     {tier.priceLabel}
                   </div>

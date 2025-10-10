@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '@/store/store';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { Button } from '@/components/ui/button';
 import Badge from '@/components/badge';
-import CountrySelector from '../CountrySelector';
+import CitySearchSelector from './CitySearchSelector';
+import type { AvoidCity } from '@/lib/helpers/avoid-cities';
 
 type Props = { open: boolean; onClose: () => void };
 
@@ -27,8 +28,8 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
   const current = filters.avoidDestinations || [];
   const max = 15;
 
-  const add = (raw: string) => {
-    const name = raw.trim();
+  const add = (cityFullName: string) => {
+    const name = cityFullName.trim();
     if (!name) return;
     const pool = [...current, ...local];
     const exists = pool.some((n) => n.toLowerCase() === name.toLowerCase());
@@ -39,6 +40,11 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
     if (pool.length >= max) return;
     setLocal((prev) => [...prev, name]);
     setQuery('');
+  };
+
+  const handleCitySelect = (city: AvoidCity) => {
+    const cityFullName = `${city.name}, ${city.country}`;
+    add(cityFullName);
   };
 
   const removeLocal = (name: string) => {
@@ -77,9 +83,10 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
         </p>
 
         <div className="flex flex-col md:flex-row items-center gap-4">
-          <CountrySelector
+          <CitySearchSelector
             value={query}
             onChange={setQuery}
+            onSelect={handleCitySelect}
             onKeyDown={onKeyDown}
             className="flex-1"
           />
@@ -101,7 +108,7 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
                   item={{
                     key: `cur-${n}`,
                     value: n,
-                    label: 'Pais',
+                    label: 'Ciudad',
                   }}
                 />
               ))}
@@ -112,7 +119,7 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
                   item={{
                     key: `loc-${n}`,
                     value: n,
-                    label: 'Pais',
+                    label: 'Ciudad',
                     onRemove: () => removeLocal(n),
                   }}
                 />

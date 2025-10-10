@@ -131,7 +131,9 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
           selected={selectedDay}
           onSelect={handleDayClick}
           numberOfMonths={2}
-          disabled={{ before: new Date() }}
+          disabled={{
+            before: new Date(new Date().setDate(new Date().getDate() + 7)),
+          }}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
           locale={es}
@@ -142,6 +144,9 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
             chevron: `fill-primary`,
           }}
         />
+        <p className="text-sm text-gray-500 mt-2">
+          Fechas disponibles a partir de 7 días.
+        </p>
       </div>
     </div>
   );

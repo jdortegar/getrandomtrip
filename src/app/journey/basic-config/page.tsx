@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import SelectionsBar from '@/components/journey/SelectionsBar';
 import { JourneyForm } from '@/components/journey/JourneyForm';
 import SummaryCard from '@/components/journey/SummaryCard';
@@ -14,11 +15,16 @@ export default function Page({
 }: {
   searchParams: Record<string, string>;
 }) {
-  const { activeTab } = useStore();
+  const { activeTab, setPartial } = useStore();
   const displayPrice = decodeURIComponent(searchParams.price || '');
 
   // Initialize journey state from URL params
   useInitJourney(searchParams, displayPrice);
+
+  // Always reset to Step 1 when landing on this page
+  useEffect(() => {
+    setPartial({ activeTab: 'logistics' });
+  }, [setPartial]);
 
   return (
     <>

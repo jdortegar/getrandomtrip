@@ -7,7 +7,8 @@ import { useStore } from '@/store/store';
 // Updated to work with countries data and landmarks
 interface AvoidSuggestion {
   slug: string;
-  name: string;
+  city: string;
+  country: string;
   image: string;
   landmark?: string;
   description?: string;
@@ -25,18 +26,18 @@ export default function DestinationCard({
 
   const selected = filters.avoidDestinations ?? [];
   const isSelected = selected.some(
-    (n) => n.toLowerCase() === suggestion.name.toLowerCase(),
+    (n) => n.toLowerCase() === suggestion.city.toLowerCase(),
   );
 
   const toggle = () => {
     let next = selected;
     if (isSelected) {
       next = selected.filter(
-        (n) => n.toLowerCase() !== suggestion.name.toLowerCase(),
+        (n) => n.toLowerCase() !== suggestion.city.toLowerCase(),
       );
     } else {
       if (selected.length >= 15) return; // límite duro
-      next = [...selected, suggestion.name];
+      next = [...selected, suggestion.city];
     }
 
     // Actualiza store
@@ -63,7 +64,7 @@ export default function DestinationCard({
       {suggestion.image ? (
         <Img
           src={suggestion.image}
-          alt={suggestion.name}
+          alt={suggestion.city}
           className="absolute inset-0 h-full w-full object-cover aspect-square"
           width={300} // Assuming a reasonable default width for aspect-[4/5]
           height={300} // Assuming a reasonable default height for aspect-[4/5]
@@ -71,16 +72,17 @@ export default function DestinationCard({
       ) : null}
 
       {/* Overlay para legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
+      <div className="absolute inset-0 bg-black/70" />
 
       {/* Nombre y Landmark */}
-      <div className="absolute bottom-2 left-2 right-2 text-white drop-shadow">
-        <div className="font-semibold text-sm">{suggestion.name}</div>
+      <div className="absolute bottom-2 left-2 right-2 text-white drop-shadow flex flex-col">
+        <div className="font-semibold text-xl">{suggestion.city}</div>
+        <div className="font-semibold text-sm">{suggestion.country}</div>
       </div>
 
       {/* Indicador seleccionado */}
       {isSelected && (
-        <div className="absolute top-2 right-2 h-7 w-7 rounded-full bg-primary text-white flex items-center justify-center shadow">
+        <div className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white text-primary flex items-center justify-center shadow">
           <Check size={16} />
         </div>
       )}

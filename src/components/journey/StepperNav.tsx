@@ -21,7 +21,8 @@ export default function StepperNav({
   const { type, level, basePriceUsd } = useStore();
 
   const goPrev = () => {
-    if (currentStep === 0) {
+    if (currentStep === 1) {
+      router.back();
       return;
     }
     onStepChange(currentStep - 1);

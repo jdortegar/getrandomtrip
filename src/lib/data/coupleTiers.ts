@@ -24,6 +24,7 @@ export const coupleTiers: CoupleTier[] = [
     priceFootnote: '· por persona',
     features: [
       { label: 'Duración', text: 'Máx 2 noches' },
+      { label: 'Destinos', text: 'Ciudades Nacionales' },
       {
         label: 'Transporte',
         text: 'Low cost (buses o vuelos off-peak).',
@@ -55,6 +56,7 @@ export const coupleTiers: CoupleTier[] = [
     priceFootnote: '· por persona',
     features: [
       { label: 'Duración', text: 'Hasta 3 noches' },
+      { label: 'Destinos', text: 'Ciudades Nacionales y Limitrofes' },
       {
         label: 'Transporte',
         text: 'Multimodal, horarios flexibles.',
@@ -87,6 +89,10 @@ export const coupleTiers: CoupleTier[] = [
     features: [
       { label: 'Duración', text: 'Hasta 4 noches' },
       {
+        label: 'Destinos',
+        text: 'Ciudades Nacionales, Limitrofes y Regionales',
+      },
+      {
         label: 'Transporte',
         text: 'Multimodal.',
         footnote:
@@ -115,6 +121,10 @@ export const coupleTiers: CoupleTier[] = [
     priceFootnote: '· por persona',
     features: [
       { label: 'Duración', text: 'Hasta 5 noches' },
+      {
+        label: 'Destinos',
+        text: 'Todo el continente',
+      },
       {
         label: 'Transporte',
         text: 'Multimodal.',
@@ -146,6 +156,7 @@ export const coupleTiers: CoupleTier[] = [
     priceFootnote: '· por persona',
     features: [
       { label: 'Duración', text: 'Customizable' },
+      { label: 'Destinos', text: 'Customizable' },
       { label: 'Transporte', text: 'Multimodal / a medida.' },
       { label: 'Fechas', text: 'Sin bloqueos.' },
       {

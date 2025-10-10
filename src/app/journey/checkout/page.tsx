@@ -31,27 +31,6 @@ export default function CheckoutPage() {
     }
   }, [session, isAuthed, status, router]);
 
-  // Show loading while checking auth
-  if (status === 'loading') {
-    return (
-      <>
-        <Hero
-          content={{
-            title: 'Cargando...',
-            subtitle: 'Verificando tu sesión',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
-          }}
-        />
-        <Section>
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        </Section>
-      </>
-    );
-  }
-
   // Don't render if not authenticated (will redirect)
   if (!session && !isAuthed) {
     return null;
@@ -158,7 +137,7 @@ export default function CheckoutPage() {
               </div>
 
               <Button className="w-full" onClick={goConfirm} size="lg">
-                Pagar ahora (demo)
+                Pagar
               </Button>
 
               <p className="text-xs text-neutral-500 text-center mt-4">
