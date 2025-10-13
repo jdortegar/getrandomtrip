@@ -7,16 +7,16 @@ import { premiumPackages } from '@/lib/premiumPackages';
 import AppleCard from '@/components/AppleCard';
 import AppleButton from '@/components/AppleButton';
 import AddonOption from '@/components/AddonOption';
+import { ADDONS, type Addon } from '@/data/addons-catalog';
 
-interface Addon {
+// Legacy local addons - keeping for backwards compatibility
+const legacyAddons: Array<{
   id: string;
   title: string;
   description: string;
-  price: number; // Price per unit
+  price: number;
   costType: 'per_person' | 'per_reservation';
-}
-
-const allAddons: Addon[] = [
+}> = [
   // Seguro de cancelación flexible: 15% del valor del viaje sorpresa (omitted for now)
   {
     id: 'seguro-viajes',
@@ -112,6 +112,9 @@ const AddonsPage = () => {
   const [travelers, setTravelers] = useState(1); // This should ideally come from previous step's state
   const [filtersCostPerPerson, setFiltersCostPerPerson] = useState(0); // This should come from previous step's state
 
+  // Use the new centralized ADDONS catalog
+  const allAddons = ADDONS;
+
   const pkg = premiumPackages.find((p) => p.id === packageId);
 
   useEffect(() => {
@@ -134,17 +137,17 @@ const AddonsPage = () => {
     selectedAddons.forEach((addonId) => {
       const addon = allAddons.find((a) => a.id === addonId);
       if (addon) {
-        if (addon.costType === 'per_person') {
+        if (addon.type === 'perPax') {
           totalAddonCost += addon.price * travelers;
         } else {
-          // per_reservation
+          // perTrip
           totalAddonCost += addon.price;
         }
       }
     });
     const addonCostPerPerson = totalAddonCost / travelers; // Average cost per person
     return { addonCostPerPerson, totalAddonCost };
-  }, [selectedAddons, travelers]);
+  }, [selectedAddons, travelers, allAddons]);
 
   const totalPerPerson =
     filtersCostPerPerson + calculateAddonCosts.addonCostPerPerson;
