@@ -128,7 +128,7 @@ const Hero: React.FC<HeroProps> = ({
   content,
   id,
   className,
-  scrollIndicator = true,
+  scrollIndicator = false,
   titleClassName,
 }) => {
   return (

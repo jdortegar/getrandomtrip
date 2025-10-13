@@ -13,6 +13,8 @@ import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/store/slices/userStore';
+import { ADDONS } from '@/data/addons-catalog';
+import { Loader2 } from 'lucide-react';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
@@ -20,6 +22,10 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { isAuthed } = useUserStore();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const { basePriceUsd, logistics, filters, addons } = useStore();
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -35,23 +41,79 @@ export default function CheckoutPage() {
   if (!session && !isAuthed) {
     return null;
   }
-  const { basePriceUsd, logistics, filters, addons } = useStore();
+
   const pax = logistics.pax || 1;
+  const basePerPax = basePriceUsd || 0;
 
+  // Calculate filters cost (not split by pax)
   const filtersTrip = computeFiltersCostPerTrip(filters, pax);
-  const { totalTrip: addonsTrip, cancelCost } = computeAddonsCostPerTrip(
-    addons.selected,
-    basePriceUsd,
-    filtersTrip,
-    pax,
-  );
+  const filtersPerPax = filtersTrip;
 
-  const filtersPerPax = filtersTrip / pax || 0;
-  const addonsPerPax = addonsTrip / pax || 0;
-  const totalPerPax = basePriceUsd + filtersPerPax + addonsPerPax;
+  // Calculate addons cost per person (excluding cancellation insurance)
+  let addonsPerPax = 0;
+  const hasCancelInsurance = addons.selected.some((s) => s.id === 'cancel-ins');
+
+  addons.selected.forEach((s) => {
+    const a = ADDONS.find((x) => x.id === s.id);
+    if (!a || a.id === 'cancel-ins') return; // Skip cancel-ins for now
+
+    const qty = s.qty || 1;
+    const totalPrice = a.price * qty;
+
+    if (a.type === 'perPax') {
+      // For perPax, show individual price (total / qty)
+      addonsPerPax += totalPrice / qty;
+    } else {
+      // For perTrip, divide by number of passengers
+      addonsPerPax += totalPrice / pax;
+    }
+  });
+
+  // Calculate subtotal before cancellation insurance
+  const subtotalPerPax = basePerPax + filtersPerPax + addonsPerPax;
+
+  // Calculate cancellation insurance as 15% of subtotal
+  const cancelInsurancePerPax = hasCancelInsurance ? subtotalPerPax * 0.15 : 0;
+
+  // Calculate totals
+  const totalAddonsPerPax = addonsPerPax + cancelInsurancePerPax;
+  const totalPerPax = basePerPax + filtersPerPax + totalAddonsPerPax;
   const totalTrip = totalPerPax * pax;
 
   const goConfirm = () => router.push('/journey/confirmation');
+
+  const handleMercadoPago = async () => {
+    setIsProcessing(true);
+    try {
+      const payload = {
+        total: totalTrip,
+        tripId: `trip-${Date.now()}`,
+        userEmail: session?.user?.email || 'cliente@example.com',
+        userName: session?.user?.name || 'Cliente',
+      };
+
+      console.log('Payload:', payload);
+
+      const response = await fetch('/api/mercadopago/preference', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment preference');
+      }
+
+      const { init_point } = await response.json();
+      window.location.href = init_point;
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Error al procesar el pago. Intenta nuevamente.');
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <>
@@ -62,6 +124,7 @@ export default function CheckoutPage() {
           videoSrc: '/videos/hero-video.mp4',
           fallbackImage: '/images/bg-playa-mexico.jpg',
         }}
+        className="!h-[40vh]"
       />
 
       <Section>
@@ -72,29 +135,37 @@ export default function CheckoutPage() {
               <h1 className="text-xl font-semibold text-neutral-900 mb-3">
                 Pasarela de pago
               </h1>
-              <p className="text-sm text-neutral-700 mb-6">
-                Elegí un método. Todos son <strong>demo</strong> por ahora.
-              </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {['Mercado Pago', 'PayPal', 'Apple Pay', 'Stripe'].map(
-                  (brand) => (
+              <div className="space-y-4">
+                {/* Mercado Pago - Primary Option */}
+                <Button
+                  onClick={handleMercadoPago}
+                  disabled={isProcessing}
+                  className="w-full !text-left"
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                      Procesando...
+                    </div>
+                  ) : (
+                    'Pagar con Mercado Pago'
+                  )}
+                </Button>
+
+                {/* Other Payment Methods - Demo */}
+                {/* <div className="grid grid-cols-2 gap-4">
+                  {['PayPal', 'Apple Pay', 'Stripe'].map((brand) => (
                     <button
                       key={brand}
                       onClick={goConfirm}
-                      className="rounded-md border border-gray-300 bg-white py-6 text-neutral-900 hover:bg-gray-50 transition-colors font-medium"
+                      className="rounded-md border border-gray-300 bg-white py-4 text-neutral-900 hover:bg-gray-50 transition-colors font-medium opacity-60"
+                      disabled
                     >
-                      {brand}
+                      {brand} (Demo)
                     </button>
-                  ),
-                )}
-              </div>
-
-              <div className="mt-8 p-4 bg-gray-50 rounded-md border border-gray-200">
-                <p className="text-xs text-neutral-600">
-                  💡 <strong>Demo Mode:</strong> No se realizará ningún cargo
-                  real. Esta es una simulación del proceso de pago.
-                </p>
+                  ))}
+                </div> */}
               </div>
             </div>
           </div>
@@ -108,37 +179,45 @@ export default function CheckoutPage() {
 
               <div className="space-y-3 mb-4 pb-4 border-b border-gray-200">
                 <div className="flex justify-between text-sm">
-                  <span className="text-neutral-600">Precio base</span>
-                  <span className="text-neutral-900">
-                    {usd(basePriceUsd * pax)}
-                  </span>
+                  <span className="text-neutral-600">Base por persona</span>
+                  <span className="text-neutral-900">{usd(basePerPax)}</span>
                 </div>
-                {filtersTrip > 0 && (
+                {filtersPerPax > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-neutral-600">Filtros premium</span>
-                    <span className="text-neutral-900">{usd(filtersTrip)}</span>
+                    <span className="text-neutral-900">
+                      {usd(filtersPerPax)}
+                    </span>
                   </div>
                 )}
-                {addonsTrip > 0 && (
+                {totalAddonsPerPax > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-neutral-600">Add-ons</span>
-                    <span className="text-neutral-900">{usd(addonsTrip)}</span>
+                    <span className="text-neutral-900">
+                      {usd(totalAddonsPerPax)}
+                    </span>
                   </div>
                 )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600">Total por persona</span>
+                  <span className="text-neutral-900 font-medium">
+                    {usd(totalPerPax)}
+                  </span>
+                </div>
               </div>
 
               <div className="flex justify-between items-center mb-6">
                 <span className="text-base font-semibold text-neutral-900">
-                  Total
+                  Total (x{pax})
                 </span>
                 <span className="text-xl font-bold text-neutral-900">
                   {usd(totalTrip)}
                 </span>
               </div>
 
-              <Button className="w-full" onClick={goConfirm} size="lg">
+              {/* <Button className="w-full" onClick={goConfirm} size="lg">
                 Pagar
-              </Button>
+              </Button> */}
 
               <p className="text-xs text-neutral-500 text-center mt-4">
                 Pago seguro y protegido

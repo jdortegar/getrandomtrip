@@ -101,15 +101,35 @@ function SummaryPageContent() {
   const pax = logistics.pax || 1;
   const basePerPax = basePriceUsd || 0;
 
+  // Calculate filters cost (not split by pax)
   const filtersTrip = computeFiltersCostPerTrip(filters, pax);
-  const { totalTrip: addonsTrip, cancelCost } = computeAddonsCostPerTrip(
-    addons.selected,
-    basePerPax,
-    filtersTrip,
-    pax,
-  );
+  const filtersPerPax = filtersTrip;
 
-  const filtersPerPax = filtersTrip / pax || 0;
+  // Calculate addons cost per person (excluding cancellation insurance)
+  let addonsPerPax = 0;
+  const hasCancelInsurance = addons.selected.some((s) => s.id === 'cancel-ins');
+
+  addons.selected.forEach((s) => {
+    const a = ADDONS.find((x) => x.id === s.id);
+    if (!a || a.id === 'cancel-ins') return; // Skip cancel-ins for now
+
+    const qty = s.qty || 1;
+    const totalPrice = a.price * qty;
+
+    if (a.type === 'perPax') {
+      // For perPax, show individual price (total / qty)
+      addonsPerPax += totalPrice / qty;
+    } else {
+      // For perTrip, divide by number of passengers
+      addonsPerPax += totalPrice / pax;
+    }
+  });
+
+  // Calculate subtotal before cancellation insurance
+  const subtotalPerPax = basePerPax + filtersPerPax + addonsPerPax;
+
+  // Calculate cancellation insurance as 15% of subtotal
+  const cancelInsurancePerPax = hasCancelInsurance ? subtotalPerPax * 0.15 : 0;
 
   // Generate filter chips using FILTER_OPTIONS
   const filterChips: Array<{ key: string; label: string; value: string }> = [];
@@ -191,27 +211,47 @@ function SummaryPageContent() {
     });
   });
 
+  // Generate addon rows with per-person pricing
   const addonRows = addons.selected
     .map((s) => {
       const a = ADDONS.find((x) => x.id === s.id);
       if (!a) return null;
-      const unitPrice = a.price;
       const qty = s.qty || 1;
-      const lineTotal = unitPrice * qty;
+
+      let pricePerPax = 0;
+
+      if (a.id === 'cancel-ins') {
+        // Special case: cancellation insurance is 15% of subtotal
+        pricePerPax = cancelInsurancePerPax;
+      } else {
+        const totalPrice = a.price * qty;
+
+        if (a.type === 'perPax') {
+          // For perPax addons, divide by quantity (which usually matches pax)
+          pricePerPax = totalPrice / qty;
+        } else {
+          // For perTrip addons, divide by number of passengers
+          pricePerPax = totalPrice / pax;
+        }
+      }
 
       return {
         id: s.id,
-        title: a.title,
-        total: lineTotal,
+        title: qty > 1 ? `${a.title} ×${qty}` : a.title,
+        pricePerPax,
+        type: a.type,
       };
     })
-    .filter(Boolean) as { id: string; title: string; total: number }[];
+    .filter(Boolean) as {
+    id: string;
+    title: string;
+    pricePerPax: number;
+    type: 'perPax' | 'perTrip';
+  }[];
 
-  // Calculate addonsPerPax based on individual addon rows to match the display
-  const addonsPerPax =
-    (addonRows.reduce((sum, row) => sum + row.total, 0) + cancelCost) / pax ||
-    0;
-  const totalPerPax = basePerPax + filtersPerPax + addonsPerPax;
+  // Calculate totals
+  const totalAddonsPerPax = addonsPerPax + cancelInsurancePerPax;
+  const totalPerPax = basePerPax + filtersPerPax + totalAddonsPerPax;
   const totalTrip = totalPerPax * pax;
 
   // Build URL with params
@@ -336,7 +376,7 @@ function SummaryPageContent() {
 
             <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
               <h2 className="text-base font-semibold text-neutral-900 mb-3">
-                Tus add-ons ({addonRows.length + (cancelCost > 0 ? 1 : 0)})
+                Tus add-ons ({addonRows.length})
               </h2>
               <div className="divide-y divide-neutral-200">
                 {addonRows.length ? (
@@ -349,7 +389,8 @@ function SummaryPageContent() {
                         {r.title}
                       </div>
                       <div className="text-sm font-medium text-neutral-900">
-                        {usd(r.total)}
+                        {usd(r.pricePerPax)}{' '}
+                        {r.type === 'perPax' ? 'per pasajero' : 'por viaje'}
                       </div>
                     </div>
                   ))
@@ -358,16 +399,6 @@ function SummaryPageContent() {
                     No agregaste add-ons.
                   </div>
                 )}
-                {/* {cancelCost > 0 && (
-                  <div className="flex items-center justify-between py-3 bg-amber-50 px-3 rounded-lg mt-2">
-                    <div className="text-neutral-900 font-medium">
-                      Seguro de cancelación · 15% del subtotal
-                    </div>
-                    <div className="text-sm font-medium text-neutral-900">
-                      {usd(cancelCost)}
-                    </div>
-                  </div>
-                )} */}
               </div>
             </div>
           </div>
@@ -416,10 +447,10 @@ function SummaryPageContent() {
 
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-700">
-                    Add-ons ({addonRows.length + (cancelCost > 0 ? 1 : 0)})
+                    Add-ons ({addonRows.length})
                   </span>
                   <span className="font-medium text-neutral-900">
-                    {usd(addonsPerPax)}
+                    {usd(totalAddonsPerPax)}
                   </span>
                 </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import ChatFab from '@/components/chrome/ChatFab';
@@ -12,13 +12,21 @@ import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
 import { Calendar, Share2, Mail } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
+import { Suspense } from 'react';
 
-export default function ConfirmationPage() {
+function ConfirmationPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const { isAuthed } = useUserStore();
   const { logistics, type } = useStore();
   const [left, setLeft] = useState<string>('—');
+
+  // Get MercadoPago callback parameters
+  const paymentId = searchParams.get('payment_id');
+  const paymentStatus = searchParams.get('status');
+  const merchantOrderId = searchParams.get('merchant_order_id');
+  const externalReference = searchParams.get('external_reference');
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -87,6 +95,19 @@ export default function ConfirmationPage() {
     .filter(Boolean)
     .join(', ');
   const icsHref = buildICS(title, startDate, endDate, location);
+
+  // Log payment information for debugging
+  useEffect(() => {
+    if (paymentId) {
+      console.log('Payment received:', {
+        paymentId,
+        paymentStatus,
+        merchantOrderId,
+        externalReference,
+      });
+      // TODO: Update trip status in database with payment information
+    }
+  }, [paymentId, paymentStatus, merchantOrderId, externalReference]);
 
   return (
     <>
@@ -223,5 +244,31 @@ export default function ConfirmationPage() {
 
       <ChatFab />
     </>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Hero
+            content={{
+              title: 'Procesando...',
+              subtitle: 'Confirmando tu pago',
+              videoSrc: '/videos/hero-video.mp4',
+              fallbackImage: '/images/bg-playa-mexico.jpg',
+            }}
+          />
+          <Section>
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          </Section>
+        </>
+      }
+    >
+      <ConfirmationPageContent />
+    </Suspense>
   );
 }
