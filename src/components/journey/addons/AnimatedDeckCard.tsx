@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Minus, Plus, Check } from 'lucide-react';
 import type { Addon } from '@/data/addons-catalog';
 import { useStore } from '@/store/store';
+import { Button } from '@/components/ui/button';
 
 // Helper simple para clases
 const cn = (...c: Array<string | false | null | undefined>) =>
@@ -17,46 +18,21 @@ type Props = {
 };
 
 export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
-  const { addons, setAddon, removeAddon, logistics } = useStore();
+  const { addons, setAddon, removeAddon, logistics, level } = useStore();
   const sel = addons.selected.find((s) => s.id === addon.id);
 
   const [qty, setQty] = useState(sel?.qty || 0);
-  const [opt, setOpt] = useState<string | undefined>(sel?.optionId);
 
   // Re-sincroniza controles al cambiar de add-on
   useEffect(() => {
     setQty(sel?.qty || 0);
-    setOpt(sel?.optionId);
   }, [sel, addon.id]);
-
-  // Set default "Incluido" option when component mounts
-  useEffect(() => {
-    if (!sel?.optionId && addon.options && addon.options.length > 0) {
-      const includedOption = addon.options.find(
-        (option) => !option.deltaUsd || option.deltaUsd === 0,
-      );
-      if (includedOption) {
-        setOpt(includedOption.id);
-      }
-    }
-  }, [addon.options, sel?.optionId]);
 
   const inc = () => {
     const newQty = qty + 1;
     setQty(newQty);
-
-    // Auto-select "Incluido" option if no option is selected and there are options
-    let selectedOptionId = opt;
-    if (!selectedOptionId && addon.options && addon.options.length > 0) {
-      const includedOption = addon.options.find(
-        (option) => !option.deltaUsd || option.deltaUsd === 0,
-      );
-      selectedOptionId = includedOption?.id || addon.options[0].id;
-      setOpt(selectedOptionId);
-    }
-
     // Auto-add when incrementing from 0
-    setAddon({ id: addon.id, qty: newQty, optionId: selectedOptionId });
+    setAddon({ id: addon.id, qty: newQty });
   };
 
   const dec = () => {
@@ -67,46 +43,60 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
       removeAddon(addon.id);
     } else {
       // Update addon quantity
-      setAddon({ id: addon.id, qty: newQty, optionId: opt });
+      setAddon({ id: addon.id, qty: newQty });
+    }
+  };
+
+  const handleAddPerTrip = () => {
+    if (isSelected) {
+      removeAddon(addon.id);
+      setQty(0);
+    } else {
+      setAddon({ id: addon.id, qty: 1 });
+      setQty(1);
     }
   };
 
   const pax = logistics.pax || 1;
-
-  const handleOptionChange = (optionId: string) => {
-    setOpt(optionId);
-    // Auto-update if addon is already selected
-    if (qty > 0) {
-      setAddon({ id: addon.id, qty, optionId });
-    }
-  };
-
   const isSelected = !!sel;
+
+  // Check if addon applies to current level
+  const isAvailableForLevel = addon.applyToLevel.includes(level);
+
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div
+      className={cn(
+        'border border-gray-200 rounded-lg overflow-hidden bg-white',
+        !isAvailableForLevel && 'opacity-50',
+      )}
+    >
       {/* Accordion Header */}
       <button
         type="button"
         onClick={onClick}
+        disabled={!isAvailableForLevel}
         aria-expanded={active}
         className={cn(
           'w-full flex items-center justify-between p-4 text-left transition-colors',
           'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
           active ? 'bg-gray-50' : '',
+          !isAvailableForLevel && 'cursor-not-allowed',
         )}
       >
         <div className="flex items-center gap-3 flex-1">
           <div className="flex-1">
             <h4 className="font-semibold text-neutral-900">{addon.title}</h4>
-            <p className="text-sm text-neutral-600 mt-0.5">{addon.short}</p>
+            <p className="text-sm text-neutral-600 mt-0.5">
+              {addon.shortDescription}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-neutral-900">
-            {addon.unit === 'percent_total'
-              ? '15% del subtotal'
-              : `desde USD ${addon.priceUsd}`}
+            {addon.priceType === 'currency'
+              ? `USD ${addon.price}`
+              : `${addon.price}%`}
           </span>
           <motion.div
             animate={{ rotate: active ? 180 : 0 }}
@@ -119,7 +109,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
 
       {/* Accordion Content */}
       <AnimatePresence initial={false}>
-        {active && (
+        {active && isAvailableForLevel && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -127,47 +117,19 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="p-4  border-t border-gray-100 space-y-4">
-              <p className="text-sm text-neutral-600">{addon.description}</p>
+            <div className="p-4 border-t border-gray-100 space-y-4 flex justify-between items-center">
+              <p className="text-sm text-neutral-600 m-0 p-0">
+                {addon.longDescription}{' '}
+                {addon.type === 'perPax'
+                  ? 'Se cobra por pasajero'
+                  : 'Se cobra por viaje'}
+              </p>
 
-              {/* Options */}
-              {addon.options && addon.options.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Opciones:
-                  </label>
-                  <div className="space-y-2">
-                    {addon.options.map((option) => (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => handleOptionChange(option.id)}
-                        className={cn(
-                          'w-full flex items-center justify-between p-3 rounded-md border transition-colors text-left',
-                          opt === option.id
-                            ? 'border-primary bg-primary/5'
-                            : 'border-gray-200 hover:border-gray-300',
-                        )}
-                      >
-                        <span className="text-sm text-neutral-700">
-                          {option.label}
-                        </span>
-                        <span className="text-sm font-medium text-neutral-900">
-                          {option.deltaUsd
-                            ? `+USD ${option.deltaUsd}`
-                            : 'Incluido'}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quantity */}
-              {addon.unit === 'per_pax' && logistics.pax === 1 ? null : (
-                <div className="flex items-center gap-3 justify-between">
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    Cantidad{addon.unit === 'per_pax' && ` (por ${pax} pax)`}:
+              {/* Quantity Controls - perPax shows quantity selector, perTrip shows add button */}
+              {addon.type === 'perPax' ? (
+                <div className="flex flex-col items-center gap-3 justify-between">
+                  <label className="block text-sm font-medium text-neutral-700">
+                    Cantidad
                   </label>
                   <div className="flex items-center gap-3">
                     <button
@@ -188,6 +150,21 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-end">
+                  <Button
+                    type="button"
+                    onClick={handleAddPerTrip}
+                    className={cn(
+                      'px-6 py-2 transition-colors',
+                      isSelected
+                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                        : 'bg-primary text-white hover:bg-primary/90',
+                    )}
+                  >
+                    {isSelected ? 'Quitar' : 'Agregar'}
+                  </Button>
                 </div>
               )}
             </div>

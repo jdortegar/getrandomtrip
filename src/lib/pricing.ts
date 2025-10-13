@@ -11,19 +11,14 @@ export function computeFiltersCostPerTrip(filters: any, pax: number): number {
   return total;
 }
 
-type Sel = { id: string; qty: number; optionId?: string };
-
-function priceOf(addon: Addon, optionId?: string): number {
-  const delta = addon.options?.find((o) => o.id === optionId)?.deltaUsd ?? 0;
-  return addon.priceUsd + delta;
-}
+type Sel = { id: string; qty: number };
 
 /** retorna costo de add-ons por VIAJE (total, no per pax) */
 export function computeAddonsCostPerTrip(
   selections: Sel[],
   basePerPax: number,
   filtersPerTrip: number,
-  pax: number
+  pax: number,
 ) {
   const paxN = pax || 1;
   const others = selections.filter((s) => s.id !== 'cancel-ins');
@@ -32,9 +27,9 @@ export function computeAddonsCostPerTrip(
   for (const sel of others) {
     const a = ADDONS.find((x) => x.id === sel.id);
     if (!a) continue;
-    const unitPrice = priceOf(a, sel.optionId);
-    if (a.unit === 'per_pax') otherTotal += unitPrice * paxN * (sel.qty || 1);
-    if (a.unit === 'per_trip') otherTotal += unitPrice * (sel.qty || 1);
+    const unitPrice = a.price;
+    // All addons are now per-trip pricing (simplified model)
+    otherTotal += unitPrice * (sel.qty || 1);
   }
 
   // costo por pax antes de cancel-ins
@@ -53,7 +48,7 @@ export function computeAddonsCostPerTrip(
 export function computeFiltersCost(
   _filters: any,
   _logistics: any,
-  basePriceUsd: number | undefined
+  basePriceUsd: number | undefined,
 ): number {
   // Si no hay base, 0; si hay base, devolverla (no rompe UI).
   return typeof basePriceUsd === 'number' ? basePriceUsd : 0;

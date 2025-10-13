@@ -61,8 +61,19 @@ export interface UserMetrics {
 // JOURNEY & TRAVEL TYPES
 // ============================================================================
 
-export type JourneyType = 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws';
-export type LevelSlug = 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway';
+export type JourneyType =
+  | 'couple'
+  | 'family'
+  | 'group'
+  | 'solo'
+  | 'honeymoon'
+  | 'paws';
+export type LevelSlug =
+  | 'essenza'
+  | 'modo-explora'
+  | 'explora-plus'
+  | 'bivouac'
+  | 'atelier-getaway';
 export type TransportMode = 'avion' | 'bus' | 'tren' | 'barco';
 export type ClimatePreference = 'indistinto' | 'calido' | 'frio' | 'templado';
 export type TimePreference = 'sin-limite' | '3h' | '5h' | '8h';
@@ -113,12 +124,18 @@ export interface JourneyState {
 // ============================================================================
 
 export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
-export type AddonCategory = 'Seguridad' | 'Vuelo y Equipaje' | 'Movilidad' | 'Alojamiento' | 'Experiencias' | 'Conectividad' | 'Otros';
+export type AddonCategory =
+  | 'Seguridad'
+  | 'Vuelo y Equipaje'
+  | 'Movilidad'
+  | 'Alojamiento'
+  | 'Experiencias'
+  | 'Conectividad'
+  | 'Otros';
 
 export interface AddonSelection {
   id: string;
   qty: number;
-  optionId?: string;
 }
 
 export interface AddonsState {
@@ -230,7 +247,14 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'select' | 'textarea' | 'checkbox' | 'radio';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'select'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio';
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];

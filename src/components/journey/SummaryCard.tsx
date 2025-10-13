@@ -22,51 +22,90 @@ export default function SummaryCard() {
 
   const pax = logistics.pax || 1;
 
+  // Calculate filters cost (not split by pax)
   const filtersTrip = computeFiltersCostPerTrip(filters, pax);
-  const { totalTrip: addonsTrip, cancelCost } = computeAddonsCostPerTrip(
-    addons.selected,
-    basePriceUsd || 0,
-    filtersTrip || 0,
-    pax,
-  );
+  const filtersPerPax = filtersTrip;
+
+  // Calculate addons cost per person (excluding cancellation insurance)
+  let addonsPerPax = 0;
+  const hasCancelInsurance = addons.selected.some((s) => s.id === 'cancel-ins');
+
+  addons.selected.forEach((s) => {
+    const a = ADDONS.find((x) => x.id === s.id);
+    if (!a || a.id === 'cancel-ins') return; // Skip cancel-ins for now
+
+    const qty = s.qty || 1;
+    const totalPrice = a.price * qty;
+
+    if (a.type === 'perPax') {
+      // For perPax, show individual price (total / qty)
+      addonsPerPax += totalPrice / qty;
+    } else {
+      // For perTrip, divide by number of passengers
+      addonsPerPax += totalPrice / pax;
+    }
+  });
 
   const basePerPax = basePriceUsd || 0;
-  const filtersPerPax = pax > 0 ? filtersTrip / pax : 0;
-  const addonsPerPax = pax > 0 ? addonsTrip / pax : 0;
-  const totalPerPax = basePerPax + filtersPerPax + addonsPerPax;
+
+  // Calculate subtotal before cancellation insurance
+  const subtotalPerPax = basePerPax + filtersPerPax + addonsPerPax;
+
+  // Calculate cancellation insurance as 15% of subtotal
+  const cancelInsurancePerPax = hasCancelInsurance ? subtotalPerPax * 0.15 : 0;
+
+  // Final total includes cancellation insurance
+  const totalPerPax = subtotalPerPax + cancelInsurancePerPax;
 
   const safeDisplay =
     displayPrice && displayPrice.trim().length > 0
       ? displayPrice
       : `USD ${basePerPax.toFixed(0)}`;
 
-  // Generate add-on chips
+  // Generate add-on chips with per-person pricing
   const addonChips = addons.selected
     .map((s) => {
       const a = ADDONS.find((x) => x.id === s.id);
       if (!a) return null;
       const qty = s.qty || 1;
 
-      const titleWithOption =
-        a.title +
-        (s.optionId
-          ? ` · ${a.options?.find((o) => o.id === s.optionId)?.label}`
-          : '');
+      const valueText = qty > 1 ? `${a.title} ×${qty}` : a.title;
 
-      const valueText =
-        qty > 1 ? `${titleWithOption} ×${qty}` : titleWithOption;
+      // Calculate per-person price
+      let pricePerPax = 0;
+
+      if (a.id === 'cancel-ins') {
+        // Special case: cancellation insurance is 15% of subtotal
+        pricePerPax = cancelInsurancePerPax;
+      } else {
+        const totalPrice = a.price * qty;
+
+        if (a.type === 'perPax') {
+          // For perPax addons, divide by quantity (which usually matches pax)
+          pricePerPax = totalPrice / qty;
+        } else {
+          // For perTrip addons, divide by number of passengers
+          pricePerPax = totalPrice / pax;
+        }
+      }
 
       return {
         id: s.id,
         category: a.category,
         value: valueText,
+        price: pricePerPax,
+        type: a.type,
       };
     })
     .filter(Boolean) as Array<{
     id: string;
     category: string;
     value: string;
+    price: number;
+    type: 'perPax' | 'perTrip';
   }>;
+
+  console.log('addonChips', addonChips);
   return (
     <div className="rounded-md bg-white/95 text-gray-900 ring-1 ring-neutral-200 shadow-sm p-4 font-jost">
       <h4 className="font-semibold mb-3">Resumen del Viaje</h4>
@@ -95,7 +134,7 @@ export default function SummaryCard() {
                 item={{
                   key: addon.id,
                   label: addon.category,
-                  value: addon.value,
+                  value: `${addon.value} (USD $${addon.price})`,
                   onRemove: () => removeAddon(addon.id),
                 }}
                 color="primary"
@@ -106,14 +145,15 @@ export default function SummaryCard() {
                 item={{
                   key: 'cancel-insurance',
                   label: 'Seguridad',
-                  value: 'Seguro cancelación',
+                  value: `Seguro cancelación (USD $${cancelCost})`,
                   onRemove: () => removeAddon('cancel-ins'),
                 }}
+                color="warning"
               />
             )} */}
           </div>
 
-          <div className="text-base font-semibold">{`USD ${addonsPerPax.toFixed(2)}`}</div>
+          <div className="text-base font-semibold">{`USD ${(addonsPerPax + cancelInsurancePerPax).toFixed(2)}`}</div>
         </div>
         <div className="border-t my-2"></div>
         <div className="space-y-1">

@@ -1,16 +1,16 @@
 // frontend/src/data/addons-catalog.ts
-import type { AddonUnit } from '@/store/slices/journeyStore'
 
-export type Addon = {
-  id: string
-  category: 'Seguridad'|'Vuelo y Equipaje'|'Movilidad'|'Alojamiento'|'Experiencias'|'Conectividad'|'Otros'
-  title: string
-  short: string
-  description: string
-  unit: AddonUnit
-  priceUsd: number            // base
-  options?: { id: string; label: string; deltaUsd?: number }[]
-  highlight?: boolean
+export interface Addon {
+  id: string;
+  category: string;
+  title: string;
+  shortDescription: string;
+  longDescription: string;
+  price: number;
+  applyToLevel: string[];
+  type: 'perPax' | 'perTrip';
+  purchaseType: 'prePurchase' | 'postPurchase';
+  priceType: 'percentage' | 'currency';
 }
 
 export const ADDONS: Addon[] = [
@@ -19,53 +19,340 @@ export const ADDONS: Addon[] = [
     id: 'cancel-ins',
     category: 'Seguridad',
     title: 'Seguro de Cancelación',
-    short: 'Protegé tu inversión',
-    description: 'Cubre cancelaciones por causas contempladas. Se calcula como el 15% del subtotal.',
-    unit: 'percent_total', priceUsd: 15, highlight: true
+    shortDescription: 'Protegé tu inversión',
+    longDescription:
+      'Cubre cancelaciones por causas contempladas. Se calcula como el 15% del subtotal.',
+    price: 15,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'prePurchase',
+    priceType: 'percentage',
   },
   {
     id: 'travel-ins-basic',
     category: 'Seguridad',
     title: 'Seguro de Viaje',
-    short: 'Asistencia médica y más',
-    description: 'Cobertura internacional. Opciones según nivel.',
-    unit: 'per_pax', priceUsd: 35,
-    options: [
-      { id:'basic', label:'Básico' },
-      { id:'plus', label:'Amplio', deltaUsd: 15 },
-      { id:'premium', label:'Premium (deportes)', deltaUsd: 40 },
-    ]
+    shortDescription: 'Asistencia médica y más',
+    longDescription: 'Cobertura internacional. Opciones según nivel.',
+    price: 35,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
   },
 
   // Vuelo y Equipaje
-  { id:'seat-select', category:'Vuelo y Equipaje', title:'Selección de asiento', short:'Elegí tu lugar', description:'Ventana, pasillo o preferente.', unit:'per_pax', priceUsd: 18,
-    options: [{id:'std',label:'Standard'},{id:'xl',label:'Extra espacio',deltaUsd:20},{id:'front',label:'Preferente',deltaUsd:12}] },
-  { id:'carry-on', category:'Vuelo y Equipaje', title:'Carry-on extra', short:'Equipaje de mano adicional', description:'Una pieza adicional.', unit:'per_pax', priceUsd: 25 },
-  { id:'checked-bag', category:'Vuelo y Equipaje', title:'Equipaje en bodega', short:'1 maleta despachada', description:'Hasta 23kg.', unit:'per_pax', priceUsd: 35 },
+  {
+    id: 'seat-select',
+    category: 'Vuelo y Equipaje',
+    title: 'Selección de asiento',
+    shortDescription: 'Elegí tu lugar',
+    longDescription: 'Ventana, pasillo o preferente.',
+    price: 18,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'carry-on',
+    category: 'Vuelo y Equipaje',
+    title: 'Carry-on extra',
+    shortDescription: 'Equipaje de mano adicional',
+    longDescription: 'Una pieza adicional.',
+    price: 25,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'checked-bag',
+    category: 'Vuelo y Equipaje',
+    title: 'Equipaje en bodega',
+    shortDescription: '1 maleta despachada',
+    longDescription: 'Hasta 23kg.',
+    price: 35,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
 
   // Conectividad
-  { id:'esim-5', category:'Conectividad', title:'e-SIM 5GB/15d', short:'Datos en destino', description:'Instalación inmediata, 5GB por 15 días.', unit:'per_pax', priceUsd: 18 },
-  { id:'esim-10', category:'Conectividad', title:'e-SIM 10GB/30d', short:'Más datos', description:'10GB por 30 días.', unit:'per_pax', priceUsd: 28 },
+  {
+    id: 'esim-5',
+    category: 'Conectividad',
+    title: 'e-SIM 5GB/15d',
+    shortDescription: 'Datos en destino',
+    longDescription: 'Instalación inmediata, 5GB por 15 días.',
+    price: 18,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'esim-10',
+    category: 'Conectividad',
+    title: 'e-SIM 10GB/30d',
+    shortDescription: 'Más datos',
+    longDescription: '10GB por 30 días.',
+    price: 28,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
 
   // Movilidad
-  { id:'pickup-origin', category:'Movilidad', title:'Transfer en Origen', short:'Pick-up/Drop-off', description:'Traslado privado en origen.', unit:'per_trip', priceUsd: 30 },
-  { id:'pickup-destination', category:'Movilidad', title:'Transfer en Destino', short:'Aeropuerto ↔ hotel', description:'Traslado privado en destino.', unit:'per_trip', priceUsd: 40 },
-  { id:'car-rental', category:'Movilidad', title:'Alquiler de Auto (por día)', short:'Con seguro básico', description:'Precio por día. Ajustá cantidad de días.', unit:'per_trip', priceUsd: 35 },
-  { id:'scooter', category:'Movilidad', title:'Alquiler de Moto/Scooter (día)', short:'Movilidad urbana', description:'Precio por día.', unit:'per_trip', priceUsd: 20 },
-  { id:'bike', category:'Movilidad', title:'Alquiler de Bicicleta (día)', short:'Explorá a tu ritmo', description:'Precio por día.', unit:'per_trip', priceUsd: 12 },
+  {
+    id: 'pickup-origin',
+    category: 'Movilidad',
+    title: 'Transfer en Origen',
+    shortDescription: 'Pick-up/Drop-off',
+    longDescription: 'Traslado privado en origen.',
+    price: 30,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'pickup-destination',
+    category: 'Movilidad',
+    title: 'Transfer en Destino',
+    shortDescription: 'Aeropuerto ↔ hotel',
+    longDescription: 'Traslado privado en destino.',
+    price: 40,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'car-rental',
+    category: 'Movilidad',
+    title: 'Alquiler de Auto (por día)',
+    shortDescription: 'Con seguro básico',
+    longDescription: 'Precio por día. Ajustá cantidad de días.',
+    price: 35,
+    applyToLevel: [
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'scooter',
+    category: 'Movilidad',
+    title: 'Alquiler de Moto/Scooter (día)',
+    shortDescription: 'Movilidad urbana',
+    longDescription: 'Precio por día.',
+    price: 20,
+    applyToLevel: [
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'bike',
+    category: 'Movilidad',
+    title: 'Alquiler de Bicicleta (día)',
+    shortDescription: 'Explorá a tu ritmo',
+    longDescription: 'Precio por día.',
+    price: 12,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
 
   // Alojamiento
-  { id:'hotel-upgrade', category:'Alojamiento', title:'Upgrade de Alojamiento', short:'Subí de categoría', description:'Mejor vista o categoría superior.', unit:'per_trip', priceUsd: 60,
-    options: [{id:'view',label:'Mejor vista'},{id:'category',label:'Categoría superior',deltaUsd:40}] },
-  { id:'early-late', category:'Alojamiento', title:'Early Check-in / Late Check-out', short:'Flexibilidad', description:'Garantizá horarios cómodos.', unit:'per_trip', priceUsd: 50 },
+  {
+    id: 'hotel-upgrade',
+    category: 'Alojamiento',
+    title: 'Upgrade de Alojamiento',
+    shortDescription: 'Subí de categoría',
+    longDescription: 'Mejor vista o categoría superior.',
+    price: 60,
+    applyToLevel: ['explora-plus', 'bivouac', 'atelier-getaway'],
+    type: 'perTrip',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'early-late',
+    category: 'Alojamiento',
+    title: 'Early Check-in / Late Check-out',
+    shortDescription: 'Flexibilidad',
+    longDescription: 'Garantizá horarios cómodos.',
+    price: 50,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
 
   // Experiencias
-  { id:'food-exp', category:'Experiencias', title:'Experiencia Gastronómica', short:'Cena/Clase/Tour', description:'Opciones foodie en destino.', unit:'per_pax', priceUsd: 45,
-    options: [{id:'dinner',label:'Cena Emblemática'},{id:'class',label:'Clase de cocina',deltaUsd:10},{id:'tasting',label:'Cata/Vinos',deltaUsd:15}] },
-  { id:'tour-exp', category:'Experiencias', title:'Experiencia Turística', short:'Tour/Entrada', description:'Histórico, naturaleza o acuático.', unit:'per_pax', priceUsd: 40 },
+  {
+    id: 'food-exp',
+    category: 'Experiencias',
+    title: 'Experiencia Gastronómica',
+    shortDescription: 'Cena/Clase/Tour',
+    longDescription: 'Opciones foodie en destino.',
+    price: 45,
+    applyToLevel: [
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'tour-exp',
+    category: 'Experiencias',
+    title: 'Experiencia Turística',
+    shortDescription: 'Tour/Entrada',
+    longDescription: 'Histórico, naturaleza o acuático.',
+    price: 40,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'postPurchase',
+    priceType: 'currency',
+  },
 
   // Otros
-  { id:'vip-lounge', category:'Otros', title:'Acceso Salas VIP', short:'Confort en aeropuerto', description:'Pase por persona.', unit:'per_pax', priceUsd: 40 },
-  { id:'fast-track', category:'Otros', title:'Fast Track Seguridad', short:'Vía rápida', description:'Control prioritario.', unit:'per_pax', priceUsd: 25 },
-  { id:'carbon', category:'Otros', title:'Compensación CO₂', short:'Viaje responsable', description:'Aporte a proyectos ambientales.', unit:'per_trip', priceUsd: 12 },
-]
+  {
+    id: 'vip-lounge',
+    category: 'Otros',
+    title: 'Acceso Salas VIP',
+    shortDescription: 'Confort en aeropuerto',
+    longDescription: 'Pase por persona.',
+    price: 40,
+    applyToLevel: ['explora-plus', 'bivouac', 'atelier-getaway'],
+    type: 'perPax',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'fast-track',
+    category: 'Otros',
+    title: 'Fast Track Seguridad',
+    shortDescription: 'Vía rápida',
+    longDescription: 'Control prioritario.',
+    price: 25,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perPax',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+  {
+    id: 'carbon',
+    category: 'Otros',
+    title: 'Compensación CO₂',
+    shortDescription: 'Viaje responsable',
+    longDescription: 'Aporte a proyectos ambientales.',
+    price: 12,
+    applyToLevel: [
+      'essenza',
+      'modo-explora',
+      'explora-plus',
+      'bivouac',
+      'atelier-getaway',
+    ],
+    type: 'perTrip',
+    purchaseType: 'prePurchase',
+    priceType: 'currency',
+  },
+];

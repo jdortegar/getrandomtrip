@@ -6,15 +6,24 @@ import { ADDONS, Addon } from '@/data/addons-catalog';
 import AnimatedDeckCard from './AnimatedDeckCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { useStore } from '@/store/store';
 
 export default function AddonsGallery() {
+  const { level } = useStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
   const [seed] = useState(0); // para shuffle
 
   const grouped = useMemo(() => {
+    // Filter addons by current level and prePurchase only
+    const availableAddons = ADDONS.filter(
+      (addon) =>
+        addon.applyToLevel.includes(level) &&
+        addon.purchaseType === 'prePurchase',
+    );
+
     // shuffle estable por seed
-    const arr = [...ADDONS].sort((a, b) => {
+    const arr = [...availableAddons].sort((a, b) => {
       const ka = (a.id + b.id + seed).length % 7;
       const kb = (b.id + a.id + seed).length % 7;
       return ka - kb;
@@ -22,7 +31,7 @@ export default function AddonsGallery() {
     const m: Record<string, Addon[]> = {};
     arr.forEach((a) => (m[a.category] ??= []).push(a));
     return m;
-  }, [seed]);
+  }, [seed, level]);
 
   const categories = Object.keys(grouped);
 

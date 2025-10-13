@@ -195,23 +195,13 @@ function SummaryPageContent() {
     .map((s) => {
       const a = ADDONS.find((x) => x.id === s.id);
       if (!a) return null;
-      const delta = a.options?.find((o) => o.id === s.optionId)?.deltaUsd ?? 0;
-      const unitPrice = a.priceUsd + delta;
+      const unitPrice = a.price;
       const qty = s.qty || 1;
-      const lineTotal =
-        a.unit === 'per_pax'
-          ? unitPrice * pax * qty
-          : a.unit === 'per_trip'
-            ? unitPrice * qty
-            : 0;
+      const lineTotal = unitPrice * qty;
 
       return {
         id: s.id,
-        title:
-          a.title +
-          (s.optionId
-            ? ` · ${a.options?.find((o) => o.id === s.optionId)?.label}`
-            : ''),
+        title: a.title,
         total: lineTotal,
       };
     })

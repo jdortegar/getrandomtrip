@@ -85,7 +85,7 @@ export const FILTER_OPTIONS = {
 };
 
 export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
-export type AddonSelection = { id: string; qty: number; optionId?: string };
+export type AddonSelection = { id: string; qty: number };
 export type AddonsState = {
   selected: AddonSelection[]; // sólo los elegidos
 };
