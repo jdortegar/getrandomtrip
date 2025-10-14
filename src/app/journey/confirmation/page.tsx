@@ -28,6 +28,12 @@ function ConfirmationPageContent() {
   const merchantOrderId = searchParams.get('merchant_order_id');
   const externalReference = searchParams.get('external_reference');
 
+  // Determine if payment was successful
+  const isPaymentSuccessful =
+    paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending');
+  const isManualRedirect = !paymentId && !paymentStatus; // No payment params = manual redirect
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   // Redirect to login if not authenticated
   useEffect(() => {
     if (status === 'loading') return;
@@ -37,6 +43,37 @@ function ConfirmationPageContent() {
       router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
     }
   }, [session, isAuthed, status, router]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    const tick = () => {
+      if (!logistics.startDate) return setLeft('—');
+      const now = new Date();
+      const start = new Date(logistics.startDate);
+      const ms = +start - +now;
+      if (ms <= 0) return setLeft('¡Es hoy!');
+      const d = Math.floor(ms / 86400000);
+      const h = Math.floor((ms % 86400000) / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      setLeft(`${d}d ${h}h ${m}m`);
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, [logistics.startDate]);
+
+  // Log payment information for debugging
+  useEffect(() => {
+    if (paymentId) {
+      console.log('Payment received:', {
+        paymentId,
+        paymentStatus,
+        merchantOrderId,
+        externalReference,
+      });
+      // TODO: Update trip status in database with payment information
+    }
+  }, [paymentId, paymentStatus, merchantOrderId, externalReference]);
 
   // Show loading while checking auth
   if (status === 'loading') {
@@ -64,23 +101,6 @@ function ConfirmationPageContent() {
     return null;
   }
 
-  useEffect(() => {
-    const tick = () => {
-      if (!logistics.startDate) return setLeft('—');
-      const now = new Date();
-      const start = new Date(logistics.startDate);
-      const ms = +start - +now;
-      if (ms <= 0) return setLeft('¡Es hoy!');
-      const d = Math.floor(ms / 86400000);
-      const h = Math.floor((ms % 86400000) / 3600000);
-      const m = Math.floor((ms % 3600000) / 60000);
-      setLeft(`${d}d ${h}h ${m}m`);
-    };
-    tick();
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, [logistics.startDate]);
-
   const startDate = logistics.startDate
     ? new Date(logistics.startDate)
     : undefined;
@@ -95,19 +115,6 @@ function ConfirmationPageContent() {
     .filter(Boolean)
     .join(', ');
   const icsHref = buildICS(title, startDate, endDate, location);
-
-  // Log payment information for debugging
-  useEffect(() => {
-    if (paymentId) {
-      console.log('Payment received:', {
-        paymentId,
-        paymentStatus,
-        merchantOrderId,
-        externalReference,
-      });
-      // TODO: Update trip status in database with payment information
-    }
-  }, [paymentId, paymentStatus, merchantOrderId, externalReference]);
 
   return (
     <>
@@ -147,6 +154,53 @@ function ConfirmationPageContent() {
               Tu destino será revelado <strong>48 horas</strong> antes del
               viaje.
             </p>
+
+            {/* Payment Status Indicator */}
+            {isPaymentSuccessful && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                <div className="flex items-center justify-center gap-2 text-green-800">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-medium">Pago confirmado</span>
+                </div>
+                <p className="text-sm text-green-700 mt-1">
+                  ID de pago: {paymentId} • Estado:{' '}
+                  {paymentStatus === 'approved' ? 'Aprobado' : 'Pendiente'}
+                </p>
+              </div>
+            )}
+
+            {isManualRedirect && (
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div className="flex items-center justify-center gap-2 text-yellow-800">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-medium">Redirección manual</span>
+                </div>
+                <p className="text-sm text-yellow-700 mt-1">
+                  Si completaste el pago, tu reserva está confirmada. Si no,
+                  regresa al checkout.
+                </p>
+              </div>
+            )}
 
             {/* Trip Details */}
             <div className="inline-flex items-center gap-4 px-6 py-4 rounded-md border border-gray-300 bg-gray-50 mb-6">

@@ -3,18 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { Loader2 } from 'lucide-react';
+
 import ChatFab from '@/components/chrome/ChatFab';
-import { useStore } from '@/store/store';
-import {
-  computeAddonsCostPerTrip,
-  computeFiltersCostPerTrip,
-} from '@/lib/pricing';
-import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
+import Section from '@/components/layout/Section';
 import { Button } from '@/components/ui/button';
+import { useStore } from '@/store/store';
 import { useUserStore } from '@/store/slices/userStore';
 import { ADDONS } from '@/data/addons-catalog';
-import { Loader2 } from 'lucide-react';
+import { computeFiltersCostPerTrip } from '@/lib/pricing';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
@@ -80,26 +78,20 @@ export default function CheckoutPage() {
   const totalPerPax = basePerPax + filtersPerPax + totalAddonsPerPax;
   const totalTrip = totalPerPax * pax;
 
-  const goConfirm = () => router.push('/journey/confirmation');
-
   const handleMercadoPago = async () => {
     setIsProcessing(true);
     try {
-      const payload = {
-        total: totalTrip,
-        tripId: `trip-${Date.now()}`,
-        userEmail: session?.user?.email || 'cliente@example.com',
-        userName: session?.user?.name || 'Cliente',
-      };
-
-      console.log('Payload:', payload);
-
       const response = await fetch('/api/mercadopago/preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          total: totalTrip,
+          tripId: `trip-${Date.now()}`,
+          userEmail: session?.user?.email || 'cliente@example.com',
+          userName: session?.user?.name || 'Cliente',
+        }),
       });
 
       if (!response.ok) {
@@ -139,13 +131,14 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 {/* Mercado Pago - Primary Option */}
                 <Button
-                  onClick={handleMercadoPago}
                   disabled={isProcessing}
-                  className="w-full !text-left"
+                  onClick={handleMercadoPago}
+                  size="lg"
+                  className="w-full"
                 >
                   {isProcessing ? (
                     <div className="flex items-center gap-2">
-                      <Loader2 className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       Procesando...
                     </div>
                   ) : (
@@ -153,19 +146,26 @@ export default function CheckoutPage() {
                   )}
                 </Button>
 
-                {/* Other Payment Methods - Demo */}
-                {/* <div className="grid grid-cols-2 gap-4">
-                  {['PayPal', 'Apple Pay', 'Stripe'].map((brand) => (
-                    <button
-                      key={brand}
-                      onClick={goConfirm}
-                      className="rounded-md border border-gray-300 bg-white py-4 text-neutral-900 hover:bg-gray-50 transition-colors font-medium opacity-60"
-                      disabled
-                    >
-                      {brand} (Demo)
-                    </button>
-                  ))}
-                </div> */}
+                {/* Fallback redirect button */}
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800 mb-2">
+                    <strong>¿No te redirigió automáticamente?</strong>
+                  </p>
+                  <p className="text-xs text-blue-600 mb-3">
+                    Si después del pago no regresas automáticamente, haz clic en
+                    el botón de abajo:
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      (window.location.href = '/journey/confirmation')
+                    }
+                    className="w-full"
+                  >
+                    Ir a Confirmación
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -206,7 +206,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center">
                 <span className="text-base font-semibold text-neutral-900">
                   Total (x{pax})
                 </span>
@@ -215,11 +215,7 @@ export default function CheckoutPage() {
                 </span>
               </div>
 
-              {/* <Button className="w-full" onClick={goConfirm} size="lg">
-                Pagar
-              </Button> */}
-
-              <p className="text-xs text-neutral-500 text-center mt-4">
+              <p className="text-xs text-neutral-500 text-center mt-6">
                 Pago seguro y protegido
               </p>
             </div>

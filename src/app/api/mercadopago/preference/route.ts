@@ -9,6 +9,9 @@ const accessToken = isProduction
 
 const client = new MercadoPagoConfig({
   accessToken,
+  options: {
+    timeout: 5000,
+  },
 });
 
 const preference = new Preference(client);
@@ -17,13 +20,6 @@ export async function POST(request: NextRequest) {
   try {
     const { total, tripId, userEmail, userName } = await request.json();
 
-    console.log('Creating MercadoPago preference with:', {
-      total,
-      tripId,
-      userEmail,
-      userName,
-    });
-
     if (!total || total <= 0) {
       return NextResponse.json(
         { error: 'Invalid total amount' },
@@ -31,36 +27,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if access token is available
     if (!accessToken) {
-      console.error(
-        `${isProduction ? 'MERCADOPAGO_LIVE_ACCESS_TOKEN' : 'MERCADOPAGO_TEST_ACCESS_TOKEN'} is not set`,
-      );
+      console.error('MercadoPago access token not configured');
       return NextResponse.json(
-        { error: 'MercadoPago configuration missing' },
+        { error: 'Payment configuration missing' },
         { status: 500 },
       );
     }
-
-    console.log('Environment:', isProduction ? 'PRODUCTION' : 'TEST');
 
     // Split user name into first and last name
     const nameParts = (userName || 'Cliente').split(' ');
     const firstName = nameParts[0] || 'Cliente';
     const lastName = nameParts.slice(1).join(' ') || 'GetRandomTrip';
 
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3010';
+    const baseUrl = 'https://getrandomtrip.vercel.app'; //process.env.NEXTAUTH_URL || 'http://localhost:3010';
 
     const preferenceData = {
       items: [
         {
-          id: tripId || 'trip-001',
+          id: tripId || `trip-${Date.now()}`,
           title: 'Viaje Sorpresa - GetRandomTrip',
           description: 'Tu aventura sorpresa personalizada',
-          category_id: 'travel', // Category for fraud prevention
+          category_id: 'travel',
           quantity: 1,
           unit_price: Number(total),
-          currency_id: 'USD',
+          currency_id: 'ARS',
         },
       ],
       payer: {
@@ -73,55 +64,43 @@ export async function POST(request: NextRequest) {
         failure: `${baseUrl}/journey/checkout`,
         pending: `${baseUrl}/journey/checkout`,
       },
-      // auto_return: 'approved' as const, // Removed - conflicts with binary_mode
+      auto_return: 'approved' as const,
       notification_url: `${baseUrl}/api/mercadopago/webhook`,
       external_reference: tripId || `trip-${Date.now()}`,
-      statement_descriptor: 'GETRANDOMTRIP', // Shows on credit card statement
-      binary_mode: true, // Instant approval/rejection (no pending)
+      statement_descriptor: 'GETRANDOMTRIP',
       metadata: {
         trip_id: tripId,
         source: 'getrandomtrip',
       },
     };
 
-    console.log('Preference data:', JSON.stringify(preferenceData, null, 2));
+    const requestOptions = {
+      idempotencyKey: `${tripId}-${Date.now()}`,
+    };
 
-    const response = await preference.create({ body: preferenceData });
-
-    console.log('MercadoPago preference created successfully:', response.id);
+    const response = await preference.create({
+      body: preferenceData,
+      requestOptions,
+    });
 
     return NextResponse.json({
       init_point: response.init_point,
       preference_id: response.id,
     });
   } catch (error) {
-    console.error('MercadoPago preference creation error:', error);
-    console.error('Error type:', typeof error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
+    console.error('MercadoPago error:', error);
 
-    // Return more specific error information
-    let errorMessage = 'Unknown error';
-    let errorDetails = '';
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-      errorDetails = error.stack || '';
-    } else if (typeof error === 'object' && error !== null) {
-      // MercadoPago SDK errors are often plain objects
-      const errObj = error as any;
-      errorMessage = errObj.message || errObj.error || JSON.stringify(error);
-      errorDetails = JSON.stringify(error, null, 2);
-    } else {
-      errorMessage = String(error);
-      errorDetails = String(error);
-    }
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'object' && error !== null
+          ? (error as any).message || JSON.stringify(error)
+          : String(error);
 
     return NextResponse.json(
       {
         error: 'Failed to create payment preference',
         details: errorMessage,
-        debug:
-          process.env.NODE_ENV === 'development' ? errorDetails : undefined,
       },
       { status: 500 },
     );
