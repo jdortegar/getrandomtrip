@@ -83,7 +83,6 @@ export default function SummaryCard() {
     type: 'perPax' | 'perTrip';
   }>;
 
-  console.log('addonChips', addonChips);
   return (
     <div className="rounded-md bg-white/95 text-gray-900 ring-1 ring-neutral-200 shadow-sm p-4 font-jost">
       <h4 className="font-semibold mb-3">Resumen del Viaje</h4>

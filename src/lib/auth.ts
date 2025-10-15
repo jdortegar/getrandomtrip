@@ -25,6 +25,17 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            password: true,
+            role: true,
+            avatarUrl: true,
+            travelerType: true,
+            interests: true,
+            dislikes: true,
+          },
         });
 
         if (!user || !user.password) {
@@ -44,6 +55,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          image: user.avatarUrl || undefined,
         };
       },
     }),
@@ -55,9 +67,56 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ token, user, trigger, session: clientSession }) {
+    async signIn({ user, account }) {
+      if (!user.email) return false;
+
+      // Check if user exists in database
+      let dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      // For OAuth (Google), create user if doesn't exist
+      if (account?.provider === 'google' && !dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name || 'Usuario',
+            avatarUrl: user.image || null,
+            role: 'client',
+            travelerType: null,
+            interests: [],
+            dislikes: [],
+          },
+        });
+        console.log('✅ Created new user from Google OAuth:', dbUser.id);
+      }
+
+      // For credentials, user should already exist (created during registration)
+      if (account?.provider === 'credentials' && !dbUser) {
+        console.error('❌ User not found for credentials login:', user.email);
+        return false;
+      }
+
+      // Ensure user has the database ID
+      if (dbUser) {
+        user.id = dbUser.id;
+      }
+
+      return true;
+    },
+    async jwt({ token, user, trigger, session: clientSession, account }) {
       if (user) {
         token.id = user.id;
+
+        // If signing in with OAuth, ensure we have the DB user ID
+        if (account?.provider === 'google' && user.email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email },
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+          }
+        }
       }
 
       // Handle session updates from client
@@ -78,6 +137,7 @@ export const authOptions: NextAuthOptions = {
             id: true,
             name: true,
             email: true,
+            role: true,
             travelerType: true,
             interests: true,
             dislikes: true,
@@ -85,8 +145,10 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (dbUser) {
+          session.user.id = dbUser.id;
           session.user.name = dbUser.name;
           session.user.email = dbUser.email;
+          (session.user as any).role = dbUser.role;
           (session.user as any).travelerType = dbUser.travelerType;
           (session.user as any).interests = dbUser.interests;
           (session.user as any).dislikes = dbUser.dislikes;
@@ -103,19 +165,19 @@ export const authOptions: NextAuthOptions = {
  */
 export async function assertTripper() {
   const session = await getServerSession(authOptions);
-  
+
   if (!session?.user) {
     redirect('/login');
   }
-  
+
   const user = await prisma.user.findUnique({
     where: { email: session.user.email! },
   });
-  
+
   if (!user || user.role !== 'tripper') {
     redirect('/');
   }
-  
+
   return user;
 }
 
@@ -125,7 +187,7 @@ export async function assertTripper() {
  */
 export function getUserRole(): string | null {
   if (typeof window === 'undefined') return null;
-  
+
   try {
     const stored = localStorage.getItem('user-storage');
     if (stored) {
@@ -135,6 +197,6 @@ export function getUserRole(): string | null {
   } catch (error) {
     console.error('Error getting user role:', error);
   }
-  
+
   return null;
 }

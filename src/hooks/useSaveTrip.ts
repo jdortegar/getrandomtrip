@@ -56,8 +56,16 @@ export function useSaveTrip() {
         level,
         country: logistics.country,
         city: logistics.city,
-        startDate: logistics.startDate?.toISOString(),
-        endDate: logistics.endDate?.toISOString(),
+        startDate: logistics.startDate
+          ? logistics.startDate instanceof Date
+            ? logistics.startDate.toISOString()
+            : new Date(logistics.startDate).toISOString()
+          : null,
+        endDate: logistics.endDate
+          ? logistics.endDate instanceof Date
+            ? logistics.endDate.toISOString()
+            : new Date(logistics.endDate).toISOString()
+          : null,
         nights: logistics.nights,
         pax: logistics.pax,
         transport: filters.transport,

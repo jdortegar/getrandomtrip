@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { NextRequest, NextResponse } from 'next/server';
 import { createPayment } from '@/lib/db/payment';
+import { prisma } from '@/lib/prisma';
 
 // Use production or test credentials based on NODE_ENV
 const isProduction = process.env.NODE_ENV === 'production';
@@ -21,9 +22,34 @@ export async function POST(request: NextRequest) {
   try {
     const { total, tripId, userEmail, userName, userId } = await request.json();
 
+    console.log('MercadoPago preference request:', {
+      total,
+      tripId,
+      userEmail,
+      userName,
+      userId,
+    });
+
     if (!total || total <= 0) {
+      console.error('Invalid total amount:', total);
       return NextResponse.json(
         { error: 'Invalid total amount' },
+        { status: 400 },
+      );
+    }
+
+    if (!tripId) {
+      console.error('Trip ID is required');
+      return NextResponse.json(
+        { error: 'Trip ID is required' },
+        { status: 400 },
+      );
+    }
+
+    if (!userId) {
+      console.error('User ID is required');
+      return NextResponse.json(
+        { error: 'User ID is required' },
         { status: 400 },
       );
     }
@@ -86,18 +112,37 @@ export async function POST(request: NextRequest) {
 
     // Create payment record in database
     if (userId && tripId) {
-      await createPayment({
-        userId,
-        tripId,
-        provider: 'mercadopago',
-        providerPreferenceId: response.id,
-        amount: total,
-        currency: 'ARS',
-        mpExternalReference: tripId,
-        mpDescription: preferenceData.items[0].description,
-        mpStatementDescriptor: 'GETRANDOMTRIP',
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-      });
+      try {
+        // Verify user exists before creating payment
+        const userExists = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        if (!userExists) {
+          console.error('User not found in database:', userId);
+          return NextResponse.json(
+            { error: 'User not found. Please logout and login again.' },
+            { status: 400 },
+          );
+        }
+
+        await createPayment({
+          userId,
+          tripId,
+          provider: 'mercadopago',
+          providerPreferenceId: response.id,
+          amount: total,
+          currency: 'ARS',
+          mpExternalReference: tripId,
+          mpDescription: preferenceData.items[0].description,
+          mpStatementDescriptor: 'GETRANDOMTRIP',
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        });
+      } catch (paymentError) {
+        console.error('Error creating payment record:', paymentError);
+        // Continue with preference even if payment record fails
+        // The webhook will handle payment tracking
+      }
     }
 
     return NextResponse.json({

@@ -116,14 +116,22 @@ export function usePayment(paymentData: PaymentData) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create payment preference');
+        const errorData = await response.json();
+        console.error('Payment preference error:', errorData);
+        throw new Error(
+          errorData.error || 'Failed to create payment preference',
+        );
       }
 
       const { init_point } = await response.json();
       window.location.href = init_point;
     } catch (error) {
       console.error('Payment error:', error);
-      alert('Error al procesar el pago. Intenta nuevamente.');
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Error al procesar el pago. Intenta nuevamente.';
+      alert(errorMessage);
       setIsProcessing(false);
     }
   };
