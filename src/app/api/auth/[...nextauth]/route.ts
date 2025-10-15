@@ -53,15 +53,42 @@ const authOptions: NextAuthOptions = {
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session: clientSession }) {
       if (user) {
         token.id = user.id;
       }
+
+      // Handle session updates from client
+      if (trigger === 'update' && clientSession) {
+        return { ...token, ...clientSession };
+      }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+
+        // Fetch latest user data from database
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            travelerType: true,
+            interests: true,
+            dislikes: true,
+          },
+        });
+
+        if (dbUser) {
+          session.user.name = dbUser.name;
+          session.user.email = dbUser.email;
+          (session.user as any).travelerType = dbUser.travelerType;
+          (session.user as any).interests = dbUser.interests;
+          (session.user as any).dislikes = dbUser.dislikes;
+        }
       }
       return session;
     },
@@ -70,4 +97,4 @@ const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST, authOptions };

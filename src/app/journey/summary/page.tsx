@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
+import { Loader2 } from 'lucide-react';
 
 import ChatFab from '@/components/chrome/ChatFab';
 
@@ -21,6 +22,7 @@ import Chip from '@/components/badge';
 import { Button } from '@/components/ui/button';
 import { usePlanData } from '@/hooks/usePlanData';
 import { useSaveTrip } from '@/hooks/useSaveTrip';
+import { usePayment } from '@/hooks/usePayment';
 import { useUserStore } from '@/store/slices/userStore';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
@@ -44,6 +46,14 @@ function SummaryPageContent() {
   } = useStore();
 
   const { tags } = usePlanData();
+
+  // Payment hook with consolidated logic
+  const { isProcessing, calculateTotals, initiatePayment } = usePayment({
+    basePriceUsd: basePriceUsd || 0,
+    logistics,
+    filters,
+    addons,
+  });
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -97,39 +107,16 @@ function SummaryPageContent() {
     return null;
   }
 
-  // Calculate pricing (after auth check)
+  // Calculate pricing using consolidated logic (DRY principle)
   const pax = logistics.pax || 1;
-  const basePerPax = basePriceUsd || 0;
-
-  // Calculate filters cost (not split by pax)
-  const filtersTrip = computeFiltersCostPerTrip(filters, pax);
-  const filtersPerPax = filtersTrip;
-
-  // Calculate addons cost per person (excluding cancellation insurance)
-  let addonsPerPax = 0;
-  const hasCancelInsurance = addons.selected.some((s) => s.id === 'cancel-ins');
-
-  addons.selected.forEach((s) => {
-    const a = ADDONS.find((x) => x.id === s.id);
-    if (!a || a.id === 'cancel-ins') return; // Skip cancel-ins for now
-
-    const qty = s.qty || 1;
-    const totalPrice = a.price * qty;
-
-    if (a.type === 'perPax') {
-      // For perPax, show individual price (total / qty)
-      addonsPerPax += totalPrice / qty;
-    } else {
-      // For perTrip, divide by number of passengers
-      addonsPerPax += totalPrice / pax;
-    }
-  });
-
-  // Calculate subtotal before cancellation insurance
-  const subtotalPerPax = basePerPax + filtersPerPax + addonsPerPax;
-
-  // Calculate cancellation insurance as 15% of subtotal
-  const cancelInsurancePerPax = hasCancelInsurance ? subtotalPerPax * 0.15 : 0;
+  const {
+    basePerPax,
+    filtersPerPax,
+    addonsPerPax,
+    cancelInsurancePerPax,
+    totalPerPax,
+    totalTrip,
+  } = calculateTotals();
 
   // Generate filter chips using FILTER_OPTIONS
   const filterChips: Array<{ key: string; label: string; value: string }> = [];
@@ -249,10 +236,7 @@ function SummaryPageContent() {
     type: 'perPax' | 'perTrip';
   }[];
 
-  // Calculate totals
-  const totalAddonsPerPax = addonsPerPax + cancelInsurancePerPax;
-  const totalPerPax = basePerPax + filtersPerPax + totalAddonsPerPax;
-  const totalTrip = totalPerPax * pax;
+  // Totals are already calculated by the payment hook (DRY principle)
 
   // Build URL with params
   const buildUrlWithParams = (path: string) => {
@@ -269,7 +253,7 @@ function SummaryPageContent() {
     router.push(buildUrlWithParams('/journey/basic-config'));
 
   const payNow = async () => {
-    // Update trip status to PENDING_PAYMENT before checkout
+    // Update trip status to PENDING_PAYMENT before payment
     if (savedTripId) {
       try {
         await saveTrip(savedTripId);
@@ -277,7 +261,9 @@ function SummaryPageContent() {
         console.error('Failed to update trip:', error);
       }
     }
-    router.push('/journey/checkout');
+
+    // Initiate MercadoPago payment directly
+    await initiatePayment(savedTripId || undefined);
   };
 
   const ItemBlock = ({ title, value }: { title: string; value: string }) => (
@@ -450,7 +436,7 @@ function SummaryPageContent() {
                     Add-ons ({addonRows.length})
                   </span>
                   <span className="font-medium text-neutral-900">
-                    {usd(totalAddonsPerPax)}
+                    {usd(addonsPerPax + cancelInsurancePerPax)}
                   </span>
                 </div>
 
@@ -480,8 +466,24 @@ function SummaryPageContent() {
                   </Link>
                 </Button>
 
-                <Button onClick={payNow} className="w-full">
-                  Continuar a pago
+                <Button
+                  onClick={payNow}
+                  disabled={isProcessing || isSaving}
+                  className="w-full"
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Procesando pago...
+                    </div>
+                  ) : isSaving ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Guardando viaje...
+                    </div>
+                  ) : (
+                    'Continuar a pago'
+                  )}
                 </Button>
               </div>
             </div>

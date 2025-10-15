@@ -107,17 +107,8 @@ export type JourneyState = {
   setAddon: (sel: AddonSelection | undefined) => void;
   removeAddon: (id: string) => void;
   resetAddons: () => void;
+  resetJourney: () => void;
 };
-
-export function countOptionalFilters(f: Filters): number {
-  let n = 0;
-  if (f.climate !== 'indistinto') n++;
-  if (f.maxTravelTime !== 'sin-limite') n++;
-  if (f.departPref !== 'indistinto') n++;
-  if (f.arrivePref !== 'indistinto') n++;
-  n += f.avoidDestinations?.length ?? 0; // cada destino suma 1
-  return n;
-}
 
 export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
   from: '',
@@ -165,4 +156,32 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
     set({ addons: { selected: next } });
   },
   resetAddons: () => set({ addons: { selected: [] } }),
+  resetJourney: () =>
+    set({
+      basePriceUsd: 0,
+      displayPrice: '',
+      level: 'essenza',
+      type: 'solo',
+      logistics: {
+        nights: 1,
+        pax: 1,
+        city: '',
+        country: '',
+        startDate: undefined,
+        endDate: undefined,
+      },
+      filters: {
+        transport: 'avion',
+        climate: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        departPref: 'indistinto',
+        arrivePref: 'indistinto',
+        avoidDestinations: [],
+      },
+      addons: { selected: [] },
+      filtersCostUsd: 0,
+      addonsCostUsd: 0,
+      totalPerPaxUsd: 0,
+      activeTab: 'logistics',
+    }),
 });

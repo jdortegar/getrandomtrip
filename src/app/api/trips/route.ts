@@ -1,39 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/trips - Get all trips for the authenticated user
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    console.log('GET /api/trips called');
+    const session = await getServerSession(authOptions);
+    console.log('Session:', session);
 
     if (!session?.user?.email) {
+      console.log('No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Find user by email
+    console.log('Finding user by email:', session.user.email);
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
+    console.log('User found:', user);
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Get all trips for this user
+    console.log('Fetching trips for userId:', user.id);
     const trips = await prisma.trip.findMany({
       where: { userId: user.id },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
       include: {
         payment: true,
       },
     });
+    console.log('Trips found:', trips.length);
 
     return NextResponse.json({ trips }, { status: 200 });
   } catch (error) {
     console.error('Error fetching trips:', error);
+    console.error(
+      'Error details:',
+      error instanceof Error ? error.message : String(error),
+    );
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }
@@ -42,7 +57,7 @@ export async function GET(request: NextRequest) {
 // POST /api/trips - Create or update a trip
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

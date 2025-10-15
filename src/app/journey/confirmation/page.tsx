@@ -12,6 +12,7 @@ import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
 import { Calendar, Share2, Mail } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
+import { useCountdown } from '@/hooks/useCountdown';
 import { Suspense } from 'react';
 
 function ConfirmationPageContent() {
@@ -19,8 +20,10 @@ function ConfirmationPageContent() {
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const { isAuthed } = useUserStore();
-  const { logistics, type } = useStore();
-  const [left, setLeft] = useState<string>('—');
+  const { logistics, type, resetJourney } = useStore();
+
+  // Use countdown hook for time remaining calculation
+  const timeLeft = useCountdown(logistics.startDate);
 
   // Get MercadoPago callback parameters
   const paymentId = searchParams.get('payment_id');
@@ -31,7 +34,6 @@ function ConfirmationPageContent() {
   // Determine if payment was successful
   const isPaymentSuccessful =
     paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending');
-  const isManualRedirect = !paymentId && !paymentStatus; // No payment params = manual redirect
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   // Redirect to login if not authenticated
@@ -44,36 +46,14 @@ function ConfirmationPageContent() {
     }
   }, [session, isAuthed, status, router]);
 
-  // Countdown timer effect
+  // Clear store when user leaves confirmation page to start fresh for next trip
   useEffect(() => {
-    const tick = () => {
-      if (!logistics.startDate) return setLeft('—');
-      const now = new Date();
-      const start = new Date(logistics.startDate);
-      const ms = +start - +now;
-      if (ms <= 0) return setLeft('¡Es hoy!');
-      const d = Math.floor(ms / 86400000);
-      const h = Math.floor((ms % 86400000) / 3600000);
-      const m = Math.floor((ms % 3600000) / 60000);
-      setLeft(`${d}d ${h}h ${m}m`);
+    return () => {
+      if (isPaymentSuccessful) {
+        resetJourney();
+      }
     };
-    tick();
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, [logistics.startDate]);
-
-  // Log payment information for debugging
-  useEffect(() => {
-    if (paymentId) {
-      console.log('Payment received:', {
-        paymentId,
-        paymentStatus,
-        merchantOrderId,
-        externalReference,
-      });
-      // TODO: Update trip status in database with payment information
-    }
-  }, [paymentId, paymentStatus, merchantOrderId, externalReference]);
+  }, [isPaymentSuccessful, resetJourney]);
 
   // Show loading while checking auth
   if (status === 'loading') {
@@ -125,6 +105,7 @@ function ConfirmationPageContent() {
           videoSrc: '/videos/hero-video.mp4',
           fallbackImage: '/images/bg-playa-mexico.jpg',
         }}
+        className="!h-[40vh]"
       />
 
       <Section>
@@ -179,34 +160,11 @@ function ConfirmationPageContent() {
               </div>
             )}
 
-            {isManualRedirect && (
-              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-                <div className="flex items-center justify-center gap-2 text-yellow-800">
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="font-medium">Redirección manual</span>
-                </div>
-                <p className="text-sm text-yellow-700 mt-1">
-                  Si completaste el pago, tu reserva está confirmada. Si no,
-                  regresa al checkout.
-                </p>
-              </div>
-            )}
-
             {/* Trip Details */}
             <div className="inline-flex items-center gap-4 px-6 py-4 rounded-md border border-gray-300 bg-gray-50 mb-6">
-              <div className="text-left">
+              <div className="text-center">
                 <div className="text-xs text-neutral-500 uppercase tracking-wider mb-1">
-                  Destino
+                  Salida desde
                 </div>
                 <div className="font-semibold text-neutral-900">
                   {logistics.city ?? '—'}
@@ -215,7 +173,7 @@ function ConfirmationPageContent() {
 
               <div className="w-px h-12 bg-gray-300" />
 
-              <div className="text-left">
+              <div className="text-center">
                 <div className="text-xs text-neutral-500 uppercase tracking-wider mb-1">
                   Fechas
                 </div>
@@ -227,11 +185,11 @@ function ConfirmationPageContent() {
 
               <div className="w-px h-12 bg-gray-300" />
 
-              <div className="text-left">
+              <div className="text-center">
                 <div className="text-xs text-neutral-500 uppercase tracking-wider mb-1">
                   Comienza en
                 </div>
-                <div className="font-semibold text-green-600">{left}</div>
+                <div className="font-semibold text-green-600">{timeLeft}</div>
               </div>
             </div>
 

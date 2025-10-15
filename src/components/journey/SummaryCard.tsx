@@ -1,12 +1,9 @@
 'use client';
 import { useStore } from '@/store/store';
-import {
-  computeFiltersCostPerTrip,
-  computeAddonsCostPerTrip,
-} from '@/lib/pricing';
 import { ADDONS } from '@/data/addons-catalog';
 import SelectedFiltersChips from './SelectedFiltersChips';
 import Chip from '@/components/badge';
+import { usePayment } from '@/hooks/usePayment';
 
 export default function SummaryCard() {
   const {
@@ -22,40 +19,21 @@ export default function SummaryCard() {
 
   const pax = logistics.pax || 1;
 
-  // Calculate filters cost (not split by pax)
-  const filtersTrip = computeFiltersCostPerTrip(filters, pax);
-  const filtersPerPax = filtersTrip;
-
-  // Calculate addons cost per person (excluding cancellation insurance)
-  let addonsPerPax = 0;
-  const hasCancelInsurance = addons.selected.some((s) => s.id === 'cancel-ins');
-
-  addons.selected.forEach((s) => {
-    const a = ADDONS.find((x) => x.id === s.id);
-    if (!a || a.id === 'cancel-ins') return; // Skip cancel-ins for now
-
-    const qty = s.qty || 1;
-    const totalPrice = a.price * qty;
-
-    if (a.type === 'perPax') {
-      // For perPax, show individual price (total / qty)
-      addonsPerPax += totalPrice / qty;
-    } else {
-      // For perTrip, divide by number of passengers
-      addonsPerPax += totalPrice / pax;
-    }
+  // Use consolidated payment hook for pricing calculations (DRY principle)
+  const { calculateTotals } = usePayment({
+    basePriceUsd: basePriceUsd || 0,
+    logistics,
+    filters,
+    addons,
   });
 
-  const basePerPax = basePriceUsd || 0;
-
-  // Calculate subtotal before cancellation insurance
-  const subtotalPerPax = basePerPax + filtersPerPax + addonsPerPax;
-
-  // Calculate cancellation insurance as 15% of subtotal
-  const cancelInsurancePerPax = hasCancelInsurance ? subtotalPerPax * 0.15 : 0;
-
-  // Final total includes cancellation insurance
-  const totalPerPax = subtotalPerPax + cancelInsurancePerPax;
+  const {
+    basePerPax,
+    filtersPerPax,
+    addonsPerPax,
+    cancelInsurancePerPax,
+    totalPerPax,
+  } = calculateTotals();
 
   const safeDisplay =
     displayPrice && displayPrice.trim().length > 0
@@ -71,7 +49,7 @@ export default function SummaryCard() {
 
       const valueText = qty > 1 ? `${a.title} ×${qty}` : a.title;
 
-      // Calculate per-person price
+      // Calculate per-person price using consolidated logic
       let pricePerPax = 0;
 
       if (a.id === 'cancel-ins') {
@@ -140,17 +118,6 @@ export default function SummaryCard() {
                 color="primary"
               />
             ))}
-            {/* {cancelCost > 0 && (
-              <Chip
-                item={{
-                  key: 'cancel-insurance',
-                  label: 'Seguridad',
-                  value: `Seguro cancelación (USD $${cancelCost})`,
-                  onRemove: () => removeAddon('cancel-ins'),
-                }}
-                color="warning"
-              />
-            )} */}
           </div>
 
           <div className="text-base font-semibold">{`USD ${(addonsPerPax + cancelInsurancePerPax).toFixed(2)}`}</div>

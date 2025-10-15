@@ -17,10 +17,6 @@ export interface User {
 const PROFILE_MENU_ITEMS = [
   {
     href: '/profile',
-    label: 'Mi perfil público',
-  },
-  {
-    href: '/profile/edit',
     label: 'Editar perfil',
   },
 ] as const;

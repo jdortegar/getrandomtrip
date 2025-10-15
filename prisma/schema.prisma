@@ -35,8 +35,9 @@ model User {
   dislikes      String[] @default([])
   
   // Relations
-  trips   Trip[]
-  reviews Review[]
+  trips    Trip[]
+  payments Payment[]
+  reviews  Review[]
   
   @@map("users")
 }
@@ -99,25 +100,64 @@ model Trip {
 
 model Payment {
   id                   String        @id @default(cuid())
-  tripId               String        @unique
-  provider             String
-  providerPaymentId    String?
-  providerPreferenceId String?
-  providerSessionId    String?
-  amount               Float
-  currency             String        @default("USD")
-  paymentMethod        String?
-  cardLast4            String?
-  cardBrand            String?
-  status               PaymentStatus @default(PENDING)
-  providerResponse     Json?
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   
   // Relations
-  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  userId               String        // Direct relation to user
+  tripId               String        @unique
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip                 Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  // Provider Information
+  provider             String        // 'mercadopago' | 'stripe' | 'paypal'
+  providerPaymentId    String?       // MP payment ID
+  providerPreferenceId String?       // MP preference ID
+  providerMerchantOrderId String?    // MP merchant order ID
+  providerSessionId    String?       // Session/token for provider
+  
+  // Payment Details
+  amount               Float         // Total amount paid
+  currency             String        @default("ARS") // Changed from USD to ARS
+  exchangeRate         Float?        // If paid in different currency
+  
+  // Payment Method Details
+  paymentMethod        String?       // 'credit_card' | 'debit_card' | 'digital_wallet'
+  cardLast4            String?       // Last 4 digits
+  cardBrand            String?       // 'visa' | 'mastercard' | 'amex'
+  cardExpiryMonth      Int?          // MM
+  cardExpiryYear       Int?          // YYYY
+  cardholderName       String?       // Cardholder name
+  
+  // MercadoPago Specific
+  mpExternalReference  String?       // External reference sent to MP
+  mpDescription        String?       // Payment description
+  mpStatementDescriptor String?      // Statement descriptor
+  mpMetadata           Json?         // Additional MP metadata
+  
+  // Payment Status & Flow
+  status               PaymentStatus @default(PENDING)
+  statusDetail         String?       // MP status detail (e.g., 'accredited', 'pending_waiting_payment')
+  failureReason        String?       // Reason if payment failed
+  
+  // Financial Tracking
+  netAmount            Float?        // Amount after fees
+  feeAmount            Float?        // Provider fees
+  taxAmount            Float?        // Tax amount
+  
+  // Refund & Chargeback
+  refundedAmount       Float         @default(0)
+  refundedAt           DateTime?
+  chargebackAmount     Float         @default(0)
+  chargebackAt         DateTime?
+  
+  // Provider Response Data
+  providerResponse     Json?         // Full provider response
+  webhookData          Json?         // Webhook payload data
+  
+  // Timestamps
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  paidAt               DateTime?     // When payment was completed
+  expiresAt            DateTime?     // When payment preference expires
   
   @@map("payments")
 }
@@ -158,9 +198,18 @@ enum TripStatus {
 }
 
 enum PaymentStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  REFUNDED
+  PENDING              // Payment created, waiting for user action
+  PROCESSING           // Payment in progress
+  APPROVED             // Payment approved by provider
+  COMPLETED            // Payment fully processed and funds received
+  PENDING_WAITING_PAYMENT // MP: Waiting for payment method
+  PENDING_WAITING_CONFIRMATION // MP: Waiting for confirmation
+  FAILED               // Payment failed
+  CANCELLED            // Payment cancelled by user or system
+  REFUNDED             // Payment refunded
+  PARTIALLY_REFUNDED   // Partial refund
+  CHARGEBACK           // Chargeback initiated
+  IN_PROCESS           // MP: Payment being processed
+  IN_MEDIATION         // MP: Payment in mediation
+  REJECTED             // MP: Payment rejected
 }

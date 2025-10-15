@@ -7,6 +7,7 @@ import SessionProvider from '@/components/providers/SessionProvider';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import FooterLanding from '@/components/layout/FooterLanding';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const fraunces = Fraunces({
@@ -71,6 +72,7 @@ export default function RootLayout({
           {children}
           <FooterLanding />
           {/* <NewsletterBar /> 👈 persistente en todo el sitio */}
+          <Toaster />
         </SessionProvider>
       </body>
     </html>

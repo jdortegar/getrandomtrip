@@ -1,10 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
-import Navbar from '@/components/Navbar';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
@@ -19,13 +18,224 @@ import {
   Edit,
   Lock,
   Settings,
+  X,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+
+type TabType = 'personal' | 'preferences' | 'security';
 
 function ProfileContent() {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>('personal');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    travelerType: '',
+    interests: [] as string[],
+    dislikes: [] as string[],
+  });
+  const [stats, setStats] = useState({
+    totalTrips: 0,
+    averageRating: 0,
+  });
 
   const currentUser = session?.user || user;
+
+  // Fetch user stats
+  useEffect(() => {
+    async function fetchStats() {
+      if (!currentUser?.id) {
+        console.log('No user ID available');
+        return;
+      }
+
+      try {
+        console.log('Fetching trips for user:', currentUser.id);
+        const tripsRes = await fetch(`/api/trips?userId=${currentUser.id}`);
+        const tripsData = await tripsRes.json();
+        console.log('Trips response:', tripsData);
+
+        if (tripsData.error) {
+          console.error('API Error:', tripsData.error, tripsData.details);
+          return;
+        }
+
+        const trips = tripsData.trips || [];
+
+        const ratingsTrips = trips.filter((t: any) => t.customerRating);
+        const avgRating =
+          ratingsTrips.length > 0
+            ? ratingsTrips.reduce(
+                (sum: number, t: any) => sum + (t.customerRating || 0),
+                0,
+              ) / ratingsTrips.length
+            : 0;
+
+        console.log('Stats calculated:', {
+          totalTrips: trips.length,
+          avgRating,
+        });
+        setStats({
+          totalTrips: trips.length,
+          averageRating: avgRating,
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    }
+
+    fetchStats();
+  }, [currentUser?.id, session]);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    // Pre-fill form with current data
+    // User data comes from NextAuth session or Zustand store
+    const travelerType =
+      (user as any)?.travelerType || (currentUser as any)?.travelerType || '';
+    const interests =
+      (user as any)?.interests || (currentUser as any)?.interests || [];
+    const dislikes =
+      (user as any)?.dislikes || (currentUser as any)?.dislikes || [];
+
+    setFormData({
+      name: currentUser?.name || '',
+      email: currentUser?.email || '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      travelerType,
+      interests: Array.isArray(interests) ? interests : [],
+      dislikes: Array.isArray(dislikes) ? dislikes : [],
+    });
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setActiveTab('personal');
+    setFormData({
+      name: '',
+      email: '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      travelerType: '',
+      interests: [],
+      dislikes: [],
+    });
+  };
+
+  const handleSavePersonal = async () => {
+    try {
+      const response = await fetch('/api/user/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Update NextAuth session
+        await updateSession({
+          ...session,
+          user: {
+            ...session?.user,
+            name: data.user.name,
+            email: data.user.email,
+          },
+        });
+
+        toast.success('Información actualizada correctamente');
+        closeModal();
+      } else {
+        toast.error('Error al actualizar información');
+      }
+    } catch (error) {
+      console.error('Error updating personal info:', error);
+      toast.error('Error al actualizar información');
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    try {
+      const response = await fetch('/api/user/preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          travelerType: formData.travelerType,
+          interests: formData.interests.filter((i) => i.trim() !== ''),
+          dislikes: formData.dislikes.filter((d) => d.trim() !== ''),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Update NextAuth session with new preferences
+        await updateSession({
+          ...session,
+          user: {
+            ...session?.user,
+            travelerType: data.user.travelerType,
+            interests: data.user.interests,
+            dislikes: data.user.dislikes,
+          },
+        });
+
+        toast.success('Preferencias actualizadas correctamente');
+        closeModal();
+      } else {
+        toast.error('Error al actualizar preferencias');
+      }
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+      toast.error('Error al actualizar preferencias');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (formData.newPassword !== formData.confirmPassword) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (formData.newPassword.length < 6) {
+      toast.error('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/user/password', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Contraseña actualizada correctamente');
+        closeModal();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Error al cambiar contraseña');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      toast.error('Error al cambiar contraseña');
+    }
+  };
 
   return (
     <>
@@ -36,6 +246,7 @@ function ProfileContent() {
           videoSrc: '/videos/hero-video.mp4',
           fallbackImage: '/images/bg-playa-mexico.jpg',
         }}
+        className="!h-[40vh]"
       />
 
       <Section>
@@ -67,18 +278,16 @@ function ProfileContent() {
                 </div>
               </div>
 
-              <Button asChild variant="secondary">
-                <Link href="/profile/edit">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Editar Perfil
-                </Link>
+              <Button variant="secondary" onClick={openModal}>
+                <Edit className="w-4 h-4 mr-2" />
+                Editar Perfil
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="space-y-6">
               {/* Personal Information */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                 <h2 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
@@ -133,9 +342,11 @@ function ProfileContent() {
                       Tipo de viajero
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {user?.prefs?.travelerType ? (
+                      {(user as any)?.travelerType ||
+                      (currentUser as any)?.travelerType ? (
                         <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm border border-blue-200">
-                          {user.prefs.travelerType}
+                          {(user as any)?.travelerType ||
+                            (currentUser as any)?.travelerType}
                         </span>
                       ) : (
                         <p className="text-sm text-neutral-500">
@@ -150,8 +361,13 @@ function ProfileContent() {
                       Intereses
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {user?.prefs?.interests?.length ? (
-                        user.prefs.interests.map((interest) => (
+                      {(user as any)?.interests?.length ||
+                      (currentUser as any)?.interests?.length ? (
+                        (
+                          (user as any)?.interests ||
+                          (currentUser as any)?.interests ||
+                          []
+                        ).map((interest: string) => (
                           <span
                             key={interest}
                             className="px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-sm border border-green-200"
@@ -172,8 +388,13 @@ function ProfileContent() {
                       Evitar
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {user?.prefs?.dislikes?.length ? (
-                        user.prefs.dislikes.map((dislike) => (
+                      {(user as any)?.dislikes?.length ||
+                      (currentUser as any)?.dislikes?.length ? (
+                        (
+                          (user as any)?.dislikes ||
+                          (currentUser as any)?.dislikes ||
+                          []
+                        ).map((dislike: string) => (
                           <span
                             key={dislike}
                             className="px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm border border-red-200"
@@ -205,17 +426,9 @@ function ProfileContent() {
                       <MapPin className="h-5 w-5 text-blue-500" />
                       <span className="text-sm text-neutral-700">Viajes</span>
                     </div>
-                    <span className="font-bold text-neutral-900">0</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2">
-                      <Heart className="h-5 w-5 text-red-500" />
-                      <span className="text-sm text-neutral-700">
-                        Favoritos
-                      </span>
-                    </div>
-                    <span className="font-bold text-neutral-900">0</span>
+                    <span className="font-bold text-neutral-900">
+                      {stats.totalTrips}
+                    </span>
                   </div>
 
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
@@ -223,54 +436,257 @@ function ProfileContent() {
                       <Star className="h-5 w-5 text-yellow-500" />
                       <span className="text-sm text-neutral-700">Rating</span>
                     </div>
-                    <span className="font-bold text-neutral-900">—</span>
+                    <span className="font-bold text-neutral-900">
+                      {stats.averageRating > 0
+                        ? stats.averageRating.toFixed(1)
+                        : '—'}
+                    </span>
                   </div>
-                </div>
-              </div>
-
-              {/* Quick Actions Card */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
-                  Acciones Rápidas
-                </h3>
-                <div className="space-y-3">
-                  <Button
-                    asChild
-                    className="w-full justify-start"
-                    variant="secondary"
-                  >
-                    <Link href="/profile/edit">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Editar Perfil
-                    </Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    className="w-full justify-start"
-                    variant="secondary"
-                  >
-                    <Link href="/profile/security">
-                      <Lock className="w-4 h-4 mr-2" />
-                      Seguridad
-                    </Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    className="w-full justify-start"
-                    variant="secondary"
-                  >
-                    <Link href="/profile/preferences">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Preferencias
-                    </Link>
-                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Edit Profile Modal with Tabs */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b flex items-center justify-between">
+                <div className="flex-1 p-6">
+                  <h3 className="text-xl font-semibold text-neutral-900 font-jost">
+                    Editar Perfil
+                  </h3>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="p-6 text-neutral-500 hover:text-neutral-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <div className="border-b">
+                <div className="flex">
+                  <button
+                    onClick={() => setActiveTab('personal')}
+                    className={`flex-1 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'personal'
+                        ? 'border-blue-600 text-blue-600'
+                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                    }`}
+                  >
+                    <User className="w-4 h-4 inline mr-2" />
+                    Personal
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('preferences')}
+                    className={`flex-1 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'preferences'
+                        ? 'border-blue-600 text-blue-600'
+                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                    }`}
+                  >
+                    <Settings className="w-4 h-4 inline mr-2" />
+                    Preferencias
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('security')}
+                    className={`flex-1 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'security'
+                        ? 'border-blue-600 text-blue-600'
+                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                    }`}
+                  >
+                    <Lock className="w-4 h-4 inline mr-2" />
+                    Seguridad
+                  </button>
+                </div>
+              </div>
+
+              {/* Tab Content */}
+              <div className="p-6">
+                {activeTab === 'personal' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Nombre
+                      </label>
+                      <Input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        placeholder="Tu nombre completo"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Email
+                      </label>
+                      <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        placeholder="tu@email.com"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'preferences' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Tipo de Viajero
+                      </label>
+                      <select
+                        value={formData.travelerType}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            travelerType: e.target.value,
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Seleccionar...</option>
+                        <option value="solo">Solo</option>
+                        <option value="couple">Pareja</option>
+                        <option value="family">Familia</option>
+                        <option value="group">Grupo</option>
+                        <option value="honeymoon">Luna de Miel</option>
+                        <option value="paws">Con Mascotas</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Intereses (separados por coma)
+                      </label>
+                      <Input
+                        type="text"
+                        value={formData.interests.filter((i) => i).join(', ')}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            interests: e.target.value
+                              .split(',')
+                              .map((i) => i.trim())
+                              .filter((i) => i !== ''),
+                          })
+                        }
+                        placeholder="aventura, cultura, comida"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Evitar (separados por coma)
+                      </label>
+                      <Input
+                        type="text"
+                        value={formData.dislikes.filter((d) => d).join(', ')}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            dislikes: e.target.value
+                              .split(',')
+                              .map((i) => i.trim())
+                              .filter((i) => i !== ''),
+                          })
+                        }
+                        placeholder="multitudes, frío"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'security' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Contraseña Actual
+                      </label>
+                      <Input
+                        type="password"
+                        value={formData.currentPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            currentPassword: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Nueva Contraseña
+                      </label>
+                      <Input
+                        type="password"
+                        value={formData.newPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            newPassword: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Confirmar Nueva Contraseña
+                      </label>
+                      <Input
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-white border-t p-6 flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={closeModal}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (activeTab === 'personal') handleSavePersonal();
+                    else if (activeTab === 'preferences')
+                      handleSavePreferences();
+                    else if (activeTab === 'security') handleChangePassword();
+                  }}
+                  className="flex-1"
+                >
+                  Guardar Cambios
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </Section>
     </>
   );

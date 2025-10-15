@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { NextRequest, NextResponse } from 'next/server';
+import { createPayment } from '@/lib/db/payment';
 
 // Use production or test credentials based on NODE_ENV
 const isProduction = process.env.NODE_ENV === 'production';
@@ -18,7 +19,7 @@ const preference = new Preference(client);
 
 export async function POST(request: NextRequest) {
   try {
-    const { total, tripId, userEmail, userName } = await request.json();
+    const { total, tripId, userEmail, userName, userId } = await request.json();
 
     if (!total || total <= 0) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
           category_id: 'travel',
           quantity: 1,
           unit_price: Number(total),
-          currency_id: 'ARS',
+          currency_id: 'USD',
         },
       ],
       payer: {
@@ -82,6 +83,22 @@ export async function POST(request: NextRequest) {
       body: preferenceData,
       requestOptions,
     });
+
+    // Create payment record in database
+    if (userId && tripId) {
+      await createPayment({
+        userId,
+        tripId,
+        provider: 'mercadopago',
+        providerPreferenceId: response.id,
+        amount: total,
+        currency: 'ARS',
+        mpExternalReference: tripId,
+        mpDescription: preferenceData.items[0].description,
+        mpStatementDescriptor: 'GETRANDOMTRIP',
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      });
+    }
 
     return NextResponse.json({
       init_point: response.init_point,
