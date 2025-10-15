@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TripStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -30,7 +30,7 @@ async function main() {
       userId: user.id,
       type: 'couple',
       level: 'atelier-getaway',
-      status: 'COMPLETED',
+      status: TripStatus.COMPLETED,
       from: '',
 
       // Logistics
@@ -75,7 +75,7 @@ async function main() {
       userId: user.id,
       type: 'family',
       level: 'explora-plus',
-      status: 'CONFIRMED',
+      status: TripStatus.CONFIRMED,
       from: '',
 
       // Logistics
@@ -119,7 +119,7 @@ async function main() {
       userId: user.id,
       type: 'solo',
       level: 'modo-explora',
-      status: 'REVEALED',
+      status: TripStatus.REVEALED,
       from: '',
 
       // Logistics

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/payments - Get all payments for the authenticated user
@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
             id: true,
             type: true,
             level: true,
-            destination: true,
             actualDestination: true,
             startDate: true,
           },

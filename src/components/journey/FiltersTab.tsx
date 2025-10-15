@@ -1,7 +1,7 @@
 
 'use client';
 import { useStore } from '@/store/store';
-import { countOptionalFilters } from '@/store/slices/journeyStore';
+import { countOptionalFilters } from '@/lib/helpers/journey';
 import { useRouter } from 'next/navigation';
 import AvoidGrid from './avoid/AvoidGrid';
 
