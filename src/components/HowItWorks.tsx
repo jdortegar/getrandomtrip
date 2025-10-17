@@ -12,20 +12,20 @@ export default function HowItWorksSection() {
       className="mt-4"
       data-testid="how-it-works"
     >
-      <div className="max-w-7xl mx-auto py-6">
-        <p className="text-center text-gray-600 italic font-jost text-lg mb-6">
+      <div className="mx-auto max-w-7xl py-8">
+        <p className="font-jost mb-10 text-center text-xl italic text-gray-600">
           {HOW_IT_WORKS_CONSTANTS.SUBTITLE}
         </p>
 
         {/* Steps */}
-        <ol className={'grid md:grid-cols-3 gap-8'} role="list">
+        <ol className="grid gap-8 md:grid-cols-3" role="list">
           {HOW_IT_WORKS_CONSTANTS.STEPS.map((step) => (
             <HowItWorksStep key={step.title} step={step} />
           ))}
         </ol>
 
         {/* Note */}
-        <p className={'mt-4 text-xs text-neutral-500 text-center'}>
+        <p className="mt-10 text-center text-sm text-neutral-500">
           {HOW_IT_WORKS_CONSTANTS.NOTE}
         </p>
       </div>

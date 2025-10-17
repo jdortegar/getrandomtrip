@@ -27,7 +27,7 @@ const Section = ({
     <section
       id={id}
       className={cn(
-        'text-center py-18 relative bg-cover bg-center',
+        'text-center py-18 relative bg-cover bg-center flex flex-col items-center justify-center',
         className,
         {
           'bg-white text-gray-900': variant === 'default',
@@ -64,7 +64,7 @@ const Section = ({
           </p>
         </div>
       )}
-      <div className={cn('mx-auto relative z-10', !fullWidth && 'max-w-5xl')}>
+      <div className={cn('mx-auto relative z-10', !fullWidth && 'max-w-7xl')}>
         {children}
       </div>
     </section>

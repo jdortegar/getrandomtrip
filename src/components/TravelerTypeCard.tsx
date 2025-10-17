@@ -22,17 +22,17 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   const cardContent = (
     <>
       <Image
-        src={imageUrl}
         alt={title}
+        className="transition-transform duration-300 group-hover:scale-110"
         fill
-        style={{ objectFit: 'cover' }}
-        className="group-hover:scale-110 transition-transform duration-300"
         priority
+        src={imageUrl}
+        style={{ objectFit: 'cover' }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10 rounded-md" />
-      <div className="absolute bottom-0 left-0 p-6 text-white w-full z-20 text-left">
-        <h3 className="text-2xl font-bold text-left font-caveat">{title}</h3>
-        <p className=" text-sm text-gray-200 text-left font-jost">
+      <div className="absolute inset-0 z-10 rounded-lg bg-gradient-to-t from-black/70 to-transparent" />
+      <div className="absolute bottom-0 left-0 z-20 w-full p-8 text-left text-white">
+        <h3 className="font-caveat text-3xl font-bold text-left">{title}</h3>
+        <p className="font-jost text-base text-gray-200 text-left mt-2">
           {description}
         </p>
       </div>
@@ -41,7 +41,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
   if (disabled) {
     return (
-      <div className="relative h-[40vh] w-60 flex-shrink-0 cursor-not-allowed group rounded-md block transition-all duration-300 origin-center overflow-hidden opacity-50">
+      <div className="group relative block flex-shrink-0 cursor-not-allowed overflow-hidden rounded-lg opacity-50 transition-all duration-300 origin-center h-[65vh] w-96">
         {cardContent}
       </div>
     );
@@ -49,8 +49,8 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
   return (
     <Link
+      className="group relative block flex-shrink-0 cursor-pointer overflow-hidden rounded-lg transition-all duration-300 origin-center h-[65vh] w-96"
       href={href}
-      className="relative h-[40vh] w-60 flex-shrink-0 cursor-pointer group rounded-md block transition-all duration-300 origin-center overflow-hidden"
     >
       {cardContent}
     </Link>

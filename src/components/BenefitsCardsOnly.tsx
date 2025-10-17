@@ -22,25 +22,30 @@ const benefits = [
 
 export default function BenefitsCardsOnly() {
   return (
-    <div className="py-6 max-w-5xl mx-auto" data-testid="benefits-cards-only">
-      <header className="text-center mb-8">
-        <p className="text-center text-gray-600  italic font-jost text-lg mb-6">
+    <div className="mx-auto max-w-5xl py-8" data-testid="benefits-cards-only">
+      <header className="mb-10 text-center">
+        <p className="font-jost mb-6 text-xl italic text-gray-600">
           Lo difícil es planificar. Lo inolvidable es viajar.
         </p>
       </header>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid gap-8 md:grid-cols-3">
         {benefits.map((b) => (
           <div
             key={b.title}
-            className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm text-primary"
+            className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-gradient-to-br from-white via-white to-gray-50/50 p-8 text-primary shadow-xl transition-all duration-500 hover:scale-[1.05] hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/20"
           >
-            <h4 className="text-xl md:text-2xl font-bold mb-2 font-caveat">
-              {b.title}
-            </h4>
-            <p className="text-sm text-neutral-700 leading-relaxed font-jost">
-              {b.description}
-            </p>
+            {/* Subtle glow on hover */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-blue-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+            <div className="relative z-10">
+              <h4 className="font-caveat mb-4 text-3xl font-bold bg-gradient-to-br from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+                {b.title}
+              </h4>
+              <p className="font-jost text-base leading-relaxed text-neutral-700">
+                {b.description}
+              </p>
+            </div>
           </div>
         ))}
       </div>

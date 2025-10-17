@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Shield, Clock, CreditCard, Heart } from 'lucide-react';
 
 // Types
@@ -70,17 +70,21 @@ function TrustSignal({
   const Icon = signal.icon;
 
   return (
-    <div
-      className={`flex items-center gap-4 p-4 rounded-xl bg-white  hover:border-primary/20 hover:shadow-md transition-all duration-300 whitespace-nowrap`}
-    >
-      <Icon className="h-6 w-6 text-primary flex-shrink-0" />
-      <div className="flex flex-col">
-        <span className="text-sm font-semibold text-neutral-800">
-          {signal.text}
-        </span>
-        {showDescription && (
-          <p className="text-xs text-neutral-500">{signal.description}</p>
-        )}
+    <div className="relative flex-shrink-0 p-6">
+      <div className="flex items-center gap-4">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+          <Icon className="h-6 w-6 flex-shrink-0 text-primary" />
+        </div>
+        <div className="flex flex-col min-w-0">
+          <span className="font-jost text-base font-semibold text-neutral-800 whitespace-nowrap">
+            {signal.text}
+          </span>
+          {showDescription && (
+            <p className="font-jost text-xs text-neutral-500 whitespace-nowrap">
+              {signal.description}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -92,26 +96,101 @@ export default function TrustSignals({
   variant = 'default',
   showDescriptions = false,
 }: TrustSignalsProps) {
-  // Create duplicated signals for infinite scroll
-  const duplicatedSignals = [
-    ...TRUST_SIGNALS_CONSTANTS.SIGNALS,
-    ...TRUST_SIGNALS_CONSTANTS.SIGNALS,
-  ];
+  // Create 3 blocks of signals for seamless infinite scroll
+  const [blocks, setBlocks] = useState([
+    { id: 0, signals: [...TRUST_SIGNALS_CONSTANTS.SIGNALS] },
+    { id: 1, signals: [...TRUST_SIGNALS_CONSTANTS.SIGNALS] },
+    { id: 2, signals: [...TRUST_SIGNALS_CONSTANTS.SIGNALS] },
+  ]);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef(0);
+  const blockWidthRef = useRef(0);
+  const animationFrameRef = useRef<number>();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Wait for first render to measure block width
+    const measureBlockWidth = () => {
+      const firstBlock = container.firstElementChild as HTMLElement;
+      if (!firstBlock) return;
+
+      // Calculate width of one block (4 cards + gaps)
+      const cards = firstBlock.querySelectorAll('.trust-signal-card');
+      let totalWidth = 0;
+      cards.forEach((card) => {
+        totalWidth += (card as HTMLElement).offsetWidth + 32; // card + gap
+      });
+      blockWidthRef.current = totalWidth;
+    };
+
+    // Measure after a brief delay to ensure render
+    setTimeout(measureBlockWidth, 100);
+
+    const scrollSpeed = 0.3; // pixels per frame
+
+    const animate = () => {
+      if (!blockWidthRef.current) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      scrollPositionRef.current += scrollSpeed;
+
+      // When we've scrolled past one full block, move first block to end
+      if (scrollPositionRef.current >= blockWidthRef.current) {
+        scrollPositionRef.current = 0;
+
+        setBlocks((prev) => {
+          const [firstBlock, ...rest] = prev;
+          return [...rest, { ...firstBlock, id: Date.now() }];
+        });
+      }
+
+      if (container) {
+        container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section
       aria-label={TRUST_SIGNALS_CONSTANTS.SECTION_ARIA_LABEL}
-      className={`py-8 ${className}`.trim()}
+      className={`py-12 ${className}`.trim()}
     >
-      <div className="overflow-hidden">
-        <div className="flex animate-infinite-scroll gap-8">
-          {duplicatedSignals.map((signal, index) => (
-            <TrustSignal
-              key={`${signal.id}-${index}`}
-              signal={signal}
-              variant={variant}
-              showDescription={showDescriptions}
-            />
+      <div className="relative overflow-hidden">
+        {/* Gradient fade edges for smooth effect */}
+        <div className="absolute bottom-0 left-0 top-0 z-10 w-32 bg-gradient-to-r from-gray-50 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 right-0 top-0 z-10 w-32 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none" />
+
+        <div className="flex" ref={containerRef}>
+          {blocks.map((block) => (
+            <div key={block.id} className="flex gap-8 flex-shrink-0">
+              {block.signals.map((signal, index) => (
+                <div
+                  key={`${signal.id}-${index}`}
+                  className="trust-signal-card"
+                >
+                  <TrustSignal
+                    showDescription={showDescriptions}
+                    signal={signal}
+                    variant={variant}
+                  />
+                </div>
+              ))}
+            </div>
           ))}
         </div>
       </div>

@@ -12,18 +12,13 @@ import { HERO_CONTENT } from '@/lib/data/home-hero';
 
 // --- Main Home Page Component ---
 export default function HomePage() {
-  const blogData = {
-    ...BLOG_CONSTANTS,
-    posts: [...BLOG_CONSTANTS.posts],
-  };
-
   return (
     <main style={{ scrollBehavior: 'smooth' }}>
       <Hero content={HERO_CONTENT} id="home-hero" />
       <HomeInfo />
       <ReadyForAdventureSection />
       <ExplorationSection />
-      <Blog content={blogData} id="home-blog" />
+      <Blog content={BLOG_CONSTANTS} id="home-blog" />
       <EventFinder />
     </main>
   );

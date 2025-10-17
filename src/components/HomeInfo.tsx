@@ -65,45 +65,54 @@ export default function HomeInfo() {
 
   return (
     <Section
-      title={HOME_INFO_CONSTANTS.TITLE}
+      className="flex min-h-screen flex-col justify-center py-20"
       subtitle={HOME_INFO_CONSTANTS.SUBTITLE}
+      title={HOME_INFO_CONSTANTS.TITLE}
     >
       {/* Tab Navigation */}
       <TabSelector
-        tabs={HOME_INFO_CONSTANTS.TABS}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
         layoutId="activeTabHomeInfo"
+        onTabChange={setActiveTab}
+        tabs={HOME_INFO_CONSTANTS.TABS}
       />
 
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 20, height: 0 }}
           animate={{ opacity: 1, y: 0, height: 'auto' }}
+          className="mx-auto w-full max-w-5xl min-h-[300px]"
           exit={{ opacity: 0, y: -20, height: 0 }}
+          initial={{ opacity: 0, y: 20, height: 0 }}
+          key={activeTab}
           transition={{
             duration: 0.5,
             ease: 'easeInOut',
             height: { duration: 0.4, ease: 'easeInOut' },
           }}
-          className="w-full overflow-hidden min-h-[300px] max-w-5xl mx-auto"
         >
           {renderActiveTab()}
         </motion.div>
       </AnimatePresence>
 
-      {/* CTA */}
-      <div className={'mt-8 flex justify-center'}>
-        <Button asChild variant="default" size="lg">
+      {/* CTA - Enhanced */}
+      <div className="mt-12 flex justify-center">
+        <Button
+          asChild
+          className="shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
+          size="lg"
+          variant="default"
+        >
           <Link href="#exploration-section" scroll={true}>
             RANDOMTRIP-ME!
           </Link>
         </Button>
       </div>
-      {/* Trust Signals */}
-      <TrustSignals variant="compact" />
+
+      {/* Trust Signals - Full Width */}
+      <div className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen">
+        <TrustSignals variant="compact" />
+      </div>
     </Section>
   );
 }

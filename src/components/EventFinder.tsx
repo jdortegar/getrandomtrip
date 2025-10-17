@@ -57,107 +57,118 @@ const EventFinder: React.FC = () => {
   return (
     <section
       aria-label="Buscador de eventos con Ticketmaster"
-      className="relative py-24 px-8 text-white overflow-hidden"
+      className="relative flex min-h-screen items-center overflow-hidden px-8 py-24 text-white"
     >
-      {/* Fondo */}
+      {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-black/50" />
         <Img
-          src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"
           alt="Concierto"
-          className="w-full h-full object-cover"
-          width={1920} // Assuming a common background image width
-          height={1080} // Assuming a common background image height
+          className="h-full w-full object-cover"
+          height={1080}
+          src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"
+          width={1920}
         />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 flex flex-col items-center justify-center font-caveat">
+      {/* Elegant gradient background overlay */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50 pointer-events-none" />
+
+      {/* Subtle accent glow */}
+      <div className="absolute left-1/4 top-0 z-[1] h-96 w-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 z-[1] h-96 w-96 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+
+      <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
+        {/* Decorative top border accent */}
+        <div className="absolute -top-12 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
+
+        <div className="flex flex-col items-center justify-center gap-2">
+          <h2 className="font-caveat text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight">
             Descubre tu próxima experiencia
           </h2>
-          <div>
-            Powered by
+          <div className="flex items-center gap-2 text-gray-300/90">
+            <span className="text-sm">Powered by</span>
             <Img
-              src="/images/ticketmaster-logo.svg"
               alt="Ticketmaster"
-              className="h-12 ml-2 inline-block mb-1"
-              width={100} // Approximate width based on h-12
-              height={48} // h-12 is 48px
-              unoptimized={true} // It's an SVG logo
+              className="mb-1 ml-2 inline-block h-12"
+              height={48}
+              src="/images/ticketmaster-logo.svg"
+              unoptimized={true}
+              width={100}
             />
           </div>
         </div>
 
-        {/* Subtítulo */}
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-jost">
+        {/* Subtitle */}
+        <p className="font-jost mx-auto mb-10 max-w-2xl text-lg text-gray-300/90 leading-relaxed mt-6">
           Conquista conciertos, festivales y eventos únicos. Boletos al
           instante, aventuras inolvidables. Solo elige tu ciudad y tus fechas.
         </p>
 
-        {/* Formulario de búsqueda */}
-        <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg flex flex-col md:flex-row items-center gap-4 border border-gray-700 max-w-2xl mx-auto">
+        {/* Search Form - Enhanced */}
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 rounded-xl border border-white/20 bg-black/40 p-6 backdrop-blur-md md:flex-row shadow-2xl">
           <Input
-            type="text"
-            value={city}
+            className="h-12 w-full rounded-lg border border-white/30 bg-gray-900/80 px-4 text-white placeholder:text-gray-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
             onChange={(e) => setCity(e.target.value)}
             placeholder="Ingresa una ciudad…"
-            className="w-full h-11 bg-gray-900/70 text-white border border-white rounded-md px-3"
+            type="text"
+            value={city}
           />
           <DatePicker
-            selectsRange
-            startDate={startDate}
+            className="h-12 w-full min-w-[200px] rounded-lg border border-white/30 bg-gray-900/80 px-4 text-white outline-none placeholder:text-gray-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
             endDate={endDate}
+            isClearable
             onChange={(update) => {
               setStartDate(update[0]);
               setEndDate(update[1]);
             }}
-            isClearable
             placeholderText="Selecciona tus fechas…"
-            className="w-full h-11 bg-gray-900/70 text-white border border-white outline-none rounded-md px-3 min-w-[200px]"
+            selectsRange
+            startDate={startDate}
           />
         </div>
 
-        {/* Botón CTA */}
+        {/* CTA Button - Enhanced */}
         <div className="mt-8">
           <Button
-            onClick={handleSearch}
+            className="shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
             disabled={isLoading}
-            variant="outline"
+            onClick={handleSearch}
             size="lg"
+            variant="outline"
           >
             {isLoading ? 'Buscando…' : 'Explorar eventos'}
           </Button>
-          <p className="text-sm text-white mt-4 font-jost  ">
+          <p className="font-jost mt-4 text-sm text-gray-300/90">
             Sorpresa, sí. Estrés, nunca. Solo define tus fechas y déjate llevar.
           </p>
         </div>
 
-        {/* Resultados y errores */}
-        <div className="mt-12 text-left max-w-2xl mx-auto">
+        {/* Results and Errors */}
+        <div className="mx-auto mt-12 max-w-2xl text-left">
           {error && (
-            <div className="bg-red-900/70 text-red-300 p-4 rounded-md inline-block mt-8">
+            <div className="mt-8 inline-block rounded-lg border border-red-500/30 bg-red-900/70 p-4 text-red-300 backdrop-blur-sm">
               {error}
             </div>
           )}
-          <div className="space-y-4 mt-4">
+          <div className="mt-4 space-y-4">
             {events.map((event) => (
               <a
-                key={event.id}
+                className="group flex overflow-hidden rounded-xl border border-white/10 bg-gray-800/50 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-gray-800/70 hover:shadow-lg hover:shadow-primary/10"
                 href={event.url}
-                target="_blank"
+                key={event.id}
                 rel="noopener noreferrer"
-                className="flex bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-colors backdrop-blur-sm"
+                target="_blank"
               >
                 <Img
-                  src={event.image}
                   alt={event.name}
-                  className="w-40 h-24 object-cover"
-                  width={160} // w-40 is 160px
-                  height={96} // h-24 is 96px
+                  className="h-28 w-44 object-cover transition-transform duration-300 group-hover:scale-105"
+                  height={112}
+                  src={event.image}
+                  width={176}
                 />
                 <div className="p-4">
-                  <h3 className="font-bold">{event.name}</h3>
+                  <h3 className="font-bold text-white">{event.name}</h3>
                   <p className="text-sm text-gray-400">
                     {event.date} – {event.venue}
                   </p>

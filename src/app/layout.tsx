@@ -6,7 +6,7 @@ import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
 import SessionProvider from '@/components/providers/SessionProvider';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
-import FooterLanding from '@/components/layout/FooterLanding';
+import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -70,7 +70,7 @@ export default function RootLayout({
           {/* <HeaderGate /> */}
           <Navbar />
           {children}
-          <FooterLanding />
+          <Footer />
           {/* <NewsletterBar /> 👈 persistente en todo el sitio */}
           <Toaster />
         </SessionProvider>

@@ -16,8 +16,8 @@ export function TravelerTypesCarousel() {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const cardWidth = 320; // w-80 = 320px
-    const gap = 24; // space-x-6 = 24px
+    const cardWidth = 384; // w-96 = 384px
+    const gap = 32; // space-x-8 = 32px
     const totalCardWidth = cardWidth + gap;
     const containerWidth = container.clientWidth;
     const visibleCards = Math.floor(containerWidth / totalCardWidth);
@@ -38,92 +38,91 @@ export function TravelerTypesCarousel() {
 
   // Calculate if arrows should be visible
   const container = scrollContainerRef.current;
-  const cardWidth = 320;
-  const gap = 24;
+  const cardWidth = 384;
+  const gap = 32;
   const totalCardWidth = cardWidth + gap;
   const containerWidth = container?.clientWidth || 0;
   const visibleCards = Math.floor(containerWidth / totalCardWidth);
 
   const canScrollLeft = currentIndex > 0;
-  const canScrollRight = currentIndex < initialTravellerTypes.length - 4;
+  const canScrollRight = currentIndex < initialTravellerTypes.length - 3;
 
   return (
-    <div className="py-4">
-      <p className="text-center text-gray-600  italic font-jost text-lg">
+    <div className="py-8">
+      <p className="font-jost mb-10 text-center text-xl italic text-gray-600">
         {EXPLORATION_CONSTANTS.TAB_DESCRIPTIONS['By Traveller']}
       </p>
 
       <div className="relative w-full">
-        {/* Left Arrow */}
+        {/* Left Arrow - Enhanced */}
         {canScrollLeft && (
           <button
-            onClick={() => handleScroll('left')}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-3 hover:border-gray-400 transition-colors shadow-lg"
             aria-label="Scroll left"
+            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-3 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
+            onClick={() => handleScroll('left')}
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={1}
+              strokeWidth={1.5}
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <path
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
           </button>
         )}
 
-        {/* Right Arrow */}
+        {/* Right Arrow - Enhanced */}
         {canScrollRight && (
           <button
-            onClick={() => handleScroll('right')}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white border border-gray-300 rounded-full p-3 hover:border-gray-400 transition-colors shadow-lg"
             aria-label="Scroll right"
+            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-3 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
+            onClick={() => handleScroll('right')}
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={1}
+              strokeWidth={1.5}
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <path
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
               />
             </svg>
           </button>
         )}
 
         {/* Carousel Container */}
-        <div ref={scrollContainerRef} className="relative py-8">
+        <div className="relative py-12" ref={scrollContainerRef}>
           <div
-            className="flex space-x-4 pb-4 transition-transform duration-500 ease-in-out overflow-x-visible"
+            className="flex space-x-8 pb-4 overflow-x-visible transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(${translateX}px)` }}
           >
             {initialTravellerTypes.map((type, index) => (
               <motion.div
-                key={type.title}
                 className="flex-shrink-0"
                 initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                key={type.title}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                whileInView={{ opacity: 1, y: 0 }}
               >
                 <TravelerTypeCard
-                  title={type.title}
                   description={type.description}
-                  imageUrl={type.imageUrl}
-                  href={`/packages/by-type/${slugify(type.travelType)}`}
                   disabled={!type.enabled}
+                  href={`/packages/by-type/${slugify(type.travelType)}`}
+                  imageUrl={type.imageUrl}
+                  title={type.title}
                 />
               </motion.div>
             ))}

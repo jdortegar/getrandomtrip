@@ -17,7 +17,7 @@ html {
 }
 
 .animate-infinite-scroll {
-  animation: infinite-scroll 20s linear infinite;
+  animation: infinite-scroll 60s linear infinite;
 }
 
 /* Custom slider styles */
