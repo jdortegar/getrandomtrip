@@ -1,10 +1,9 @@
-// frontend/src/components/by-type/couple/CoupleAlmaOptionCard.tsx
 'use client';
 
 import React from 'react';
-import Img from '@/components/common/Img'; // Added import
+import Img from '@/components/common/Img';
 
-export default function CoupleAlmaOptionCard({
+export default function AlmaOptionCard({
   opKey,
   label,
   desc,
@@ -19,7 +18,7 @@ export default function CoupleAlmaOptionCard({
   img?: string;
   selected?: boolean;
   onToggle: () => void;
-  borderClass: string; // p.ej. "border-rose-400"
+  borderClass: string;
 }) {
   return (
     <div
@@ -40,14 +39,14 @@ export default function CoupleAlmaOptionCard({
       ].join(' ')}
     >
       <Img
+        alt={label}
+        className="absolute inset-0 h-full w-full object-cover"
+        height={1500}
         src={
           img ||
           'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80'
         }
-        alt={label}
-        className="absolute inset-0 h-full w-full object-cover"
-        width={1200} // Assuming a reasonable default width
-        height={1500} // Assuming a reasonable default height (aspect-[4/5])
+        width={1200}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
 

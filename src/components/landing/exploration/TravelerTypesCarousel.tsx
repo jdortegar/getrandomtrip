@@ -123,7 +123,7 @@ export function TravelerTypesCarousel() {
                   description={type.description}
                   imageUrl={type.imageUrl}
                   href={`/packages/by-type/${slugify(type.travelType)}`}
-                  disabled={index > 0}
+                  disabled={!type.enabled}
                 />
               </motion.div>
             ))}

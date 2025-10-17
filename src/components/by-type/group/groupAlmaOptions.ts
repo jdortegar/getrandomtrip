@@ -1,28 +1,13 @@
-// frontend/src/components/by-type/group/almaOptions.ts
+import type { AlmaSpec } from '@/types/planner';
 
-export type AlmaOption = {
-  key: string;
-  label: string;
-  img?: string;
-  desc?: string; // NUEVO
-};
-
-export type AlmaSpec = {
-  title: string;
-  core: string; // NUEVO (reemplaza tagline)
-  options: AlmaOption[];
-  ctaLabel: string;
-  tint?: string;
-  heroImg?: string;
-};
-
-export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
+export const GROUP_ALMA_OPTIONS: Record<string, AlmaSpec> = {
   'visual-storytellers': {
     title: 'Narradores Visuales',
     core: 'Viajes diseñados para quienes buscan mirar el mundo a través de un lente, capturar historias y volver con memorias que son también obras visuales.',
     ctaLabel: 'Capturá el siguiente cuadro →',
     tint: 'bg-rose-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1527499354222-c3975b69f669?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1527499354222-c3975b69f669?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'landscapes-nature',
@@ -55,7 +40,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Escapadas pensadas para reconectar cuerpo, mente y espíritu en entornos que invitan a bajar el ritmo.',
     ctaLabel: 'Respirá y seguí el camino →',
     tint: 'bg-emerald-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1475444239989-05b09b5453c2?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1475444239989-05b09b5453c2?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'yoga-retreats',
@@ -88,7 +74,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Viajes para quienes buscan lo trascendente, con espacios de silencio, comunidad y sentido.',
     ctaLabel: 'Iniciá tu búsqueda espiritual →',
     tint: 'bg-amber-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'pilgrimages',
@@ -121,7 +108,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Viajes que exploran culturas a través de sabores, aromas y experiencias culinarias únicas.',
     ctaLabel: 'Servime la próxima experiencia →',
     tint: 'bg-orange-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'street-food-crawl',
@@ -154,7 +142,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Viajes que transforman libros, sagas y películas en escenarios reales donde todo se siente posible.',
     ctaLabel: 'Abrí el siguiente capítulo →',
     tint: 'bg-fuchsia-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1534685785742-43a2539a215a?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1534685785742-43a2539a215a?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'movie-worlds',
@@ -187,7 +176,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Escapadas que retan cuerpo y espíritu, donde cada kilómetro recorrido es un logro compartido.',
     ctaLabel: 'Dale play a la aventura →',
     tint: 'bg-cyan-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1505521216430-8b73b2067359?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1505521216430-8b73b2067359?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'trekking-hiking',
@@ -220,7 +210,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Viajes que celebran la amistad, las risas compartidas y los momentos que después se cuentan mil veces.',
     ctaLabel: 'Que empiece la anécdota →',
     tint: 'bg-amber-800/30',
-    heroImg: 'https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'graduation-trip',
@@ -253,7 +244,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Experiencias que combinan estrategia, networking y conexión real fuera de la oficina.',
     ctaLabel: 'Sellamos el próximo deal →',
     tint: 'bg-blue-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'strategy-offsite',
@@ -286,7 +278,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Viajes que transforman la educación en aventura, con aprendizajes que quedan para siempre.',
     ctaLabel: 'Abran la clase más grande →',
     tint: 'bg-green-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'educational-trips',
@@ -319,7 +312,8 @@ export const ALMA_OPTIONS: Record<string, AlmaSpec> = {
     core: 'Escapadas que giran en torno a la música, donde el ritmo marca cada momento del viaje.',
     ctaLabel: 'Subí el volumen →',
     tint: 'bg-violet-900/30',
-    heroImg: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80',
+    heroImg:
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80',
     options: [
       {
         key: 'international-festivals',

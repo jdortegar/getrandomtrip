@@ -1,243 +1,180 @@
-import { getTravellerData, getAllTravellerSlugs } from '@/lib/travellerTypes';
-import type { CSSProperties } from 'react';
-import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Hero from '@/components/Hero';
+import Paragraph from '@/components/Paragraph';
+import Testimonials from '@/components/Testimonials';
+import Blog from '@/components/Blog';
+import { getTestimonialsByType } from '@/data/testimonials';
+import { getBlogDataByPackage } from '@/data/blog';
+import { coupleHeroContent, coupleStoryContent } from '@/data/couple';
+import { soloHeroContent, soloStoryContent } from '@/data/solo';
+import { familyHeroContent, familyStoryContent } from '@/data/family';
+import { groupHeroContent, groupStoryContent } from '@/data/group';
+import { honeymoonHeroContent, honeymoonStoryContent } from '@/data/honeymoon';
+import { pawsHeroContent, pawsStoryContent } from '@/data/paws';
+import { couplePlannerContent } from '@/data/couple-planner';
+import { soloPlannerContent } from '@/data/solo-planner';
+import { familyPlannerContent } from '@/data/family-planner';
+import { groupPlannerContent } from '@/data/group-planner';
+import { honeymoonPlannerContent } from '@/data/honeymoon-planner';
+import { pawsPlannerContent } from '@/data/paws-planner';
 
-// Dynamic imports for better code splitting
-import dynamic from 'next/dynamic';
+// Import centralized planner
+import TypePlanner from '@/components/by-type/TypePlanner';
+import type { TypePlannerContent } from '@/types/planner';
 
-// Component mapping for dynamic imports
-const COMPONENT_MAP = {
-  // Generic components
-  Hero: dynamic(() => import('@/components/by-type/Hero'), { ssr: true }),
-  IntroBlock: dynamic(() => import('@/components/by-type/IntroBlock'), {
-    ssr: true,
-  }),
-  ImageMosaic: dynamic(() => import('@/components/by-type/ImageMosaic'), {
-    ssr: false,
-  }),
-  BenefitGrid: dynamic(() => import('@/components/by-type/BenefitGrid'), {
-    ssr: true,
-  }),
-  LevelsSection: dynamic(() => import('@/components/by-type/LevelsSection'), {
-    ssr: true,
-  }),
-  CtaBand: dynamic(() => import('@/components/by-type/CtaBand'), { ssr: true }),
-
-  // Specific pages
-  CouplePage: dynamic(() => import('../couple/page'), { ssr: true }),
-
-  // Solo sections
-  SoloHero: dynamic(() => import('@/components/by-type/solo/SoloHero'), {
-    ssr: true,
-  }),
-  SoloIntro: dynamic(() => import('@/components/by-type/solo/SoloIntro'), {
-    ssr: true,
-  }),
-  SoloPlanner: dynamic(() => import('@/components/by-type/solo/SoloPlanner'), {
-    ssr: false,
-  }),
-} as const;
-
-/**
- * Canonicalización local SOLO para este archivo:
- * (no tiene que coincidir con las claves del JSON; esto es para slug/UI)
- */
-const ALIAS: Record<string, string> = {
-  // family
-  families: 'family',
-  familia: 'family',
-
-  // honeymoon
-  honeymoons: 'honeymoon',
-
-  // group
-  groups: 'group',
-  grupo: 'group',
-
-  // parejas → couple
-  parejas: 'couple',
-  pareja: 'couple',
-  couples: 'couple',
-
-  // solo
-  solos: 'solo',
-
-  // paws
-  paw: 'paws',
-};
-
-const canonicalType = (raw: string) => {
-  const k = raw?.toLowerCase?.();
-  return (ALIAS[k] ?? k) as string;
-};
-
-// Slugs con página dedicada (NO renderizar aquí; redirigir)
-const DEDICATED: Set<string> = new Set([
+// Define valid traveler types
+const VALID_TYPES = [
+  'couple',
+  'solo',
   'family',
-  'honeymoon',
   'group',
+  'honeymoon',
   'paws',
-]);
+  'parejas',
+  'pareja',
+  'couples',
+  'familia',
+  'families',
+  'grupo',
+  'amigos',
+  'luna-de-miel',
+  'mascotas',
+] as const;
+type ValidType = (typeof VALID_TYPES)[number];
 
-// --- Enhanced Static Generation ---
-export async function generateStaticParams() {
-  const slugs = getAllTravellerSlugs();
+// Normalize type variants to canonical form
+function normalizeType(
+  type: string,
+): 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws' | null {
+  const normalized = type.toLowerCase();
 
-  // Generate params for dynamic routes only
-  const dynamicSlugs = slugs
-    .filter((t) => !DEDICATED.has(canonicalType(t)))
-    .map((type) => ({ type }));
-
-  // Add fallback for common aliases
-  const aliasParams = Object.entries(ALIAS)
-    .filter(([alias, canonical]) => !DEDICATED.has(canonical))
-    .map(([alias, canonical]) => ({ type: alias }));
-
-  return [...dynamicSlugs, ...aliasParams];
-}
-
-// --- Loading Component ---
-function LoadingSkeleton() {
-  return (
-    <div className="animate-pulse">
-      <div className="h-96 bg-gray-200 rounded-lg mb-8"></div>
-      <div className="space-y-4">
-        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-      </div>
-    </div>
-  );
-}
-
-// --- Component Mapping Function ---
-function renderPageByType(type: string, data?: any) {
-  // Special case: Couple page
-  if (type === 'couple') {
-    return <COMPONENT_MAP.CouplePage />;
+  if (['couple', 'parejas', 'pareja', 'couples'].includes(normalized)) {
+    return 'couple';
   }
 
-  // Special case: Solo page
-  if (type === 'solo') {
-    return (
-      <main>
-        <COMPONENT_MAP.SoloHero />
-        <COMPONENT_MAP.SoloIntro />
-        <COMPONENT_MAP.SoloPlanner />
-      </main>
-    );
+  if (normalized === 'solo') {
+    return 'solo';
   }
 
-  // Generic flow for other types
-  if (!data) return null;
+  if (['family', 'familia', 'families'].includes(normalized)) {
+    return 'family';
+  }
 
-  const style = {
-    '--rt-primary': data.palette.primary,
-    '--rt-secondary': data.palette.secondary,
-    '--rt-accent': data.palette.accent,
-    '--rt-text': data.palette.text,
-  } as CSSProperties;
+  if (['group', 'grupo', 'amigos'].includes(normalized)) {
+    return 'group';
+  }
 
-  return (
-    <main style={style}>
-      <COMPONENT_MAP.Hero data={data} />
-      <COMPONENT_MAP.IntroBlock type={data.slug} palette={data.palette} />
-      <COMPONENT_MAP.ImageMosaic type={data.slug} />
-      <COMPONENT_MAP.BenefitGrid type={data.slug} palette={data.palette} />
-      <section className="bg-white text-slate-900">
-        <COMPONENT_MAP.LevelsSection type={data.slug} palette={data.palette} />
-      </section>
-      <COMPONENT_MAP.CtaBand palette={data.palette} />
-    </main>
-  );
+  if (['honeymoon', 'luna-de-miel'].includes(normalized)) {
+    return 'honeymoon';
+  }
+
+  if (['paws', 'mascotas'].includes(normalized)) {
+    return 'paws';
+  }
+
+  return null;
 }
 
-// --- Main Page Component ---
-export default async function Page({ params }: { params: { type: string } }) {
-  const type = canonicalType(params.type);
+// Get content based on type
+function getContentByType(
+  type: 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws',
+) {
+  switch (type) {
+    case 'couple':
+      return {
+        hero: coupleHeroContent,
+        story: coupleStoryContent,
+        plannerContent: couplePlannerContent,
+      };
+    case 'solo':
+      return {
+        hero: soloHeroContent,
+        story: soloStoryContent,
+        plannerContent: soloPlannerContent,
+      };
+    case 'family':
+      return {
+        hero: familyHeroContent,
+        story: familyStoryContent,
+        plannerContent: familyPlannerContent,
+      };
+    case 'group':
+      return {
+        hero: groupHeroContent,
+        story: groupStoryContent,
+        plannerContent: groupPlannerContent,
+      };
+    case 'honeymoon':
+      return {
+        hero: honeymoonHeroContent,
+        story: honeymoonStoryContent,
+        plannerContent: honeymoonPlannerContent,
+      };
+    case 'paws':
+      return {
+        hero: pawsHeroContent,
+        story: pawsStoryContent,
+        plannerContent: pawsPlannerContent,
+      };
+    default:
+      return null;
+  }
+}
 
-  // // Redirect to dedicated pages
-  // if (DEDICATED.has(type)) {
-  //   redirect(`/packages/by-type/${type}`);
-  // }
+export async function generateMetadata({
+  params,
+}: {
+  params: { type: string };
+}): Promise<Metadata> {
+  const normalizedType = normalizeType(params.type);
 
-  // // Special case: Couple page
-  // if (type === 'couple') {
-  //   return (
-  //     <Suspense fallback={<LoadingSkeleton />}>{/* <CouplePage /> */}</Suspense>
-  //   );
-  // }
+  if (!normalizedType) {
+    return { title: 'Randomtrip' };
+  }
 
-  // // Special case: Solo page with optimized structure
-  // if (type === 'solo') {
-  //   return (
-  //     <main>
-  //       <Suspense fallback={<LoadingSkeleton />}>
-  //         <COMPONENT_MAP.SoloHero />
-  //       </Suspense>
-  //       <Suspense fallback={<LoadingSkeleton />}>
-  //         <COMPONENT_MAP.SoloIntro />
-  //       </Suspense>
-  //       <Suspense fallback={<LoadingSkeleton />}>
-  //         <COMPONENT_MAP.SoloPlanner />
-  //       </Suspense>
-  //     </main>
-  //   );
-  // }
+  const titles = {
+    couple: 'En Pareja | Randomtrip',
+    solo: 'Solo | Randomtrip',
+    family: 'En Familia | Randomtrip',
+    group: 'En Grupo | Randomtrip',
+    honeymoon: 'Luna de Miel | Randomtrip',
+    paws: 'PAWS | Randomtrip',
+  };
 
-  // // Get data with error handling
-  // const data = getTravellerData(type) ?? {
-  //   slug: type,
-  //   heroTitle: 'Ruta con Alma',
-  //   subcopy: 'Preparamos la sorpresa; tú te quedas con la historia.',
-  //   palette: {
-  //     primary: '#FFF',
-  //     secondary: '#0A2240',
-  //     accent: '#F2C53D',
-  //     text: '#212121',
-  //   },
-  //   images: { hero: '' },
-  // };
+  return {
+    title: titles[normalizedType],
+  };
+}
 
-  // const style = {
-  //   '--rt-primary': data.palette.primary,
-  //   '--rt-secondary': data.palette.secondary,
-  //   '--rt-accent': data.palette.accent,
-  //   '--rt-text': data.palette.text,
-  // } as CSSProperties;
+export default function TravelerTypePage({
+  params,
+}: {
+  params: { type: string };
+}) {
+  const normalizedType = normalizeType(params.type);
 
-  return <LoadingSkeleton />;
-  // Generic flow with optimized loading
+  if (!normalizedType) {
+    notFound();
+  }
+
+  const content = getContentByType(normalizedType);
+
+  if (!content) {
+    notFound();
+  }
+
+  const { hero, story, plannerContent } = content;
+  const { testimonials, title } = getTestimonialsByType(normalizedType);
+  const blogData = getBlogDataByPackage(normalizedType);
+
   return (
-    <main>
-      {/* <Suspense fallback={<LoadingSkeleton />}>
-        <COMPONENT_MAP.Hero data={data} />
-      </Suspense>
-      <Suspense fallback={<LoadingSkeleton />}>
-        <COMPONENT_MAP.IntroBlock type={data.slug} palette={data.palette} />
-      </Suspense>
-      <Suspense
-        fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg" />}
-      >
-        <COMPONENT_MAP.ImageMosaic type={data.slug} />
-      </Suspense>
-      <Suspense fallback={<LoadingSkeleton />}>
-        <COMPONENT_MAP.BenefitGrid type={data.slug} palette={data.palette} />
-      </Suspense>
-      <section className="bg-white text-slate-900">
-        <Suspense fallback={<LoadingSkeleton />}>
-          <COMPONENT_MAP.LevelsSection
-            type={data.slug}
-            palette={data.palette}
-          />
-        </Suspense>
-      </section>
-      <Suspense fallback={<LoadingSkeleton />}>
-        <COMPONENT_MAP.CtaBand palette={data.palette} />
-      </Suspense> */}
-      <Suspense fallback={<LoadingSkeleton />}>
-        {/* <COMPONENT_MAP.FooterLanding /> */}
-      </Suspense>
+    <main className="relative">
+      <Hero content={hero} id={`${normalizedType}-hero`} className="h-[70vh]" />
+      <Paragraph content={story} id={`${normalizedType}-story`} />
+      <TypePlanner content={plannerContent} type={normalizedType} />
+      <Blog content={blogData} id={`${normalizedType}-blog`} />
+      <Testimonials testimonials={testimonials} title={title} />
     </main>
   );
 }

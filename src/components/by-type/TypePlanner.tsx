@@ -1,15 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import Presupuesto from '@/components/by-type/couple/Presupuesto';
-import LaExcusa from '@/components/by-type/couple/LaExcusa';
-import AfinarDetalles from '@/components/by-type/couple/AfinarDetalles';
 import Section from '@/components/layout/Section';
 import { WizardHeader } from '@/components/WizardHeader';
+import Presupuesto from '@/components/by-type/shared/Presupuesto';
+import LaExcusa from '@/components/by-type/shared/LaExcusa';
+import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
+import type { TypePlannerContent } from '@/types/planner';
 
-export default function CouplePlanner() {
+interface TypePlannerProps {
+  content: TypePlannerContent;
+  type: string; // 'couple', 'solo', 'family', etc.
+}
+
+export default function TypePlanner({ content, type }: TypePlannerProps) {
   const router = useRouter();
 
   const [step, setStep] = useState<number>(1);
@@ -17,18 +23,11 @@ export default function CouplePlanner() {
   const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(
     null,
   );
-  const [coupleAlma, setCoupleAlma] = useState<string | null>(null);
+  const [almaKey, setAlmaKey] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   if (typeof window === 'undefined') return;
-  //   const h = window.location.hash;
-  //   const [, query] = h.split('?');
-  //   const s = new URLSearchParams(query || '').get('step');
-  //   if (s === 'budget') setStep('Presupuesto');
-  // }, []);
   const steps = [
     { step: 1, label: 'Presupuesto' },
-    { step: 2, label: 'La Excusa' },
+    { step: 2, label: content.steps.step2Label },
     { step: 3, label: 'Detalles' },
   ];
 
@@ -40,7 +39,7 @@ export default function CouplePlanner() {
       case 2:
         return budgetTier !== null; // Need budget tier to access step 2
       case 3:
-        return budgetTier !== null && coupleAlma !== null; // Need both budget and couple alma for step 3
+        return budgetTier !== null && almaKey !== null; // Need both budget and alma for step 3
       default:
         return false;
     }
@@ -52,20 +51,35 @@ export default function CouplePlanner() {
         return (
           <Presupuesto
             budgetTier={budgetTier}
+            content={content.steps.presupuesto}
+            plannerId={`${type}-planner`}
             setBudgetTier={setBudgetTier}
             setPendingPriceLabel={setPendingPriceLabel}
             setStep={setStep}
+            tiers={content.tiers}
+            type={type}
           />
         );
       case 2:
-        return <LaExcusa setCoupleAlma={setCoupleAlma} setStep={setStep} />;
+        return (
+          <LaExcusa
+            almaCards={content.steps.laExcusa.cards}
+            content={content.steps.laExcusa}
+            plannerId={`${type}-planner`}
+            setAlmaKey={setAlmaKey}
+            setStep={setStep}
+          />
+        );
       case 3:
         return (
           <AfinarDetalles
-            coupleAlma={coupleAlma}
+            almaKey={almaKey}
+            almaOptions={content.almaOptions}
             budgetTier={budgetTier}
+            content={content.steps.afinarDetalles}
             pendingPriceLabel={pendingPriceLabel}
             setStep={setStep}
+            type={type}
           />
         );
     }
@@ -75,31 +89,31 @@ export default function CouplePlanner() {
 
   return (
     <Section
-      title="Diseñen su Randomtrip en pareja"
-      subtitle="Tres pasos sencillos para vivir una historia que nadie más podrá contar."
       className="py-20"
       fullWidth={true}
+      subtitle={content.subtitle}
+      title={content.title}
     >
       <div className="relative">
-        <div id="couple-planner" className="h-0 scroll-mt-24" />
+        <div id={`${type}-planner`} className="h-0 scroll-mt-24" />
         <WizardHeader
-          steps={steps}
-          currentStep={step}
           canNavigateToStep={canNavigateToStep}
+          currentStep={step}
           onStepClick={setStep}
+          steps={steps}
         />
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
-            initial={{ opacity: 0, y: 20, height: 0 }}
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -20, height: 0 }}
+            initial={{ opacity: 0, y: 20, height: 0 }}
             transition={{
               duration: 0.5,
               ease: 'easeInOut',
               height: { duration: 0.4, ease: 'easeInOut' },
             }}
-            className="w-full overflow-hidden min-h-[300px] "
+            className="w-full overflow-hidden min-h-[300px]"
           >
             {renderActiveTab()}
           </motion.div>

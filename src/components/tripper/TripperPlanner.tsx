@@ -1,11 +1,18 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
-import AlmaDetails from '@/components/by-type/group/AlmaDetails';
-import { ALMA_OPTIONS } from '@/components/by-type/group/almaOptions';
+// import AlmaDetails from '@/components/by-type/group/AlmaDetails'; // TODO: Migrate to shared AfinarDetalles
+import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
+import { GROUP_ALMA_OPTIONS } from '@/components/by-type/group/groupAlmaOptions';
 import type { Tripper } from '@/content/trippers';
 
 type Step =
@@ -33,71 +40,107 @@ export default function TripperPlanner({ t }: Props) {
   const [travellerType, setTravellerType] = useState<string | null>(null);
   const [groupAlma, setGroupAlma] = useState<string | null>(null);
 
-  const tabs: Step[] = ['Presentación', 'By Traveller', 'Presupuesto', 'Destination Decoded', 'Tipo de escapada'];
+  const tabs: Step[] = [
+    'Presentación',
+    'By Traveller',
+    'Presupuesto',
+    'Destination Decoded',
+    'Tipo de escapada',
+  ];
 
   const previewChips = useMemo(() => {
-    return t.interests?.map(interest => ({
-      title: interest,
-      core: `Un viaje centrado en ${interest.toLowerCase()}.`
-    })) || [];
+    return (
+      t.interests?.map((interest) => ({
+        title: interest,
+        core: `Un viaje centrado en ${interest.toLowerCase()}.`,
+      })) || []
+    );
   }, [t.interests]);
 
   const tiers = useMemo(() => {
-    const selectedKey = travellerType ? travellerTypeMap[travellerType] : 'solo';
+    const selectedKey = travellerType
+      ? travellerTypeMap[travellerType]
+      : 'solo';
     const selectedTiers = ALL_TIERS_CONTENT[selectedKey];
 
     if (!selectedTiers) return [];
 
     const emojiMap: { [key: string]: string } = {
-      'Duración': '🗓️',
-      'Transporte': '✈️',
-      'Fechas': '🗓️',
-      'Alojamiento': '🛏️',
-      'Extras': '🎁',
-      'Incluye': '🌟',
-      'Perks': '💎',
+      Duración: '🗓️',
+      Transporte: '✈️',
+      Fechas: '🗓️',
+      Alojamiento: '🛏️',
+      Extras: '🎁',
+      Incluye: '🌟',
+      Perks: '💎',
     };
 
-    return Object.entries(selectedTiers).map(([key, content]: [string, any]) => {
-      const titleParts = content.title.split('—');
-      const name = titleParts[0] ? titleParts[0].trim() : content.title;
-      const subtitle = titleParts[1] ? titleParts[1].trim() : '';
+    return Object.entries(selectedTiers).map(
+      ([key, content]: [string, any]) => {
+        const titleParts = content.title.split('—');
+        const name = titleParts[0] ? titleParts[0].trim() : content.title;
+        const subtitle = titleParts[1] ? titleParts[1].trim() : '';
 
-      const features = content.bullets.map((bullet: string) => {
-        const prefix = Object.keys(emojiMap).find(p => bullet.startsWith(p));
-        const emoji = prefix ? emojiMap[prefix] : '•';
-        // Avoid duplicating the emoji if it's already there
-        if (bullet.startsWith(emoji)) {
+        const features = content.bullets.map((bullet: string) => {
+          const prefix = Object.keys(emojiMap).find((p) =>
+            bullet.startsWith(p),
+          );
+          const emoji = prefix ? emojiMap[prefix] : '•';
+          // Avoid duplicating the emoji if it's already there
+          if (bullet.startsWith(emoji)) {
             return { text: bullet };
-        }
-        return { text: `${emoji} ${bullet}` };
-      });
+          }
+          return { text: `${emoji} ${bullet}` };
+        });
 
-      return {
-        key,
-        name: name,
-        subtitle: subtitle,
-        priceLabel: content.priceLabel,
-        priceFootnote: content.priceFootnote,
-        features: features,
-        closingLine: content.closingLine,
-        cta: content.ctaLabel,
-      };
-    });
+        return {
+          key,
+          name: name,
+          subtitle: subtitle,
+          priceLabel: content.priceLabel,
+          priceFootnote: content.priceFootnote,
+          features: features,
+          closingLine: content.closingLine,
+          cta: content.ctaLabel,
+        };
+      },
+    );
   }, [travellerType]);
 
   const allTravellerOptions = [
-    { key: 'pareja',    title: 'En Pareja',   img: '/images/journey-types/couple-hetero.jpg' },
-    { key: 'solo',      title: 'Solo',        img: '/images/journey-types/solo-traveler.jpg' },
-    { key: 'familia',   title: 'En Familia',  img: '/images/journey-types/family-vacation.jpg' },
-    { key: 'grupo',     title: 'En Grupo',    img: '/images/journey-types/friends-group.jpg' },
-    { key: 'honeymoon', title: 'Honeymoon',   img: '/images/journey-types/honeymoon-same-sex.jpg' },
+    {
+      key: 'pareja',
+      title: 'En Pareja',
+      img: '/images/journey-types/couple-hetero.jpg',
+    },
+    {
+      key: 'solo',
+      title: 'Solo',
+      img: '/images/journey-types/solo-traveler.jpg',
+    },
+    {
+      key: 'familia',
+      title: 'En Familia',
+      img: '/images/journey-types/family-vacation.jpg',
+    },
+    {
+      key: 'grupo',
+      title: 'En Grupo',
+      img: '/images/journey-types/friends-group.jpg',
+    },
+    {
+      key: 'honeymoon',
+      title: 'Honeymoon',
+      img: '/images/journey-types/honeymoon-same-sex.jpg',
+    },
   ];
 
   const travellerOptions = allTravellerOptions;
 
   const almaOptionsList = useMemo(() => {
-    const options = Object.entries(ALMA_OPTIONS as Record<string, any>).map(([key, val]) => ({
+    const options = Object.entries(
+      GROUP_ALMA_OPTIONS as Record<string, any>,
+    ).map(([key, val]) => ({
       key,
       title: val?.title ?? key,
       img:
@@ -108,7 +151,11 @@ export default function TripperPlanner({ t }: Props) {
     if (!t.interests) {
       return options;
     }
-    return options.filter(opt => t.interests!.some(interest => opt.title.toLowerCase().includes(interest.toLowerCase())));
+    return options.filter((opt) =>
+      t.interests!.some((interest) =>
+        opt.title.toLowerCase().includes(interest.toLowerCase()),
+      ),
+    );
   }, [t.interests]);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -132,10 +179,18 @@ export default function TripperPlanner({ t }: Props) {
         setTimeout(scrollPlanner, 0);
       }
     };
-    if (target === 'Presentación' || target === 'By Traveller') return doSet(target);
+    if (target === 'Presentación' || target === 'By Traveller')
+      return doSet(target);
     if (target === 'Presupuesto' && travellerType) return doSet(target);
-    if (target === 'Destination Decoded' && travellerType && budgetTier) return doSet(target);
-    if (target === 'Tipo de escapada' && travellerType && budgetTier && groupAlma) return doSet(target);
+    if (target === 'Destination Decoded' && travellerType && budgetTier)
+      return doSet(target);
+    if (
+      target === 'Tipo de escapada' &&
+      travellerType &&
+      budgetTier &&
+      groupAlma
+    )
+      return doSet(target);
   };
 
   function FlipCard({
@@ -155,16 +210,23 @@ export default function TripperPlanner({ t }: Props) {
     const faceStyle: CSSProperties = { backfaceVisibility: 'hidden' };
 
     const copy: Record<string, string> = {
-      'visual-storytellers': 'De la cámara al drone: viajes para quienes miran el mundo a través de una lente.',
-      'yoga-wellness': 'De la esterilla al amanecer: escapadas para reconectar cuerpo y mente.',
-      spiritual: 'Del silencio al canto: viajes para quienes buscan lo trascendente.',
-      foodies: 'De la cocina callejera a la de autor: paladares curiosos bienvenidos.',
-      'stories-fantasy': 'De pantallas y libros al viaje: vivan sus sagas y escenarios favoritos.',
+      'visual-storytellers':
+        'De la cámara al drone: viajes para quienes miran el mundo a través de una lente.',
+      'yoga-wellness':
+        'De la esterilla al amanecer: escapadas para reconectar cuerpo y mente.',
+      spiritual:
+        'Del silencio al canto: viajes para quienes buscan lo trascendente.',
+      foodies:
+        'De la cocina callejera a la de autor: paladares curiosos bienvenidos.',
+      'stories-fantasy':
+        'De pantallas y libros al viaje: vivan sus sagas y escenarios favoritos.',
       'nature-adventure': 'De la cima al río: respirar hondo y conquistar.',
       friends: 'De las risas al brindis: anécdotas aseguradas.',
-      business: 'De la sala de juntas al destino sorpresa: estrategia con conexión real.',
+      business:
+        'De la sala de juntas al destino sorpresa: estrategia con conexión real.',
       students: 'De la teoría al terreno: aprendizaje en aventura.',
-      'music-festivals': 'Del backstage al campamento: vivir a ritmo de canciones.',
+      'music-festivals':
+        'Del backstage al campamento: vivir a ritmo de canciones.',
     };
 
     return (
@@ -202,11 +264,20 @@ export default function TripperPlanner({ t }: Props) {
             </div>
           </div>
           {/* Dorso */}
-          <div className="absolute inset-0" style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>
-            <Image src={item.img} alt="" fill className="h-full w-full object-cover" />
+          <div
+            className="absolute inset-0"
+            style={{ ...faceStyle, transform: 'rotateY(180deg)' }}
+          >
+            <Image
+              src={item.img}
+              alt=""
+              fill
+              className="h-full w-full object-cover"
+            />
             <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-between">
               <p className="text-sm leading-relaxed">
-                {copy[item.key] ?? 'La razón que les mueve, convertida en aventura bien diseñada.'}
+                {copy[item.key] ??
+                  'La razón que les mueve, convertida en aventura bien diseñada.'}
               </p>
               <button
                 className="self-start mt-4 inline-flex items-center rounded-full bg-white text-neutral-900 px-3 py-1 text-sm font-semibold hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-white/70"
@@ -225,33 +296,46 @@ export default function TripperPlanner({ t }: Props) {
   }
 
   return (
-    <section 
-      id="planner" 
-      ref={sectionRef} 
+    <section
+      id="planner"
+      ref={sectionRef}
       className="bg-cover bg-center text-white py-16 scroll-mt-24"
-      style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80')" }}
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80')",
+      }}
     >
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative max-w-7xl mx-auto px-4 md:px-8">
         {/* Carátula personalizada */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2
+            className="text-4xl md:text-5xl font-bold"
+            style={{ fontFamily: 'Playfair Display, serif' }}
+          >
             Diseña tu Aventura con {t.name}
           </h2>
           <p className="mt-4 text-lg max-w-3xl mx-auto text-white/90">
-            {t.name} se especializa en crear experiencias inolvidables. Sigue estos pasos para empezar a construir tu próximo gran viaje.
+            {t.name} se especializa en crear experiencias inolvidables. Sigue
+            estos pasos para empezar a construir tu próximo gran viaje.
           </p>
         </div>
 
         {/* Tabs header con gating */}
-        <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-8" role="tablist" aria-label="Planificador Randomtrip">
+        <div
+          className="flex gap-2 overflow-x-auto hide-scrollbar mb-8"
+          role="tablist"
+          aria-label="Planificador Randomtrip"
+        >
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => go(tab)}
               className={clsx(
                 'px-4 py-2 rounded-full text-sm font-semibold transition hover:-translate-y-0.5 hover:shadow-lg',
-                step === tab ? 'bg-white text-slate-900' : 'bg-white/10 text-white ring-1 ring-white/20'
+                step === tab
+                  ? 'bg-white text-slate-900'
+                  : 'bg-white/10 text-white ring-1 ring-white/20',
               )}
               role="tab"
               aria-selected={step === tab}
@@ -265,9 +349,12 @@ export default function TripperPlanner({ t }: Props) {
         {/* STEP 1: Presentación */}
         {step === 'Presentación' && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h2 className="text-2xl md:text-3xl font-semibold">Una muestra del estilo de {t.name.split(' ')[0]}</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold">
+              Una muestra del estilo de {t.name.split(' ')[0]}
+            </h2>
             <p className="mt-2 text-sm text-white/80">
-              Estas son algunas de las experiencias que {t.name.split(' ')[0]} ama crear.
+              Estas son algunas de las experiencias que {t.name.split(' ')[0]}{' '}
+              ama crear.
             </p>
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -315,7 +402,7 @@ export default function TripperPlanner({ t }: Props) {
                   onClick={() => setTravellerType(opt.key)}
                   className={clsx(
                     'group relative h-[420px] rounded-2xl overflow-hidden border border-white/20 bg-white text-left focus:outline-none focus:ring-2 focus:ring-white transition',
-                    travellerType === opt.key && 'ring-2 ring-white'
+                    travellerType === opt.key && 'ring-2 ring-white',
                   )}
                   aria-pressed={travellerType === opt.key}
                   tabIndex={0}
@@ -328,8 +415,12 @@ export default function TripperPlanner({ t }: Props) {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
                   <div className="absolute bottom-0 p-4 text-white">
-                    <div className="text-2xl font-extrabold drop-shadow">{opt.title}</div>
-                    <div className="text-sm opacity-90">Elegí el espíritu del viaje.</div>
+                    <div className="text-2xl font-extrabold drop-shadow">
+                      {opt.title}
+                    </div>
+                    <div className="text-sm opacity-90">
+                      Elegí el espíritu del viaje.
+                    </div>
                   </div>
                 </button>
               ))}
@@ -354,21 +445,26 @@ export default function TripperPlanner({ t }: Props) {
         {/* STEP 3: Presupuesto */}
         {step === 'Presupuesto' && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h3 className="text-center text-2xl font-semibold">✨ Comiencen a planear su escapada</h3>
+            <h3 className="text-center text-2xl font-semibold">
+              ✨ Comiencen a planear su escapada
+            </h3>
             <p className="mt-2 text-center text-sm text-white/80 max-w-3xl mx-auto">
-              💡 Lo único que se define acá en este paso es el presupuesto por persona. Ese será su techo.
-              El resto… dejalo en manos de tu Tripper.
+              💡 Lo único que se define acá en este paso es el presupuesto por
+              persona. Ese será su techo. El resto… dejalo en manos de tu
+              Tripper.
             </p>
 
-            <div className={`grid grid-cols-1 md:grid-cols-2 ${tiers.length === 1 ? 'lg:grid-cols-1 max-w-md mx-auto' : 'lg:grid-cols-5'} gap-6 mt-8`}>
+            <div
+              className={`grid grid-cols-1 md:grid-cols-2 ${tiers.length === 1 ? 'lg:grid-cols-1 max-w-md mx-auto' : 'lg:grid-cols-5'} gap-6 mt-8`}
+            >
               {tiers.map((tier) => (
                 <div
                   key={tier.key}
                   role="group"
                   aria-labelledby={`tier-title-${tier.key}`}
                   className={clsx(
-                    "w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/25 shadow-xl transition hover:shadow-2xl h-full flex flex-col",
-                    budgetTier === tier.key ? 'ring-2 ring-white' : ''
+                    'w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/25 shadow-xl transition hover:shadow-2xl h-full flex flex-col',
+                    budgetTier === tier.key ? 'ring-2 ring-white' : '',
                   )}
                 >
                   <div className="p-6 md:p-8 h-full flex flex-col">
@@ -384,7 +480,7 @@ export default function TripperPlanner({ t }: Props) {
 
                     {/* Precio */}
                     <div className="mt-6">
-                      <div 
+                      <div
                         className="text-3xl leading-tight font-bold text-[var(--rt-terracotta)] drop-shadow"
                         style={{ fontFamily: 'Playfair Display, serif' }}
                       >
@@ -398,7 +494,9 @@ export default function TripperPlanner({ t }: Props) {
                     {/* Bullets */}
                     <ul className="mt-5 space-y-2 text-sm text-neutral-100 flex-1">
                       {tier.features.map((f: any, i: number) => (
-                        <li key={i} className="leading-snug">{f.text}</li>
+                        <li key={i} className="leading-snug">
+                          {f.text}
+                        </li>
                       ))}
                     </ul>
 
@@ -459,16 +557,22 @@ export default function TripperPlanner({ t }: Props) {
         {/* STEP 5: Tipo de escapada */}
         {step === 'Tipo de escapada' && groupAlma && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <AlmaDetails
-              groupKey={groupAlma}
+            <AfinarDetalles
+              almaKey={groupAlma}
+              almaOptions={GROUP_ALMA_OPTIONS}
               budgetTier={budgetTier}
-              onBack={() => {
+              content={{
+                title: 'Afinen sus detalles',
+                tagline:
+                  'Elijan las opciones que les gustan para crear su viaje.',
+                ctaLabel: 'Continuar al diseño →',
+              }}
+              pendingPriceLabel={null}
+              setStep={() => {
                 setStep('Destination Decoded');
                 setTimeout(scrollPlanner, 0);
               }}
-              onContinue={(_selectedKeys) => {
-                window.location.href = `/packages/${t.slug}/basic-config`;
-              }}
+              type="group"
             />
           </div>
         )}
