@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
-import { searchCountries } from '@/lib/data/countries';
+import { searchCountries } from '@/lib/data/shared/countries';
 
 interface Country {
   name: string;

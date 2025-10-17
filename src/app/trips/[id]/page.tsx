@@ -28,7 +28,7 @@ import {
   X as XIcon,
 } from 'lucide-react';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
-import { ADDONS } from '@/lib/data/addons-catalog';
+import { ADDONS } from '@/lib/data/shared/addons-catalog';
 
 interface TripDetails {
   id: string;

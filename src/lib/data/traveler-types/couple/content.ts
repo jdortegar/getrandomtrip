@@ -27,7 +27,7 @@ export const coupleHeroContent: HeroContent = {
   },
 };
 
-export const coupleStoryContent = {
+export const coupleStoryContent: ParagraphContent = {
   title: 'Amor clasificado',
   paragraphs: [
     'Nadie sabrá dónde estarán. Ni siquiera ustedes… todavía. Y créanme: eso está buenísimo. Porque si algo mata la magia de un viaje es ese Excel de horarios que se arma el primo que "sabe organizar".',

@@ -1,6 +1,6 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { coupleTiers } from '@/lib/data/tiers/couple';
-import { COUPLE_ALMA_OPTIONS } from '@/components/by-type/couple/coupleAlmaOptions';
+import { coupleTiers } from './tiers';
+import { COUPLE_ALMA_OPTIONS } from './alma-options';
 
 export const couplePlannerContent: TypePlannerContent = {
   title: 'Diseñen su Randomtrip en pareja',

@@ -4,7 +4,7 @@ import LogisticsTab from './LogisticsTab';
 import PreferencesTab from './PreferencesTab';
 import StepperNav from './StepperNav';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Level, LEVELS } from '@/lib/data/levels';
+import { Level, LEVELS } from '@/lib/data/shared/levels';
 import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
 import AddonsGallery from './addons/AddonsGallery';

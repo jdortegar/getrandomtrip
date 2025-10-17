@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 import ChatFab from '@/components/chrome/ChatFab';
 
 import { useStore } from '@/store/store';
-import { ADDONS } from '@/lib/data/addons-catalog';
+import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import {
   computeAddonsCostPerTrip,

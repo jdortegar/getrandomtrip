@@ -7,7 +7,7 @@ import { premiumPackages } from '@/lib/premiumPackages';
 import AppleCard from '@/components/AppleCard';
 import AppleButton from '@/components/AppleButton';
 import AddonOption from '@/components/AddonOption';
-import { ADDONS, type Addon } from '@/lib/data/addons-catalog';
+import { ADDONS, type Addon } from '@/lib/data/shared/addons-catalog';
 
 // Legacy local addons - keeping for backwards compatibility
 const legacyAddons: Array<{

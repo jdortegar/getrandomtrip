@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useStore } from '@/store/store'
-import { ADDONS } from '@/lib/data/addons-catalog'
+import { ADDONS } from '@/lib/data/shared/addons-catalog'
 import { X } from 'lucide-react'
 
 export default function SelectedAddonsChips() {

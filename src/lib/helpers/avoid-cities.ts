@@ -1,4 +1,4 @@
-import { AMERICAN_COUNTRIES } from '@/lib/data/countries';
+import { AMERICAN_COUNTRIES } from '@/lib/data/shared/countries';
 
 // Country neighboring relationships (simplified for American countries)
 const NEIGHBORING_COUNTRIES: Record<string, string[]> = {

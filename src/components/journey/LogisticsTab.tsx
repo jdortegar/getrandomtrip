@@ -5,7 +5,7 @@ import NightsCalendar from './NightsCalendar';
 import StepperNav from './StepperNav';
 import CountrySelector from './CountrySelector';
 import CitySelector from './CitySelector';
-import { Level } from '@/lib/data/levels';
+import { Level } from '@/lib/data/shared/levels';
 import { useStore } from '@/store/store';
 
 interface LogisticsTabProps {

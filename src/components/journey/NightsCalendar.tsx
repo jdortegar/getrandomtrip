@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { getMaxNights, getLevelName, Level } from '@/lib/data/levels';
+import { getMaxNights, getLevelName, Level } from '@/lib/data/shared/levels';
 import { es } from 'react-day-picker/locale';
 import Chip from '@/components/Chip';
 import { useStore } from '@/store/store';

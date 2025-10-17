@@ -1,7 +1,7 @@
 'use client';
 import { useStore } from '@/store/store';
 import { FILTER_OPTIONS, Filters } from '@/store/slices/journeyStore';
-import { AMERICAN_COUNTRIES } from '@/lib/data/countries';
+import { AMERICAN_COUNTRIES } from '@/lib/data/shared/countries';
 import Chip from '@/components/badge';
 
 type Item = {

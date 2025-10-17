@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
 // import AlmaDetails from '@/components/by-type/group/AlmaDetails'; // TODO: Migrate to shared AfinarDetalles
 import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
-import { GROUP_ALMA_OPTIONS } from '@/components/by-type/group/groupAlmaOptions';
+import { GROUP_ALMA_OPTIONS } from '@/lib/data/traveler-types/group/alma-options';
 import type { Tripper } from '@/content/trippers';
 
 type Step =

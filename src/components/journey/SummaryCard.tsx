@@ -1,6 +1,6 @@
 'use client';
 import { useStore } from '@/store/store';
-import { ADDONS } from '@/lib/data/addons-catalog';
+import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import SelectedFiltersChips from './SelectedFiltersChips';
 import Chip from '@/components/badge';
 import { usePayment } from '@/hooks/usePayment';
