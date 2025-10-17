@@ -1,5 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { coupleTiers } from '@/lib/data/coupleTiers';
+import { coupleTiers } from '@/lib/data/tiers/couple';
 import { COUPLE_ALMA_OPTIONS } from '@/components/by-type/couple/coupleAlmaOptions';
 
 export const couplePlannerContent: TypePlannerContent = {

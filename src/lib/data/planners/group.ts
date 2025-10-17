@@ -1,5 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { groupTiers } from '@/lib/data/groupTiers';
+import { groupTiers } from '@/lib/data/tiers/group';
 import { GROUP_ALMA_OPTIONS } from '@/components/by-type/group/groupAlmaOptions';
 
 export const groupPlannerContent: TypePlannerContent = {

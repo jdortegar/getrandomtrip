@@ -1,5 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { pawsTiers } from '@/lib/data/pawsTiers';
+import { pawsTiers } from '@/lib/data/tiers/paws';
 import { PAWS_ALMA_OPTIONS } from '@/components/by-type/paws/pawsAlmaOptions';
 
 export const pawsPlannerContent: TypePlannerContent = {

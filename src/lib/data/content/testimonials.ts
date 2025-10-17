@@ -1,10 +1,10 @@
-interface Testimonial {
+export interface Testimonial {
   author: string;
   city: string;
   quote: string;
 }
 
-interface TestimonialsData {
+export interface TestimonialsData {
   testimonials: Testimonial[];
   title: string;
 }

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Minus, Plus, Check } from 'lucide-react';
-import type { Addon } from '@/data/addons-catalog';
+import type { Addon } from '@/lib/data/addons-catalog';
 import { useStore } from '@/store/store';
 import { Button } from '@/components/ui/button';
 

@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ADDONS, Addon } from '@/data/addons-catalog';
+import { ADDONS, Addon } from '@/lib/data/addons-catalog';
 import AnimatedDeckCard from './AnimatedDeckCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';

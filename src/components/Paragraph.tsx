@@ -1,6 +1,6 @@
 import Section from './layout/Section';
 
-interface ParagraphContent {
+export interface ParagraphContent {
   title: string;
   paragraphs: string[];
   tagline: string;

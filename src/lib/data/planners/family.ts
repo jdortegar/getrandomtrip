@@ -1,5 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { familyTiers } from '@/lib/data/familyTiers';
+import { familyTiers } from '@/lib/data/tiers/family';
 import { FAMILY_ALMA_OPTIONS } from '@/components/by-type/family/familyAlmaOptions';
 
 export const familyPlannerContent: TypePlannerContent = {

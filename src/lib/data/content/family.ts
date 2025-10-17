@@ -1,7 +1,8 @@
 import type { HeroContent } from '@/components/Hero';
+import type { ParagraphContent } from '@/components/Paragraph';
 
 export const familyHeroContent: HeroContent = {
-  title: 'KIN© RANDOMTRIP',
+  title: 'Kin© Randomtrip',
   subtitle:
     'Viajar en familia es moverse, es descubrirse, es crear anécdotas que después se contarán mil veces en la sobremesa.',
   tagline: 'Escapadas diseñadas para toda la familia',

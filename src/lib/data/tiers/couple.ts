@@ -1,21 +1,6 @@
-export interface TierFeature {
-  label: string;
-  text: string;
-  footnote?: string;
-}
+import type { Tier } from '@/types/planner';
 
-export interface CoupleTier {
-  id: string;
-  name: string;
-  subtitle: string;
-  priceLabel: string;
-  priceFootnote: string;
-  features: TierFeature[];
-  closingLine: string;
-  ctaLabel: string;
-}
-
-export const coupleTiers: CoupleTier[] = [
+export const coupleTiers: Tier[] = [
   {
     id: 'essenza',
     name: 'Essenza',

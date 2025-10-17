@@ -1,4 +1,5 @@
 import type { HeroContent } from '@/components/Hero';
+import type { ParagraphContent } from '@/components/Paragraph';
 
 export const soloHeroContent: HeroContent = {
   title: 'Solo© Randomtrip',

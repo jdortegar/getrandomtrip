@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ADDONS } from '@/data/addons-catalog';
+import { ADDONS } from '@/lib/data/addons-catalog';
 import { useStore } from '@/store/store';
 import { X, Minus, Plus } from 'lucide-react';
 

@@ -1,19 +1,21 @@
-interface BlogPost {
+export interface BlogPost {
   image: string;
   category: string;
   title: string;
   href?: string;
 }
 
-interface BlogContent {
+export interface BlogViewAll {
+  title: string;
+  subtitle: string;
+  href: string;
+}
+
+export interface BlogContent {
   title: string;
   subtitle: string;
   posts: BlogPost[];
-  viewAll?: {
-    title: string;
-    subtitle: string;
-    href: string;
-  };
+  viewAll?: BlogViewAll;
 }
 
 export function getBlogDataByPackage(packageType: string): BlogContent {

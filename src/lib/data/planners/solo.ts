@@ -1,5 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { soloTiers } from '@/lib/data/soloTiers';
+import { soloTiers } from '@/lib/data/tiers/solo';
 import { SOLO_ALMA_OPTIONS } from '@/components/by-type/solo/soloAlmaOptions';
 
 export const soloPlannerContent: TypePlannerContent = {

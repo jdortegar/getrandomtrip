@@ -1,21 +1,6 @@
-export interface TierFeature {
-  label: string;
-  text: string;
-  footnote?: string;
-}
+import type { Tier } from '@/types/planner';
 
-export interface SoloTier {
-  id: string;
-  name: string;
-  subtitle: string;
-  priceLabel: string;
-  priceFootnote: string;
-  features: TierFeature[];
-  closingLine: string;
-  ctaLabel: string;
-}
-
-export const soloTiers: SoloTier[] = [
+export const soloTiers: Tier[] = [
   {
     id: 'essenza',
     name: 'Essenza',
@@ -177,4 +162,3 @@ export const soloTiers: SoloTier[] = [
     ctaLabel: 'Crea lo irrepetible →',
   },
 ];
-

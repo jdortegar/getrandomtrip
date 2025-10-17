@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { ADDONS } from '@/data/addons-catalog';
+import { ADDONS } from '@/lib/data/addons-catalog';
 import { computeFiltersCostPerTrip } from '@/lib/pricing';
 import type {
   Logistics,

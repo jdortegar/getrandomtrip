@@ -1,5 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { honeymoonTiers } from '@/lib/data/honeymoonTiers';
+import { honeymoonTiers } from '@/lib/data/tiers/honeymoon';
 import { HONEYMOON_ALMA_OPTIONS } from '@/components/by-type/honeymoon/honeymoonAlmaOptions';
 
 // Honeymoon has a simplified structure - single tier, goes directly to basic-config
