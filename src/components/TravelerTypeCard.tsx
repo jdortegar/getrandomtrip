@@ -30,9 +30,11 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         style={{ objectFit: 'cover' }}
       />
       <div className="absolute inset-0 z-10 rounded-lg bg-gradient-to-t from-black/70 to-transparent" />
-      <div className="absolute bottom-0 left-0 z-20 w-full p-8 text-left text-white">
-        <h3 className="font-caveat text-3xl font-bold text-left">{title}</h3>
-        <p className="font-jost text-base text-gray-200 text-left mt-2">
+      <div className="absolute bottom-0 left-0 z-20 w-full p-4 text-left text-white md:p-8">
+        <h3 className="font-caveat text-2xl font-bold text-left md:text-3xl">
+          {title}
+        </h3>
+        <p className="font-jost text-sm text-gray-200 text-left mt-1 md:text-base md:mt-2">
           {description}
         </p>
       </div>
@@ -41,7 +43,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
   if (disabled) {
     return (
-      <div className="group relative block flex-shrink-0 cursor-not-allowed overflow-hidden rounded-lg opacity-50 transition-all duration-300 origin-center h-[65vh] w-96">
+      <div className="group relative block flex-shrink-0 cursor-not-allowed overflow-hidden rounded-lg opacity-50 transition-all duration-300 origin-center h-[50vh] w-72 md:h-[65vh] md:w-96">
         {cardContent}
       </div>
     );
@@ -49,7 +51,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
   return (
     <Link
-      className="group relative block flex-shrink-0 cursor-pointer overflow-hidden rounded-lg transition-all duration-300 origin-center h-[65vh] w-96"
+      className="group relative block flex-shrink-0 cursor-pointer overflow-hidden rounded-lg transition-all duration-300 origin-center h-[50vh] w-72 md:h-[65vh] md:w-96"
       href={href}
     >
       {cardContent}

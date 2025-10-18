@@ -16,7 +16,8 @@ export function TravelerTypesCarousel() {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const cardWidth = 384; // w-96 = 384px
+    const isMobile = window.innerWidth < 768;
+    const cardWidth = isMobile ? 288 : 384; // w-72 (mobile) or w-96 (desktop)
     const gap = 32; // space-x-8 = 32px
     const totalCardWidth = cardWidth + gap;
     const containerWidth = container.clientWidth;
@@ -38,18 +39,20 @@ export function TravelerTypesCarousel() {
 
   // Calculate if arrows should be visible
   const container = scrollContainerRef.current;
-  const cardWidth = 384;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const cardWidth = isMobile ? 288 : 384;
   const gap = 32;
   const totalCardWidth = cardWidth + gap;
   const containerWidth = container?.clientWidth || 0;
   const visibleCards = Math.floor(containerWidth / totalCardWidth);
 
   const canScrollLeft = currentIndex > 0;
-  const canScrollRight = currentIndex < initialTravellerTypes.length - 3;
+  const canScrollRight =
+    currentIndex < initialTravellerTypes.length - (isMobile ? 1 : 2);
 
   return (
-    <div className="py-8">
-      <p className="font-jost mb-10 text-center text-xl italic text-gray-600">
+    <div className="py-6 md:py-8">
+      <p className="font-jost mb-6 text-center text-lg italic text-gray-600 md:mb-10 md:text-xl">
         {EXPLORATION_CONSTANTS.TAB_DESCRIPTIONS['By Traveller']}
       </p>
 
@@ -58,11 +61,11 @@ export function TravelerTypesCarousel() {
         {canScrollLeft && (
           <button
             aria-label="Scroll left"
-            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-3 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
+            className="absolute left-2 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-2 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl md:left-4 md:p-3"
             onClick={() => handleScroll('left')}
           >
             <svg
-              className="h-6 w-6"
+              className="h-5 w-5 md:h-6 md:w-6"
               fill="none"
               stroke="currentColor"
               strokeWidth={1.5}
@@ -82,11 +85,11 @@ export function TravelerTypesCarousel() {
         {canScrollRight && (
           <button
             aria-label="Scroll right"
-            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-3 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl"
+            className="absolute right-2 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-2 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl md:right-4 md:p-3"
             onClick={() => handleScroll('right')}
           >
             <svg
-              className="h-6 w-6"
+              className="h-5 w-5 md:h-6 md:w-6"
               fill="none"
               stroke="currentColor"
               strokeWidth={1.5}
@@ -103,7 +106,7 @@ export function TravelerTypesCarousel() {
         )}
 
         {/* Carousel Container */}
-        <div className="relative py-12" ref={scrollContainerRef}>
+        <div className="relative py-8 md:py-12" ref={scrollContainerRef}>
           <div
             className="flex space-x-8 pb-4 overflow-x-visible transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(${translateX}px)` }}

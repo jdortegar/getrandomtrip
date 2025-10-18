@@ -83,14 +83,14 @@ const EventFinder: React.FC = () => {
         <div className="absolute -top-12 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
 
         <div className="flex flex-col items-center justify-center gap-2">
-          <h2 className="font-caveat text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight">
+          <h2 className="font-caveat text-4xl md:text-6xl font-bold mb-3 bg-gradient-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight md:mb-4">
             Descubre tu próxima experiencia
           </h2>
           <div className="flex items-center gap-2 text-gray-300/90">
-            <span className="text-sm">Powered by</span>
+            <span className="text-xs md:text-sm">Powered by</span>
             <Img
               alt="Ticketmaster"
-              className="mb-1 ml-2 inline-block h-12"
+              className="mb-1 ml-2 inline-block h-8 md:h-12"
               height={48}
               src="/images/ticketmaster-logo.svg"
               unoptimized={true}
@@ -100,22 +100,22 @@ const EventFinder: React.FC = () => {
         </div>
 
         {/* Subtitle */}
-        <p className="font-jost mx-auto mb-10 max-w-2xl text-lg text-gray-300/90 leading-relaxed mt-6">
+        <p className="font-jost mx-auto mb-8 max-w-2xl text-base text-gray-300/90 leading-relaxed mt-4 px-4 md:text-lg md:mb-10 md:mt-6">
           Conquista conciertos, festivales y eventos únicos. Boletos al
           instante, aventuras inolvidables. Solo elige tu ciudad y tus fechas.
         </p>
 
         {/* Search Form - Enhanced */}
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 rounded-xl border border-white/20 bg-black/40 p-6 backdrop-blur-md md:flex-row shadow-2xl">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 rounded-xl border border-white/20 bg-black/40 p-4 backdrop-blur-md md:flex-row md:gap-4 md:p-6 shadow-2xl">
           <Input
-            className="h-12 w-full rounded-lg border border-white/30 bg-gray-900/80 px-4 text-white placeholder:text-gray-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+            className="h-11 w-full rounded-lg border border-white/30 bg-gray-900/80 px-3 text-sm text-white placeholder:text-gray-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all md:h-12 md:px-4 md:text-base"
             onChange={(e) => setCity(e.target.value)}
             placeholder="Ingresa una ciudad…"
             type="text"
             value={city}
           />
           <DatePicker
-            className="h-12 w-full min-w-[200px] rounded-lg border border-white/30 bg-gray-900/80 px-4 text-white outline-none placeholder:text-gray-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+            className="h-11 w-full min-w-[200px] rounded-lg border border-white/30 bg-gray-900/80 px-3 text-sm text-white outline-none placeholder:text-gray-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all md:h-12 md:px-4 md:text-base"
             endDate={endDate}
             isClearable
             onChange={(update) => {
@@ -129,17 +129,17 @@ const EventFinder: React.FC = () => {
         </div>
 
         {/* CTA Button - Enhanced */}
-        <div className="mt-8">
+        <div className="mt-6 md:mt-8">
           <Button
-            className="shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+            className="shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
             disabled={isLoading}
             onClick={handleSearch}
-            size="lg"
+            size="default"
             variant="outline"
           >
             {isLoading ? 'Buscando…' : 'Explorar eventos'}
           </Button>
-          <p className="font-jost mt-4 text-sm text-gray-300/90">
+          <p className="font-jost mt-3 text-xs text-gray-300/90 px-4 md:mt-4 md:text-sm">
             Sorpresa, sí. Estrés, nunca. Solo define tus fechas y déjate llevar.
           </p>
         </div>
