@@ -41,7 +41,7 @@ export default function Testimonials({
       title={title}
       subtitle="Tu próximo recuerdo inolvidable está a un solo click de distancia.
             No lo pienses más."
-      className=""
+      className=" min-h-[60vh]"
     >
       {/* Carousel Section - 70% of available space */}
       <div className="flex-1 flex items-center justify-center relative">

@@ -98,7 +98,7 @@ export function JourneyForm() {
   console.log('logistics', logistics);
 
   return (
-    <div className="bg-gray-100 p-4 rounded-md max-w-4xl mx-auto mb-12 border border-gray-200 py-6">
+    <div className="bg-gray-100 p-4 rounded-md  mx-auto mb-12 border border-gray-200 py-6">
       <WizardHeader
         steps={steps}
         currentStep={currentStep}

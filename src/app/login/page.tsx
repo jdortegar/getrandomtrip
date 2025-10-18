@@ -9,6 +9,7 @@ import Hero from '@/components/Hero';
 import Section from '@/components/layout/Section';
 import type { UserRole } from '@/store/slices/userStore';
 import { dashboardPathFromRole } from '@/lib/roles';
+import { Loader2 } from 'lucide-react';
 
 function LoginContent() {
   const { data: session, status } = useSession();
@@ -34,14 +35,6 @@ function LoginContent() {
 
   return (
     <>
-      <Hero
-        content={{
-          title: 'Bienvenido a Randomtrip',
-          subtitle: 'Inicia sesión para continuar tu aventura',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-        }}
-      />
       <Section>
         <div className="flex justify-center items-center min-h-[400px]">
           {status === 'loading' ? (
@@ -73,7 +66,7 @@ export default function LoginPage() {
           />
           <Section>
             <div className="flex justify-center items-center min-h-[400px]">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
           </Section>
         </>

@@ -11,13 +11,10 @@ import ChatFab from '@/components/chrome/ChatFab';
 import { useStore } from '@/store/store';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
-import {
-  computeAddonsCostPerTrip,
-  computeFiltersCostPerTrip,
-} from '@/lib/pricing';
+
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
-import { getTravelerTypeLabel, getLevelLabel } from '@/lib/data/journey-labels';
+
 import Chip from '@/components/badge';
 import { Button } from '@/components/ui/button';
 import { usePlanData } from '@/hooks/usePlanData';
@@ -83,23 +80,7 @@ function SummaryPageContent() {
 
   // Show loading while checking auth
   if (status === 'loading') {
-    return (
-      <>
-        <Hero
-          content={{
-            title: 'Cargando...',
-            subtitle: 'Verificando tu sesión',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
-          }}
-        />
-        <Section>
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        </Section>
-      </>
-    );
+    return <Loader2 className="h-12 w-12 animate-spin text-primary" />;
   }
 
   // Don't render if not authenticated (will redirect)
@@ -390,28 +371,12 @@ function SummaryPageContent() {
           </div>
 
           {/* Columna derecha */}
-          <aside className="sticky top-20 self-start w-80 flex-shrink-0">
+          <aside className="sticky top-20 self-start w-80 flex-shrink-0 max-w-[300px]">
             <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-neutral-900">
                   Precio
                 </h3>
-                {savedTripId && (
-                  <div className="flex items-center gap-2 text-sm text-green-600">
-                    <svg
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Guardado
-                  </div>
-                )}
               </div>
 
               <div className="space-y-3">
@@ -471,15 +436,10 @@ function SummaryPageContent() {
                   disabled={isProcessing || isSaving}
                   className="w-full"
                 >
-                  {isProcessing ? (
+                  {isProcessing || isSaving ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Procesando pago...
-                    </div>
-                  ) : isSaving ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Guardando viaje...
                     </div>
                   ) : (
                     'Continuar a pago'
@@ -511,7 +471,7 @@ export default function SummaryPage() {
           />
           <Section>
             <div className="flex justify-center items-center min-h-[400px]">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
           </Section>
         </>

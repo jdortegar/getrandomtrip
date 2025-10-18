@@ -41,7 +41,7 @@ export default function Page({
             <JourneyForm />
           </div>
 
-          <aside className="sticky top-20 self-start w-80 flex-shrink-0 max-w-[200px]">
+          <aside className="sticky top-20 self-start w-80 flex-shrink-0 max-w-[300px]">
             <SummaryCard />
 
             {activeTab === 'preferences' && (
