@@ -20,6 +20,11 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "npx tsx prisma/seed.ts",
+    "discord:setup": "npx tsx scripts/discord-setup.ts",
+    "discord:setup-work": "npx tsx scripts/discord-setup-work-channels.ts",
+    "discord:setup-messages": "npx tsx scripts/discord-setup-messages.ts",
+    "discord:setup-roles": "npx tsx scripts/discord-setup-worker-roles.ts",
+    "discord:update-work-permissions": "npx tsx scripts/discord-update-work-permissions.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -39,6 +44,8 @@
     "cmdk": "^1.1.1",
     "cypress": "^14.5.3",
     "date-fns": "^4.1.0",
+    "discord.js": "^14.23.2",
+    "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.12",
     "leaflet": "^1.9.4",
