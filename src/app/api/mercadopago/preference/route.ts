@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           category_id: 'travel',
           quantity: 1,
           unit_price: Number(total),
-          currency_id: 'USD',
+          currency_id: 'ARS',
         },
       ],
       payer: {
