@@ -12,7 +12,7 @@ export const EXPLORATION_CONSTANTS = {
       label: 'Top Trippers',
       description: 'Ellos ya dejaron huella. ¿Quién será tu cómplice de viaje?',
       href: '/trippers',
-      disabled: true,
+      disabled: false,
     },
     {
       id: 'Roadtrips',

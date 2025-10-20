@@ -106,7 +106,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           )}
 
           {/* Help Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
+          {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
             <h3 className="font-semibold text-blue-900 mb-2">
               💡 ¿Necesitas ayuda?
             </h3>
@@ -125,7 +125,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
       </Section>
     </>
