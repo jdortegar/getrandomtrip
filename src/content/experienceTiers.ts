@@ -48,14 +48,16 @@ const COUPLE_CONTENT = {
     priceLabel: `Hasta ${calculatePrice(BASE_PRICES.essenza)} USD`,
     priceFootnote: 'por persona · 💑 base doble',
     bullets: [
-      'Duración: Máximo 2 noches.',
+      'Duración del viaje: Máximo 2 noches.',
+      'Destinos: Nacional (mismo país de origen).',
       'Transporte: Low cost (buses o vuelos off-peak). Asientos, carry-on y bodega no incluidos.',
-      'Fechas: Menor disponibilidad; con restricciones y bloqueos.',
       'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Una guía esencial pensada para explorar juntos sin apuros.'
+      'Experiencias únicas: —',
+      'Extras: Una guía esencial pensada para explorar juntos sin apuros.',
+      'Destination Decoded: Pistas básicas para descubrir el destino.',
     ],
     closingLine: 'Un escape breve para mirarse distinto.',
-    ctaLabel: 'Reservar fácil →'
+    ctaLabel: 'Reservar fácil →',
   },
   explora: {
     title: 'Modo Explora',
@@ -63,14 +65,16 @@ const COUPLE_CONTENT = {
     priceLabel: `Hasta ${calculatePrice(BASE_PRICES.explora)} USD`,
     priceFootnote: 'por persona · 💑 base doble',
     bullets: [
-      'Duración: Hasta 3 noches.',
+      'Duración del viaje: Hasta 3 noches.',
+      'Destinos: Nacional + países vecinos.',
       'Transporte: Multimodal, horarios más flexibles. En vuelos: asientos, carry-on y bodega no incluidos.',
-      'Fechas: Mayor disponibilidad; feriados/puentes con bloqueos.',
       'Alojamiento: Mid-to-Upscale.',
-      'Extras: Guía curada “Randomtrip Decode” con pistas para descubrir en pareja.'
+      'Experiencias únicas: —',
+      'Extras: Recomendaciones locales y sorpresas pequeñas.',
+      'Destination Decoded: Guía curada "Randomtrip Decode" con pistas para descubrir en pareja.',
     ],
     closingLine: 'Para los que creen que enamorarse es perderse.',
-    ctaLabel: 'Activen su modo →'
+    ctaLabel: 'Activen su modo →',
   },
   exploraPlus: {
     title: 'Explora+',
@@ -78,14 +82,16 @@ const COUPLE_CONTENT = {
     priceLabel: `Hasta ${calculatePrice(BASE_PRICES.exploraPlus)} USD`,
     priceFootnote: 'por persona · 💑 base doble',
     bullets: [
-      'Duración: Hasta 4 noches.',
+      'Duración del viaje: Hasta 4 noches.',
+      'Destinos: Nacional + vecinos + región.',
       'Transporte: Multimodal. En vuelos: asientos, carry-on y bodega no incluidos.',
-      'Fechas: Alta disponibilidad, incluso feriados/puentes (con bloqueos festivos).',
       'Alojamiento: Upscale garantizado.',
-      'Extras: Decode personalizado + 1 experiencia/actividad curada para dos.'
+      'Experiencias únicas: 1 experiencia/actividad curada para dos.',
+      'Extras: Amenities locales y detalles especiales.',
+      'Destination Decoded: Decode personalizado con recomendaciones exclusivas.',
     ],
     closingLine: 'Más excusas para coleccionar recuerdos a dos voces.',
-    ctaLabel: 'Suban de nivel →'
+    ctaLabel: 'Suban de nivel →',
   },
   bivouac: {
     title: 'Bivouac',
@@ -93,14 +99,16 @@ const COUPLE_CONTENT = {
     priceLabel: `Hasta ${calculatePrice(BASE_PRICES.bivouac)} USD`,
     priceFootnote: 'por persona · 💑 base doble',
     bullets: [
-      'Duración: Hasta 5 noches.',
+      'Duración del viaje: Hasta 5 noches.',
+      'Destinos: Toda América (sin límites).',
       'Transporte: Multimodal. En vuelos: asientos y carry-on incluidos; bodega no incluida.',
-      'Fechas: Sin fechas bloqueadas.',
       'Alojamiento: Upper-Upscale (diseño, boutique, experiencias locales).',
-      'Extras: Concierge Advisors + 1 experiencia Premium para compartir + perks (early/late & upgrade sujetos a dispo).'
+      'Experiencias únicas: 1 experiencia Premium para compartir.',
+      'Extras: Concierge Advisors + perks (early/late & upgrade sujetos a dispo).',
+      'Destination Decoded: Guía artesanal con secretos locales y activaciones exclusivas.',
     ],
     closingLine: 'Un viaje que se cuida como se cuida una relación.',
-    ctaLabel: 'Viajen distinto →'
+    ctaLabel: 'Viajen distinto →',
   },
   atelier: {
     title: 'Atelier Getaway',
@@ -108,15 +116,17 @@ const COUPLE_CONTENT = {
     priceLabel: `Desde ${calculatePrice(BASE_PRICES.atelier)} USD`,
     priceFootnote: 'por persona · 💑 base doble',
     bullets: [
-      'Duración: Customizable.',
+      'Duración del viaje: Customizable (5+ noches recomendadas).',
+      'Destinos: Sin límites geográficos.',
+      'Transporte: First class (priority boarding, lounge, asiento+carry-on+bodega incluidos).',
       'Alojamiento: Luxury / de autor / cadenas A1.',
-      'Extras: Co-creación con Luxury Travel Advisor + equipo 24/7.',
-      'Incluye: 2+ Experiencias Premium a medida, diseñadas para dos.',
-      'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.'
+      'Experiencias únicas: 2+ Experiencias Premium a medida, diseñadas para dos.',
+      'Extras: Co-creación con Luxury Travel Advisor + equipo 24/7 + traslados privados + regalos.',
+      'Destination Decoded: Curaduría completa con accesos VIP y experiencias irrepetibles.',
     ],
     closingLine: 'Un lienzo en blanco para su historia.',
-    ctaLabel: 'A un clic de lo extraordinario →'
-  }
+    ctaLabel: 'A un clic de lo extraordinario →',
+  },
 };
 
 const PAWS_CONTENT = {
@@ -129,10 +139,10 @@ const PAWS_CONTENT = {
       'Transporte: Low cost (cuando aplica).',
       'Fechas: Disponibilidad acotada con restricciones.',
       'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Guía esencial + tips para moverse con tu mascota.'
+      'Extras: Guía esencial + tips para moverse con tu mascota.',
     ],
     closingLine: 'Un escape simple donde tu mascota es parte del plan.',
-    ctaLabel: 'Reservar fácil →'
+    ctaLabel: 'Reservar fácil →',
   },
   explora: {
     title: 'Modo Explora — Activo y flexible (Pet Edition).',
@@ -143,10 +153,10 @@ const PAWS_CONTENT = {
       'Transporte: Multimodal; opciones amigables con mascotas donde sea posible.',
       'Fechas: Buena disponibilidad; algunos bloqueos en feriados.',
       'Alojamiento: Mid-to-Upscale pet-friendly.',
-      'Extras: Randomtrip Decode con paseos y espacios dog/cat-friendly.'
+      'Extras: Randomtrip Decode con paseos y espacios dog/cat-friendly.',
     ],
     closingLine: 'Senderos y rincones para descubrir juntos, sin estrés.',
-    ctaLabel: 'Activen su modo →'
+    ctaLabel: 'Activen su modo →',
   },
   'explora-plus': {
     title: 'Explora+ — Más días, más huellas.',
@@ -157,10 +167,10 @@ const PAWS_CONTENT = {
       'Transporte: Multimodal.',
       'Fechas: Alta disponibilidad (con bloqueos festivos).',
       'Alojamiento: Upscale asegurado, preferencia pet-friendly.',
-      'Extras: Decode personalizado + 1 experiencia curada para ambos.'
+      'Extras: Decode personalizado + 1 experiencia curada para ambos.',
     ],
     closingLine: 'Más juegos, más memoria compartida.',
-    ctaLabel: 'Suban de nivel →'
+    ctaLabel: 'Suban de nivel →',
   },
   bivouac: {
     title: 'Bivouac — Curaduría artesanal (Pet Edition).',
@@ -171,10 +181,10 @@ const PAWS_CONTENT = {
       'Transporte: Multimodal (comodidad priorizada).',
       'Fechas: Sin bloqueos.',
       'Alojamiento: Upper-Upscale pet-friendly.',
-      'Extras: Concierge Advisor + 1 experiencia premium con tu mascota + perks.'
+      'Extras: Concierge Advisor + 1 experiencia premium con tu mascota + perks.',
     ],
     closingLine: 'Un viaje pensado al detalle para los dos.',
-    ctaLabel: 'Viajen distinto →'
+    ctaLabel: 'Viajen distinto →',
   },
   atelier: {
     title: 'Atelier Getaway — Distinción, a medida (Pet Edition).',
@@ -185,11 +195,12 @@ const PAWS_CONTENT = {
       'Alojamiento: Luxury / de autor con protocolos pet-friendly.',
       'Extras: Co-creación con Luxury Travel Advisor + 24/7.',
       'Incluye: 2+ experiencias premium diseñadas para ambos.',
-      'Perks: traslados privados, salas VIP (cuando aplica), reservas prioritarias.'
+      'Perks: traslados privados, salas VIP (cuando aplica), reservas prioritarias.',
     ],
-    closingLine: 'Cada momento, diseñado para vos y tu compañero de cuatro patas.',
-    ctaLabel: 'A un clic de lo extraordinario →'
-  }
+    closingLine:
+      'Cada momento, diseñado para vos y tu compañero de cuatro patas.',
+    ctaLabel: 'A un clic de lo extraordinario →',
+  },
 };
 
 const HONEYMOON_CONTENT = {
@@ -202,11 +213,12 @@ const HONEYMOON_CONTENT = {
       'Alojamiento: Luxury / de autor / cadenas A1.',
       'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7.',
       'Incluye: 2+ experiencias premium diseñadas a medida.',
-      'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.'
+      'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.',
     ],
-    closingLine: 'Un lienzo en blanco para crear la luna de miel que no se repetirá jamás.',
-    ctaLabel: 'Creen lo irrepetible →'
-  }
+    closingLine:
+      'Un lienzo en blanco para crear la luna de miel que no se repetirá jamás.',
+    ctaLabel: 'Creen lo irrepetible →',
+  },
 };
 
 const SOLO_CONTENT = {
@@ -219,10 +231,10 @@ const SOLO_CONTENT = {
       'Transporte: Low cost (buses o vuelos off-peak). Asiento garantizado, carry-on opcional.',
       'Fechas: Menor disponibilidad; con restricciones.',
       'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Una guía esencial pensada para que explores a tu manera, sin apuro.'
+      'Extras: Una guía esencial pensada para que explores a tu manera, sin apuro.',
     ],
     closingLine: 'Un escape breve para perderte en lo simple y encontrarte.',
-    ctaLabel: 'Reservá fácil →'
+    ctaLabel: 'Reservá fácil →',
   },
   explora: {
     title: 'Modo Explora — Viaje activo y flexible.',
@@ -233,10 +245,10 @@ const SOLO_CONTENT = {
       'Transporte: Multimodal. En vuelos: asiento garantizado, carry-on opcional.',
       'Fechas: Mayor disponibilidad, con algunos bloqueos en feriados.',
       'Alojamiento: Mid-to-Upscale.',
-      'Extras: “Randomtrip Decode” con pistas para abrirte camino a tu aire.'
+      'Extras: “Randomtrip Decode” con pistas para abrirte camino a tu aire.',
     ],
     closingLine: 'Diseñado para descubrir a tu propio ritmo.',
-    ctaLabel: 'Activá tu modo →'
+    ctaLabel: 'Activá tu modo →',
   },
   'explora-plus': {
     title: 'Explora+ — Más capas, más descubrimientos.',
@@ -247,10 +259,11 @@ const SOLO_CONTENT = {
       'Transporte: Multimodal. En vuelos: asiento garantizado, carry-on opcional.',
       'Fechas: Alta disponibilidad, incluso en feriados (con bloqueos festivos).',
       'Alojamiento: Upscale asegurado.',
-      'Extras: Decode personalizado + 1 experiencia curada solo para vos.'
+      'Extras: Decode personalizado + 1 experiencia curada solo para vos.',
     ],
-    closingLine: 'Más noches, más encuentros, más razones para volver distinto.',
-    ctaLabel: 'Subí de nivel →'
+    closingLine:
+      'Más noches, más encuentros, más razones para volver distinto.',
+    ctaLabel: 'Subí de nivel →',
   },
   bivouac: {
     title: 'Bivouac — Curaduría que se siente artesanal.',
@@ -261,10 +274,11 @@ const SOLO_CONTENT = {
       'Transporte: Multimodal. En vuelos: asiento y carry-on incluidos.',
       'Fechas: Sin bloqueos.',
       'Alojamiento: Upper-Upscale (boutique, diseño, experiencias locales).',
-      'Extras: Concierge Advisor + 1 experiencia premium + perks (early/late & upgrade sujetos a dispo).'
+      'Extras: Concierge Advisor + 1 experiencia premium + perks (early/late & upgrade sujetos a dispo).',
     ],
-    closingLine: 'Un viaje cuidado, íntimo y con detalles que marcan la diferencia.',
-    ctaLabel: 'Viajá distinto →'
+    closingLine:
+      'Un viaje cuidado, íntimo y con detalles que marcan la diferencia.',
+    ctaLabel: 'Viajá distinto →',
   },
   atelier: {
     title: 'Atelier Getaway — Distinción, sin esfuerzo.',
@@ -275,11 +289,12 @@ const SOLO_CONTENT = {
       'Alojamiento: Luxury / de autor / cadenas A1.',
       'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7.',
       'Incluye: 2+ experiencias premium a medida.',
-      'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.'
+      'Perks: traslados privados, salas VIP, reservas prioritarias, regalos de marcas asociadas.',
     ],
-    closingLine: 'El lujo de viajar sin testigos, con experiencias confidenciales.',
-    ctaLabel: 'A un clic de lo impredecible →'
-  }
+    closingLine:
+      'El lujo de viajar sin testigos, con experiencias confidenciales.',
+    ctaLabel: 'A un clic de lo impredecible →',
+  },
 };
 
 const FAMILY_CONTENT = {
@@ -292,10 +307,10 @@ const FAMILY_CONTENT = {
       'Transporte: Low cost. Asientos, carry-on y bodega no incluidos.',
       'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
       'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Guía esencial para que el grupo disfrute sin complicaciones.'
+      'Extras: Guía esencial para que el grupo disfrute sin complicaciones.',
     ],
     closingLine: 'Un par de días que se contarán en la sobremesa.',
-    ctaLabel: 'Activen su Essenza →'
+    ctaLabel: 'Activen su Essenza →',
   },
   explora: {
     title: 'Modo Explora — Activo y flexible, en equipo.',
@@ -306,10 +321,10 @@ const FAMILY_CONTENT = {
       'Transporte: Multimodal. Asientos, carry-on y bodega no incluidos.',
       'Fechas: Mayor disponibilidad; algunos bloqueos en feriados.',
       'Alojamiento: Mid-to-Upscale.',
-      'Extras: Randomtrip Decode con pistas para descubrir en grupo.'
+      'Extras: Randomtrip Decode con pistas para descubrir en grupo.',
     ],
     closingLine: 'Planes que sorprenden a grandes y chicos.',
-    ctaLabel: 'Activen su Modo Explora →'
+    ctaLabel: 'Activen su Modo Explora →',
   },
   exploraPlus: {
     title: 'Explora+ — Más capas, más momentos (en plural).',
@@ -320,10 +335,10 @@ const FAMILY_CONTENT = {
       'Transporte: Multimodal. Asientos, carry-on y bodega no incluidos.',
       'Fechas: Alta disponibilidad, incluso en feriados.',
       'Alojamiento: Upscale asegurado.',
-      'Extras: Decode personalizado + 1 experiencia curada para el grupo.'
+      'Extras: Decode personalizado + 1 experiencia curada para el grupo.',
     ],
     closingLine: 'Más días, más juegos, más historias que se heredan.',
-    ctaLabel: 'Suban de nivel con Explora+ →'
+    ctaLabel: 'Suban de nivel con Explora+ →',
   },
   bivouac: {
     title: 'Bivouac — Curaduría artesanal para su tribu.',
@@ -334,10 +349,10 @@ const FAMILY_CONTENT = {
       'Transporte: Multimodal. Asientos y carry-on incluidos.',
       'Fechas: Sin bloqueos.',
       'Alojamiento: Upper-Upscale (boutique, diseño, stays con alma).',
-      'Extras: Concierge Advisor + 1 experiencia premium para el grupo + perks.'
+      'Extras: Concierge Advisor + 1 experiencia premium para el grupo + perks.',
     ],
     closingLine: 'Donde cada miembro de la familia encuentra su lugar.',
-    ctaLabel: 'Viajen distinto con Bivouac →'
+    ctaLabel: 'Viajen distinto con Bivouac →',
   },
   atelier: {
     title: 'Atelier Getaway — Distinción, a medida (Family Edition).',
@@ -348,11 +363,12 @@ const FAMILY_CONTENT = {
       'Alojamiento: Luxury / de autor / cadenas A1.',
       'Extras: Co-creación con un Luxury Travel Advisor + equipo 24/7.',
       'Incluye: 2+ experiencias premium diseñadas a la medida del grupo.',
-      'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones especiales.'
+      'Perks: Traslados privados, salas VIP, reservas prioritarias, atenciones especiales.',
     ],
-    closingLine: 'Una experiencia donde la familia entera viaja como protagonista.',
-    ctaLabel: 'A un clic de lo extraordinario →'
-  }
+    closingLine:
+      'Una experiencia donde la familia entera viaja como protagonista.',
+    ctaLabel: 'A un clic de lo extraordinario →',
+  },
 };
 
 const GROUP_CONTENT = {
@@ -365,10 +381,10 @@ const GROUP_CONTENT = {
       'Transporte: Low cost. Asientos, carry-on y bodega no incluidos.',
       'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
       'Alojamiento: Midscale (3★ o equivalentes).',
-      'Extras: Guía esencial con planes simples para disfrutar en grupo.'
+      'Extras: Guía esencial con planes simples para disfrutar en grupo.',
     ],
     closingLine: 'Una escapada simple para reírse juntos otra vez.',
-    ctaLabel: 'Reservar fácil →'
+    ctaLabel: 'Reservar fácil →',
   },
   explora: {
     title: 'Modo Explora — Activo y flexible para el grupo.',
@@ -379,10 +395,10 @@ const GROUP_CONTENT = {
       'Transporte: Multimodal. Asientos, carry-on y bodega no incluidos.',
       'Fechas: Mayor disponibilidad; algunos bloqueos en feriados.',
       'Alojamiento: Mid-to-Upscale.',
-      'Extras: Randomtrip Decode con pistas + actividades que admiten distintos ritmos.'
+      'Extras: Randomtrip Decode con pistas + actividades que admiten distintos ritmos.',
     ],
     closingLine: 'Planes flexibles que se adaptan a todos.',
-    ctaLabel: 'Activen su modo →'
+    ctaLabel: 'Activen su modo →',
   },
   exploraPlus: {
     title: 'Explora+ — Más noches, más brindis.',
@@ -393,10 +409,10 @@ const GROUP_CONTENT = {
       'Transporte: Multimodal. Asientos, carry-on y bodega no incluidos.',
       'Fechas: Alta disponibilidad, incluso feriados.',
       'Alojamiento: Upscale asegurado.',
-      'Extras: Decode personalizado + 1 experiencia especial para el grupo.'
+      'Extras: Decode personalizado + 1 experiencia especial para el grupo.',
     ],
     closingLine: 'Más anécdotas que se vuelven leyenda compartida.',
-    ctaLabel: 'Suban de nivel →'
+    ctaLabel: 'Suban de nivel →',
   },
   bivouac: {
     title: 'Bivouac — Curaduría artesanal para tu tribu.',
@@ -407,10 +423,10 @@ const GROUP_CONTENT = {
       'Transporte: Multimodal. Asientos y carry-on incluidos.',
       'Fechas: Sin bloqueos.',
       'Alojamiento: Upper-Upscale (diseño, boutique, stays con alma).',
-      'Extras: Concierge Advisor + 1 experiencia premium para el grupo + perks.'
+      'Extras: Concierge Advisor + 1 experiencia premium para el grupo + perks.',
     ],
     closingLine: 'Conviértanse en tribu, no solo en grupo.',
-    ctaLabel: 'Viajen distinto →'
+    ctaLabel: 'Viajen distinto →',
   },
   atelier: {
     title: 'Atelier Getaway — Distinción, a medida (Crew Edition).',
@@ -421,11 +437,11 @@ const GROUP_CONTENT = {
       'Alojamiento: Luxury / de autor / cadenas A1.',
       'Extras: Co-creación con Luxury Travel Advisor + equipo 24/7.',
       'Incluye: 2+ experiencias premium a medida para celebrar juntos.',
-      'Perks: Traslados privados, salas VIP, reservas prioritarias, amenidades exclusivas.'
+      'Perks: Traslados privados, salas VIP, reservas prioritarias, amenidades exclusivas.',
     ],
     closingLine: 'La experiencia que vuelve inolvidable cualquier celebración.',
-    ctaLabel: 'A un clic de lo extraordinario →'
-  }
+    ctaLabel: 'A un clic de lo extraordinario →',
+  },
 };
 
 export const ALL_TIERS_CONTENT = {

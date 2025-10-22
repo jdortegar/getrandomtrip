@@ -50,10 +50,20 @@ function validateConfig() {
   }
 }
 
+// Guild-specific channel types (excludes DM, GroupDM, etc.)
+type GuildChannelType =
+  | ChannelType.GuildText
+  | ChannelType.GuildVoice
+  | ChannelType.GuildCategory
+  | ChannelType.GuildAnnouncement
+  | ChannelType.GuildStageVoice
+  | ChannelType.GuildForum
+  | ChannelType.GuildMedia;
+
 // Channel definitions for work channels
 interface WorkChannelDefinition {
   name: string;
-  type: ChannelType;
+  type: GuildChannelType;
   category?: string;
   topic?: string;
   allowedRoles: string[]; // Role names that can access

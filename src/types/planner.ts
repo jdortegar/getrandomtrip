@@ -41,7 +41,7 @@ export interface AlmaSpec {
 export interface PresupuestoContent {
   title: string;
   tagline: string;
-  categoryLabels: string[];
+  categoryLabels?: string[]; // Optional now - defaults to hardcoded values
 }
 
 export interface LaExcusaContent {

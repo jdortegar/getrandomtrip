@@ -27,7 +27,7 @@ export default function RouteDetailPage() {
       <div className="p-4 bg-white rounded-2xl shadow">
         <h2 className="font-medium mb-2">Hints de destino</h2>
         <ul className="list-disc pl-5">
-          {route.destinationHints.map((h, i) => <li key={i}>{h}</li>)}
+          {route.destinationHints.map((h: string, i: number) => <li key={i}>{h}</li>)}
         </ul>
       </div>
       <Link href="/tripper/routes" className="underline">← Volver</Link>

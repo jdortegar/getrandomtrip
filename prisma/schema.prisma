@@ -24,7 +24,12 @@ model User {
   name      String
   password  String?
   avatarUrl String?
-  role      String   @default("client") // 'client' | 'tripper' | 'admin'
+  role      UserRole @default(CLIENT)
+  
+  // Tripper-specific fields
+  tripperSlug    String? @unique  // For trippers: 'dawson', 'alma', etc.
+  commission     Float?           // Tripper's commission rate (0.12 = 12%)
+  availableTypes String[] @default([]) // ['solo', 'couple', 'group']
   
   // Timestamps
   createdAt DateTime @default(now())
@@ -36,9 +41,11 @@ model User {
   dislikes      String[] @default([])
   
   // Relations
-  trips    Trip[]
-  payments Payment[]
-  reviews  Review[]
+  trips       Trip[]     @relation("CustomerTrips")
+  ownedTrips  Trip[]     @relation("OwnedTrips")
+  payments    Payment[]
+  reviews     Review[]
+  likedTrips  TripLike[]
   
   @@map("users")
 }
@@ -48,10 +55,25 @@ model Trip {
   userId String
   status TripStatus @default(DRAFT)
   
+  // Trip Ownership & Visibility
+  ownerId    String?    // Tripper or Admin who created/curates this trip
+  ownerType  OwnerType  @default(CUSTOMER) // Who created it
+  isTemplate Boolean    @default(false)     // Can be used as inspiration
+  isFeatured Boolean    @default(false)     // Show in tripper's gallery
+  likes      Int        @default(0)         // Like counter
+  
   // Journey metadata
-  from  String? // 'tripper' | ''
+  from  String? // 'tripper-slug' | 'admin' | null
   type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
   level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+  
+  // Display info for templates
+  title       String?   // "Aventura Urbana Misteriosa"
+  teaser      String?   // Short description
+  description String?   // Full description
+  heroImage   String?   // Main image for card
+  tags        String[]  @default([]) // ['adventure', 'cultural']
+  highlights  String[]  @default([]) // ["3 noches", "Hotel boutique"]
   
   // Logistics
   country   String
@@ -93,8 +115,10 @@ model Trip {
   updatedAt DateTime @updatedAt
   
   // Relations
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  payment Payment?
+  user       User       @relation("CustomerTrips", fields: [userId], references: [id], onDelete: Cascade)
+  owner      User?      @relation("OwnedTrips", fields: [ownerId], references: [id], onDelete: SetNull)
+  payment    Payment?
+  tripLikes  TripLike[]
   
   @@map("trips")
 }
@@ -184,9 +208,35 @@ model Review {
   @@map("reviews")
 }
 
+model TripLike {
+  id        String   @id @default(cuid())
+  tripId    String
+  userId    String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([tripId, userId])
+  @@map("trip_likes")
+}
+
 // ============================================================================
 // ENUMS
 // ============================================================================
+
+enum UserRole {
+  CLIENT
+  TRIPPER
+  ADMIN
+}
+
+enum OwnerType {
+  CUSTOMER  // Regular user creating their own trip
+  TRIPPER   // Tripper creating a template/featured trip
+  ADMIN     // RandomTrip admin creating trips
+}
 
 enum TripStatus {
   DRAFT

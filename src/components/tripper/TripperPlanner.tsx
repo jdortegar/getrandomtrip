@@ -1,164 +1,123 @@
 'use client';
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
-// import AlmaDetails from '@/components/by-type/group/AlmaDetails'; // TODO: Migrate to shared AfinarDetalles
 import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
-import { GROUP_ALMA_OPTIONS } from '@/lib/data/traveler-types/group/alma-options';
+import { WizardHeader } from '@/components/WizardHeader';
+import Presupuesto from '@/components/by-type/shared/Presupuesto';
+import LaExcusa from '@/components/by-type/shared/LaExcusa';
 import type { Tripper } from '@/content/trippers';
-
-type Step =
-  | 'Presentación'
-  | 'By Traveller'
-  | 'Presupuesto'
-  | 'Destination Decoded'
-  | 'Tipo de escapada';
+import Section from '@/components/layout/Section';
+import {
+  TRAVELLER_TYPE_OPTIONS,
+  TRAVELLER_TYPE_MAP,
+} from '@/lib/constants/traveller-types';
+import { getTravelerType } from '@/lib/data/traveler-types';
 
 type Props = {
-  t: Tripper;
+  staticTripper: Tripper;
+  tripperData?: {
+    id: string;
+    name: string;
+    slug: string;
+    commission: number;
+    availableTypes: string[];
+  };
 };
 
-const travellerTypeMap: Record<string, keyof typeof ALL_TIERS_CONTENT> = {
-  pareja: 'couple',
-  solo: 'solo',
-  familia: 'family',
-  grupo: 'group',
-  honeymoon: 'honeymoon',
-};
-
-export default function TripperPlanner({ t }: Props) {
-  const [step, setStep] = useState<Step>('Presentación');
-  const [budgetTier, setBudgetTier] = useState<string | null>(null);
+export default function TripperPlanner({
+  staticTripper: t,
+  tripperData,
+}: Props) {
+  const [step, setStep] = useState<number>(1);
   const [travellerType, setTravellerType] = useState<string | null>(null);
-  const [groupAlma, setGroupAlma] = useState<string | null>(null);
+  const [budgetTier, setBudgetTier] = useState<string | null>(null);
+  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(
+    null,
+  );
+  const [almaKey, setAlmaKey] = useState<string | null>(null);
 
-  const tabs: Step[] = [
-    'Presentación',
-    'By Traveller',
-    'Presupuesto',
-    'Destination Decoded',
-    'Tipo de escapada',
-  ];
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const firstName = t.name?.split(' ')[0] || t.name || 'este tripper';
 
-  const previewChips = useMemo(() => {
-    return (
-      t.interests?.map((interest) => ({
-        title: interest,
-        core: `Un viaje centrado en ${interest.toLowerCase()}.`,
-      })) || []
-    );
-  }, [t.interests]);
+  // Filter by tripper's available types (DB first, then static fallback)
+  const availableTypes = tripperData?.availableTypes || t.availableTypes || [];
+  const travellerOptions =
+    availableTypes.length > 0
+      ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
+      : TRAVELLER_TYPE_OPTIONS;
 
+  // Get tiers for selected traveller type
   const tiers = useMemo(() => {
-    const selectedKey = travellerType
-      ? travellerTypeMap[travellerType]
-      : 'solo';
-    const selectedTiers = ALL_TIERS_CONTENT[selectedKey];
+    if (!travellerType) return [];
+
+    const mappedType =
+      (TRAVELLER_TYPE_MAP[travellerType] as keyof typeof ALL_TIERS_CONTENT) ||
+      'solo';
+    const selectedTiers = ALL_TIERS_CONTENT[mappedType];
 
     if (!selectedTiers) return [];
-
-    const emojiMap: { [key: string]: string } = {
-      Duración: '🗓️',
-      Transporte: '✈️',
-      Fechas: '🗓️',
-      Alojamiento: '🛏️',
-      Extras: '🎁',
-      Incluye: '🌟',
-      Perks: '💎',
-    };
 
     return Object.entries(selectedTiers).map(
       ([key, content]: [string, any]) => {
         const titleParts = content.title.split('—');
-        const name = titleParts[0] ? titleParts[0].trim() : content.title;
-        const subtitle = titleParts[1] ? titleParts[1].trim() : '';
+        const name = titleParts[0]?.trim() || content.title;
+        const subtitle = titleParts[1]?.trim() || '';
 
-        const features = content.bullets.map((bullet: string) => {
-          const prefix = Object.keys(emojiMap).find((p) =>
-            bullet.startsWith(p),
-          );
-          const emoji = prefix ? emojiMap[prefix] : '•';
-          // Avoid duplicating the emoji if it's already there
-          if (bullet.startsWith(emoji)) {
-            return { text: bullet };
-          }
-          return { text: `${emoji} ${bullet}` };
-        });
+        // Apply commission (DB first, then static fallback)
+        const basePrice =
+          parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
+        const commission = tripperData?.commission || t.commission || 0;
+        const finalPrice = basePrice * (1 + commission);
+
+        const priceLabel =
+          commission > 0 ? `$${finalPrice.toFixed(0)} USD` : content.priceLabel;
+
+        const priceFootnote =
+          commission > 0
+            ? `Incluye curación de ${firstName} (${(commission * 100).toFixed(0)}%)`
+            : content.priceFootnote;
 
         return {
+          id: key,
           key,
-          name: name,
-          subtitle: subtitle,
-          priceLabel: content.priceLabel,
-          priceFootnote: content.priceFootnote,
-          features: features,
+          name,
+          subtitle,
+          priceLabel,
+          priceFootnote,
+          features: content.bullets.map((bullet: string) => ({
+            label: '',
+            text: bullet,
+          })),
           closingLine: content.closingLine,
-          cta: content.ctaLabel,
+          ctaLabel: content.ctaLabel,
         };
       },
     );
+  }, [travellerType, tripperData, firstName]);
+
+  // Get traveler type data for selected type
+  const travellerTypeData = useMemo(() => {
+    if (!travellerType) return null;
+    const mappedType = TRAVELLER_TYPE_MAP[travellerType] || travellerType;
+    return getTravelerType(mappedType);
   }, [travellerType]);
 
-  const allTravellerOptions = [
-    {
-      key: 'pareja',
-      title: 'En Pareja',
-      img: '/images/journey-types/couple-hetero.jpg',
-    },
-    {
-      key: 'solo',
-      title: 'Solo',
-      img: '/images/journey-types/solo-traveler.jpg',
-    },
-    {
-      key: 'familia',
-      title: 'En Familia',
-      img: '/images/journey-types/family-vacation.jpg',
-    },
-    {
-      key: 'grupo',
-      title: 'En Grupo',
-      img: '/images/journey-types/friends-group.jpg',
-    },
-    {
-      key: 'honeymoon',
-      title: 'Honeymoon',
-      img: '/images/journey-types/honeymoon-same-sex.jpg',
-    },
-  ];
+  // Alma cards from traveler type data, filtered by tripper interests
+  const almaCards = useMemo(() => {
+    const typeCards = travellerTypeData?.planner?.steps?.laExcusa?.cards || [];
 
-  const travellerOptions = allTravellerOptions;
+    if (!t.interests || t.interests.length === 0) return typeCards;
 
-  const almaOptionsList = useMemo(() => {
-    const options = Object.entries(
-      GROUP_ALMA_OPTIONS as Record<string, any>,
-    ).map(([key, val]) => ({
-      key,
-      title: val?.title ?? key,
-      img:
-        val?.heroImg ||
-        val?.img ||
-        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
-    }));
-    if (!t.interests) {
-      return options;
-    }
-    return options.filter((opt) =>
+    return typeCards.filter((card) =>
       t.interests!.some((interest) =>
-        opt.title.toLowerCase().includes(interest.toLowerCase()),
+        card.title.toLowerCase().includes(interest.toLowerCase()),
       ),
     );
-  }, [t.interests]);
-
-  const sectionRef = useRef<HTMLElement>(null);
+  }, [travellerTypeData, t.interests]);
 
   const scrollPlanner = () => {
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -172,428 +131,207 @@ export default function TripperPlanner({ t }: Props) {
     }
   }, []);
 
-  const go = (target: Step) => {
-    const doSet = (next: Step) => {
-      setStep(next);
-      if (next !== 'Presentación') {
-        setTimeout(scrollPlanner, 0);
-      }
-    };
-    if (target === 'Presentación' || target === 'By Traveller')
-      return doSet(target);
-    if (target === 'Presupuesto' && travellerType) return doSet(target);
-    if (target === 'Destination Decoded' && travellerType && budgetTier)
-      return doSet(target);
-    if (
-      target === 'Tipo de escapada' &&
-      travellerType &&
-      budgetTier &&
-      groupAlma
-    )
-      return doSet(target);
+  // Wizard steps - dynamic labels from traveler type data
+  const wizardSteps = useMemo(
+    () => [
+      { step: 1, label: 'Tipo de Viaje' },
+      { step: 2, label: 'Presupuesto' },
+      {
+        step: 3,
+        label: travellerTypeData?.planner?.steps?.step2Label || 'La Excusa',
+      },
+      { step: 4, label: 'Detalles' },
+    ],
+    [travellerTypeData],
+  );
+
+  const canNavigateToStep = (targetStep: number): boolean => {
+    switch (targetStep) {
+      case 1:
+        return true;
+      case 2:
+        return travellerType !== null;
+      case 3:
+        return travellerType !== null && budgetTier !== null;
+      case 4:
+        return (
+          travellerType !== null && budgetTier !== null && almaKey !== null
+        );
+      default:
+        return false;
+    }
   };
 
-  function FlipCard({
-    item,
-    onChoose,
-  }: {
-    item: { key: string; title: string; img: string };
-    onChoose: (key: string) => void;
-  }) {
-    const [flipped, setFlipped] = useState(false);
+  const handleStepChange = (newStep: number) => {
+    if (canNavigateToStep(newStep)) {
+      setStep(newStep);
+      setTimeout(scrollPlanner, 100);
+    }
+  };
 
-    const innerStyle: CSSProperties = {
-      transformStyle: 'preserve-3d',
-      transition: 'transform 0.5s',
-      transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-    };
-    const faceStyle: CSSProperties = { backfaceVisibility: 'hidden' };
-
-    const copy: Record<string, string> = {
-      'visual-storytellers':
-        'De la cámara al drone: viajes para quienes miran el mundo a través de una lente.',
-      'yoga-wellness':
-        'De la esterilla al amanecer: escapadas para reconectar cuerpo y mente.',
-      spiritual:
-        'Del silencio al canto: viajes para quienes buscan lo trascendente.',
-      foodies:
-        'De la cocina callejera a la de autor: paladares curiosos bienvenidos.',
-      'stories-fantasy':
-        'De pantallas y libros al viaje: vivan sus sagas y escenarios favoritos.',
-      'nature-adventure': 'De la cima al río: respirar hondo y conquistar.',
-      friends: 'De las risas al brindis: anécdotas aseguradas.',
-      business:
-        'De la sala de juntas al destino sorpresa: estrategia con conexión real.',
-      students: 'De la teoría al terreno: aprendizaje en aventura.',
-      'music-festivals':
-        'Del backstage al campamento: vivir a ritmo de canciones.',
-    };
-
-    return (
-      <div
-        className="relative h-[420px] w-full rounded-2xl overflow-hidden border border-white/10 bg-white/5 text-white"
-        style={{ perspective: '1200px' }}
-      >
-        <div
-          style={innerStyle}
-          onMouseEnter={() => setFlipped(true)}
-          onMouseLeave={() => setFlipped(false)}
-          onClick={() => setFlipped((v) => !v)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setFlipped((v) => !v);
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          aria-label={`${item.title} — ver detalles`}
-          className="h-full w-full"
-        >
-          {/* Frente */}
-          <div className="absolute inset-0" style={faceStyle}>
-            <Image
-              src={item.img}
-              alt={item.title}
-              fill
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <h3 className="text-lg font-semibold">{item.title}</h3>
-            </div>
-          </div>
-          {/* Dorso */}
-          <div
-            className="absolute inset-0"
-            style={{ ...faceStyle, transform: 'rotateY(180deg)' }}
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-8"
+            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.4 }}
           >
-            <Image
-              src={item.img}
-              alt=""
-              fill
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-between">
-              <p className="text-sm leading-relaxed">
-                {copy[item.key] ??
-                  'La razón que les mueve, convertida en aventura bien diseñada.'}
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-gray-900 md:text-3xl">
+                ¿Qué tipo de viaje estás planeando?
+              </h3>
+              <p className="mx-auto mt-2 max-w-2xl text-gray-600">
+                Selecciona el estilo de viaje que {firstName} diseñará para ti
               </p>
-              <button
-                className="self-start mt-4 inline-flex items-center rounded-full bg-white text-neutral-900 px-3 py-1 text-sm font-semibold hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-white/70"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChoose(item.key);
-                }}
-              >
-                Elegir y continuar →
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <section
-      id="planner"
-      ref={sectionRef}
-      className="bg-cover bg-center text-white py-16 scroll-mt-24"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80')",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
-        {/* Carátula personalizada */}
-        <div className="text-center mb-12">
-          <h2
-            className="text-4xl md:text-5xl font-bold"
-            style={{ fontFamily: 'Playfair Display, serif' }}
-          >
-            Diseña tu Aventura con {t.name}
-          </h2>
-          <p className="mt-4 text-lg max-w-3xl mx-auto text-white/90">
-            {t.name} se especializa en crear experiencias inolvidables. Sigue
-            estos pasos para empezar a construir tu próximo gran viaje.
-          </p>
-        </div>
-
-        {/* Tabs header con gating */}
-        <div
-          className="flex gap-2 overflow-x-auto hide-scrollbar mb-8"
-          role="tablist"
-          aria-label="Planificador Randomtrip"
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => go(tab)}
-              className={clsx(
-                'px-4 py-2 rounded-full text-sm font-semibold transition hover:-translate-y-0.5 hover:shadow-lg',
-                step === tab
-                  ? 'bg-white text-slate-900'
-                  : 'bg-white/10 text-white ring-1 ring-white/20',
-              )}
-              role="tab"
-              aria-selected={step === tab}
-              aria-current={step === tab ? 'step' : undefined}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* STEP 1: Presentación */}
-        {step === 'Presentación' && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h2 className="text-2xl md:text-3xl font-semibold">
-              Una muestra del estilo de {t.name.split(' ')[0]}
-            </h2>
-            <p className="mt-2 text-sm text-white/80">
-              Estas son algunas de las experiencias que {t.name.split(' ')[0]}{' '}
-              ama crear.
-            </p>
-
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {previewChips.map((c) => (
-                <div
-                  key={c.title}
-                  className="group rounded-2xl border border-white/20 bg-white/10 p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition text-center"
-                  role="group"
-                  aria-label={c.title}
-                >
-                  <div className="font-semibold">{c.title}</div>
-                  <div className="mt-4 text-sm text-white/90 opacity-0 group-hover:opacity-100 transition">
-                    {c.core}
-                  </div>
-                </div>
-              ))}
             </div>
 
-            <div className="mt-8 text-right">
-              <button
-                className="inline-flex items-center rounded-full bg-[#E4A687] text-white px-5 py-3 text-sm font-semibold shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E4A687]"
-                onClick={() => {
-                  setStep('By Traveller');
-                  setTimeout(scrollPlanner, 0);
-                }}
-                aria-label="GetRandomtrip! Ir a By Traveller"
-              >
-                GetRandomtrip! →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: By Traveller */}
-        {step === 'By Traveller' && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h3 className="text-center text-2xl font-semibold">
-              ¿Qué tipo de viaje estás pensando?
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-8">
+            <div className="mx-auto flex max-w-6xl flex-wrap justify-center gap-6">
               {travellerOptions.map((opt) => (
                 <button
                   key={opt.key}
-                  onClick={() => setTravellerType(opt.key)}
-                  className={clsx(
-                    'group relative h-[420px] rounded-2xl overflow-hidden border border-white/20 bg-white text-left focus:outline-none focus:ring-2 focus:ring-white transition',
-                    travellerType === opt.key && 'ring-2 ring-white',
-                  )}
-                  aria-pressed={travellerType === opt.key}
-                  tabIndex={0}
+                  aria-label={`Seleccionar viaje ${opt.title}`}
+                  className="group relative h-80 w-full max-w-sm overflow-hidden rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:w-80"
+                  onClick={() => {
+                    setTravellerType(opt.key);
+                    setTimeout(() => {
+                      setStep(2);
+                      scrollPlanner();
+                    }, 300);
+                  }}
                 >
                   <Image
-                    src={opt.img}
                     alt={opt.title}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                     fill
-                    className="absolute inset-0 h-full w-full object-cover"
+                    src={opt.img}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
-                  <div className="absolute bottom-0 p-4 text-white">
-                    <div className="text-2xl font-extrabold drop-shadow">
-                      {opt.title}
-                    </div>
-                    <div className="text-sm opacity-90">
-                      Elegí el espíritu del viaje.
-                    </div>
+                  <div className="absolute inset-0 z-10 rounded-lg bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 z-20 p-6 text-white">
+                    <h4 className="text-2xl font-bold">{opt.title}</h4>
+                    <p className="mt-1 text-sm text-white/90">{opt.subtitle}</p>
                   </div>
                 </button>
               ))}
             </div>
+          </motion.div>
+        );
 
-            <div className="mt-8 text-right">
-              <button
-                className="inline-flex items-center rounded-full bg-[#E4A687] text-white px-5 py-3 text-sm font-semibold shadow-sm disabled:opacity-50"
-                onClick={() => {
-                  setStep('Presupuesto');
-                  setTimeout(scrollPlanner, 0);
-                }}
-                disabled={!travellerType}
-                aria-label="Continuar a Presupuesto"
-              >
-                Continuar →
-              </button>
-            </div>
-          </div>
-        )}
+      case 2:
+        return (
+          <Presupuesto
+            budgetTier={budgetTier}
+            content={
+              travellerTypeData?.planner?.steps?.presupuesto || {
+                title: `Elige tu presupuesto con ${firstName}`,
+                tagline: 'Selecciona el nivel de experiencia que buscas',
+              }
+            }
+            plannerId="tripper-planner"
+            setBudgetTier={setBudgetTier}
+            setPendingPriceLabel={setPendingPriceLabel}
+            setStep={() => handleStepChange(3)}
+            tiers={tiers}
+            type={travellerType || 'solo'}
+          />
+        );
 
-        {/* STEP 3: Presupuesto */}
-        {step === 'Presupuesto' && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h3 className="text-center text-2xl font-semibold">
-              ✨ Comiencen a planear su escapada
-            </h3>
-            <p className="mt-2 text-center text-sm text-white/80 max-w-3xl mx-auto">
-              💡 Lo único que se define acá en este paso es el presupuesto por
-              persona. Ese será su techo. El resto… dejalo en manos de tu
-              Tripper.
-            </p>
+      case 3:
+        return (
+          <LaExcusa
+            almaCards={almaCards}
+            content={
+              travellerTypeData?.planner?.steps?.laExcusa || {
+                title: '¿Qué los mueve a viajar?',
+                tagline: `${firstName} diseñará tu experiencia según tu motivación`,
+                cards: almaCards,
+              }
+            }
+            plannerId="tripper-planner"
+            setAlmaKey={(key) => {
+              setAlmaKey(key);
+              setTimeout(() => handleStepChange(4), 100);
+            }}
+            setStep={() => handleStepChange(2)}
+          />
+        );
 
-            <div
-              className={`grid grid-cols-1 md:grid-cols-2 ${tiers.length === 1 ? 'lg:grid-cols-1 max-w-md mx-auto' : 'lg:grid-cols-5'} gap-6 mt-8`}
-            >
-              {tiers.map((tier) => (
-                <div
-                  key={tier.key}
-                  role="group"
-                  aria-labelledby={`tier-title-${tier.key}`}
-                  className={clsx(
-                    'w-full rounded-2xl bg-white/12 backdrop-blur-md border border-white/25 shadow-xl transition hover:shadow-2xl h-full flex flex-col',
-                    budgetTier === tier.key ? 'ring-2 ring-white' : '',
-                  )}
-                >
-                  <div className="p-6 md:p-8 h-full flex flex-col">
-                    {/* Título + subtítulo */}
-                    <h3
-                      id={`tier-title-${tier.key}`}
-                      className="text-2xl font-bold text-white"
-                      style={{ fontFamily: 'Playfair Display, serif' }}
-                    >
-                      {tier.name}
-                    </h3>
-                    <p className="text-neutral-200 text-sm">{tier.subtitle}</p>
-
-                    {/* Precio */}
-                    <div className="mt-6">
-                      <div
-                        className="text-3xl leading-tight font-bold text-[var(--rt-terracotta)] drop-shadow"
-                        style={{ fontFamily: 'Playfair Display, serif' }}
-                      >
-                        {tier.priceLabel}
-                      </div>
-                      <span className="block text-xs text-neutral-100">
-                        {tier.priceFootnote}
-                      </span>
-                    </div>
-
-                    {/* Bullets */}
-                    <ul className="mt-5 space-y-2 text-sm text-neutral-100 flex-1">
-                      {tier.features.map((f: any, i: number) => (
-                        <li key={i} className="leading-snug">
-                          {f.text}
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Cita */}
-                    {tier.closingLine && (
-                      <div className="mt-6 py-4 border-y border-white/20">
-                        <p className="text-neutral-50 text-sm leading-relaxed text-center">
-                          &ldquo;{tier.closingLine}&rdquo;
-                        </p>
-                      </div>
-                    )}
-
-                    {/* CTA */}
-                    <div className="mt-6">
-                      <button
-                        type="button"
-                        className="btn-card w-full"
-                        aria-label={tier.cta}
-                        onClick={() => {
-                          setBudgetTier(tier.key);
-                          setStep('Destination Decoded');
-                          setTimeout(scrollPlanner, 0);
-                        }}
-                      >
-                        {tier.cta}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: Destination Decoded */}
-        {step === 'Destination Decoded' && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <h3 className="text-center text-2xl font-semibold">
-              Viajamos por muchas razones, ¿cuál los mueve hoy?
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
-              {almaOptionsList.map((it) => (
-                <FlipCard
-                  key={it.key}
-                  item={it}
-                  onChoose={(k) => {
-                    setGroupAlma(k);
-                    setStep('Tipo de escapada');
-                    setTimeout(scrollPlanner, 0);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 5: Tipo de escapada */}
-        {step === 'Tipo de escapada' && groupAlma && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-8">
-            <AfinarDetalles
-              almaKey={groupAlma}
-              almaOptions={GROUP_ALMA_OPTIONS}
-              budgetTier={budgetTier}
-              content={{
-                title: 'Afinen sus detalles',
+      case 4:
+        return (
+          <AfinarDetalles
+            almaKey={almaKey}
+            almaOptions={travellerTypeData?.planner?.almaOptions || {}}
+            budgetTier={budgetTier}
+            content={
+              travellerTypeData?.planner?.steps?.afinarDetalles || {
+                title: 'Afina los detalles finales',
                 tagline:
-                  'Elijan las opciones que les gustan para crear su viaje.',
-                ctaLabel: 'Continuar al diseño →',
-              }}
-              pendingPriceLabel={null}
-              setStep={() => {
-                setStep('Destination Decoded');
-                setTimeout(scrollPlanner, 0);
-              }}
-              type="group"
-            />
-          </div>
-        )}
+                  'Personaliza tu aventura con las opciones que prefieras',
+                ctaLabel: 'Ver resumen del viaje →',
+              }
+            }
+            pendingPriceLabel={pendingPriceLabel}
+            setStep={() => handleStepChange(3)}
+            type={travellerType || 'solo'}
+          />
+        );
 
-        {step === 'Tipo de escapada' && !groupAlma && (
-          <div className="rounded-xl border border-white/20 bg-white/10 p-6 mt-8">
-            <p>Elegí primero un alma del viaje.</p>
-            <div className="mt-4">
-              <button
-                className="inline-flex items-center rounded-full border px-4 py-2 text-sm hover:bg-white/20"
-                onClick={() => {
-                  setStep('Destination Decoded');
-                  setTimeout(scrollPlanner, 0);
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Section
+      className="bg-gradient-to-b from-white to-gray-50 py-20"
+      fullWidth={true}
+      id="planner"
+    >
+      <div ref={sectionRef} className="scroll-mt-24">
+        {/* Custom Trip Builder */}
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 text-center">
+            <h2 className="font-caveat text-4xl font-bold text-gray-900 md:text-5xl">
+              Diseña tu Randomtrip con {firstName}
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              {firstName} se especializa en crear experiencias inolvidables.
+              Sigue estos pasos para construir tu próximo gran viaje.
+            </p>
+          </div>
+
+          {/* Wizard Header */}
+          <WizardHeader
+            canNavigateToStep={canNavigateToStep}
+            currentStep={step}
+            onStepClick={handleStepChange}
+            steps={wizardSteps}
+          />
+
+          {/* Step Content with Animation */}
+          <div className="mt-12">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                className="min-h-[400px] w-full overflow-hidden"
+                exit={{ opacity: 0, y: -20, height: 0 }}
+                initial={{ opacity: 0, y: 20, height: 0 }}
+                transition={{
+                  duration: 0.5,
+                  ease: 'easeInOut',
+                  height: { duration: 0.4, ease: 'easeInOut' },
                 }}
               >
-                ← Volver
-              </button>
-            </div>
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
           </div>
-        )}
+        </div>
       </div>
-    </section>
+    </Section>
   );
 }

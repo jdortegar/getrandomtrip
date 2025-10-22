@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name || 'Usuario',
             avatarUrl: user.image || null,
-            role: 'client',
+            role: 'CLIENT',
             travelerType: null,
             interests: [],
             dislikes: [],
@@ -174,7 +174,7 @@ export async function assertTripper() {
     where: { email: session.user.email! },
   });
 
-  if (!user || user.role !== 'tripper') {
+  if (!user || user.role !== 'TRIPPER') {
     redirect('/');
   }
 

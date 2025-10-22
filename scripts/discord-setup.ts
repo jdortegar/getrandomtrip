@@ -142,9 +142,19 @@ const roles: RoleDefinition[] = [
 ];
 
 // Channel definitions
+// Guild-specific channel types (excludes DM, GroupDM, etc.)
+type GuildChannelType =
+  | ChannelType.GuildText
+  | ChannelType.GuildVoice
+  | ChannelType.GuildCategory
+  | ChannelType.GuildAnnouncement
+  | ChannelType.GuildStageVoice
+  | ChannelType.GuildForum
+  | ChannelType.GuildMedia;
+
 interface ChannelDefinition {
   name: string;
-  type: ChannelType;
+  type: GuildChannelType;
   category?: string;
   topic?: string;
   nsfw?: boolean;

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
@@ -27,6 +28,23 @@ export default function Presupuesto({
   type,
 }: PresupuestoProps) {
   const router = useRouter();
+
+  // Extract unique categories from tier features
+  const categories = React.useMemo(() => {
+    const categorySet = new Set<string>();
+
+    tiers.forEach((tier) => {
+      tier.features.forEach((feature) => {
+        // Extract category from "Category: Content" format
+        const match = feature.text.match(/^([^:]+):/);
+        if (match) {
+          categorySet.add(match[1].trim());
+        }
+      });
+    });
+
+    return Array.from(categorySet);
+  }, [tiers]);
 
   const handleTierCTA = (tierId: string, priceLabel: string) => {
     const level = normalizeTierId(tierId);
@@ -91,16 +109,13 @@ export default function Presupuesto({
             </div>
 
             {/* Pricing Category */}
-            <div className="h-[60px] text-left">
+            <div className="h-[60px] text-left items-center flex">
               <h4 className="font-semibold text-primary-700 font-jost text-sm">
                 Precio por persona
               </h4>
-              <div className="text-sm text-primary-600 font-jost">
-                Incluye vuelo y alojamiento
-              </div>
             </div>
 
-            {content.categoryLabels.map((label) => (
+            {(content.categoryLabels || categories).map((label) => (
               <div key={label}>
                 <div className="h-[40px] items-center flex">
                   <h4 className="font-semibold text-primary-700 font-jost text-sm">
@@ -118,7 +133,7 @@ export default function Presupuesto({
           {tiers.map((tier) => (
             <div
               key={tier.id}
-              className="relative bg-gray-100 transition-all duration-200 min-w-[300px]"
+              className="relative bg-gray-100 transition-all duration-200 min-w-[350px]"
             >
               <div className="py-12 px-6">
                 {/* Plan Name */}
@@ -132,23 +147,41 @@ export default function Presupuesto({
                 </div>
 
                 {/* Pricing */}
-                <div className="text-center h-[60px]">
+                <div className="text-center h-[60px] items-center flex justify-center">
                   <div className="font-bold text-xl text-primary-700 font-jost">
                     {tier.priceLabel}
                   </div>
                 </div>
 
-                {/* Features */}
-                {tier.features.map((feature, idx) => (
-                  <div key={idx}>
-                    <div className="flex items-center h-[40px] justify-center">
-                      <span className="text-sm text-gray-700 font-jost text-center">
-                        {feature.text}
-                      </span>
+                {/* Features - aligned with categories */}
+                {(content.categoryLabels || categories).map((category) => {
+                  // Find feature that starts with this category
+                  // Handle variations like "Duración" vs "Duración del viaje"
+                  const feature = tier.features.find((f) => {
+                    const featurePrefix =
+                      f.text.split(':')[0]?.trim().toLowerCase() || '';
+                    const categoryLower = category.toLowerCase();
+                    return (
+                      featurePrefix === categoryLower ||
+                      featurePrefix.includes(categoryLower) ||
+                      categoryLower.includes(featurePrefix)
+                    );
+                  });
+
+                  const featureText =
+                    feature?.text.replace(/^[^:]+:\s*/, '') || '—';
+
+                  return (
+                    <div key={category}>
+                      <div className="flex items-center h-[40px] justify-center px-2">
+                        <span className="text-sm text-gray-700 font-jost text-center">
+                          {featureText}
+                        </span>
+                      </div>
+                      <div className="border-t border-gray-200 my-2"></div>
                     </div>
-                    <div className="border-t border-gray-200 my-2"></div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* CTA Button */}
                 <div className="text-center mt-10">

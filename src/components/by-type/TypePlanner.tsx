@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import Section from '@/components/layout/Section';
@@ -9,6 +9,8 @@ import Presupuesto from '@/components/by-type/shared/Presupuesto';
 import LaExcusa from '@/components/by-type/shared/LaExcusa';
 import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
 import type { TypePlannerContent } from '@/types/planner';
+import { ALL_LEVELS } from '@/content/levels';
+import type { LevelContent } from '@/content/levels';
 
 interface TypePlannerProps {
   content: TypePlannerContent;
@@ -24,6 +26,32 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
     null,
   );
   const [almaKey, setAlmaKey] = useState<string | null>(null);
+
+  // Generate tiers dynamically from ALL_LEVELS
+  const tiers = useMemo(() => {
+    const selectedLevels = ALL_LEVELS[type as keyof typeof ALL_LEVELS];
+
+    if (!selectedLevels) return content.tiers; // Fallback to content tiers
+
+    return Object.entries(selectedLevels).map(([key, levelContent]) => {
+      const level = levelContent as LevelContent;
+
+      return {
+        id: key,
+        name: level.title,
+        subtitle: level.subtitle,
+        priceLabel: level.priceLabel,
+        priceFootnote: level.priceFootnote,
+        // Map new features structure to format expected by Presupuesto
+        features: level.features.map((feature) => ({
+          label: feature.label,
+          text: `${feature.label}: ${feature.content}`,
+        })),
+        closingLine: level.closingLine,
+        ctaLabel: level.ctaLabel,
+      };
+    });
+  }, [type, content.tiers]);
 
   const steps = [
     { step: 1, label: 'Presupuesto' },
@@ -56,7 +84,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
             setBudgetTier={setBudgetTier}
             setPendingPriceLabel={setPendingPriceLabel}
             setStep={setStep}
-            tiers={content.tiers}
+            tiers={tiers}
             type={type}
           />
         );
