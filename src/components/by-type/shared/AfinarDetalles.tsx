@@ -33,6 +33,11 @@ const BORDER_COLOR: Record<string, string> = {
   'foodie-journey': 'border-orange-400',
   'wellness-solo': 'border-emerald-400',
   'adventure-solo': 'border-cyan-400',
+  // Family alma keys
+  toddlers: 'border-orange-400',
+  teens: 'border-teal-400',
+  adults: 'border-slate-400',
+  multigen: 'border-amber-400',
 };
 
 export default function AfinarDetalles({
@@ -65,12 +70,33 @@ export default function AfinarDetalles({
     [selected.length],
   );
 
-  if (!spec || !almaKey) {
+  if (!almaKey) {
+    return (
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <h3 className="text-xl font-semibold text-neutral-900 mb-4">
+            {content.title}
+          </h3>
+          <p className="text-neutral-700 mb-6">
+            Para personalizar tu experiencia, primero necesitás elegir el tipo
+            de viaje que más te inspire.
+          </p>
+          <div className="text-center">
+            <Button onClick={() => setStep(2)} variant="default" size="lg">
+              Elegir tipo de viaje →
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!spec) {
     return (
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <div className="rounded-xl border border-neutral-200 bg-white p-6">
           <p className="text-neutral-700">
-            Por favor, seleccioná un tipo de viaje primero.
+            Tipo de viaje no encontrado. Por favor, volvé a seleccionar.
           </p>
           <div className="mt-8 text-center">
             <Button onClick={() => setStep(2)} variant="link">
@@ -95,7 +121,7 @@ export default function AfinarDetalles({
           {content.title}
         </h3>
         <p
-          className="mt-2 text-center text-sm text-neutral-800 max-w-3xl mx-auto"
+          className="mt-2 text-center text-sm text-neutral-800 max-w-3xl mx-auto w-full"
           data-testid="tab3-tagline"
         >
           {content.tagline}
@@ -132,7 +158,7 @@ export default function AfinarDetalles({
             {spec.title}
           </h3>
           <p
-            className="mt-2 max-w-3xl text-white/90 font-jost"
+            className="mt-2 max-w-3xl text-white/90 font-jost mx-auto w-full"
             data-testid="tab4-core"
           >
             {spec.core}
@@ -147,18 +173,30 @@ export default function AfinarDetalles({
       </div>
 
       {/* GRID opciones */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
+      <div className="flex flex-wrap gap-8 mt-8">
         {spec.options.map((op) => (
-          <AlmaOptionCard
+          <div
             key={op.key}
-            borderClass={borderClass}
-            desc={op.desc}
-            img={op.img}
-            label={op.label}
-            opKey={op.key}
-            selected={selected.includes(op.key)}
-            onToggle={() => toggle(op.key)}
-          />
+            className={`flex-1 min-w-0 h-full aspect-square ${
+              spec.options.length === 1
+                ? 'w-full'
+                : spec.options.length === 2
+                  ? 'w-full sm:w-1/2'
+                  : spec.options.length === 3
+                    ? 'w-full sm:w-1/2 lg:w-1/3'
+                    : 'w-full sm:w-1/2 lg:w-1/4'
+            }`}
+          >
+            <AlmaOptionCard
+              borderClass={borderClass}
+              desc={op.desc}
+              img={op.img}
+              label={op.label}
+              opKey={op.key}
+              selected={selected.includes(op.key)}
+              onToggle={() => toggle(op.key)}
+            />
+          </div>
         ))}
       </div>
 
@@ -175,6 +213,7 @@ export default function AfinarDetalles({
           onClick={() => {
             if (canContinue) {
               // Navigate to basic config with all selections
+              // Let basicConfig handle price calculation internally
               gotoBasicConfig(router, {
                 fromOrType: type as
                   | 'couple'

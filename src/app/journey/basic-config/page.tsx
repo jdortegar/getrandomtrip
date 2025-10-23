@@ -16,10 +16,9 @@ export default function Page({
   searchParams: Record<string, string>;
 }) {
   const { activeTab, setPartial } = useStore();
-  const displayPrice = decodeURIComponent(searchParams.price || '');
 
   // Initialize journey state from URL params
-  useInitJourney(searchParams, displayPrice);
+  useInitJourney(searchParams);
 
   // Always reset to Step 1 when landing on this page
   useEffect(() => {

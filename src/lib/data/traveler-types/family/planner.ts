@@ -8,7 +8,7 @@ export const familyPlannerContent: TypePlannerContent = {
   tiers: familyTiers,
   almaOptions: FAMILY_ALMA_OPTIONS,
   steps: {
-    step2Label: 'La Excusa',
+    step2Label: 'Composición Familiar',
     presupuesto: {
       title: '¿Cuánto quieren invertir?',
       tagline:
@@ -24,35 +24,36 @@ export const familyPlannerContent: TypePlannerContent = {
       ],
     },
     laExcusa: {
-      title: 'Viajan en familia por muchas razones, ¿cuál los mueve hoy?',
-      tagline: 'Toda escapada familiar tiene su "porque sí".',
+      title: '¿Con quién viajan?',
+      tagline:
+        'Elijan la composición familiar para personalizar su experiencia.',
       cards: [
         {
-          key: 'family-adventure',
-          title: 'Aventura Familiar',
-          img: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd',
+          key: 'toddlers',
+          title: 'Con los más chicos',
+          img: '/images/placeholder/Toddlers.svg',
           description:
-            'Experiencias que todos disfrutarán, desde los más chicos hasta los abuelos.',
+            'Cuando todavía hay cochecitos, mamaderas y siestas obligadas, todo cuenta… lo transformamos en juego y calma.',
         },
         {
-          key: 'nature-exploration',
-          title: 'Exploración Natural',
-          img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1',
+          key: 'teens',
+          title: 'Con adolescentes',
+          img: '/images/placeholder/Teens.svg',
           description:
-            'Conectar con la naturaleza en familia, aprendiendo y disfrutando juntos.',
+            'Secretos para que dejen el celular: primero viven, después publican.',
         },
         {
-          key: 'cultural-discovery',
-          title: 'Descubrimiento Cultural',
-          img: 'https://images.unsplash.com/photo-1717801556175-3a22bd4a0360',
-          description:
-            'Museos, tradiciones y costumbres para que toda la familia aprenda.',
+          key: 'adults',
+          title: 'Con hijos grandes',
+          img: '/images/placeholder/Adult.svg',
+          description: 'Aventuras más intensas: trekking, surf, cultura local.',
         },
         {
-          key: 'beach-relaxation',
-          title: 'Relax en Playa',
-          img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-          description: 'Sol, arena y diversión para toda la familia.',
+          key: 'multigen',
+          title: 'Con toda la familia',
+          img: '/images/placeholder/Multi-Gen.svg',
+          description:
+            'Nadie queda afuera. Logística y actividades para cada edad.',
         },
       ],
     },

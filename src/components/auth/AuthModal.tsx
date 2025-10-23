@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X, Mail, Lock, User } from 'lucide-react';
@@ -17,6 +18,10 @@ export default function AuthModal({
   onClose,
   defaultMode = 'login',
 }: AuthModalProps) {
+  // Early return before any hooks to avoid Rules of Hooks violation
+  if (!isOpen) return null;
+
+  const router = useRouter();
   const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,10 +31,74 @@ export default function AuthModal({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  if (!isOpen) return null;
+  // Handle successful authentication - just close modal and let the page handle the next action
+  const handleAuthSuccess = useCallback(() => {
+    // Clear form state
+    setName('');
+    setEmail('');
+    setPassword('');
+    setError('');
+
+    // Close modal
+    onClose();
+
+    // Let the page handle what happens next after authentication
+    // No redirects - the page will detect the auth state change and proceed
+  }, [onClose]);
+
+  // Handle close - just close the modal, don't redirect
+  const handleClose = useCallback(() => {
+    onClose();
+    // Don't redirect when closing - let user stay on current page
+  }, [onClose]);
+
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, handleClose]);
+
+  // Form validation
+  const validateForm = () => {
+    if (!email || !password) {
+      setError('Por favor completa todos los campos');
+      return false;
+    }
+
+    if (mode === 'register' && !name) {
+      setError('El nombre es requerido');
+      return false;
+    }
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Por favor ingresa un email válido');
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
@@ -59,12 +128,8 @@ export default function AuthModal({
           throw new Error('Login failed after registration');
         }
 
-        // Clear form and close modal
-        setName('');
-        setEmail('');
-        setPassword('');
-        onClose();
-        window.location.reload(); // Refresh to update session
+        // Handle successful authentication
+        handleAuthSuccess();
       } else {
         // Login existing user
         const result = await signIn('credentials', {
@@ -77,11 +142,8 @@ export default function AuthModal({
           throw new Error('Invalid email or password');
         }
 
-        // Clear form and close modal
-        setEmail('');
-        setPassword('');
-        onClose();
-        window.location.reload(); // Refresh to update session
+        // Handle successful authentication
+        handleAuthSuccess();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -90,22 +152,35 @@ export default function AuthModal({
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = useCallback(async () => {
+    // Use current page as callback - let the page handle what happens next
     await signIn('google', { callbackUrl: window.location.href });
-  };
+  }, []);
 
-  const toggleMode = () => {
+  const toggleMode = useCallback(() => {
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
-  };
+  }, [mode]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
+    >
       <div className="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
         {/* Close button */}
         <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors z-10"
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleClose();
+          }}
+          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors z-20 p-1 rounded-md hover:bg-neutral-100 cursor-pointer"
           aria-label="Cerrar"
         >
           <X className="w-5 h-5" />
@@ -126,13 +201,17 @@ export default function AuthModal({
 
           {/* Error message */}
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div
+              id="error-message"
+              className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md"
+              role="alert"
+            >
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             {/* Name field (only for register) */}
             {mode === 'register' && (
               <div>
@@ -148,6 +227,8 @@ export default function AuthModal({
                     className="pl-10"
                     placeholder="Juan Pérez"
                     required
+                    aria-describedby={error ? 'error-message' : undefined}
+                    autoComplete="name"
                   />
                 </div>
               </div>
@@ -167,6 +248,8 @@ export default function AuthModal({
                   className="pl-10"
                   placeholder="tu@email.com"
                   required
+                  aria-describedby={error ? 'error-message' : undefined}
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -186,6 +269,10 @@ export default function AuthModal({
                   placeholder="••••••••"
                   required
                   minLength={6}
+                  aria-describedby={error ? 'error-message' : undefined}
+                  autoComplete={
+                    mode === 'register' ? 'new-password' : 'current-password'
+                  }
                 />
               </div>
             </div>

@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef } from 'react';
 import { useStore } from '@/store/store';
-import { parseBasePrice } from '@/lib/levels';
 import pricingCatalog from '@/data/pricing-catalog.json' assert { type: 'json' };
 
 type TierType =
@@ -24,7 +23,6 @@ interface ParsedParams {
   level?: TierType;
   tripperId?: string;
   priceKey?: string;
-  pbp?: number;
 }
 
 // Normalize tier string
@@ -75,10 +73,7 @@ function buildStateUpdate(
   };
 }
 
-export function useInitJourney(
-  searchParams: Record<string, string>,
-  displayPrice?: string,
-) {
+export function useInitJourney(searchParams: Record<string, string>) {
   const setPartial = useStore((s) => s.setPartial);
   const logistics = useStore((s) => s.logistics);
   const initialized = useRef(false);
@@ -86,39 +81,24 @@ export function useInitJourney(
   const params = useMemo<ParsedParams>(() => {
     const sp = new URLSearchParams(searchParams as any);
 
-    // Parse displayPrice if provided
-    if (displayPrice && !sp.get('pbp')) {
-      const parsed = parseBasePrice(displayPrice);
-      if (!isNaN(parsed) && parsed > 0) {
-        sp.set('pbp', String(parsed));
-      }
-    }
-
     const from = sp.get('from') || '';
     const type = (sp.get('type') || from || 'couple') as TravelerType;
     const levelRaw = sp.get('level') || sp.get('tier') || undefined;
     const level = normalizeTier(levelRaw);
     const tripperId = sp.get('tripperId') || undefined;
     const priceKey = sp.get('priceKey') || undefined;
-    const pbp = sp.get('pbp') ? Number(sp.get('pbp')) : undefined;
 
-    return { from, type, level, tripperId, priceKey, pbp };
-  }, [searchParams, displayPrice]);
+    return { from, type, level, tripperId, priceKey };
+  }, [searchParams]);
 
   useEffect(() => {
     // Only initialize once
     if (initialized.current) return;
     initialized.current = true;
 
-    const { type, level, tripperId, priceKey, pbp } = params;
+    const { type, level, tripperId, priceKey } = params;
 
-    // Priority 1: Direct price-per-person
-    if (pbp && !isNaN(pbp) && pbp > 0) {
-      setPartial(buildStateUpdate(params, pbp, logistics));
-      return;
-    }
-
-    // Priority 2: Explicit priceKey
+    // Priority 1: Explicit priceKey
     if (priceKey) {
       const [root, ...rest] = priceKey.split('.');
       const catalog =
@@ -133,7 +113,7 @@ export function useInitJourney(
       }
     }
 
-    // Priority 3: Tripper-specific pricing
+    // Priority 2: Tripper-specific pricing
     if (tripperId && level) {
       const price = extractPrice(
         (pricingCatalog.trippers as any)?.[tripperId],
@@ -145,7 +125,7 @@ export function useInitJourney(
       }
     }
 
-    // Priority 4: Standard traveler type pricing
+    // Priority 3: Standard traveler type pricing
     if (level) {
       const price = extractPrice(pricingCatalog.byTraveller, [
         type,

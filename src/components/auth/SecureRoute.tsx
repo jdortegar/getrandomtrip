@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/slices/userStore';
 import GlassCard from '@/components/ui/GlassCard';
 import BgCarousel from '@/components/media/BgCarousel';
+import AuthModal from '@/components/auth/AuthModal';
 
 interface SecureRouteProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ export default function SecureRoute({
   fallback,
 }: SecureRouteProps) {
   const { data: session, status } = useSession();
-  const { isAuthed, user } = useUserStore();
+  const { isAuthed, user, authModalOpen, closeAuth } = useUserStore();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
@@ -28,9 +29,9 @@ export default function SecureRoute({
 
     // Check authentication
     if (!session && !isAuthed) {
-      router.push(
-        '/login?returnTo=' + encodeURIComponent(window.location.pathname),
-      );
+      // Open auth modal using the user store
+      const { openAuth } = useUserStore.getState();
+      openAuth('signin');
       return;
     }
 
@@ -102,5 +103,14 @@ export default function SecureRoute({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={closeAuth}
+        defaultMode="login"
+      />
+    </>
+  );
 }

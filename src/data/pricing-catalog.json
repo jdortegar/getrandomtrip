@@ -3,25 +3,46 @@
   "currency": "USD",
   "byTraveller": {
     "solo": {
-      "essenza":   { "base": 320 },
+      "essenza": { "base": 320 },
       "modo-explora": { "base": 520 },
       "explora-plus": { "base": 780 },
-      "bivouac":   { "base": 1100 },
-      "atelier":   { "base": 1200 }
+      "bivouac": { "base": 1100 },
+      "atelier": { "base": 1200 }
     },
     "couple": {
-      "essenza":   { "base": 350 },
+      "essenza": { "base": 350 },
       "modo-explora": { "base": 550 },
       "explora-plus": { "base": 850 },
-      "bivouac":   { "base": 1200 },
-      "atelier":   { "base": 1300 }
+      "bivouac": { "base": 1200 },
+      "atelier": { "base": 1300 }
     },
     "family": {
-      "essenza":   { "base": 300 },
+      "essenza": { "base": 300 },
       "modo-explora": { "base": 500 },
       "explora-plus": { "base": 800 },
-      "bivouac":   { "base": 1150 },
-      "atelier":   { "base": 1300 }
+      "bivouac": { "base": 1150 },
+      "atelier": { "base": 1300 }
+    },
+    "group": {
+      "essenza": { "base": 300 },
+      "modo-explora": { "base": 500 },
+      "explora-plus": { "base": 800 },
+      "bivouac": { "base": 1150 },
+      "atelier": { "base": 1300 }
+    },
+    "honeymoon": {
+      "essenza": { "base": 525 },
+      "modo-explora": { "base": 825 },
+      "explora-plus": { "base": 1275 },
+      "bivouac": { "base": 1800 },
+      "atelier": { "base": 1950 }
+    },
+    "paws": {
+      "essenza": { "base": 320 },
+      "modo-explora": { "base": 520 },
+      "explora-plus": { "base": 780 },
+      "bivouac": { "base": 1100 },
+      "atelier": { "base": 1200 }
     }
   },
   "trippers": {

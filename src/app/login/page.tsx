@@ -54,23 +54,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense
-      fallback={
-        <>
-          <Hero
-            content={{
-              title: 'Cargando...',
-              subtitle: '',
-              videoSrc: '/videos/hero-video.mp4',
-              fallbackImage: '/images/bg-playa-mexico.jpg',
-            }}
-          />
-          <Section>
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            </div>
-          </Section>
-        </>
-      }
+      fallback={<Loader2 className="h-12 w-12 animate-spin text-primary" />}
     >
       <LoginContent />
     </Suspense>

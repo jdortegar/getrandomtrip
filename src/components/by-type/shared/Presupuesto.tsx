@@ -94,7 +94,7 @@ export default function Presupuesto({
         </p>
       </div>
 
-      <div className="flex no-wrap rounded-md overflow-hidden">
+      <div className="flex no-wrap rounded-md overflow-hidden mx-auto justify-center">
         {/* Categories Header Card */}
         <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-12 min-w-[200px]">
           <div className="">
@@ -129,11 +129,13 @@ export default function Presupuesto({
         </div>
 
         {/* Tier Cards */}
-        <div className="flex no-wrap overflow-hidden overflow-x-auto">
+        <div
+          className={`flex no-wrap overflow-hidden overflow-x-auto ${tiers.length === 1 ? 'justify-center' : ''}`}
+        >
           {tiers.map((tier) => (
             <div
               key={tier.id}
-              className="relative bg-gray-100 transition-all duration-200 min-w-[350px]"
+              className={`relative bg-gray-100 transition-all duration-200 ${tiers.length === 1 ? 'max-w-[500px] w-full' : 'min-w-[350px]'}`}
             >
               <div className="py-12 px-6">
                 {/* Plan Name */}

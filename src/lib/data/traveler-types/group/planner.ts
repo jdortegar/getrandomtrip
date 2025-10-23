@@ -8,7 +8,7 @@ export const groupPlannerContent: TypePlannerContent = {
   tiers: groupTiers,
   almaOptions: GROUP_ALMA_OPTIONS,
   steps: {
-    step2Label: 'La Excusa',
+    step2Label: 'Tipo de Experiencia',
     presupuesto: {
       title: '¿Cuánto quieren invertir?',
       tagline:
@@ -24,35 +24,64 @@ export const groupPlannerContent: TypePlannerContent = {
       ],
     },
     laExcusa: {
-      title: 'Viajan en grupo por muchas razones, ¿cuál los mueve hoy?',
-      tagline: 'Toda escapada con amigos tiene su "porque sí".',
+      title: '¿Qué tipo de experiencia buscan?',
+      tagline: 'Elijan el estilo de viaje que más los representa como grupo.',
       cards: [
         {
-          key: 'group-adventure',
-          title: 'Aventura Grupal',
-          img: 'https://images.unsplash.com/photo-1562337635-a4d98d22c1d2',
+          key: 'visual-storytellers',
+          title: 'Narradores Visuales',
+          img: 'https://images.unsplash.com/photo-1527499354222-c3975b69f669?auto=format&fit=crop&w=800&q=80',
           description:
-            'Actividades emocionantes para compartir con toda la barra.',
+            'Viajes diseñados para quienes buscan mirar el mundo a través de un lente, capturar historias y volver con memorias que son también obras visuales.',
         },
         {
-          key: 'party-celebration',
-          title: 'Celebración',
-          img: 'https://images.unsplash.com/photo-1746559893894-92e3318393bc',
+          key: 'yoga-wellness',
+          title: 'Yoga & Bienestar',
+          img: 'https://images.unsplash.com/photo-1475444239989-05b09b5453c2?auto=format&fit=crop&w=800&q=80',
           description:
-            'Un cumpleaños, despedida o simplemente la excusa perfecta para juntarse.',
+            'Escapadas pensadas para reconectar cuerpo, mente y espíritu en entornos que invitan a bajar el ritmo.',
         },
         {
-          key: 'food-wine',
-          title: 'Gastro & Vinos',
-          img: 'https://images.unsplash.com/photo-1663428710477-c7c838be76b5',
-          description: 'Rutas gastronómicas y catas para disfrutar en grupo.',
+          key: 'spiritual',
+          title: 'Religioso o Espiritual',
+          img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=800&q=80',
+          description:
+            'Viajes para quienes buscan lo trascendente, con espacios de silencio, comunidad y sentido.',
         },
         {
-          key: 'urban-nightlife',
-          title: 'Vida Urbana',
-          img: 'https://images.unsplash.com/photo-1634452584863-e6590064b4d3',
+          key: 'foodies',
+          title: 'Gastronómico',
+          img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
           description:
-            'Ciudades vibrantes con la mejor escena nocturna para el grupo.',
+            'Viajes que exploran culturas a través de sabores, aromas y experiencias culinarias únicas.',
+        },
+        {
+          key: 'stories-fantasy',
+          title: 'Historias & Fantasía',
+          img: 'https://images.unsplash.com/photo-1534685785742-43a2539a215a?auto=format&fit=crop&w=800&q=80',
+          description:
+            'Viajes que transforman libros, sagas y películas en escenarios reales donde todo se siente posible.',
+        },
+        {
+          key: 'nature-adventure',
+          title: 'Naturaleza & Aventura',
+          img: 'https://images.unsplash.com/photo-1505521216430-8b73b2067359?auto=format&fit=crop&w=800&q=80',
+          description:
+            'Escapadas que retan cuerpo y espíritu, donde cada kilómetro recorrido es un logro compartido.',
+        },
+        {
+          key: 'friends',
+          title: 'Amigos',
+          img: 'https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?auto=format&fit=crop&w=800&q=80',
+          description:
+            'Viajes que celebran la amistad, las risas compartidas y los momentos que después se cuentan mil veces.',
+        },
+        {
+          key: 'business',
+          title: 'Negocios',
+          img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80',
+          description:
+            'Experiencias que combinan estrategia, networking y conexión real fuera de la oficina.',
         },
       ],
     },

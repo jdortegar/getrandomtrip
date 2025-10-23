@@ -29,10 +29,10 @@ export const familyTiers: Tier[] = [
     ctaLabel: 'Reserven fácil →',
   },
   {
-    id: 'modo-explora',
+    id: 'explora',
     name: 'Modo Explora',
     subtitle: 'Viaje activo y flexible',
-    priceLabel: 'Hasta 550 USD',
+    priceLabel: 'Hasta 500 USD',
     priceFootnote: '· por persona',
     features: [
       { label: 'Duración', text: 'Hasta 3 noches' },
@@ -56,7 +56,7 @@ export const familyTiers: Tier[] = [
     ctaLabel: 'Activen su Modo Explora →',
   },
   {
-    id: 'explora-plus',
+    id: 'exploraPlus',
     name: 'Explora+',
     subtitle: 'Más capas, más descubrimientos',
     priceLabel: 'Hasta 850 USD',
@@ -116,7 +116,7 @@ export const familyTiers: Tier[] = [
     ctaLabel: 'Viajen distinto →',
   },
   {
-    id: 'atelier-getaway',
+    id: 'atelier',
     name: 'Atelier Getaway',
     subtitle: 'Distinción, sin esfuerzo',
     priceLabel: 'Desde 1200 USD',

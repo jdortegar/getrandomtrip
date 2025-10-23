@@ -118,12 +118,7 @@ export default async function Page({
 
       {/* Featured Trips Gallery */}
       {featuredTrips.length > 0 && (
-        <Section className="bg-primary py-20" fullWidth={true}>
-          <TripperInspirationGallery
-            trips={featuredTrips}
-            tripperName={t.name}
-          />
-        </Section>
+        <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
       )}
 
       {/* Planner: with DB data */}

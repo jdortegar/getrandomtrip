@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import ChatFab from '@/components/chrome/ChatFab';
+import AuthModal from '@/components/auth/AuthModal';
 import { useStore } from '@/store/store';
 import { buildICS } from '@/lib/ics';
 import Section from '@/components/layout/Section';
@@ -14,16 +15,18 @@ import { Calendar, Share2, Mail } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
 import { useCountdown } from '@/hooks/useCountdown';
 import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 
 function ConfirmationPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
-  const { isAuthed } = useUserStore();
+  const { isAuthed, authModalOpen, closeAuth } = useUserStore();
   const { logistics, type, resetJourney } = useStore();
+  const [tripData, setTripData] = useState<any>(null);
 
   // Use countdown hook for time remaining calculation
-  const timeLeft = useCountdown(logistics.startDate);
+  const timeLeft = useCountdown(tripData?.startDate || logistics.startDate);
 
   // Get MercadoPago callback parameters
   const paymentId = searchParams.get('payment_id');
@@ -36,15 +39,96 @@ function ConfirmationPageContent() {
     paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending');
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  // Redirect to login if not authenticated
+  // Open auth modal if not authenticated
   useEffect(() => {
     if (status === 'loading') return;
 
     if (!session && !isAuthed) {
-      const currentPath = window.location.pathname + window.location.search;
-      router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
+      // Open auth modal using the user store
+      const { openAuth } = useUserStore.getState();
+      openAuth('signin');
     }
-  }, [session, isAuthed, status, router]);
+  }, [session, isAuthed, status]);
+
+  // Fetch trip data from database
+  useEffect(() => {
+    if (externalReference) {
+      console.log(
+        'Fetching trip data for external reference:',
+        externalReference,
+      );
+      console.log('Current session:', session);
+      console.log('Current auth status:', { isAuthed, status });
+
+      const fetchTripData = async () => {
+        try {
+          console.log(`Making request to: /api/trips/${externalReference}`);
+          const response = await fetch(`/api/trips/${externalReference}`);
+          console.log('Response status:', response.status);
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Trip data fetched:', data.trip);
+            console.log('Trip city:', data.trip?.city);
+            console.log('Trip country:', data.trip?.country);
+            console.log('Trip startDate:', data.trip?.startDate);
+            console.log('Trip endDate:', data.trip?.endDate);
+            setTripData(data.trip); // API returns { trip: {...} }
+          } else {
+            const errorData = await response.json();
+            console.error(
+              'Failed to fetch trip data:',
+              response.status,
+              errorData,
+            );
+          }
+        } catch (error) {
+          console.error('Error fetching trip data:', error);
+        }
+      };
+
+      fetchTripData();
+    }
+  }, [externalReference, session, isAuthed, status]);
+
+  // Handle payment confirmation when page loads
+  useEffect(() => {
+    if (isPaymentSuccessful && paymentId && externalReference) {
+      // Call API to confirm payment
+      const confirmPayment = async () => {
+        try {
+          const response = await fetch('/api/payments/confirm', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              paymentId,
+              externalReference,
+              merchantOrderId,
+              status: paymentStatus,
+            }),
+          });
+
+          if (response.ok) {
+            console.log('Payment confirmed successfully');
+          } else {
+            console.error('Failed to confirm payment');
+          }
+        } catch (error) {
+          console.error('Error confirming payment:', error);
+        }
+      };
+
+      confirmPayment();
+    }
+  }, [
+    isPaymentSuccessful,
+    paymentId,
+    externalReference,
+    merchantOrderId,
+    paymentStatus,
+  ]);
 
   // Clear store when user leaves confirmation page to start fresh for next trip
   useEffect(() => {
@@ -57,41 +141,32 @@ function ConfirmationPageContent() {
 
   // Show loading while checking auth
   if (status === 'loading') {
-    return (
-      <>
-        <Hero
-          content={{
-            title: 'Cargando...',
-            subtitle: 'Verificando tu sesión',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
-          }}
-        />
-        <Section>
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        </Section>
-      </>
-    );
+    return <Loader2 className="h-12 w-12 animate-spin text-primary" />;
   }
 
-  // Don't render if not authenticated (will redirect)
-  if (!session && !isAuthed) {
-    return null;
-  }
-
-  const startDate = logistics.startDate
-    ? new Date(logistics.startDate)
-    : undefined;
-  const endDate = logistics.endDate
-    ? new Date(logistics.endDate)
-    : startDate
-      ? new Date(startDate.getTime() + (logistics.nights || 1) * 86400000)
+  const startDate = tripData?.startDate
+    ? new Date(tripData.startDate)
+    : logistics.startDate
+      ? new Date(logistics.startDate)
       : undefined;
+  const endDate = tripData?.endDate
+    ? new Date(tripData.endDate)
+    : logistics.endDate
+      ? new Date(logistics.endDate)
+      : startDate
+        ? new Date(
+            startDate.getTime() +
+              (tripData?.nights || logistics.nights || 1) * 86400000,
+          )
+        : undefined;
 
-  const title = `${type || 'randomtrip'}`.toUpperCase() + ' – Viaje confirmado';
-  const location = [logistics.city, logistics.country]
+  const title =
+    `${tripData?.type || type || 'randomtrip'}`.toUpperCase() +
+    ' – Viaje confirmado';
+  const location = [
+    tripData?.city || logistics.city,
+    tripData?.country || logistics.country,
+  ]
     .filter(Boolean)
     .join(', ');
   const icsHref = buildICS(title, startDate, endDate, location);
@@ -167,7 +242,7 @@ function ConfirmationPageContent() {
                   Salida desde
                 </div>
                 <div className="font-semibold text-neutral-900">
-                  {logistics.city ?? '—'}
+                  {tripData?.city || logistics.city || '—'}
                 </div>
               </div>
 
@@ -255,6 +330,12 @@ function ConfirmationPageContent() {
       </Section>
 
       <ChatFab />
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={closeAuth}
+        defaultMode="login"
+      />
     </>
   );
 }

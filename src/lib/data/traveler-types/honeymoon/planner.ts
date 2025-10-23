@@ -32,28 +32,28 @@ export const honeymoonPlannerContent: TypePlannerContent = {
           title: 'Paraíso Romántico',
           img: 'https://images.unsplash.com/photo-1519741497674-611481863552',
           description:
-            'Playas paradisíacas y atardeceres inolvidables para celebrar su amor.',
+            'Playas paradisíacas, atardeceres inolvidables y momentos de intimidad perfecta. Hoteles boutique frente al mar, cenas privadas en la playa y experiencias diseñadas para celebrar su amor en los escenarios más románticos del mundo.',
         },
         {
           key: 'luxury-escape',
           title: 'Escapada de Lujo',
           img: 'https://images.unsplash.com/photo-1687875495230-96dfea96d9da',
           description:
-            'Spa, cenas privadas y el máximo confort para su luna de miel.',
+            'Spa de clase mundial, cenas privadas con chef personal, suites presidenciales y el máximo confort. Tratamientos de pareja, traslados en limusina, acceso VIP a los mejores restaurantes y experiencias exclusivas que solo el lujo puede ofrecer.',
         },
         {
           key: 'adventure-honeymoon',
           title: 'Luna de Miel Aventurera',
           img: 'https://images.unsplash.com/photo-1562337635-a4d98d22c1d2',
           description:
-            'Para parejas que buscan adrenalina y experiencias únicas juntos.',
+            'Trekking por montañas, buceo en arrecifes, safaris nocturnos y experiencias que aceleran el corazón. Para parejas que buscan adrenalina, descubrimiento y aventuras que los unan a través de desafíos compartidos y recuerdos únicos.',
         },
         {
           key: 'cultural-romance',
           title: 'Romance Cultural',
           img: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd',
           description:
-            'Ciudades históricas, arte y gastronomía para su viaje romántico.',
+            'Ciudades históricas, museos íntimos, gastronomía local y tradiciones que enriquecen el alma. Paseos por barrios antiguos, catas de vino privadas, espectáculos culturales y experiencias que conectan con la esencia de cada destino.',
         },
       ],
     },

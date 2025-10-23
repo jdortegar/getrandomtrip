@@ -9,7 +9,6 @@ type SectionProps = {
   className?: string;
   variant?: 'default' | 'light' | 'dark';
   id?: string;
-  background?: string;
   fullWidth?: boolean;
 };
 
@@ -20,13 +19,12 @@ const Section = ({
   className,
   variant = 'default',
   id,
-  background,
   fullWidth = false,
 }: SectionProps) => {
   return (
     <section
       className={cn(
-        'text-center py-12 md:py-18 relative bg-cover bg-center flex flex-col items-center justify-center w-full',
+        'text-center py-12 md:py-18 relative flex flex-col items-center justify-center w-full',
         className,
         {
           'bg-white text-gray-900': variant === 'default',
@@ -35,9 +33,7 @@ const Section = ({
         },
       )}
       id={id}
-      style={{ backgroundImage: `url(${background})` }}
     >
-      {background && <div className="absolute inset-0 bg-black/50" />}
       {title && (
         <div className="mb-6 max-w-3xl mx-auto relative z-10 px-4 md:mb-8">
           <h2

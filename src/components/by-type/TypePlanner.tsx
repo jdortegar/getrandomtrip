@@ -33,7 +33,13 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
 
     if (!selectedLevels) return content.tiers; // Fallback to content tiers
 
-    return Object.entries(selectedLevels).map(([key, levelContent]) => {
+    // For honeymoon, only show the atelier level
+    const levelsToShow =
+      type === 'honeymoon'
+        ? { atelier: selectedLevels.atelier }
+        : selectedLevels;
+
+    return Object.entries(levelsToShow).map(([key, levelContent]) => {
       const level = levelContent as LevelContent;
 
       return {
@@ -67,7 +73,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
       case 2:
         return budgetTier !== null; // Need budget tier to access step 2
       case 3:
-        return budgetTier !== null && almaKey !== null; // Need both budget and alma for step 3
+        return budgetTier !== null; // Only need budget tier to access step 3 (almaKey is optional)
       default:
         return false;
     }
@@ -83,7 +89,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
             plannerId={`${type}-planner`}
             setBudgetTier={setBudgetTier}
             setPendingPriceLabel={setPendingPriceLabel}
-            setStep={setStep}
+            setStep={handleStepChange}
             tiers={tiers}
             type={type}
           />
@@ -95,7 +101,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
             content={content.steps.laExcusa}
             plannerId={`${type}-planner`}
             setAlmaKey={setAlmaKey}
-            setStep={setStep}
+            setStep={handleStepChange}
           />
         );
       case 3:
@@ -106,13 +112,28 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
             budgetTier={budgetTier}
             content={content.steps.afinarDetalles}
             pendingPriceLabel={pendingPriceLabel}
-            setStep={setStep}
+            setStep={handleStepChange}
             type={type}
           />
         );
     }
 
     return null;
+  };
+
+  // Scroll to planner section when step changes
+  const handleStepChange = (newStep: number) => {
+    setStep(newStep);
+    // Scroll to the planner section after a short delay to allow for animation
+    setTimeout(() => {
+      const plannerElement = document.getElementById(`${type}-planner`);
+      if (plannerElement) {
+        plannerElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -127,7 +148,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
         <WizardHeader
           canNavigateToStep={canNavigateToStep}
           currentStep={step}
-          onStepClick={setStep}
+          onStepClick={handleStepChange}
           steps={steps}
         />
         <AnimatePresence mode="wait">

@@ -7,15 +7,30 @@ import { useUserStore } from '@/store/slices/userStore';
 import { useEffect, useState } from 'react';
 import Link from 'next/link'; // Added import
 import type { TravelerType, BudgetLevel } from '@/store/slices/userStore';
+import AuthModal from '@/components/auth/AuthModal';
 
 export default function EditProfilePage() {
-  const { isAuthed, user, openAuth, updateAccount, upsertPrefs } = useUserStore();
+  const {
+    isAuthed,
+    user,
+    openAuth,
+    updateAccount,
+    upsertPrefs,
+    authModalOpen,
+    closeAuth,
+  } = useUserStore();
 
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
-  const [travelerType, setTravelerType] = useState<TravelerType | undefined>(user?.prefs.travelerType);
-  const [budget, setBudget] = useState<BudgetLevel | undefined>(user?.prefs.budget);
-  const [publicProfile, setPublicProfile] = useState<boolean>(!!user?.prefs.publicProfile);
+  const [travelerType, setTravelerType] = useState<TravelerType | undefined>(
+    user?.prefs.travelerType,
+  );
+  const [budget, setBudget] = useState<BudgetLevel | undefined>(
+    user?.prefs.budget,
+  );
+  const [publicProfile, setPublicProfile] = useState<boolean>(
+    !!user?.prefs.publicProfile,
+  );
 
   useEffect(() => {
     if (!isAuthed) openAuth('signin');
@@ -32,12 +47,17 @@ export default function EditProfilePage() {
   }, [user]);
 
   const onSaveAccount = () => updateAccount?.(name, email);
-  const onSavePrefs = () => upsertPrefs?.({ travelerType, budget, publicProfile });
+  const onSavePrefs = () =>
+    upsertPrefs?.({ travelerType, budget, publicProfile });
 
   if (!isAuthed) {
     return (
       <PageContainer>
-        <GlassCard><div className="p-6 text-center text-neutral-700">Inicia sesión para editar tu perfil.</div></GlassCard>
+        <GlassCard>
+          <div className="p-6 text-center text-neutral-700">
+            Inicia sesión para editar tu perfil.
+          </div>
+        </GlassCard>
       </PageContainer>
     );
   }
@@ -49,23 +69,47 @@ export default function EditProfilePage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard title="Cuenta">
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-neutral-700">Nombre</label>
-            <input className="rt-input" value={name} onChange={e=>setName(e.target.value)} />
-            <label className="block mt-3 text-sm font-medium text-neutral-700">Email</label>
-            <input className="rt-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} />
+            <label className="block text-sm font-medium text-neutral-700">
+              Nombre
+            </label>
+            <input
+              className="rt-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <label className="block mt-3 text-sm font-medium text-neutral-700">
+              Email
+            </label>
+            <input
+              className="rt-input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
             <div className="mt-4">
-              <button className="rt-btn rt-btn--primary" onClick={onSaveAccount}>Guardar cuenta</button>
+              <button
+                className="rt-btn rt-btn--primary"
+                onClick={onSaveAccount}
+              >
+                Guardar cuenta
+              </button>
             </div>
           </div>
         </SectionCard>
 
         <SectionCard title="Preferencias">
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-neutral-700">Tipo de viajero</label>
+            <label className="block text-sm font-medium text-neutral-700">
+              Tipo de viajero
+            </label>
             <select
               className="rt-input"
               value={travelerType ?? ''}
-              onChange={e => setTravelerType((e.target.value || undefined) as TravelerType | undefined)}
+              onChange={(e) =>
+                setTravelerType(
+                  (e.target.value || undefined) as TravelerType | undefined,
+                )
+              }
             >
               <option value="">Selecciona…</option>
               <option value="solo">Solo</option>
@@ -75,11 +119,17 @@ export default function EditProfilePage() {
               <option value="empresa">Empresa</option>
             </select>
 
-            <label className="block mt-3 text-sm font-medium text-neutral-700">Presupuesto típico</label>
+            <label className="block mt-3 text-sm font-medium text-neutral-700">
+              Presupuesto típico
+            </label>
             <select
               className="rt-input"
               value={budget ?? ''}
-              onChange={e => setBudget((e.target.value || undefined) as BudgetLevel | undefined)}
+              onChange={(e) =>
+                setBudget(
+                  (e.target.value || undefined) as BudgetLevel | undefined,
+                )
+              }
             >
               <option value="">Selecciona…</option>
               <option value="low">Low</option>
@@ -88,7 +138,9 @@ export default function EditProfilePage() {
             </select>
 
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-neutral-700">Perfil público</label>
+              <label className="text-sm font-medium text-neutral-700">
+                Perfil público
+              </label>
               <input
                 type="checkbox"
                 checked={publicProfile}
@@ -97,12 +149,22 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button onClick={onSavePrefs} className="rt-btn rt-btn--primary">Guardar preferencias</button>
-              <Link href="/profile" className="rt-btn rt-btn--ghost">Ver vista pública</Link>
+              <button onClick={onSavePrefs} className="rt-btn rt-btn--primary">
+                Guardar preferencias
+              </button>
+              <Link href="/profile" className="rt-btn rt-btn--ghost">
+                Ver vista pública
+              </Link>
             </div>
           </div>
         </SectionCard>
       </div>
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={closeAuth}
+        defaultMode="login"
+      />
     </PageContainer>
   );
 }

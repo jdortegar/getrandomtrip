@@ -7,8 +7,10 @@ import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 
 import ChatFab from '@/components/chrome/ChatFab';
+import AuthModal from '@/components/auth/AuthModal';
 
 import { useStore } from '@/store/store';
+import { useUserStore } from '@/store/slices/userStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 
@@ -20,14 +22,13 @@ import { Button } from '@/components/ui/button';
 import { usePlanData } from '@/hooks/usePlanData';
 import { useSaveTrip } from '@/hooks/useSaveTrip';
 import { usePayment } from '@/hooks/usePayment';
-import { useUserStore } from '@/store/slices/userStore';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
 function SummaryPageContent() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { isAuthed } = useUserStore();
+  const { isAuthed, authModalOpen, closeAuth } = useUserStore();
   const { saveTrip, isLoading: isSaving, error: saveError } = useSaveTrip();
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
 
@@ -52,40 +53,49 @@ function SummaryPageContent() {
     addons,
   });
 
-  // Redirect to login if not authenticated
+  // Define handleSaveTrip before any early returns
+  const handleSaveTrip = async () => {
+    try {
+      console.log('🚀 Attempting to save trip...', { savedTripId, isSaving });
+      const trip = await saveTrip(savedTripId || undefined);
+      console.log('✅ Trip saved successfully:', trip);
+      setSavedTripId(trip.id);
+    } catch (error) {
+      console.error('❌ Failed to save trip:', error);
+    }
+  };
+
+  // Open auth modal if not authenticated
   useEffect(() => {
     if (status === 'loading') return;
 
     if (!session && !isAuthed) {
-      const currentPath = window.location.pathname + window.location.search;
-      router.push(`/login?returnTo=${encodeURIComponent(currentPath)}`);
+      // Open auth modal using the user store
+      const { openAuth } = useUserStore.getState();
+      openAuth('signin');
     }
-  }, [session, isAuthed, status, router]);
+  }, [session, isAuthed, status]);
 
   // Auto-save trip when user arrives (if authenticated)
   useEffect(() => {
-    if ((session || isAuthed) && !savedTripId && !isSaving) {
-      handleSaveTrip();
-    }
-  }, [session, isAuthed]);
+    console.log('🔄 Auto-save useEffect triggered:', {
+      session: !!session,
+      isAuthed,
+      savedTripId,
+      isSaving,
+    });
 
-  const handleSaveTrip = async () => {
-    try {
-      const trip = await saveTrip(savedTripId || undefined);
-      setSavedTripId(trip.id);
-    } catch (error) {
-      console.error('Failed to save trip:', error);
+    if ((session || isAuthed) && !savedTripId && !isSaving) {
+      console.log('✅ Conditions met, calling handleSaveTrip');
+      handleSaveTrip();
+    } else {
+      console.log('❌ Conditions not met for auto-save');
     }
-  };
+  }, [session, isAuthed, savedTripId, isSaving, handleSaveTrip]);
 
   // Show loading while checking auth
   if (status === 'loading') {
     return <Loader2 className="h-12 w-12 animate-spin text-primary" />;
-  }
-
-  // Don't render if not authenticated (will redirect)
-  if (!session && !isAuthed) {
-    return null;
   }
 
   // Calculate pricing using consolidated logic (DRY principle)
@@ -234,16 +244,23 @@ function SummaryPageContent() {
     router.push(buildUrlWithParams('/journey/basic-config'));
 
   const payNow = async () => {
+    console.log('💳 PayNow called with savedTripId:', savedTripId);
+
     // Update trip status to PENDING_PAYMENT before payment
     if (savedTripId) {
       try {
+        console.log('🔄 Updating trip before payment...');
         await saveTrip(savedTripId);
+        console.log('✅ Trip updated successfully');
       } catch (error) {
-        console.error('Failed to update trip:', error);
+        console.error('❌ Failed to update trip:', error);
       }
+    } else {
+      console.log('⚠️ No savedTripId - trip may not be saved yet');
     }
 
     // Initiate MercadoPago payment directly
+    console.log('🚀 Initiating payment with tripId:', savedTripId || undefined);
     await initiatePayment(savedTripId || undefined);
   };
 
@@ -432,7 +449,14 @@ function SummaryPageContent() {
                 </Button>
 
                 <Button
-                  onClick={payNow}
+                  onClick={
+                    !session && !isAuthed
+                      ? () => {
+                          const { openAuth } = useUserStore.getState();
+                          openAuth('signin');
+                        }
+                      : payNow
+                  }
                   disabled={isProcessing || isSaving}
                   className="w-full"
                 >
@@ -441,6 +465,8 @@ function SummaryPageContent() {
                       <Loader2 className="h-5 w-5 animate-spin" />
                       Procesando pago...
                     </div>
+                  ) : !session && !isAuthed ? (
+                    'Inicia sesión para continuar'
                   ) : (
                     'Continuar a pago'
                   )}
@@ -452,6 +478,12 @@ function SummaryPageContent() {
 
         <ChatFab />
       </Section>
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={closeAuth}
+        defaultMode="login"
+      />
     </>
   );
 }
@@ -459,23 +491,7 @@ function SummaryPageContent() {
 export default function SummaryPage() {
   return (
     <Suspense
-      fallback={
-        <>
-          <Hero
-            content={{
-              title: 'Cargando...',
-              subtitle: '',
-              videoSrc: '/videos/hero-video.mp4',
-              fallbackImage: '/images/bg-playa-mexico.jpg',
-            }}
-          />
-          <Section>
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            </div>
-          </Section>
-        </>
-      }
+      fallback={<Loader2 className="h-12 w-12 animate-spin text-primary" />}
     >
       <SummaryPageContent />
     </Suspense>

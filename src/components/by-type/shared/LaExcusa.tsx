@@ -159,7 +159,9 @@ export default function LaExcusa({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+      <div
+        className={`grid gap-6 mt-8 ${almaCards.length === 1 ? 'grid-cols-1 justify-center max-w-md mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}
+      >
         {almaCards.map((card) => (
           <FlipCard
             key={card.key}

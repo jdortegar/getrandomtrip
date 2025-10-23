@@ -295,11 +295,11 @@ export default function TripperPlanner({
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 text-center">
             <h2 className="font-caveat text-4xl font-bold text-gray-900 md:text-5xl">
-              Diseña tu Randomtrip con {firstName}
+              Planifica tu Randomtrip con {firstName}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
               {firstName} se especializa en crear experiencias inolvidables.
-              Sigue estos pasos para construir tu próximo gran viaje.
+              Sigue estos pasos para planificar tu próximo gran viaje.
             </p>
           </div>
 

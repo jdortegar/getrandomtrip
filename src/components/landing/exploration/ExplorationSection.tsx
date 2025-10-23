@@ -52,8 +52,8 @@ export function ExplorationSection() {
           <motion.div
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             className="mx-auto mt-8 w-full max-w-7xl min-h-[400px]"
-            exit={{ opacity: 0, y: -20, height: 0 }}
-            initial={{ opacity: 0, y: 20, height: 0 }}
+            exit={{ opacity: 0, y: -20, height: '400px' }}
+            initial={{ opacity: 0, y: 20, height: '400px' }}
             key={activeTab}
             transition={{
               duration: 0.5,

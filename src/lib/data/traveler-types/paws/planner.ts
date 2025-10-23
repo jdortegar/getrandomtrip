@@ -29,28 +29,28 @@ export const pawsPlannerContent: TypePlannerContent = {
       tagline: 'Toda aventura es mejor cuando la compartís con tu mejor amigo.',
       cards: [
         {
-          key: 'nature-paws',
+          key: 'trails-nature',
           title: 'Naturaleza & Patas',
           img: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b',
           description:
             'Senderos, playas y espacios abiertos para que tu mascota disfrute.',
         },
         {
-          key: 'pet-friendly-cities',
+          key: 'pet-lover-cities',
           title: 'Ciudades Pet-Friendly',
           img: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e',
           description:
             'Destinos urbanos con la mejor infraestructura para mascotas.',
         },
         {
-          key: 'camping-adventure',
+          key: 'outdoor-adventure',
           title: 'Camping & Aventura',
           img: 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d',
           description:
             'Experiencias al aire libre perfectas para compartir con tu peludo.',
         },
         {
-          key: 'beach-retreat',
+          key: 'dog-friendly-beaches',
           title: 'Retiro Playero',
           img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
           description:

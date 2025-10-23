@@ -130,24 +130,7 @@ function TripDetailsContent() {
   }, [tripId, session?.user?.id]);
 
   if (loading) {
-    return (
-      <>
-        <Hero
-          content={{
-            title: 'Cargando...',
-            subtitle: 'Obteniendo detalles del viaje',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
-          }}
-          className="!h-[40vh]"
-        />
-        <Section>
-          <div className="flex justify-center items-center min-h-[400px]">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-          </div>
-        </Section>
-      </>
-    );
+    return <Loader2 className="h-12 w-12 animate-spin text-primary" />;
   }
 
   if (!trip) {

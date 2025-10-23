@@ -28,13 +28,13 @@ export const soloPlannerContent: TypePlannerContent = {
       tagline: 'Toda escapada tiene su "porque sí".',
       cards: [
         {
-          key: 'self-discovery',
+          key: 'get-lost',
           title: 'Autodescubrimiento',
           img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
           description: 'Un viaje para reconectar con vos mismo.',
         },
         {
-          key: 'adventure',
+          key: 'aventura-desafio',
           title: 'Aventura',
           img: 'https://images.unsplash.com/photo-1562337635-a4d98d22c1d2',
           description: 'Porque la adrenalina es mejor cuando la elegís vos.',

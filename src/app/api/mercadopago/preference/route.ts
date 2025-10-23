@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
       userId,
     });
 
+    console.log('External reference will be set to:', tripId);
+
     if (!total || total <= 0) {
       console.error('Invalid total amount:', total);
       return NextResponse.json(
@@ -126,6 +128,21 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // Verify trip exists before creating payment
+        const tripExists = await prisma.trip.findUnique({
+          where: { id: tripId },
+        });
+
+        if (!tripExists) {
+          console.error('Trip not found in database:', tripId);
+          return NextResponse.json(
+            { error: 'Trip not found. Please try again.' },
+            { status: 400 },
+          );
+        }
+
+        console.log('Creating payment record for trip:', tripId);
+
         await createPayment({
           userId,
           tripId,
@@ -138,6 +155,8 @@ export async function POST(request: NextRequest) {
           mpStatementDescriptor: 'GETRANDOMTRIP',
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         });
+
+        console.log('Payment record created successfully');
       } catch (paymentError) {
         console.error('Error creating payment record:', paymentError);
         // Continue with preference even if payment record fails
