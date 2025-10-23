@@ -69,8 +69,8 @@ function ConfirmationPageContent() {
           if (response.ok) {
             const data = await response.json();
             console.log('Trip data fetched:', data.trip);
-            console.log('Trip city:', data.trip?.city);
-            console.log('Trip country:', data.trip?.country);
+            console.log('Trip originCity:', data.trip?.originCity);
+            console.log('Trip originCountry:', data.trip?.originCountry);
             console.log('Trip startDate:', data.trip?.startDate);
             console.log('Trip endDate:', data.trip?.endDate);
             setTripData(data.trip); // API returns { trip: {...} }
@@ -164,8 +164,8 @@ function ConfirmationPageContent() {
     `${tripData?.type || type || 'randomtrip'}`.toUpperCase() +
     ' – Viaje confirmado';
   const location = [
-    tripData?.city || logistics.city,
-    tripData?.country || logistics.country,
+    tripData?.originCity || logistics.city,
+    tripData?.originCountry || logistics.country,
   ]
     .filter(Boolean)
     .join(', ');
@@ -242,7 +242,7 @@ function ConfirmationPageContent() {
                   Salida desde
                 </div>
                 <div className="font-semibold text-neutral-900">
-                  {tripData?.city || logistics.city || '—'}
+                  {tripData?.originCity || logistics.city || '—'}
                 </div>
               </div>
 

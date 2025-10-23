@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
       include: {
-        trip: {
+        tripRequest: {
           select: {
             id: true,
             type: true,

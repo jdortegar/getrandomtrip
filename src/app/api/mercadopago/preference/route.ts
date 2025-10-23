@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify trip exists before creating payment
-        const tripExists = await prisma.trip.findUnique({
+        const tripExists = await prisma.tripRequest.findUnique({
           where: { id: tripId },
         });
 
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
         await createPayment({
           userId,
-          tripId,
+          tripRequestId: tripId,
           provider: 'mercadopago',
           providerPreferenceId: response.id,
           amount: total,

@@ -45,7 +45,7 @@ export async function getUserById(id: string) {
   return await prisma.user.findUnique({
     where: { id },
     include: {
-      trips: true,
+      tripRequests: true,
       reviews: true,
     },
   });
@@ -70,14 +70,14 @@ export async function updateUserPrefs(
 // ========================================
 
 export async function createTrip(userId: string, data: CreateTripData) {
-  return await prisma.trip.create({
+  return await prisma.tripRequest.create({
     data: {
       userId,
       from: data.from || '',
       type: data.type,
       level: data.level,
-      country: data.country,
-      city: data.city,
+      originCountry: data.country,
+      originCity: data.city,
       startDate: data.startDate,
       endDate: data.endDate,
       nights: data.nights,
@@ -89,19 +89,19 @@ export async function createTrip(userId: string, data: CreateTripData) {
       arrivePref: data.arrivePref || 'indistinto',
       avoidDestinations: data.avoidDestinations || [],
       addons: data.addons || [],
-      basePriceUsd: data.basePriceUsd,
-      displayPrice: data.displayPrice || '',
-      filtersCostUsd: data.filtersCostUsd || 0,
-      addonsCostUsd: data.addonsCostUsd || 0,
-      totalPerPaxUsd: data.totalPerPaxUsd || 0,
-      totalTripUsd: data.totalTripUsd || 0,
+      // basePriceUsd: data.basePriceUsd, // Pricing fields removed from TripRequest
+      // displayPrice: data.displayPrice || '', // Pricing fields removed from TripRequest
+      // filtersCostUsd: data.filtersCostUsd || 0,
+      // addonsCostUsd: data.addonsCostUsd || 0,
+      // totalPerPaxUsd: data.totalPerPaxUsd || 0,
+      // totalTripUsd: data.totalTripUsd || 0,
       status: (data.status as any) || 'DRAFT',
     },
   });
 }
 
 export async function getTripsByUserId(userId: string) {
-  return await prisma.trip.findMany({
+  return await prisma.tripRequest.findMany({
     where: { userId },
     include: {
       payment: true,
@@ -111,7 +111,7 @@ export async function getTripsByUserId(userId: string) {
 }
 
 export async function getTripById(id: string) {
-  return await prisma.trip.findUnique({
+  return await prisma.tripRequest.findUnique({
     where: { id },
     include: {
       user: true,
@@ -121,7 +121,7 @@ export async function getTripById(id: string) {
 }
 
 export async function updateTripStatus(id: string, status: string) {
-  return await prisma.trip.update({
+  return await prisma.tripRequest.update({
     where: { id },
     data: { status: status as any },
   });
@@ -167,7 +167,7 @@ export async function getUserStats(): Promise<UserStats> {
     }),
     prisma.user.count({
       where: {
-        trips: {
+        tripRequests: {
           some: {},
         },
       },
@@ -184,11 +184,11 @@ export async function getUserStats(): Promise<UserStats> {
 
 export async function getTripStats(): Promise<TripStats> {
   const [total, confirmed, byType] = await Promise.all([
-    prisma.trip.count(),
-    prisma.trip.count({
+    prisma.tripRequest.count(),
+    prisma.tripRequest.count({
       where: { status: 'CONFIRMED' },
     }),
-    prisma.trip.groupBy({
+    prisma.tripRequest.groupBy({
       by: ['type'],
       _count: true,
     }),

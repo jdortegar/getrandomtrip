@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useStore } from '@/store/store';
 
 interface SaveTripResponse {
-  trip: {
+  tripRequest: {
     id: string;
     status: string;
     createdAt: string;
@@ -18,44 +18,43 @@ export function useSaveTrip() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const store = useStore();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const saveTrip = async (tripId?: string) => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // If already loading, don't start another save
+    if (isLoading) {
+      console.log('⏳ Save already in progress, skipping...');
+      return;
+    }
+
     console.log('🚀 useSaveTrip: Starting save trip...', { tripId });
     setIsLoading(true);
     setError(null);
 
     try {
-      const {
-        from,
-        type,
-        level,
-        logistics,
-        filters,
-        addons,
-        basePriceUsd,
-        displayPrice,
-        filtersCostUsd,
-        addonsCostUsd,
-        totalPerPaxUsd,
-      } = store;
+      const { from, type, level, logistics, filters, addons } = store;
 
       console.log('📦 Store data:', {
         type,
         level,
-        country: logistics.country,
-        city: logistics.city,
+        originCountry: logistics.country,
+        originCity: logistics.city,
       });
 
-      // Calculate total trip cost
-      const totalTripUsd = totalPerPaxUsd * logistics.pax;
+      // Note: Pricing will be calculated when a package is assigned to this trip request
 
       const payload = {
         id: tripId,
         from,
         type,
         level,
-        country: logistics.country,
-        city: logistics.city,
+        originCountry: logistics.country,
+        originCity: logistics.city,
         startDate: logistics.startDate
           ? logistics.startDate instanceof Date
             ? logistics.startDate.toISOString()
@@ -75,18 +74,12 @@ export function useSaveTrip() {
         arrivePref: filters.arrivePref,
         avoidDestinations: filters.avoidDestinations,
         addons: addons.selected,
-        basePriceUsd,
-        displayPrice,
-        filtersCostUsd,
-        addonsCostUsd,
-        totalPerPaxUsd,
-        totalTripUsd,
         status: tripId ? 'SAVED' : 'DRAFT',
       };
 
       console.log('📤 Sending to API:', payload);
 
-      const response = await fetch('/api/trips', {
+      const response = await fetch('/api/trip-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,9 +95,9 @@ export function useSaveTrip() {
         throw new Error(errorData.error || 'Failed to save trip');
       }
 
-      const data: SaveTripResponse = await response.json();
-      console.log('✅ Trip saved successfully:', data.trip);
-      return data.trip;
+      const data = await response.json();
+      console.log('✅ Trip saved successfully:', data.tripRequest);
+      return data.tripRequest;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to save trip';
@@ -115,8 +108,21 @@ export function useSaveTrip() {
     }
   };
 
+  const debouncedSaveTrip = (tripId?: string, delay = 1000) => {
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set a new timeout
+    saveTimeoutRef.current = setTimeout(() => {
+      saveTrip(tripId);
+    }, delay);
+  };
+
   return {
     saveTrip,
+    debouncedSaveTrip,
     isLoading,
     error,
   };

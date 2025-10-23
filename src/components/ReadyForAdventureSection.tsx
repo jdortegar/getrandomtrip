@@ -8,7 +8,6 @@ import Section from './layout/Section';
 const ReadyForAdventureSection: React.FC = () => {
   return (
     <Section
-      background="/images/bg-playa-mexico.jpg"
       className="relative min-h-[50vh] overflow-hidden md:min-h-[60vh]"
       subtitle={
         'Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.'

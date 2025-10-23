@@ -51,13 +51,13 @@ export async function POST(request: NextRequest) {
         userId: user.id,
       },
       include: {
-        trip: true,
+        tripRequest: true,
       },
     });
 
     console.log('Payment found:', {
       paymentId: payment?.id,
-      tripId: payment?.tripId,
+      tripRequestId: payment?.tripRequestId,
     });
 
     if (!payment) {
@@ -74,13 +74,16 @@ export async function POST(request: NextRequest) {
 
     await prisma.payment.update({
       where: { id: payment.id },
-      data: updateData,
+      data: {
+        ...updateData,
+        status: updateData.status as any,
+      },
     });
 
     // Update trip status if payment is approved
     if (status === 'approved') {
-      await prisma.trip.update({
-        where: { id: payment.tripId },
+      await prisma.tripRequest.update({
+        where: { id: payment.tripRequestId },
         data: { status: 'CONFIRMED' },
       });
     }
@@ -89,7 +92,7 @@ export async function POST(request: NextRequest) {
       paymentId,
       externalReference,
       status,
-      tripId: payment.tripId,
+      tripRequestId: payment.tripRequestId,
     });
 
     return NextResponse.json({ success: true });

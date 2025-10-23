@@ -9,6 +9,7 @@ import {
   getTripperBySlug,
   getTripperFeaturedTrips,
 } from '@/lib/db/tripper-queries';
+import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
 import TripperHero from '@/components/tripper/TripperHero';
 import TripperPlanner from '@/components/tripper/TripperPlanner';
 import TripperInspirationGallery from '@/components/tripper/TripperInspirationGallery';
@@ -73,6 +74,11 @@ export default async function Page({
   const dbTripper = await getTripperBySlug(params.tripper);
   const featuredTrips = await getTripperFeaturedTrips(params.tripper, 3);
 
+  // Fetch tripper packages for filtering
+  const tripperPackages = dbTripper
+    ? await getTripperAvailableTypesAndLevels(dbTripper.id)
+    : [];
+
   // Fallback to static content for now
   const staticTripper = getStaticTripper(params.tripper);
 
@@ -135,6 +141,7 @@ export default async function Page({
               }
             : undefined
         }
+        tripperPackages={tripperPackages}
       />
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (

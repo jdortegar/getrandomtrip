@@ -11,7 +11,7 @@ export type UserWithTrips = Prisma.UserGetPayload<{
   };
 }>;
 
-export type TripWithDetails = Prisma.TripGetPayload<{
+export type TripWithDetails = Prisma.TripRequestGetPayload<{
   include: {
     user: true;
     payment: true;

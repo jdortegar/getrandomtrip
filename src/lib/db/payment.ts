@@ -1,9 +1,9 @@
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/prisma';
 import type { PaymentStatus } from '@prisma/client';
 
 export interface CreatePaymentData {
   userId: string;
-  tripId: string;
+  tripRequestId: string;
   provider: string;
   providerPreferenceId?: string;
   amount: number;
@@ -41,7 +41,7 @@ export async function createPayment(data: CreatePaymentData) {
   return await prisma.payment.create({
     data: {
       userId: data.userId,
-      tripId: data.tripId,
+      tripRequestId: data.tripRequestId,
       provider: data.provider,
       providerPreferenceId: data.providerPreferenceId,
       amount: data.amount,
@@ -79,7 +79,7 @@ export async function findPaymentByProviderId(providerPaymentId: string) {
     where: { providerPaymentId },
     include: {
       user: true,
-      trip: true,
+      tripRequest: true,
     },
   });
 }
@@ -92,7 +92,7 @@ export async function findPaymentByPreferenceId(providerPreferenceId: string) {
     where: { providerPreferenceId },
     include: {
       user: true,
-      trip: true,
+      tripRequest: true,
     },
   });
 }
@@ -104,15 +104,15 @@ export async function getUserPayments(userId: string, limit = 10) {
   return await prisma.payment.findMany({
     where: { userId },
     include: {
-      trip: {
+      tripRequest: {
         select: {
           id: true,
           type: true,
           level: true,
           startDate: true,
           endDate: true,
-          country: true,
-          city: true,
+          originCountry: true,
+          originCity: true,
         },
       },
     },
@@ -124,9 +124,9 @@ export async function getUserPayments(userId: string, limit = 10) {
 /**
  * Get trip payment
  */
-export async function getTripPayment(tripId: string) {
+export async function getTripPayment(tripRequestId: string) {
   return await prisma.payment.findUnique({
-    where: { tripId },
+    where: { tripRequestId },
     include: {
       user: {
         select: {
@@ -180,8 +180,8 @@ export async function updatePaymentFromWebhook(
 
   // Update trip status based on payment status
   if (updateData.status === 'APPROVED') {
-    await prisma.trip.update({
-      where: { id: payment.tripId },
+    await prisma.tripRequest.update({
+      where: { id: payment.tripRequestId },
       data: { status: 'CONFIRMED' },
     });
   }

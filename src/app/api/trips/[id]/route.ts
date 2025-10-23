@@ -25,7 +25,7 @@ export async function GET(
     }
 
     // Get trip
-    const trip = await prisma.trip.findUnique({
+    const trip = await prisma.tripRequest.findUnique({
       where: { id: params.id },
       include: {
         payment: true,
@@ -73,7 +73,7 @@ export async function DELETE(
     }
 
     // Get trip
-    const trip = await prisma.trip.findUnique({
+    const trip = await prisma.tripRequest.findUnique({
       where: { id: params.id },
     });
 
@@ -87,7 +87,7 @@ export async function DELETE(
     }
 
     // Delete trip
-    await prisma.trip.delete({
+    await prisma.tripRequest.delete({
       where: { id: params.id },
     });
 

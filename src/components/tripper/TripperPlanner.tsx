@@ -16,6 +16,7 @@ import {
   TRAVELLER_TYPE_MAP,
 } from '@/lib/constants/traveller-types';
 import { getTravelerType } from '@/lib/data/traveler-types';
+import { prisma } from '@/lib/prisma';
 
 type Props = {
   staticTripper: Tripper;
@@ -26,11 +27,16 @@ type Props = {
     commission: number;
     availableTypes: string[];
   };
+  tripperPackages?: {
+    type: string;
+    level: string;
+  }[];
 };
 
 export default function TripperPlanner({
   staticTripper: t,
   tripperData,
+  tripperPackages = [],
 }: Props) {
   const [step, setStep] = useState<number>(1);
   const [travellerType, setTravellerType] = useState<string | null>(null);
@@ -50,7 +56,7 @@ export default function TripperPlanner({
       ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
       : TRAVELLER_TYPE_OPTIONS;
 
-  // Get tiers for selected traveller type
+  // Get tiers for selected traveller type, filtered by tripper's actual trips
   const tiers = useMemo(() => {
     if (!travellerType) return [];
 
@@ -61,43 +67,58 @@ export default function TripperPlanner({
 
     if (!selectedTiers) return [];
 
-    return Object.entries(selectedTiers).map(
-      ([key, content]: [string, any]) => {
-        const titleParts = content.title.split('—');
-        const name = titleParts[0]?.trim() || content.title;
-        const subtitle = titleParts[1]?.trim() || '';
+    // Check if this is Randomtrip tripper (shows all levels)
+    const isRandomtripTripper =
+      t.slug === 'randomtrip' || t.name?.toLowerCase().includes('randomtrip');
 
-        // Apply commission (DB first, then static fallback)
-        const basePrice =
-          parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
-        const commission = tripperData?.commission || t.commission || 0;
-        const finalPrice = basePrice * (1 + commission);
+    // Get available levels for this tripper and traveler type
+    const availableLevels = isRandomtripTripper
+      ? Object.keys(selectedTiers) // Randomtrip has all levels
+      : tripperPackages
+          .filter((pkg) => pkg.type === travellerType)
+          .map((pkg) => pkg.level)
+          .filter((level, index, array) => array.indexOf(level) === index); // Remove duplicates
 
-        const priceLabel =
-          commission > 0 ? `$${finalPrice.toFixed(0)} USD` : content.priceLabel;
+    // Filter tiers to only show what the tripper actually offers
+    const filteredTiers = Object.entries(selectedTiers).filter(([key]) => {
+      return availableLevels.includes(key);
+    });
 
-        const priceFootnote =
-          commission > 0
-            ? `Incluye curación de ${firstName} (${(commission * 100).toFixed(0)}%)`
-            : content.priceFootnote;
+    return filteredTiers.map(([key, content]: [string, any]) => {
+      const titleParts = content.title.split('—');
+      const name = titleParts[0]?.trim() || content.title;
+      const subtitle = titleParts[1]?.trim() || '';
 
-        return {
-          id: key,
-          key,
-          name,
-          subtitle,
-          priceLabel,
-          priceFootnote,
-          features: content.bullets.map((bullet: string) => ({
-            label: '',
-            text: bullet,
-          })),
-          closingLine: content.closingLine,
-          ctaLabel: content.ctaLabel,
-        };
-      },
-    );
-  }, [travellerType, tripperData, firstName]);
+      // Apply commission (DB first, then static fallback)
+      const basePrice =
+        parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
+      const commission = tripperData?.commission || t.commission || 0;
+      const finalPrice = basePrice * (1 + commission);
+
+      const priceLabel =
+        commission > 0 ? `$${finalPrice.toFixed(0)} USD` : content.priceLabel;
+
+      const priceFootnote =
+        commission > 0
+          ? `Incluye curación de ${firstName} (${(commission * 100).toFixed(0)}%)`
+          : content.priceFootnote;
+
+      return {
+        id: key,
+        key,
+        name,
+        subtitle,
+        priceLabel,
+        priceFootnote,
+        features: content.bullets.map((bullet: string) => ({
+          label: '',
+          text: bullet,
+        })),
+        closingLine: content.closingLine,
+        ctaLabel: content.ctaLabel,
+      };
+    });
+  }, [travellerType, tripperData, firstName, t.slug, t.name, tripperPackages]);
 
   // Get traveler type data for selected type
   const travellerTypeData = useMemo(() => {

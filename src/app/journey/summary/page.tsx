@@ -21,6 +21,7 @@ import Chip from '@/components/badge';
 import { Button } from '@/components/ui/button';
 import { usePlanData } from '@/hooks/usePlanData';
 import { useSaveTrip } from '@/hooks/useSaveTrip';
+import { useCallback, useRef } from 'react';
 import { usePayment } from '@/hooks/usePayment';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
@@ -29,8 +30,14 @@ function SummaryPageContent() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { isAuthed, authModalOpen, closeAuth } = useUserStore();
-  const { saveTrip, isLoading: isSaving, error: saveError } = useSaveTrip();
+  const {
+    saveTrip,
+    debouncedSaveTrip,
+    isLoading: isSaving,
+    error: saveError,
+  } = useSaveTrip();
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
+  const hasAttemptedSave = useRef(false);
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const {
@@ -54,16 +61,19 @@ function SummaryPageContent() {
   });
 
   // Define handleSaveTrip before any early returns
-  const handleSaveTrip = async () => {
+  const handleSaveTrip = useCallback(async () => {
     try {
       console.log('🚀 Attempting to save trip...', { savedTripId, isSaving });
       const trip = await saveTrip(savedTripId || undefined);
       console.log('✅ Trip saved successfully:', trip);
-      setSavedTripId(trip.id);
+      if (trip?.id) {
+        setSavedTripId(trip.id);
+        hasAttemptedSave.current = false; // Reset for potential future saves
+      }
     } catch (error) {
       console.error('❌ Failed to save trip:', error);
     }
-  };
+  }, [saveTrip, savedTripId, isSaving]);
 
   // Open auth modal if not authenticated
   useEffect(() => {
@@ -83,10 +93,17 @@ function SummaryPageContent() {
       isAuthed,
       savedTripId,
       isSaving,
+      hasAttemptedSave: hasAttemptedSave.current,
     });
 
-    if ((session || isAuthed) && !savedTripId && !isSaving) {
+    if (
+      (session || isAuthed) &&
+      !savedTripId &&
+      !isSaving &&
+      !hasAttemptedSave.current
+    ) {
       console.log('✅ Conditions met, calling handleSaveTrip');
+      hasAttemptedSave.current = true;
       handleSaveTrip();
     } else {
       console.log('❌ Conditions not met for auto-save');

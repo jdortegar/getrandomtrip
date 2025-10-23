@@ -2,7 +2,7 @@
 // Tripper Database Queries
 // ============================================================================
 
-import { prisma } from '@/lib/db/prisma';
+import { prisma } from '@/lib/prisma';
 import type {
   FeaturedTrip,
   FeaturedTripCard,
@@ -63,12 +63,12 @@ export async function getTripperFeaturedTrips(
 
     if (!tripper) return [];
 
-    const trips = await prisma.trip.findMany({
+    const trips = await prisma.package.findMany({
       where: {
         ownerId: tripper.id,
-        ownerType: 'TRIPPER',
+        isActive: true,
         isFeatured: true,
-        status: 'COMPLETED', // Only show completed trips
+        status: 'ACTIVE', // Only show active packages
       },
       orderBy: { likes: 'desc' },
       take: limit,
@@ -82,8 +82,10 @@ export async function getTripperFeaturedTrips(
         highlights: true,
         tags: true,
         likes: true,
-        nights: true,
-        pax: true,
+        minNights: true,
+        maxNights: true,
+        minPax: true,
+        maxPax: true,
         displayPrice: true,
       },
     });
@@ -99,8 +101,8 @@ export async function getTripperFeaturedTrips(
       highlights: trip.highlights,
       tags: trip.tags,
       likes: trip.likes,
-      nights: trip.nights,
-      pax: trip.pax,
+      nights: trip.minNights,
+      pax: trip.minPax,
       displayPrice: trip.displayPrice,
     }));
   } catch (error) {
@@ -141,19 +143,19 @@ export async function toggleTripLike(
   userId: string,
 ): Promise<{ liked: boolean; likes: number }> {
   try {
-    const existing = await prisma.tripLike.findUnique({
+    const existing = await prisma.packageLike.findUnique({
       where: {
-        tripId_userId: { tripId, userId },
+        packageId_userId: { packageId: tripId, userId },
       },
     });
 
     if (existing) {
       // Unlike
-      await prisma.tripLike.delete({
+      await prisma.packageLike.delete({
         where: { id: existing.id },
       });
 
-      const trip = await prisma.trip.update({
+      const trip = await prisma.package.update({
         where: { id: tripId },
         data: { likes: { decrement: 1 } },
         select: { likes: true },
@@ -162,11 +164,11 @@ export async function toggleTripLike(
       return { liked: false, likes: trip.likes };
     } else {
       // Like
-      await prisma.tripLike.create({
-        data: { tripId, userId },
+      await prisma.packageLike.create({
+        data: { packageId: tripId, userId },
       });
 
-      const trip = await prisma.trip.update({
+      const trip = await prisma.package.update({
         where: { id: tripId },
         data: { likes: { increment: 1 } },
         select: { likes: true },
@@ -188,9 +190,9 @@ export async function hasUserLikedTrip(
   userId: string,
 ): Promise<boolean> {
   try {
-    const like = await prisma.tripLike.findUnique({
+    const like = await prisma.packageLike.findUnique({
       where: {
-        tripId_userId: { tripId, userId },
+        packageId_userId: { packageId: tripId, userId },
       },
     });
 
@@ -208,7 +210,7 @@ export async function getTripById(
   tripId: string,
 ): Promise<FeaturedTrip | null> {
   try {
-    const trip = await prisma.trip.findUnique({
+    const trip = await prisma.package.findUnique({
       where: { id: tripId },
       include: {
         owner: {

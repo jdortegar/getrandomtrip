@@ -1,8 +1,8 @@
 // ============================================================================
-// RANDOMTRIP - Clean Prisma Schema
+// RANDOMTRIP - New Schema with TripRequest and Package Models
 // ============================================================================
-// Fresh start with Trip-focused model
-// Backup of old schema: schema.backup.prisma
+// TripRequest: User planning data (what user wants)
+// Package: Tripper-created content (what tripper offers)
 // ============================================================================
 
 generator client {
@@ -41,47 +41,32 @@ model User {
   dislikes      String[] @default([])
   
   // Relations
-  trips       Trip[]     @relation("CustomerTrips")
-  ownedTrips  Trip[]     @relation("OwnedTrips")
-  payments    Payment[]
-  reviews     Review[]
-  likedTrips  TripLike[]
+  tripRequests  TripRequest[] @relation("CustomerTripRequests")
+  ownedPackages Package[]     @relation("OwnedPackages")
+  payments      Payment[]
+  reviews       Review[]
+  likedPackages PackageLike[]
   
   @@map("users")
 }
 
-model Trip {
+model TripRequest {
   id     String     @id @default(cuid())
   userId String
-  status TripStatus @default(DRAFT)
-  
-  // Trip Ownership & Visibility
-  ownerId    String?    // Tripper or Admin who created/curates this trip
-  ownerType  OwnerType  @default(CUSTOMER) // Who created it
-  isTemplate Boolean    @default(false)     // Can be used as inspiration
-  isFeatured Boolean    @default(false)     // Show in tripper's gallery
-  likes      Int        @default(0)         // Like counter
+  status TripRequestStatus @default(DRAFT)
   
   // Journey metadata
-  from  String? // 'tripper-slug' | 'admin' | null
+  from  String // 'tripper-slug' | 'admin'
   type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
   level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
   
-  // Display info for templates
-  title       String?   // "Aventura Urbana Misteriosa"
-  teaser      String?   // Short description
-  description String?   // Full description
-  heroImage   String?   // Main image for card
-  tags        String[]  @default([]) // ['adventure', 'cultural']
-  highlights  String[]  @default([]) // ["3 noches", "Hotel boutique"]
-  
-  // Logistics
-  country   String
-  city      String
-  startDate DateTime?
-  endDate   DateTime?
-  nights    Int      @default(1)
-  pax       Int      @default(1)
+  // Logistics - ORIGIN (where user starts from)
+  originCountry String
+  originCity    String
+  startDate     DateTime?
+  endDate       DateTime?
+  nights        Int      @default(1)
+  pax           Int      @default(1)
   
   // Filters
   transport         String   @default("avion")
@@ -94,13 +79,8 @@ model Trip {
   // Addons (JSON for flexibility)
   addons Json? // Array of { id: string, qty: number, optionId?: string }
   
-  // Pricing
-  basePriceUsd   Float  @default(0)
-  displayPrice   String @default("")
-  filtersCostUsd Float  @default(0)
-  addonsCostUsd  Float  @default(0)
-  totalPerPaxUsd Float  @default(0)
-  totalTripUsd   Float  @default(0)
+  // Package Assignment
+  packageId String? // Assigned package when user selects one
   
   // Completed trip data (optional - populated after trip completion)
   actualDestination     String?   // Revealed destination
@@ -115,12 +95,66 @@ model Trip {
   updatedAt DateTime @updatedAt
   
   // Relations
-  user       User       @relation("CustomerTrips", fields: [userId], references: [id], onDelete: Cascade)
-  owner      User?      @relation("OwnedTrips", fields: [ownerId], references: [id], onDelete: SetNull)
-  payment    Payment?
-  tripLikes  TripLike[]
+  user    User     @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
+  package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  payment Payment?
   
-  @@map("trips")
+  @@map("trip_requests")
+}
+
+model Package {
+  id     String     @id @default(cuid())
+  ownerId String    // Tripper who created this package
+  status PackageStatus @default(DRAFT)
+  
+  // Package metadata
+  type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
+  level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+  
+  // Capacity constraints
+  minNights Int @default(1)
+  maxNights Int @default(7)
+  minPax    Int @default(1)
+  maxPax    Int @default(8)
+  
+  // Display info
+  title       String   // "Aventura Urbana Misteriosa"
+  teaser      String   // Short description
+  description String   // Full description
+  heroImage   String   // Main image for card
+  tags        String[] @default([]) // ['adventure', 'cultural']
+  highlights  String[] @default([]) // ["3 noches", "Hotel boutique"]
+  
+  // Destination info
+  destinationCountry String
+  destinationCity    String
+  
+  // Package content (JSON for flexibility)
+  hotels     Json? // Array of hotel objects
+  activities Json? // Array of activity objects
+  itinerary  Json? // Detailed itinerary
+  inclusions Json? // What's included
+  exclusions Json? // What's not included
+  
+  // Pricing
+  basePriceUsd   Float  @default(0)
+  displayPrice   String @default("")
+  
+  // Visibility
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+  likes      Int     @default(0)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  owner       User         @relation("OwnedPackages", fields: [ownerId], references: [id], onDelete: Cascade)
+  tripRequests TripRequest[] @relation
+  packageLikes PackageLike[]
+  
+  @@map("packages")
 }
 
 model Payment {
@@ -128,9 +162,9 @@ model Payment {
   
   // Relations
   userId               String        // Direct relation to user
-  tripId               String        @unique
+  tripRequestId        String        @unique
   user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip                 Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripRequest          TripRequest   @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
   
   // Provider Information
   provider             String        // 'mercadopago' | 'stripe' | 'paypal'
@@ -208,18 +242,18 @@ model Review {
   @@map("reviews")
 }
 
-model TripLike {
+model PackageLike {
   id        String   @id @default(cuid())
-  tripId    String
+  packageId String
   userId    String
   createdAt DateTime @default(now())
   
   // Relations
-  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  @@unique([tripId, userId])
-  @@map("trip_likes")
+  @@unique([packageId, userId])
+  @@map("package_likes")
 }
 
 // ============================================================================
@@ -238,7 +272,7 @@ enum OwnerType {
   ADMIN     // RandomTrip admin creating trips
 }
 
-enum TripStatus {
+enum TripRequestStatus {
   DRAFT
   SAVED
   PENDING_PAYMENT
@@ -246,6 +280,13 @@ enum TripStatus {
   REVEALED
   COMPLETED
   CANCELLED
+}
+
+enum PackageStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
 }
 
 enum PaymentStatus {
