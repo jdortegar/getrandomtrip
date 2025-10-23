@@ -31,6 +31,13 @@ model User {
   commission     Float?           // Tripper's commission rate (0.12 = 12%)
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
   
+  // Tripper profile fields
+  bio            String?          // Tripper biography/description
+  heroImage      String?          // Hero banner image
+  location       String?          // Tripper location
+  tierLevel      String?          // Tripper tier level
+  destinations   String[] @default([]) // Countries/cities they specialize in
+  
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,9 +1,23 @@
-import { PrismaClient, TripStatus, UserRole, OwnerType } from '@prisma/client';
+import {
+  PrismaClient,
+  TripRequestStatus,
+  PackageStatus,
+  UserRole,
+} from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+// NOTE: This seed file is outdated and needs to be updated for the new schema
+// For now, we're using the custom seed script in scripts/seed-trippers-packages.ts
 async function main() {
+  console.log(
+    '⚠️  This seed file is outdated. Use scripts/seed-trippers-packages.ts instead.',
+  );
+  return;
+
+  // Disabled for now - all code below is commented out
+  /*
   console.log('🌱 Starting database seed...');
 
   // ============================================================================
@@ -211,30 +225,30 @@ async function main() {
   ];
 
   for (const tripData of trips) {
-    const trip = await prisma.trip.create({
+    const tripRequest = await prisma.tripRequest.create({
       data: tripData,
     });
 
     console.log(
-      `✅ Created trip: ${trip.actualDestination || 'Secret destination'} (${trip.status})`,
+      `✅ Created tripRequest: ${tripRequest.actualDestination || 'Secret destination'} (${tripRequest.status})`,
     );
 
     // Create payment for each trip
     const paymentStatus =
-      trip.status === 'COMPLETED' ||
-      trip.status === 'CONFIRMED' ||
-      trip.status === 'REVEALED'
+      tripRequest.status === 'COMPLETED' ||
+      tripRequest.status === 'CONFIRMED' ||
+      tripRequest.status === 'REVEALED'
         ? 'APPROVED'
         : 'PENDING';
 
     const payment = await prisma.payment.create({
       data: {
         userId: user.id,
-        tripId: trip.id,
+        tripRequestId: tripRequest.id,
         provider: 'mercadopago',
-        providerPaymentId: `mp_test_${trip.id}`,
-        providerPreferenceId: `pref_${trip.id}`,
-        amount: trip.totalTripUsd,
+        providerPaymentId: `mp_test_${tripRequest.id}`,
+        providerPreferenceId: `pref_${tripRequest.id}`,
+        amount: tripRequest.totalTripUsd,
         currency: 'USD',
         paymentMethod: 'credit_card',
         cardLast4: '1234',
@@ -445,7 +459,7 @@ async function main() {
   ];
 
   for (const tripData of featuredTrips) {
-    const trip = await prisma.trip.create({
+    const tripRequest = await prisma.tripRequest.create({
       data: tripData,
     });
 
@@ -454,10 +468,10 @@ async function main() {
     );
 
     // Add some likes from demo user
-    if (trip.id) {
-      await prisma.tripLike.create({
+    if (tripRequest.id) {
+      await prisma.packageLike.create({
         data: {
-          tripId: trip.id,
+          packageId: tripRequest.id,
           userId: user.id,
         },
       });
@@ -477,6 +491,7 @@ async function main() {
   console.log('   👑 Admin:');
   console.log('      Email: admin@getrandomtrip.com');
   console.log('      Password: admin123\n');
+  */
 }
 
 main()

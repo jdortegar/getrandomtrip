@@ -56,7 +56,7 @@ export default function TripperPlanner({
       ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
       : TRAVELLER_TYPE_OPTIONS;
 
-  // Get tiers for selected traveller type, filtered by tripper's actual trips
+  // Get tiers for selected traveller type, filtered by tripper's actual packages
   const tiers = useMemo(() => {
     if (!travellerType) return [];
 
@@ -245,12 +245,10 @@ export default function TripperPlanner({
         return (
           <Presupuesto
             budgetTier={budgetTier}
-            content={
-              travellerTypeData?.planner?.steps?.presupuesto || {
-                title: `Elige tu presupuesto con ${firstName}`,
-                tagline: 'Selecciona el nivel de experiencia que buscas',
-              }
-            }
+            content={{
+              title: `Elige tu presupuesto con ${firstName}`,
+              tagline: 'Selecciona el nivel de experiencia que buscas',
+            }}
             plannerId="tripper-planner"
             setBudgetTier={setBudgetTier}
             setPendingPriceLabel={setPendingPriceLabel}
@@ -264,13 +262,11 @@ export default function TripperPlanner({
         return (
           <LaExcusa
             almaCards={almaCards}
-            content={
-              travellerTypeData?.planner?.steps?.laExcusa || {
-                title: '¿Qué los mueve a viajar?',
-                tagline: `${firstName} diseñará tu experiencia según tu motivación`,
-                cards: almaCards,
-              }
-            }
+            content={{
+              title: '¿Qué los mueve a viajar?',
+              tagline: `${firstName} diseñará tu experiencia según tu motivación`,
+              cards: almaCards,
+            }}
             plannerId="tripper-planner"
             setAlmaKey={(key) => {
               setAlmaKey(key);
@@ -286,14 +282,11 @@ export default function TripperPlanner({
             almaKey={almaKey}
             almaOptions={travellerTypeData?.planner?.almaOptions || {}}
             budgetTier={budgetTier}
-            content={
-              travellerTypeData?.planner?.steps?.afinarDetalles || {
-                title: 'Afina los detalles finales',
-                tagline:
-                  'Personaliza tu aventura con las opciones que prefieras',
-                ctaLabel: 'Ver resumen del viaje →',
-              }
-            }
+            content={{
+              title: 'Afina los detalles finales',
+              tagline: 'Personaliza tu aventura con las opciones que prefieras',
+              ctaLabel: 'Ver resumen del viaje →',
+            }}
             pendingPriceLabel={pendingPriceLabel}
             setStep={() => handleStepChange(3)}
             type={travellerType || 'solo'}

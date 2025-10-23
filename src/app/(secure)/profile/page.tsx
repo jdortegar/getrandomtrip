@@ -19,6 +19,7 @@ import {
   Lock,
   Settings,
   X,
+  Briefcase,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -278,10 +279,20 @@ function ProfileContent() {
                 </div>
               </div>
 
-              <Button variant="secondary" onClick={openModal}>
-                <Edit className="w-4 h-4 mr-2" />
-                Editar Perfil
-              </Button>
+              <div className="flex gap-3">
+                <Button variant="secondary" onClick={openModal}>
+                  <Edit className="w-4 h-4 mr-2" />
+                  Editar Perfil
+                </Button>
+                {(currentUser as any)?.role === 'TRIPPER' && (
+                  <Button asChild>
+                    <a href="/trippers/profile">
+                      <Briefcase className="w-4 h-4 mr-2" />
+                      Perfil de Tripper
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 

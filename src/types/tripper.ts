@@ -66,6 +66,11 @@ export interface TripperProfile {
   commission: number;
   availableTypes: string[];
   interests: string[];
+  bio: string | null;
+  heroImage: string | null;
+  location: string | null;
+  tierLevel: string | null;
+  destinations: string[];
   createdAt: Date;
   updatedAt: Date;
 }

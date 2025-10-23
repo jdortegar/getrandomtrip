@@ -26,6 +26,7 @@ const TripperVisitedMap = dynamic(
 import Testimonials from '@/components/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import HomeInfo from '@/components/HomeInfo';
+import { ExplorationSection } from '@/components/landing/exploration';
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from '@/components/tripper/TripperIntroVideoGate';
@@ -119,7 +120,7 @@ export default async function Page({
         forceShow={!!forceVideo}
       /> */}
       {/* Hero */}
-      <TripperHero t={t} />
+      <TripperHero t={t} dbTripper={dbTripper} />
       <HomeInfo />
 
       {/* Featured Trips Gallery */}
@@ -143,6 +144,9 @@ export default async function Page({
         }
         tripperPackages={tripperPackages}
       />
+
+      {/* Exploration Section - Destinos, Experiencias únicas, Destination Decoded */}
+      <ExplorationSection />
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (
         <Blog
