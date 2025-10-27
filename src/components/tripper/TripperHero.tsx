@@ -44,6 +44,12 @@ export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
       className="relative bg-slate-950 text-white pb-20"
       id="tripper-hero"
     >
+      {/* Hero sentinel for navbar detection */}
+      <div
+        id="hero-sentinel"
+        aria-hidden
+        className="absolute top-0 left-0 h-px w-px"
+      />
       <div className="mx-auto">
         <div className="">
           {/* Header Image */}

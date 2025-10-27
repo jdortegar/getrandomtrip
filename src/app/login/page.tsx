@@ -9,7 +9,7 @@ import Hero from '@/components/Hero';
 import Section from '@/components/layout/Section';
 import type { UserRole } from '@/store/slices/userStore';
 import { dashboardPathFromRole } from '@/lib/roles';
-import { Loader2 } from 'lucide-react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 function LoginContent() {
   const { data: session, status } = useSession();
@@ -36,15 +36,15 @@ function LoginContent() {
   return (
     <>
       <Section>
-        <div className="flex justify-center items-center min-h-[400px]">
-          {status === 'loading' ? (
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          ) : (
+        {status === 'loading' ? (
+          <LoadingSpinner />
+        ) : (
+          <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center text-neutral-700">
               {session || isAuthed ? 'Redirigiendo...' : 'Cargando...'}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </Section>
       <AuthModal isOpen={showModal} onClose={() => {}} defaultMode="login" />
     </>
@@ -53,9 +53,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={<Loader2 className="h-12 w-12 animate-spin text-primary" />}
-    >
+    <Suspense fallback={<LoadingSpinner />}>
       <LoginContent />
     </Suspense>
   );

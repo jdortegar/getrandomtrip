@@ -71,17 +71,24 @@ export default function TripperPlanner({
     const isRandomtripTripper =
       t.slug === 'randomtrip' || t.name?.toLowerCase().includes('randomtrip');
 
-    // Get available levels for this tripper and traveler type
-    const availableLevels = isRandomtripTripper
-      ? Object.keys(selectedTiers) // Randomtrip has all levels
-      : tripperPackages
-          .filter((pkg) => pkg.type === travellerType)
-          .map((pkg) => pkg.level)
-          .filter((level, index, array) => array.indexOf(level) === index); // Remove duplicates
+    // Show general content for this traveler type
+    // If tripper has specific levels for this type, show those; otherwise show all general tiers
+    const tripperLevelsForType = tripperPackages
+      .filter((pkg) => pkg.type === travellerType)
+      .map((pkg) => pkg.level)
+      .filter((level, index, array) => array.indexOf(level) === index); // Remove duplicates
 
-    // Filter tiers to only show what the tripper actually offers
+    // Use tripper's specific levels if available, otherwise show all general tiers
+
+    const levelsToShow = isRandomtripTripper
+      ? Object.keys(selectedTiers) // Randomtrip shows all levels
+      : tripperLevelsForType.length > 0
+        ? tripperLevelsForType
+        : Object.keys(selectedTiers); // Fallback to all general tiers
+
+    // Filter tiers to show general content
     const filteredTiers = Object.entries(selectedTiers).filter(([key]) => {
-      return availableLevels.includes(key);
+      return levelsToShow.includes(key);
     });
 
     return filteredTiers.map(([key, content]: [string, any]) => {
@@ -127,18 +134,11 @@ export default function TripperPlanner({
     return getTravelerType(mappedType);
   }, [travellerType]);
 
-  // Alma cards from traveler type data, filtered by tripper interests
+  // Alma cards from traveler type data - show all general content
   const almaCards = useMemo(() => {
     const typeCards = travellerTypeData?.planner?.steps?.laExcusa?.cards || [];
-
-    if (!t.interests || t.interests.length === 0) return typeCards;
-
-    return typeCards.filter((card) =>
-      t.interests!.some((interest) =>
-        card.title.toLowerCase().includes(interest.toLowerCase()),
-      ),
-    );
-  }, [travellerTypeData, t.interests]);
+    return typeCards;
+  }, [travellerTypeData]);
 
   const scrollPlanner = () => {
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -169,15 +169,15 @@ export default function TripperPlanner({
   const canNavigateToStep = (targetStep: number): boolean => {
     switch (targetStep) {
       case 1:
-        return true;
+        return true; // Always allow going back to step 1
       case 2:
-        return travellerType !== null;
+        return travellerType !== null; // Can go to step 2 if traveler type is selected
       case 3:
-        return travellerType !== null && budgetTier !== null;
+        return travellerType !== null && budgetTier !== null; // Can go to step 3 if both traveler type and budget are selected
       case 4:
         return (
           travellerType !== null && budgetTier !== null && almaKey !== null
-        );
+        ); // Can go to step 4 if all previous steps are completed
       default:
         return false;
     }
@@ -215,7 +215,7 @@ export default function TripperPlanner({
                 <button
                   key={opt.key}
                   aria-label={`Seleccionar viaje ${opt.title}`}
-                  className="group relative h-80 w-full max-w-sm overflow-hidden rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:w-80"
+                  className="group relative h-80 w-full max-w-sm overflow-hidden rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:w-80 cursor-pointer"
                   onClick={() => {
                     setTravellerType(opt.key);
                     setTimeout(() => {
@@ -232,7 +232,9 @@ export default function TripperPlanner({
                   />
                   <div className="absolute inset-0 z-10 rounded-lg bg-gradient-to-t from-black/70 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 z-20 p-6 text-white">
-                    <h4 className="text-2xl font-bold">{opt.title}</h4>
+                    <h4 className="text-2xl font-bold font-caveat">
+                      {opt.title}
+                    </h4>
                     <p className="mt-1 text-sm text-white/90">{opt.subtitle}</p>
                   </div>
                 </button>
@@ -252,7 +254,7 @@ export default function TripperPlanner({
             plannerId="tripper-planner"
             setBudgetTier={setBudgetTier}
             setPendingPriceLabel={setPendingPriceLabel}
-            setStep={() => handleStepChange(3)}
+            setStep={handleStepChange}
             tiers={tiers}
             type={travellerType || 'solo'}
           />
@@ -300,51 +302,35 @@ export default function TripperPlanner({
 
   return (
     <Section
-      className="bg-gradient-to-b from-white to-gray-50 py-20"
+      className="py-20"
       fullWidth={true}
-      id="planner"
+      subtitle={`${firstName} se especializa en crear experiencias inolvidables. Sigue estos pasos para planificar tu próximo gran viaje.`}
+      title={`Planifica tu Randomtrip con ${firstName}`}
     >
-      <div ref={sectionRef} className="scroll-mt-24">
-        {/* Custom Trip Builder */}
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-12 text-center">
-            <h2 className="font-caveat text-4xl font-bold text-gray-900 md:text-5xl">
-              Planifica tu Randomtrip con {firstName}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-              {firstName} se especializa en crear experiencias inolvidables.
-              Sigue estos pasos para planificar tu próximo gran viaje.
-            </p>
-          </div>
-
-          {/* Wizard Header */}
-          <WizardHeader
-            canNavigateToStep={canNavigateToStep}
-            currentStep={step}
-            onStepClick={handleStepChange}
-            steps={wizardSteps}
-          />
-
-          {/* Step Content with Animation */}
-          <div className="mt-12">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                animate={{ opacity: 1, y: 0, height: 'auto' }}
-                className="min-h-[400px] w-full overflow-hidden"
-                exit={{ opacity: 0, y: -20, height: 0 }}
-                initial={{ opacity: 0, y: 20, height: 0 }}
-                transition={{
-                  duration: 0.5,
-                  ease: 'easeInOut',
-                  height: { duration: 0.4, ease: 'easeInOut' },
-                }}
-              >
-                {renderStep()}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+      <div className="relative">
+        <div ref={sectionRef} id="planner" className="h-0 scroll-mt-24" />
+        <WizardHeader
+          canNavigateToStep={canNavigateToStep}
+          currentStep={step}
+          onStepClick={handleStepChange}
+          steps={wizardSteps}
+        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
+            initial={{ opacity: 0, y: 20, height: 0 }}
+            transition={{
+              duration: 0.5,
+              ease: 'easeInOut',
+              height: { duration: 0.4, ease: 'easeInOut' },
+            }}
+            className="w-full overflow-hidden min-h-[300px]"
+          >
+            {renderStep()}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </Section>
   );

@@ -68,7 +68,7 @@ export default function Presupuesto({
     // Higher tiers: save tier info and proceed to the next step
     setBudgetTier(tiers.find((t) => t.id === tierId)?.name || '');
     setPendingPriceLabel(priceLabel);
-    setStep(2); // Go to next step
+    setStep(3); // Go to next step
     document
       .getElementById(plannerId)
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -79,7 +79,7 @@ export default function Presupuesto({
       className="w-full px-4 md:px-8 py-10 text-gray-900 -mr-[8px] md:pr-0"
       data-testid="tab-presupuesto"
     >
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 relative">
         <h3
           className="text-center text-xl font-semibold text-neutral-900"
           data-testid="tab3-title"
@@ -92,6 +92,16 @@ export default function Presupuesto({
         >
           {content.tagline}
         </p>
+        <div className="text-center absolute top-1/2 -translate-y-1/2">
+          <Button
+            className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
+            data-testid="cta-back-to-tab2"
+            onClick={() => setStep(1)}
+            variant="link"
+          >
+            ← Volver
+          </Button>
+        </div>
       </div>
 
       <div className="flex no-wrap rounded-md overflow-hidden mx-auto justify-center">

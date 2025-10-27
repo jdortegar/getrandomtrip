@@ -16,6 +16,7 @@ interface AfinarDetallesProps {
   pendingPriceLabel: string | null;
   setStep: (stepIndex: number) => void;
   type: string;
+  tripperSlug?: string;
 }
 
 const BORDER_COLOR: Record<string, string> = {
@@ -48,6 +49,7 @@ export default function AfinarDetalles({
   pendingPriceLabel,
   setStep,
   type,
+  tripperSlug,
 }: AfinarDetallesProps) {
   const router = useRouter();
   const spec = almaKey ? almaOptions[almaKey] : null;
@@ -227,6 +229,7 @@ export default function AfinarDetalles({
                 extra: {
                   [`${type}Alma`]: almaKey,
                   almaOptions: selected.join(','),
+                  tripperSlug: tripperSlug,
                 },
               });
             }

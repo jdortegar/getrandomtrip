@@ -21,7 +21,6 @@ import {
   CreditCard,
   Eye,
   EyeOff,
-  Loader2,
   DollarSign,
   CheckCircle,
   Clock,
@@ -29,6 +28,7 @@ import {
 } from 'lucide-react';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface TripDetails {
   id: string;
@@ -130,7 +130,7 @@ function TripDetailsContent() {
   }, [tripId, session?.user?.id]);
 
   if (loading) {
-    return <Loader2 className="h-12 w-12 animate-spin text-primary" />;
+    return <LoadingSpinner />;
   }
 
   if (!trip) {

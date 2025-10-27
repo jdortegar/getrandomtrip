@@ -145,8 +145,6 @@ export default async function Page({
         tripperPackages={tripperPackages}
       />
 
-      {/* Exploration Section - Destinos, Experiencias únicas, Destination Decoded */}
-      <ExplorationSection />
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (
         <Blog

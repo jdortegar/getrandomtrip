@@ -17,19 +17,19 @@ export const TRAVELLER_TYPE_OPTIONS: TravellerTypeOption[] = [
     img: '/images/journey-types/solo-traveler.jpg',
   },
   {
-    key: 'pareja',
+    key: 'couple',
     title: 'En Pareja',
     subtitle: 'Creen recuerdos juntos',
     img: '/images/journey-types/couple-hetero.jpg',
   },
   {
-    key: 'familia',
+    key: 'family',
     title: 'En Familia',
     subtitle: 'Aventuras para todos',
     img: '/images/journey-types/family-vacation.jpg',
   },
   {
-    key: 'grupo',
+    key: 'group',
     title: 'En Grupo',
     subtitle: 'Experiencias compartidas',
     img: '/images/journey-types/friends-group.jpg',
@@ -44,9 +44,9 @@ export const TRAVELLER_TYPE_OPTIONS: TravellerTypeOption[] = [
 
 export const TRAVELLER_TYPE_MAP: Record<string, string> = {
   solo: 'solo',
-  pareja: 'couple',
-  familia: 'family',
-  grupo: 'group',
+  couple: 'couple',
+  family: 'family',
+  group: 'group',
   honeymoon: 'honeymoon',
 };
 
@@ -70,11 +70,8 @@ export const TIER_BADGES: Record<string, BadgeConfig> = {
 export const TYPE_LABELS: Record<string, string> = {
   solo: 'Solo',
   couple: 'En Pareja',
-  pareja: 'En Pareja',
   family: 'Familia',
-  familia: 'Familia',
   group: 'Grupo',
-  grupo: 'Grupo',
   honeymoon: 'Luna de Miel',
   paws: 'Con Mascotas',
 };

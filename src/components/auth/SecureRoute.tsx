@@ -7,6 +7,7 @@ import { useUserStore } from '@/store/slices/userStore';
 import GlassCard from '@/components/ui/GlassCard';
 import BgCarousel from '@/components/media/BgCarousel';
 import AuthModal from '@/components/auth/AuthModal';
+import LoadingSpinner from '../layout/LoadingSpinner';
 
 interface SecureRouteProps {
   children: React.ReactNode;
@@ -49,19 +50,7 @@ export default function SecureRoute({
   }, [session, status, isAuthed, user, requiredRole, router]);
 
   if (status === 'loading' || isChecking) {
-    return (
-      <>
-        <BgCarousel scrim={0.75} />
-        <main className="container mx-auto max-w-5xl px-4 pt-24 md:pt-28 pb-16">
-          <GlassCard>
-            <div className="p-6 text-center text-neutral-700">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              Verificando acceso...
-            </div>
-          </GlassCard>
-        </main>
-      </>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!session && !isAuthed) {

@@ -29,7 +29,6 @@ export async function getTripperBySlug(
         role: true,
         tripperSlug: true,
         commission: true,
-        availableTypes: true,
         interests: true,
         bio: true,
         heroImage: true,
@@ -43,10 +42,25 @@ export async function getTripperBySlug(
 
     if (!tripper || !tripper.tripperSlug) return null;
 
+    // Dynamically calculate availableTypes based on actual packages
+    const packages = await prisma.package.findMany({
+      where: {
+        ownerId: tripper.id,
+        isActive: true,
+      },
+      select: {
+        type: true,
+      },
+      distinct: ['type'],
+    });
+
+    const availableTypes = packages.map((pkg) => pkg.type);
+
     return {
       ...tripper,
       tripperSlug: tripper.tripperSlug,
       commission: tripper.commission || 0,
+      availableTypes,
     } as TripperProfile;
   } catch (error) {
     console.error('Error fetching tripper by slug:', error);

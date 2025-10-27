@@ -145,7 +145,7 @@ async function seedTrippersAndPackages() {
       {
         ownerId: createdTrippers[0].id,
         type: 'couple',
-        level: 'explora-plus',
+        level: 'exploraPlus',
         minNights: 3,
         maxNights: 5,
         minPax: 2,

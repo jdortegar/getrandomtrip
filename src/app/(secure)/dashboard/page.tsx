@@ -14,7 +14,6 @@ import {
   Plane,
   Star,
   TrendingUp,
-  Loader2,
   DollarSign,
   Clock,
   Plus,
@@ -23,6 +22,7 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { useUserStore } from '@/store/slices';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface Trip {
   id: string;
@@ -223,9 +223,7 @@ function DashboardContent() {
       <Section>
         <div className="max-w-7xl mx-auto">
           {loading ? (
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-            </div>
+            <LoadingSpinner />
           ) : (
             <>
               {/* Stats Grid */}

@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/button';
 import {
   User,
@@ -28,10 +27,12 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type TabType = 'overview' | 'packages' | 'performance' | 'settings';
 
 function TripperProfileContent() {
+  const router = useRouter();
   const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,11 +63,18 @@ function TripperProfileContent() {
   if ((currentUser as any)?.role !== 'TRIPPER') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 mb-4">
-            Acceso Restringido
-          </h1>
-          <p className="text-neutral-600">Esta página es solo para trippers.</p>
+        <div className="flex flex-col items-center justify-center text-center gap-6">
+          <div>
+            <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+              Acceso Restringido
+            </h1>
+            <p className="text-neutral-600">
+              Esta página es solo para trippers.
+            </p>
+          </div>
+          <Button variant="secondary" onClick={() => router.push('/')}>
+            Volver a la página principal
+          </Button>
         </div>
       </div>
     );
@@ -175,15 +183,17 @@ function TripperProfileContent() {
 
   return (
     <>
-      <Hero
-        content={{
-          title: 'Mi Perfil de Tripper',
-          subtitle: 'Gestiona tu negocio de viajes',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-        }}
-        className="!h-[40vh]"
-      />
+      {/* Simple header instead of Hero component */}
+      <div className="bg-primary py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <h1 className="text-4xl font-bold text-white mb-4 font-caveat">
+            Mi Perfil de Tripper
+          </h1>
+          <p className="text-xl text-white/90 font-jost">
+            Gestiona tu negocio de viajes
+          </p>
+        </div>
+      </div>
 
       <Section>
         <div className="max-w-6xl mx-auto">

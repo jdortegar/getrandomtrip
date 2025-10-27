@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, User, Search } from 'lucide-react';
@@ -27,15 +28,47 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
   const overlay = useScrollDetection({ variant });
   const { isAuthed, user, signOut, session } = useUserStore();
   const { isOpen, mode, close, openLogin } = useAuthModal();
+  const pathname = usePathname();
+  const [hasHeroSection, setHasHeroSection] = useState(true);
+
+  // Check for hero section on route change
+  useEffect(() => {
+    const checkHeroSection = () => {
+      if (typeof window === 'undefined') return;
+
+      // Small delay to ensure DOM is updated after route change
+      setTimeout(() => {
+        const heroSentinel = document.getElementById('hero-sentinel');
+        setHasHeroSection(heroSentinel !== null);
+      }, 100);
+    };
+
+    checkHeroSection();
+  }, [pathname]);
 
   const headerClass = useMemo(() => {
+    // If no hero section exists, always use solid variant
+    if (!hasHeroSection) {
+      return NAVBAR_STYLES.SOLID;
+    }
+
+    // For pages with hero sections, use the original logic
+    // This allows transparent navbar on home page, etc.
     const isSolid = variant === 'solid' || (variant === 'auto' && !overlay);
     return isSolid ? NAVBAR_STYLES.SOLID : NAVBAR_STYLES.OVERLAY;
-  }, [overlay, variant]);
+  }, [overlay, variant, hasHeroSection]);
 
-  const logoSrc = overlay
-    ? '/assets/logos/logo_getrandomtrip_white.png'
-    : '/assets/logos/logo_getrandomtrip.png';
+  const logoSrc = useMemo(() => {
+    // If no hero section, always use the regular logo (solid navbar)
+    if (!hasHeroSection) {
+      return '/assets/logos/logo_getrandomtrip.png';
+    }
+
+    // Original logic for pages with hero sections
+    return overlay
+      ? '/assets/logos/logo_getrandomtrip_white.png'
+      : '/assets/logos/logo_getrandomtrip.png';
+  }, [overlay, hasHeroSection]);
 
   return (
     <>

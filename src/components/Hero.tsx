@@ -136,6 +136,12 @@ const Hero: React.FC<HeroProps> = ({
       id={id || 'home-hero'}
       className={`relative h-screen flex flex-col items-center justify-center text-center overflow-hidden ${className || ''}`}
     >
+      {/* Hero sentinel for navbar detection */}
+      <div
+        id="hero-sentinel"
+        aria-hidden
+        className="absolute top-0 left-0 h-px w-px"
+      />
       <HeroVideoBackground content={content} />
       <div className="relative z-10 max-w-5xl mx-auto px-4 py-16">
         <h2
