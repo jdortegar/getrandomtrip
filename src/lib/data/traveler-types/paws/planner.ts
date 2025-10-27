@@ -24,7 +24,7 @@ export const pawsPlannerContent: TypePlannerContent = {
         'Destination Decoded',
       ],
     },
-    laExcusa: {
+    excuse: {
       title: 'Viajás con tu mascota por muchas razones, ¿cuál te mueve hoy?',
       tagline: 'Toda aventura es mejor cuando la compartís con tu mejor amigo.',
       cards: [
@@ -58,7 +58,7 @@ export const pawsPlannerContent: TypePlannerContent = {
         },
       ],
     },
-    afinarDetalles: {
+    details: {
       title: 'Afiná los detalles',
       tagline: 'Elegí las opciones ideales para vos y tu mascota.',
       ctaLabel: 'Continuar al diseño →',

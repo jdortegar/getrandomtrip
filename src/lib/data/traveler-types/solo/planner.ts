@@ -23,7 +23,7 @@ export const soloPlannerContent: TypePlannerContent = {
         'Destination Decoded',
       ],
     },
-    laExcusa: {
+    excuse: {
       title: 'Viajás por muchas razones, ¿cuál te mueve hoy?',
       tagline: 'Toda escapada tiene su "porque sí".',
       cards: [
@@ -41,7 +41,7 @@ export const soloPlannerContent: TypePlannerContent = {
         },
       ],
     },
-    afinarDetalles: {
+    details: {
       title: 'Afiná tus detalles',
       tagline: 'Elegí las opciones que te gustan para crear tu viaje.',
       ctaLabel: 'Continuar al diseño →',

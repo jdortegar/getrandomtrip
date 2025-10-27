@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
-import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
+import Details from '@/components/by-type/shared/Details';
 import { WizardHeader } from '@/components/WizardHeader';
 import Presupuesto from '@/components/by-type/shared/Presupuesto';
-import LaExcusa from '@/components/by-type/shared/LaExcusa';
+import Excuse from '@/components/by-type/shared/Excuse';
 import type { Tripper } from '@/content/trippers';
 import Section from '@/components/layout/Section';
 import {
@@ -136,7 +136,7 @@ export default function TripperPlanner({
 
   // Alma cards from traveler type data - show all general content
   const almaCards = useMemo(() => {
-    const typeCards = travellerTypeData?.planner?.steps?.laExcusa?.cards || [];
+    const typeCards = travellerTypeData?.planner?.steps?.excuse?.cards || [];
     return typeCards;
   }, [travellerTypeData]);
 
@@ -155,13 +155,13 @@ export default function TripperPlanner({
   // Wizard steps - dynamic labels from traveler type data
   const wizardSteps = useMemo(
     () => [
-      { step: 1, label: 'Tipo de Viaje' },
-      { step: 2, label: 'Presupuesto' },
+      { step: 1, label: 'Traveler Type' },
+      { step: 2, label: 'Budget' },
       {
         step: 3,
-        label: travellerTypeData?.planner?.steps?.step2Label || 'La Excusa',
+        label: travellerTypeData?.planner?.steps?.step2Label || 'Excuse',
       },
-      { step: 4, label: 'Detalles' },
+      { step: 4, label: 'Details' },
     ],
     [travellerTypeData],
   );
@@ -262,7 +262,7 @@ export default function TripperPlanner({
 
       case 3:
         return (
-          <LaExcusa
+          <Excuse
             almaCards={almaCards}
             content={{
               title: '¿Qué los mueve a viajar?',
@@ -280,7 +280,7 @@ export default function TripperPlanner({
 
       case 4:
         return (
-          <AfinarDetalles
+          <Details
             almaKey={almaKey}
             almaOptions={travellerTypeData?.planner?.almaOptions || {}}
             budgetTier={budgetTier}
@@ -292,6 +292,7 @@ export default function TripperPlanner({
             pendingPriceLabel={pendingPriceLabel}
             setStep={() => handleStepChange(3)}
             type={travellerType || 'solo'}
+            tripperSlug={tripperData?.slug}
           />
         );
 

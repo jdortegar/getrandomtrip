@@ -3,11 +3,11 @@
 import { useState, useRef, useCallback, type CSSProperties } from 'react';
 import Img from '@/components/common/Img';
 import { Button } from '@/components/ui/button';
-import type { AlmaCard, LaExcusaContent } from '@/types/planner';
+import type { AlmaCard, ExcuseContent } from '@/types/planner';
 
-interface LaExcusaProps {
+interface ExcuseProps {
   almaCards: AlmaCard[];
-  content: LaExcusaContent;
+  content: ExcuseContent;
   plannerId: string;
   setAlmaKey: (alma: string | null) => void;
   setStep: (stepIndex: number) => void;
@@ -122,13 +122,13 @@ function FlipCard({
   );
 }
 
-export default function LaExcusa({
+export default function Excuse({
   almaCards,
   content,
   plannerId,
   setAlmaKey,
   setStep,
-}: LaExcusaProps) {
+}: ExcuseProps) {
   return (
     <section
       className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"

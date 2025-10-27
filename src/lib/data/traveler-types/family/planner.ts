@@ -23,7 +23,7 @@ export const familyPlannerContent: TypePlannerContent = {
         'Destination Decoded',
       ],
     },
-    laExcusa: {
+    excuse: {
       title: '¿Con quién viajan?',
       tagline:
         'Elijan la composición familiar para personalizar su experiencia.',
@@ -57,7 +57,7 @@ export const familyPlannerContent: TypePlannerContent = {
         },
       ],
     },
-    afinarDetalles: {
+    details: {
       title: 'Afinen los detalles',
       tagline:
         'Elijan las opciones que les gustan para crear su viaje familiar.',

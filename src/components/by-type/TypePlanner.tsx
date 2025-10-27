@@ -6,8 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Section from '@/components/layout/Section';
 import { WizardHeader } from '@/components/WizardHeader';
 import Presupuesto from '@/components/by-type/shared/Presupuesto';
-import LaExcusa from '@/components/by-type/shared/LaExcusa';
-import AfinarDetalles from '@/components/by-type/shared/AfinarDetalles';
+import Excuse from '@/components/by-type/shared/Excuse';
+import Details from '@/components/by-type/shared/Details';
 import type { TypePlannerContent } from '@/types/planner';
 import { ALL_LEVELS } from '@/content/levels';
 import type { LevelContent } from '@/content/levels';
@@ -60,9 +60,9 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
   }, [type, content.tiers]);
 
   const steps = [
-    { step: 1, label: 'Presupuesto' },
+    { step: 1, label: 'Budget' },
     { step: 2, label: content.steps.step2Label },
-    { step: 3, label: 'Detalles' },
+    { step: 3, label: 'Details' },
   ];
 
   // Validation function to check if previous steps have required data
@@ -96,9 +96,9 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
         );
       case 2:
         return (
-          <LaExcusa
-            almaCards={content.steps.laExcusa.cards}
-            content={content.steps.laExcusa}
+          <Excuse
+            almaCards={content.steps.excuse.cards}
+            content={content.steps.excuse}
             plannerId={`${type}-planner`}
             setAlmaKey={setAlmaKey}
             setStep={handleStepChange}
@@ -106,11 +106,11 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
         );
       case 3:
         return (
-          <AfinarDetalles
+          <Details
             almaKey={almaKey}
             almaOptions={content.almaOptions}
             budgetTier={budgetTier}
-            content={content.steps.afinarDetalles}
+            content={content.steps.details}
             pendingPriceLabel={pendingPriceLabel}
             setStep={handleStepChange}
             type={type}

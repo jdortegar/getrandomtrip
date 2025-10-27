@@ -23,7 +23,7 @@ export const groupPlannerContent: TypePlannerContent = {
         'Destination Decoded',
       ],
     },
-    laExcusa: {
+    excuse: {
       title: '¿Qué tipo de experiencia buscan?',
       tagline: 'Elijan el estilo de viaje que más los representa como grupo.',
       cards: [
@@ -85,7 +85,7 @@ export const groupPlannerContent: TypePlannerContent = {
         },
       ],
     },
-    afinarDetalles: {
+    details: {
       title: 'Afinen los detalles',
       tagline: 'Elijan las opciones que les gustan para crear su viaje grupal.',
       ctaLabel: 'Continuar al diseño →',

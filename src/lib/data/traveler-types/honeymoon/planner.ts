@@ -23,7 +23,7 @@ export const honeymoonPlannerContent: TypePlannerContent = {
         'Destination Decoded',
       ],
     },
-    laExcusa: {
+    excuse: {
       title: '¿Qué tipo de luna de miel sueñan?',
       tagline: 'El comienzo perfecto para su vida juntos.',
       cards: [
@@ -57,7 +57,7 @@ export const honeymoonPlannerContent: TypePlannerContent = {
         },
       ],
     },
-    afinarDetalles: {
+    details: {
       title: 'Afinen los detalles',
       tagline: 'Elijan las opciones perfectas para su luna de miel.',
       ctaLabel: 'Continuar al diseño →',

@@ -44,13 +44,13 @@ export interface PresupuestoContent {
   categoryLabels?: string[]; // Optional now - defaults to hardcoded values
 }
 
-export interface LaExcusaContent {
+export interface ExcuseContent {
   title: string;
   tagline: string;
   cards: AlmaCard[];
 }
 
-export interface AfinarDetallesContent {
+export interface DetailsContent {
   title: string;
   tagline: string;
   ctaLabel: string;
@@ -64,7 +64,7 @@ export interface TypePlannerContent {
   steps: {
     step2Label: string;
     presupuesto: PresupuestoContent;
-    laExcusa: LaExcusaContent;
-    afinarDetalles: AfinarDetallesContent;
+    excuse: ExcuseContent;
+    details: DetailsContent;
   };
 }

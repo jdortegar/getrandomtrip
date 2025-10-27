@@ -24,7 +24,7 @@ export const couplePlannerContent: TypePlannerContent = {
         'Destination Decoded',
       ],
     },
-    laExcusa: {
+    excuse: {
       title: 'Viajamos por muchas razones, ¿cuál los mueve hoy?',
       tagline:
         'Toda escapada tiene su "porque sí". Armando el Destination Decoded.',
@@ -87,7 +87,7 @@ export const couplePlannerContent: TypePlannerContent = {
         },
       ],
     },
-    afinarDetalles: {
+    details: {
       title: 'Afinen sus detalles',
       tagline: 'Elijan las opciones que les gustan para crear su viaje.',
       ctaLabel: 'Continuar al diseño →',

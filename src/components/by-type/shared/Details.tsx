@@ -6,13 +6,13 @@ import Img from '@/components/common/Img';
 import { Button } from '@/components/ui/button';
 import { gotoBasicConfig } from '@/lib/linking';
 import AlmaOptionCard from './AlmaOptionCard';
-import type { AlmaSpec, AfinarDetallesContent } from '@/types/planner';
+import type { AlmaSpec, DetailsContent } from '@/types/planner';
 
-interface AfinarDetallesProps {
+interface DetailsProps {
   almaKey: string | null;
   almaOptions: Record<string, AlmaSpec>;
   budgetTier: string | null;
-  content: AfinarDetallesContent;
+  content: DetailsContent;
   pendingPriceLabel: string | null;
   setStep: (stepIndex: number) => void;
   type: string;
@@ -41,7 +41,7 @@ const BORDER_COLOR: Record<string, string> = {
   multigen: 'border-amber-400',
 };
 
-export default function AfinarDetalles({
+export default function Details({
   almaKey,
   almaOptions,
   budgetTier,
@@ -50,7 +50,7 @@ export default function AfinarDetalles({
   setStep,
   type,
   tripperSlug,
-}: AfinarDetallesProps) {
+}: DetailsProps) {
   const router = useRouter();
   const spec = almaKey ? almaOptions[almaKey] : null;
   const borderClass = almaKey
@@ -227,9 +227,9 @@ export default function AfinarDetalles({
                 tierId: budgetTier!,
                 priceLabel: pendingPriceLabel!,
                 extra: {
-                  [`${type}Alma`]: almaKey,
+                  [`${type}Alma`]: almaKey || '',
                   almaOptions: selected.join(','),
-                  tripperSlug: tripperSlug,
+                  tripperSlug: tripperSlug || '',
                 },
               });
             }
