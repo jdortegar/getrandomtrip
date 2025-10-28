@@ -11,14 +11,14 @@ interface OriginStepProps {
     city: string;
     country: string;
   } | null;
-  setOrigin: (origin: { city: string; country: string } | null) => void;
+  handlePlanData: (origin: { city: string; country: string } | null) => void;
   onContinue: () => void;
   tripperName: string;
 }
 
 export default function OriginStep({
   origin,
-  setOrigin,
+  handlePlanData,
   onContinue,
   tripperName,
 }: OriginStepProps) {
@@ -27,12 +27,12 @@ export default function OriginStep({
 
   const handleCountryChange = (country: string) => {
     setCountryValue(country);
-    setOrigin({ country, city: cityValue });
+    handlePlanData({ country, city: cityValue });
   };
 
   const handleCityChange = (city: string) => {
     setCityValue(city);
-    setOrigin({ country: countryValue, city });
+    handlePlanData({ country: countryValue, city });
   };
 
   const canContinue = countryValue && cityValue;
@@ -55,33 +55,41 @@ export default function OriginStep({
       </div>
 
       <div className="mx-auto max-w-2xl space-y-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            País de salida
-          </label>
-          <CountrySelector
-            className="w-full"
-            onChange={handleCountryChange}
-            placeholder="Selecciona tu país"
-            value={countryValue}
-          />
-        </div>
+        <div className="flex gap-4 justify-center">
+          <div className="space-y-2 text-left">
+            <label className="text-sm font-medium text-gray-700">
+              País de salida
+            </label>
+            <CountrySelector
+              className="w-full"
+              onChange={handleCountryChange}
+              placeholder="Selecciona tu país"
+              value={countryValue}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            Ciudad de salida
-          </label>
-          <CitySelector
-            className="w-full"
-            countryValue={countryValue}
-            onChange={handleCityChange}
-            placeholder="Selecciona tu ciudad"
-            value={cityValue}
-          />
+          <div className="space-y-2 text-left">
+            <label className="text-sm font-medium text-gray-700">
+              Ciudad de salida
+            </label>
+            <CitySelector
+              className="w-full"
+              countryValue={countryValue}
+              onChange={handleCityChange}
+              placeholder="Selecciona tu ciudad"
+              value={cityValue}
+            />
+          </div>
         </div>
 
         <div className="flex justify-center pt-4">
-          <Button disabled={!canContinue} onClick={onContinue} size="lg">
+          <Button
+            disabled={!canContinue}
+            onClick={() => {
+              onContinue();
+            }}
+            size="lg"
+          >
             Continuar →
           </Button>
         </div>

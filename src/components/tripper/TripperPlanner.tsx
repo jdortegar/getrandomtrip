@@ -16,8 +16,9 @@ import {
   TRAVELLER_TYPE_MAP,
 } from '@/lib/constants/traveller-types';
 import { getTravelerType } from '@/lib/data/traveler-types';
-
+import { prisma } from '@/lib/prisma';
 import OriginStep from './steps/OriginStep';
+import TravelerTypeStep from './steps/TravelerTypeStep';
 
 type Props = {
   tripperData: {
@@ -37,9 +38,14 @@ export default function TripperPlanner({
   tripperData,
   tripperPackages = [],
 }: Props) {
-  const [origin, setOrigin] = useState<{
-    city: string;
-    country: string;
+  // PLAN DATA
+  const [planData, setPlanData] = useState<{
+    origin: {
+      city: string;
+      country: string;
+    } | null;
+    travellerType: string | null;
+    budgetTier: string | null;
   } | null>(null);
 
   const [step, setStep] = useState<number>(1);
@@ -175,18 +181,13 @@ export default function TripperPlanner({
       case 1:
         return true; // Always allow going back to step 1
       case 2:
-        return origin !== null; // Can go to step 2 if origin is selected
+        return travellerType !== null; // Can go to step 2 if traveler type is selected
       case 3:
-        return origin !== null && travellerType !== null; // Can go to step 3 if origin and traveler type are selected
+        return travellerType !== null && budgetTier !== null; // Can go to step 3 if both traveler type and budget are selected
       case 4:
-        return origin !== null && travellerType !== null && budgetTier !== null; // Can go to step 4 if origin, traveler type and budget are selected
-      case 5:
         return (
-          origin !== null &&
-          travellerType !== null &&
-          budgetTier !== null &&
-          almaKey !== null
-        ); // Can go to step 5 if all previous steps are completed
+          travellerType !== null && budgetTier !== null && almaKey !== null
+        ); // Can go to step 4 if all previous steps are completed
       default:
         return false;
     }
@@ -199,71 +200,28 @@ export default function TripperPlanner({
     }
   };
 
-  const handleOriginContinue = () => {
-    setStep(2);
-    scrollPlanner();
-  };
-
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
           <OriginStep
-            origin={origin}
-            setOrigin={setOrigin}
-            onContinue={handleOriginContinue}
+            origin={planData?.origin!}
+            handlePlanData={(origin) => setPlanData({ ...planData!, origin })}
+            onContinue={() => setStep(2)}
             tripperName={firstName}
           />
         );
       case 2:
         return (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-8"
-            exit={{ opacity: 0, y: -20 }}
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 md:text-3xl">
-                ¿Qué tipo de viaje estás planeando?
-              </h3>
-              <p className="mx-auto mt-2 max-w-2xl text-gray-600">
-                Selecciona el estilo de viaje que {firstName} diseñará para ti
-              </p>
-            </div>
-
-            <div className="mx-auto flex max-w-6xl flex-wrap justify-center gap-6">
-              {travellerOptions.map((opt) => (
-                <button
-                  key={opt.key}
-                  aria-label={`Seleccionar viaje ${opt.title}`}
-                  className="group relative h-80 w-full max-w-sm overflow-hidden rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:w-80 cursor-pointer"
-                  onClick={() => {
-                    setTravellerType(opt.key);
-                    setTimeout(() => {
-                      setStep(3);
-                      scrollPlanner();
-                    }, 300);
-                  }}
-                >
-                  <Image
-                    alt={opt.title}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    fill
-                    src={opt.img}
-                  />
-                  <div className="absolute inset-0 z-10 rounded-lg bg-gradient-to-t from-black/70 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 z-20 p-6 text-white">
-                    <h4 className="text-2xl font-bold font-caveat">
-                      {opt.title}
-                    </h4>
-                    <p className="mt-1 text-sm text-white/90">{opt.subtitle}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </motion.div>
+          <TravelerTypeStep
+            options={travellerOptions}
+            handlePlanData={(travellerType) =>
+              setPlanData({ ...planData!, travellerType })
+            }
+            onContinue={() => setStep(3)}
+            tripperName={firstName}
+            onBack={() => setStep(1)}
+          />
         );
 
       case 3:
@@ -295,9 +253,9 @@ export default function TripperPlanner({
             plannerId="tripper-planner"
             setAlmaKey={(key) => {
               setAlmaKey(key);
-              setTimeout(() => handleStepChange(5), 100);
+              setTimeout(() => handleStepChange(4), 100);
             }}
-            setStep={() => handleStepChange(3)}
+            setStep={() => handleStepChange(2)}
           />
         );
 
@@ -313,7 +271,7 @@ export default function TripperPlanner({
               ctaLabel: 'Ver resumen del viaje →',
             }}
             pendingPriceLabel={pendingPriceLabel}
-            setStep={() => handleStepChange(4)}
+            setStep={() => handleStepChange(3)}
             type={travellerType || 'solo'}
             tripperSlug={tripperData?.slug}
           />
