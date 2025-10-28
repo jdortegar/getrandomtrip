@@ -129,21 +129,18 @@ export default async function Page({
       )}
 
       {/* Planner: with DB data */}
-      <TripperPlanner
-        staticTripper={t}
-        tripperData={
-          dbTripper && dbTripper.tripperSlug
-            ? {
-                id: dbTripper.id,
-                name: dbTripper.name,
-                slug: dbTripper.tripperSlug,
-                commission: dbTripper.commission || 0,
-                availableTypes: dbTripper.availableTypes as any[],
-              }
-            : undefined
-        }
-        tripperPackages={tripperPackages}
-      />
+      {dbTripper && dbTripper.tripperSlug && (
+        <TripperPlanner
+          tripperData={{
+            id: dbTripper.id,
+            name: dbTripper.name,
+            slug: dbTripper.tripperSlug,
+            commission: dbTripper.commission || 0,
+            availableTypes: dbTripper.availableTypes as string[],
+          }}
+          tripperPackages={tripperPackages}
+        />
+      )}
 
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (

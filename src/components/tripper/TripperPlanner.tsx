@@ -19,8 +19,7 @@ import { getTravelerType } from '@/lib/data/traveler-types';
 import { prisma } from '@/lib/prisma';
 
 type Props = {
-  staticTripper: Tripper;
-  tripperData?: {
+  tripperData: {
     id: string;
     name: string;
     slug: string;
@@ -34,7 +33,6 @@ type Props = {
 };
 
 export default function TripperPlanner({
-  staticTripper: t,
   tripperData,
   tripperPackages = [],
 }: Props) {
@@ -47,10 +45,11 @@ export default function TripperPlanner({
   const [almaKey, setAlmaKey] = useState<string | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const firstName = t.name?.split(' ')[0] || t.name || 'este tripper';
+  const firstName =
+    tripperData.name?.split(' ')[0] || tripperData.name || 'este tripper';
 
-  // Filter by tripper's available types (DB first, then static fallback)
-  const availableTypes = tripperData?.availableTypes || t.availableTypes || [];
+  // Filter by tripper's available types
+  const availableTypes = tripperData.availableTypes || [];
   const travellerOptions =
     availableTypes.length > 0
       ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
@@ -69,7 +68,8 @@ export default function TripperPlanner({
 
     // Check if this is Randomtrip tripper (shows all levels)
     const isRandomtripTripper =
-      t.slug === 'randomtrip' || t.name?.toLowerCase().includes('randomtrip');
+      tripperData.slug === 'randomtrip' ||
+      tripperData.name?.toLowerCase().includes('randomtrip');
 
     // Show general content for this traveler type
     // If tripper has specific levels for this type, show those; otherwise show all general tiers
@@ -96,10 +96,10 @@ export default function TripperPlanner({
       const name = titleParts[0]?.trim() || content.title;
       const subtitle = titleParts[1]?.trim() || '';
 
-      // Apply commission (DB first, then static fallback)
+      // Apply commission
       const basePrice =
         parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
-      const commission = tripperData?.commission || t.commission || 0;
+      const commission = tripperData.commission || 0;
       const finalPrice = basePrice * (1 + commission);
 
       const priceLabel =
@@ -125,7 +125,7 @@ export default function TripperPlanner({
         ctaLabel: content.ctaLabel,
       };
     });
-  }, [travellerType, tripperData, firstName, t.slug, t.name, tripperPackages]);
+  }, [travellerType, tripperData, firstName, tripperPackages]);
 
   // Get traveler type data for selected type
   const travellerTypeData = useMemo(() => {

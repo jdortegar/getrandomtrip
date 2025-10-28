@@ -118,6 +118,10 @@ model Package {
   type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
   level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
   
+  // User preference matching (for filtering)
+  excuseKey      String?   // Key from excuse step (e.g., 'romantic-getaway', 'adventure-honeymoon')
+  detailsOptions String[]  @default([]) // Array of detail option keys that this package supports
+  
   // Capacity constraints
   minNights Int @default(1)
   maxNights Int @default(7)
