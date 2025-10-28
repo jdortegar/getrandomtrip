@@ -16,7 +16,8 @@ import {
   TRAVELLER_TYPE_MAP,
 } from '@/lib/constants/traveller-types';
 import { getTravelerType } from '@/lib/data/traveler-types';
-import { prisma } from '@/lib/prisma';
+
+import OriginStep from './steps/OriginStep';
 
 type Props = {
   tripperData: {
@@ -36,6 +37,11 @@ export default function TripperPlanner({
   tripperData,
   tripperPackages = [],
 }: Props) {
+  const [origin, setOrigin] = useState<{
+    city: string;
+    country: string;
+  } | null>(null);
+
   const [step, setStep] = useState<number>(1);
   const [travellerType, setTravellerType] = useState<string | null>(null);
   const [budgetTier, setBudgetTier] = useState<string | null>(null);
@@ -155,13 +161,11 @@ export default function TripperPlanner({
   // Wizard steps - dynamic labels from traveler type data
   const wizardSteps = useMemo(
     () => [
-      { step: 1, label: 'Traveler Type' },
-      { step: 2, label: 'Budget' },
-      {
-        step: 3,
-        label: travellerTypeData?.planner?.steps?.step2Label || 'Excuse',
-      },
-      { step: 4, label: 'Details' },
+      { step: 1, label: 'Origen' },
+      { step: 2, label: 'Tipo de viajero' },
+      { step: 3, label: 'Presupuesto' },
+      { step: 4, label: 'La Excusa' },
+      { step: 5, label: 'Afinar detalles' },
     ],
     [travellerTypeData],
   );
@@ -171,13 +175,18 @@ export default function TripperPlanner({
       case 1:
         return true; // Always allow going back to step 1
       case 2:
-        return travellerType !== null; // Can go to step 2 if traveler type is selected
+        return origin !== null; // Can go to step 2 if origin is selected
       case 3:
-        return travellerType !== null && budgetTier !== null; // Can go to step 3 if both traveler type and budget are selected
+        return origin !== null && travellerType !== null; // Can go to step 3 if origin and traveler type are selected
       case 4:
+        return origin !== null && travellerType !== null && budgetTier !== null; // Can go to step 4 if origin, traveler type and budget are selected
+      case 5:
         return (
-          travellerType !== null && budgetTier !== null && almaKey !== null
-        ); // Can go to step 4 if all previous steps are completed
+          origin !== null &&
+          travellerType !== null &&
+          budgetTier !== null &&
+          almaKey !== null
+        ); // Can go to step 5 if all previous steps are completed
       default:
         return false;
     }
@@ -190,9 +199,23 @@ export default function TripperPlanner({
     }
   };
 
+  const handleOriginContinue = () => {
+    setStep(2);
+    scrollPlanner();
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
+        return (
+          <OriginStep
+            origin={origin}
+            setOrigin={setOrigin}
+            onContinue={handleOriginContinue}
+            tripperName={firstName}
+          />
+        );
+      case 2:
         return (
           <motion.div
             animate={{ opacity: 1, y: 0 }}
@@ -219,7 +242,7 @@ export default function TripperPlanner({
                   onClick={() => {
                     setTravellerType(opt.key);
                     setTimeout(() => {
-                      setStep(2);
+                      setStep(3);
                       scrollPlanner();
                     }, 300);
                   }}
@@ -243,7 +266,7 @@ export default function TripperPlanner({
           </motion.div>
         );
 
-      case 2:
+      case 3:
         return (
           <Presupuesto
             budgetTier={budgetTier}
@@ -260,7 +283,7 @@ export default function TripperPlanner({
           />
         );
 
-      case 3:
+      case 4:
         return (
           <Excuse
             almaCards={almaCards}
@@ -272,13 +295,13 @@ export default function TripperPlanner({
             plannerId="tripper-planner"
             setAlmaKey={(key) => {
               setAlmaKey(key);
-              setTimeout(() => handleStepChange(4), 100);
+              setTimeout(() => handleStepChange(5), 100);
             }}
-            setStep={() => handleStepChange(2)}
+            setStep={() => handleStepChange(3)}
           />
         );
 
-      case 4:
+      case 5:
         return (
           <Details
             almaKey={almaKey}
@@ -290,7 +313,7 @@ export default function TripperPlanner({
               ctaLabel: 'Ver resumen del viaje →',
             }}
             pendingPriceLabel={pendingPriceLabel}
-            setStep={() => handleStepChange(3)}
+            setStep={() => handleStepChange(4)}
             type={travellerType || 'solo'}
             tripperSlug={tripperData?.slug}
           />
