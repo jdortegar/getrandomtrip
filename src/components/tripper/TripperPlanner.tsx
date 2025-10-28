@@ -2,21 +2,17 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import clsx from 'clsx';
 import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
 import Details from '@/components/by-type/shared/Details';
 import { WizardHeader } from '@/components/WizardHeader';
 import Presupuesto from '@/components/by-type/shared/Presupuesto';
 import Excuse from '@/components/by-type/shared/Excuse';
-import type { Tripper } from '@/content/trippers';
 import Section from '@/components/layout/Section';
 import {
   TRAVELLER_TYPE_OPTIONS,
   TRAVELLER_TYPE_MAP,
 } from '@/lib/constants/traveller-types';
 import { getTravelerType } from '@/lib/data/traveler-types';
-import { prisma } from '@/lib/prisma';
 import OriginStep from './steps/OriginStep';
 import TravelerTypeStep from './steps/TravelerTypeStep';
 
@@ -69,45 +65,22 @@ export default function TripperPlanner({
 
   // Get tiers for selected traveller type, filtered by tripper's actual packages
   const tiers = useMemo(() => {
-    if (!travellerType) return [];
+    if (!planData?.travellerType) return [];
 
-    const mappedType =
-      (TRAVELLER_TYPE_MAP[travellerType] as keyof typeof ALL_TIERS_CONTENT) ||
-      'solo';
-    const selectedTiers = ALL_TIERS_CONTENT[mappedType];
+    const selectedTiers =
+      ALL_TIERS_CONTENT[
+        planData.travellerType as keyof typeof ALL_TIERS_CONTENT
+      ];
 
     if (!selectedTiers) return [];
 
-    // Check if this is Randomtrip tripper (shows all levels)
-    const isRandomtripTripper =
-      tripperData.slug === 'randomtrip' ||
-      tripperData.name?.toLowerCase().includes('randomtrip');
+    const filteredTiers = Object.entries(selectedTiers).filter(
+      ([key, content]) => {
+        return tripperPackages.some((pkg) => pkg.level === key);
+      },
+    );
 
-    // Show general content for this traveler type
-    // If tripper has specific levels for this type, show those; otherwise show all general tiers
-    const tripperLevelsForType = tripperPackages
-      .filter((pkg) => pkg.type === travellerType)
-      .map((pkg) => pkg.level)
-      .filter((level, index, array) => array.indexOf(level) === index); // Remove duplicates
-
-    // Use tripper's specific levels if available, otherwise show all general tiers
-
-    const levelsToShow = isRandomtripTripper
-      ? Object.keys(selectedTiers) // Randomtrip shows all levels
-      : tripperLevelsForType.length > 0
-        ? tripperLevelsForType
-        : Object.keys(selectedTiers); // Fallback to all general tiers
-
-    // Filter tiers to show general content
-    const filteredTiers = Object.entries(selectedTiers).filter(([key]) => {
-      return levelsToShow.includes(key);
-    });
-
-    return filteredTiers.map(([key, content]: [string, any]) => {
-      const titleParts = content.title.split('—');
-      const name = titleParts[0]?.trim() || content.title;
-      const subtitle = titleParts[1]?.trim() || '';
-
+    return filteredTiers.map(([key, content]) => {
       // Apply commission
       const basePrice =
         parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
@@ -125,19 +98,21 @@ export default function TripperPlanner({
       return {
         id: key,
         key,
-        name,
-        subtitle,
+        name: content.title,
+        subtitle: content.description,
         priceLabel,
         priceFootnote,
-        features: content.bullets.map((bullet: string) => ({
-          label: '',
-          text: bullet,
-        })),
+        features: content.features.map(
+          (feature: { title: string; description: string }) => ({
+            label: feature.title,
+            text: feature.description,
+          }),
+        ),
         closingLine: content.closingLine,
         ctaLabel: content.ctaLabel,
       };
     });
-  }, [travellerType, tripperData, firstName, tripperPackages]);
+  }, [planData?.travellerType, tripperData, firstName, tripperPackages]);
 
   // Get traveler type data for selected type
   const travellerTypeData = useMemo(() => {
@@ -219,21 +194,23 @@ export default function TripperPlanner({
               setPlanData({ ...planData!, travellerType })
             }
             onContinue={() => setStep(3)}
-            tripperName={firstName}
             onBack={() => setStep(1)}
+            tripperName={firstName}
           />
         );
 
       case 3:
         return (
           <Presupuesto
-            budgetTier={budgetTier}
+            budgetTier={planData?.budgetTier!}
             content={{
               title: `Elige tu presupuesto con ${firstName}`,
               tagline: 'Selecciona el nivel de experiencia que buscas',
             }}
             plannerId="tripper-planner"
-            setBudgetTier={setBudgetTier}
+            setBudgetTier={(budgetTier) =>
+              setPlanData({ ...planData!, budgetTier })
+            }
             setPendingPriceLabel={setPendingPriceLabel}
             setStep={handleStepChange}
             tiers={tiers}
@@ -251,11 +228,8 @@ export default function TripperPlanner({
               cards: almaCards,
             }}
             plannerId="tripper-planner"
-            setAlmaKey={(key) => {
-              setAlmaKey(key);
-              setTimeout(() => handleStepChange(4), 100);
-            }}
-            setStep={() => handleStepChange(2)}
+            setAlmaKey={(key) => setAlmaKey(key)}
+            setStep={handleStepChange}
           />
         );
 

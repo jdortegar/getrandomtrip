@@ -23,7 +23,7 @@ export default function TripperCard({
   return (
     <div className="group rounded-md overflow-hidden shadow-xl bg-white">
       {/* Foto + nombre: llevan a la landing del tripper */}
-      <Link href={`/packages/${slug}`} className="block relative">
+      <Link href={`/packages/by-tripper/${slug}`} className="block relative">
         <div className="relative w-full h-64">
           <Image
             src={img}

@@ -96,7 +96,7 @@ export default function Presupuesto({
           <Button
             className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
             data-testid="cta-back-to-tab2"
-            onClick={() => setStep(1)}
+            onClick={() => setStep(2)}
             variant="link"
           >
             ← Volver

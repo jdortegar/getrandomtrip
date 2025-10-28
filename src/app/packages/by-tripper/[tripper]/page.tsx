@@ -1,10 +1,7 @@
 // frontend/src/app/packages/(tripper)/[tripper]/page.tsx
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-import {
-  TRIPPERS,
-  getTripperBySlug as getStaticTripper,
-} from '@/content/trippers';
+import { TRIPPERS } from '@/content/trippers';
 import {
   getTripperBySlug,
   getTripperFeaturedTrips,
@@ -31,7 +28,9 @@ import { ExplorationSection } from '@/components/landing/exploration';
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from '@/components/tripper/TripperIntroVideoGate';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  // For now, we'll use the static TRIPPERS list
+  // In the future, this could be replaced with a database query
   return TRIPPERS.map((t) => ({ tripper: t.slug }));
 }
 
@@ -40,20 +39,16 @@ export async function generateMetadata({
 }: {
   params: { tripper: string };
 }): Promise<Metadata> {
-  // Try DB first, fallback to static
   const dbTripper = await getTripperBySlug(params.tripper);
-  const staticTripper = getStaticTripper(params.tripper);
-  const t = dbTripper || staticTripper;
 
-  if (!t) return { title: 'Randomtrip' };
+  if (!dbTripper) return { title: 'Randomtrip' };
 
-  const avatar = dbTripper?.avatarUrl || staticTripper?.avatar || '';
-  const heroImage = staticTripper?.heroImage || avatar;
+  const heroImage = dbTripper.avatarUrl || '/images/fallback-profile.jpg';
 
   return {
-    title: `${t.name} | Randomtrip`,
+    title: `${dbTripper.name} | Randomtrip`,
     openGraph: {
-      title: `${t.name} | Randomtrip`,
+      title: `${dbTripper.name} | Randomtrip`,
       images: [{ url: heroImage, width: 1200, height: 630 }],
     },
   };
@@ -80,22 +75,22 @@ export default async function Page({
     ? await getTripperAvailableTypesAndLevels(dbTripper.id)
     : [];
 
-  // Fallback to static content for now
-  const staticTripper = getStaticTripper(params.tripper);
+  // Must have database tripper data
+  if (!dbTripper) return notFound();
 
-  // Must have at least one data source
-  if (!staticTripper && !dbTripper) return notFound();
-
-  // Use static tripper as primary for now (contains posts, bio, etc)
-  // If no static tripper, we'll still need to handle this gracefully
-  const t =
-    staticTripper ||
-    ({
-      name: dbTripper?.name || 'Tripper',
-      slug: params.tripper,
-      avatar: dbTripper?.avatarUrl || '/images/fallback-profile.jpg',
-      interests: dbTripper?.interests || [],
-    } as any);
+  // Create tripper object from database data
+  const t = {
+    name: dbTripper.name,
+    slug: dbTripper.tripperSlug || params.tripper,
+    avatar: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
+    heroImage: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
+    interests: dbTripper.interests || [],
+    posts: [], // TODO: Add posts field to database schema if needed
+    bio: dbTripper.bio || '',
+    location: dbTripper.location || '',
+    agency: 'Randomtrip', // Default agency name
+    visitedPlaces: [], // TODO: Add visitedPlaces field to database schema if needed
+  };
 
   // QA: permitir forzar el video con ?forcevideo=1
   const forceVideo =
@@ -122,7 +117,6 @@ export default async function Page({
       {/* Hero */}
       <TripperHero t={t} dbTripper={dbTripper} />
       <HomeInfo />
-
       {/* Featured Trips Gallery */}
       {featuredTrips.length > 0 && (
         <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
@@ -141,7 +135,6 @@ export default async function Page({
           tripperPackages={tripperPackages}
         />
       )}
-
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (
         <Blog
@@ -174,8 +167,8 @@ export default async function Page({
             '@type': 'Person',
             name: t.name,
             jobTitle: 'Travel Advisor',
-            image: t.heroImage || t.avatar,
-            worksFor: t.agency || 'Randomtrip',
+            image: t.heroImage,
+            worksFor: t.agency,
             homeLocation: t.location || undefined,
           }),
         }}
