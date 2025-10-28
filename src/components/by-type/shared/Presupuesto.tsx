@@ -5,17 +5,17 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 import { TRAVELER_TYPES } from '@/lib/data/traveler-types';
-import type { Tier, PresupuestoContent } from '@/types/planner';
+import type { Level, PresupuestoContent } from '@/types/planner';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
 interface PresupuestoProps {
-  budgetTier: string | null;
+  budgetLevel: string | null;
   content?: PresupuestoContent; // Optional since we can get from centralized data
   plannerId: string;
-  setBudgetTier: (tier: string | null) => void;
+  setBudgetLevel: (level: string | null) => void;
   setPendingPriceLabel: (label: string | null) => void;
   setStep: (stepIndex: number) => void;
-  tiers: Tier[];
+  levels: Level[];
   type: TravelerTypeSlug;
 }
 
@@ -24,12 +24,12 @@ const getTravelerTypeData = (type: TravelerTypeSlug) => {
   return TRAVELER_TYPES[type];
 };
 
-// Helper function to extract unique categories from tier features
-const extractCategories = (tiers: Tier[]): string[] => {
+// Helper function to extract unique categories from level features
+const extractCategories = (levels: Level[]): string[] => {
   const categorySet = new Set<string>();
 
-  tiers.forEach((tier) => {
-    tier.features.forEach((feature) => {
+  levels.forEach((level) => {
+    level.features.forEach((feature) => {
       categorySet.add(feature.title);
     });
   });
@@ -39,7 +39,7 @@ const extractCategories = (tiers: Tier[]): string[] => {
 
 // Helper function to find feature by category
 const findFeatureByCategory = (
-  features: Tier['features'],
+  features: Level['features'],
   category: string,
 ) => {
   return features.find((feature) => {
@@ -53,41 +53,41 @@ const findFeatureByCategory = (
   });
 };
 
-// Tier Card Component
-interface TierCardProps {
-  tier: Tier;
+// Level Card Component
+interface LevelCardProps {
+  level: Level;
   categories: string[];
-  budgetTier: string | null;
-  onTierSelect: (tierId: string, priceLabel: string) => void;
+  budgetLevel: string | null;
+  onLevelSelect: (levelId: string, priceLabel: string) => void;
 }
 
-const TierCard = ({
-  tier,
+const LevelCard = ({
+  level,
   categories,
-  budgetTier,
-  onTierSelect,
-}: TierCardProps) => {
+  budgetLevel,
+  onLevelSelect,
+}: LevelCardProps) => {
   return (
     <div className="relative bg-gray-100 transition-all duration-200 min-w-[350px]">
       <div className="py-12 px-6">
         {/* Plan Name */}
         <div className="text-center h-[80px]">
           <h3 className="text-3xl font-bold text-gray-900 font-caveat">
-            {tier.name}
+            {level.name}
           </h3>
-          <p className="text-gray-600 font-jost text-sm">{tier.subtitle}</p>
+          <p className="text-gray-600 font-jost text-sm">{level.subtitle}</p>
         </div>
 
         {/* Pricing */}
         <div className="text-center h-[60px] items-center flex justify-center">
           <div className="font-bold text-xl text-primary-700 font-jost">
-            {tier.priceLabel}
+            {level.priceLabel}
           </div>
         </div>
 
         {/* Features - aligned with categories */}
         {categories.map((category) => {
-          const feature = findFeatureByCategory(tier.features, category);
+          const feature = findFeatureByCategory(level.features, category);
           const featureText = feature?.description || '—';
 
           return (
@@ -106,11 +106,11 @@ const TierCard = ({
         <div className="text-center mt-10">
           <Button
             className="w-full"
-            onClick={() => onTierSelect(tier.id, tier.priceLabel)}
+            onClick={() => onLevelSelect(level.id, level.priceLabel)}
             type="button"
-            variant={budgetTier === tier.id ? 'default' : 'secondary'}
+            variant={budgetLevel === level.id ? 'default' : 'secondary'}
           >
-            {tier.ctaLabel}
+            {level.ctaLabel}
           </Button>
         </div>
       </div>
@@ -119,13 +119,13 @@ const TierCard = ({
 };
 
 export default function Presupuesto({
-  budgetTier,
+  budgetLevel,
   content,
   plannerId,
-  setBudgetTier,
+  setBudgetLevel,
   setPendingPriceLabel,
   setStep,
-  tiers,
+  levels,
   type,
 }: PresupuestoProps) {
   const router = useRouter();
@@ -136,18 +136,18 @@ export default function Presupuesto({
     [type],
   );
 
-  // Extract unique categories from tier features
-  const categories = React.useMemo(() => extractCategories(tiers), [tiers]);
+  // Extract unique categories from level features
+  const categories = React.useMemo(() => extractCategories(levels), [levels]);
 
   // Use centralized content with fallback to props
   const presupuestoContent = React.useMemo(() => {
     return content || travelerTypeData?.planner?.steps?.presupuesto;
   }, [content, travelerTypeData]);
 
-  const handleTierCTA = (tierId: string, priceLabel: string) => {
-    const level = normalizeTierId(tierId);
+  const handleLevelCTA = (levelId: string, priceLabel: string) => {
+    const level = normalizeTierId(levelId);
 
-    // Low tiers go directly to basic-config
+    // Low levels go directly to basic-config
     if (level === 'essenza' || level === 'modo-explora') {
       gotoBasicConfig(router, {
         fromOrType: type as
@@ -157,14 +157,14 @@ export default function Presupuesto({
           | 'group'
           | 'honeymoon'
           | 'paws',
-        tierId,
+        tierId: levelId,
         priceLabel,
       });
       return;
     }
 
-    // Higher tiers: save tier info and proceed to the next step
-    setBudgetTier(tiers.find((t) => t.id === tierId)?.name || '');
+    // Higher levels: save level info and proceed to the next step
+    setBudgetLevel(levels.find((l) => l.id === levelId)?.name || '');
     setPendingPriceLabel(priceLabel);
     setStep(3); // Go to next step
     document
@@ -237,17 +237,17 @@ export default function Presupuesto({
           ))}
         </div>
 
-        {/* Tier Cards */}
+        {/* Level Cards */}
         <div
-          className={`flex no-wrap overflow-hidden overflow-x-auto ${tiers.length === 1 ? 'justify-center' : ''}`}
+          className={`flex no-wrap overflow-hidden overflow-x-auto ${levels.length === 1 ? 'justify-center' : ''}`}
         >
-          {tiers.map((tier) => (
-            <TierCard
-              key={tier.id}
-              tier={tier}
+          {levels.map((level) => (
+            <LevelCard
+              key={level.id}
+              level={level}
               categories={presupuestoContent?.categoryLabels || categories}
-              budgetTier={budgetTier}
-              onTierSelect={handleTierCTA}
+              budgetLevel={budgetLevel}
+              onLevelSelect={handleLevelCTA}
             />
           ))}
         </div>

@@ -11,7 +11,7 @@ import type { ExcuseSpec, DetailsContent } from '@/types/planner';
 interface DetailsProps {
   excuseKey: string | null;
   excuseOptions: Record<string, ExcuseSpec>;
-  budgetTier: string | null;
+  budgetLevel: string | null;
   content: DetailsContent;
   pendingPriceLabel: string | null;
   setStep: (stepIndex: number) => void;
@@ -44,7 +44,7 @@ const BORDER_COLOR: Record<string, string> = {
 export default function Details({
   excuseKey,
   excuseOptions,
-  budgetTier,
+  budgetLevel,
   content,
   pendingPriceLabel,
   setStep,
@@ -165,10 +165,10 @@ export default function Details({
           >
             {spec.core}
           </p>
-          {budgetTier && (
+          {budgetLevel && (
             <p className="mt-2 text-sm text-white/75 font-jost">
               Presupuesto elegido:{' '}
-              <span className="font-semibold">{budgetTier}</span>
+              <span className="font-semibold">{budgetLevel}</span>
             </p>
           )}
         </div>
@@ -224,7 +224,7 @@ export default function Details({
                   | 'group'
                   | 'honeymoon'
                   | 'paws',
-                tierId: budgetTier!,
+                tierId: budgetLevel!,
                 priceLabel: pendingPriceLabel!,
                 extra: {
                   [`${type}Excuse`]: excuseKey || '',

@@ -1,16 +1,16 @@
-export interface TierFeature {
+export interface LevelFeature {
   title: string;
   description: string;
   footnote?: string;
 }
 
-export interface Tier {
+export interface Level {
   id: string;
   name: string;
   subtitle: string;
   priceLabel: string;
   priceFootnote: string;
-  features: TierFeature[];
+  features: LevelFeature[];
   closingLine: string;
   ctaLabel: string;
 }
@@ -59,7 +59,7 @@ export interface DetailsContent {
 export interface TypePlannerContent {
   title: string;
   subtitle: string;
-  tiers: Tier[];
+  levels: Level[];
   excuseOptions: Record<string, ExcuseSpec>;
   steps: {
     step2Label: string;

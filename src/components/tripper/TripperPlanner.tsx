@@ -41,12 +41,12 @@ export default function TripperPlanner({
       country: string;
     } | null;
     travellerType: string | null;
-    budgetTier: string | null;
+    budgetLevel: string | null;
   } | null>(null);
 
   const [step, setStep] = useState<number>(1);
   const [travellerType, setTravellerType] = useState<string | null>(null);
-  const [budgetTier, setBudgetTier] = useState<string | null>(null);
+  const [budgetLevel, setBudgetLevel] = useState<string | null>(null);
   const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(
     null,
   );
@@ -63,24 +63,24 @@ export default function TripperPlanner({
       ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
       : TRAVELLER_TYPE_OPTIONS;
 
-  // Get tiers for selected traveller type, filtered by tripper's actual packages
-  const tiers = useMemo(() => {
+  // Get levels for selected traveller type, filtered by tripper's actual packages
+  const levels = useMemo(() => {
     if (!planData?.travellerType) return [];
 
-    const selectedTiers =
+    const selectedLevels =
       ALL_TIERS_CONTENT[
         planData.travellerType as keyof typeof ALL_TIERS_CONTENT
       ];
 
-    if (!selectedTiers) return [];
+    if (!selectedLevels) return [];
 
-    const filteredTiers = Object.entries(selectedTiers).filter(
+    const filteredLevels = Object.entries(selectedLevels).filter(
       ([key, content]) => {
         return tripperPackages.some((pkg) => pkg.level === key);
       },
     );
 
-    return filteredTiers.map(([key, content]) => {
+    return filteredLevels.map(([key, content]) => {
       // Apply commission
       const basePrice =
         parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
@@ -153,10 +153,10 @@ export default function TripperPlanner({
       case 2:
         return travellerType !== null; // Can go to step 2 if traveler type is selected
       case 3:
-        return travellerType !== null && budgetTier !== null; // Can go to step 3 if both traveler type and budget are selected
+        return travellerType !== null && budgetLevel !== null; // Can go to step 3 if both traveler type and budget are selected
       case 4:
         return (
-          travellerType !== null && budgetTier !== null && excuseKey !== null
+          travellerType !== null && budgetLevel !== null && excuseKey !== null
         ); // Can go to step 4 if all previous steps are completed
       default:
         return false;
@@ -197,18 +197,18 @@ export default function TripperPlanner({
       case 3:
         return (
           <Presupuesto
-            budgetTier={planData?.budgetTier!}
+            budgetLevel={planData?.budgetLevel!}
             content={{
               title: `Elige tu presupuesto con ${firstName}`,
               tagline: 'Selecciona el nivel de experiencia que buscas',
             }}
             plannerId="tripper-planner"
-            setBudgetTier={(budgetTier) =>
-              setPlanData({ ...planData!, budgetTier })
+            setBudgetLevel={(budgetLevel) =>
+              setPlanData({ ...planData!, budgetLevel })
             }
             setPendingPriceLabel={setPendingPriceLabel}
             setStep={handleStepChange}
-            tiers={tiers}
+            levels={levels}
             type={travellerType || 'solo'}
           />
         );
@@ -233,7 +233,7 @@ export default function TripperPlanner({
           <Details
             excuseKey={excuseKey}
             excuseOptions={travellerTypeData?.planner?.excuseOptions || {}}
-            budgetTier={budgetTier}
+            budgetLevel={budgetLevel}
             content={{
               title: 'Afina los detalles finales',
               tagline: 'Personaliza tu aventura con las opciones que prefieras',
