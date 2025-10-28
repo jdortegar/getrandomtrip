@@ -2,7 +2,7 @@ import type { AlmaSpec } from '@/types/planner';
 
 // Honeymoon uses a simplified structure - single tier only
 // No alma selection needed, just goes directly to basic-config
-export const HONEYMOON_ALMA_OPTIONS: Record<string, AlmaSpec> = {
+export const HONEYMOON_EXCUSE_OPTIONS: Record<string, AlmaSpec> = {
   'romantic-paradise': {
     title: 'Paraíso Romántico',
     core: 'Playas paradisíacas, atardeceres inolvidables y momentos de intimidad perfecta.',

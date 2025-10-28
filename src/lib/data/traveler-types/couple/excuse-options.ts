@@ -16,7 +16,7 @@ export type CoupleAlmaSpec = {
   heroImg?: string;
 };
 
-export const COUPLE_ALMA_OPTIONS: Record<string, CoupleAlmaSpec> = {
+export const COUPLE_EXCUSE_OPTIONS: Record<string, CoupleAlmaSpec> = {
   'romantic-getaway': {
     title: 'Escapada Romántica',
     core: 'Un viaje corto, suficiente para apagar el mundo y encenderse mutuamente.',

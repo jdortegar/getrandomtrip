@@ -1,13 +1,13 @@
 import type { TypePlannerContent } from '@/types/planner';
 import { coupleTiers } from './tiers';
-import { COUPLE_ALMA_OPTIONS } from './alma-options';
+import { COUPLE_EXCUSE_OPTIONS } from './excuse-options';
 
 export const couplePlannerContent: TypePlannerContent = {
   title: 'Diseñen su Randomtrip en pareja',
   subtitle:
     'Tres pasos sencillos para vivir una historia que nadie más podrá contar.',
-  tiers: coupleTiers,
-  almaOptions: COUPLE_ALMA_OPTIONS,
+  levels: coupleTiers,
+  excuseOptions: COUPLE_EXCUSE_OPTIONS,
   steps: {
     step2Label: 'La Excusa',
     presupuesto: {

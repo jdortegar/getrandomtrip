@@ -1,6 +1,6 @@
 import type { AlmaSpec } from '@/types/planner';
 
-export const GROUP_ALMA_OPTIONS: Record<string, AlmaSpec> = {
+export const GROUP_EXCUSE_OPTIONS: Record<string, AlmaSpec> = {
   'visual-storytellers': {
     title: 'Narradores Visuales',
     core: 'Viajes diseñados para quienes buscan mirar el mundo a través de un lente, capturar historias y volver con memorias que son también obras visuales.',

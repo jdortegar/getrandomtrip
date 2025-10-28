@@ -10,7 +10,6 @@ import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
 interface PresupuestoProps {
   budgetLevel: string | null;
-  content?: PresupuestoContent; // Optional since we can get from centralized data
   plannerId: string;
   setBudgetLevel: (level: string | null) => void;
   setPendingPriceLabel: (label: string | null) => void;
@@ -18,24 +17,6 @@ interface PresupuestoProps {
   levels: Level[];
   type: TravelerTypeSlug;
 }
-
-// Helper function to get centralized traveler type data
-const getTravelerTypeData = (type: TravelerTypeSlug) => {
-  return TRAVELER_TYPES[type];
-};
-
-// Helper function to extract unique categories from level features
-const extractCategories = (levels: Level[]): string[] => {
-  const categorySet = new Set<string>();
-
-  levels.forEach((level) => {
-    level.features.forEach((feature) => {
-      categorySet.add(feature.title);
-    });
-  });
-
-  return Array.from(categorySet);
-};
 
 // Helper function to find feature by category
 const findFeatureByCategory = (
@@ -120,7 +101,6 @@ const LevelCard = ({
 
 export default function Presupuesto({
   budgetLevel,
-  content,
   plannerId,
   setBudgetLevel,
   setPendingPriceLabel,
@@ -131,18 +111,13 @@ export default function Presupuesto({
   const router = useRouter();
 
   // Get centralized traveler type data
-  const travelerTypeData = React.useMemo(
-    () => getTravelerTypeData(type),
-    [type],
-  );
+  const travelerTypeData = React.useMemo(() => TRAVELER_TYPES[type], [type]);
 
-  // Extract unique categories from level features
-  const categories = React.useMemo(() => extractCategories(levels), [levels]);
+  // Get content from traveler type data
+  const presupuestoContent = travelerTypeData?.planner?.steps?.presupuesto;
 
-  // Use centralized content with fallback to props
-  const presupuestoContent = React.useMemo(() => {
-    return content || travelerTypeData?.planner?.steps?.presupuesto;
-  }, [content, travelerTypeData]);
+  // Get feature categories from content
+  const featureCategories = presupuestoContent?.categoryLabels || [];
 
   const handleLevelCTA = (levelId: string, priceLabel: string) => {
     const level = normalizeTierId(levelId);
@@ -225,7 +200,7 @@ export default function Presupuesto({
           </div>
 
           {/* Feature Categories */}
-          {(presupuestoContent?.categoryLabels || categories).map((label) => (
+          {featureCategories.map((label) => (
             <div key={label}>
               <div className="h-[40px] items-center flex">
                 <h4 className="font-semibold text-primary-700 font-jost text-sm">
@@ -245,7 +220,7 @@ export default function Presupuesto({
             <LevelCard
               key={level.id}
               level={level}
-              categories={presupuestoContent?.categoryLabels || categories}
+              categories={featureCategories}
               budgetLevel={budgetLevel}
               onLevelSelect={handleLevelCTA}
             />

@@ -2,7 +2,7 @@ import type { AlmaSpec } from '@/types/planner';
 
 // Paws has a unique structure - pet configurator first, then escape type
 // For the sake of TypePlanner, we'll use escape types as the "alma" options
-export const PAWS_ALMA_OPTIONS: Record<string, AlmaSpec> = {
+export const PAWS_EXCUSE_OPTIONS: Record<string, AlmaSpec> = {
   'trails-nature': {
     title: 'Senderos & Naturaleza',
     core: 'Rutas y paisajes pensados para caminar juntos, sin correa al tiempo.',

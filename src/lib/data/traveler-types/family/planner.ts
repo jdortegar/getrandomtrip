@@ -1,12 +1,12 @@
 import type { TypePlannerContent } from '@/types/planner';
 import { familyTiers } from './tiers';
-import { FAMILY_ALMA_OPTIONS } from './alma-options';
+import { FAMILY_EXCUSE_OPTIONS } from './excuse-options';
 
 export const familyPlannerContent: TypePlannerContent = {
   title: 'Diseñen su Randomtrip en familia',
   subtitle: '3 pasos cortos, para que comencemos a crear la mejor experiencia.',
-  tiers: familyTiers,
-  almaOptions: FAMILY_ALMA_OPTIONS,
+  levels: familyTiers,
+  excuseOptions: FAMILY_EXCUSE_OPTIONS,
   steps: {
     step2Label: 'Composición Familiar',
     presupuesto: {

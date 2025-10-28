@@ -1,12 +1,12 @@
 import type { TypePlannerContent } from '@/types/planner';
 import { soloTiers } from './tiers';
-import { SOLO_ALMA_OPTIONS } from './alma-options';
+import { SOLO_EXCUSE_OPTIONS } from './excuse-options';
 
 export const soloPlannerContent: TypePlannerContent = {
   title: 'Diseña tu Randomtrip en solitario',
   subtitle: 'Tres pasos sencillos para una aventura que solo tú podrás contar.',
-  tiers: soloTiers,
-  almaOptions: SOLO_ALMA_OPTIONS,
+  levels: soloTiers,
+  excuseOptions: SOLO_EXCUSE_OPTIONS,
   steps: {
     step2Label: 'La Excusa',
     presupuesto: {

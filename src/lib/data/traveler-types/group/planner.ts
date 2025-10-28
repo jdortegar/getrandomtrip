@@ -1,12 +1,12 @@
 import type { TypePlannerContent } from '@/types/planner';
 import { groupTiers } from './tiers';
-import { GROUP_ALMA_OPTIONS } from './alma-options';
+import { GROUP_EXCUSE_OPTIONS } from './excuse-options';
 
 export const groupPlannerContent: TypePlannerContent = {
   title: 'De amigos a equipos: diseñen su Randomtrip',
   subtitle: 'Pasos cortos, para crear la mejor experiencia grupal.',
-  tiers: groupTiers,
-  almaOptions: GROUP_ALMA_OPTIONS,
+  levels: groupTiers,
+  excuseOptions: GROUP_EXCUSE_OPTIONS,
   steps: {
     step2Label: 'Tipo de Experiencia',
     presupuesto: {

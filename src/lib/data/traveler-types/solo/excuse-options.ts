@@ -14,7 +14,7 @@ export type SoloAlmaSpec = {
   heroImg?: string;
 };
 
-export const SOLO_ALMA_OPTIONS: Record<string, SoloAlmaSpec> = {
+export const SOLO_EXCUSE_OPTIONS: Record<string, SoloAlmaSpec> = {
   'get-lost': {
     title: 'Get Lost',
     core: 'Apagar el mundo para conectarse con uno mismo.',

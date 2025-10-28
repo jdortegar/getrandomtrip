@@ -4,7 +4,7 @@ import type { AlmaSpec } from '@/types/planner';
 // Step 1: Choose family composition (who's traveling)
 // Step 2: Choose escape type (what kind of trip)
 
-export const FAMILY_ALMA_OPTIONS: Record<string, AlmaSpec> = {
+export const FAMILY_EXCUSE_OPTIONS: Record<string, AlmaSpec> = {
   toddlers: {
     title: 'Con los más chicos',
     core: 'Cuando todavía hay cochecitos, mamaderas y siestas obligadas, todo cuenta… lo transformamos en juego y calma.',

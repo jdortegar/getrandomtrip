@@ -1,12 +1,12 @@
 import type { TypePlannerContent } from '@/types/planner';
 import { honeymoonTiers } from './tiers';
-import { HONEYMOON_ALMA_OPTIONS } from './alma-options';
+import { HONEYMOON_EXCUSE_OPTIONS } from './excuse-options';
 
 export const honeymoonPlannerContent: TypePlannerContent = {
   title: 'Diseñen su Honeymoon Randomtrip',
   subtitle: 'Tres pasos para comenzar su vida juntos de la mejor manera.',
-  tiers: honeymoonTiers,
-  almaOptions: HONEYMOON_ALMA_OPTIONS,
+  levels: honeymoonTiers,
+  excuseOptions: HONEYMOON_EXCUSE_OPTIONS,
   steps: {
     step2Label: 'La Excusa',
     presupuesto: {

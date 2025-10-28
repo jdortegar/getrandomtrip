@@ -1,13 +1,13 @@
 import type { TypePlannerContent } from '@/types/planner';
 import { pawsTiers } from './tiers';
-import { PAWS_ALMA_OPTIONS } from './alma-options';
+import { PAWS_EXCUSE_OPTIONS } from './excuse-options';
 
 export const pawsPlannerContent: TypePlannerContent = {
   title: 'Diseñen su PAWS Randomtrip',
   subtitle:
     'Tres pasos sencillos para una aventura donde tu mascota es protagonista.',
-  tiers: pawsTiers,
-  almaOptions: PAWS_ALMA_OPTIONS,
+  levels: pawsTiers,
+  excuseOptions: PAWS_EXCUSE_OPTIONS,
   steps: {
     step2Label: 'La Excusa',
     presupuesto: {
