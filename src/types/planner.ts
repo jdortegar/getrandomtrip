@@ -15,24 +15,24 @@ export interface Tier {
   ctaLabel: string;
 }
 
-export interface AlmaCard {
+export interface ExcuseCard {
   key: string;
   title: string;
   img: string;
   description: string;
 }
 
-export interface AlmaOption {
+export interface ExcuseOption {
   key: string;
   label: string;
   desc?: string;
   img?: string;
 }
 
-export interface AlmaSpec {
+export interface ExcuseSpec {
   title: string;
   core: string;
-  options: AlmaOption[];
+  options: ExcuseOption[];
   ctaLabel: string;
   tint?: string;
   heroImg?: string;
@@ -47,7 +47,7 @@ export interface PresupuestoContent {
 export interface ExcuseContent {
   title: string;
   tagline: string;
-  cards: AlmaCard[];
+  cards: ExcuseCard[];
 }
 
 export interface DetailsContent {
@@ -60,7 +60,7 @@ export interface TypePlannerContent {
   title: string;
   subtitle: string;
   tiers: Tier[];
-  almaOptions: Record<string, AlmaSpec>;
+  excuseOptions: Record<string, ExcuseSpec>;
   steps: {
     step2Label: string;
     presupuesto: PresupuestoContent;

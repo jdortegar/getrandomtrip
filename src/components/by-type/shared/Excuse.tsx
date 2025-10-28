@@ -3,13 +3,13 @@
 import { useState, useRef, useCallback, type CSSProperties } from 'react';
 import Img from '@/components/common/Img';
 import { Button } from '@/components/ui/button';
-import type { AlmaCard, ExcuseContent } from '@/types/planner';
+import type { ExcuseCard, ExcuseContent } from '@/types/planner';
 
 interface ExcuseProps {
-  almaCards: AlmaCard[];
+  excuseCards: ExcuseCard[];
   content: ExcuseContent;
   plannerId: string;
-  setAlmaKey: (alma: string | null) => void;
+  setExcuseKey: (excuse: string | null) => void;
   setStep: (stepIndex: number) => void;
 }
 
@@ -18,7 +18,7 @@ function FlipCard({
   item,
   onChoose,
 }: {
-  item: AlmaCard;
+  item: ExcuseCard;
   onChoose: (key: string) => void;
 }) {
   const [flipped, setFlipped] = useState(false);
@@ -123,16 +123,16 @@ function FlipCard({
 }
 
 export default function Excuse({
-  almaCards,
+  excuseCards,
   content,
   plannerId,
-  setAlmaKey,
+  setExcuseKey,
   setStep,
 }: ExcuseProps) {
   return (
     <section
       className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"
-      data-testid="tab-alma"
+      data-testid="tab-excuse"
     >
       <div className="text-center mb-8 relative">
         <h3
@@ -160,14 +160,14 @@ export default function Excuse({
       </div>
 
       <div
-        className={`grid gap-6 mt-8 ${almaCards.length === 1 ? 'grid-cols-1 justify-center max-w-md mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}
+        className={`grid gap-6 mt-8 ${excuseCards.length === 1 ? 'grid-cols-1 justify-center max-w-md mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}
       >
-        {almaCards.map((card) => (
+        {excuseCards.map((card) => (
           <FlipCard
             key={card.key}
             item={card}
             onChoose={(key) => {
-              setAlmaKey(key);
+              setExcuseKey(key);
               setStep(3); // Go to next step (Afinar detalles)
               document
                 .getElementById(plannerId)

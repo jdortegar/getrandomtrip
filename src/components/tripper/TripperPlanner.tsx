@@ -50,7 +50,7 @@ export default function TripperPlanner({
   const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(
     null,
   );
-  const [almaKey, setAlmaKey] = useState<string | null>(null);
+  const [excuseKey, setExcuseKey] = useState<string | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const firstName =
@@ -102,12 +102,7 @@ export default function TripperPlanner({
         subtitle: content.description,
         priceLabel,
         priceFootnote,
-        features: content.features.map(
-          (feature: { title: string; description: string }) => ({
-            label: feature.title,
-            text: feature.description,
-          }),
-        ),
+        features: content.features,
         closingLine: content.closingLine,
         ctaLabel: content.ctaLabel,
       };
@@ -121,8 +116,8 @@ export default function TripperPlanner({
     return getTravelerType(mappedType);
   }, [travellerType]);
 
-  // Alma cards from traveler type data - show all general content
-  const almaCards = useMemo(() => {
+  // Excuse cards from traveler type data - show all general content
+  const excuseCards = useMemo(() => {
     const typeCards = travellerTypeData?.planner?.steps?.excuse?.cards || [];
     return typeCards;
   }, [travellerTypeData]);
@@ -161,7 +156,7 @@ export default function TripperPlanner({
         return travellerType !== null && budgetTier !== null; // Can go to step 3 if both traveler type and budget are selected
       case 4:
         return (
-          travellerType !== null && budgetTier !== null && almaKey !== null
+          travellerType !== null && budgetTier !== null && excuseKey !== null
         ); // Can go to step 4 if all previous steps are completed
       default:
         return false;
@@ -221,14 +216,14 @@ export default function TripperPlanner({
       case 4:
         return (
           <Excuse
-            almaCards={almaCards}
+            excuseCards={excuseCards}
             content={{
               title: '¿Qué los mueve a viajar?',
               tagline: `${firstName} diseñará tu experiencia según tu motivación`,
-              cards: almaCards,
+              cards: excuseCards,
             }}
             plannerId="tripper-planner"
-            setAlmaKey={(key) => setAlmaKey(key)}
+            setExcuseKey={(key: string | null) => setExcuseKey(key)}
             setStep={handleStepChange}
           />
         );
@@ -236,8 +231,8 @@ export default function TripperPlanner({
       case 5:
         return (
           <Details
-            almaKey={almaKey}
-            almaOptions={travellerTypeData?.planner?.almaOptions || {}}
+            excuseKey={excuseKey}
+            excuseOptions={travellerTypeData?.planner?.excuseOptions || {}}
             budgetTier={budgetTier}
             content={{
               title: 'Afina los detalles finales',

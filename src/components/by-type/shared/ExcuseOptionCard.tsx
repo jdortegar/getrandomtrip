@@ -3,7 +3,7 @@
 import React from 'react';
 import Img from '@/components/common/Img';
 
-export default function AlmaOptionCard({
+export default function ExcuseOptionCard({
   opKey,
   label,
   desc,

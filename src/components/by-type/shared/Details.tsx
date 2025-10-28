@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 import Img from '@/components/common/Img';
 import { Button } from '@/components/ui/button';
 import { gotoBasicConfig } from '@/lib/linking';
-import AlmaOptionCard from './AlmaOptionCard';
-import type { AlmaSpec, DetailsContent } from '@/types/planner';
+import ExcuseOptionCard from './ExcuseOptionCard';
+import type { ExcuseSpec, DetailsContent } from '@/types/planner';
 
 interface DetailsProps {
-  almaKey: string | null;
-  almaOptions: Record<string, AlmaSpec>;
+  excuseKey: string | null;
+  excuseOptions: Record<string, ExcuseSpec>;
   budgetTier: string | null;
   content: DetailsContent;
   pendingPriceLabel: string | null;
@@ -34,7 +34,7 @@ const BORDER_COLOR: Record<string, string> = {
   'foodie-journey': 'border-orange-400',
   'wellness-solo': 'border-emerald-400',
   'adventure-solo': 'border-cyan-400',
-  // Family alma keys
+  // Family excuse keys
   toddlers: 'border-orange-400',
   teens: 'border-teal-400',
   adults: 'border-slate-400',
@@ -42,8 +42,8 @@ const BORDER_COLOR: Record<string, string> = {
 };
 
 export default function Details({
-  almaKey,
-  almaOptions,
+  excuseKey,
+  excuseOptions,
   budgetTier,
   content,
   pendingPriceLabel,
@@ -52,13 +52,13 @@ export default function Details({
   tripperSlug,
 }: DetailsProps) {
   const router = useRouter();
-  const spec = almaKey ? almaOptions[almaKey] : null;
-  const borderClass = almaKey
-    ? BORDER_COLOR[almaKey] || 'border-white'
+  const spec = excuseKey ? excuseOptions[excuseKey] : null;
+  const borderClass = excuseKey
+    ? BORDER_COLOR[excuseKey] || 'border-white'
     : 'border-white';
   const [selected, setSelected] = useState<string[]>([]);
 
-  useEffect(() => setSelected([]), [almaKey]);
+  useEffect(() => setSelected([]), [excuseKey]);
 
   const canContinue = selected.length > 0;
 
@@ -72,7 +72,7 @@ export default function Details({
     [selected.length],
   );
 
-  if (!almaKey) {
+  if (!excuseKey) {
     return (
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <div className="rounded-xl border border-neutral-200 bg-white p-6">
@@ -189,7 +189,7 @@ export default function Details({
                     : 'w-full sm:w-1/2 lg:w-1/4'
             }`}
           >
-            <AlmaOptionCard
+            <ExcuseOptionCard
               borderClass={borderClass}
               desc={op.desc}
               img={op.img}
@@ -210,7 +210,7 @@ export default function Details({
       {/* Acciones */}
       <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
         <Button
-          data-testid="cta-alma-continue"
+          data-testid="cta-excuse-continue"
           disabled={!canContinue}
           onClick={() => {
             if (canContinue) {
@@ -227,8 +227,8 @@ export default function Details({
                 tierId: budgetTier!,
                 priceLabel: pendingPriceLabel!,
                 extra: {
-                  [`${type}Alma`]: almaKey || '',
-                  almaOptions: selected.join(','),
+                  [`${type}Excuse`]: excuseKey || '',
+                  excuseOptions: selected.join(','),
                   tripperSlug: tripperSlug || '',
                 },
               });
