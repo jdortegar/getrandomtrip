@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Home, Plane, MapPin, Users, Heart, HelpCircle } from 'lucide-react';
 
 export default function NotFoundPage() {
   return (
@@ -6,48 +7,163 @@ export default function NotFoundPage() {
       <head>
         <title>Página No Encontrada - RandomTrip</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="description"
+          content="La página que buscas no existe. Descubre increíbles destinos con RandomTrip."
+        />
       </head>
-      <body className="font-sans bg-neutral-50 text-neutral-900 antialiased min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-2xl mx-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-neutral-200 p-8 text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-8 h-8 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+      <body className="font-sans bg-gray-50 text-gray-900 antialiased min-h-screen">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+          <div
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
+            style={{ animationDelay: '2s' }}
+          ></div>
+          <div
+            className="absolute top-40 left-1/2 w-80 h-80 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
+            style={{ animationDelay: '4s' }}
+          ></div>
+        </div>
+
+        <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-4xl mx-auto">
+            {/* Main Content Card */}
+            <div className="bg-white rounded-3xl shadow-2xl border border-neutral-200 p-8 md:p-12 text-center">
+              {/* 404 Number with Animation */}
+              <div className="mb-8">
+                <div className="relative inline-block">
+                  <h1 className="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-primary/60 animate-pulse">
+                    404
+                  </h1>
+                  <div className="absolute inset-0 text-8xl md:text-9xl font-black text-primary/20 -z-10 blur-sm">
+                    404
+                  </div>
+                </div>
+              </div>
+
+              {/* Icon with Animation */}
+              <div className="mb-8">
+                <div className="relative inline-block">
+                  <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-bounce">
+                    <svg
+                      className="w-10 h-10 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="absolute inset-0 w-20 h-20 bg-primary rounded-full blur-md opacity-30 animate-ping"></div>
+                </div>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                ¡Ups! Te has perdido
+              </h2>
+
+              {/* Subtitle */}
+              <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
+                La página que buscas no existe o ha sido movida. Pero no te
+                preocupes, tenemos muchos destinos increíbles esperándote. ¿Por
+                qué no exploras nuestras aventuras?
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <Link
+                  href="/"
+                  className="group relative px-8 py-4 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                >
+                  <Home className="w-5 h-5" />
+                  <span className="relative z-10">Ir al Inicio</span>
+                  <div className="absolute inset-0 bg-primary rounded-xl blur opacity-0 group-hover:opacity-75 transition-opacity duration-300"></div>
+                </Link>
+
+                <Link
+                  href="/packages"
+                  className="group px-8 py-4 border-2 border-primary/20 text-primary rounded-xl font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                >
+                  <Plane className="w-5 h-5" />
+                  Ver Paquetes
+                </Link>
+              </div>
+
+              {/* Quick Links */}
+              <div className="border-t border-neutral-200 pt-8">
+                <p className="text-sm text-gray-600 mb-4">
+                  O explora estas secciones populares:
+                </p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link
+                    href="/packages/by-type/solo"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    Viajes Solo
+                  </Link>
+                  <Link
+                    href="/packages/by-type/couple"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <Heart className="w-4 h-4" />
+                    En Pareja
+                  </Link>
+                  <Link
+                    href="/packages/by-type/family"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <Users className="w-4 h-4" />
+                    En Familia
+                  </Link>
+                  <Link
+                    href="/trippers"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <Users className="w-4 h-4" />
+                    Nuestros Trippers
+                  </Link>
+                </div>
+              </div>
+
+              {/* Fun Message */}
+              <div className="mt-8 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/20">
+                <p className="text-sm text-gray-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
+                  <span>
+                    <strong>Tip:</strong> ¿Sabías que nuestros trippers han
+                    visitado más de 50 países? ¡Descubre sus experiencias
+                    únicas!
+                  </span>
+                </p>
+              </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4">
-              Página No Encontrada
-            </h1>
-
-            <p className="text-neutral-600 mb-8">
-              Lo sentimos, la página que buscas no existe o ha sido movida. ¿Por
-              qué no exploras nuestros increíbles destinos?
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Ir al Inicio
-              </Link>
-              <Link
-                href="/packages"
-                className="px-6 py-3 border border-neutral-200 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors"
-              >
-                Ver Paquetes
-              </Link>
+            {/* Footer */}
+            <div className="text-center mt-8">
+              <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
+                <HelpCircle className="w-4 h-4" />
+                ¿Necesitas ayuda?{' '}
+                <Link
+                  href="/contact"
+                  className="text-primary hover:text-primary/80 underline"
+                >
+                  Contáctanos
+                </Link>
+              </p>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 export interface TierFeature {
-  label: string;
-  text: string;
+  title: string;
+  description: string;
   footnote?: string;
 }
 
