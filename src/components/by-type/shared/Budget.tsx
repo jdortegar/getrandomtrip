@@ -130,7 +130,7 @@ export default function Budget({
 
     // Higher levels: save level info and proceed to the excuse step
     setBudgetLevel(levelId); // Store the level ID, not the name
-    setStep(2); // Go to excuse step
+    setStep(4); // Go to excuse step
     document
       .getElementById(plannerId)
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -11,6 +11,7 @@ interface ExcuseProps {
   plannerId: string;
   setExcuseKey: (excuse: string | null) => void;
   setStep: (stepIndex: number) => void;
+  nextStep?: number; // Optional prop to specify which step to go to next
 }
 
 // Flip card component
@@ -128,6 +129,7 @@ export default function Excuse({
   plannerId,
   setExcuseKey,
   setStep,
+  nextStep = 3, // Default to step 3 for backward compatibility
 }: ExcuseProps) {
   return (
     <section
@@ -176,7 +178,7 @@ export default function Excuse({
             item={card}
             onChoose={(key) => {
               setExcuseKey(key);
-              setStep(3); // Go to next step (Afinar detalles)
+              setStep(nextStep); // Go to next step (configurable)
               document
                 .getElementById(plannerId)
                 ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
