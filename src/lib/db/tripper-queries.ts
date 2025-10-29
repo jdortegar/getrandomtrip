@@ -250,3 +250,90 @@ export async function getTripById(
     return null;
   }
 }
+
+/**
+ * Get tripper-specific excuse data derived from their packages
+ * This approach generates excuses based on what packages the tripper actually offers
+ */
+export async function getTripperExcuseData(tripperId: string) {
+  try {
+    const packages = await prisma.package.findMany({
+      where: {
+        ownerId: tripperId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        type: true,
+        level: true,
+        title: true,
+        teaser: true,
+        heroImage: true,
+        tags: true,
+        highlights: true,
+        selectedOptions: true,
+      },
+      orderBy: [{ type: 'asc' }, { level: 'asc' }, { title: 'asc' }],
+    });
+
+    // Group packages by type and level, then create excuse data
+    const excuseDataByType: Record<string, Record<string, any>> = {};
+
+    packages.forEach((pkg) => {
+      const { type, level } = pkg;
+
+      if (!excuseDataByType[type]) {
+        excuseDataByType[type] = {};
+      }
+
+      if (!excuseDataByType[type][level]) {
+        excuseDataByType[type][level] = {
+          excuses: [],
+        };
+      }
+
+      // Create excuse key from package title (slugified)
+      const excuseKey = pkg.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+
+      // Check if this excuse already exists for this level
+      const existingExcuse = excuseDataByType[type][level].excuses.find(
+        (excuse: any) => excuse.key === excuseKey,
+      );
+
+      if (!existingExcuse) {
+        // Create excuse data from package
+        excuseDataByType[type][level].excuses.push({
+          key: excuseKey,
+          title: pkg.title,
+          description: pkg.teaser,
+          img: pkg.heroImage,
+          details: {
+            title: pkg.title,
+            core: pkg.teaser,
+            ctaLabel: 'Ver detalles →',
+            tint: 'bg-blue-900/30',
+            heroImg: pkg.heroImage,
+            options: pkg.selectedOptions.map((optionKey: string) => ({
+              key: optionKey,
+              label: optionKey
+                .replace(/-/g, ' ')
+                .replace(/\b\w/g, (l: string) => l.toUpperCase()),
+              desc: `Opción personalizada: ${optionKey}`,
+              img: pkg.heroImage,
+            })),
+          },
+        });
+      }
+    });
+
+    return excuseDataByType;
+  } catch (error) {
+    console.error('Error fetching tripper excuse data:', error);
+    return {};
+  }
+}

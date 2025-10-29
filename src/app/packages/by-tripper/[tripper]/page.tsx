@@ -5,6 +5,7 @@ import { TRIPPERS } from '@/content/trippers';
 import {
   getTripperBySlug,
   getTripperFeaturedTrips,
+  getTripperExcuseData,
 } from '@/lib/db/tripper-queries';
 import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
 import TripperHero from '@/components/tripper/TripperHero';
@@ -75,6 +76,11 @@ export default async function Page({
     ? await getTripperAvailableTypesAndLevels(dbTripper.id)
     : [];
 
+  // Fetch tripper-specific excuse data
+  const tripperExcuseData = dbTripper
+    ? await getTripperExcuseData(dbTripper.id)
+    : {};
+
   // Must have database tripper data
   if (!dbTripper) return notFound();
 
@@ -133,6 +139,7 @@ export default async function Page({
             availableTypes: dbTripper.availableTypes as string[],
           }}
           tripperPackages={tripperPackages}
+          tripperExcuseData={tripperExcuseData}
         />
       )}
       {/* Blog / inspiración */}

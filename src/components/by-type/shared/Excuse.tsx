@@ -160,7 +160,15 @@ export default function Excuse({
       </div>
 
       <div
-        className={`grid gap-6 mt-8 ${excuseCards.length === 1 ? 'grid-cols-1 justify-center max-w-md mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}
+        className={`grid gap-6 mt-8 justify-center ${
+          excuseCards.length === 1
+            ? 'grid-cols-1 max-w-md mx-auto'
+            : excuseCards.length === 2
+              ? 'grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto'
+              : excuseCards.length === 3
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+        }`}
       >
         {excuseCards.map((card) => (
           <FlipCard

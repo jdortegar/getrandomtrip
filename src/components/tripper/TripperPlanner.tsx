@@ -27,11 +27,13 @@ type Props = {
     type: string;
     level: string;
   }[];
+  tripperExcuseData?: Record<string, Record<string, any>>;
 };
 
 export default function TripperPlanner({
   tripperData,
   tripperPackages = [],
+  tripperExcuseData = {},
 }: Props) {
   // PLAN DATA
   const [planData, setPlanData] = useState<{
@@ -78,15 +80,24 @@ export default function TripperPlanner({
     );
   }, [travellerTypeData, tripperPackages]);
 
-  // Excuse cards from selected level's excuses
+  // Excuse cards from tripper-specific data or fallback to centralized data
   const excuseCards = useMemo(() => {
-    if (!planData?.budgetLevel) return [];
+    if (!planData?.budgetLevel || !travellerType) return [];
 
+    // Try to get tripper-specific excuse data first
+    const tripperExcuses =
+      tripperExcuseData[travellerType]?.[planData.budgetLevel]?.excuses;
+
+    if (tripperExcuses && tripperExcuses.length > 0) {
+      return tripperExcuses;
+    }
+
+    // Fallback to centralized data
     const selectedLevel = levels.find(
       (level) => level.id === planData.budgetLevel,
     );
     return selectedLevel?.excuses || [];
-  }, [levels, planData?.budgetLevel]);
+  }, [levels, planData?.budgetLevel, travellerType, tripperExcuseData]);
 
   const scrollPlanner = () => {
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -193,15 +204,30 @@ export default function TripperPlanner({
           <Details
             excuseKey={excuseKey}
             excuseOptions={(() => {
-              if (!planData?.budgetLevel || !excuseKey) return {};
+              if (!planData?.budgetLevel || !excuseKey || !travellerType)
+                return {};
+
+              // Try to get tripper-specific excuse data first
+              const tripperExcuses =
+                tripperExcuseData[travellerType]?.[planData.budgetLevel]
+                  ?.excuses;
+              const selectedExcuse = tripperExcuses?.find(
+                (excuse: any) => excuse.key === excuseKey,
+              );
+
+              if (selectedExcuse) {
+                return { [excuseKey]: selectedExcuse.details };
+              }
+
+              // Fallback to centralized data
               const selectedLevel = levels.find(
                 (level) => level.id === planData.budgetLevel,
               );
-              const selectedExcuse = selectedLevel?.excuses.find(
+              const fallbackExcuse = selectedLevel?.excuses.find(
                 (excuse) => excuse.key === excuseKey,
               );
-              return selectedExcuse
-                ? { [excuseKey]: selectedExcuse.details }
+              return fallbackExcuse
+                ? { [excuseKey]: fallbackExcuse.details }
                 : {};
             })()}
             budgetLevel={budgetLevel}
