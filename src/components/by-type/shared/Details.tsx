@@ -7,15 +7,15 @@ import { Button } from '@/components/ui/button';
 import { gotoBasicConfig } from '@/lib/linking';
 import ExcuseOptionCard from './ExcuseOptionCard';
 import type { ExcuseSpec, DetailsContent } from '@/types/planner';
+import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
 interface DetailsProps {
   excuseKey: string | null;
   excuseOptions: Record<string, ExcuseSpec>;
   budgetLevel: string | null;
   content: DetailsContent;
-  pendingPriceLabel: string | null;
   setStep: (stepIndex: number) => void;
-  type: string;
+  type: TravelerTypeSlug;
   tripperSlug?: string;
 }
 
@@ -46,7 +46,6 @@ export default function Details({
   excuseOptions,
   budgetLevel,
   content,
-  pendingPriceLabel,
   setStep,
   type,
   tripperSlug,
@@ -217,19 +216,12 @@ export default function Details({
               // Navigate to basic config with all selections
               // Let basicConfig handle price calculation internally
               gotoBasicConfig(router, {
-                fromOrType: type as
-                  | 'couple'
-                  | 'solo'
-                  | 'family'
-                  | 'group'
-                  | 'honeymoon'
-                  | 'paws',
+                fromOrType: type as TravelerTypeSlug,
                 tierId: budgetLevel!,
-                priceLabel: pendingPriceLabel!,
                 extra: {
-                  [`${type}Excuse`]: excuseKey || '',
+                  excuse: excuseKey || '',
                   excuseOptions: selected.join(','),
-                  tripperSlug: tripperSlug || '',
+                  ...(tripperSlug ? { tripperSlug } : {}),
                 },
               });
             }

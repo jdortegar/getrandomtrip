@@ -2,10 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ALL_TIERS_CONTENT } from '@/content/experienceTiers';
 import Details from '@/components/by-type/shared/Details';
 import { WizardHeader } from '@/components/WizardHeader';
-import Presupuesto from '@/components/by-type/shared/Presupuesto';
+import Budget from '@/components/by-type/shared/Budget';
 import Excuse from '@/components/by-type/shared/Excuse';
 import Section from '@/components/layout/Section';
 import {
@@ -47,9 +46,6 @@ export default function TripperPlanner({
   const [step, setStep] = useState<number>(1);
   const [travellerType, setTravellerType] = useState<string | null>(null);
   const [budgetLevel, setBudgetLevel] = useState<string | null>(null);
-  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(
-    null,
-  );
   const [excuseKey, setExcuseKey] = useState<string | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -63,52 +59,6 @@ export default function TripperPlanner({
       ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
       : TRAVELLER_TYPE_OPTIONS;
 
-  // Get levels for selected traveller type, filtered by tripper's actual packages
-  const levels = useMemo(() => {
-    if (!planData?.travellerType) return [];
-
-    const selectedLevels =
-      ALL_TIERS_CONTENT[
-        planData.travellerType as keyof typeof ALL_TIERS_CONTENT
-      ];
-
-    if (!selectedLevels) return [];
-
-    const filteredLevels = Object.entries(selectedLevels).filter(
-      ([key, content]) => {
-        return tripperPackages.some((pkg) => pkg.level === key);
-      },
-    );
-
-    return filteredLevels.map(([key, content]) => {
-      // Apply commission
-      const basePrice =
-        parseFloat(content.priceLabel.replace(/[^0-9.]/g, '')) || 0;
-      const commission = tripperData.commission || 0;
-      const finalPrice = basePrice * (1 + commission);
-
-      const priceLabel =
-        commission > 0 ? `$${finalPrice.toFixed(0)} USD` : content.priceLabel;
-
-      const priceFootnote =
-        commission > 0
-          ? `Incluye curación de ${firstName} (${(commission * 100).toFixed(0)}%)`
-          : content.priceFootnote;
-
-      return {
-        id: key,
-        key,
-        name: content.title,
-        subtitle: content.description,
-        priceLabel,
-        priceFootnote,
-        features: content.features,
-        closingLine: content.closingLine,
-        ctaLabel: content.ctaLabel,
-      };
-    });
-  }, [planData?.travellerType, tripperData, firstName, tripperPackages]);
-
   // Get traveler type data for selected type
   const travellerTypeData = useMemo(() => {
     if (!travellerType) return null;
@@ -116,11 +66,27 @@ export default function TripperPlanner({
     return getTravelerType(mappedType);
   }, [travellerType]);
 
-  // Excuse cards from traveler type data - show all general content
+  // Get levels from traveler type data (clean hierarchy)
+  const levels = useMemo(() => {
+    const baseLevels = travellerTypeData?.planner?.levels || [];
+
+    // Filter by tripper's available packages
+    if (!tripperPackages?.length) return baseLevels;
+
+    return baseLevels.filter((level) =>
+      tripperPackages.some((pkg) => pkg.level === level.id),
+    );
+  }, [travellerTypeData, tripperPackages]);
+
+  // Excuse cards from selected level's excuses
   const excuseCards = useMemo(() => {
-    const typeCards = travellerTypeData?.planner?.steps?.excuse?.cards || [];
-    return typeCards;
-  }, [travellerTypeData]);
+    if (!planData?.budgetLevel) return [];
+
+    const selectedLevel = levels.find(
+      (level) => level.id === planData.budgetLevel,
+    );
+    return selectedLevel?.excuses || [];
+  }, [levels, planData?.budgetLevel]);
 
   const scrollPlanner = () => {
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -196,17 +162,12 @@ export default function TripperPlanner({
 
       case 3:
         return (
-          <Presupuesto
+          <Budget
             budgetLevel={planData?.budgetLevel!}
-            content={{
-              title: `Elige tu presupuesto con ${firstName}`,
-              tagline: 'Selecciona el nivel de experiencia que buscas',
-            }}
             plannerId="tripper-planner"
             setBudgetLevel={(budgetLevel) =>
               setPlanData({ ...planData!, budgetLevel })
             }
-            setPendingPriceLabel={setPendingPriceLabel}
             setStep={handleStepChange}
             levels={levels}
             type={travellerType || 'solo'}
@@ -220,7 +181,6 @@ export default function TripperPlanner({
             content={{
               title: '¿Qué los mueve a viajar?',
               tagline: `${firstName} diseñará tu experiencia según tu motivación`,
-              cards: excuseCards,
             }}
             plannerId="tripper-planner"
             setExcuseKey={(key: string | null) => setExcuseKey(key)}
@@ -232,14 +192,24 @@ export default function TripperPlanner({
         return (
           <Details
             excuseKey={excuseKey}
-            excuseOptions={travellerTypeData?.planner?.excuseOptions || {}}
+            excuseOptions={(() => {
+              if (!planData?.budgetLevel || !excuseKey) return {};
+              const selectedLevel = levels.find(
+                (level) => level.id === planData.budgetLevel,
+              );
+              const selectedExcuse = selectedLevel?.excuses.find(
+                (excuse) => excuse.key === excuseKey,
+              );
+              return selectedExcuse
+                ? { [excuseKey]: selectedExcuse.details }
+                : {};
+            })()}
             budgetLevel={budgetLevel}
             content={{
               title: 'Afina los detalles finales',
               tagline: 'Personaliza tu aventura con las opciones que prefieras',
               ctaLabel: 'Ver resumen del viaje →',
             }}
-            pendingPriceLabel={pendingPriceLabel}
             setStep={() => handleStepChange(3)}
             type={travellerType || 'solo'}
             tripperSlug={tripperData?.slug}

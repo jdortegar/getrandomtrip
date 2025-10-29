@@ -1,94 +1,324 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { groupTiers } from './tiers';
-import { GROUP_EXCUSE_OPTIONS } from './excuse-options';
 
 export const groupPlannerContent: TypePlannerContent = {
   title: 'De amigos a equipos: diseñen su Randomtrip',
   subtitle: 'Pasos cortos, para crear la mejor experiencia grupal.',
-  levels: groupTiers,
-  excuseOptions: GROUP_EXCUSE_OPTIONS,
-  steps: {
-    step2Label: 'Tipo de Experiencia',
-    presupuesto: {
-      title: '¿Cuánto quieren invertir?',
-      tagline:
-        'Definan el presupuesto por persona para pasaje y alojamiento. Ese será su techo. Del resto… nos ocupamos nosotros.',
-      categoryLabels: [
-        'Duración del viaje',
-        'Destinos',
-        'Transporte',
-        'Alojamiento',
-        'Experiencias grupales',
-        'Extras',
-        'Destination Decoded',
+  levels: [
+    {
+      id: 'essenza',
+      name: 'Essenza',
+      subtitle: 'Lo esencial con estilo',
+      priceLabel: 'Hasta 350 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Máx 2 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Ciudades Nacionales',
+        },
+        {
+          title: 'Transporte',
+          description: 'Low cost (buses o vuelos off-peak).',
+          footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Menor disponibilidad, con restricciones y bloqueos.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Midscale (3★ o equivalentes).',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía esencial del destino.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'No incluye',
+        },
       ],
-    },
-    excuse: {
-      title: '¿Qué tipo de experiencia buscan?',
-      tagline: 'Elijan el estilo de viaje que más los representa como grupo.',
-      cards: [
+      closingLine: 'Perfecto para una escapada rápida y económica.',
+      ctaLabel: 'Elegir Essenza →',
+      excuses: [
         {
-          key: 'visual-storytellers',
-          title: 'Narradores Visuales',
-          img: 'https://images.unsplash.com/photo-1527499354222-c3975b69f669?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Viajes diseñados para quienes buscan mirar el mundo a través de un lente, capturar historias y volver con memorias que son también obras visuales.',
-        },
-        {
-          key: 'yoga-wellness',
-          title: 'Yoga & Bienestar',
-          img: 'https://images.unsplash.com/photo-1475444239989-05b09b5453c2?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Escapadas pensadas para reconectar cuerpo, mente y espíritu en entornos que invitan a bajar el ritmo.',
-        },
-        {
-          key: 'spiritual',
-          title: 'Religioso o Espiritual',
-          img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Viajes para quienes buscan lo trascendente, con espacios de silencio, comunidad y sentido.',
-        },
-        {
-          key: 'foodies',
-          title: 'Gastronómico',
-          img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Viajes que exploran culturas a través de sabores, aromas y experiencias culinarias únicas.',
-        },
-        {
-          key: 'stories-fantasy',
-          title: 'Historias & Fantasía',
-          img: 'https://images.unsplash.com/photo-1534685785742-43a2539a215a?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Viajes que transforman libros, sagas y películas en escenarios reales donde todo se siente posible.',
-        },
-        {
-          key: 'nature-adventure',
-          title: 'Naturaleza & Aventura',
-          img: 'https://images.unsplash.com/photo-1505521216430-8b73b2067359?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Escapadas que retan cuerpo y espíritu, donde cada kilómetro recorrido es un logro compartido.',
-        },
-        {
-          key: 'friends',
-          title: 'Amigos',
-          img: 'https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Viajes que celebran la amistad, las risas compartidas y los momentos que después se cuentan mil veces.',
-        },
-        {
-          key: 'business',
-          title: 'Negocios',
-          img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80',
-          description:
-            'Experiencias que combinan estrategia, networking y conexión real fuera de la oficina.',
+          key: 'default-excuse',
+          title: 'Experiencia Esencial',
+          description: 'Lo básico para una experiencia memorable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Esencial',
+            core: 'Lo básico para una experiencia memorable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-gray-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'basic-option',
+                label: 'Opción Básica',
+                desc: 'Experiencia esencial incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
         },
       ],
     },
-    details: {
-      title: 'Afinen los detalles',
-      tagline: 'Elijan las opciones que les gustan para crear su viaje grupal.',
-      ctaLabel: 'Continuar al diseño →',
+    {
+      id: 'explora',
+      name: 'Modo Explora',
+      subtitle: 'Aventura sin límites',
+      priceLabel: 'Hasta 650 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Hasta 4 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Nacionales + Regionales',
+        },
+        {
+          title: 'Transporte',
+          description: 'Económico con opciones de upgrade.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Mayor flexibilidad, algunas restricciones.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Midscale+ (3-4★ o equivalentes).',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía del destino + 1 experiencia incluida.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Soporte 24/7',
+        },
+      ],
+      closingLine: 'Ideal para explorar más allá de lo obvio.',
+      ctaLabel: 'Elegir Modo Explora →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Estándar',
+          description: 'Una experiencia completa y bien balanceada.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Estándar',
+            core: 'Una experiencia completa y bien balanceada.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-blue-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'standard-option',
+                label: 'Opción Estándar',
+                desc: 'Experiencia estándar incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
     },
-  },
+    {
+      id: 'exploraPlus',
+      name: 'Explora+',
+      subtitle: 'Experiencia premium',
+      priceLabel: 'Hasta 1200 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Hasta 7 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Internacionales + Nacionales Premium',
+        },
+        {
+          title: 'Transporte',
+          description: 'Premium con todas las comodidades.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Máxima flexibilidad, sin restricciones.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Lujo (5★ o equivalentes).',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía personalizada + experiencias exclusivas.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Concierge 24/7 + upgrades automáticos',
+        },
+      ],
+      closingLine: 'Para quienes buscan lo mejor de lo mejor.',
+      ctaLabel: 'Elegir Explora+ →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Premium',
+          description: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Premium',
+            core: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-purple-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'premium-option',
+                label: 'Opción Premium',
+                desc: 'Experiencia premium incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'bivouac',
+      name: 'Bivouac',
+      subtitle: 'Aventura sin límites',
+      priceLabel: 'Hasta 1200 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Hasta 5 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Toda América (sin límites)',
+        },
+        {
+          title: 'Transporte',
+          description: 'Multimodal con comodidad priorizada.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Sin bloqueos.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Upper-Upscale.',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía personalizada + experiencias exclusivas.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Concierge 24/7 + upgrades automáticos',
+        },
+      ],
+      closingLine: 'Para quienes buscan lo mejor de lo mejor.',
+      ctaLabel: 'Elegir Bivouac →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Premium',
+          description: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Premium',
+            core: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-purple-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'premium-option',
+                label: 'Opción Premium',
+                desc: 'Experiencia premium incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'atelier',
+      name: 'Atelier Getaway',
+      subtitle: 'Experiencia de lujo',
+      priceLabel: 'Hasta 1200 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Customizable (5+ noches recomendadas)',
+        },
+        {
+          title: 'Destinos',
+          description: 'Sin límites geográficos',
+        },
+        {
+          title: 'Transporte',
+          description: 'First class con todas las comodidades.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Máxima flexibilidad, sin restricciones.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Luxury / de autor / cadenas A1.',
+        },
+        {
+          title: 'Extras',
+          description: 'Co-creación con Luxury Travel Advisor.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Equipo 24/7 + experiencias premium a medida',
+        },
+      ],
+      closingLine: 'Para quienes buscan lo mejor de lo mejor.',
+      ctaLabel: 'Elegir Atelier →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Premium',
+          description: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Premium',
+            core: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-purple-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'premium-option',
+                label: 'Opción Premium',
+                desc: 'Experiencia premium incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
 };

@@ -5,7 +5,13 @@ import Img from '@/components/common/Img'; // Added import
 import { useRouter } from 'next/navigation';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 
-type LevelId = 'essenza' | 'explora' | 'explora-plus' | 'exploraPlus' | 'bivouac' | 'atelier';
+type LevelId =
+  | 'essenza'
+  | 'explora'
+  | 'explora-plus'
+  | 'exploraPlus'
+  | 'bivouac'
+  | 'atelier';
 
 const ESCAPES = [
   {
@@ -77,7 +83,8 @@ export default function PawsEscapeTypeTab({
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-10">
         <div className="rounded-xl border bg-white p-6 text-center">
           <p className="text-sm text-neutral-600">
-            Esta etapa está disponible desde <strong>Explora+</strong> en adelante.
+            Esta etapa está disponible desde <strong>Explora+</strong> en
+            adelante.
           </p>
         </div>
       </div>
@@ -97,15 +104,23 @@ export default function PawsEscapeTypeTab({
       </div>
 
       <div className="text-center mb-8">
-        <h3 className="text-2xl md:text-3xl font-bold text-neutral-900">Tipo de escapada</h3>
+        <h3 className="text-2xl md:text-3xl font-bold text-neutral-900">
+          Tipo de escapada
+        </h3>
         <p className="text-neutral-600 mt-2">
-          Elijan el mood del viaje. Al pasar el mouse, verán un detalle y podrán continuar.
+          Elijan el mood del viaje. Al pasar el mouse, verán un detalle y podrán
+          continuar.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {ESCAPES.map((card) => (
-          <CardFlip key={card.key} item={card} levelId={levelId} priceLabel={priceLabel} />
+          <CardFlip
+            key={card.key}
+            item={card}
+            levelId={levelId}
+            priceLabel={priceLabel}
+          />
         ))}
       </div>
     </div>
@@ -127,7 +142,6 @@ function CardFlip({
     gotoBasicConfig(router, {
       fromOrType: 'paws',
       tierId: levelId,
-      priceLabel: priceLabel,
       extra: {
         escapeType: item.key,
       },
@@ -139,10 +153,18 @@ function CardFlip({
       <div className="relative h-64 w-full rounded-2xl shadow-lg transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
         {/* FRONT */}
         <div className="absolute inset-0 overflow-hidden rounded-2xl [backface-visibility:hidden]">
-          <Img src={item.img} alt={item.title} className="h-full w-full object-cover" width={400} height={256} />
+          <Img
+            src={item.img}
+            alt={item.title}
+            className="h-full w-full object-cover"
+            width={400}
+            height={256}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h4 className="text-white font-semibold drop-shadow">{item.title}</h4>
+            <h4 className="text-white font-semibold drop-shadow">
+              {item.title}
+            </h4>
           </div>
         </div>
 

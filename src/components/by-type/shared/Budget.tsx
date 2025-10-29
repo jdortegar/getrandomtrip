@@ -1,18 +1,15 @@
 'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
-import { TRAVELER_TYPES } from '@/lib/data/traveler-types';
-import type { Level, PresupuestoContent } from '@/types/planner';
+import type { Level } from '@/types/planner';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
-interface PresupuestoProps {
+interface BudgetProps {
   budgetLevel: string | null;
   plannerId: string;
   setBudgetLevel: (level: string | null) => void;
-  setPendingPriceLabel: (label: string | null) => void;
   setStep: (stepIndex: number) => void;
   levels: Level[];
   type: TravelerTypeSlug;
@@ -39,7 +36,7 @@ interface LevelCardProps {
   level: Level;
   categories: string[];
   budgetLevel: string | null;
-  onLevelSelect: (levelId: string, priceLabel: string) => void;
+  onLevelSelect: (levelId: string) => void;
 }
 
 const LevelCard = ({
@@ -87,7 +84,7 @@ const LevelCard = ({
         <div className="text-center mt-10">
           <Button
             className="w-full"
-            onClick={() => onLevelSelect(level.id, level.priceLabel)}
+            onClick={() => onLevelSelect(level.id)}
             type="button"
             variant={budgetLevel === level.id ? 'default' : 'secondary'}
           >
@@ -99,49 +96,41 @@ const LevelCard = ({
   );
 };
 
-export default function Presupuesto({
+export default function Budget({
   budgetLevel,
   plannerId,
   setBudgetLevel,
-  setPendingPriceLabel,
   setStep,
   levels,
   type,
-}: PresupuestoProps) {
+}: BudgetProps) {
   const router = useRouter();
 
-  // Get centralized traveler type data
-  const travelerTypeData = React.useMemo(() => TRAVELER_TYPES[type], [type]);
+  // Get feature categories from levels (using the first level as template)
+  const featureCategories = levels[0]?.features?.map((f) => f.title) || [];
 
-  // Get content from traveler type data
-  const presupuestoContent = travelerTypeData?.planner?.steps?.presupuesto;
+  // Content for the presupuesto section
+  const presupuestoContent = {
+    title: 'Elige tu nivel de experiencia',
+    tagline:
+      'Cada nivel ofrece una experiencia única adaptada a tus preferencias y presupuesto.',
+  };
 
-  // Get feature categories from content
-  const featureCategories = presupuestoContent?.categoryLabels || [];
-
-  const handleLevelCTA = (levelId: string, priceLabel: string) => {
+  const handleLevelCTA = (levelId: string) => {
     const level = normalizeTierId(levelId);
 
     // Low levels go directly to basic-config
     if (level === 'essenza' || level === 'modo-explora') {
       gotoBasicConfig(router, {
-        fromOrType: type as
-          | 'couple'
-          | 'solo'
-          | 'family'
-          | 'group'
-          | 'honeymoon'
-          | 'paws',
+        fromOrType: type as TravelerTypeSlug,
         tierId: levelId,
-        priceLabel,
       });
       return;
     }
 
-    // Higher levels: save level info and proceed to the next step
-    setBudgetLevel(levels.find((l) => l.id === levelId)?.name || '');
-    setPendingPriceLabel(priceLabel);
-    setStep(3); // Go to next step
+    // Higher levels: save level info and proceed to the excuse step
+    setBudgetLevel(levelId); // Store the level ID, not the name
+    setStep(2); // Go to excuse step
     document
       .getElementById(plannerId)
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });

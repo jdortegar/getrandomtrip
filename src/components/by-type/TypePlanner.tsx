@@ -1,130 +1,59 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import Section from '@/components/layout/Section';
 import { WizardHeader } from '@/components/WizardHeader';
-import Presupuesto from '@/components/by-type/shared/Presupuesto';
+import Budget from '@/components/by-type/shared/Budget';
 import Excuse from '@/components/by-type/shared/Excuse';
 import Details from '@/components/by-type/shared/Details';
 import type { TypePlannerContent } from '@/types/planner';
-import { ALL_LEVELS } from '@/content/levels';
-import type { LevelContent } from '@/content/levels';
+import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
 interface TypePlannerProps {
   content: TypePlannerContent;
-  type: string; // 'couple', 'solo', 'family', etc.
+  type: TravelerTypeSlug;
 }
 
+const WIZARD_STEPS = [
+  { step: 1, label: 'Presupuesto' },
+  { step: 2, label: 'La Excusa' },
+  { step: 3, label: 'Details' },
+];
+
 export default function TypePlanner({ content, type }: TypePlannerProps) {
-  const router = useRouter();
-
   const [step, setStep] = useState<number>(1);
-  const [budgetTier, setBudgetTier] = useState<string | null>(null);
-  const [pendingPriceLabel, setPendingPriceLabel] = useState<string | null>(
-    null,
-  );
-  const [almaKey, setAlmaKey] = useState<string | null>(null);
+  const [budgetLevel, setBudgetLevel] = useState<string | null>(null);
+  const [excuseKey, setExcuseKey] = useState<string | null>(null);
 
-  // Generate tiers dynamically from ALL_LEVELS
-  const tiers = useMemo(() => {
-    const selectedLevels = ALL_LEVELS[type as keyof typeof ALL_LEVELS];
+  // Get selected level and excuse data
+  const selectedLevel = useMemo(() => {
+    if (!budgetLevel) return null;
+    return content.levels.find((level) => level.id === budgetLevel);
+  }, [budgetLevel, content.levels]);
 
-    if (!selectedLevels) return content.tiers; // Fallback to content tiers
-
-    // For honeymoon, only show the atelier level
-    const levelsToShow =
-      type === 'honeymoon'
-        ? { atelier: selectedLevels.atelier }
-        : selectedLevels;
-
-    return Object.entries(levelsToShow).map(([key, levelContent]) => {
-      const level = levelContent as LevelContent;
-
-      return {
-        id: key,
-        name: level.title,
-        subtitle: level.subtitle,
-        priceLabel: level.priceLabel,
-        priceFootnote: level.priceFootnote,
-        // Map new features structure to format expected by Presupuesto
-        features: level.features.map((feature) => ({
-          label: feature.label,
-          text: `${feature.label}: ${feature.content}`,
-        })),
-        closingLine: level.closingLine,
-        ctaLabel: level.ctaLabel,
-      };
-    });
-  }, [type, content.tiers]);
-
-  const steps = [
-    { step: 1, label: 'Budget' },
-    { step: 2, label: content.steps.step2Label },
-    { step: 3, label: 'Details' },
-  ];
+  const selectedExcuse = useMemo(() => {
+    if (!selectedLevel || !excuseKey) return null;
+    return selectedLevel.excuses.find((excuse) => excuse.key === excuseKey);
+  }, [selectedLevel, excuseKey]);
 
   // Validation function to check if previous steps have required data
   const canNavigateToStep = (targetStep: number): boolean => {
     switch (targetStep) {
       case 1:
-        return true; // First step is always accessible
+        return true;
       case 2:
-        return budgetTier !== null; // Need budget tier to access step 2
+        return budgetLevel !== null;
       case 3:
-        return budgetTier !== null; // Only need budget tier to access step 3 (almaKey is optional)
+        return budgetLevel !== null;
       default:
         return false;
     }
   };
 
-  const renderActiveTab = () => {
-    switch (step) {
-      case 1:
-        return (
-          <Presupuesto
-            budgetTier={budgetTier}
-            content={content.steps.presupuesto}
-            plannerId={`${type}-planner`}
-            setBudgetTier={setBudgetTier}
-            setPendingPriceLabel={setPendingPriceLabel}
-            setStep={handleStepChange}
-            tiers={tiers}
-            type={type}
-          />
-        );
-      case 2:
-        return (
-          <Excuse
-            almaCards={content.steps.excuse.cards}
-            content={content.steps.excuse}
-            plannerId={`${type}-planner`}
-            setAlmaKey={setAlmaKey}
-            setStep={handleStepChange}
-          />
-        );
-      case 3:
-        return (
-          <Details
-            almaKey={almaKey}
-            almaOptions={content.almaOptions}
-            budgetTier={budgetTier}
-            content={content.steps.details}
-            pendingPriceLabel={pendingPriceLabel}
-            setStep={handleStepChange}
-            type={type}
-          />
-        );
-    }
-
-    return null;
-  };
-
   // Scroll to planner section when step changes
   const handleStepChange = (newStep: number) => {
     setStep(newStep);
-    // Scroll to the planner section after a short delay to allow for animation
     setTimeout(() => {
       const plannerElement = document.getElementById(`${type}-planner`);
       if (plannerElement) {
@@ -134,6 +63,54 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
         });
       }
     }, 100);
+  };
+
+  const renderActiveTab = () => {
+    switch (step) {
+      case 1:
+        return (
+          <Budget
+            budgetLevel={budgetLevel}
+            plannerId={`${type}-planner`}
+            setBudgetLevel={setBudgetLevel}
+            setStep={handleStepChange}
+            levels={content.levels}
+            type={type}
+          />
+        );
+      case 2:
+        return (
+          <Excuse
+            excuseCards={selectedLevel?.excuses || []}
+            content={{
+              title: '¿Qué los mueve a viajar?',
+              tagline: 'Toda escapada tiene su "porque sí".',
+            }}
+            plannerId={`${type}-planner`}
+            setExcuseKey={setExcuseKey}
+            setStep={handleStepChange}
+          />
+        );
+      case 3:
+        return (
+          <Details
+            excuseKey={excuseKey}
+            excuseOptions={
+              selectedExcuse ? { [excuseKey!]: selectedExcuse.details } : {}
+            }
+            budgetLevel={budgetLevel}
+            content={{
+              title: 'Afina los detalles finales',
+              tagline: 'Personaliza tu aventura con las opciones que prefieras',
+              ctaLabel: 'Ver resumen del viaje →',
+            }}
+            setStep={handleStepChange}
+            type={type}
+          />
+        );
+    }
+
+    return null;
   };
 
   return (
@@ -149,7 +126,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
           canNavigateToStep={canNavigateToStep}
           currentStep={step}
           onStepClick={handleStepChange}
-          steps={steps}
+          steps={WIZARD_STEPS}
         />
         <AnimatePresence mode="wait">
           <motion.div

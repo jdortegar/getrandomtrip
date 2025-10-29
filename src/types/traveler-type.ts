@@ -3,7 +3,6 @@ import type { ParagraphContent } from '@/components/Paragraph';
 import type { TypePlannerContent } from '@/types/planner';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
-import type { Tier } from '@/types/planner';
 
 export interface TravelerTypeMeta {
   slug: string;
@@ -19,7 +18,6 @@ export interface TravelerTypeData {
     story: ParagraphContent;
   };
   planner: TypePlannerContent;
-  tiers: Tier[];
   blog: {
     title: string;
     subtitle: string;

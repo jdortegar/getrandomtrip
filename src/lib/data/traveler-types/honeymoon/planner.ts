@@ -1,66 +1,324 @@
 import type { TypePlannerContent } from '@/types/planner';
-import { honeymoonTiers } from './tiers';
-import { HONEYMOON_EXCUSE_OPTIONS } from './excuse-options';
 
 export const honeymoonPlannerContent: TypePlannerContent = {
   title: 'Diseñen su Honeymoon Randomtrip',
   subtitle: 'Tres pasos para comenzar su vida juntos de la mejor manera.',
-  levels: honeymoonTiers,
-  excuseOptions: HONEYMOON_EXCUSE_OPTIONS,
-  steps: {
-    step2Label: 'La Excusa',
-    presupuesto: {
-      title: '¿Cuánto quieren invertir en su luna de miel?',
-      tagline:
-        'Definan el presupuesto por persona para pasaje y alojamiento. Este es el inicio de su aventura juntos.',
-      categoryLabels: [
-        'Duración del viaje',
-        'Destinos románticos',
-        'Transporte',
-        'Alojamiento especial',
-        'Experiencias únicas',
-        'Extras románticos',
-        'Destination Decoded',
-      ],
-    },
-    excuse: {
-      title: '¿Qué tipo de luna de miel sueñan?',
-      tagline: 'El comienzo perfecto para su vida juntos.',
-      cards: [
+  levels: [
+    {
+      id: 'essenza',
+      name: 'Essenza',
+      subtitle: 'Lo esencial con estilo',
+      priceLabel: 'Hasta 350 USD',
+      priceFootnote: '· por persona',
+      features: [
         {
-          key: 'romantic-paradise',
-          title: 'Paraíso Romántico',
-          img: 'https://images.unsplash.com/photo-1519741497674-611481863552',
-          description:
-            'Playas paradisíacas, atardeceres inolvidables y momentos de intimidad perfecta. Hoteles boutique frente al mar, cenas privadas en la playa y experiencias diseñadas para celebrar su amor en los escenarios más románticos del mundo.',
+          title: 'Duración',
+          description: 'Máx 2 noches',
         },
         {
-          key: 'luxury-escape',
-          title: 'Escapada de Lujo',
-          img: 'https://images.unsplash.com/photo-1687875495230-96dfea96d9da',
-          description:
-            'Spa de clase mundial, cenas privadas con chef personal, suites presidenciales y el máximo confort. Tratamientos de pareja, traslados en limusina, acceso VIP a los mejores restaurantes y experiencias exclusivas que solo el lujo puede ofrecer.',
+          title: 'Destinos',
+          description: 'Ciudades Nacionales',
         },
         {
-          key: 'adventure-honeymoon',
-          title: 'Luna de Miel Aventurera',
-          img: 'https://images.unsplash.com/photo-1562337635-a4d98d22c1d2',
-          description:
-            'Trekking por montañas, buceo en arrecifes, safaris nocturnos y experiencias que aceleran el corazón. Para parejas que buscan adrenalina, descubrimiento y aventuras que los unan a través de desafíos compartidos y recuerdos únicos.',
+          title: 'Transporte',
+          description: 'Low cost (buses o vuelos off-peak).',
+          footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
         },
         {
-          key: 'cultural-romance',
-          title: 'Romance Cultural',
-          img: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd',
-          description:
-            'Ciudades históricas, museos íntimos, gastronomía local y tradiciones que enriquecen el alma. Paseos por barrios antiguos, catas de vino privadas, espectáculos culturales y experiencias que conectan con la esencia de cada destino.',
+          title: 'Fechas',
+          description: 'Menor disponibilidad, con restricciones y bloqueos.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Midscale (3★ o equivalentes).',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía esencial del destino.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'No incluye',
         },
       ],
+      closingLine: 'Perfecto para una escapada rápida y económica.',
+      ctaLabel: 'Elegir Essenza →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Esencial',
+          description: 'Lo básico para una experiencia memorable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Esencial',
+            core: 'Lo básico para una experiencia memorable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-gray-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'basic-option',
+                label: 'Opción Básica',
+                desc: 'Experiencia esencial incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
     },
-    details: {
-      title: 'Afinen los detalles',
-      tagline: 'Elijan las opciones perfectas para su luna de miel.',
-      ctaLabel: 'Continuar al diseño →',
+    {
+      id: 'explora',
+      name: 'Modo Explora',
+      subtitle: 'Aventura sin límites',
+      priceLabel: 'Hasta 650 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Hasta 4 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Nacionales + Regionales',
+        },
+        {
+          title: 'Transporte',
+          description: 'Económico con opciones de upgrade.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Mayor flexibilidad, algunas restricciones.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Midscale+ (3-4★ o equivalentes).',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía del destino + 1 experiencia incluida.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Soporte 24/7',
+        },
+      ],
+      closingLine: 'Ideal para explorar más allá de lo obvio.',
+      ctaLabel: 'Elegir Modo Explora →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Estándar',
+          description: 'Una experiencia completa y bien balanceada.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Estándar',
+            core: 'Una experiencia completa y bien balanceada.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-blue-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'standard-option',
+                label: 'Opción Estándar',
+                desc: 'Experiencia estándar incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
     },
-  },
+    {
+      id: 'exploraPlus',
+      name: 'Explora+',
+      subtitle: 'Experiencia premium',
+      priceLabel: 'Hasta 1200 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Hasta 7 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Internacionales + Nacionales Premium',
+        },
+        {
+          title: 'Transporte',
+          description: 'Premium con todas las comodidades.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Máxima flexibilidad, sin restricciones.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Lujo (5★ o equivalentes).',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía personalizada + experiencias exclusivas.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Concierge 24/7 + upgrades automáticos',
+        },
+      ],
+      closingLine: 'Para quienes buscan lo mejor de lo mejor.',
+      ctaLabel: 'Elegir Explora+ →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Premium',
+          description: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Premium',
+            core: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-purple-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'premium-option',
+                label: 'Opción Premium',
+                desc: 'Experiencia premium incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'bivouac',
+      name: 'Bivouac',
+      subtitle: 'Aventura sin límites',
+      priceLabel: 'Hasta 1200 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Hasta 5 noches',
+        },
+        {
+          title: 'Destinos',
+          description: 'Toda América (sin límites)',
+        },
+        {
+          title: 'Transporte',
+          description: 'Multimodal con comodidad priorizada.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Sin bloqueos.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Upper-Upscale.',
+        },
+        {
+          title: 'Extras',
+          description: 'Guía personalizada + experiencias exclusivas.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Concierge 24/7 + upgrades automáticos',
+        },
+      ],
+      closingLine: 'Para quienes buscan lo mejor de lo mejor.',
+      ctaLabel: 'Elegir Bivouac →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Premium',
+          description: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Premium',
+            core: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-purple-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'premium-option',
+                label: 'Opción Premium',
+                desc: 'Experiencia premium incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      id: 'atelier',
+      name: 'Atelier Getaway',
+      subtitle: 'Experiencia de lujo',
+      priceLabel: 'Hasta 1200 USD',
+      priceFootnote: '· por persona',
+      features: [
+        {
+          title: 'Duración',
+          description: 'Customizable (5+ noches recomendadas)',
+        },
+        {
+          title: 'Destinos',
+          description: 'Sin límites geográficos',
+        },
+        {
+          title: 'Transporte',
+          description: 'First class con todas las comodidades.',
+        },
+        {
+          title: 'Fechas',
+          description: 'Máxima flexibilidad, sin restricciones.',
+        },
+        {
+          title: 'Alojamiento',
+          description: 'Luxury / de autor / cadenas A1.',
+        },
+        {
+          title: 'Extras',
+          description: 'Co-creación con Luxury Travel Advisor.',
+        },
+        {
+          title: 'Beneficios',
+          description: 'Equipo 24/7 + experiencias premium a medida',
+        },
+      ],
+      closingLine: 'Para quienes buscan lo mejor de lo mejor.',
+      ctaLabel: 'Elegir Atelier →',
+      excuses: [
+        {
+          key: 'default-excuse',
+          title: 'Experiencia Premium',
+          description: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+          details: {
+            title: 'Experiencia Premium',
+            core: 'Lo mejor de lo mejor para una experiencia inolvidable.',
+            ctaLabel: 'Continuar →',
+            tint: 'bg-purple-900/30',
+            heroImg:
+              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            options: [
+              {
+                key: 'premium-option',
+                label: 'Opción Premium',
+                desc: 'Experiencia premium incluida.',
+                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
 };

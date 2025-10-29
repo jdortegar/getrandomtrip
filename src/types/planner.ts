@@ -4,6 +4,30 @@ export interface LevelFeature {
   footnote?: string;
 }
 
+export interface ExcuseOption {
+  key: string;
+  label: string;
+  img?: string;
+  desc?: string;
+}
+
+export interface ExcuseDetails {
+  title: string;
+  core: string;
+  options: ExcuseOption[];
+  ctaLabel: string;
+  tint?: string;
+  heroImg?: string;
+}
+
+export interface Excuse {
+  key: string;
+  title: string;
+  description: string;
+  img: string;
+  details: ExcuseDetails;
+}
+
 export interface Level {
   id: string;
   name: string;
@@ -13,41 +37,18 @@ export interface Level {
   features: LevelFeature[];
   closingLine: string;
   ctaLabel: string;
-}
-
-export interface ExcuseCard {
-  key: string;
-  title: string;
-  img: string;
-  description: string;
-}
-
-export interface ExcuseOption {
-  key: string;
-  label: string;
-  desc?: string;
-  img?: string;
-}
-
-export interface ExcuseSpec {
-  title: string;
-  core: string;
-  options: ExcuseOption[];
-  ctaLabel: string;
-  tint?: string;
-  heroImg?: string;
+  excuses: Excuse[];
 }
 
 export interface PresupuestoContent {
   title: string;
   tagline: string;
-  categoryLabels?: string[]; // Optional now - defaults to hardcoded values
+  categoryLabels: string[];
 }
 
 export interface ExcuseContent {
   title: string;
   tagline: string;
-  cards: ExcuseCard[];
 }
 
 export interface DetailsContent {
@@ -60,11 +61,21 @@ export interface TypePlannerContent {
   title: string;
   subtitle: string;
   levels: Level[];
-  excuseOptions: Record<string, ExcuseSpec>;
-  steps: {
-    step2Label: string;
-    presupuesto: PresupuestoContent;
-    excuse: ExcuseContent;
-    details: DetailsContent;
-  };
+}
+
+// Legacy types for backward compatibility
+export interface ExcuseCard {
+  key: string;
+  title: string;
+  img: string;
+  description: string;
+}
+
+export interface ExcuseSpec {
+  title: string;
+  core: string;
+  options: ExcuseOption[];
+  ctaLabel: string;
+  tint?: string;
+  heroImg?: string;
 }
