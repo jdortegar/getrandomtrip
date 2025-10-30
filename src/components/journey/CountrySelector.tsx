@@ -17,6 +17,7 @@ interface CountrySelectorProps {
   className?: string;
   disabled?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export default function CountrySelector({
@@ -26,6 +27,7 @@ export default function CountrySelector({
   className = '',
   disabled = false,
   onKeyDown,
+  size = 'md',
 }: CountrySelectorProps) {
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(false);
@@ -92,7 +94,9 @@ export default function CountrySelector({
         placeholder={placeholder}
         autoComplete="off"
         disabled={disabled}
-        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0`}
+        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${
+          size === 'lg' ? 'h-12 text-base' : size === 'sm' ? 'h-8 text-sm' : 'h-10'
+        }`}
       />
 
       {open && (

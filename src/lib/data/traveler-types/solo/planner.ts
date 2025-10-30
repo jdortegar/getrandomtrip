@@ -1,4 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
+import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 
 export const soloPlannerContent: TypePlannerContent = {
   title: 'Diseña tu Randomtrip en solitario',
@@ -28,43 +29,7 @@ export const soloPlannerContent: TypePlannerContent = {
       ],
       closingLine: 'Perfecto para una escapada rápida y económica.',
       ctaLabel: 'Elegir Essenza →',
-      excuses: [
-        {
-          key: 'solo-adventure',
-          title: 'Aventura en Solitario',
-          description:
-            'Descubrir el mundo a tu ritmo, sin compromisos ni horarios.',
-          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-          details: {
-            title: 'Aventura en Solitario',
-            core: 'Descubrir el mundo a tu ritmo, sin compromisos ni horarios.',
-            ctaLabel: 'Aventúrate solo →',
-            tint: 'bg-emerald-900/30',
-            heroImg:
-              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-            options: [
-              {
-                key: 'hiking-trekking',
-                label: 'Senderismo & Trekking',
-                desc: 'Caminar hacia lugares que solo se alcanzan a pie.',
-                img: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256',
-              },
-              {
-                key: 'water-sports',
-                label: 'Deportes Acuáticos',
-                desc: 'Sumergirse en aventuras acuáticas.',
-                img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5',
-              },
-              {
-                key: 'extreme-sports',
-                label: 'Deportes Extremos',
-                desc: 'Adrenalina pura que te haga sentir vivo.',
-                img: 'https://images.unsplash.com/photo-1551524164-6cf77ac4e879',
-              },
-            ],
-          },
-        },
-      ],
+      excuses: getExcusesByType('solo'),
     },
     {
       id: 'explora',
@@ -199,7 +164,7 @@ export const soloPlannerContent: TypePlannerContent = {
         },
       ],
       closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-      ctaLabel: 'Elegir Modo Lujo →',
+      ctaLabel: 'Elegir Explora+ →',
       excuses: [
         {
           key: 'solo-adventure',
@@ -334,43 +299,7 @@ export const soloPlannerContent: TypePlannerContent = {
       ],
       closingLine: 'Para quienes buscan lo mejor de lo mejor.',
       ctaLabel: 'Elegir Bivouac →',
-      excuses: [
-        {
-          key: 'solo-adventure',
-          title: 'Aventura en Solitario',
-          description:
-            'Descubrir el mundo a tu ritmo, sin compromisos ni horarios.',
-          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-          details: {
-            title: 'Aventura en Solitario',
-            core: 'Descubrir el mundo a tu ritmo, sin compromisos ni horarios.',
-            ctaLabel: 'Aventúrate solo →',
-            tint: 'bg-emerald-900/30',
-            heroImg:
-              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-            options: [
-              {
-                key: 'hiking-trekking',
-                label: 'Senderismo & Trekking',
-                desc: 'Caminar hacia lugares que solo se alcanzan a pie.',
-                img: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256',
-              },
-              {
-                key: 'water-sports',
-                label: 'Deportes Acuáticos',
-                desc: 'Sumergirse en aventuras acuáticas.',
-                img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5',
-              },
-              {
-                key: 'extreme-sports',
-                label: 'Deportes Extremos',
-                desc: 'Adrenalina pura que te haga sentir vivo.',
-                img: 'https://images.unsplash.com/photo-1551524164-6cf77ac4e879',
-              },
-            ],
-          },
-        },
-      ],
+      excuses: getExcusesByType('solo'),
     },
     {
       id: 'atelier',
@@ -407,43 +336,7 @@ export const soloPlannerContent: TypePlannerContent = {
       ],
       closingLine: 'Para quienes buscan lo mejor de lo mejor.',
       ctaLabel: 'Elegir Atelier →',
-      excuses: [
-        {
-          key: 'solo-adventure',
-          title: 'Aventura en Solitario',
-          description:
-            'Descubrir el mundo a tu ritmo, sin compromisos ni horarios.',
-          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-          details: {
-            title: 'Aventura en Solitario',
-            core: 'Descubrir el mundo a tu ritmo, sin compromisos ni horarios.',
-            ctaLabel: 'Aventúrate solo →',
-            tint: 'bg-emerald-900/30',
-            heroImg:
-              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-            options: [
-              {
-                key: 'hiking-trekking',
-                label: 'Senderismo & Trekking',
-                desc: 'Caminar hacia lugares que solo se alcanzan a pie.',
-                img: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256',
-              },
-              {
-                key: 'water-sports',
-                label: 'Deportes Acuáticos',
-                desc: 'Sumergirse en aventuras acuáticas.',
-                img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5',
-              },
-              {
-                key: 'extreme-sports',
-                label: 'Deportes Extremos',
-                desc: 'Adrenalina pura que te haga sentir vivo.',
-                img: 'https://images.unsplash.com/photo-1551524164-6cf77ac4e879',
-              },
-            ],
-          },
-        },
-      ],
+      excuses: getExcusesByType('solo'),
     },
   ],
 };

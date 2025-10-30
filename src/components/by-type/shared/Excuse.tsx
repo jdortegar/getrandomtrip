@@ -56,28 +56,38 @@ function FlipCard({
     debouncedFlipBack();
   }, [debouncedFlipBack]);
 
+  const handleClick = useCallback(() => {
+    // Clear any pending flip-back timeout to prevent interference
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    // Immediately call onChoose without waiting for flip animation
+    onChoose(item.key);
+  }, [onChoose, item.key]);
+
   return (
     <div
-      className="relative aspect-square w-full rounded-2xl overflow-hidden border border-white/10 bg-white/5 text-white"
+      className="group relative h-80 w-full max-w-sm overflow-hidden rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:w-80 cursor-pointer"
       style={{
         perspective: '1000px',
         perspectiveOrigin: 'center center',
       }}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${item.title} — ver detalles`}
     >
       <div
         style={innerStyle}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onClick={() => onChoose(item.key)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onChoose(item.key);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label={`${item.title} — ver detalles`}
         className="h-full w-full cursor-pointer"
       >
         {/* Front */}
@@ -91,7 +101,9 @@ function FlipCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
           <div className="absolute inset-x-0 bottom-0 p-4">
-            <h3 className="text-2xl font-semibold font-caveat">{item.title}</h3>
+            <h3 className="text-2xl font-semibold font-caveat text-white">
+              {item.title}
+            </h3>
           </div>
         </div>
 
@@ -112,7 +124,7 @@ function FlipCard({
             width={420}
           />
           <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-center items-center text-center">
-            <p className="text-sm leading-relaxed mb-4 font-jost">
+            <p className="text-sm leading-relaxed mb-4 font-jost text-white">
               {item.description}
             </p>
             <Button variant="outline">Elegir y continuar →</Button>
@@ -138,22 +150,22 @@ export default function Excuse({
     >
       <div className="text-center mb-8 relative">
         <h3
-          className="text-center text-xl font-semibold text-neutral-900"
+          className="text-xl font-semibold text-neutral-900"
           data-testid="tab3-title"
         >
           {content.title}
         </h3>
         <p
-          className="mt-2 text-center text-sm text-neutral-800 max-w-3xl mx-auto"
+          className="mt-2 text-sm text-neutral-800 max-w-3xl mx-auto"
           data-testid="tab3-tagline"
         >
           {content.tagline}
         </p>
-        <div className="text-center absolute top-1/2 -translate-y-1/2">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2">
           <Button
             className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
-            data-testid="cta-back-to-tab2"
-            onClick={() => setStep(1)}
+            data-testid="cta-back-to-tab3"
+            onClick={() => setStep(3)}
             variant="link"
           >
             ← Volver
@@ -162,14 +174,14 @@ export default function Excuse({
       </div>
 
       <div
-        className={`grid gap-6 mt-8 justify-center ${
+        className={`flex flex-wrap gap-6 mt-8 justify-center ${
           excuseCards.length === 1
-            ? 'grid-cols-1 max-w-md mx-auto'
+            ? 'max-w-sm mx-auto'
             : excuseCards.length === 2
-              ? 'grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto'
+              ? 'max-w-4xl mx-auto'
               : excuseCards.length === 3
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
-                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+                ? 'max-w-6xl mx-auto'
+                : 'max-w-7xl mx-auto'
         }`}
       >
         {excuseCards.map((card) => (

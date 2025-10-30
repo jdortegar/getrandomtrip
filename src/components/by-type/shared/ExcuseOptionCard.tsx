@@ -33,8 +33,8 @@ export default function ExcuseOptionCard({
         }
       }}
       className={[
-        'group relative overflow-hidden rounded-md aspect-square cursor-pointer',
-        'transition-all duration-300 will-change-transform hover:-translate-y-0.5 hover:shadow-lg',
+        'group relative h-80 w-full max-w-sm overflow-hidden rounded-lg cursor-pointer',
+        'transition-all duration-300 will-change-transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:w-80',
         selected ? 'ring-4 ring-primary shadow-xl ' : 'ring-0',
       ].join(' ')}
     >

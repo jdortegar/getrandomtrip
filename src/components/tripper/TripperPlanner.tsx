@@ -16,6 +16,11 @@ import {
   isPackageGeographicallyValid,
   calculatePriceWithCommission,
 } from '@/lib/helpers/package-geography';
+import {
+  getExcuseByKey,
+  getExcuseTitle,
+  getExcuseDescription,
+} from '@/lib/helpers/excuse-helper';
 import OriginStep from './steps/OriginStep';
 import TravelerTypeStep from './steps/TravelerTypeStep';
 
@@ -132,38 +137,62 @@ export default function TripperPlanner({
         ),
       );
 
-      // Transform filtered packages to excuse cards
-      return filteredPackages.map((pkg) => {
+      // Transform filtered packages to excuse cards based on excuseKey
+      // Group packages by their excuseKey to create unique excuse cards
+      const excuseMap = new Map();
+
+      filteredPackages.forEach((pkg) => {
+        // Only process packages that have valid excuse keys
+        if (pkg.excuseKey) {
+          if (!excuseMap.has(pkg.excuseKey)) {
+            // Get excuse data from the excuse system
+            const excuseData = getExcuseByKey(pkg.excuseKey);
+
+            excuseMap.set(pkg.excuseKey, {
+              key: pkg.excuseKey,
+              title: excuseData?.title || getExcuseTitle(pkg.excuseKey),
+              description:
+                excuseData?.description || getExcuseDescription(pkg.excuseKey),
+              img: excuseData?.img || pkg.heroImage,
+              packages: [], // Will store all packages with this excuse
+            });
+          }
+
+          // Add this package to the excuse's packages list
+          excuseMap.get(pkg.excuseKey).packages.push(pkg);
+        }
+      });
+
+      // Convert map to array and add package details
+      return Array.from(excuseMap.values()).map((excuse) => {
+        const firstPackage = excuse.packages[0];
         const priceWithCommission = calculatePriceWithCommission(
-          pkg.basePriceUsd || 0,
+          firstPackage.basePriceUsd || 0,
           tripperData.commission,
         );
 
         return {
-          key: pkg.title
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .trim(),
-          title: pkg.title,
-          description: pkg.teaser,
-          img: pkg.heroImage,
-          price: `$${priceWithCommission.toFixed(0)} USD`,
-          destination: `${pkg.destinationCity}, ${pkg.destinationCountry}`,
+          ...excuse,
+          price: `Desde $${priceWithCommission.toFixed(0)} USD`,
+          destination: `${firstPackage.destinationCity}, ${firstPackage.destinationCountry}`,
           details: {
-            title: pkg.title,
-            core: pkg.teaser,
+            title: excuse.title,
+            core: excuse.description,
             ctaLabel: 'Ver detalles →',
             tint: 'bg-blue-900/30',
-            heroImg: pkg.heroImage,
-            options: pkg.selectedOptions.map((optionKey: string) => ({
-              key: optionKey,
-              label: optionKey
-                .replace(/-/g, ' ')
-                .replace(/\b\w/g, (l: string) => l.toUpperCase()),
-              desc: `Opción personalizada: ${optionKey}`,
+            heroImg: firstPackage.heroImage,
+            options: excuse.packages.map((pkg: any) => ({
+              key: pkg.title
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim(),
+              label: pkg.title,
+              desc: pkg.teaser,
               img: pkg.heroImage,
+              destination: `${pkg.destinationCity}, ${pkg.destinationCountry}`,
+              price: `$${calculatePriceWithCommission(pkg.basePriceUsd || 0, tripperData.commission).toFixed(0)} USD`,
             })),
           },
         };
@@ -241,6 +270,14 @@ export default function TripperPlanner({
     }
   };
 
+  const handleBudgetLevelChange = (levelId: string | null) => {
+    if (!levelId) return;
+    // Update budget level and immediately go to step 4
+    setPlanData({ ...planData!, budgetLevel: levelId });
+    setStep(4);
+    setTimeout(scrollPlanner, 100);
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -270,9 +307,7 @@ export default function TripperPlanner({
           <Budget
             budgetLevel={planData?.budgetLevel!}
             plannerId="tripper-planner"
-            setBudgetLevel={(budgetLevel) =>
-              setPlanData({ ...planData!, budgetLevel })
-            }
+            setBudgetLevel={handleBudgetLevelChange}
             setStep={handleStepChange}
             levels={levels}
             type={travellerType || 'solo'}
@@ -301,71 +336,22 @@ export default function TripperPlanner({
           <Details
             excuseKey={excuseKey}
             excuseOptions={(() => {
-              if (
-                !planData?.budgetLevel ||
-                !excuseKey ||
-                !travellerType ||
-                !planData?.origin
-              )
-                return {};
+              if (!excuseKey) return {};
 
-              // Get tripper packages for the selected type and level
-              const tripperPackages =
-                tripperPackagesByType[travellerType]?.[planData.budgetLevel] ||
-                [];
-
-              // Filter packages by geography and find the selected one
-              const filteredPackages = tripperPackages.filter((pkg) =>
-                isPackageGeographicallyValid(
-                  pkg,
-                  planData.origin!.country,
-                  planData.origin!.city,
-                  planData.budgetLevel!,
-                ),
+              // Find the selected excuse card from the excuseCards generated in step 4
+              const selectedExcuseCard = excuseCards.find(
+                (card) => card.key === excuseKey,
               );
 
-              const selectedPackage = filteredPackages.find(
-                (pkg) =>
-                  pkg.title
-                    .toLowerCase()
-                    .replace(/[^a-z0-9\s-]/g, '')
-                    .replace(/\s+/g, '-')
-                    .replace(/-+/g, '-')
-                    .trim() === excuseKey,
-              );
-
-              if (selectedPackage) {
-                const priceWithCommission = calculatePriceWithCommission(
-                  selectedPackage.basePriceUsd || 0,
-                  tripperData.commission,
-                );
-
+              if (selectedExcuseCard && selectedExcuseCard.details) {
                 return {
-                  [excuseKey]: {
-                    title: selectedPackage.title,
-                    core: selectedPackage.teaser,
-                    ctaLabel: 'Ver detalles →',
-                    tint: 'bg-blue-900/30',
-                    heroImg: selectedPackage.heroImage,
-                    price: `$${priceWithCommission.toFixed(0)} USD`,
-                    destination: `${selectedPackage.destinationCity}, ${selectedPackage.destinationCountry}`,
-                    options: selectedPackage.selectedOptions.map(
-                      (optionKey: string) => ({
-                        key: optionKey,
-                        label: optionKey
-                          .replace(/-/g, ' ')
-                          .replace(/\b\w/g, (l: string) => l.toUpperCase()),
-                        desc: `Opción personalizada: ${optionKey}`,
-                        img: selectedPackage.heroImage,
-                      }),
-                    ),
-                  },
+                  [excuseKey]: selectedExcuseCard.details,
                 };
               }
 
-              // Fallback to centralized data
+              // Fallback to centralized data if no excuse card found
               const selectedLevel = levels.find(
-                (level) => level.id === planData.budgetLevel,
+                (level) => level.id === planData?.budgetLevel,
               );
               const fallbackExcuse = selectedLevel?.excuses.find(
                 (excuse) => excuse.key === excuseKey,
@@ -380,13 +366,7 @@ export default function TripperPlanner({
               tagline: 'Personaliza tu aventura con las opciones que prefieras',
               ctaLabel: 'Ver resumen del viaje →',
             }}
-            setStep={() => {
-              // Complete the flow - could redirect to checkout or show summary
-              console.log('Trip planning completed!', planData);
-              // For now, just go back to step 1 to restart
-              setStep(1);
-              setPlanData(null);
-            }}
+            setStep={handleStepChange}
             type={travellerType || 'solo'}
             tripperSlug={tripperData?.slug}
           />
@@ -423,7 +403,7 @@ export default function TripperPlanner({
               ease: 'easeInOut',
               height: { duration: 0.4, ease: 'easeInOut' },
             }}
-            className="w-full overflow-hidden min-h-[300px]"
+            className="w-full overflow-hidden min-h-[300px] mt-2"
           >
             {renderStep()}
           </motion.div>

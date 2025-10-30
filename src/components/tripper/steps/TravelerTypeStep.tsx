@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { TRAVELLER_TYPE_OPTIONS } from '@/lib/constants/traveller-types';
 import { Button } from '@/components/ui/button';
@@ -21,27 +20,22 @@ export default function TravelerTypeStep({
   onBack,
 }: TravelerTypeStepProps) {
   return (
-    <motion.div
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-8"
-      exit={{ opacity: 0, y: -20 }}
-      initial={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.4 }}
-    >
+    <section className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative">
+      <div className="space-y-8">
       <div className="text-center mb-8 relative">
         <h3
-          className="text-center text-xl font-semibold text-neutral-900"
+          className="text-xl font-semibold text-neutral-900"
           data-testid="tab3-title"
         >
           ¿Qué tipo de viaje estás planeando?
         </h3>
         <p
-          className="mt-2 text-center text-sm text-neutral-800 max-w-3xl mx-auto"
+          className="mt-2 text-sm text-neutral-800 max-w-3xl mx-auto"
           data-testid="tab3-tagline"
         >
           Selecciona el estilo de viaje que {tripperName} diseñará para ti
         </p>
-        <div className="text-center absolute top-1/2 -translate-y-1/2">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2">
           <Button
             className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
             data-testid="cta-back-to-tab2"
@@ -78,6 +72,7 @@ export default function TravelerTypeStep({
           </button>
         ))}
       </div>
-    </motion.div>
+      </div>
+    </section>
   );
 }

@@ -95,11 +95,11 @@ export default function Details({
   if (!spec) {
     return (
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 relative">
           <p className="text-neutral-700">
             Tipo de viaje no encontrado. Por favor, volvé a seleccionar.
           </p>
-          <div className="mt-8 text-center">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2">
             <Button onClick={() => setStep(2)} variant="link">
               ← Volver
             </Button>
@@ -116,22 +116,22 @@ export default function Details({
     >
       <div className="text-center mb-8 relative">
         <h3
-          className="text-center text-xl font-semibold text-neutral-900"
+          className="text-xl font-semibold text-neutral-900"
           data-testid="tab3-title"
         >
           {content.title}
         </h3>
         <p
-          className="mt-2 text-center text-sm text-neutral-800 max-w-3xl mx-auto w-full"
+          className="mt-2 text-sm text-neutral-800 max-w-3xl mx-auto"
           data-testid="tab3-tagline"
         >
           {content.tagline}
         </p>
-        <div className="text-center absolute left-0 top-1/2 -translate-y-1/2">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2">
           <Button
             className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
-            data-testid="cta-back-to-tab2"
-            onClick={() => setStep(2)}
+            data-testid="cta-back-to-tab4"
+            onClick={() => setStep(4)}
             variant="link"
           >
             ← Volver
@@ -174,20 +174,19 @@ export default function Details({
       </div>
 
       {/* GRID opciones */}
-      <div className="flex flex-wrap gap-8 mt-8">
+      <div
+        className={`flex flex-wrap gap-6 mt-8 justify-center ${
+          spec.options.length === 1
+            ? 'max-w-sm mx-auto'
+            : spec.options.length === 2
+              ? 'max-w-4xl mx-auto'
+              : spec.options.length === 3
+                ? 'max-w-6xl mx-auto'
+                : 'max-w-7xl mx-auto'
+        }`}
+      >
         {spec.options.map((op) => (
-          <div
-            key={op.key}
-            className={`flex-1 min-w-0 h-full aspect-square ${
-              spec.options.length === 1
-                ? 'w-full'
-                : spec.options.length === 2
-                  ? 'w-full sm:w-1/2'
-                  : spec.options.length === 3
-                    ? 'w-full sm:w-1/2 lg:w-1/3'
-                    : 'w-full sm:w-1/2 lg:w-1/4'
-            }`}
-          >
+          <div key={op.key} className="w-full max-w-sm sm:w-80">
             <ExcuseOptionCard
               borderClass={borderClass}
               desc={op.desc}

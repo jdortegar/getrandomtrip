@@ -142,11 +142,13 @@ export async function getAllTrippers() {
         name: true,
         tripperSlug: true,
         avatarUrl: true,
+        bio: true,
+        location: true,
         commission: true,
         availableTypes: true,
         interests: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { name: 'asc' },
     });
   } catch (error) {
     console.error('Error fetching all trippers:', error);
@@ -271,7 +273,7 @@ export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
         heroImage: true,
         tags: true,
         highlights: true,
-        selectedOptions: true,
+        excuseKey: true,
         destinationCountry: true,
         destinationCity: true,
         basePriceUsd: true,
@@ -303,3 +305,4 @@ export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
     return {};
   }
 }
+

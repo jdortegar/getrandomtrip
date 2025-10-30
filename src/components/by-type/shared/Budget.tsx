@@ -128,17 +128,13 @@ export default function Budget({
       return;
     }
 
-    // Higher levels: save level info and proceed to the excuse step
-    setBudgetLevel(levelId); // Store the level ID, not the name
-    setStep(4); // Go to excuse step
-    document
-      .getElementById(plannerId)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Higher levels: use the parent's handler that updates both budget level and step
+    setBudgetLevel(levelId);
   };
 
   return (
     <section
-      className="w-full px-4 md:px-8 py-10 text-gray-900 -mr-[8px] md:pr-0"
+      className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"
       data-testid="tab-presupuesto"
     >
       {/* Header Section */}
@@ -155,7 +151,7 @@ export default function Budget({
         >
           {presupuestoContent?.tagline}
         </p>
-        <div className="absolute top-1/2 -translate-y-1/2">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2">
           <Button
             className="text-neutral-900 hover:underline decoration-neutral-400 hover:decoration-neutral-800"
             data-testid="cta-back-to-tab2"

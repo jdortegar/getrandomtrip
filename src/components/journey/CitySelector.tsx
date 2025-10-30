@@ -17,6 +17,7 @@ interface CitySelectorProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export default function CitySelector({
@@ -26,6 +27,7 @@ export default function CitySelector({
   placeholder = 'Ciudad de salida',
   className = '',
   disabled = false,
+  size = 'md',
 }: CitySelectorProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -110,7 +112,9 @@ export default function CitySelector({
         placeholder={countryValue ? placeholder : 'Selecciona un país primero'}
         disabled={disabled || !countryValue}
         autoComplete="off"
-        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${className}`}
+        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${
+          size === 'lg' ? 'h-12 text-base' : size === 'sm' ? 'h-8 text-sm' : 'h-10'
+        } ${className}`}
       />
 
       {open && countryValue && (

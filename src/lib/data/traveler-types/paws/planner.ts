@@ -1,4 +1,5 @@
 import type { TypePlannerContent } from '@/types/planner';
+import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 
 export const pawsPlannerContent: TypePlannerContent = {
   title: 'Diseñen su PAWS Randomtrip',
@@ -44,30 +45,7 @@ export const pawsPlannerContent: TypePlannerContent = {
       ],
       closingLine: 'Perfecto para una escapada rápida y económica.',
       ctaLabel: 'Elegir Essenza →',
-      excuses: [
-        {
-          key: 'default-excuse',
-          title: 'Experiencia Esencial',
-          description: 'Lo básico para una experiencia memorable.',
-          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-          details: {
-            title: 'Experiencia Esencial',
-            core: 'Lo básico para una experiencia memorable.',
-            ctaLabel: 'Continuar →',
-            tint: 'bg-gray-900/30',
-            heroImg:
-              'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-            options: [
-              {
-                key: 'basic-option',
-                label: 'Opción Básica',
-                desc: 'Experiencia esencial incluida.',
-                img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-              },
-            ],
-          },
-        },
-      ],
+      excuses: getExcusesByType('paws'),
     },
     {
       id: 'explora',

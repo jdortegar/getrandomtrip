@@ -45,7 +45,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
       case 2:
         return budgetLevel !== null;
       case 3:
-        return budgetLevel !== null;
+        return budgetLevel !== null && excuseKey !== null;
       default:
         return false;
     }
@@ -65,6 +65,14 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
     }, 100);
   };
 
+  // Handle budget level selection and advance to next step
+  const handleBudgetLevelChange = (levelId: string | null) => {
+    setBudgetLevel(levelId);
+    if (levelId) {
+      setStep(2);
+    }
+  };
+
   const renderActiveTab = () => {
     switch (step) {
       case 1:
@@ -72,7 +80,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
           <Budget
             budgetLevel={budgetLevel}
             plannerId={`${type}-planner`}
-            setBudgetLevel={setBudgetLevel}
+            setBudgetLevel={handleBudgetLevelChange}
             setStep={handleStepChange}
             levels={content.levels}
             type={type}
@@ -139,7 +147,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
               ease: 'easeInOut',
               height: { duration: 0.4, ease: 'easeInOut' },
             }}
-            className="w-full overflow-hidden min-h-[300px]"
+            className="w-full overflow-hidden min-h-[300px] mt-2"
           >
             {renderActiveTab()}
           </motion.div>

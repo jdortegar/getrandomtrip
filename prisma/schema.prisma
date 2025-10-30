@@ -119,7 +119,7 @@ model Package {
   level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
   
   // User preference matching (for filtering)
-  selectedOptions String[] @default([]) // Array of option keys that this package supports
+  excuseKey String? // Excuse key that this package supports (e.g., 'romantic-getaway', 'solo-adventure')
   
   // Capacity constraints
   minNights Int @default(1)

@@ -1,16 +1,56 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import TripperCard from '@/components/TripperCard';
-import { TRIPPERS } from '@/content/trippers';
 
 export default function TopTrippersGrid() {
+  const [trippers, setTrippers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTrippers() {
+      try {
+        const response = await fetch('/api/trippers');
+        const data = await response.json();
+        setTrippers(data);
+      } catch (error) {
+        console.error('Error fetching trippers:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTrippers();
+  }, []);
+
+  if (loading) {
+    return (
+      <div id="top-trippers" className="py-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="group rounded-md overflow-hidden shadow-xl bg-white"
+            >
+              <div className="relative w-full h-64 bg-gray-200 animate-pulse">
+                <div className="absolute bottom-0 left-0 right-0 text-white bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="h-6 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-300 rounded w-16 mx-auto"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div id="top-trippers" className="py-8">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
-        {TRIPPERS.map((tripper) => (
+        {trippers.map((tripper) => (
           <motion.div
             key={tripper.name}
             initial={{ opacity: 0, y: 30 }}
@@ -20,11 +60,12 @@ export default function TopTrippersGrid() {
           >
             <TripperCard
               name={tripper.name}
-              img={
-                tripper.avatar ?? tripper.heroImage ?? '/images/fallback.jpg'
+              img={tripper.avatarUrl ?? '/images/fallback.jpg'}
+              slug={
+                tripper.tripperSlug ||
+                tripper.name.toLowerCase().replace(/\s+/g, '-')
               }
-              slug={tripper.slug}
-              bio={tripper.bio}
+              bio={tripper.bio || ''}
             />
           </motion.div>
         ))}
