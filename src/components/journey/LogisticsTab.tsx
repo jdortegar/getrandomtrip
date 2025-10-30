@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NightsCalendar from './NightsCalendar';
 import StepperNav from './StepperNav';
 import CountrySelector from './CountrySelector';
@@ -22,6 +22,12 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
   // Check if origin is locked (came from tripper flow)
   const isOriginLocked = Boolean(_originLocked);
 
+  // Sync local state with store when logistics changes (e.g., when origin is pre-filled)
+  useEffect(() => {
+    setCountryValue(logistics.country || '');
+    setCityValue(logistics.city || '');
+  }, [logistics.country, logistics.city]);
+
   const decPax = () => {
     const currentPax = logistics.pax || 1;
     setPartial({
@@ -38,6 +44,7 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
 
   // Handle country change
   const handleCountryChange = (value: string) => {
+    if (isOriginLocked) return; // Prevent changes when locked
     setCountryValue(value);
     setPartial({
       logistics: {
@@ -54,6 +61,7 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
 
   // Handle city change
   const handleCityChange = (value: string) => {
+    if (isOriginLocked) return; // Prevent changes when locked
     setCityValue(value);
     setPartial({
       logistics: {
@@ -81,11 +89,6 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
             placeholder="País de salida"
             value={countryValue}
           />
-          {isOriginLocked && (
-            <p className="mt-1 text-xs text-neutral-500">
-              Este origen fue predefinido por tu tripper
-            </p>
-          )}
         </div>
         <div className="flex-1">
           <label className="block text-xs font-medium text-left mb-1">
