@@ -58,25 +58,45 @@ function buildStateUpdate(
   params: ParsedParams,
   price: number,
   logistics: any,
+  clearFormData: boolean = false,
 ): any {
-  const { type, level, from } = params;
+  const { type, level, from, tripperId } = params;
   return {
     from: from || '',
     type,
     level: level || 'modo-explora',
     displayPrice: price > 0 ? `USD ${price.toFixed(0)}` : '',
     basePriceUsd: price,
+    tripperId,
     logistics: {
       ...logistics,
       pax: getPaxCount(type),
     },
+    // Clear form data when coming from TypePlanner
+    ...(clearFormData && {
+      filters: {
+        transport: 'avion',
+        climate: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        departPref: 'indistinto',
+        arrivePref: 'indistinto',
+        avoidDestinations: [],
+      },
+      addons: { selected: [] },
+      filtersCostUsd: 0,
+      addonsCostUsd: 0,
+      totalPerPaxUsd: 0,
+    }),
   };
 }
 
 export function useInitJourney(searchParams: Record<string, string>) {
   const setPartial = useStore((s) => s.setPartial);
+  const resetJourney = useStore((s) => s.resetJourney);
   const logistics = useStore((s) => s.logistics);
   const initialized = useRef(false);
+  const lastParams = useRef<string>('');
+  const isUpdating = useRef(false);
 
   const params = useMemo<ParsedParams>(() => {
     const sp = new URLSearchParams(searchParams as any);
@@ -91,55 +111,95 @@ export function useInitJourney(searchParams: Record<string, string>) {
     return { from, type, level, tripperId, priceKey };
   }, [searchParams]);
 
+  // Create a string representation of current params for comparison
+  const currentParamsString = useMemo(() => {
+    return JSON.stringify({
+      from: params.from,
+      type: params.type,
+      level: params.level,
+      tripperId: params.tripperId,
+    });
+  }, [params]);
+
   useEffect(() => {
-    // Only initialize once
-    if (initialized.current) return;
-    initialized.current = true;
+    // Prevent infinite loops
+    if (isUpdating.current) return;
 
-    const { type, level, tripperId, priceKey } = params;
+    // Check if params have changed significantly
+    const hasParamsChanged = lastParams.current !== currentParamsString;
 
-    // Priority 1: Explicit priceKey
-    if (priceKey) {
-      const [root, ...rest] = priceKey.split('.');
-      const catalog =
-        root === 'trippers' && tripperId
-          ? (pricingCatalog.trippers as any)?.[tripperId]
-          : (pricingCatalog as any)?.[root];
+    // If params changed or this is a fresh load, reset and initialize
+    if (hasParamsChanged || !initialized.current) {
+      isUpdating.current = true;
 
-      const price = extractPrice(catalog, rest);
-      if (price) {
-        setPartial(buildStateUpdate(params, price, logistics));
-        return;
+      // Clear existing state when params change
+      if (initialized.current && hasParamsChanged) {
+        resetJourney();
       }
-    }
 
-    // Priority 2: Tripper-specific pricing
-    if (tripperId && level) {
-      const price = extractPrice(
-        (pricingCatalog.trippers as any)?.[tripperId],
-        [level, 'base'],
+      lastParams.current = currentParamsString;
+      initialized.current = true;
+
+      const { type, level, tripperId, priceKey } = params;
+
+      // Check if coming from TypePlanner (has type and level params)
+      const isFromTypePlanner = Boolean(
+        searchParams.type && searchParams.level,
       );
-      if (price) {
-        setPartial(buildStateUpdate(params, price, logistics));
-        return;
-      }
-    }
 
-    // Priority 3: Standard traveler type pricing
-    if (level) {
-      const price = extractPrice(pricingCatalog.byTraveller, [
-        type,
-        level,
-        'base',
-      ]);
-      if (price) {
-        setPartial(buildStateUpdate(params, price, logistics));
-        return;
-      }
-    }
+      // Priority 1: Explicit priceKey
+      if (priceKey) {
+        const [root, ...rest] = priceKey.split('.');
+        const catalog =
+          root === 'trippers' && tripperId
+            ? (pricingCatalog.trippers as any)?.[tripperId]
+            : (pricingCatalog as any)?.[root];
 
-    // Fallback: No price found
-    setPartial(buildStateUpdate(params, 0, logistics));
+        const price = extractPrice(catalog, rest);
+        if (price) {
+          setPartial(
+            buildStateUpdate(params, price, logistics, isFromTypePlanner),
+          );
+          isUpdating.current = false;
+          return;
+        }
+      }
+
+      // Priority 2: Tripper-specific pricing
+      if (tripperId && level) {
+        const price = extractPrice(
+          (pricingCatalog.trippers as any)?.[tripperId],
+          [level, 'base'],
+        );
+        if (price) {
+          setPartial(
+            buildStateUpdate(params, price, logistics, isFromTypePlanner),
+          );
+          isUpdating.current = false;
+          return;
+        }
+      }
+
+      // Priority 3: Standard traveler type pricing
+      if (level) {
+        const price = extractPrice(pricingCatalog.byTraveller, [
+          type,
+          level,
+          'base',
+        ]);
+        if (price) {
+          setPartial(
+            buildStateUpdate(params, price, logistics, isFromTypePlanner),
+          );
+          isUpdating.current = false;
+          return;
+        }
+      }
+
+      // Fallback: No price found
+      setPartial(buildStateUpdate(params, 0, logistics, isFromTypePlanner));
+      isUpdating.current = false;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentParamsString]);
 }

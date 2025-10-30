@@ -17,6 +17,11 @@ export function JourneyForm() {
   const levelParam = searchParams.get('level');
   const level: Level = LEVELS.find((l) => l.id === levelParam) || LEVELS[0];
 
+  // Check if coming from TypePlanner (has type and level params)
+  const isFromTypePlanner = Boolean(
+    searchParams.get('type') && searchParams.get('level'),
+  );
+
   // Map string tabs to numbers for component logic
   const tabToNumber: Record<string, number> = {
     logistics: 1,

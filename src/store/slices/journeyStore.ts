@@ -96,6 +96,7 @@ export type JourneyState = {
   level: string;
   displayPrice: string;
   basePriceUsd: number;
+  tripperId?: string;
   logistics: Logistics;
   filters: Filters;
   addons: AddonsState;
@@ -108,6 +109,7 @@ export type JourneyState = {
   removeAddon: (id: string) => void;
   resetAddons: () => void;
   resetJourney: () => void;
+  clearFormAfterPurchase: () => void;
 };
 
 export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
@@ -116,6 +118,7 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
   level: 'modo-explora',
   displayPrice: '',
   basePriceUsd: 0,
+  tripperId: undefined,
   logistics: {
     nights: 1,
     pax: 1,
@@ -162,6 +165,31 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
       displayPrice: '',
       level: 'essenza',
       type: 'solo',
+      logistics: {
+        nights: 1,
+        pax: 1,
+        city: '',
+        country: '',
+        startDate: undefined,
+        endDate: undefined,
+      },
+      filters: {
+        transport: 'avion',
+        climate: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        departPref: 'indistinto',
+        arrivePref: 'indistinto',
+        avoidDestinations: [],
+      },
+      addons: { selected: [] },
+      filtersCostUsd: 0,
+      addonsCostUsd: 0,
+      totalPerPaxUsd: 0,
+      activeTab: 'logistics',
+    }),
+  clearFormAfterPurchase: () =>
+    set({
+      // Keep basic journey info but clear form-specific data
       logistics: {
         nights: 1,
         pax: 1,

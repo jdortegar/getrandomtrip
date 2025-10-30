@@ -34,6 +34,7 @@ export const useStore = create<RootState>()(
           level: state.level,
           displayPrice: state.displayPrice,
           basePriceUsd: state.basePriceUsd,
+          tripperId: state.tripperId,
           logistics: state.logistics,
           filters: state.filters,
           addons: state.addons,

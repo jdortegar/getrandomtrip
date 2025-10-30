@@ -5,6 +5,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import SkeletonLoader from '../../components/SkeletonLoader';
+import { useClearFormAfterPurchase } from '@/hooks/useClearFormAfterPurchase';
 
 interface TripSummary {
   experienceLevel: string;
@@ -30,6 +31,7 @@ export default function CheckoutClient() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { clearForm } = useClearFormAfterPurchase();
 
   useEffect(() => {
     const fetchTripSummary = async () => {
@@ -124,6 +126,8 @@ export default function CheckoutClient() {
 
       if (response.ok && data.success) {
         setPaymentStatus('success');
+        // Clear form data after successful purchase
+        clearForm();
         toast.success('Payment successful! Redirecting...');
         // Redirect to Mercado Pago init_point if available, otherwise to post-purchase
         if (data.initPoint) {
