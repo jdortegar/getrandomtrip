@@ -9,13 +9,13 @@ import {
 export type { ExcuseData } from '@/lib/data/shared/excuses';
 
 // All available excuse keys from centralized data
-export const EXCUSE_KEYS = allExcuses.map(excuse => excuse.key) as const;
+export const EXCUSE_KEYS = allExcuses.map(excuse => excuse.key);
 export type ExcuseKey = typeof EXCUSE_KEYS[number];
 
 // Excuse option keys from centralized data
 export const EXCUSE_OPTION_KEYS = allExcuses.flatMap(excuse => 
   excuse.details.options.map(option => option.key)
-) as const;
+);
 export type ExcuseOptionKey = typeof EXCUSE_OPTION_KEYS[number];
 
 /**
