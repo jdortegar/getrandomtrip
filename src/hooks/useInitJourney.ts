@@ -23,6 +23,8 @@ interface ParsedParams {
   level?: TierType;
   tripperId?: string;
   priceKey?: string;
+  originCity?: string;
+  originCountry?: string;
 }
 
 // Normalize tier string
@@ -60,7 +62,26 @@ function buildStateUpdate(
   logistics: any,
   clearFormData: boolean = false,
 ): any {
-  const { type, level, from, tripperId } = params;
+  const { type, level, from, tripperId, originCity, originCountry } = params;
+  
+  // Read package destinations from sessionStorage (hidden from URL)
+  let packageDestinations: Array<{ city: string; country: string }> = [];
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = sessionStorage.getItem('tripperPackageDestinations');
+      if (stored) {
+        packageDestinations = JSON.parse(stored);
+        // Clear after reading to avoid stale data on next navigation
+        sessionStorage.removeItem('tripperPackageDestinations');
+      }
+    } catch (e) {
+      console.error('Error parsing tripperPackageDestinations from sessionStorage:', e);
+    }
+  }
+  
+  // Check if origin came from URL params (should be locked)
+  const hasOriginFromURL = Boolean(originCity && originCountry);
+  
   return {
     from: from || '',
     type,
@@ -70,8 +91,18 @@ function buildStateUpdate(
     tripperId,
     logistics: {
       ...logistics,
+      city: originCity || logistics.city || '',
+      country: originCountry || logistics.country || '',
       pax: getPaxCount(type),
     },
+    // Store package destinations for filtering avoidDestinations (hidden from user)
+    ...(packageDestinations.length > 0 && {
+      _tripperPackageDestinations: packageDestinations,
+    }),
+    // Mark origin as locked when coming from URL params
+    ...(hasOriginFromURL && {
+      _originLocked: true,
+    }),
     // Clear form data when coming from TypePlanner
     ...(clearFormData && {
       filters: {
@@ -107,8 +138,10 @@ export function useInitJourney(searchParams: Record<string, string>) {
     const level = normalizeTier(levelRaw);
     const tripperId = sp.get('tripperId') || undefined;
     const priceKey = sp.get('priceKey') || undefined;
+    const originCity = sp.get('originCity') || undefined;
+    const originCountry = sp.get('originCountry') || undefined;
 
-    return { from, type, level, tripperId, priceKey };
+    return { from, type, level, tripperId, priceKey, originCity, originCountry };
   }, [searchParams]);
 
   // Create a string representation of current params for comparison

@@ -17,6 +17,9 @@ interface DetailsProps {
   setStep: (stepIndex: number) => void;
   type: TravelerTypeSlug;
   tripperSlug?: string;
+  // New props for tripper context
+  origin?: { city: string; country: string } | null;
+  packageDestinations?: Array<{ city: string; country: string }> | null;
 }
 
 const BORDER_COLOR: Record<string, string> = {
@@ -49,6 +52,8 @@ export default function Details({
   setStep,
   type,
   tripperSlug,
+  origin,
+  packageDestinations,
 }: DetailsProps) {
   const router = useRouter();
   const spec = excuseKey ? excuseOptions[excuseKey] : null;
@@ -221,8 +226,18 @@ export default function Details({
                   excuse: excuseKey || '',
                   excuseOptions: selected.join(','),
                   ...(tripperSlug ? { tripperSlug } : {}),
+                  ...(origin?.city ? { originCity: origin.city } : {}),
+                  ...(origin?.country ? { originCountry: origin.country } : {}),
                 },
               });
+
+              // Store package destinations in sessionStorage (hidden from URL)
+              if (packageDestinations && packageDestinations.length > 0) {
+                sessionStorage.setItem(
+                  'tripperPackageDestinations',
+                  JSON.stringify(packageDestinations),
+                );
+              }
             }
           }}
           size="lg"

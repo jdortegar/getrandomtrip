@@ -104,6 +104,9 @@ export type JourneyState = {
   addonsCostUsd: number; // por viaje (total)
   totalPerPaxUsd: number;
   activeTab: 'logistics' | 'preferences' | 'addons';
+  // Hidden state for tripper package context (not exposed to user)
+  _tripperPackageDestinations?: Array<{ city: string; country: string }>;
+  _originLocked?: boolean; // When origin came from URL params (tripper flow)
   setPartial: (patch: Partial<JourneyState>) => void;
   setAddon: (sel: AddonSelection | undefined) => void;
   removeAddon: (id: string) => void;

@@ -42,6 +42,9 @@ export const useStore = create<RootState>()(
           addonsCostUsd: state.addonsCostUsd,
           totalPerPaxUsd: state.totalPerPaxUsd,
           activeTab: state.activeTab,
+          // Persist hidden state for tripper context
+          _originLocked: state._originLocked,
+          _tripperPackageDestinations: state._tripperPackageDestinations,
         }),
       },
     ),

@@ -12,7 +12,7 @@ export default function AvoidGrid() {
   const [suggestions, setSuggestions] = useState<
     Array<{ slug: string; city: string; country: string; image: string }>
   >([]);
-  const { logistics, level } = useStore();
+  const { logistics, level, _tripperPackageDestinations } = useStore();
 
   // Get cities based on level and departure location
   const avoidCities = getAvoidCities(
@@ -45,7 +45,24 @@ export default function AvoidGrid() {
       );
 
       console.log(`✅ All cities loaded:`, citiesWithImages);
-      setSuggestions(citiesWithImages);
+      
+      // Filter out tripper package destinations to avoid spoiling surprises
+      const filteredCities = citiesWithImages.filter((city) => {
+        if (!_tripperPackageDestinations || _tripperPackageDestinations.length === 0) {
+          return true;
+        }
+        
+        // Check if this city is in the tripper's packages
+        const isPackageDestination = _tripperPackageDestinations.some(
+          (pkg) =>
+            pkg.city.toLowerCase() === city.city.toLowerCase() &&
+            pkg.country.toLowerCase() === city.country.toLowerCase()
+        );
+        
+        return !isPackageDestination;
+      });
+      
+      setSuggestions(filteredCities);
     }
 
     if (avoidCities.length > 0) {
@@ -53,7 +70,7 @@ export default function AvoidGrid() {
     } else {
       setSuggestions([]);
     }
-  }, [logistics.country, logistics.city, level]);
+  }, [logistics.country, logistics.city, level, _tripperPackageDestinations]);
 
   return (
     <div className="space-y-4">

@@ -95,7 +95,11 @@ export default function CountrySelector({
         autoComplete="off"
         disabled={disabled}
         className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${
-          size === 'lg' ? 'h-12 text-base' : size === 'sm' ? 'h-8 text-sm' : 'h-10'
+          size === 'lg'
+            ? 'h-12 text-base'
+            : size === 'sm'
+              ? 'h-8 text-sm'
+              : 'h-10'
         }`}
       />
 

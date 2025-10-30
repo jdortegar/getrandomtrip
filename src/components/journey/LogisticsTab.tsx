@@ -13,11 +13,14 @@ interface LogisticsTabProps {
 }
 
 export default function LogisticsTab({ level }: LogisticsTabProps) {
-  const { logistics, setPartial } = useStore();
+  const { logistics, setPartial, _originLocked } = useStore();
 
   // Local state for form values
   const [countryValue, setCountryValue] = useState(logistics.country || '');
   const [cityValue, setCityValue] = useState(logistics.city || '');
+
+  // Check if origin is locked (came from tripper flow)
+  const isOriginLocked = Boolean(_originLocked);
 
   const decPax = () => {
     const currentPax = logistics.pax || 1;
@@ -73,20 +76,27 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
             País de Salida
           </label>
           <CountrySelector
-            value={countryValue}
+            disabled={isOriginLocked}
             onChange={handleCountryChange}
             placeholder="País de salida"
+            value={countryValue}
           />
+          {isOriginLocked && (
+            <p className="mt-1 text-xs text-neutral-500">
+              Este origen fue predefinido por tu tripper
+            </p>
+          )}
         </div>
         <div className="flex-1">
           <label className="block text-xs font-medium text-left mb-1">
             Ciudad de Salida
           </label>
           <CitySelector
-            value={cityValue}
-            onChange={handleCityChange}
             countryValue={countryValue}
+            disabled={isOriginLocked}
+            onChange={handleCityChange}
             placeholder="Ciudad de salida"
+            value={cityValue}
           />
         </div>
       </div>

@@ -213,6 +213,50 @@ export default function TripperPlanner({
     tripperData.commission,
   ]);
 
+  // Get unique package destinations for avoidDestinations context
+  const packageDestinations = useMemo(() => {
+    if (!travellerType || !planData?.budgetLevel) return [];
+
+    const tripperPackages =
+      tripperPackagesByType[travellerType]?.[planData.budgetLevel] || [];
+
+    if (tripperPackages.length === 0) return [];
+
+    // Filter packages by geographic criteria
+    const filteredPackages = tripperPackages.filter((pkg) =>
+      isPackageGeographicallyValid(
+        pkg,
+        planData.origin!.country,
+        planData.origin!.city,
+        planData.budgetLevel!,
+      ),
+    );
+
+    // Extract unique destinations
+    const destinationsMap = new Map<
+      string,
+      { city: string; country: string }
+    >();
+    filteredPackages.forEach((pkg: any) => {
+      const key = `${pkg.destinationCity},${pkg.destinationCountry}`;
+      if (!destinationsMap.has(key)) {
+        destinationsMap.set(key, {
+          city: pkg.destinationCity,
+          country: pkg.destinationCountry,
+        });
+      }
+    });
+
+    return Array.from(destinationsMap.values());
+  }, [
+    travellerType,
+    planData?.budgetLevel,
+    planData?.origin,
+    tripperPackagesByType,
+  ]);
+
+  console.log('packageDestinations', packageDestinations);
+
   const scrollPlanner = () => {
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -369,6 +413,8 @@ export default function TripperPlanner({
             setStep={handleStepChange}
             type={travellerType || 'solo'}
             tripperSlug={tripperData?.slug}
+            origin={planData?.origin}
+            packageDestinations={packageDestinations}
           />
         );
 

@@ -110,10 +110,14 @@ export default function CitySelector({
         onFocus={() => setOpen(true)}
         type="text"
         placeholder={countryValue ? placeholder : 'Selecciona un país primero'}
-        disabled={disabled || !countryValue}
+        disabled={disabled}
         autoComplete="off"
         className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${
-          size === 'lg' ? 'h-12 text-base' : size === 'sm' ? 'h-8 text-sm' : 'h-10'
+          size === 'lg'
+            ? 'h-12 text-base'
+            : size === 'sm'
+              ? 'h-8 text-sm'
+              : 'h-10'
         } ${className}`}
       />
 
