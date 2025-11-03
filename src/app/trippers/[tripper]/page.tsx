@@ -56,10 +56,8 @@ export async function generateMetadata({
 
 export default async function Page({
   params,
-  searchParams,
 }: {
   params: { tripper: string };
-  searchParams?: Record<string, string | string[] | undefined>;
 }) {
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === 'undefined') {
@@ -96,16 +94,6 @@ export default async function Page({
     agency: 'Randomtrip', // Default agency name
     visitedPlaces: [], // TODO: Add visitedPlaces field to database schema if needed
   };
-
-  // QA: permitir forzar el video con ?forcevideo=1
-  const forceVideo =
-    (typeof searchParams?.forcevideo === 'string' &&
-      searchParams?.forcevideo === '1') ||
-    (Array.isArray(searchParams?.forcevideo) &&
-      searchParams?.forcevideo?.[0] === '1');
-
-  // Clave específica por tripper para que no se mezcle el "no volver a mostrar"
-  const storageKey = `rt_tripper_intro_seen:${t.slug}`;
 
   return (
     <main className="bg-white text-slate-900">
