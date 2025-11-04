@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, BlogStatus, BlogFormat } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -596,8 +596,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['aventura', 'patagonia', 'buenos-aires', 'urban-exploration'],
-        format: 'ARTICLE',
-        status: 'PUBLISHED',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
         seo: {
           title: 'Mi Primera Aventura en Buenos Aires - Blog de Dawson',
           description: 'Descubre los secretos de Buenos Aires a través de la experiencia de un tripper experimentado',
@@ -631,8 +631,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['cafe', 'colombia', 'gastronomia', 'eje-cafetero'],
-        format: 'ARTICLE',
-        status: 'PUBLISHED',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
         seo: {
           title: 'Ruta del Café en Colombia - Guía de Viaje',
           description: 'Descubre la ruta del café colombiano y las mejores fincas para visitar',
@@ -666,8 +666,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['fotografia', 'urban', 'tecnica', 'arte'],
-        format: 'PHOTO',
-        status: 'PUBLISHED',
+        format: BlogFormat.PHOTO,
+        status: BlogStatus.PUBLISHED,
         seo: {
           title: 'Fotografía Urbana: Guía Completa',
           description: 'Aprende técnicas de fotografía urbana con consejos de un experto',
@@ -696,8 +696,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['gastronomia', 'mercados', 'cultura-local', 'comida'],
-        format: 'ARTICLE',
-        status: 'DRAFT',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.DRAFT,
         seo: {
           title: 'Guía de Mercados Locales para Viajeros',
           description: 'Descubre los mejores mercados locales del mundo y cómo disfrutarlos',
@@ -721,8 +721,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['noche', 'vida-nocturna', 'cultura', 'aventura'],
-        format: 'MIXED',
-        status: 'DRAFT',
+        format: BlogFormat.MIXED,
+        status: BlogStatus.DRAFT,
         seo: {
           title: 'Guía de Vida Nocturna para Viajeros',
           description: 'Descubre la mejor vida nocturna de las ciudades que visitas',
