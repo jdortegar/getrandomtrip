@@ -1,0 +1,49 @@
+# Netlify Configuration for Next.js 14
+# This file configures Netlify to properly build and deploy Next.js applications
+# 
+# Key differences from Vercel:
+# - Vercel has native Next.js integration (built by Next.js creators)
+# - Netlify requires explicit configuration via @netlify/plugin-nextjs
+# - Netlify may be stricter about build-time static generation errors
+
+[build]
+  # Build command - use npm run build to ensure consistent environment
+  command = "npm run build"
+  
+  # Publish directory - Netlify Next.js plugin handles this automatically
+  # but we specify it for clarity
+  publish = ".next"
+
+# Environment variables for build
+[build.environment]
+  # Node.js version - Next.js 14 requires Node 18+
+  NODE_VERSION = "18.x"
+  
+  # Set NODE_ENV to production for builds (this was the warning you saw)
+  # Netlify may set this to a non-standard value, so we enforce it
+  NODE_ENV = "production"
+  
+  # Next.js specific settings
+  NEXT_TELEMETRY_DISABLED = "1"
+  
+  # Note: @netlify/plugin-nextjs handles output configuration automatically
+
+# Next.js runtime plugin - REQUIRED for proper Next.js support on Netlify
+# This plugin handles:
+# - Server-side rendering (SSR)
+# - API routes
+# - Middleware
+# - Image optimization
+# - Static file serving
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+

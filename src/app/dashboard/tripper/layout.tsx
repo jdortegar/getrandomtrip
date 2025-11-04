@@ -1,12 +1,14 @@
-'use client';
-import TripperGuard from '@/components/tripper/TripperGuard';
+// Route segment config to prevent static generation
+// All tripper dashboard pages use client-side hooks and must be dynamic
+export const dynamic = 'force-dynamic';
 
-export default function TripperLayout({ children }: { children: React.ReactNode }) {
-  // Let TripperGuard handle all role checking and redirects
-  // This prevents duplicate redirects and loops
-  return (
-    <TripperGuard>
-      {children}
-    </TripperGuard>
-  );
+import TripperLayoutClient from './layout-client';
+
+export default function TripperLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <TripperLayoutClient>{children}</TripperLayoutClient>;
 }
+
