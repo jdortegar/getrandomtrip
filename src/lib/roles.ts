@@ -3,7 +3,7 @@ export type UserRole = 'client' | 'tripper' | 'admin' | null;
 
 /** A partir del rol, ¿a qué dashboard va el usuario? */
 export function dashboardPathFromRole(role: UserRole) {
-  if (role === 'tripper') return '/tripper';
+  if (role === 'tripper') return '/dashboard/tripper';
   if (role === 'admin') return '/admin'; // placeholder
   return '/dashboard';
 }

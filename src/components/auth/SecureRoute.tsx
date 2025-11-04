@@ -25,6 +25,16 @@ export default function SecureRoute({
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
+  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
+  const normalizeRole = (role: string | undefined): string | null => {
+    if (!role) return null;
+    return role.toLowerCase();
+  };
+
+  const userRoleFromStore = normalizeRole(user?.role);
+  const userRoleFromSession = normalizeRole((session?.user as any)?.role);
+  const normalizedRequiredRole = requiredRole ? requiredRole.toLowerCase() : null;
+
   useEffect(() => {
     if (status === 'loading') return;
 
@@ -36,18 +46,18 @@ export default function SecureRoute({
       return;
     }
 
-    // Check role if required
+    // Check role if required (compare normalized roles)
     if (
-      requiredRole &&
-      user?.role !== requiredRole &&
-      session?.user?.role !== requiredRole
+      normalizedRequiredRole &&
+      userRoleFromStore !== normalizedRequiredRole &&
+      userRoleFromSession !== normalizedRequiredRole
     ) {
       router.push('/unauthorized');
       return;
     }
 
     setIsChecking(false);
-  }, [session, status, isAuthed, user, requiredRole, router]);
+  }, [session, status, isAuthed, userRoleFromStore, userRoleFromSession, normalizedRequiredRole, router]);
 
   if (status === 'loading' || isChecking) {
     return <LoadingSpinner />;
@@ -70,10 +80,11 @@ export default function SecureRoute({
     );
   }
 
+  // Check role if required (compare normalized roles)
   if (
-    requiredRole &&
-    user?.role !== requiredRole &&
-    session?.user?.role !== requiredRole
+    normalizedRequiredRole &&
+    userRoleFromStore !== normalizedRequiredRole &&
+    userRoleFromSession !== normalizedRequiredRole
   ) {
     return (
       fallback || (

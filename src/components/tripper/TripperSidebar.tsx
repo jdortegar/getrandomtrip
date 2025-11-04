@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navLinks = [
-  { name: 'Dashboard', href: '/tripper' },
-  { name: 'Mis Rutas', href: '/tripper/routes' },
-  { name: 'Ganancias', href: '/tripper/earnings' },
-  { name: 'Reseñas & NPS', href: '/tripper/reviews' },
-  { name: 'Media', href: '/tripper/media' },
-  { name: 'Promos', href: '/tripper/promos' }, // Assuming 'Promos' is a link, though not explicitly a page yet.
-  { name: 'Perfil', href: '/tripper/profile' },
-  { name: 'Settings', href: '/tripper/settings' },
+  { name: 'Dashboard', href: '/dashboard/tripper' },
+  { name: 'Mis Rutas', href: '/dashboard/tripper/routes' },
+  { name: 'Ganancias', href: '/dashboard/tripper/earnings' },
+  { name: 'Reseñas & NPS', href: '/dashboard/tripper/reviews' },
+  { name: 'Media', href: '/dashboard/tripper/media' },
+  { name: 'Promos', href: '/dashboard/tripper/promos' }, // Assuming 'Promos' is a link, though not explicitly a page yet.
+  { name: 'Perfil', href: '/dashboard/tripper/profile' },
+  { name: 'Settings', href: '/dashboard/tripper/settings' },
 ];
 
 export default function TripperSidebar() {

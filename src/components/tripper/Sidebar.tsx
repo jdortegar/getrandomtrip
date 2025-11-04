@@ -9,19 +9,19 @@ const navGroups = [
   {
     name: "General",
     items: [
-      { name: "Tripper OS", href: "/tripper", icon: Home },
-      { name: "Mis Rutas", href: "/tripper/routes", icon: Route },
-      { name: "Reservas", href: "/tripper/bookings", icon: Calendar },
-      { name: "Ingresos", href: "/tripper/earnings", icon: DollarSign },
-      { name: "Comunidad", href: "/tripper/community", icon: Users },
-      { name: "Configuración", href: "/tripper/settings", icon: Settings },
+      { name: "Tripper OS", href: "/dashboard/tripper", icon: Home },
+      { name: "Mis Rutas", href: "/dashboard/tripper/routes", icon: Route },
+      { name: "Reservas", href: "/dashboard/tripper/bookings", icon: Calendar },
+      { name: "Ingresos", href: "/dashboard/tripper/earnings", icon: DollarSign },
+      { name: "Comunidad", href: "/dashboard/tripper/community", icon: Users },
+      { name: "Configuración", href: "/dashboard/tripper/settings", icon: Settings },
     ],
   },
   {
     name: "Contenido",
     items: [
-      { name: "Mis Posts", href: "/tripper/blogs", icon: Book },
-      { name: "Crear Post", href: "/tripper/blogs/new", icon: PlusCircle, isButton: true },
+      { name: "Mis Posts", href: "/dashboard/tripper/blogs", icon: Book },
+      { name: "Crear Post", href: "/dashboard/tripper/blogs/new", icon: PlusCircle, isButton: true },
     ],
   },
 ];

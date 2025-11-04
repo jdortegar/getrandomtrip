@@ -1,6 +1,7 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
 import AuthModal from '@/components/auth/AuthModal';
 
@@ -10,8 +11,20 @@ export default function TripperGuard({
   children: React.ReactNode;
 }) {
   const { isAuthed, user, authModalOpen, closeAuth } = useUserStore();
+  const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [hasChecked, setHasChecked] = useState(false);
+
+  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
+  const normalizeRole = (role: string | undefined): string | null => {
+    if (!role) return null;
+    return role.toLowerCase();
+  };
+
+  const userRole = normalizeRole(
+    (session?.user as any)?.role || user?.role
+  );
 
   useEffect(() => {
     if (!isAuthed) {
@@ -20,12 +33,32 @@ export default function TripperGuard({
       openAuth('signin');
       return;
     }
-    if (user?.role !== 'tripper') {
+    
+    // Only redirect if we have a role and it's NOT tripper
+    // Don't redirect if role is still loading (null)
+    if (userRole && userRole !== 'tripper') {
       router.replace('/dashboard');
+    } else if (userRole === 'tripper' || (isAuthed && !userRole && session?.user)) {
+      // User is a tripper or session is loading, allow access
+      setHasChecked(true);
     }
-  }, [isAuthed, user?.role, router, pathname]);
+  }, [isAuthed, userRole, router, pathname, session?.user]);
 
-  if (!isAuthed || user?.role !== 'tripper') return null;
+  // Show nothing while checking or if not authenticated
+  if (!isAuthed || (!hasChecked && !userRole)) {
+    return null;
+  }
+
+  // If we have a role and it's not tripper, show nothing (redirecting)
+  if (userRole && userRole !== 'tripper') {
+    return null;
+  }
+
+  // Only render if user is a tripper
+  if (userRole !== 'tripper') {
+    return null;
+  }
+
   return (
     <>
       {children}

@@ -22,7 +22,7 @@ const PROFILE_MENU_ITEMS = [
 ] as const;
 
 const TRIPPER_MENU_ITEM = {
-  href: '/tripper',
+  href: '/dashboard/tripper',
   label: 'Tripper OS',
 };
 
@@ -46,6 +46,15 @@ export function NavbarProfile({
 
   const avatarSrc = user?.avatar ?? 'https://placehold.co/64x64';
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'R';
+
+  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
+  const normalizeRole = (role: string | undefined): string | null => {
+    if (!role) return null;
+    return role.toLowerCase();
+  };
+
+  const userRole = normalizeRole((session?.user as any)?.role || user?.role);
+  const isTripper = userRole === 'tripper';
 
   const handleSignOut = () => {
     if (session) {
@@ -98,7 +107,8 @@ export function NavbarProfile({
             </Link>
           ))}
 
-          {user?.role === 'tripper' && (
+          {/* Show dashboard link - role-aware */}
+          {isTripper ? (
             <Link
               role="menuitem"
               href={TRIPPER_MENU_ITEM.href}
@@ -107,16 +117,16 @@ export function NavbarProfile({
             >
               {TRIPPER_MENU_ITEM.label}
             </Link>
+          ) : (
+            <Link
+              role="menuitem"
+              href={DASHBOARD_MENU_ITEM.href}
+              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+              onClick={close}
+            >
+              {DASHBOARD_MENU_ITEM.label}
+            </Link>
           )}
-
-          <Link
-            role="menuitem"
-            href={DASHBOARD_MENU_ITEM.href}
-            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-            onClick={close}
-          >
-            {DASHBOARD_MENU_ITEM.label}
-          </Link>
 
           <div className="my-1 h-px bg-neutral-200" />
 

@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 
 import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
-import Navbar from '@/components/Navbar';
 import SecureRoute from '@/components/auth/SecureRoute';
+import Section from '@/components/layout/Section';
+import Hero from '@/components/Hero';
 import GlassCard from '@/components/ui/GlassCard';
-import BgCarousel from '@/components/media/BgCarousel';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import {
   Users,
@@ -21,6 +21,7 @@ import {
   Settings,
   BarChart3,
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface DashboardStats {
   totalBookings: number;
@@ -89,11 +90,20 @@ function TripperContent() {
   if (loading) {
     return (
       <>
-        <Navbar />
-        <BgCarousel scrim={0.75} />
-        <main className="container mx-auto max-w-7xl px-4 pt-24 md:pt-28 pb-16">
-          <LoadingSpinner />
-        </main>
+        <Hero
+          content={{
+            title: 'Tripper OS 🧳',
+            subtitle: 'Cargando tu dashboard...',
+            videoSrc: '/videos/hero-video.mp4',
+            fallbackImage: '/images/bg-playa-mexico.jpg',
+          }}
+          className="!h-[40vh]"
+        />
+        <Section>
+          <div className="max-w-7xl mx-auto">
+            <LoadingSpinner />
+          </div>
+        </Section>
       </>
     );
   }
@@ -128,19 +138,18 @@ function TripperContent() {
 
   return (
     <>
-      <Navbar />
-      <BgCarousel scrim={0.75} />
+      <Hero
+        content={{
+          title: 'Tripper OS 🧳',
+          subtitle: 'Gestiona tus paquetes de viaje y clientes',
+          videoSrc: '/videos/hero-video.mp4',
+          fallbackImage: '/images/bg-playa-mexico.jpg',
+        }}
+        className="!h-[40vh]"
+      />
 
-      <main className="container mx-auto max-w-7xl px-4 pt-24 md:pt-28 pb-16">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            Tripper OS 🧳
-          </h1>
-          <p className="text-neutral-600">
-            Gestiona tus paquetes de viaje y clientes
-          </p>
-        </div>
+      <Section>
+        <div className="max-w-7xl mx-auto">
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -210,9 +219,12 @@ function TripperContent() {
                   <h2 className="text-xl font-semibold text-neutral-900">
                     Reservas Recientes
                   </h2>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                  <Link
+                    href="/dashboard/tripper/bookings"
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  >
                     Ver todas
-                  </button>
+                  </Link>
                 </div>
                 <div className="space-y-4">
                   {recentBookings.length === 0 ? (
@@ -270,7 +282,10 @@ function TripperContent() {
                   Acciones Rápidas
                 </h3>
                 <div className="space-y-3">
-                  <button className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                  <Link
+                    href="/dashboard/tripper/routes"
+                    className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                  >
                     <Plus className="h-5 w-5 text-blue-600" />
                     <div className="text-left">
                       <div className="font-medium text-blue-900">
@@ -280,21 +295,42 @@ function TripperContent() {
                         Nueva oferta de viaje
                       </div>
                     </div>
-                  </button>
+                  </Link>
 
-                  <button className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                  <Link
+                    href="/dashboard/tripper/earnings"
+                    className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                  >
                     <BarChart3 className="h-5 w-5 text-green-600" />
                     <div className="text-left">
                       <div className="font-medium text-green-900">
-                        Ver Estadísticas
+                        Ver Ganancias
                       </div>
                       <div className="text-sm text-green-700">
                         Análisis detallado
                       </div>
                     </div>
-                  </button>
+                  </Link>
 
-                  <button className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                  <Link
+                    href="/dashboard/tripper/reviews"
+                    className="w-full flex items-center gap-3 p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors"
+                  >
+                    <Star className="h-5 w-5 text-yellow-600" />
+                    <div className="text-left">
+                      <div className="font-medium text-yellow-900">
+                        Reseñas & NPS
+                      </div>
+                      <div className="text-sm text-yellow-700">
+                        Ver feedback
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/trippers/profile"
+                    className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                  >
                     <Settings className="h-5 w-5 text-purple-600" />
                     <div className="text-left">
                       <div className="font-medium text-purple-900">
@@ -304,7 +340,7 @@ function TripperContent() {
                         Ajustes del perfil
                       </div>
                     </div>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </GlassCard>
@@ -358,37 +394,44 @@ function TripperContent() {
                 <h2 className="text-xl font-semibold text-neutral-900">
                   Mis Paquetes
                 </h2>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                <Link
+                  href="/dashboard/tripper/routes"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
                   <Plus className="h-4 w-4" />
                   Nuevo Paquete
-                </button>
+                </Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {tripperStats.activePackages === 0 ? (
                   <div className="col-span-full text-center py-8 text-neutral-500">
                     <p className="mb-4">No tienes paquetes activos aún</p>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto">
+                    <Link
+                      href="/dashboard/tripper/routes"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+                    >
                       <Plus className="h-4 w-4" />
                       Crear tu primer paquete
-                    </button>
+                    </Link>
                   </div>
                 ) : (
                   <p className="col-span-full text-sm text-neutral-600">
                     {tripperStats.activePackages} paquete(s) activo(s).{' '}
-                    <a
-                      href="/tripper/routes"
+                    <Link
+                      href="/dashboard/tripper/routes"
                       className="text-blue-600 hover:underline"
                     >
                       Ver todos →
-                    </a>
+                    </Link>
                   </p>
                 )}
               </div>
             </div>
           </GlassCard>
         </div>
-      </main>
+        </div>
+      </Section>
     </>
   );
 }

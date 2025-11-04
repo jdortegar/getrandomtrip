@@ -10,7 +10,7 @@ export default async function TripperBlogListPage() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-neutral-800">Mis Posts</h1>
-        <Link href="/tripper/blogs/new" className="rt-btn rt-btn--primary">Crear Nuevo Post</Link>
+        <Link href="/dashboard/tripper/blogs/new" className="rt-btn rt-btn--primary">Crear Nuevo Post</Link>
       </div>
       <BlogList posts={demoPosts} />
     </div>

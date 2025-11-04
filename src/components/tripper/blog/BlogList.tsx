@@ -13,7 +13,7 @@ export default function BlogList({ posts }: BlogListProps) {
         <div className="lg:col-span-3 text-center p-10 border border-dashed border-neutral-300 rounded-2xl text-neutral-600">
           <h2 className="text-xl font-semibold mb-2">Aún no tienes posts.</h2>
           <p className="mb-4">¡Es hora de contar tu primera historia!</p>
-          <Link href="/tripper/blogs/new" className="rt-btn rt-btn--primary">Crear mi primer post</Link>
+          <Link href="/dashboard/tripper/blogs/new" className="rt-btn rt-btn--primary">Crear mi primer post</Link>
         </div>
       ) : (
         posts.map((post) => (
@@ -43,8 +43,8 @@ export default function BlogList({ posts }: BlogListProps) {
                 ))}
               </div>
               <div className="flex space-x-3">
-                <Link href={`/tripper/blogs/${post.id}/edit`} className="rt-btn rt-btn--secondary rt-btn--sm">Editar</Link>
-                <Link href={`/tripper/blogs/${post.id}/preview`} className="rt-btn rt-btn--ghost rt-btn--sm">Previsualizar</Link>
+                <Link href={`/dashboard/tripper/blogs/${post.id}/edit`} className="rt-btn rt-btn--secondary rt-btn--sm">Editar</Link>
+                <Link href={`/dashboard/tripper/blogs/${post.id}/preview`} className="rt-btn rt-btn--ghost rt-btn--sm">Previsualizar</Link>
                 {/* TODO: Publicar/Despublicar, Eliminar */}
               </div>
             </div>

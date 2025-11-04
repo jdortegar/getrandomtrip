@@ -303,60 +303,75 @@ function TripperProfileContent() {
                     <h2 className="text-xl font-semibold text-neutral-900 font-jost">
                       Mis Paquetes
                     </h2>
-                    <Button>
+                    <Button onClick={() => router.push('/dashboard/tripper/routes')}>
                       <Package className="w-4 h-4 mr-2" />
-                      Crear Paquete
+                      Gestionar Paquetes
                     </Button>
                   </div>
 
                   {packages.length > 0 ? (
-                    <div className="grid gap-4">
-                      {packages.map((pkg: any) => (
-                        <div
-                          key={pkg.id}
-                          className="border border-gray-200 rounded-lg p-4"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-semibold text-neutral-900">
-                                {pkg.title}
-                              </h3>
-                              <p className="text-sm text-neutral-600 mt-1">
-                                {pkg.teaser}
-                              </p>
-                              <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500">
-                                <span>
-                                  {pkg.type} • {pkg.level}
-                                </span>
-                                <span>
-                                  {pkg.minNights}-{pkg.maxNights} noches
-                                </span>
-                                <span>
-                                  {pkg.minPax}-{pkg.maxPax} personas
-                                </span>
+                    <div className="space-y-4">
+                      <p className="text-sm text-neutral-600 mb-4">
+                        Tienes {packages.length} paquete(s) creado(s). Ve al dashboard para crear nuevos o gestionar los existentes.
+                      </p>
+                      <div className="grid gap-4">
+                        {packages.slice(0, 5).map((pkg: any) => (
+                          <div
+                            key={pkg.id}
+                            className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h3 className="font-semibold text-neutral-900">
+                                  {pkg.title}
+                                </h3>
+                                <p className="text-sm text-neutral-600 mt-1">
+                                  {pkg.teaser}
+                                </p>
+                                <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500">
+                                  <span>
+                                    {pkg.type} • {pkg.level}
+                                  </span>
+                                  <span>
+                                    {pkg.minNights}-{pkg.maxNights} noches
+                                  </span>
+                                  <span>
+                                    {pkg.minPax}-{pkg.maxPax} personas
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-neutral-900">
+                                  {pkg.displayPrice}
+                                </p>
+                                <p className="text-sm text-neutral-500">
+                                  {pkg.isActive ? 'Activo' : 'Inactivo'}
+                                </p>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-neutral-900">
-                                {pkg.displayPrice}
-                              </p>
-                              <p className="text-sm text-neutral-500">
-                                {pkg.isActive ? 'Activo' : 'Inactivo'}
-                              </p>
-                            </div>
                           </div>
+                        ))}
+                      </div>
+                      {packages.length > 5 && (
+                        <div className="text-center pt-4">
+                          <Button
+                            variant="outline"
+                            onClick={() => router.push('/dashboard/tripper/routes')}
+                          >
+                            Ver todos los paquetes ({packages.length})
+                          </Button>
                         </div>
-                      ))}
+                      )}
                     </div>
                   ) : (
                     <div className="text-center py-8">
                       <Package className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                      <p className="text-neutral-500">
+                      <p className="text-neutral-500 mb-4">
                         No tienes paquetes creados aún
                       </p>
-                      <Button className="mt-4">
+                      <Button onClick={() => router.push('/dashboard/tripper/routes')}>
                         <Package className="w-4 h-4 mr-2" />
-                        Crear tu primer paquete
+                        Ir al Dashboard para Crear Paquetes
                       </Button>
                     </div>
                   )}
@@ -366,10 +381,18 @@ function TripperProfileContent() {
               {/* Performance Tab */}
               {activeTab === 'performance' && (
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h2 className="text-xl font-semibold text-neutral-900 mb-6 font-jost">
-                    Rendimiento
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-neutral-900 font-jost">
+                      Rendimiento
+                    </h2>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push('/dashboard/tripper')}
+                    >
+                      Ver Dashboard Completo
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
                       <TrendingUp className="w-8 h-8 text-blue-500 mx-auto mb-2" />
                       <p className="text-2xl font-bold text-neutral-900">
@@ -409,6 +432,18 @@ function TripperProfileContent() {
                       </p>
                     </div>
                   </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      💡 Para ver estadísticas detalladas, análisis de rendimiento y gestionar tus paquetes, ve al{' '}
+                      <button
+                        onClick={() => router.push('/dashboard/tripper')}
+                        className="font-semibold underline hover:text-blue-900"
+                      >
+                        Dashboard de Tripper
+                      </button>
+                      .
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -441,7 +476,7 @@ function TripperProfileContent() {
                     }`}
                   >
                     <Package className="w-4 h-4 inline mr-2" />
-                    Mis Paquetes
+                    Vista de Paquetes
                   </button>
                   <button
                     onClick={() => setActiveTab('performance')}
@@ -452,7 +487,14 @@ function TripperProfileContent() {
                     }`}
                   >
                     <TrendingUp className="w-4 h-4 inline mr-2" />
-                    Rendimiento
+                    Resumen de Rendimiento
+                  </button>
+                  <button
+                    onClick={() => router.push('/dashboard/tripper/dashboard')}
+                    className="w-full text-left px-3 py-2 rounded-md text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700 mt-2"
+                  >
+                    <Settings className="w-4 h-4 inline mr-2" />
+                    Ir al Dashboard
                   </button>
                 </div>
               </div>

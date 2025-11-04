@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useUserStore } from '@/store/slices';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import { useRouter } from 'next/navigation';
 
 interface Trip {
   id: string;
@@ -65,6 +66,7 @@ interface DashboardStats {
 function DashboardContent() {
   const { data: session } = useSession();
   const { user } = useUserStore();
+  const router = useRouter();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -75,8 +77,40 @@ function DashboardContent() {
     averageRating: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   const currentUser = session?.user || user;
+
+  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
+  const normalizeRole = (role: string | undefined): string | null => {
+    if (!role) return null;
+    return role.toLowerCase();
+  };
+
+  // Get role from multiple possible sources (session might have uppercase TRIPPER)
+  const rawRole =
+    (session?.user as any)?.role || (currentUser as any)?.role || user?.role;
+
+  const userRole = normalizeRole(rawRole);
+
+  // Redirect trippers to their dashboard - check once and redirect immediately
+  useEffect(() => {
+    if (!hasRedirected && userRole === 'tripper') {
+      setHasRedirected(true);
+      // Use push with replace: true to avoid adding to history
+      router.push('/dashboard/tripper');
+    }
+  }, [userRole, router, hasRedirected]);
+
+  // Don't render client dashboard content if user is a tripper
+  if (userRole === 'tripper') {
+    return <LoadingSpinner />;
+  }
+
+  // Show loading if session is still loading and we don't have a user yet
+  if (!currentUser?.id && !user?.id) {
+    return <LoadingSpinner />;
+  }
 
   // Fetch user trips and payments
   useEffect(() => {

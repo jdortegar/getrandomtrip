@@ -90,7 +90,7 @@ export default function TripperRoutesPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-neutral-800">Mis Paquetes</h1>
         <Link
-          href="/tripper/packages/new"
+          href="/dashboard/tripper/packages/new"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           Nuevo Paquete
@@ -151,7 +151,7 @@ export default function TripperRoutesPage() {
                 <tr key={pkg.id} className="border-t border-neutral-100">
                   <td className="px-4 py-2 text-neutral-800">
                     <Link
-                      href={`/tripper/routes/${pkg.id}`}
+                      href={`/dashboard/tripper/routes/${pkg.id}`}
                       className="text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     >
                       {pkg.title}
