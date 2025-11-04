@@ -44,6 +44,20 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Redirects - Prevent Netlify URL redirects
+# Force custom domain to be used
+[[redirects]]
+  from = "https://getrandomtrip-1.netlify.app/*"
+  to = "https://getrandomtrip.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://*.netlify.app/*"
+  to = "https://getrandomtrip.com/:splat"
+  status = 301
+  force = true
+
 # Security headers
 [[headers]]
   for = "/*"

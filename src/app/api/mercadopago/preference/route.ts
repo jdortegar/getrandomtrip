@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || 'Cliente';
     const lastName = nameParts.slice(1).join(' ') || 'GetRandomTrip';
 
-    const baseUrl = 'https://getrandomtrip.vercel.app'; //process.env.NEXTAUTH_URL || 'http://localhost:3010';
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3010';
 
     const preferenceData = {
       items: [
