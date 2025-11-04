@@ -283,7 +283,7 @@ function TripperContent() {
                 </h3>
                 <div className="space-y-3">
                   <Link
-                    href="/dashboard/tripper/routes"
+                    href="/dashboard/tripper/packages"
                     className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                   >
                     <Plus className="h-5 w-5 text-blue-600" />
@@ -395,7 +395,7 @@ function TripperContent() {
                   Mis Paquetes
                 </h2>
                 <Link
-                  href="/dashboard/tripper/routes"
+                  href="/dashboard/tripper/packages"
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
                   <Plus className="h-4 w-4" />
@@ -408,7 +408,7 @@ function TripperContent() {
                   <div className="col-span-full text-center py-8 text-neutral-500">
                     <p className="mb-4">No tienes paquetes activos aún</p>
                     <Link
-                      href="/dashboard/tripper/routes"
+                      href="/dashboard/tripper/packages"
                       className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
                     >
                       <Plus className="h-4 w-4" />
@@ -419,7 +419,7 @@ function TripperContent() {
                   <p className="col-span-full text-sm text-neutral-600">
                     {tripperStats.activePackages} paquete(s) activo(s).{' '}
                     <Link
-                      href="/dashboard/tripper/routes"
+                      href="/dashboard/tripper/packages"
                       className="text-blue-600 hover:underline"
                     >
                       Ver todos →

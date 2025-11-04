@@ -19,7 +19,7 @@ interface Package {
   updatedAt: string;
 }
 
-export default function TripperRoutesPage() {
+export default function TripperPackagesPage() {
   const { data: session } = useSession();
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +151,7 @@ export default function TripperRoutesPage() {
                 <tr key={pkg.id} className="border-t border-neutral-100">
                   <td className="px-4 py-2 text-neutral-800">
                     <Link
-                      href={`/dashboard/tripper/routes/${pkg.id}`}
+                      href={`/dashboard/tripper/packages/${pkg.id}`}
                       className="text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     >
                       {pkg.title}

@@ -10,7 +10,7 @@ const navGroups = [
     name: "General",
     items: [
       { name: "Tripper OS", href: "/dashboard/tripper", icon: Home },
-      { name: "Mis Rutas", href: "/dashboard/tripper/routes", icon: Route },
+      { name: "Mis Paquetes", href: "/dashboard/tripper/packages", icon: Route },
       { name: "Reservas", href: "/dashboard/tripper/bookings", icon: Calendar },
       { name: "Ingresos", href: "/dashboard/tripper/earnings", icon: DollarSign },
       { name: "Comunidad", href: "/dashboard/tripper/community", icon: Users },

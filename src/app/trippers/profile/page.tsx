@@ -303,7 +303,7 @@ function TripperProfileContent() {
                     <h2 className="text-xl font-semibold text-neutral-900 font-jost">
                       Mis Paquetes
                     </h2>
-                    <Button onClick={() => router.push('/dashboard/tripper/routes')}>
+                    <Button onClick={() => router.push('/dashboard/tripper/packages')}>
                       <Package className="w-4 h-4 mr-2" />
                       Gestionar Paquetes
                     </Button>
@@ -356,7 +356,7 @@ function TripperProfileContent() {
                         <div className="text-center pt-4">
                           <Button
                             variant="outline"
-                            onClick={() => router.push('/dashboard/tripper/routes')}
+                            onClick={() => router.push('/dashboard/tripper/packages')}
                           >
                             Ver todos los paquetes ({packages.length})
                           </Button>
@@ -369,7 +369,7 @@ function TripperProfileContent() {
                       <p className="text-neutral-500 mb-4">
                         No tienes paquetes creados aún
                       </p>
-                      <Button onClick={() => router.push('/dashboard/tripper/routes')}>
+                      <Button onClick={() => router.push('/dashboard/tripper/packages')}>
                         <Package className="w-4 h-4 mr-2" />
                         Ir al Dashboard para Crear Paquetes
                       </Button>

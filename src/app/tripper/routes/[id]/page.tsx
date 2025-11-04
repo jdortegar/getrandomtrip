@@ -13,7 +13,7 @@ export default function RouteDetailPage() {
     return (
       <div className="p-6">
         <p className="mb-4">La ruta <strong>{id}</strong> no existe.</p>
-        <Link href="/dashboard/tripper/routes" className="underline">← Volver a Mis Rutas</Link>
+        <Link href="/dashboard/tripper/packages" className="underline">← Volver a Mis Paquetes</Link>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export default function RouteDetailPage() {
           {route.destinationHints.map((h: string, i: number) => <li key={i}>{h}</li>)}
         </ul>
       </div>
-      <Link href="/dashboard/tripper/routes" className="underline">← Volver</Link>
+      <Link href="/dashboard/tripper/packages" className="underline">← Volver</Link>
     </div>
   );
 }

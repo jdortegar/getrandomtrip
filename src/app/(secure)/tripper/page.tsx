@@ -377,7 +377,7 @@ function TripperContent() {
                   <p className="col-span-full text-sm text-neutral-600">
                     {tripperStats.activePackages} paquete(s) activo(s).{' '}
                     <a
-                      href="/tripper/routes"
+                      href="/dashboard/tripper/packages"
                       className="text-blue-600 hover:underline"
                     >
                       Ver todos →

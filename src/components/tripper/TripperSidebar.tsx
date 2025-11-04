@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard/tripper' },
-  { name: 'Mis Rutas', href: '/dashboard/tripper/routes' },
+  { name: 'Mis Paquetes', href: '/dashboard/tripper/packages' },
   { name: 'Ganancias', href: '/dashboard/tripper/earnings' },
   { name: 'Reseñas & NPS', href: '/dashboard/tripper/reviews' },
   { name: 'Media', href: '/dashboard/tripper/media' },
