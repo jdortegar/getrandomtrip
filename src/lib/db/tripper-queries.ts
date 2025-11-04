@@ -730,3 +730,41 @@ export async function getTripperPackages(tripperId: string) {
     return [];
   }
 }
+
+/**
+ * Get published blog posts for a tripper (for public profile)
+ */
+export async function getTripperPublishedBlogs(
+  tripperId: string,
+  limit: number = 6,
+) {
+  try {
+    const blogs = await prisma.blogPost.findMany({
+      where: {
+        authorId: tripperId,
+        status: 'PUBLISHED',
+      },
+      select: {
+        id: true,
+        title: true,
+        subtitle: true,
+        coverUrl: true,
+        tags: true,
+        publishedAt: true,
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: limit,
+    });
+
+    // Transform to match Blog component format
+    return blogs.map((blog) => ({
+      image: blog.coverUrl || '/images/placeholders/cover-1.jpg',
+      category: blog.tags[0] || 'Viajes',
+      title: blog.title,
+      href: `/blogs/${blog.id}`, // TODO: Update this when blog detail pages are created
+    }));
+  } catch (error) {
+    console.error('Error fetching tripper published blogs:', error);
+    return [];
+  }
+}

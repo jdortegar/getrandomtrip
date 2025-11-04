@@ -560,7 +560,187 @@ async function seedTrippersAndPackages() {
       );
     }
 
-    console.log('🎉 Successfully seeded trippers and packages!');
+    // Create blog posts for Dawson (first tripper)
+    console.log('\n📝 Creating blog posts for Dawson...');
+    const dawson = createdTrippers[0];
+    
+    const blogPosts = [
+      {
+        authorId: dawson.id,
+        title: 'Mi Primera Aventura en Buenos Aires',
+        subtitle: 'Un viaje inolvidable por la Patagonia urbana',
+        tagline: 'Descubre los secretos del sur argentino a través de mis ojos',
+        coverUrl: '/images/placeholders/cover-1.jpg',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Hace unas semanas, tuve la oportunidad de explorar Buenos Aires de una manera completamente nueva. Como tripper, siempre busco esos lugares que no aparecen en las guías turísticas tradicionales.',
+          },
+          {
+            type: 'image',
+            url: '/images/placeholders/photo-1.jpg',
+            caption: 'Atardecer en San Telmo',
+          },
+          {
+            type: 'paragraph',
+            text: 'La ciudad se revela poco a poco cuando caminas sin rumbo fijo. Los barrios de Palermo y San Telmo guardan tesoros que solo los locales conocen. Desde cafés escondidos hasta mercados callejeros llenos de vida.',
+          },
+          {
+            type: 'quote',
+            text: 'Viajar es vivir dos veces.',
+            cite: 'Omar Khayyam',
+          },
+          {
+            type: 'paragraph',
+            text: 'En este viaje, descubrí que la mejor manera de conocer una ciudad es perderse en ella. Cada esquina tiene una historia, cada local tiene una recomendación secreta.',
+          },
+        ],
+        tags: ['aventura', 'patagonia', 'buenos-aires', 'urban-exploration'],
+        format: 'ARTICLE',
+        status: 'PUBLISHED',
+        seo: {
+          title: 'Mi Primera Aventura en Buenos Aires - Blog de Dawson',
+          description: 'Descubre los secretos de Buenos Aires a través de la experiencia de un tripper experimentado',
+          keywords: ['buenos aires', 'viajes', 'aventura', 'patagonia'],
+        },
+        publishedAt: new Date('2024-01-15'),
+      },
+      {
+        authorId: dawson.id,
+        title: 'Ruta del Café en Colombia',
+        subtitle: 'Explorando los sabores de la tierra cafetera',
+        tagline: 'Un recorrido por las fincas más auténticas del Eje Cafetero',
+        coverUrl: '/images/placeholders/cover-2.jpg',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Colombia es sinónimo de café de calidad mundial. Pero más allá de la taza perfecta, hay toda una cultura alrededor de este grano que vale la pena explorar.',
+          },
+          {
+            type: 'image',
+            url: '/images/placeholders/photo-2.jpg',
+            caption: 'Finca cafetera en el Eje Cafetero',
+          },
+          {
+            type: 'paragraph',
+            text: 'Durante mi viaje por el Eje Cafetero, visité varias fincas familiares donde aprendí sobre el proceso completo: desde la siembra hasta la taza. La pasión de los caficultores es contagiosa.',
+          },
+          {
+            type: 'paragraph',
+            text: 'Cada finca tiene su propia historia y método. Algunas mantienen técnicas tradicionales, otras combinan lo mejor de ambos mundos. Lo que todas tienen en común es el amor por el café.',
+          },
+        ],
+        tags: ['cafe', 'colombia', 'gastronomia', 'eje-cafetero'],
+        format: 'ARTICLE',
+        status: 'PUBLISHED',
+        seo: {
+          title: 'Ruta del Café en Colombia - Guía de Viaje',
+          description: 'Descubre la ruta del café colombiano y las mejores fincas para visitar',
+          keywords: ['colombia', 'cafe', 'gastronomia', 'turismo'],
+        },
+        publishedAt: new Date('2024-02-10'),
+      },
+      {
+        authorId: dawson.id,
+        title: 'Fotografía Urbana: Capturando la Esencia de las Ciudades',
+        subtitle: 'Técnicas y consejos para fotografiar ciudades',
+        tagline: 'La ciudad como lienzo',
+        coverUrl: '/images/placeholders/cover-3.jpg',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'La fotografía urbana es mi pasión. Cada ciudad tiene su propia personalidad, y capturarla es un arte que requiere práctica y paciencia.',
+          },
+          {
+            type: 'image',
+            url: '/images/placeholders/photo-3.jpg',
+            caption: 'Calle de La Habana, Cuba',
+          },
+          {
+            type: 'paragraph',
+            text: 'En este post comparto algunas técnicas que he aprendido a lo largo de los años: desde la composición hasta el uso de la luz natural. La mejor hora para fotografiar ciudades es durante la hora dorada, justo después del amanecer o antes del atardecer.',
+          },
+          {
+            type: 'paragraph',
+            text: 'No todo se trata del equipo. A veces, la mejor cámara es la que tienes contigo. Lo importante es tener ojo para los detalles y la paciencia para esperar el momento perfecto.',
+          },
+        ],
+        tags: ['fotografia', 'urban', 'tecnica', 'arte'],
+        format: 'PHOTO',
+        status: 'PUBLISHED',
+        seo: {
+          title: 'Fotografía Urbana: Guía Completa',
+          description: 'Aprende técnicas de fotografía urbana con consejos de un experto',
+          keywords: ['fotografia', 'urbana', 'tecnica', 'viajes'],
+        },
+        publishedAt: new Date('2024-03-05'),
+      },
+      {
+        authorId: dawson.id,
+        title: 'Los Mercados Locales: El Corazón de Cada Ciudad',
+        subtitle: 'Descubriendo la gastronomía auténtica',
+        tagline: 'Donde los locales compran, los viajeros descubren',
+        coverUrl: '/images/placeholders/cover-4.jpg',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Los mercados locales son mi lugar favorito para entender una ciudad. No hay mejor manera de conocer la cultura gastronómica de un lugar que visitando sus mercados.',
+          },
+          {
+            type: 'paragraph',
+            text: 'Desde el Mercado de San Telmo en Buenos Aires hasta el Mercado de la Boqueria en Barcelona, cada mercado tiene su propia personalidad y productos únicos.',
+          },
+          {
+            type: 'paragraph',
+            text: 'En este artículo, comparto mis experiencias y recomendaciones para navegar los mercados locales como un experto. Aprende a identificar los mejores puestos, negociar precios y descubrir ingredientes únicos.',
+          },
+        ],
+        tags: ['gastronomia', 'mercados', 'cultura-local', 'comida'],
+        format: 'ARTICLE',
+        status: 'DRAFT',
+        seo: {
+          title: 'Guía de Mercados Locales para Viajeros',
+          description: 'Descubre los mejores mercados locales del mundo y cómo disfrutarlos',
+          keywords: ['mercados', 'gastronomia', 'viajes', 'cultura'],
+        },
+      },
+      {
+        authorId: dawson.id,
+        title: 'Aventuras Nocturnas: La Vida Nocturna de las Ciudades',
+        subtitle: 'Explorando la ciudad después del atardecer',
+        tagline: 'Cuando el sol se pone, la ciudad se transforma',
+        coverUrl: '/images/placeholders/cover-5.jpg',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'La noche transforma las ciudades. Los lugares que conoces de día se vuelven completamente diferentes cuando cae el sol. Esta es mi guía para explorar la vida nocturna de forma segura y auténtica.',
+          },
+          {
+            type: 'paragraph',
+            text: 'Desde bares escondidos hasta eventos culturales nocturnos, cada ciudad tiene su propia escena nocturna. Lo importante es saber dónde buscar y cómo moverse con seguridad.',
+          },
+        ],
+        tags: ['noche', 'vida-nocturna', 'cultura', 'aventura'],
+        format: 'MIXED',
+        status: 'DRAFT',
+        seo: {
+          title: 'Guía de Vida Nocturna para Viajeros',
+          description: 'Descubre la mejor vida nocturna de las ciudades que visitas',
+          keywords: ['vida nocturna', 'bares', 'cultura', 'viajes'],
+        },
+      },
+    ];
+
+    for (const blogData of blogPosts) {
+      const blog = await prisma.blogPost.create({
+        data: blogData,
+      });
+      console.log(
+        `✅ Created blog post: ${blog.title} (${blog.status})`,
+      );
+    }
+
+    console.log('🎉 Successfully seeded trippers, packages, and blog posts!');
   } catch (error) {
     console.error('❌ Error seeding data:', error);
     throw error;

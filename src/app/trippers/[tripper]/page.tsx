@@ -5,6 +5,7 @@ import {
   getTripperBySlug,
   getTripperFeaturedTrips,
   getTripperPackagesByTypeAndLevel,
+  getTripperPublishedBlogs,
 } from '@/lib/db/tripper-queries';
 import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
 import TripperHero from '@/components/tripper/TripperHero';
@@ -81,6 +82,9 @@ export default async function Page({
   // Must have database tripper data
   if (!dbTripper) return notFound();
 
+  // Fetch published blog posts for this tripper
+  const publishedBlogs = await getTripperPublishedBlogs(dbTripper.id, 6);
+
   // Create tripper object from database data
   const t = {
     name: dbTripper.name,
@@ -88,7 +92,7 @@ export default async function Page({
     avatar: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
     heroImage: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
     interests: dbTripper.interests || [],
-    posts: [], // TODO: Add posts field to database schema if needed
+    posts: publishedBlogs,
     bio: dbTripper.bio || '',
     location: dbTripper.location || '',
     agency: 'Randomtrip', // Default agency name
