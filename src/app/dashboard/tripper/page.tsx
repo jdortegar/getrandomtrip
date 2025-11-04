@@ -20,6 +20,7 @@ import {
   Plus,
   Settings,
   BarChart3,
+  Book,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -323,6 +324,21 @@ function TripperContent() {
                       </div>
                       <div className="text-sm text-yellow-700">
                         Ver feedback
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/tripper/blogs"
+                    className="w-full flex items-center gap-3 p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                  >
+                    <Book className="h-5 w-5 text-indigo-600" />
+                    <div className="text-left">
+                      <div className="font-medium text-indigo-900">
+                        Mis Posts
+                      </div>
+                      <div className="text-sm text-indigo-700">
+                        Gestionar blog
                       </div>
                     </div>
                   </Link>

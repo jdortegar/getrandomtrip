@@ -25,56 +25,57 @@ model User {
   password  String?
   avatarUrl String?
   role      UserRole @default(CLIENT)
-  
+
   // Tripper-specific fields
-  tripperSlug    String? @unique  // For trippers: 'dawson', 'alma', etc.
-  commission     Float?           // Tripper's commission rate (0.12 = 12%)
+  tripperSlug    String?  @unique // For trippers: 'dawson', 'alma', etc.
+  commission     Float? // Tripper's commission rate (0.12 = 12%)
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
-  
+
   // Tripper profile fields
-  bio            String?          // Tripper biography/description
-  heroImage      String?          // Hero banner image
-  location       String?          // Tripper location
-  tierLevel      String?          // Tripper tier level
-  destinations   String[] @default([]) // Countries/cities they specialize in
-  
+  bio          String? // Tripper biography/description
+  heroImage    String? // Hero banner image
+  location     String? // Tripper location
+  tierLevel    String? // Tripper tier level
+  destinations String[] @default([]) // Countries/cities they specialize in
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // User preferences
-  travelerType  String?
-  interests     String[] @default([])
-  dislikes      String[] @default([])
-  
+  travelerType String?
+  interests    String[] @default([])
+  dislikes     String[] @default([])
+
   // Relations
   tripRequests  TripRequest[] @relation("CustomerTripRequests")
   ownedPackages Package[]     @relation("OwnedPackages")
   payments      Payment[]
   reviews       Review[]
   likedPackages PackageLike[]
-  
+  blogPosts     BlogPost[]    @relation("BlogAuthor")
+
   @@map("users")
 }
 
 model TripRequest {
-  id     String     @id @default(cuid())
+  id     String            @id @default(cuid())
   userId String
   status TripRequestStatus @default(DRAFT)
-  
+
   // Journey metadata
   from  String // 'tripper-slug' | 'admin'
-  type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
-  level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
-  
+  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
+  level String // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+
   // Logistics - ORIGIN (where user starts from)
   originCountry String
   originCity    String
   startDate     DateTime?
   endDate       DateTime?
-  nights        Int      @default(1)
-  pax           Int      @default(1)
-  
+  nights        Int       @default(1)
+  pax           Int       @default(1)
+
   // Filters
   transport         String   @default("avion")
   climate           String   @default("indistinto")
@@ -82,152 +83,152 @@ model TripRequest {
   departPref        String   @default("indistinto")
   arrivePref        String   @default("indistinto")
   avoidDestinations String[] @default([])
-  
+
   // Addons (JSON for flexibility)
   addons Json? // Array of { id: string, qty: number, optionId?: string }
-  
+
   // Package Assignment
   packageId String? // Assigned package when user selects one
-  
+
   // Completed trip data (optional - populated after trip completion)
-  actualDestination     String?   // Revealed destination
+  actualDestination     String? // Revealed destination
   destinationRevealedAt DateTime? // When destination was revealed (48h before)
   completedAt           DateTime? // When trip was marked as completed
-  customerRating        Int?      // 1-5 star rating
-  customerFeedback      String?   // Customer review/feedback
-  tripPhotos            Json?     // Array of photo URLs from the trip
-  
+  customerRating        Int? // 1-5 star rating
+  customerFeedback      String? // Customer review/feedback
+  tripPhotos            Json? // Array of photo URLs from the trip
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
   user    User     @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
   package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
   payment Payment?
-  
+
   @@map("trip_requests")
 }
 
 model Package {
-  id     String     @id @default(cuid())
-  ownerId String    // Tripper who created this package
-  status PackageStatus @default(DRAFT)
-  
+  id      String        @id @default(cuid())
+  ownerId String // Tripper who created this package
+  status  PackageStatus @default(DRAFT)
+
   // Package metadata
-  type  String  // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
-  level String  // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
-  
+  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
+  level String // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+
   // User preference matching (for filtering)
   excuseKey String? // Excuse key that this package supports (e.g., 'romantic-getaway', 'solo-adventure')
-  
+
   // Capacity constraints
   minNights Int @default(1)
   maxNights Int @default(7)
   minPax    Int @default(1)
   maxPax    Int @default(8)
-  
+
   // Display info
-  title       String   // "Aventura Urbana Misteriosa"
-  teaser      String   // Short description
-  description String   // Full description
-  heroImage   String   // Main image for card
+  title       String // "Aventura Urbana Misteriosa"
+  teaser      String // Short description
+  description String // Full description
+  heroImage   String // Main image for card
   tags        String[] @default([]) // ['adventure', 'cultural']
   highlights  String[] @default([]) // ["3 noches", "Hotel boutique"]
-  
+
   // Destination info
   destinationCountry String
   destinationCity    String
-  
+
   // Package content (JSON for flexibility)
   hotels     Json? // Array of hotel objects
   activities Json? // Array of activity objects
   itinerary  Json? // Detailed itinerary
   inclusions Json? // What's included
   exclusions Json? // What's not included
-  
+
   // Pricing
-  basePriceUsd   Float  @default(0)
-  displayPrice   String @default("")
-  
+  basePriceUsd Float  @default(0)
+  displayPrice String @default("")
+
   // Visibility
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)
   likes      Int     @default(0)
-  
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  owner       User         @relation("OwnedPackages", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner        User          @relation("OwnedPackages", fields: [ownerId], references: [id], onDelete: Cascade)
   tripRequests TripRequest[] @relation
   packageLikes PackageLike[]
-  
+
   @@map("packages")
 }
 
 model Payment {
-  id                   String        @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Relations
-  userId               String        // Direct relation to user
-  tripRequestId        String        @unique
-  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tripRequest          TripRequest   @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
-  
+  userId        String // Direct relation to user
+  tripRequestId String      @unique
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+
   // Provider Information
-  provider             String        // 'mercadopago' | 'stripe' | 'paypal'
-  providerPaymentId    String?       // MP payment ID
-  providerPreferenceId String?       // MP preference ID
-  providerMerchantOrderId String?    // MP merchant order ID
-  providerSessionId    String?       // Session/token for provider
-  
+  provider                String // 'mercadopago' | 'stripe' | 'paypal'
+  providerPaymentId       String? // MP payment ID
+  providerPreferenceId    String? // MP preference ID
+  providerMerchantOrderId String? // MP merchant order ID
+  providerSessionId       String? // Session/token for provider
+
   // Payment Details
-  amount               Float         // Total amount paid
-  currency             String        @default("ARS") // Changed from USD to ARS
-  exchangeRate         Float?        // If paid in different currency
-  
+  amount       Float // Total amount paid
+  currency     String @default("ARS") // Changed from USD to ARS
+  exchangeRate Float? // If paid in different currency
+
   // Payment Method Details
-  paymentMethod        String?       // 'credit_card' | 'debit_card' | 'digital_wallet'
-  cardLast4            String?       // Last 4 digits
-  cardBrand            String?       // 'visa' | 'mastercard' | 'amex'
-  cardExpiryMonth      Int?          // MM
-  cardExpiryYear       Int?          // YYYY
-  cardholderName       String?       // Cardholder name
-  
+  paymentMethod   String? // 'credit_card' | 'debit_card' | 'digital_wallet'
+  cardLast4       String? // Last 4 digits
+  cardBrand       String? // 'visa' | 'mastercard' | 'amex'
+  cardExpiryMonth Int? // MM
+  cardExpiryYear  Int? // YYYY
+  cardholderName  String? // Cardholder name
+
   // MercadoPago Specific
-  mpExternalReference  String?       // External reference sent to MP
-  mpDescription        String?       // Payment description
-  mpStatementDescriptor String?      // Statement descriptor
-  mpMetadata           Json?         // Additional MP metadata
-  
+  mpExternalReference   String? // External reference sent to MP
+  mpDescription         String? // Payment description
+  mpStatementDescriptor String? // Statement descriptor
+  mpMetadata            Json? // Additional MP metadata
+
   // Payment Status & Flow
-  status               PaymentStatus @default(PENDING)
-  statusDetail         String?       // MP status detail (e.g., 'accredited', 'pending_waiting_payment')
-  failureReason        String?       // Reason if payment failed
-  
+  status        PaymentStatus @default(PENDING)
+  statusDetail  String? // MP status detail (e.g., 'accredited', 'pending_waiting_payment')
+  failureReason String? // Reason if payment failed
+
   // Financial Tracking
-  netAmount            Float?        // Amount after fees
-  feeAmount            Float?        // Provider fees
-  taxAmount            Float?        // Tax amount
-  
+  netAmount Float? // Amount after fees
+  feeAmount Float? // Provider fees
+  taxAmount Float? // Tax amount
+
   // Refund & Chargeback
-  refundedAmount       Float         @default(0)
-  refundedAt           DateTime?
-  chargebackAmount     Float         @default(0)
-  chargebackAt         DateTime?
-  
+  refundedAmount   Float     @default(0)
+  refundedAt       DateTime?
+  chargebackAmount Float     @default(0)
+  chargebackAt     DateTime?
+
   // Provider Response Data
-  providerResponse     Json?         // Full provider response
-  webhookData          Json?         // Webhook payload data
-  
+  providerResponse Json? // Full provider response
+  webhookData      Json? // Webhook payload data
+
   // Timestamps
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-  paidAt               DateTime?     // When payment was completed
-  expiresAt            DateTime?     // When payment preference expires
-  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  paidAt    DateTime? // When payment was completed
+  expiresAt DateTime? // When payment preference expires
+
   @@map("payments")
 }
 
@@ -241,14 +242,14 @@ model Review {
   destination String
   isApproved  Boolean @default(false)
   isPublic    Boolean @default(true)
-  
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("reviews")
 }
 
@@ -257,15 +258,47 @@ model PackageLike {
   packageId String
   userId    String
   createdAt DateTime @default(now())
-  
+
   // Relations
   package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([packageId, userId])
   @@map("package_likes")
 }
 
+model BlogPost {
+  id       String     @id @default(cuid())
+  authorId String // Tripper who created this blog post
+  status   BlogStatus @default(DRAFT)
+  format   BlogFormat @default(ARTICLE)
+
+  // Basic info
+  title    String
+  subtitle String?
+  tagline  String?
+  coverUrl String? // Hero/cover image URL
+
+  // Content blocks (JSON array for flexibility)
+  // Each block can be: paragraph, image, video, embed, quote
+  blocks Json @default("[]")
+
+  // Metadata
+  tags String[] @default([])
+
+  // SEO
+  seo Json? // { title?: string, description?: string, keywords?: string[] }
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  // Relations
+  author User @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("blog_posts")
+}
 
 // ============================================================================
 // ENUMS
@@ -278,9 +311,9 @@ enum UserRole {
 }
 
 enum OwnerType {
-  CUSTOMER  // Regular user creating their own trip
-  TRIPPER   // Tripper creating a template/featured trip
-  ADMIN     // RandomTrip admin creating trips
+  CUSTOMER // Regular user creating their own trip
+  TRIPPER // Tripper creating a template/featured trip
+  ADMIN // RandomTrip admin creating trips
 }
 
 enum TripRequestStatus {
@@ -301,18 +334,30 @@ enum PackageStatus {
 }
 
 enum PaymentStatus {
-  PENDING              // Payment created, waiting for user action
-  PROCESSING           // Payment in progress
-  APPROVED             // Payment approved by provider
-  COMPLETED            // Payment fully processed and funds received
+  PENDING // Payment created, waiting for user action
+  PROCESSING // Payment in progress
+  APPROVED // Payment approved by provider
+  COMPLETED // Payment fully processed and funds received
   PENDING_WAITING_PAYMENT // MP: Waiting for payment method
   PENDING_WAITING_CONFIRMATION // MP: Waiting for confirmation
-  FAILED               // Payment failed
-  CANCELLED            // Payment cancelled by user or system
-  REFUNDED             // Payment refunded
-  PARTIALLY_REFUNDED   // Partial refund
-  CHARGEBACK           // Chargeback initiated
-  IN_PROCESS           // MP: Payment being processed
-  IN_MEDIATION         // MP: Payment in mediation
-  REJECTED             // MP: Payment rejected
+  FAILED // Payment failed
+  CANCELLED // Payment cancelled by user or system
+  REFUNDED // Payment refunded
+  PARTIALLY_REFUNDED // Partial refund
+  CHARGEBACK // Chargeback initiated
+  IN_PROCESS // MP: Payment being processed
+  IN_MEDIATION // MP: Payment in mediation
+  REJECTED // MP: Payment rejected
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum BlogFormat {
+  ARTICLE
+  PHOTO
+  VIDEO
+  MIXED
 }
