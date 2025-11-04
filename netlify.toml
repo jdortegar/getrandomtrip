@@ -1,69 +1,17 @@
 # Netlify Configuration for Next.js 14
-# This file configures Netlify to properly build and deploy Next.js applications
-# 
-# Key differences from Vercel:
-# - Vercel has native Next.js integration (built by Next.js creators)
-# - Netlify requires explicit configuration via @netlify/plugin-nextjs
-# - Netlify may be stricter about build-time static generation errors
+# Minimal configuration - Netlify handles most defaults automatically
 
-[build]
-  # Build command - use npm run build to ensure consistent environment
-  command = "npm run build"
-  
-  # Publish directory - Netlify Next.js plugin handles this automatically
-  # but we specify it for clarity
-  publish = ".next"
-
-# Environment variables for build
 [build.environment]
-  # Node.js version - Next.js 14 requires Node 18+
-  # Using 20.x (LTS) - Netlify supports 18.x and 20.x
-  # Note: Use just "20" not "20.x" for better compatibility
+  # Node.js version
   NODE_VERSION = "20"
   
-  # Set NODE_ENV to production for builds (this was the warning you saw)
-  # Netlify may set this to a non-standard value, so we enforce it
-  NODE_ENV = "production"
-  
-  # Install devDependencies (required for Prisma and build tools)
-  # Netlify by default skips devDependencies in production, but we need them for the build
+  # Ensure devDependencies are installed (required for Prisma)
   NPM_CONFIG_PRODUCTION = "false"
   
-  # Next.js specific settings
-  NEXT_TELEMETRY_DISABLED = "1"
-  
-  # Note: @netlify/plugin-nextjs handles output configuration automatically
+  # Set NODE_ENV to production
+  NODE_ENV = "production"
 
-# Next.js runtime plugin - REQUIRED for proper Next.js support on Netlify
-# This plugin handles:
-# - Server-side rendering (SSR)
-# - API routes
-# - Middleware
-# - Image optimization
-# - Static file serving
+# Next.js plugin - Required for Next.js support on Netlify
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-
-# Redirects - Prevent Netlify URL redirects
-# Force custom domain to be used
-[[redirects]]
-  from = "https://getrandomtrip-1.netlify.app/*"
-  to = "https://getrandomtrip.com/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "https://*.netlify.app/*"
-  to = "https://getrandomtrip.com/:splat"
-  status = 301
-  force = true
-
-# Security headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
 
