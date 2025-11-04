@@ -17,7 +17,9 @@
 # Environment variables for build
 [build.environment]
   # Node.js version - Next.js 14 requires Node 18+
-  NODE_VERSION = "22.x"
+  # Using 20.x (LTS) - Netlify supports 18.x and 20.x
+  # Note: Use just "20" not "20.x" for better compatibility
+  NODE_VERSION = "20"
   
   # Set NODE_ENV to production for builds (this was the warning you saw)
   # Netlify may set this to a non-standard value, so we enforce it
