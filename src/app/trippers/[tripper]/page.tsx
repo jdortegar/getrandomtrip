@@ -143,7 +143,7 @@ export default async function Page({
             viewAll: {
               title: 'Ver Todo',
               subtitle: 'Explora más contenido',
-              href: `/blog?tripper=${t.slug}`,
+              href: `/blog?tripperId=${dbTripper.id}&tripper=${t.name}`,
             },
           }}
           id="tripper-blog"

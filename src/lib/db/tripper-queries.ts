@@ -761,7 +761,7 @@ export async function getTripperPublishedBlogs(
       image: blog.coverUrl || '/images/placeholders/cover-1.jpg',
       category: blog.tags[0] || 'Viajes',
       title: blog.title,
-      href: `/blogs/${blog.id}`, // TODO: Update this when blog detail pages are created
+      href: `/blogs/${blog.id}`,
     }));
   } catch (error) {
     console.error('Error fetching tripper published blogs:', error);
