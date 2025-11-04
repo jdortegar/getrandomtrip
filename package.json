@@ -25,7 +25,7 @@
     "discord:setup-messages": "npx tsx scripts/discord-setup-messages.ts",
     "discord:setup-roles": "npx tsx scripts/discord-setup-worker-roles.ts",
     "discord:update-work-permissions": "npx tsx scripts/discord-update-work-permissions.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

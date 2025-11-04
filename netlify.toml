@@ -25,6 +25,10 @@
   # Netlify may set this to a non-standard value, so we enforce it
   NODE_ENV = "production"
   
+  # Install devDependencies (required for Prisma and build tools)
+  # Netlify by default skips devDependencies in production, but we need them for the build
+  NPM_CONFIG_PRODUCTION = "false"
+  
   # Next.js specific settings
   NEXT_TELEMETRY_DISABLED = "1"
   
