@@ -119,7 +119,7 @@ export default async function Page({
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="rt-container px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/trippers">
@@ -177,7 +177,7 @@ export default async function Page({
       </div>
 
       {/* Packages Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="rt-container px-4 sm:px-6 lg:px-8 py-8">
         {allPackages.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">📦</div>

@@ -8,7 +8,7 @@ export default function TripperPlacesVisited({ tripper }: { tripper: Tripper }) 
   if (!places?.length) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-10" id="places-visited">
+    <section className="rt-container px-4 md:px-8 py-10" id="places-visited">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl md:text-3xl font-semibold">Places Visited</h2>
       </div>

@@ -26,7 +26,7 @@ export function WizardHeader({
 }: WizardHeaderProps) {
   return (
     <div className={className}>
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 text-center">
+      <div className="rt-container px-4 md:px-8 py-6 text-center">
         {/* Wizard Progress */}
 
         {/* Progress Bar */}

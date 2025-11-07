@@ -53,7 +53,7 @@ export function BudgetBandsSection({
 
   return (
     <section className={isCompact ? 'py-6 md:py-8' : 'py-10 md:py-14'}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="rt-container px-4 sm:px-6 lg:px-8">
         <header
           className={
             isCompact ? 'text-center mb-4 md:mb-6' : 'text-center mb-10'

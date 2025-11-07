@@ -91,7 +91,7 @@ function TripperContent() {
       <>
         <Navbar />
         <BgCarousel scrim={0.75} />
-        <main className="container mx-auto max-w-7xl px-4 pt-24 md:pt-28 pb-16">
+        <main className="container rt-container px-4 pt-24 md:pt-28 pb-16">
           <LoadingSpinner />
         </main>
       </>
@@ -131,7 +131,7 @@ function TripperContent() {
       <Navbar />
       <BgCarousel scrim={0.75} />
 
-      <main className="container mx-auto max-w-7xl px-4 pt-24 md:pt-28 pb-16">
+      <main className="container rt-container px-4 pt-24 md:pt-28 pb-16">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">

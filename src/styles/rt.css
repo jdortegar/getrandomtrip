@@ -1,40 +1,83 @@
 @reference "../app/globals.css";
 
 /* Cards / superficies */
-.rt-card { @apply bg-white rounded-2xl border border-neutral-200/60 shadow-sm; }
-.rt-card-body { @apply p-4 sm:p-5; }
+.rt-container {
+  @apply w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.rt-card {
+  @apply bg-white rounded-2xl border border-neutral-200/60 shadow-sm;
+}
+.rt-card-body {
+  @apply p-4 sm:p-5;
+}
 
 /* Títulos y texto */
-.rt-h1 { @apply text-2xl font-semibold text-neutral-900; }
-.rt-h2 { @apply text-lg font-semibold text-neutral-900; }
-.rt-subtle { @apply text-sm text-neutral-500; }
+.rt-h1 {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+.rt-h2 {
+  @apply text-lg font-semibold text-neutral-900;
+}
+.rt-subtle {
+  @apply text-sm text-neutral-500;
+}
 
 /* Botones */
-.rt-btn { @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm transition
-  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2; }
-.rt-btn--primary { @apply bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500; }
-.rt-btn--ghost { @apply bg-transparent hover:bg-neutral-100 text-neutral-700; }
-.rt-btn--muted { @apply bg-neutral-100 text-neutral-700 border border-neutral-200; }
+.rt-btn {
+  @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm transition
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+}
+.rt-btn--primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500;
+}
+.rt-btn--ghost {
+  @apply bg-transparent hover:bg-neutral-100 text-neutral-700;
+}
+.rt-btn--muted {
+  @apply bg-neutral-100 text-neutral-700 border border-neutral-200;
+}
 
 /* Inputs */
-.rt-input { @apply w-full h-10 px-3 rounded-xl bg-white border border-neutral-200
-  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500; }
+.rt-input {
+  @apply w-full h-10 px-3 rounded-xl bg-white border border-neutral-200
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500;
+}
 
 /* Listas */
-.rt-list { @apply divide-y divide-neutral-200; }
-.rt-list-item { @apply p-4; }
+.rt-list {
+  @apply divide-y divide-neutral-200;
+}
+.rt-list-item {
+  @apply p-4;
+}
 
 /* Grid KPIs */
-.rt-stats { @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-4; }
-.rt-stat { @apply bg-white rounded-2xl border border-neutral-200/60 shadow-sm; }
-.rt-stat .k { @apply text-2xl font-semibold; }
-.rt-stat .l { @apply text-sm text-neutral-500; }
+.rt-stats {
+  @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-4;
+}
+.rt-stat {
+  @apply bg-white rounded-2xl border border-neutral-200/60 shadow-sm;
+}
+.rt-stat .k {
+  @apply text-2xl font-semibold;
+}
+.rt-stat .l {
+  @apply text-sm text-neutral-500;
+}
 
 /* Badges */
-.rt-badge { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border; }
-.rt-badge--ok { @apply bg-green-50 text-green-700 border-green-200; }
-.rt-badge--warn { @apply bg-yellow-50 text-yellow-800 border-yellow-200; }
+.rt-badge {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border;
+}
+.rt-badge--ok {
+  @apply bg-green-50 text-green-700 border-green-200;
+}
+.rt-badge--warn {
+  @apply bg-yellow-50 text-yellow-800 border-yellow-200;
+}
 
 /* Página con offset bajo el header del sitio */
-.rt-page { @apply max-w-7xl mx-auto px-6 py-6 pt-[var(--rt-header-h,64px)]; }
-
+.rt-page {
+  @apply rt-container px-6 py-6 pt-[var(--rt-header-h,64px)];
+}

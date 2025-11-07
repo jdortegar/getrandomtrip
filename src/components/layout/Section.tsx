@@ -1,6 +1,7 @@
 import React from 'react';
 import { slugify } from '@/lib/helpers/slugify';
 import { cn } from '@/lib/utils';
+import Container from './Container';
 
 type SectionProps = {
   children: React.ReactNode;
@@ -35,7 +36,7 @@ const Section = ({
       id={id}
     >
       {title && (
-        <div className="mb-6 max-w-3xl mx-auto relative z-10 px-4 md:mb-8">
+        <div className="mb-6 max-w-4xl mx-auto relative z-10 px-4 md:mb-8">
           <h2
             className={cn(
               'font-caveat text-4xl md:text-5xl font-bold mb-4 md:mb-6',
@@ -63,14 +64,9 @@ const Section = ({
           </p>
         </div>
       )}
-      <div
-        className={cn(
-          'mx-auto relative z-10 px-4 w-full',
-          !fullWidth && 'max-w-7xl',
-        )}
-      >
+      <Container size={fullWidth ? 'full' : 'xl'} className="relative z-10">
         {children}
-      </div>
+      </Container>
     </section>
   );
 };

@@ -49,7 +49,7 @@ export default function AddonsGallery() {
 
   return (
     <div className="font-jost space-y-4" data-testid="addons-gallery">
-      <div className="max-w-7xl mx-auto py-6">
+      <div className="rt-container py-6">
         <p className="text-center text-gray-600 italic text-lg">
           Elegí tus add-ons
         </p>

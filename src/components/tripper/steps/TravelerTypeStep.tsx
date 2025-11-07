@@ -20,7 +20,7 @@ export default function TravelerTypeStep({
   onBack,
 }: TravelerTypeStepProps) {
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative">
+    <section className="rt-container px-4 md:px-8 py-10 relative">
       <div className="space-y-8">
       <div className="text-center mb-8 relative">
         <h3

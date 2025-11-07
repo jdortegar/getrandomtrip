@@ -145,7 +145,7 @@ export default function Excuse({
 }: ExcuseProps) {
   return (
     <section
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"
+      className="rt-container px-4 md:px-8 py-10 relative"
       data-testid="tab-excuse"
     >
       <div className="text-center mb-8 relative">
@@ -181,7 +181,7 @@ export default function Excuse({
               ? 'max-w-4xl mx-auto'
               : excuseCards.length === 3
                 ? 'max-w-6xl mx-auto'
-                : 'max-w-7xl mx-auto'
+                : 'rt-container'
         }`}
       >
         {excuseCards.map((card) => (

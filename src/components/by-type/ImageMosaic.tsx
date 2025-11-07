@@ -33,7 +33,7 @@ export default function ImageMosaic({ type }: ImageMosaicProps) {
   const images = getPlaceholderImages(type);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+    <section className="rt-container px-4 md:px-8 py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="relative h-80 rounded-2xl overflow-hidden shadow-lg">
           <SafeImage src={`${images[0]}.jpg`} alt="Travel image 1" fill className="object-cover" />

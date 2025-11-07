@@ -66,7 +66,7 @@ export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
           </div>
 
           {/* Right Column - Content */}
-          <div className="relative flex flex-col gap-8 px-6 mt-[-100px] z-10 max-w-7xl mx-auto">
+          <div className="relative flex flex-col gap-8 px-6 mt-[-100px] z-10 rt-container">
             {/* Avatar */}
             <div className="flex gap-6 items-end">
               <div className="h-80 w-80 overflow-hidden rounded-sm bg-slate-800 ring-4 ring-white/70 shadow-2xl ">

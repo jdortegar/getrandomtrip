@@ -134,7 +134,7 @@ export default function Budget({
 
   return (
     <section
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"
+      className="rt-container px-4 md:px-8 py-10 relative"
       data-testid="tab-presupuesto"
     >
       {/* Header Section */}

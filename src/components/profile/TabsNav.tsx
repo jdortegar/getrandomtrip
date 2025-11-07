@@ -10,7 +10,7 @@ export default function TabsNav({ onChange }: { onChange: (t: Tab) => void }) {
 
   return (
     <div className="sticky top-16 z-10 -mt-2 mb-4 border-b border-neutral-200 bg-white/70 backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
-      <div className="mx-auto flex max-w-7xl gap-4 px-2 py-2">
+      <div className="mx-auto flex rt-container gap-4 px-2 py-2">
         {TABS.map(tab => (
           <button
             key={tab}

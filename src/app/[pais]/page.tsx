@@ -16,7 +16,7 @@ export default function CountryPage({ params }: { params: { pais: string } }) {
         />
         {/* Encabezado */}
         <div className="absolute inset-0 flex items-end">
-          <div className="max-w-7xl mx-auto w-full px-4 md:px-8 pb-10">
+          <div className="rt-container w-full px-4 md:px-8 pb-10">
             {country.heroKicker && (
               <p className="uppercase tracking-wide text-white/90 text-xs mb-1">{country.heroKicker}</p>
             )}
@@ -34,7 +34,7 @@ export default function CountryPage({ params }: { params: { pais: string } }) {
       </section>
 
       {/* ... resto de secciones ... */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+      <div className="rt-container px-4 md:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
                 <h2 className="text-3xl font-bold mb-4">Razones para ir</h2>

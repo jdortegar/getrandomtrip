@@ -73,7 +73,7 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
 
   return (
     <div className="font-jost space-y-6" data-testid="logistics-tab">
-      <div className="max-w-7xl mx-auto py-6">
+      <div className="rt-container py-6">
         <p className="text-center text-gray-600 italic text-lg ">
           Elegí país y ciudad de salida, cantidad de días y la fecha de inicio.
         </p>

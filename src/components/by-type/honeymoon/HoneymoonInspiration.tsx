@@ -50,7 +50,7 @@ const HoneymoonInspiration: React.FC = () => {
 
   return (
     <section id="inspiracion-honeymoon" className="py-20 px-8 bg-[#111827] text-white">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+      <div className="rt-container grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
         {/* Columna izquierda: título + copy + flechas */}
         <div className="md:col-span-1 text-left">
           <h2

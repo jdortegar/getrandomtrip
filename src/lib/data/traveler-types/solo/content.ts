@@ -10,7 +10,7 @@ export const soloHeroContent: HeroContent = {
   videoSrc: '/videos/solo-hero-video.mp4',
   fallbackImage: '/images/journey-types/solo-traveler.jpg',
   primaryCta: {
-    text: 'RANDOMTRIP-me!',
+    text: 'RANDOMTRIPME!',
     href: '#solo-planner',
     ariaLabel: 'Ir a la sección de planificación de viaje',
   },

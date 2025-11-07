@@ -1,6 +1,6 @@
 export const NAVBAR_CONSTANTS = {
   HEIGHT: 'h-16', // Increased height for better spacing
-  MAX_WIDTH: 'max-w-7xl',
+  MAX_WIDTH: 'rt-container',
   PADDING: 'px-4 sm:px-6 lg:px-8',
   SPACER_HEIGHT: 'h-16', // Match navbar height
 } as const;

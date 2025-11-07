@@ -255,7 +255,7 @@ function DashboardContent() {
       />
 
       <Section>
-        <div className="max-w-7xl mx-auto">
+        <div className="rt-container">
           {loading ? (
             <LoadingSpinner />
           ) : (

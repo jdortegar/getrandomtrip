@@ -4,7 +4,7 @@ import EmpathyCard from './EmpathyCard';
 
 export default function FamilyIntro({ onStart }: { onStart: () => void }) {
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+    <section className="rt-container px-4 md:px-8 py-12">
       <h2 className="text-center font-display text-3xl md:text-4xl">
         Comencemos a diseñar su Randomtrip Familiar
       </h2>

@@ -16,7 +16,7 @@ export function TrippersDecodePageContent() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header Section */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="rt-container px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="font-caveat text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               {TRIPPERS_DECODE_CONSTANTS.TITLE}
@@ -29,7 +29,7 @@ export function TrippersDecodePageContent() {
       </div>
 
       {/* Search Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="rt-container px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <TrippersDecodeSearch
             initialDestination={destination}

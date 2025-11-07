@@ -42,7 +42,7 @@ export default function GroupHero() {
       <div className="absolute inset-0 bg-black/40 pointer-events-none" />
 
       {/* Contenido */}
-      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+      <div className="relative z-20 rt-container px-4 md:px-8 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
         <div className="max-w-2xl">
           <h1 className="font-display text-4xl md:text-6xl leading-tight">
             <span>CREW<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP

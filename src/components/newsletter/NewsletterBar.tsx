@@ -66,7 +66,7 @@ export default function NewsletterBar() {
       aria-label="Suscripción al newsletter"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-neutral-900/95 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md text-white"
     >
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      <div className="rt-container px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-6">
           {/* Copy */}
           <div className="flex-1">

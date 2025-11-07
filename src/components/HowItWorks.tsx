@@ -12,7 +12,7 @@ export default function HowItWorksSection() {
       className="mt-4"
       data-testid="how-it-works"
     >
-      <div className="mx-auto max-w-7xl py-8">
+      <div className="rt-container py-8">
         <p className="font-jost mb-10 text-center text-xl italic text-gray-600">
           {HOW_IT_WORKS_CONSTANTS.SUBTITLE}
         </p>
@@ -23,11 +23,6 @@ export default function HowItWorksSection() {
             <HowItWorksStep key={step.title} step={step} />
           ))}
         </ol>
-
-        {/* Note */}
-        <p className="mt-10 text-center text-sm text-neutral-500">
-          {HOW_IT_WORKS_CONSTANTS.NOTE}
-        </p>
       </div>
     </div>
   );

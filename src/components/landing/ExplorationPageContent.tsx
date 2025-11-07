@@ -231,7 +231,7 @@ function ExplorationPageContent() {
       <section
         data-testid="journey-section"
         aria-label="Comienza tu Viaje"
-        className="max-w-7xl mx-auto text-center"
+        className="rt-container text-center"
       >
         <h2
           data-testid="journey-title"

@@ -45,8 +45,6 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
   const primaryLinks = NAVBAR_LINKS.slice(0, 3);
   const extraLinks = NAVBAR_LINKS.slice(3);
 
-  console.log('overlay', overlay);
-
   return (
     <>
       <header

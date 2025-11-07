@@ -54,7 +54,7 @@ function BlogListContent() {
           className="!h-[40vh]"
         />
         <Section>
-          <div className="max-w-7xl mx-auto">
+          <div className="rt-container">
             <LoadingSpinner />
           </div>
         </Section>
@@ -75,7 +75,7 @@ function BlogListContent() {
       />
 
       <Section>
-        <div className="max-w-7xl mx-auto">
+        <div className="rt-container">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-neutral-800">Mis Posts</h1>
             <Link

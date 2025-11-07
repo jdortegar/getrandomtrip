@@ -4,7 +4,7 @@ import React from 'react';
 export default function SoloIntro() {
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 md:px-8 py-16 grid md:grid-cols-2 gap-10">
+      <div className="rt-container px-4 md:px-8 py-16 grid md:grid-cols-2 gap-10">
         <div>
           <h3 className="font-display text-2xl text-neutral-900">
             SOLUM<sup className="align-super text-[0.65em] ml-0.5">©</sup> CONFIDENCIAL

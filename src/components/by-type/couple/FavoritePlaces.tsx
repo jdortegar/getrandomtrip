@@ -20,7 +20,7 @@ export default function FavoritePlaces() {
 
   return (
     <section id="inspiracion-couples" className="py-20 px-8 bg-[#111827] text-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="rt-container">
         <SectionHeading
           title="Nuestros lugares favoritos para escapadas en pareja"
           subtitle="El viaje debe ser tan único como ustedes."

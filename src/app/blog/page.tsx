@@ -139,7 +139,7 @@ function BlogListContent() {
           className="!h-[40vh]"
         />
         <Section>
-          <div className="max-w-7xl mx-auto">
+          <div className="rt-container">
             <LoadingSpinner />
           </div>
         </Section>
@@ -160,7 +160,7 @@ function BlogListContent() {
       />
 
       <Section>
-        <div className="max-w-7xl mx-auto">
+        <div className="rt-container">
           {tripperName && (
             <div className="mb-6">
               <Link
@@ -314,7 +314,7 @@ function BlogPageContent() {
             className="!h-[40vh]"
           />
           <Section>
-            <div className="max-w-7xl mx-auto">
+            <div className="rt-container">
               <LoadingSpinner />
             </div>
           </Section>

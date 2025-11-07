@@ -116,7 +116,7 @@ export default function BitacorasPage() {
         <meta name="description" content="Rutas que no vas a encontrar en Google. Recomendaciones que solo los Trippers conocen." />
       </Head>
       <main className="bg-white text-black py-16 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="rt-container">
           <header className="text-center mb-12">
             <h1 className="text-5xl md:text-7xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>
               Off the Record: Bitácoras del Continente

@@ -49,12 +49,15 @@ export default function SoloHero() {
       {/* Gradiente para legibilidad */}
       <div className="absolute inset-0 bg-black/40" />
 
-      <div className="relative z-10 mx-auto h-full max-w-7xl px-4">
+      <div className="relative z-10 mx-auto h-full rt-container px-4">
         <div className="grid h-full items-center gap-8 md:grid-cols-2">
           {/* Columna izquierda: título + chips + CTAs */}
           <div className="max-w-2xl">
             <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight tracking-tightish text-white">
-              <span>SOLUM<sup className="align-super text-[0.65em] ml-0.5">©</sup></span> RANDOMTRIP
+              <span>
+                SOLUM<sup className="align-super text-[0.65em] ml-0.5">©</sup>
+              </span>{' '}
+              RANDOMTRIP
             </h1>
             <p className="mt-3 text-base md:text-lg text-white/90">
               Escapadas secretas diseñadas para que te pierdas. Y te encuentres.
@@ -90,7 +93,7 @@ export default function SoloHero() {
                   });
                 }}
               >
-                RANDOMTRIP-me! →
+                RANDOMTRIPME! →
               </Link>
               <Link
                 href="#inspiracion-solo"
@@ -117,36 +120,41 @@ export default function SoloHero() {
               </h3>
               <div className="mt-6 space-y-4 text-sm md:text-base leading-relaxed md:leading-8 text-white/90">
                 <p>
-                  Cuando uno viaja solo, no hay que rendir cuentas: ni a la pareja que quiere parar en cada mirador,
-                  ni al amigo que arma itinerarios con colores.
+                  Cuando uno viaja solo, no hay que rendir cuentas: ni a la
+                  pareja que quiere parar en cada mirador, ni al amigo que arma
+                  itinerarios con colores.
                 </p>
                 <p>
-                  Acá no habrá listas de “cosas que hacer”, ni reseñas de TripAdvisor con cinco estrellas y fotos
-                  pixeladas. Habrá un camino que se abre frente a vos, como si lo fueras inventando con cada paso.
-                  Y, en el fondo, alguien —nosotros— asegurándonos de que todo funcione aunque parezca improvisado.
+                  Acá no habrá listas de “cosas que hacer”, ni reseñas de
+                  TripAdvisor con cinco estrellas y fotos pixeladas. Habrá un
+                  camino que se abre frente a vos, como si lo fueras inventando
+                  con cada paso. Y, en el fondo, alguien —nosotros—
+                  asegurándonos de que todo funcione aunque parezca improvisado.
                 </p>
                 <p>
-                  Quizá amanezcas mirando un lago que no sabías que existía. O termines hablando con extraños que,
-                  al rato, ya no lo serán. Viajar solo es ese raro lujo: el de encontrarte con el silencio
-                  y descubrir que no asusta tanto.
+                  Quizá amanezcas mirando un lago que no sabías que existía. O
+                  termines hablando con extraños que, al rato, ya no lo serán.
+                  Viajar solo es ese raro lujo: el de encontrarte con el
+                  silencio y descubrir que no asusta tanto.
                 </p>
                 <p>
-                  Lo que empieza es un relato sin testigos: un café que se enfría mientras escribís en una libreta,
-                  una caminata que te obliga a pensar distinto, una foto que no tenés a quién mostrar pero que igual guardás.
+                  Lo que empieza es un relato sin testigos: un café que se
+                  enfría mientras escribís en una libreta, una caminata que te
+                  obliga a pensar distinto, una foto que no tenés a quién
+                  mostrar pero que igual guardás.
                 </p>
                 <p>
-                  Lo único seguro es que vas a volver distinto. No mejor ni peor: distinto. Y con ganas de repetir,
-                  como ese libro que releés sabiendo que la segunda vez lo vas a entender mejor.
+                  Lo único seguro es que vas a volver distinto. No mejor ni
+                  peor: distinto. Y con ganas de repetir, como ese libro que
+                  releés sabiendo que la segunda vez lo vas a entender mejor.
                 </p>
-                <p>
-                 --- RANDOMTRIP. Wonder. Wander. Repeat. ---
-                </p>
+                <p>--- RANDOMTRIP. Wonder. Wander. Repeat. ---</p>
               </div>
             </div>
           </aside>
         </div>
       </div>
-    {/* Indicador de scroll (unificado) */}
+      {/* Indicador de scroll (unificado) */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none text-white/70 select-none flex flex-col items-center">
         <span className="text-[10px] tracking-[0.35em]">SCROLL</span>
         <span className="mt-1 h-6 w-px bg-white/60 animate-pulse" />

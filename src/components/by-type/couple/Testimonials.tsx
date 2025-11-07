@@ -57,7 +57,7 @@ export default function CoupleTestimonials() {
 
   return (
     <section id="testimonios-couple" className="py-20 px-8 bg-white text-neutral-900">
-      <div className="max-w-7xl mx-auto">
+      <div className="rt-container">
         <h2
           className="text-5xl font-bold text-center mb-12"
           style={{ fontFamily: 'Playfair Display, serif' }}

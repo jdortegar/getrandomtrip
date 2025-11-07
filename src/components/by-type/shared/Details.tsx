@@ -78,7 +78,7 @@ export default function Details({
 
   if (!excuseKey) {
     return (
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+      <section className="rt-container px-4 md:px-8 py-12">
         <div className="rounded-xl border border-neutral-200 bg-white p-6">
           <h3 className="text-xl font-semibold text-neutral-900 mb-4">
             {content.title}
@@ -99,7 +99,7 @@ export default function Details({
 
   if (!spec) {
     return (
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+      <section className="rt-container px-4 md:px-8 py-12">
         <div className="rounded-xl border border-neutral-200 bg-white p-6 relative">
           <p className="text-neutral-700">
             Tipo de viaje no encontrado. Por favor, volvé a seleccionar.
@@ -116,7 +116,7 @@ export default function Details({
 
   return (
     <section
-      className="max-w-7xl mx-auto px-4 md:px-8 py-10 relative"
+      className="rt-container px-4 md:px-8 py-10 relative"
       data-testid="tab-afinar-detalles"
     >
       <div className="text-center mb-8 relative">
@@ -187,7 +187,7 @@ export default function Details({
               ? 'max-w-4xl mx-auto'
               : spec.options.length === 3
                 ? 'max-w-6xl mx-auto'
-                : 'max-w-7xl mx-auto'
+                : 'rt-container'
         }`}
       >
         {spec.options.map((op) => (

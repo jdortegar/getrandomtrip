@@ -22,7 +22,7 @@ export default function TripperInspirationGallery({
 
   return (
     <Section className="bg-primary py-20" fullWidth={true} variant="dark">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <div className="rt-container px-6 md:px-12">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="font-caveat text-4xl font-bold text-white md:text-6xl mb-6">

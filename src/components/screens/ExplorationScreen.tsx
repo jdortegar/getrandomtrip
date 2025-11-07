@@ -94,7 +94,7 @@ const ExplorationScreen = () => {
 
   return (
     <div className="bg-[#0D0D0D] text-white py-16">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="rt-container px-4 md:px-8">
         <div className="text-center">
           <h1
             className="text-5xl md:text-7xl font-bold"

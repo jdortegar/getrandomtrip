@@ -19,7 +19,7 @@ export default function LevelsSection({ type, palette }: Props) {
 
   return (
     <section id={sectionId} className={`relative scroll-mt-16 ${bgClass}`}>
-      <div className="mx-auto max-w-7xl px-4 py-20">
+      <div className="rt-container px-4 py-20">
         <header className="mb-10 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
             {isSolo ? '✨ Empieza a planear tu Solum Randomtrip' : 'Elige tu nivel Randomtrip'}

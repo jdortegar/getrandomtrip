@@ -49,7 +49,7 @@ export default function FamilyHero(): JSX.Element {
       {/* Gradiente para legibilidad (espejo de /solo) */}
       <div className="absolute inset-0 bg-black/40" />
 
-      <div className="relative z-10 mx-auto h-full max-w-7xl px-4">
+      <div className="relative z-10 mx-auto h-full rt-container px-4">
         <div className="grid h-full items-center gap-8 md:grid-cols-2">
           {/* Columna izquierda: título + bajada + chips + CTAs */}
           <div className="max-w-2xl">

@@ -5,7 +5,7 @@ import { TRIPPERS_TIERS } from '@/content/tiers';
 export default function TripperTiers({ tripperSlug }: { tripperSlug: string }) {
   const router = useRouter();
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+    <section className="rt-container px-4 md:px-8 py-10">
       <h2 className="text-xl font-medium">Selecciona tu Nivel de Experiencia</h2>
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {TRIPPERS_TIERS.map(t => (

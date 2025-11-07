@@ -10,7 +10,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
   if (!hasData) return null;
 
   return (
-    <section id="travel-specialties" className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+    <section id="travel-specialties" className="rt-container px-4 md:px-8 py-12">
       <h2 className="text-2xl md:text-3xl font-semibold mb-6">Travel Specialties</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
