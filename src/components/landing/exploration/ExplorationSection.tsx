@@ -31,7 +31,7 @@ export function ExplorationSection() {
 
   return (
     <Section
-      className="relative flex min-h-screen items-center overflow-hidden"
+      className="relative flex min-h-screen items-center overflow-hidden top-20"
       id="exploration-section"
       subtitle={EXPLORATION_CONSTANTS.SUBTITLE}
       title={EXPLORATION_CONSTANTS.TITLE}

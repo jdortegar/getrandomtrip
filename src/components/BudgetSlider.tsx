@@ -71,7 +71,7 @@ export default function BudgetSlider({
                 Presupuesto por persona
               </span>
               <span className="text-xl font-bold text-gray-900 font-jost md:text-2xl">
-                US$ {budget}
+                {currentStepIndex <= 0 ? 'desde ' : ''}US$ {budget}
               </span>
             </div>
 

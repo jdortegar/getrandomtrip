@@ -14,16 +14,17 @@ const ReadyForAdventureSection: React.FC = () => {
       }
       title={'¿Listo para la aventura?'}
       variant="dark"
+      style={{
+        backgroundImage: 'url(/images/bg/2.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+      overlay
     >
-      <Button
-        aria-label="Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada"
-        asChild
-        className="px-8 shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 md:px-12"
-        size="default"
-        variant="outline"
-      >
+      <Button asChild size="lg" variant="outline">
         <Link href="#exploration-section" scroll={true}>
-          RANDOMTRIP-ME!
+          RANDOMTRIPME!
         </Link>
       </Button>
     </Section>

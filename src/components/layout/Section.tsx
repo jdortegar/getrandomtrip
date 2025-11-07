@@ -11,6 +11,8 @@ type SectionProps = {
   variant?: 'default' | 'light' | 'dark';
   id?: string;
   fullWidth?: boolean;
+  style?: React.CSSProperties;
+  overlay?: boolean;
 };
 
 const Section = ({
@@ -21,6 +23,8 @@ const Section = ({
   variant = 'default',
   id,
   fullWidth = false,
+  style,
+  overlay = false,
 }: SectionProps) => {
   return (
     <section
@@ -34,7 +38,9 @@ const Section = ({
         },
       )}
       id={id}
+      style={style}
     >
+      {overlay && <div className="absolute inset-0 bg-black/50" />}
       {title && (
         <div className="mb-6 max-w-4xl mx-auto relative z-10 px-4 md:mb-8">
           <h2

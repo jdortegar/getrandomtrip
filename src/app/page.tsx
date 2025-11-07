@@ -19,10 +19,10 @@ export default function HomePage() {
       <HomeInfo />
       <TrustSignals variant="compact" />
 
-      <ReadyForAdventureSection />
-      <ExplorationSection />
       <Blog content={BLOG_CONSTANTS} id="home-blog" />
+      <ExplorationSection />
       <EventFinder />
+      <ReadyForAdventureSection />
     </main>
   );
 }
