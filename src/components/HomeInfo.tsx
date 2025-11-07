@@ -65,7 +65,7 @@ export default function HomeInfo() {
 
   return (
     <Section
-      className="flex min-h-screen flex-col justify-center py-20"
+      className="flex flex-col justify-center pt-20"
       subtitle={HOME_INFO_CONSTANTS.SUBTITLE}
       title={HOME_INFO_CONSTANTS.TITLE}
     >
@@ -97,21 +97,11 @@ export default function HomeInfo() {
 
       {/* CTA - Enhanced */}
       <div className="mt-12 flex justify-center">
-        <Button
-          asChild
-          className="shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
-          size="lg"
-          variant="default"
-        >
+        <Button variant="default" size="lg">
           <Link href="#exploration-section" scroll={true}>
             RANDOMTRIP-ME!
           </Link>
         </Button>
-      </div>
-
-      {/* Trust Signals - Full Width */}
-      <div className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen">
-        <TrustSignals variant="compact" />
       </div>
     </Section>
   );

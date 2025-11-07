@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { scrollToAnchor } from '@/lib/helpers/scrollToAnchor';
 
 export interface HeroContent {
   title: string;
@@ -132,16 +131,6 @@ const Hero: React.FC<HeroProps> = ({
   scrollIndicator = false,
   titleClassName,
 }) => {
-  const handleCtaClick = (href: string) => {
-    if (href.startsWith('#')) {
-      return (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-        scrollToAnchor(href);
-      };
-    }
-    return undefined;
-  };
-
   return (
     <section
       id={id || 'home-hero'}
@@ -202,12 +191,8 @@ const Hero: React.FC<HeroProps> = ({
               aria-label={content.primaryCta.ariaLabel}
               variant="default"
               size="lg"
-              className="mt-8 uppercase tracking-wider animate-pulse-once"
             >
-              <Link
-                href={content.primaryCta.href}
-                onClick={handleCtaClick(content.primaryCta.href)}
-              >
+              <Link href={content.primaryCta.href} scroll={true}>
                 {content.primaryCta.text}
               </Link>
             </Button>
@@ -220,10 +205,7 @@ const Hero: React.FC<HeroProps> = ({
               size="lg"
               className="mt-8 uppercase tracking-wider animate-pulse-once"
             >
-              <Link
-                href={content.secondaryCta.href}
-                onClick={handleCtaClick(content.secondaryCta.href)}
-              >
+              <Link href={content.secondaryCta.href} scroll={true}>
                 {content.secondaryCta.text}
               </Link>
             </Button>

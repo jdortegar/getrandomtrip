@@ -168,7 +168,7 @@ export default function TrustSignals({
   return (
     <section
       aria-label={TRUST_SIGNALS_CONSTANTS.SECTION_ARIA_LABEL}
-      className={`py-12 ${className}`.trim()}
+      className={`bg-white py-12 ${className}`}
     >
       <div className="relative overflow-hidden">
         {/* Gradient fade edges for smooth effect */}

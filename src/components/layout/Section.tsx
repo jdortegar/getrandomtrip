@@ -24,7 +24,7 @@ const Section = ({
   return (
     <section
       className={cn(
-        'text-center py-12 md:py-18 relative flex flex-col items-center justify-center w-full',
+        'text-center relative flex flex-col items-center justify-center w-full',
         className,
         {
           'bg-white text-gray-900': variant === 'default',

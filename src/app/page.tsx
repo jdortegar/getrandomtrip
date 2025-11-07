@@ -9,6 +9,7 @@ import ReadyForAdventureSection from '@/components/ReadyForAdventureSection';
 import Blog from '@/components/Blog';
 import { BLOG_CONSTANTS } from '@/lib/data/constants/blog';
 import { HERO_CONTENT } from '@/lib/data/home-hero';
+import TrustSignals from '@/components/TrustSignals';
 
 // --- Main Home Page Component ---
 export default function HomePage() {
@@ -16,6 +17,8 @@ export default function HomePage() {
     <main style={{ scrollBehavior: 'smooth' }}>
       <Hero content={HERO_CONTENT} scrollIndicator />
       <HomeInfo />
+      <TrustSignals variant="compact" />
+
       <ReadyForAdventureSection />
       <ExplorationSection />
       <Blog content={BLOG_CONSTANTS} id="home-blog" />
