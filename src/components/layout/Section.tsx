@@ -2,6 +2,7 @@ import React from 'react';
 import { slugify } from '@/lib/helpers/slugify';
 import { cn } from '@/lib/utils';
 import Container from './Container';
+import Img from '../common/Img';
 
 type SectionProps = {
   children: React.ReactNode;
@@ -12,10 +13,11 @@ type SectionProps = {
   id?: string;
   fullWidth?: boolean;
   style?: React.CSSProperties;
-  overlay?: boolean;
+  backgroundImage?: string;
 };
 
 const Section = ({
+  backgroundImage,
   children,
   title,
   subtitle,
@@ -24,7 +26,6 @@ const Section = ({
   id,
   fullWidth = false,
   style,
-  overlay = false,
 }: SectionProps) => {
   return (
     <section
@@ -40,7 +41,20 @@ const Section = ({
       id={id}
       style={style}
     >
-      {overlay && <div className="absolute inset-0 bg-black/50" />}
+      {backgroundImage && (
+        <>
+          <div className="absolute inset-0 z-0">
+            <Img
+              alt="Concierto"
+              className="h-full w-full object-cover"
+              height={1080}
+              src={backgroundImage}
+              width={1920}
+            />
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
+        </>
+      )}
       {title && (
         <div className="mb-6 max-w-4xl mx-auto relative z-10 px-4 md:mb-8">
           <h2

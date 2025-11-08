@@ -1,137 +1,183 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { motion } from 'framer-motion';
 import TravelerTypeCard from '@/components/TravelerTypeCard';
 import { slugify } from '@/lib/slugify';
 import { initialTravellerTypes } from '@/lib/data/travelerTypes';
 import { EXPLORATION_CONSTANTS } from './exploration.constants';
 
-export function TravelerTypesCarousel() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [translateX, setTranslateX] = useState(0);
+const CARD_WIDTH = {
+  mobile: 288, // w-72
+  desktop: 384, // w-96
+} as const;
 
-  const handleScroll = (direction: 'left' | 'right') => {
-    const container = scrollContainerRef.current;
+const CARD_GAP = {
+  mobile: 24, // gap-6
+  desktop: 32, // gap-8
+} as const;
+
+export function TravelerTypesCarousel() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const scrollStep = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return CARD_WIDTH.desktop + CARD_GAP.desktop;
+    }
+    const isMobile = window.innerWidth < 768;
+    const gap = isMobile ? CARD_GAP.mobile : CARD_GAP.desktop;
+    const width = isMobile ? CARD_WIDTH.mobile : CARD_WIDTH.desktop;
+    return width + gap;
+  }, []);
+
+  const updateScrollState = useCallback(() => {
+    const container = containerRef.current;
     if (!container) return;
 
-    const isMobile = window.innerWidth < 768;
-    const cardWidth = isMobile ? 288 : 384; // w-72 (mobile) or w-96 (desktop)
-    const gap = 32; // space-x-8 = 32px
-    const totalCardWidth = cardWidth + gap;
-    const containerWidth = container.clientWidth;
-    const visibleCards = Math.floor(containerWidth / totalCardWidth);
+    const { scrollLeft, clientWidth, scrollWidth } = container;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  }, []);
 
-    let newIndex = currentIndex;
-    if (direction === 'right') {
-      newIndex = Math.min(
-        currentIndex + 1,
-        initialTravellerTypes.length - visibleCards,
-      );
-    } else {
-      newIndex = Math.max(currentIndex - 1, 0);
-    }
+  const handleScroll = useCallback(
+    (direction: 'left' | 'right') => {
+      const container = containerRef.current;
+      if (!container) return;
 
-    setCurrentIndex(newIndex);
-    setTranslateX(-newIndex * totalCardWidth);
+      const distance = scrollStep();
+      const delta = direction === 'left' ? -distance : distance;
+      container.scrollBy({ left: delta, behavior: 'smooth' });
+    },
+    [scrollStep],
+  );
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    updateScrollState();
+    const handleResize = () => updateScrollState();
+    container.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      container.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [updateScrollState]);
+
+  const description = useMemo(
+    () => EXPLORATION_CONSTANTS.TAB_DESCRIPTIONS['By Traveller'],
+    [],
+  );
+
+  const ArrowButton = ({
+    direction,
+    onClick,
+    disabled,
+    className,
+    size = 'md',
+  }: {
+    direction: 'left' | 'right';
+    onClick: () => void;
+    disabled: boolean;
+    className?: string;
+    size?: 'md' | 'lg';
+  }) => {
+    const label =
+      direction === 'left' ? 'Ver tipos anteriores' : 'Ver más tipos';
+    const symbol = direction === 'left' ? '‹' : '›';
+
+    const sizeClasses =
+      size === 'lg' ? 'h-11 w-11 shadow-lg' : 'h-10 w-10 shadow-sm';
+    const baseClasses =
+      'flex items-center justify-center rounded-full border border-gray-300 bg-white text-lg text-gray-600 transition-all hover:border-primary/50 hover:text-primary disabled:pointer-events-none disabled:opacity-40';
+
+    return (
+      <button
+        aria-label={label}
+        className={`${baseClasses} ${sizeClasses} ${className ?? ''}`.trim()}
+        disabled={disabled}
+        onClick={onClick}
+        type="button"
+      >
+        {symbol}
+      </button>
+    );
   };
 
-  // Calculate if arrows should be visible
-  const container = scrollContainerRef.current;
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const cardWidth = isMobile ? 288 : 384;
-  const gap = 32;
-  const totalCardWidth = cardWidth + gap;
-  const containerWidth = container?.clientWidth || 0;
-  const visibleCards = Math.floor(containerWidth / totalCardWidth);
-
-  const canScrollLeft = currentIndex > 0;
-  const canScrollRight =
-    currentIndex < initialTravellerTypes.length - (isMobile ? 1 : 2);
-
   return (
-    <div className="py-6 md:py-8">
-      <p className="font-jost mb-6 text-center text-lg italic text-gray-600 md:mb-10 md:text-xl">
-        {EXPLORATION_CONSTANTS.TAB_DESCRIPTIONS['By Traveller']}
-      </p>
+    <section className="py-6 md:py-8">
+      <div className="rt-container">
+        <p className="font-jost mb-6 text-center text-lg italic text-gray-600 md:mb-10 md:text-xl">
+          {description}
+        </p>
 
-      <div className="relative w-full">
-        {/* Left Arrow - Enhanced */}
-        {canScrollLeft && (
-          <button
-            aria-label="Scroll left"
-            className="absolute left-2 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-2 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl md:left-4 md:p-3"
+        <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
+          <ArrowButton
+            className="absolute left-2 top-1/2 z-20 -translate-y-1/2 transform sm:left-4 lg:left-6"
+            direction="left"
+            disabled={!canScrollLeft}
             onClick={() => handleScroll('left')}
-          >
-            <svg
-              className="h-5 w-5 md:h-6 md:w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
+            size="lg"
+          />
 
-        {/* Right Arrow - Enhanced */}
-        {canScrollRight && (
-          <button
-            aria-label="Scroll right"
-            className="absolute right-2 top-1/2 z-20 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white p-2 shadow-lg transition-all duration-300 hover:border-primary/50 hover:shadow-xl md:right-4 md:p-3"
+          <ArrowButton
+            className="absolute right-2 top-1/2 z-20 -translate-y-1/2 transform sm:right-4 lg:right-6"
+            direction="right"
+            disabled={!canScrollRight}
             onClick={() => handleScroll('right')}
-          >
-            <svg
-              className="h-5 w-5 md:h-6 md:w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
+            size="lg"
+          />
 
-        {/* Carousel Container */}
-        <div className="relative py-8 md:py-12" ref={scrollContainerRef}>
           <div
-            className="flex space-x-8 pb-4 overflow-x-visible transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(${translateX}px)` }}
+            className="overflow-hidden px-4 sm:px-6 lg:px-8"
+            ref={containerRef}
           >
-            {initialTravellerTypes.map((type, index) => (
-              <motion.div
-                className="flex-shrink-0"
-                initial={{ opacity: 0, y: 30 }}
-                key={type.title}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
-                viewport={{ once: true }}
-                whileInView={{ opacity: 1, y: 0 }}
-              >
-                <TravelerTypeCard
-                  description={type.description}
-                  disabled={!type.enabled}
-                  href={`/packages/by-type/${slugify(type.travelType)}`}
-                  imageUrl={type.imageUrl}
-                  title={type.title}
-                />
-              </motion.div>
-            ))}
+            <div className="flex gap-6 md:gap-8">
+              {initialTravellerTypes.map((type) => (
+                <motion.div
+                  className="flex-shrink-0"
+                  initial={{ opacity: 0, y: 24 }}
+                  key={type.title}
+                  viewport={{ once: true }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                >
+                  <TravelerTypeCard
+                    description={type.description}
+                    disabled={!type.enabled}
+                    href={`/packages/by-type/${slugify(type.travelType)}`}
+                    imageUrl={type.imageUrl}
+                    title={type.title}
+                  />
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
+
+        <div className="mt-4 flex justify-center gap-3 md:hidden">
+          <ArrowButton
+            direction="left"
+            disabled={!canScrollLeft}
+            onClick={() => handleScroll('left')}
+          />
+          <ArrowButton
+            direction="right"
+            disabled={!canScrollRight}
+            onClick={() => handleScroll('right')}
+          />
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -14,13 +14,7 @@ const ReadyForAdventureSection: React.FC = () => {
       }
       title={'¿Listo para la aventura?'}
       variant="dark"
-      style={{
-        backgroundImage: 'url(/images/bg/2.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-      overlay
+      backgroundImage="/images/bg/2.jpg"
     >
       <Button asChild size="lg" variant="outline">
         <Link href="#exploration-section" scroll={true}>

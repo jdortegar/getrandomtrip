@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface TravelerTypeCardProps {
   title: string;
@@ -10,6 +11,7 @@ interface TravelerTypeCardProps {
   imageUrl: string;
   href?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
@@ -18,7 +20,12 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   imageUrl,
   href = '', // Provide a default empty string
   disabled = false,
+  className,
 }) => {
+  const baseClasses =
+    'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[3/4] w-72 md:w-96';
+  const composedClasses = cn(baseClasses, className);
+
   const cardContent = (
     <>
       <Image
@@ -29,12 +36,10 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         src={imageUrl}
         style={{ objectFit: 'cover' }}
       />
-      <div className="absolute inset-0 z-10 rounded-lg bg-gradient-to-t from-black/70 to-transparent" />
-      <div className="absolute bottom-0 left-0 z-20 w-full p-4 text-left text-white md:p-8">
-        <h3 className="font-caveat text-2xl font-bold text-left md:text-3xl">
-          {title}
-        </h3>
-        <p className="font-jost text-sm text-gray-200 text-left mt-1 md:text-base md:mt-2">
+      <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-t from-black/75 to-transparent" />
+      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white md:p-8">
+        <h3 className="font-caveat text-3xl font-bold md:text-4xl">{title}</h3>
+        <p className="font-jost mt-2 text-sm text-gray-200 md:text-base">
           {description}
         </p>
       </div>
@@ -43,17 +48,14 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
   if (disabled) {
     return (
-      <div className="group relative block flex-shrink-0 cursor-not-allowed overflow-hidden rounded-lg opacity-50 transition-all duration-300 origin-center h-[50vh] w-72 md:h-[65vh] md:w-96">
+      <div className={cn(composedClasses, 'cursor-not-allowed opacity-50')}>
         {cardContent}
       </div>
     );
   }
 
   return (
-    <Link
-      className="group relative block flex-shrink-0 cursor-pointer overflow-hidden rounded-lg transition-all duration-300 origin-center h-[50vh] w-72 md:h-[65vh] md:w-96"
-      href={href}
-    >
+    <Link className={composedClasses} href={href}>
       {cardContent}
     </Link>
   );
