@@ -57,6 +57,7 @@ export default function TravelerTypePage({
         className="h-[70vh]"
         content={typeData.content.hero}
         id={`${typeData.meta.slug}-hero`}
+        scrollIndicator={true}
       />
       <Paragraph
         content={typeData.content.story}

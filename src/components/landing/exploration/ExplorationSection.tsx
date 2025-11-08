@@ -1,15 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExplorationTabNavigation } from './ExplorationTabNavigation';
 import { TravelerTypesCarousel } from './TravelerTypesCarousel';
 import { TopTrippersGrid } from './TopTrippersGrid';
 import { RoadtripsGrid } from './RoadtripsGrid';
-import { TrippersDecodeSearch } from './TrippersDecodeSearch';
+// import TrippersDecodeSearch from '@/app/trippers-decode/TrippersDecodePageContent';
 import { EXPLORATION_CONSTANTS } from './exploration.constants';
 import Section from '@/components/layout/Section';
+
+const ComingSoon: React.FC = () => (
+  <div className="py-4">
+    <p className="text-center text-gray-600 italic font-jost text-lg">
+      ¡Pronto podrás explorar esta sección!
+    </p>
+  </div>
+);
 
 export function ExplorationSection() {
   const [activeTab, setActiveTab] = useState('By Traveller');
@@ -21,9 +29,9 @@ export function ExplorationSection() {
       case 'Top Trippers':
         return <TopTrippersGrid />;
       case 'Roadtrips':
-        return <RoadtripsGrid />;
+        return <ComingSoon />;
       case 'Trippers Decode':
-        return <TrippersDecodeSearch />;
+        return <ComingSoon />;
       default:
         return <TravelerTypesCarousel />;
     }

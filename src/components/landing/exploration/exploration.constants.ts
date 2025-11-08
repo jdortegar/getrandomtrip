@@ -18,15 +18,15 @@ export const EXPLORATION_CONSTANTS = {
       id: 'Roadtrips',
       label: 'Roadtrips',
       description: 'Libertad sobre ruedas. Tú eliges el ritmo.',
-      disabled: true,
+      disabled: false,
     },
     {
       id: 'Trippers Decode',
-      label: 'Trippers Decode',
+      label: 'Destination Decode',
       description:
         'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',
       href: '/trippers-decode',
-      disabled: true,
+      disabled: false,
     },
   ] as const,
 

@@ -203,7 +203,6 @@ const Hero: React.FC<HeroProps> = ({
               aria-label={content.secondaryCta.ariaLabel}
               variant="outline"
               size="lg"
-              className="mt-8 uppercase tracking-wider animate-pulse-once"
             >
               <Link href={content.secondaryCta.href} scroll={true}>
                 {content.secondaryCta.text}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Img from '../common/Img';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -18,16 +19,15 @@ export default function Footer() {
 
         {/* Main Footer Content */}
         <div className="container mx-auto px-4 py-16">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
             {/* Company Section */}
-            <div>
-              <h3 className="font-caveat mb-6 text-2xl font-bold bg-gradient-to-br from-white to-gray-300 bg-clip-text text-transparent">
-                Randomtrip
-              </h3>
-              <p className="font-jost mb-4 text-sm leading-relaxed text-gray-300/90">
-                Donde termina la rutina, comienza la aventura. Descubre
-                experiencias únicas y crea recuerdos inolvidables.
-              </p>
+            <div className="flex items-center justify-center">
+              <Img
+                src="/assets/logos/logo_getrandomtrip_white.png"
+                alt="Randomtrip"
+                width={240}
+                height={40}
+              />
             </div>
 
             {/* Quick Links */}
@@ -41,7 +41,7 @@ export default function Footer() {
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
                     href="/about"
                   >
-                    Acerca de
+                    Nosotros
                   </Link>
                 </li>
                 <li>
@@ -57,7 +57,7 @@ export default function Footer() {
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
                     href="/blog"
                   >
-                    Blog
+                    Inspiración
                   </Link>
                 </li>
                 <li>
@@ -71,6 +71,62 @@ export default function Footer() {
               </ul>
             </div>
 
+            {/* Traveler Types */}
+            <div>
+              <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
+                Viajeros
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href="/packages/by-type/solo"
+                  >
+                    Solo
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href="/packages/by-type/couple"
+                  >
+                    Pareja
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href="/packages/by-type/family"
+                  >
+                    Familia
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href="/packages/by-type/group"
+                  >
+                    Grupos
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href="/packages/by-type/honeymoon"
+                  >
+                    Luna de miel
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href="/packages/by-type/paws"
+                  >
+                    Paws
+                  </Link>
+                </li>
+              </ul>
+            </div>
             {/* Legal */}
             <div>
               <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
@@ -134,14 +190,14 @@ export default function Footer() {
                     Soporte
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
                     href="mailto:hello@randomtrip.com"
                   >
                     hello@randomtrip.com
                   </a>
-                </li>
+                </li> */}
               </ul>
 
               {/* Social Links */}
