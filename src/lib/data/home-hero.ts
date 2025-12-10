@@ -1,7 +1,7 @@
 export const HERO_CONTENT = {
-  title: 'Serendipia Diseñada',
+  title: 'SERENDIPIA DISEÑADA',
   subtitle:
-    'Vivi lo inesperado sin improvisar. Nosotros diseñamos tu viaje y <strong>te revelamos el destino desde 48h antes.</strong>',
+    'Vivi lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>',
   branding: {
     text: 'WONDER • WANDER',
     repeatText: 'Repeat',

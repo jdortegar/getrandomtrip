@@ -76,7 +76,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
                 key={link.href}
                 href={link.href}
                 aria-label={link.ariaLabel}
-                className="hover:underline underline-offset-4 uppercase"
+                className="hover:underline underline-offset-4 uppercase text-base font-barlow "
               >
                 {link.label}
               </Link>

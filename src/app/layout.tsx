@@ -7,6 +7,7 @@ import {
   Fraunces,
   Jost,
   Caveat,
+  Nothing_You_Could_Do,
 } from 'next/font/google';
 import HeaderGate from '@/components/layout/HeaderGate';
 import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
@@ -49,6 +50,12 @@ const caveat = Caveat({
   weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
+const nothingYouCouldDo = Nothing_You_Could_Do({
+  subsets: ['latin'],
+  variable: '--font-nothing-you-could-do',
+  weight: ['400'],
+  display: 'swap',
+});
 
 // Carga del client component sin SSR
 const NewsletterBar = dynamic(
@@ -79,7 +86,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${barlow.variable} ${barlowCondensed.variable} ${inter.variable} ${fraunces.variable} ${jost.variable} ${caveat.variable}`}
+      className={`${barlow.variable} ${barlowCondensed.variable} ${inter.variable} ${fraunces.variable} ${jost.variable} ${caveat.variable} ${nothingYouCouldDo.variable}`}
     >
       <head>
         <meta name="color-scheme" content="light" />

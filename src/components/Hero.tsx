@@ -91,7 +91,7 @@ function HeroVideoBackground({ content }: { content: HeroContent }) {
       {/* Fallback Image - Always visible as background */}
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${content.fallbackImage})` }}
+        // style={{ backgroundImage: `url(${content.fallbackImage})` }}
       />
 
       {/* Video Overlay - Only when ready */}
@@ -143,7 +143,6 @@ const Hero: React.FC<HeroProps> = ({
         className,
       )}
     >
-      {/* Hero sentinel for navbar detection */}
       <div
         id="hero-sentinel"
         aria-hidden
@@ -155,55 +154,36 @@ const Hero: React.FC<HeroProps> = ({
       <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-12 lg:px-16">
         {/* Top Left Branding */}
         {content.branding && (
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="font-sans text-sm md:text-base font-normal text-white uppercase tracking-wider">
-                {content.branding.text}
-              </span>
-              {content.branding.repeatText && (
-                <div className="relative flex items-center">
-                  <svg
-                    className="absolute -left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M15 18l-6-6 6-6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <div className="relative">
-                    <div className="absolute inset-0 rounded-full border-2 border-yellow-400" />
-                    <span className="relative block px-3 py-1 text-xs md:text-sm font-caveat text-yellow-400 italic">
-                      {content.branding.repeatText}
-                    </span>
-                  </div>
+          <div className="flex items-center gap-3 mb-8 relative">
+            <span className="font-barlow-condensed text-3xl font-semibold text-white uppercase tracking-[6px] ">
+              {content.branding.text}
+            </span>
+            {content.branding.repeatText && (
+              <div className="relative flex items-center ml-4 w-[230px]">
+                <img
+                  src="/assets/svg/yellow-circle.svg"
+                  className="w-full absolute -top-12 -left-4 object-cover"
+                />
+                <div className="relative">
+                  <span className="font-nothing-you-could-do text-yellow-400 text-6xl">
+                    {content.branding.repeatText}
+                  </span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+            <img
+              src="/assets/svg/yellow-arrow-back.svg"
+              className="w-[300px] absolute top-15 left-25 object-cover"
+            />
           </div>
         )}
         <div className="max-w-3xl flex flex-col justify-center">
-          <h2
-            className={cn('mb-6 capitalize', titleClassName)}
-            style={{
-              color: '#FFF',
-              fontFamily: 'var(--font-barlow-condensed), sans-serif',
-              fontSize: 'clamp(60px, 8vw, 140px)',
-              fontStyle: 'normal',
-              fontWeight: 800,
-              lineHeight: 'clamp(59px, 7.9vw, 138px)',
-              textTransform: 'capitalize',
-            }}
-          >
+          <h2 className="mb-6 text-white font-barlow-condensed font-extrabold text-[170px] z-10 leading-[170px]">
             {content.title}
           </h2>
 
           <p
-            className="font-jost text-lg md:text-xl lg:text-2xl font-normal leading-relaxed text-gray-300 max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            className="font-barlow text-xl font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
           />
 
@@ -239,19 +219,17 @@ const Hero: React.FC<HeroProps> = ({
         </div>
         {/* CTA Button - Lower Left */}
         {content.primaryCta && (
-          <div>
-            <Button
-              asChild
-              aria-label={content.primaryCta.ariaLabel}
-              className="border-2 border-white bg-transparent hover:bg-white/10 text-white font-sans text-sm md:text-base uppercase tracking-wider px-6 py-3 rounded-none"
-              size="lg"
-              variant="outline"
-            >
-              <Link href={content.primaryCta.href} scroll={true}>
-                {content.primaryCta.text}
-              </Link>
-            </Button>
-          </div>
+          <Button
+            asChild
+            aria-label={content.primaryCta.ariaLabel}
+            size="lg"
+            variant="outline"
+            className="mr-auto"
+          >
+            <Link href={content.primaryCta.href} scroll={true}>
+              {content.primaryCta.text}
+            </Link>
+          </Button>
         )}
 
         {content.secondaryCta && (

@@ -74,6 +74,7 @@ html {
   --font-barlow-condensed: var(--font-barlow-condensed), sans-serif;
   --font-jost: Jost, sans-serif;
   --font-caveat: Caveat, cursive;
+  --font-nothing-you-could-do: var(--font-nothing-you-could-do), cursive;
 
   /* Primary Ocean Deep Blue Color */
   --color-primary: #111827;
