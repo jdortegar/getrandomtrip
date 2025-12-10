@@ -38,7 +38,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
 
   const logoSrc = useMemo(() => {
     return overlay
-      ? '/assets/logos/logo_getrandomtrip_white.png'
+      ? '/assets/logos/logo_getrandomtrip_1.png'
       : '/assets/logos/logo_getrandomtrip.png';
   }, [overlay]);
 
@@ -76,7 +76,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
                 key={link.href}
                 href={link.href}
                 aria-label={link.ariaLabel}
-                className="hover:underline underline-offset-4"
+                className="hover:underline underline-offset-4 uppercase"
               >
                 {link.label}
               </Link>

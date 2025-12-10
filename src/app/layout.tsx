@@ -1,6 +1,13 @@
 import './globals.css';
 import '@/styles/rt.css';
-import { Inter, Fraunces, Jost, Caveat } from 'next/font/google';
+import {
+  Barlow,
+  Barlow_Condensed,
+  Inter,
+  Fraunces,
+  Jost,
+  Caveat,
+} from 'next/font/google';
 import HeaderGate from '@/components/layout/HeaderGate';
 import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
 import SessionProvider from '@/components/providers/SessionProvider';
@@ -9,6 +16,20 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 
+const barlow = Barlow({
+  subsets: ['latin'],
+  variable: '--font-barlow',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  variable: '--font-barlow-condensed',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -58,13 +79,13 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${inter.variable} ${fraunces.variable} ${jost.variable} ${caveat.variable}`}
+      className={`${barlow.variable} ${barlowCondensed.variable} ${inter.variable} ${fraunces.variable} ${jost.variable} ${caveat.variable}`}
     >
       <head>
         <meta name="color-scheme" content="light" />
         <meta name="theme-color" content="#fafafa" />
       </head>
-      <body className="bg-neutral-50 text-neutral-900 antialiased overflow-x-hidden">
+      <body className="bg-neutral-50 text-neutral-900 antialiased overflow-x-hidden font-barlow">
         <SessionProvider>
           {/* <SiteHeaderOffset /> */}
           {/* <HeaderGate /> */}

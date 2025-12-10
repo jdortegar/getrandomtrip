@@ -12,6 +12,10 @@ export interface HeroContent {
   scrollText?: string;
   videoSrc: string;
   fallbackImage: string;
+  branding?: {
+    text: string;
+    repeatText?: string;
+  };
   tags?: {
     label: string;
     value: string;
@@ -134,7 +138,10 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section
       id={id || 'home-hero'}
-      className={`relative h-screen flex flex-col items-center justify-center text-center overflow-hidden ${className || ''}`}
+      className={cn(
+        'relative h-screen flex flex-col overflow-hidden',
+        className,
+      )}
     >
       {/* Hero sentinel for navbar detection */}
       <div
@@ -143,73 +150,125 @@ const Hero: React.FC<HeroProps> = ({
         className="absolute top-0 left-0 h-px w-px"
       />
       <HeroVideoBackground content={content} />
-      <div className="relative z-10 max-w-5xl mx-auto px-4 py-16">
-        <h2
-          className={cn(
-            'font-caveat text-7xl font-bold leading-tight text-white mb-4',
-            titleClassName,
-          )}
-        >
-          {content.title}
-        </h2>
 
-        <p className="font-jost text-xl font-normal leading-relaxed text-gray-300 max-w-4xl mx-auto mb-8">
-          {content.subtitle}
-        </p>
-
-        {content.tagline && (
-          <p className="font-jost text-lg font-normal leading-relaxed text-gray-300 max-w-2xl mx-auto mb-8">
-            {content.tagline}
-          </p>
-        )}
-
-        {/* Tags/Chips */}
-        {content.tags && content.tags.length > 0 && (
-          <div className="flex flex-wrap justify-center items-center gap-2 mb-8">
-            {content.tags?.map((tag, index) => (
-              <div key={`${tag.label}-${index}`} className="flex items-center">
-                <div className="rounded-sm px-6 py-2 flex flex-col">
-                  <span className="text-xs uppercase text-white mb-2">
-                    {tag.label}
-                  </span>
-                  <p className="text-3xl font-semibold text-white font-caveat">
-                    {tag.value}
-                  </p>
+      {/* Main Content - Left Aligned */}
+      <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-12 lg:px-16">
+        {/* Top Left Branding */}
+        {content.branding && (
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="font-sans text-sm md:text-base font-normal text-white uppercase tracking-wider">
+                {content.branding.text}
+              </span>
+              {content.branding.repeatText && (
+                <div className="relative flex items-center">
+                  <svg
+                    className="absolute -left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-yellow-400"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M15 18l-6-6 6-6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full border-2 border-yellow-400" />
+                    <span className="relative block px-3 py-1 text-xs md:text-sm font-caveat text-yellow-400 italic">
+                      {content.branding.repeatText}
+                    </span>
+                  </div>
                 </div>
-                {index < (content.tags?.length ?? 0) - 1 && (
-                  <div className="h-16 w-px bg-white/70 mx-2" />
-                )}
-              </div>
-            ))}
+              )}
+            </div>
           </div>
         )}
+        <div className="max-w-3xl flex flex-col justify-center">
+          <h2
+            className={cn('mb-6 capitalize', titleClassName)}
+            style={{
+              color: '#FFF',
+              fontFamily: 'var(--font-barlow-condensed), sans-serif',
+              fontSize: 'clamp(60px, 8vw, 140px)',
+              fontStyle: 'normal',
+              fontWeight: 800,
+              lineHeight: 'clamp(59px, 7.9vw, 138px)',
+              textTransform: 'capitalize',
+            }}
+          >
+            {content.title}
+          </h2>
 
-        <div className="flex flex-wrap gap-4 justify-center">
-          {content.primaryCta && (
+          <p
+            className="font-jost text-lg md:text-xl lg:text-2xl font-normal leading-relaxed text-gray-300 max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            dangerouslySetInnerHTML={{ __html: content.subtitle }}
+          />
+
+          {content.tagline && (
+            <p className="font-jost text-base md:text-lg font-normal leading-relaxed text-gray-300 max-w-xl mb-8">
+              {content.tagline}
+            </p>
+          )}
+
+          {/* Tags/Chips */}
+          {content.tags && content.tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mb-8">
+              {content.tags?.map((tag, index) => (
+                <div
+                  key={`${tag.label}-${index}`}
+                  className="flex items-center"
+                >
+                  <div className="rounded-sm px-6 py-2 flex flex-col">
+                    <span className="text-xs uppercase text-white mb-2">
+                      {tag.label}
+                    </span>
+                    <p className="text-3xl font-semibold text-white font-caveat">
+                      {tag.value}
+                    </p>
+                  </div>
+                  {index < (content.tags?.length ?? 0) - 1 && (
+                    <div className="h-16 w-px bg-white/70 mx-2" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* CTA Button - Lower Left */}
+        {content.primaryCta && (
+          <div>
             <Button
               asChild
               aria-label={content.primaryCta.ariaLabel}
-              variant="default"
+              className="border-2 border-white bg-transparent hover:bg-white/10 text-white font-sans text-sm md:text-base uppercase tracking-wider px-6 py-3 rounded-none"
               size="lg"
+              variant="outline"
             >
               <Link href={content.primaryCta.href} scroll={true}>
                 {content.primaryCta.text}
               </Link>
             </Button>
-          )}
-          {content.secondaryCta && (
+          </div>
+        )}
+
+        {content.secondaryCta && (
+          <div className="absolute bottom-12 left-8 md:bottom-16 md:left-12 lg:left-16 z-10">
             <Button
               asChild
               aria-label={content.secondaryCta.ariaLabel}
-              variant="outline"
+              className="border-2 border-white bg-transparent hover:bg-white/10 text-white font-sans text-sm md:text-base uppercase tracking-wider px-6 py-3 rounded-none"
               size="lg"
+              variant="outline"
             >
               <Link href={content.secondaryCta.href} scroll={true}>
                 {content.secondaryCta.text}
               </Link>
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {scrollIndicator && (

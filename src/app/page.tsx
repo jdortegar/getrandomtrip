@@ -18,7 +18,6 @@ export default function HomePage() {
       <Hero content={HERO_CONTENT} scrollIndicator />
       <HomeInfo />
       <TrustSignals variant="compact" />
-
       <Blog content={BLOG_CONSTANTS} id="home-blog" />
       <ExplorationSection />
       <EventFinder />

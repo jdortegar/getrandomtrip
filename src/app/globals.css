@@ -70,6 +70,8 @@ html {
 }
 
 @theme {
+  --font-sans: var(--font-barlow), sans-serif;
+  --font-barlow-condensed: var(--font-barlow-condensed), sans-serif;
   --font-jost: Jost, sans-serif;
   --font-caveat: Caveat, cursive;
 

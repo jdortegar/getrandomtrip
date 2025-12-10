@@ -24,7 +24,7 @@ export const NAVBAR_LINKS = [
   },
   {
     href: '/tripbuddy',
-    label: 'IA TripBuddy',
+    label: 'North IA',
     ariaLabel: 'Ir a IA TripBuddy',
   },
   {
