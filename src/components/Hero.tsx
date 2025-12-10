@@ -178,7 +178,7 @@ const Hero: React.FC<HeroProps> = ({
           </div>
         )}
         <div className="max-w-3xl flex flex-col justify-center">
-          <h2 className="mb-6 text-white font-barlow-condensed font-extrabold text-[170px] z-10 leading-[170px]">
+          <h2 className="mb-6 text-white font-barlow-condensed font-extrabold text-[160px] z-10 leading-[170px]">
             {content.title}
           </h2>
 
