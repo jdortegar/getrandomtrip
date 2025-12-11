@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -154,48 +155,162 @@ const Hero: React.FC<HeroProps> = ({
       <div className="relative z-10 flex flex-col justify-center h-full container mx-auto px-20">
         {/* Top Left Branding */}
         {content.branding && (
-          <div className="flex items-center gap-3 mb-4 relative">
-            <span className="font-barlow-condensed text-[30px] font-semibold text-white uppercase tracking-[6px] ">
-              {content.branding.text}
-            </span>
+          <motion.div
+            className="flex items-center gap-3 mb-4 relative"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.05,
+                  delayChildren: 1.4,
+                },
+              },
+            }}
+          >
+            <motion.span className="font-barlow-condensed text-[30px] font-semibold text-white uppercase tracking-[6px] inline-flex">
+              {content.branding.text.split('').map((char, index) => (
+                <motion.span
+                  key={index}
+                  variants={{
+                    hidden: { x: -20, opacity: 0 },
+                    visible: {
+                      x: 0,
+                      opacity: 1,
+                      transition: {
+                        duration: 0.4,
+                        ease: 'easeOut',
+                      },
+                    },
+                  }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </motion.span>
+              ))}
+            </motion.span>
             {content.branding.repeatText && (
-              <div className="relative flex items-center ml-4 w-[190px]">
-                <img
+              <motion.div
+                className="relative flex items-center ml-4 w-[190px]"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.05,
+                      delayChildren:
+                        1.4 + content.branding.text.length * 0.05 + 0.4 + 0.2,
+                    },
+                  },
+                }}
+              >
+                <motion.img
                   src="/assets/svg/yellow-circle.svg"
                   className="w-full absolute -top-10 -left-4 object-cover"
+                  initial={{ scale: 1.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    duration: 0.8,
+                    delay:
+                      1.4 +
+                      content.branding.text.length * 0.05 +
+                      0.4 +
+                      0.2 +
+                      content.branding.repeatText.length * 0.05 +
+                      0.4 +
+                      0.2,
+                    ease: 'easeOut',
+                  }}
                 />
                 <div className="relative">
-                  <span className="font-nothing-you-could-do text-yellow-400 text-5xl">
-                    {content.branding.repeatText}
-                  </span>
+                  <motion.span className="font-nothing-you-could-do text-yellow-400 text-5xl inline-flex">
+                    {content.branding.repeatText
+                      .split('')
+                      .map((char, index) => (
+                        <motion.span
+                          key={index}
+                          variants={{
+                            hidden: { x: -20, opacity: 0 },
+                            visible: {
+                              x: 0,
+                              opacity: 1,
+                              transition: {
+                                duration: 0.4,
+                                ease: 'easeOut',
+                              },
+                            },
+                          }}
+                        >
+                          {char === ' ' ? '\u00A0' : char}
+                        </motion.span>
+                      ))}
+                  </motion.span>
                 </div>
-              </div>
+              </motion.div>
             )}
-            <img
-              src="/assets/svg/yellow-arrow-back.svg"
-              className="w-[300px] absolute top-12 left-25 object-cover"
-            />
-          </div>
+            <motion.div
+              className="w-[300px] absolute top-12 left-25 overflow-hidden"
+              initial={{ clipPath: 'inset(0 0% 0 100%)' }}
+              animate={{ clipPath: 'inset(0 0% 0 0%)' }}
+              transition={{
+                duration: 0.8,
+                delay:
+                  1.4 +
+                  content.branding.text.length * 0.05 +
+                  0.4 +
+                  0.2 +
+                  (content.branding.repeatText?.length ?? 0) * 0.05 +
+                  0.4 +
+                  0.2 +
+                  0.8 +
+                  0.2,
+                ease: 'easeOut',
+              }}
+            >
+              <img
+                src="/assets/svg/yellow-arrow-back.svg"
+                className="w-full object-cover"
+                alt=""
+              />
+            </motion.div>
+          </motion.div>
         )}
         <div className="max-w-3xl flex flex-col justify-center">
-          <h2 className="mb-6 text-white font-barlow-condensed font-extrabold text-[140px] z-10 leading-[140px]">
+          <motion.h2
+            className="mb-6 text-white font-barlow-condensed font-extrabold text-[140px] z-10 leading-[140px]"
+            initial={{ y: 60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             {content.title}
-          </h2>
+          </motion.h2>
 
-          <p
+          <motion.p
             className="font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
           />
 
           {content.tagline && (
-            <p className="font-jost text-base md:text-lg font-normal leading-relaxed text-gray-300 max-w-xl mb-8">
+            <motion.p
+              className="font-jost text-base md:text-lg font-normal leading-relaxed text-gray-300 max-w-xl mb-8"
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
               {content.tagline}
-            </p>
+            </motion.p>
           )}
 
           {/* Tags/Chips */}
           {content.tags && content.tags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 mb-8">
+            <motion.div
+              className="flex flex-wrap items-center gap-2 mb-8"
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 1.0 }}
+            >
               {content.tags?.map((tag, index) => (
                 <div
                   key={`${tag.label}-${index}`}
@@ -214,26 +329,38 @@ const Hero: React.FC<HeroProps> = ({
                   )}
                 </div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
         {/* CTA Button - Lower Left */}
         {content.primaryCta && (
-          <Button
-            asChild
-            aria-label={content.primaryCta.ariaLabel}
-            size="lg"
-            variant="outline"
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
             className="mr-auto"
           >
-            <Link href={content.primaryCta.href} scroll={true}>
-              {content.primaryCta.text}
-            </Link>
-          </Button>
+            <Button
+              asChild
+              aria-label={content.primaryCta.ariaLabel}
+              size="lg"
+              variant="outline"
+              className="mr-auto"
+            >
+              <Link href={content.primaryCta.href} scroll={true}>
+                {content.primaryCta.text}
+              </Link>
+            </Button>
+          </motion.div>
         )}
 
         {content.secondaryCta && (
-          <div className="absolute bottom-12 left-8 md:bottom-16 md:left-12 lg:left-16 z-10">
+          <motion.div
+            className="absolute bottom-12 left-8 md:bottom-16 md:left-12 lg:left-16 z-10"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
+          >
             <Button
               asChild
               aria-label={content.secondaryCta.ariaLabel}
@@ -245,7 +372,7 @@ const Hero: React.FC<HeroProps> = ({
                 {content.secondaryCta.text}
               </Link>
             </Button>
-          </div>
+          </motion.div>
         )}
       </div>
 

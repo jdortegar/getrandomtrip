@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 
 import { TabSelector } from './ui/TabSelector';
@@ -50,9 +50,6 @@ export default function HomeInfo() {
       case 'benefits':
         return <ThreeColumns items={BENEFITS_CONSTANTS.STEPS} />;
 
-      // case 'budgetBands':
-      //   return <BudgetSlider />;
-
       default:
         return null;
     }
@@ -65,28 +62,39 @@ export default function HomeInfo() {
       title={HOME_INFO_CONSTANTS.TITLE}
     >
       {/* Tab Navigation */}
-      <TabSelector
-        activeTab={activeTab}
-        layoutId="activeTabHomeInfo"
-        onTabChange={setActiveTab}
-        tabs={HOME_INFO_CONSTANTS.TABS.map(({ id, label }) => ({
-          id,
-          label,
-        }))}
-      />
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+      >
+        <TabSelector
+          activeTab={activeTab}
+          layoutId="activeTabHomeInfo"
+          onTabChange={setActiveTab}
+          tabs={HOME_INFO_CONSTANTS.TABS.map(({ id, label }) => ({
+            id,
+            label,
+          }))}
+        />
+      </motion.div>
 
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <div key={activeTab}>{renderActiveTab()}</div>
       </AnimatePresence>
       {/* CTA - Enhanced */}
-      <div className="mt-12 flex justify-center">
+      <motion.div
+        className="mt-12 flex justify-center"
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 1 }}
+      >
         <Button variant="pill" size="lg">
           <Link href="#exploration-section" scroll={true}>
             RANDOMTRIPME!
           </Link>
         </Button>
-      </div>
+      </motion.div>
     </Section>
   );
 }

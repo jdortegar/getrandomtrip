@@ -39,7 +39,7 @@ export function TabSelector({
           {activeTab === tab.id && (
             <motion.div
               className={cn(
-                'absolute -bottom-4 left-0 right-0 w-1/2 m-auto h-[2px] bg-[#4F96B6]',
+                'absolute -bottom-3 left-0 right-0 w-1/2 m-auto h-[2px] bg-[#4F96B6] rounded-full',
               )}
               layoutId={layoutId}
               transition={{
@@ -47,6 +47,8 @@ export function TabSelector({
                 stiffness: 500,
                 damping: 30,
               }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: '-100px' }}
             />
           )}
         </button>

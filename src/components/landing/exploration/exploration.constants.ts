@@ -1,4 +1,5 @@
 export const EXPLORATION_CONSTANTS = {
+  EYEBROW: 'Dale forma a tu aventura',
   TITLE: 'Puntos de Partida',
   SUBTITLE: 'Elige cómo quieres empezar a dar forma a tu aventura.',
   TABS: [
@@ -15,20 +16,20 @@ export const EXPLORATION_CONSTANTS = {
       href: '/trippers',
       disabled: false,
     },
-    {
-      id: 'Roadtrips',
-      label: 'Roadtrips',
-      description: 'Libertad sobre ruedas. Tú eliges el ritmo.',
-      disabled: false,
-    },
-    {
-      id: 'Trippers Decode',
-      label: 'Destination Decode',
-      description:
-        'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',
-      href: '/trippers-decode',
-      disabled: false,
-    },
+    // {
+    //   id: 'Roadtrips',
+    //   label: 'Roadtrips',
+    //   description: 'Libertad sobre ruedas. Tú eliges el ritmo.',
+    //   disabled: true,
+    // },
+    // {
+    //   id: 'Trippers Decode',
+    //   label: 'Destination Decode',
+    //   description:
+    //     'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',
+    //   href: '/trippers-decode',
+    //   disabled: true,
+    // },
   ],
 
   TAB_DESCRIPTIONS: {

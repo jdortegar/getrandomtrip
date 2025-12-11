@@ -17,11 +17,11 @@ export default function HomePage() {
     <main style={{ scrollBehavior: 'smooth' }}>
       <Hero content={HERO_CONTENT} scrollIndicator />
       <HomeInfo />
-      <TrustSignals variant="compact" />
-      <Blog content={BLOG_CONSTANTS} id="home-blog" />
+      {/* <TrustSignals variant="compact" /> */}
       <ExplorationSection />
-      <EventFinder />
-      <ReadyForAdventureSection />
+      {/* <Blog content={BLOG_CONSTANTS} id="home-blog" /> */}
+      {/* <EventFinder /> */}
+      {/* <ReadyForAdventureSection /> */}
     </main>
   );
 }

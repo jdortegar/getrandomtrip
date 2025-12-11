@@ -3,13 +3,13 @@
 import React, { useMemo, useState } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExplorationTabNavigation } from './ExplorationTabNavigation';
 import { TravelerTypesCarousel } from './TravelerTypesCarousel';
 import { TopTrippersGrid } from './TopTrippersGrid';
 import { RoadtripsGrid } from './RoadtripsGrid';
 // import TrippersDecodeSearch from '@/app/trippers-decode/TrippersDecodePageContent';
 import { EXPLORATION_CONSTANTS } from './exploration.constants';
 import Section from '@/components/layout/Section';
+import { TabSelector } from '@/components/ui/TabSelector';
 
 const ComingSoon: React.FC = () => (
   <div className="py-4">
@@ -41,28 +41,32 @@ export function ExplorationSection() {
     <Section
       className="relative flex min-h-screen items-center overflow-hidden py-20"
       id="exploration-section"
+      eyebrow={EXPLORATION_CONSTANTS.EYEBROW}
       subtitle={EXPLORATION_CONSTANTS.SUBTITLE}
       title={EXPLORATION_CONSTANTS.TITLE}
     >
       {/* Tab Navigation */}
-      <ExplorationTabNavigation
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+        viewport={{ once: true, margin: '-100px' }}
+        whileInView={{ y: 0, opacity: 1 }}
+      >
+        <TabSelector
+          tabs={EXPLORATION_CONSTANTS.TABS}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          layoutId="activeTab"
+        />
+      </motion.div>
 
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          animate={{ opacity: 1, y: 0, height: 'auto' }}
-          className="mx-auto mt-8 w-full rt-container min-h-[400px]"
-          exit={{ opacity: 0, y: -20, height: '400px' }}
-          initial={{ opacity: 0, y: 20, height: '400px' }}
-          key={activeTab}
-          transition={{
-            duration: 0.5,
-            ease: 'easeInOut',
-            height: { duration: 0.4, ease: 'easeInOut' },
-          }}
+          className="mt-12 flex justify-center"
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1 }}
         >
           {renderActiveTab()}
         </motion.div>

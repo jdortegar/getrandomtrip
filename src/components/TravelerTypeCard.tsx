@@ -22,12 +22,15 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   disabled = false,
   className,
 }) => {
-  const baseClasses =
-    'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[3/4] w-72 md:w-96';
-  const composedClasses = cn(baseClasses, className);
-
-  const cardContent = (
-    <>
+  return (
+    <Link
+      className={cn(
+        'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[5/4] w-full',
+        className,
+        disabled ? 'cursor-not-allowed opacity-50' : '',
+      )}
+      href={href}
+    >
       <Image
         alt={title}
         className="transition-transform duration-300 group-hover:scale-110"
@@ -37,26 +40,28 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         style={{ objectFit: 'cover' }}
       />
       <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-t from-black/75 to-transparent" />
-      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white md:p-8">
-        <h3 className="font-caveat text-3xl font-bold md:text-4xl">{title}</h3>
-        <p className="font-jost mt-2 text-sm text-gray-200 md:text-base">
+
+      {/* Trustpilot Rating */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 backdrop-blur-sm">
+        <span className="text-xs font-semibold text-white">4.6</span>
+        <svg
+          className="h-3 w-3 text-yellow-400"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      </div>
+
+      {/* Card Content */}
+      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white md:p-8 pb-12">
+        <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase leading-tight md:text-5xl">
+          {title}
+        </h3>
+        <p className="font-barlow mt-2 text-base text-white/90 md:text-lg">
           {description}
         </p>
       </div>
-    </>
-  );
-
-  if (disabled) {
-    return (
-      <div className={cn(composedClasses, 'cursor-not-allowed opacity-50')}>
-        {cardContent}
-      </div>
-    );
-  }
-
-  return (
-    <Link className={composedClasses} href={href}>
-      {cardContent}
     </Link>
   );
 };

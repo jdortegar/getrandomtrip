@@ -1,5 +1,4 @@
 export { ExplorationSection } from './ExplorationSection';
-export { ExplorationTabNavigation } from './ExplorationTabNavigation';
 export { TravelerTypesCarousel } from './TravelerTypesCarousel';
 export { TopTrippersGrid } from './TopTrippersGrid';
 export { RoadtripsGrid } from './RoadtripsGrid';

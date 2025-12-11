@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'framer-motion';
 import { slugify } from '@/lib/helpers/slugify';
 import { cn } from '@/lib/utils';
 import Container from './Container';
@@ -57,40 +60,52 @@ const Section = ({
           </div>
         </>
       )}
-      {eyebrow && (
-        <div className="text-lg font-bold tracking-[9px] uppercase text-[#4F96B6] mb-2">
-          {eyebrow}
-        </div>
-      )}
-      {title && (
-        <h2
-          className={cn(
-            'font-barlow-condensed text-[70px] mb-12 uppercase font-bold',
-            {
-              'text-gray-900': variant === 'default',
-              'text-gray-50': variant === 'light',
-              'text-white': variant === 'dark',
-            },
-          )}
-          data-testid="section-title"
-        >
-          {title}
-        </h2>
-      )}
-      {subtitle && (
-        <p
-          className={cn(
-            'font-jost text-base md:text-xl text-gray-700 mx-auto leading-relaxed',
-            {
+      <div className="mb-14">
+        {eyebrow && (
+          <motion.div
+            className="text-lg font-bold tracking-[9px] uppercase text-[#4F96B6]"
+            initial={{ y: 40, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {eyebrow}
+          </motion.div>
+        )}
+        {title && (
+          <motion.h2
+            className={cn(
+              'font-barlow-condensed text-[70px] uppercase font-bold mt-4 leading-none',
+              {
+                'text-gray-900': variant === 'default',
+                'text-gray-50': variant === 'light',
+                'text-white': variant === 'dark',
+              },
+            )}
+            initial={{ y: 60, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            {title}
+          </motion.h2>
+        )}
+        {subtitle && (
+          <motion.p
+            className={cn('text-lg text-[#888] mx-auto mt-8 ', {
               'text-gray-700': variant === 'default',
               'text-gray-900': variant === 'light',
               'text-white': variant === 'dark',
-            },
-          )}
-        >
-          {subtitle}
-        </p>
-      )}
+            })}
+            initial={{ y: 40, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            {subtitle}
+          </motion.p>
+        )}
+      </div>
       <Container size={fullWidth ? 'full' : 'xl'} className="relative z-10">
         {children}
       </Container>
