@@ -52,7 +52,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
         className={`${headerClass} ${NAVBAR_CONSTANTS.HEIGHT}`}
       >
         <nav
-          className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT} ${NAVBAR_CONSTANTS.MAX_WIDTH} ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between`}
+          className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT}  ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between container`}
         >
           <Link
             href="/"

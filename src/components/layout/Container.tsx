@@ -14,7 +14,7 @@ const SIZE_CLASS_MAP: Record<ContainerSize, string> = {
   sm: 'max-w-2xl',
   md: 'max-w-4xl',
   lg: 'max-w-5xl',
-  xl: 'rt-container',
+  xl: '',
   '2xl': 'max-w-screen-2xl',
   full: 'max-w-full',
 };

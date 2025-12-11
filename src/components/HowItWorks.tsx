@@ -37,13 +37,13 @@ const STEPS: StepCard[] = [
 ];
 
 const cardVariants = {
-  hidden: { y: 20, opacity: 0 },
+  hidden: { y: 60, opacity: 0 },
   visible: (i: number) => ({
     y: 0,
     opacity: 1,
     transition: {
-      delay: i * 0.1,
-      duration: 0.4,
+      delay: i * 0.2,
+      duration: 0.8,
       ease: [0.4, 0, 0.2, 1] as const,
     },
   }),
@@ -51,7 +51,7 @@ const cardVariants = {
 
 export default function HowItWorks() {
   return (
-    <div className="grid gap-4 md:grid-cols-3 w-full max-w-screen-xl mx-auto px-20">
+    <div className="grid gap-4 md:grid-cols-3 w-full container mx-auto px-20">
       {STEPS.map((step, index) => (
         <motion.div
           key={step.title}

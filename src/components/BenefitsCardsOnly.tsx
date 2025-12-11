@@ -49,7 +49,7 @@ const cardVariants = {
 
 export default function BenefitsCardsOnly() {
   return (
-    <div className="grid gap-10 md:grid-cols-3 w-full max-w-screen-xl mx-auto px-20">
+    <div className="grid gap-10 md:grid-cols-3 w-full container mx-auto px-20">
       {STEPS.map((step, index) => (
         <motion.div
           key={step.title}
