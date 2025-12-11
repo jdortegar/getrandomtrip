@@ -6,6 +6,7 @@ export const EXPLORATION_CONSTANTS = {
       id: 'By Traveller',
       label: 'By Traveller',
       description: '¿Con quién vas a escribir tu próxima historia?',
+      disabled: false,
     },
     {
       id: 'Top Trippers',
@@ -28,7 +29,7 @@ export const EXPLORATION_CONSTANTS = {
       href: '/trippers-decode',
       disabled: false,
     },
-  ] as const,
+  ],
 
   TAB_DESCRIPTIONS: {
     'By Traveller': '¿Con quién vas a escribir tu próxima historia?',
@@ -37,5 +38,5 @@ export const EXPLORATION_CONSTANTS = {
     Roadtrips: 'Libertad sobre ruedas. Tú eliges el ritmo.',
     'Trippers Decode':
       'Rutas con alma, contadas por quienes las vivieron. Vive destinos a través de los ojos de auténticos expertos.',
-  } as const,
-} as const;
+  },
+};

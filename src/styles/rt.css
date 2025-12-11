@@ -79,5 +79,5 @@
 
 /* Página con offset bajo el header del sitio */
 .rt-page {
-  @apply rt-container px-6 py-6 pt-[var(--rt-header-h,64px)];
+  @apply w-full max-w-screen-xl mx-auto px-6 py-6 pt-[var(--rt-header-h,64px)];
 }

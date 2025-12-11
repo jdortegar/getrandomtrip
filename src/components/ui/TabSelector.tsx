@@ -8,7 +8,8 @@ interface TabSelectorProps {
   tabs: {
     id: string;
     label: string;
-    disabled?: boolean;
+    disabled?: boolean | undefined;
+    href?: string | undefined;
   }[];
   activeTab: string;
   onTabChange: (tab: string) => void;

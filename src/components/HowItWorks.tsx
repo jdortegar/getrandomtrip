@@ -51,7 +51,7 @@ const cardVariants = {
 
 export default function HowItWorks() {
   return (
-    <div className="grid gap-4 md:grid-cols-3 container mx-auto px-20">
+    <div className="grid gap-4 md:grid-cols-3 w-full max-w-screen-xl mx-auto px-20">
       {STEPS.map((step, index) => (
         <motion.div
           key={step.title}
