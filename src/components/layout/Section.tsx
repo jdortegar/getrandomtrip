@@ -8,6 +8,7 @@ type SectionProps = {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
+  eyebrow?: string;
   className?: string;
   variant?: 'default' | 'light' | 'dark';
   id?: string;
@@ -21,6 +22,7 @@ const Section = ({
   children,
   title,
   subtitle,
+  eyebrow,
   className,
   variant = 'default',
   id,
@@ -30,7 +32,7 @@ const Section = ({
   return (
     <section
       className={cn(
-        'text-center relative flex flex-col items-center justify-center w-full',
+        'text-center relative flex flex-col items-center justify-center w-full py-20',
         className,
         {
           'bg-white text-gray-900': variant === 'default',
@@ -55,34 +57,39 @@ const Section = ({
           </div>
         </>
       )}
-      {title && (
-        <div className="mb-6 max-w-4xl mx-auto relative z-10 px-4 md:mb-8">
-          <h2
-            className={cn(
-              'font-caveat text-4xl md:text-5xl font-bold mb-4 md:mb-6',
-              {
-                'text-gray-900': variant === 'default',
-                'text-gray-50': variant === 'light',
-                'text-white': variant === 'dark',
-              },
-            )}
-            data-testid="section-title"
-          >
-            {title}
-          </h2>
-          <p
-            className={cn(
-              'font-jost text-base md:text-xl text-gray-700 mx-auto leading-relaxed',
-              {
-                'text-gray-700': variant === 'default',
-                'text-gray-900': variant === 'light',
-                'text-white': variant === 'dark',
-              },
-            )}
-          >
-            {subtitle}
-          </p>
+      {eyebrow && (
+        <div className="text-lg font-bold tracking-[9px] uppercase text-[#4F96B6] mb-2">
+          {eyebrow}
         </div>
+      )}
+      {title && (
+        <h2
+          className={cn(
+            'font-barlow-condensed text-[70px] mb-12 uppercase font-bold',
+            {
+              'text-gray-900': variant === 'default',
+              'text-gray-50': variant === 'light',
+              'text-white': variant === 'dark',
+            },
+          )}
+          data-testid="section-title"
+        >
+          {title}
+        </h2>
+      )}
+      {subtitle && (
+        <p
+          className={cn(
+            'font-jost text-base md:text-xl text-gray-700 mx-auto leading-relaxed',
+            {
+              'text-gray-700': variant === 'default',
+              'text-gray-900': variant === 'light',
+              'text-white': variant === 'dark',
+            },
+          )}
+        >
+          {subtitle}
+        </p>
       )}
       <Container size={fullWidth ? 'full' : 'xl'} className="relative z-10">
         {children}

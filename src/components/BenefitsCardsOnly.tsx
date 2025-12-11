@@ -1,57 +1,89 @@
 'use client';
 import React from 'react';
-import GetRandomtripCta from '@/components/common/GetRandomtripCta';
+import { motion } from 'framer-motion';
+import Img from '@/components/common/Img';
 
-const benefits = [
+interface StepCard {
+  title: string;
+  description: string;
+  imageSrc: string;
+  imageAlt: string;
+}
+
+const STEPS: StepCard[] = [
   {
-    title: 'Sin estrés y Flexible',
+    title: 'sin stress y flexible',
     description:
       'Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.',
+    imageSrc: '/images/benefits-1.png',
+    imageAlt: 'Road through green forest',
   },
   {
     title: 'Todo resuelto',
     description:
       'Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.',
+    imageSrc: '/images/benefits-2.png',
+    imageAlt: 'Airplane interior at night',
   },
   {
-    title: 'Descubrimiento auténtico',
+    title: 'descubrimiento auténtico',
     description:
       'Viví la emoción de lo inesperado con curaduría real, no al azar.',
+    imageSrc: '/images/benefits-3.png',
+    imageAlt: 'Airplane window view',
   },
 ];
 
+const cardVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: (i: number) => ({
+    y: 0,
+    opacity: 1,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1] as const,
+    },
+  }),
+};
+
 export default function BenefitsCardsOnly() {
   return (
-    <div
-      className="mx-auto max-w-5xl py-6 px-4 md:py-8"
-      data-testid="benefits-cards-only"
-    >
-      <header className="mb-6 text-center md:mb-10">
-        <p className="font-jost mb-6 text-lg italic text-gray-600 md:text-xl">
-          Lo difícil es planificar. Lo inolvidable es viajar.
-        </p>
-      </header>
-
-      <div className="grid gap-6 md:grid-cols-3 md:gap-8">
-        {benefits.map((b) => (
-          <div
-            key={b.title}
-            className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-gradient-to-br from-white via-white to-gray-50/50 p-6 text-primary shadow-xl transition-all duration-500 hover:scale-[1.05] hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/20 md:p-8"
-          >
-            {/* Subtle glow on hover */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-blue-500/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-            <div className="relative z-10">
-              <h4 className="font-caveat mb-3 text-2xl font-bold bg-gradient-to-br from-primary via-primary to-primary/80 bg-clip-text text-transparent md:mb-4 md:text-3xl">
-                {b.title}
-              </h4>
-              <p className="font-jost text-sm leading-relaxed text-neutral-700 md:text-base">
-                {b.description}
-              </p>
-            </div>
+    <div className="grid gap-10 md:grid-cols-3 container mx-auto px-20">
+      {STEPS.map((step, index) => (
+        <motion.div
+          key={step.title}
+          className="flex flex-col"
+          custom={index}
+          initial="hidden"
+          animate="visible"
+          variants={cardVariants}
+        >
+          {/* Image */}
+          <div className="relative w-full overflow-hidden aspect-4/3 rounded-lg">
+            <Img
+              alt={step.imageAlt}
+              className="h-full w-full object-cover"
+              height={400}
+              src={step.imageSrc}
+              width={600}
+            />
           </div>
-        ))}
-      </div>
+
+          {/* Content */}
+          <div className="flex flex-col gap-3 p-6 text-center">
+            <h3 className="font-barlow text-xl font-bold uppercase text-[#282828]">
+              {step.title}
+            </h3>
+            <p
+              className="font-barlow text-lg text-[#888]"
+              dangerouslySetInnerHTML={{
+                __html: step.description,
+              }}
+            />
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
 }

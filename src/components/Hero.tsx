@@ -151,21 +151,21 @@ const Hero: React.FC<HeroProps> = ({
       <HeroVideoBackground content={content} />
 
       {/* Main Content - Left Aligned */}
-      <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-12 lg:px-16">
+      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto px-20">
         {/* Top Left Branding */}
         {content.branding && (
-          <div className="flex items-center gap-3 mb-8 relative">
-            <span className="font-barlow-condensed text-3xl font-semibold text-white uppercase tracking-[6px] ">
+          <div className="flex items-center gap-3 mb-4 relative">
+            <span className="font-barlow-condensed text-[30px] font-semibold text-white uppercase tracking-[6px] ">
               {content.branding.text}
             </span>
             {content.branding.repeatText && (
-              <div className="relative flex items-center ml-4 w-[230px]">
+              <div className="relative flex items-center ml-4 w-[190px]">
                 <img
                   src="/assets/svg/yellow-circle.svg"
-                  className="w-full absolute -top-12 -left-4 object-cover"
+                  className="w-full absolute -top-10 -left-4 object-cover"
                 />
                 <div className="relative">
-                  <span className="font-nothing-you-could-do text-yellow-400 text-6xl">
+                  <span className="font-nothing-you-could-do text-yellow-400 text-5xl">
                     {content.branding.repeatText}
                   </span>
                 </div>
@@ -173,17 +173,17 @@ const Hero: React.FC<HeroProps> = ({
             )}
             <img
               src="/assets/svg/yellow-arrow-back.svg"
-              className="w-[300px] absolute top-15 left-25 object-cover"
+              className="w-[300px] absolute top-12 left-25 object-cover"
             />
           </div>
         )}
         <div className="max-w-3xl flex flex-col justify-center">
-          <h2 className="mb-6 text-white font-barlow-condensed font-extrabold text-[160px] z-10 leading-[170px]">
+          <h2 className="mb-6 text-white font-barlow-condensed font-extrabold text-[140px] z-10 leading-[140px]">
             {content.title}
           </h2>
 
           <p
-            className="font-barlow text-xl font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            className="font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
           />
 
