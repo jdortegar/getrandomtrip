@@ -5,37 +5,51 @@ export const HOW_IT_WORKS_CONSTANTS = {
 
   STEPS: [
     {
-      num: '1',
-      title: 'Planificá',
+      title: 'PLANIFICÁ',
       description:
-        'Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.',
-      iconKey: 'calendar',
+        'Viví lo inesperado sin improvisar. Nosotros diseñamos tu viaje y te revelamos el <strong>destino 48h antes.</strong>',
+      imageSrc: '/images/how-it-works-1.png',
+      imageAlt: 'Road through green forest',
     },
     {
-      num: '2',
-      title: 'Recibí la sorpresa',
+      title: 'RECIBÍ LA SORPRESA',
       description:
         'Confirmá tu viaje. Te revelamos el destino 48 h antes y te enviamos la guía para ese mood.',
-      iconKey: 'question',
+      imageSrc: '/images/how-it-works-2.png',
+      imageAlt: 'Airplane interior at night',
     },
     {
-      num: '3',
-      title: 'Viajá sin estrés',
+      title: 'VIAJÁ SIN STRESS',
       description:
         'Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.',
-      iconKey: 'luggage',
+      imageSrc: '/images/how-it-works-3.png',
+      imageAlt: 'Airplane window view',
     },
-  ] as const,
+  ],
+};
 
-  BADGES: [
-    'Confiado por viajeros',
-    'Atención humana 24/7',
-    'Pagos seguros',
-    'Pet-friendly ready',
-  ] as const,
-
-  // Accessibility
-  SECTION_ARIA_LABEL: 'Cómo funciona Random Trip - Proceso de 3 pasos',
-} as const;
-
-export type HowItWorksConstants = typeof HOW_IT_WORKS_CONSTANTS;
+export const BENEFITS_CONSTANTS = {
+  STEPS: [
+    {
+      title: 'sin stress y flexible',
+      description:
+        'Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.',
+      imageSrc: '/images/benefits-1.png',
+      imageAlt: 'Road through green forest',
+    },
+    {
+      title: 'Todo resuelto',
+      description:
+        'Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.',
+      imageSrc: '/images/benefits-2.png',
+      imageAlt: 'Airplane interior at night',
+    },
+    {
+      title: 'descubrimiento auténtico',
+      description:
+        'Viví la emoción de lo inesperado con curaduría real, no al azar.',
+      imageSrc: '/images/benefits-3.png',
+      imageAlt: 'Airplane window view',
+    },
+  ],
+};

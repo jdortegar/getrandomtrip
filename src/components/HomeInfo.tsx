@@ -1,23 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { TabSelector } from './ui/TabSelector';
-import TrustSignals from './TrustSignals';
-import { BudgetBandsSection } from '@/components/BudgetBandsSection';
-import BenefitsCardsOnly from './BenefitsCardsOnly';
-import HowItWorks from './HowItWorks';
-import { Button } from '@/components/ui/button';
+import { AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import BudgetSlider from './BudgetSlider';
+
+import { TabSelector } from './ui/TabSelector';
+import { Button } from '@/components/ui/button';
+import ThreeColumns from './ThreeColumns';
 import Section from './layout/Section';
+import {
+  HOW_IT_WORKS_CONSTANTS,
+  BENEFITS_CONSTANTS,
+} from '@/lib/data/how-it-works';
 
 // Constants
 const HOME_INFO_CONSTANTS = {
   EYEBROW: 'Tres pasos, cero stress',
   TITLE: '¿Qué hacemos?',
-  // SUBTITLE:
-  //   'La plataforma que conecta viajeros auténticos con aventureros que buscan experiencias únicas. Descubre destinos a través de los ojos de quienes los conocen mejor.',
   TABS: [
     {
       id: 'how',
@@ -29,14 +28,9 @@ const HOME_INFO_CONSTANTS = {
       label: 'Beneficios clave',
       contentKey: 'benefits',
     },
-    // {
-    //   id: 'bands',
-    //   label: 'Bandas & modos de viaje',
-    //   contentKey: 'budgetBands',
-    // },
-  ] as const,
+  ],
   SECTION_ARIA_LABEL: 'Información sobre Random Trip',
-} as const;
+};
 
 export default function HomeInfo() {
   const [activeTab, setActiveTab] = useState<string>(
@@ -51,10 +45,10 @@ export default function HomeInfo() {
 
     switch (currentTab.contentKey) {
       case 'howItWorks':
-        return <HowItWorks />;
+        return <ThreeColumns items={HOW_IT_WORKS_CONSTANTS.STEPS} />;
 
       case 'benefits':
-        return <BenefitsCardsOnly />;
+        return <ThreeColumns items={BENEFITS_CONSTANTS.STEPS} />;
 
       // case 'budgetBands':
       //   return <BudgetSlider />;

@@ -5,8 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TrustSignals from '../TrustSignals';
 import { TabSelector } from '../ui/TabSelector';
 import { BudgetBandsSection } from '@/components/BudgetBandsSection';
-import BenefitsCardsOnly from '../BenefitsCardsOnly';
-import HowItWorksSection from '../HowItWorks';
+import ThreeColumns from '../ThreeColumns';
+import {
+  HOW_IT_WORKS_CONSTANTS,
+  BENEFITS_CONSTANTS,
+} from '@/lib/data/how-it-works';
 
 const HOME_INFO_CAROUSEL_CONSTANTS = {
   SECTION_ARIA_LABEL: 'Información del viaje',
@@ -51,10 +54,10 @@ export default function HomeInfoCarousel({
 
     switch (currentTab.contentKey) {
       case 'howItWorks':
-        return <HowItWorksSection />;
+        return <ThreeColumns items={HOW_IT_WORKS_CONSTANTS.STEPS} />;
 
       case 'benefits':
-        return <BenefitsCardsOnly />;
+        return <ThreeColumns items={BENEFITS_CONSTANTS.STEPS} />;
 
       case 'budgetBands':
         return <BudgetBandsSection variant={variant} defaultOpenDetails />;

@@ -13,8 +13,6 @@ export interface ThreeColumnsItem {
 
 interface ThreeColumnsProps {
   items: ThreeColumnsItem[];
-  gap?: 'sm' | 'md' | 'lg';
-  className?: string;
 }
 
 const cardVariants = {
@@ -30,21 +28,9 @@ const cardVariants = {
   }),
 };
 
-const gapMap = {
-  sm: 'gap-4',
-  md: 'gap-6',
-  lg: 'gap-10',
-};
-
-export default function ThreeColumns({
-  items,
-  gap = 'sm',
-  className,
-}: ThreeColumnsProps) {
+export default function ThreeColumns({ items }: ThreeColumnsProps) {
   return (
-    <div
-      className={`grid ${gapMap[gap]} md:grid-cols-3 w-full container mx-auto px-20 ${className || ''}`}
-    >
+    <div className={`grid gap-4 md:grid-cols-3 w-full container mx-auto px-20`}>
       {items.map((item, index) => (
         <motion.div
           key={item.title}
