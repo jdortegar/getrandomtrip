@@ -10,7 +10,7 @@ import { useStore } from '@/store/store';
 import { buildICS } from '@/lib/ics';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Calendar, Share2, Mail } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
 import { useCountdown } from '@/hooks/useCountdown';

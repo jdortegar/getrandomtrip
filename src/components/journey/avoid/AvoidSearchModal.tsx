@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '@/store/store';
 import { useQuerySync } from '@/hooks/useQuerySync';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import Badge from '@/components/badge';
 import CitySearchSelector from './CitySearchSelector';
 import type { AvoidCity } from '@/lib/helpers/avoid-cities';

@@ -8,7 +8,7 @@ import Link from 'next/link';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import Chip from '@/components/badge';
 import {
   ArrowLeft,

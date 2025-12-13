@@ -4,7 +4,7 @@ import DestinationCard from './DestinationCard';
 import { getAvoidCities } from '@/lib/helpers/avoid-cities';
 import { getCityImage, getLandmarkImageForCountry } from '@/lib/api/unsplash';
 import AvoidSearchModal from './AvoidSearchModal';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { useStore } from '@/store/store';
 
 export default function AvoidGrid() {
@@ -45,23 +45,26 @@ export default function AvoidGrid() {
       );
 
       console.log(`✅ All cities loaded:`, citiesWithImages);
-      
+
       // Filter out tripper package destinations to avoid spoiling surprises
       const filteredCities = citiesWithImages.filter((city) => {
-        if (!_tripperPackageDestinations || _tripperPackageDestinations.length === 0) {
+        if (
+          !_tripperPackageDestinations ||
+          _tripperPackageDestinations.length === 0
+        ) {
           return true;
         }
-        
+
         // Check if this city is in the tripper's packages
         const isPackageDestination = _tripperPackageDestinations.some(
           (pkg) =>
             pkg.city.toLowerCase() === city.city.toLowerCase() &&
-            pkg.country.toLowerCase() === city.country.toLowerCase()
+            pkg.country.toLowerCase() === city.country.toLowerCase(),
         );
-        
+
         return !isPackageDestination;
       });
-      
+
       setSuggestions(filteredCities);
     }
 

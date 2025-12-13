@@ -63,7 +63,7 @@ export function ExplorationSection() {
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          className="mt-12 flex justify-center"
+          className="mt-12 flex justify-center container mx-auto px-20"
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 1 }}

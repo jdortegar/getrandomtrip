@@ -8,7 +8,7 @@ import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
 import GlassCard from '@/components/ui/GlassCard';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Save, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';

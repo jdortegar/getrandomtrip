@@ -25,7 +25,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   return (
     <Link
       className={cn(
-        'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[5/4] w-full',
+        'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full',
         className,
         disabled ? 'cursor-not-allowed opacity-50' : '',
       )}
@@ -54,11 +54,11 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       </div>
 
       {/* Card Content */}
-      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white md:p-8 pb-12">
+      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white pb-20">
         <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase leading-tight md:text-5xl">
           {title}
         </h3>
-        <p className="font-barlow mt-2 text-base text-white/90 md:text-lg">
+        <p className="font-barlow text-base text-white/90 md:text-lg">
           {description}
         </p>
       </div>

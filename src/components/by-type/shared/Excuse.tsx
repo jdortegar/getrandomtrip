@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, type CSSProperties } from 'react';
 import Img from '@/components/common/Img';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import type { ExcuseCard, ExcuseContent } from '@/types/planner';
 
 interface ExcuseProps {

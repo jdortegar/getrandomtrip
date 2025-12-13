@@ -7,7 +7,7 @@ import { useUserStore } from '@/store/slices/userStore';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import {
   User,
   Mail,

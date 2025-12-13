@@ -8,7 +8,7 @@ import { useStore } from '@/store/store';
 import { usePayment } from '@/hooks/usePayment';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import {
   AlertTriangle,
   ArrowLeft,

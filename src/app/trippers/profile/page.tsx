@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import {
   User,
   Mail,
@@ -303,7 +303,9 @@ function TripperProfileContent() {
                     <h2 className="text-xl font-semibold text-neutral-900 font-jost">
                       Mis Paquetes
                     </h2>
-                    <Button onClick={() => router.push('/dashboard/tripper/packages')}>
+                    <Button
+                      onClick={() => router.push('/dashboard/tripper/packages')}
+                    >
                       <Package className="w-4 h-4 mr-2" />
                       Gestionar Paquetes
                     </Button>
@@ -312,7 +314,8 @@ function TripperProfileContent() {
                   {packages.length > 0 ? (
                     <div className="space-y-4">
                       <p className="text-sm text-neutral-600 mb-4">
-                        Tienes {packages.length} paquete(s) creado(s). Ve al dashboard para crear nuevos o gestionar los existentes.
+                        Tienes {packages.length} paquete(s) creado(s). Ve al
+                        dashboard para crear nuevos o gestionar los existentes.
                       </p>
                       <div className="grid gap-4">
                         {packages.slice(0, 5).map((pkg: any) => (
@@ -356,7 +359,9 @@ function TripperProfileContent() {
                         <div className="text-center pt-4">
                           <Button
                             variant="outline"
-                            onClick={() => router.push('/dashboard/tripper/packages')}
+                            onClick={() =>
+                              router.push('/dashboard/tripper/packages')
+                            }
                           >
                             Ver todos los paquetes ({packages.length})
                           </Button>
@@ -369,7 +374,11 @@ function TripperProfileContent() {
                       <p className="text-neutral-500 mb-4">
                         No tienes paquetes creados aún
                       </p>
-                      <Button onClick={() => router.push('/dashboard/tripper/packages')}>
+                      <Button
+                        onClick={() =>
+                          router.push('/dashboard/tripper/packages')
+                        }
+                      >
                         <Package className="w-4 h-4 mr-2" />
                         Ir al Dashboard para Crear Paquetes
                       </Button>
@@ -434,7 +443,8 @@ function TripperProfileContent() {
                   </div>
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p className="text-sm text-blue-800">
-                      💡 Para ver estadísticas detalladas, análisis de rendimiento y gestionar tus paquetes, ve al{' '}
+                      💡 Para ver estadísticas detalladas, análisis de
+                      rendimiento y gestionar tus paquetes, ve al{' '}
                       <button
                         onClick={() => router.push('/dashboard/tripper')}
                         className="font-semibold underline hover:text-blue-900"

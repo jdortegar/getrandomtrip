@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Img from '@/components/common/Img';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { gotoBasicConfig } from '@/lib/linking';
 import ExcuseOptionCard from './ExcuseOptionCard';
 import type { ExcuseSpec, DetailsContent } from '@/types/planner';

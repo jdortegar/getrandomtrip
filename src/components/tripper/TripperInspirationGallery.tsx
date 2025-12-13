@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Heart, MapPin, Calendar, Users, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import Section from '@/components/layout/Section';
 import type { FeaturedTripCard } from '@/types/tripper';
 import { getTierBadge, getTypeLabel } from '@/lib/constants/traveller-types';

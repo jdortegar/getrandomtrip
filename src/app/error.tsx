@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
 
 interface ErrorPageProps {

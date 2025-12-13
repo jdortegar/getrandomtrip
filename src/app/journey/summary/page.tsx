@@ -18,7 +18,7 @@ import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
 
 import Chip from '@/components/badge';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { usePlanData } from '@/hooks/usePlanData';
 import { useSaveTrip } from '@/hooks/useSaveTrip';
 import { useCallback, useRef } from 'react';

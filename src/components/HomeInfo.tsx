@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 
 import { TabSelector } from './ui/TabSelector';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import ThreeColumns from './ThreeColumns';
 import Section from './layout/Section';
 import {

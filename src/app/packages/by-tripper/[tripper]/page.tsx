@@ -7,7 +7,7 @@ import {
 import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
 import TripperCard from '@/components/TripperCard';
 import PackageCard from '@/components/PackageCard';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { ArrowLeft, MapPin, Star, Users, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';

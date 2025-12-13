@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { gotoBasicConfig, normalizeTierId } from '@/lib/linking';
 import type { Level } from '@/types/planner';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';

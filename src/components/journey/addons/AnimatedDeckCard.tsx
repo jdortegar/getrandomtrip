@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Minus, Plus, Check } from 'lucide-react';
 import type { Addon } from '@/lib/data/shared/addons-catalog';
 import { useStore } from '@/store/store';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 
 // Helper simple para clases
 const cn = (...c: Array<string | false | null | undefined>) =>

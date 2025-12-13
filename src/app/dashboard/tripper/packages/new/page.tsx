@@ -8,7 +8,7 @@ import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
 import GlassCard from '@/components/ui/GlassCard';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Save, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -37,34 +37,34 @@ interface PackageFormData {
   title: string;
   destinationCountry: string;
   destinationCity: string;
-  
+
   // Optional basic info
   teaser: string;
   description: string;
   heroImage: string;
   excuseKey: string;
-  
+
   // Capacity
   minNights: number;
   maxNights: number;
   minPax: number;
   maxPax: number;
-  
+
   // Arrays
   tags: string[];
   highlights: string[];
-  
+
   // Pricing
   basePriceUsd: number;
   displayPrice: string;
-  
+
   // JSON fields (simplified for now)
   hotels: any;
   activities: any;
   itinerary: any;
   inclusions: any;
   exclusions: any;
-  
+
   // Visibility
   isActive: boolean;
   isFeatured: boolean;
@@ -122,7 +122,10 @@ function PackageForm() {
   };
 
   const addHighlight = () => {
-    if (highlightInput.trim() && !formData.highlights.includes(highlightInput.trim())) {
+    if (
+      highlightInput.trim() &&
+      !formData.highlights.includes(highlightInput.trim())
+    ) {
       setFormData({
         ...formData,
         highlights: [...formData.highlights, highlightInput.trim()],
@@ -279,7 +282,10 @@ function PackageForm() {
                       <textarea
                         value={formData.description}
                         onChange={(e) =>
-                          setFormData({ ...formData, description: e.target.value })
+                          setFormData({
+                            ...formData,
+                            description: e.target.value,
+                          })
                         }
                         placeholder="Describe tu paquete en detalle..."
                         rows={5}
@@ -536,7 +542,11 @@ function PackageForm() {
                       }}
                       placeholder="Agregar highlight (presiona Enter)"
                     />
-                    <Button type="button" onClick={addHighlight} variant="outline">
+                    <Button
+                      type="button"
+                      onClick={addHighlight}
+                      variant="outline"
+                    >
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
@@ -656,4 +666,3 @@ function PackageFormPage() {
 }
 
 export default PackageFormPage;
-

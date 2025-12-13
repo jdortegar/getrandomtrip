@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { useMemo } from 'react';
 
 interface TripperHeroProps {
