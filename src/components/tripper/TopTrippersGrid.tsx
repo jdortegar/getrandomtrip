@@ -60,8 +60,8 @@ export default function TopTrippersGrid() {
           >
             <TripperCard
               name={tripper.name}
-              img={tripper.avatarUrl ?? '/images/fallback.jpg'}
-              slug={
+              imageUrl={tripper.avatarUrl ?? '/images/fallback.jpg'}
+              href={
                 tripper.tripperSlug ||
                 tripper.name.toLowerCase().replace(/\s+/g, '-')
               }

@@ -19,7 +19,18 @@ const ComingSoon: React.FC = () => (
   </div>
 );
 
-export function ExplorationSection() {
+interface ExplorationSectionProps {
+  trippers?: Array<{
+    id: string;
+    name: string;
+    tripperSlug: string | null;
+    avatarUrl: string | null;
+    bio: string | null;
+    instagramUrl?: string | null;
+  }>;
+}
+
+export function ExplorationSection({ trippers = [] }: ExplorationSectionProps) {
   const [activeTab, setActiveTab] = useState('By Traveller');
 
   const renderActiveTab = () => {
@@ -27,7 +38,7 @@ export function ExplorationSection() {
       case 'By Traveller':
         return <TravelerTypesCarousel />;
       case 'Top Trippers':
-        return <TopTrippersGrid />;
+        return <TopTrippersGrid trippers={trippers} />;
       case 'Roadtrips':
         return <ComingSoon />;
       case 'Trippers Decode':

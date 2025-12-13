@@ -153,9 +153,9 @@ const ExplorationScreen = () => {
                 {TRIPPERS.map((tripper) => (
                   <TripperCard
                     key={tripper.slug}
-                    slug={tripper.slug}
+                    href={tripper.slug}
                     name={tripper.name}
-                    img={tripper.avatar}
+                    imageUrl={tripper.avatar}
                     bio={tripper.bio}
                   />
                 ))}
