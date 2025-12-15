@@ -17,7 +17,7 @@ export function TravelerTypesCarousel() {
       className="w-full"
     >
       <Carousel
-        itemClassName="basis-1/2 md:basis-1/3 lg:basis-1/4"
+        itemClassName="basis-full md:basis-1/3 lg:basis-1/4"
         slidesToScroll={1}
         fullViewportWidth
       >

@@ -25,7 +25,7 @@ export function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
   return (
     <div className="w-full">
       <motion.div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full"
+        className="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

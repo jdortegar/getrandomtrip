@@ -25,7 +25,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   return (
     <Link
       className={cn(
-        'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full',
+        'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full cursor-pointer',
         className,
         disabled ? 'cursor-not-allowed opacity-50' : '',
       )}

@@ -168,7 +168,7 @@ const Hero: React.FC<HeroProps> = ({
               },
             }}
           >
-            <motion.span className="font-barlow-condensed text-[30px] font-semibold text-white uppercase tracking-[6px] inline-flex">
+            <motion.span className="font-barlow-condensed text-[20px] md:text-[30px] font-semibold text-white uppercase tracking-[6px] inline-flex">
               {content.branding.text.split('').map((char, index) => (
                 <motion.span
                   key={index}
@@ -205,7 +205,7 @@ const Hero: React.FC<HeroProps> = ({
               >
                 <motion.img
                   src="/assets/svg/yellow-circle.svg"
-                  className="w-full absolute -top-10 -left-4 object-cover"
+                  className="w-full absolute -top-8 -left-6 md:-top-10 md:-left-4 object-cover"
                   initial={{ scale: 1.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{
@@ -222,7 +222,7 @@ const Hero: React.FC<HeroProps> = ({
                   }}
                 />
                 <div className="relative">
-                  <motion.span className="font-nothing-you-could-do text-yellow-400 text-5xl inline-flex">
+                  <motion.span className="font-nothing-you-could-do text-yellow-400 text-3xl md:text-5xl inline-flex">
                     {content.branding.repeatText
                       .split('')
                       .map((char, index) => (
@@ -248,7 +248,7 @@ const Hero: React.FC<HeroProps> = ({
               </motion.div>
             )}
             <motion.div
-              className="w-[300px] absolute top-12 left-25 overflow-hidden"
+              className="w-[200px]md:w-[300px] absolute top-12 left-20 md:left-25 overflow-hidden"
               initial={{ clipPath: 'inset(0 0% 0 100%)' }}
               animate={{ clipPath: 'inset(0 0% 0 0%)' }}
               transition={{
@@ -274,9 +274,9 @@ const Hero: React.FC<HeroProps> = ({
             </motion.div>
           </motion.div>
         )}
-        <div className="max-w-3xl flex flex-col justify-center">
+        <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
           <motion.h2
-            className="mb-6 text-white font-barlow-condensed font-extrabold text-[140px] z-10 leading-[140px]"
+            className="mb-6 text-white font-barlow-condensed font-extrabold text-[100px] md:text-[140px] z-10 leading-[100px] md:leading-[140px]"
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -338,7 +338,7 @@ const Hero: React.FC<HeroProps> = ({
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 1.2 }}
-            className="mr-auto"
+            className="mr-auto  md:mr-auto ml-auto md:ml-0"
           >
             <Button
               asChild
