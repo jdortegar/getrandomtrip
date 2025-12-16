@@ -20,11 +20,11 @@ export const coupleHeroContent: HeroContent = {
     href: '#couple-planner',
     ariaLabel: 'Ir a la sección de planificación de viaje',
   },
-  secondaryCta: {
-    text: 'Relatos que inspiran',
-    href: '#couple-blog',
-    ariaLabel: 'Ir a la sección de blog',
-  },
+  // secondaryCta: {
+  //   text: 'Relatos que inspiran',
+  //   href: '#couple-blog',
+  //   ariaLabel: 'Ir a la sección de blog',
+  // },
 };
 
 export const coupleStoryContent: ParagraphContent = {
@@ -35,5 +35,5 @@ export const coupleStoryContent: ParagraphContent = {
     'Ningún mapa lo marca. Ningún blog lo recomienda. Solo ustedes dos, caminando por lugares que parecerán inventados para que nadie más los vea. Un itinerario bajo llave, como las recetas de la abuela, que jura llevarse a la tumba… y después termina contando en un casamiento.',
     'En la reserva estarán sus nombres. El destino, no. Y ahí empezará la novela: desayuno acá, un beso allá, un atardecer que no pidieron pero igual se llevarán de recuerdo. Lo único seguro es que volverán con anécdotas imposibles de explicar sin gestos y sin exagerar… y con ganas de repetir, como cuando una canción que nos gusta termina y uno aprieta "otra vez".',
   ],
-  tagline: 'Wonder • Wander • Repeat',
+  tagline: 'tagline',
 };

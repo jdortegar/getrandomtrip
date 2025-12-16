@@ -74,7 +74,7 @@ export function ExplorationSection({ trippers = [] }: ExplorationSectionProps) {
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          className="mt-12 flex justify-center container mx-auto px-20"
+          className="mt-12 flex justify-center container mx-auto md:px-20 px-4"
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 1 }}

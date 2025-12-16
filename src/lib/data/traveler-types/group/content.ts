@@ -19,11 +19,11 @@ export const groupHeroContent: HeroContent = {
     href: '#group-planner',
     ariaLabel: 'Comienza tu viaje en grupo',
   },
-  secondaryCta: {
-    text: 'Relatos que inspiran',
-    href: '#group-blog',
-    ariaLabel: 'Ir a la sección de blog',
-  },
+  // secondaryCta: {
+  //   text: 'Relatos que inspiran',
+  //   href: '#group-blog',
+  //   ariaLabel: 'Ir a la sección de blog',
+  // },
 };
 
 export const groupStoryContent = {
@@ -33,5 +33,5 @@ export const groupStoryContent = {
     'Acá no se trata de coordinar vuelos ni de discutir destinos. Se trata de entregarse a la sorpresa de estar juntos, sin que nadie tenga que hacer de organizador. Ustedes llegan con la historia; nosotros la convertimos en escenario.',
     'Será una sobremesa que se extiende hasta la madrugada, una caminata que se transforma en ritual, un viaje que se volverá leyenda compartida. Porque lo que empieza en plural, siempre se recuerda en mayúsculas.',
   ],
-  tagline: 'Wonder • Wander • Repeat',
+  tagline: 'tagline',
 };

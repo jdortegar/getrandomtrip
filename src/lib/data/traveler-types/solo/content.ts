@@ -14,11 +14,11 @@ export const soloHeroContent: HeroContent = {
     href: '#solo-planner',
     ariaLabel: 'Ir a la sección de planificación de viaje',
   },
-  secondaryCta: {
-    text: 'Historias inspiradoras',
-    href: '#solo-blog',
-    ariaLabel: 'Ir a la sección de blog',
-  },
+  // secondaryCta: {
+  //   text: 'Historias inspiradoras',
+  //   href: '#solo-blog',
+  //   ariaLabel: 'Ir a la sección de blog',
+  // },
 };
 
 export const soloStoryContent = {

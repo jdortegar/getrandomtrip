@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import BrandingAnimation from '@/components/BrandingAnimation';
 
 export interface HeroContent {
   title: string;
@@ -152,131 +153,14 @@ const Hero: React.FC<HeroProps> = ({
       <HeroVideoBackground content={content} />
 
       {/* Main Content - Left Aligned */}
-      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto px-20">
+      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
         {/* Top Left Branding */}
         {content.branding && (
-          <motion.div
-            className="flex items-center gap-3 mb-4 relative"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.05,
-                  delayChildren: 1.4,
-                },
-              },
-            }}
-          >
-            <motion.span className="font-barlow-condensed text-[20px] md:text-[30px] font-semibold text-white uppercase tracking-[6px] inline-flex">
-              {content.branding.text.split('').map((char, index) => (
-                <motion.span
-                  key={index}
-                  variants={{
-                    hidden: { x: -20, opacity: 0 },
-                    visible: {
-                      x: 0,
-                      opacity: 1,
-                      transition: {
-                        duration: 0.4,
-                        ease: 'easeOut',
-                      },
-                    },
-                  }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </motion.span>
-              ))}
-            </motion.span>
-            {content.branding.repeatText && (
-              <motion.div
-                className="relative flex items-center ml-4 w-[190px]"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.05,
-                      delayChildren:
-                        1.4 + content.branding.text.length * 0.05 + 0.4 + 0.2,
-                    },
-                  },
-                }}
-              >
-                <motion.img
-                  src="/assets/svg/yellow-circle.svg"
-                  className="w-full absolute -top-8 -left-6 md:-top-10 md:-left-4 object-cover"
-                  initial={{ scale: 1.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{
-                    duration: 0.8,
-                    delay:
-                      1.4 +
-                      content.branding.text.length * 0.05 +
-                      0.4 +
-                      0.2 +
-                      content.branding.repeatText.length * 0.05 +
-                      0.4 +
-                      0.2,
-                    ease: 'easeOut',
-                  }}
-                />
-                <div className="relative">
-                  <motion.span className="font-nothing-you-could-do text-yellow-400 text-3xl md:text-5xl inline-flex">
-                    {content.branding.repeatText
-                      .split('')
-                      .map((char, index) => (
-                        <motion.span
-                          key={index}
-                          variants={{
-                            hidden: { x: -20, opacity: 0 },
-                            visible: {
-                              x: 0,
-                              opacity: 1,
-                              transition: {
-                                duration: 0.4,
-                                ease: 'easeOut',
-                              },
-                            },
-                          }}
-                        >
-                          {char === ' ' ? '\u00A0' : char}
-                        </motion.span>
-                      ))}
-                  </motion.span>
-                </div>
-              </motion.div>
-            )}
-            <motion.div
-              className="w-[200px]md:w-[300px] absolute top-12 left-20 md:left-25 overflow-hidden"
-              initial={{ clipPath: 'inset(0 0% 0 100%)' }}
-              animate={{ clipPath: 'inset(0 0% 0 0%)' }}
-              transition={{
-                duration: 0.8,
-                delay:
-                  1.4 +
-                  content.branding.text.length * 0.05 +
-                  0.4 +
-                  0.2 +
-                  (content.branding.repeatText?.length ?? 0) * 0.05 +
-                  0.4 +
-                  0.2 +
-                  0.8 +
-                  0.2,
-                ease: 'easeOut',
-              }}
-            >
-              <img
-                src="/assets/svg/yellow-arrow-back.svg"
-                className="w-full object-cover"
-                alt=""
-              />
-            </motion.div>
-          </motion.div>
+          <BrandingAnimation className="flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
         )}
         <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
           <motion.h2
-            className="mb-6 text-white font-barlow-condensed font-extrabold text-[100px] md:text-[140px] z-10 leading-[100px] md:leading-[140px]"
+            className="mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[140px] z-10 leading-[80px] md:leading-[140px]"
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}

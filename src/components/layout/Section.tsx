@@ -35,7 +35,7 @@ const Section = ({
   return (
     <section
       className={cn(
-        'text-center relative flex flex-col items-center justify-center w-full py-20',
+        'text-center relative flex flex-col items-center justify-center w-full py-20 px-4',
         className,
         {
           'bg-white text-gray-900': variant === 'default',
@@ -63,7 +63,7 @@ const Section = ({
       <div className="mb-14">
         {eyebrow && (
           <motion.div
-            className="text-lg font-bold tracking-[9px] uppercase text-[#4F96B6]"
+            className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-[#4F96B6]"
             initial={{ y: 40, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, margin: '-100px' }}
@@ -75,7 +75,7 @@ const Section = ({
         {title && (
           <motion.h2
             className={cn(
-              'font-barlow-condensed text-[70px] uppercase font-bold mt-4 leading-none',
+              'font-barlow-condensed text-[50px] md:text-[70px] uppercase font-bold mt-4 leading-none',
               {
                 'text-gray-900': variant === 'default',
                 'text-gray-50': variant === 'light',

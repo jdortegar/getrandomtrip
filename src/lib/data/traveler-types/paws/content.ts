@@ -19,11 +19,11 @@ export const pawsHeroContent: HeroContent = {
     href: '#paws-planner',
     ariaLabel: 'Comienza tu viaje con tu mascota',
   },
-  secondaryCta: {
-    text: '✨ Relatos que inspiran',
-    href: '#paws-blog',
-    ariaLabel: 'Ver relatos de viajes con mascotas',
-  },
+  // secondaryCta: {
+  //   text: '✨ Relatos que inspiran',
+  //   href: '#paws-blog',
+  //   ariaLabel: 'Ver relatos de viajes con mascotas',
+  // },
 };
 
 export const pawsStoryContent = {
@@ -34,5 +34,5 @@ export const pawsStoryContent = {
     'Un camino nuevo huele distinto; un bosque tiene sonidos que despiertan curiosidad; una playa es territorio para correr sin relojes. Ellos no solo te acompañan: te enseñan a viajar distinto.',
     'Porque algunas huellas se dejan en la arena, y otras, para siempre en la memoria.',
   ],
-  tagline: 'Wonder • Wander • Repeat',
+  tagline: 'tagline',
 };

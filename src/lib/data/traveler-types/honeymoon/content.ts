@@ -19,11 +19,11 @@ export const honeymoonHeroContent: HeroContent = {
     href: '#honeymoon-planner',
     ariaLabel: 'Comienza tu luna de miel',
   },
-  secondaryCta: {
-    text: 'Relatos que inspiran',
-    href: '#honeymoon-blog',
-    ariaLabel: 'Ir a la sección de blog',
-  },
+  // secondaryCta: {
+  //   text: 'Relatos que inspiran',
+  //   href: '#honeymoon-blog',
+  //   ariaLabel: 'Ir a la sección de blog',
+  // },
 };
 
 export const honeymoonStoryContent = {
@@ -33,5 +33,5 @@ export const honeymoonStoryContent = {
     'No hay coordenadas precisas para ese viaje. Porque lo que importa no es el lugar al que se llega, sino lo que cada paso revela del otro. Una risa inesperada en medio de una caminata, un silencio compartido frente al mar, la certeza de que hay alguien que nos acompaña incluso cuando no decimos nada.',
     'Nosotros proponemos el escenario, ustedes escribirán el guion invisible que nadie más podrá repetir. Porque hay viajes que se terminan al regresar, y otros —los verdaderos— que empiezan cuando entendemos que el destino es, en realidad, el vínculo que construimos cada día. La luna de miel no es el epílogo de una fiesta. Es el prólogo de una historia que recién comienza.',
   ],
-  tagline: 'Wonder • Wander • Repeat',
+  tagline: 'tagline',
 };

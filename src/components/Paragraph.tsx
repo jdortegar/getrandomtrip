@@ -1,3 +1,4 @@
+import BrandingAnimation from './BrandingAnimation';
 import Section from './layout/Section';
 
 export interface ParagraphContent {
@@ -18,26 +19,16 @@ export default function Paragraph({
   className = '',
 }: ParagraphProps) {
   return (
-    <Section className={`px-4 md:px-8 bg-gray-100! w-full py-20 ${className}`}>
-      <div className="max-w-4xl mx-auto bg-white rounded-lg p-8" id={id}>
-        <header className="text-center mb-12">
-          <h2 className="text-5xl font-bold mb-6 font-caveat text-gray-900">
-            {content.title}
-          </h2>
-        </header>
-        <div className="prose prose-lg max-w-none border-b border-gray-200 ">
+    <Section eyebrow={content.tagline} title={content.title}>
+      <div>
+        <div className="prose prose-md md:max-w-1/2 mx-auto text-center border-gray-200 text-gray-700">
           {content.paragraphs.map((paragraph, index) => (
-            <p
-              key={index}
-              className="text-gray-700 leading-relaxed mb-6 font-jost"
-            >
+            <p key={index} className="leading-relaxed mb-6">
               {paragraph}
             </p>
           ))}
         </div>
-        <p className="text-lg md:text-2xl text-gray-700 font-caveat font-semibold text-center py-4">
-          {content.tagline}
-        </p>
+        <BrandingAnimation className="flex items-center relative justify-center md:justify-start text-[#4F96B6]" />
       </div>
     </Section>
   );

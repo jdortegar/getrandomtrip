@@ -32,9 +32,13 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
   const languageMenu = useMenuState();
   const [language, setLanguage] = useState<'es' | 'en'>('es');
 
-  const headerClass = useMemo(() => {
-    return overlay ? NAVBAR_STYLES.OVERLAY : NAVBAR_STYLES.SOLID;
-  }, [overlay]);
+  // const headerClass = useMemo(() => {
+
+  //   return overlay ? NAVBAR_STYLES.OVERLAY : NAVBAR_STYLES.SOLID;
+  // }, [overlay]);
+
+  const headerClass =
+    'absolute top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out';
 
   const logoSrc = useMemo(() => {
     return overlay
