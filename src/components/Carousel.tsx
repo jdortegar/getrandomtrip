@@ -220,7 +220,7 @@ const CarouselPrevious = React.forwardRef<
         variant={variant}
         size={size}
         className={cn(
-          'w-12 h-12 rounded-full bg-[#e1e1e1] hover:bg-[#4F96B6]',
+          'md:w-12 md:h-12 w-8 h-8 rounded-full bg-[#4F96B6] hover:bg-[#367A95]',
           'text-white',
           className,
         )}
@@ -228,7 +228,7 @@ const CarouselPrevious = React.forwardRef<
         onClick={scrollPrev}
         {...props}
       >
-        <ArrowLeft className="size-[25px] text-white" />
+        <ArrowLeft className="md:size-[25px] size-[20px] text-white" />
         <span className="sr-only">Previous slide</span>
       </Button>
     );
@@ -253,7 +253,7 @@ const CarouselNext = React.forwardRef<
         variant={variant}
         size={size}
         className={cn(
-          'w-12 h-12 rounded-full bg-[#e1e1e1] hover:bg-[#4F96B6]',
+          'md:w-12 md:h-12 w-8 h-8 rounded-full bg-[#4F96B6] hover:bg-[#367A95]',
           'text-white',
           className,
         )}
@@ -261,7 +261,7 @@ const CarouselNext = React.forwardRef<
         onClick={scrollNext}
         {...props}
       >
-        <ArrowRight className="size-[25px] text-white" />
+        <ArrowRight className="md:size-[25px] size-[20px] text-white" />
         <span className="sr-only">Next slide</span>
       </Button>
     );
