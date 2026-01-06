@@ -155,9 +155,9 @@ const Hero: React.FC<HeroProps> = ({
       {/* Main Content - Left Aligned */}
       <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
         {/* Top Left Branding */}
-        {content.branding && (
-          <BrandingAnimation className="flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
-        )}
+
+        <BrandingAnimation className="flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+
         <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
           <motion.h2
             className="mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[140px] z-10 leading-[80px] md:leading-[140px]"
@@ -178,7 +178,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {content.tagline && (
             <motion.p
-              className="font-jost text-base md:text-lg font-normal leading-relaxed text-gray-300 max-w-xl mb-8"
+              className="font-barlow text-base md:text-lg font-bold leading-relaxed text-white max-w-xl mb-8"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -186,78 +186,47 @@ const Hero: React.FC<HeroProps> = ({
               {content.tagline}
             </motion.p>
           )}
-
-          {/* Tags/Chips */}
-          {content.tags && content.tags.length > 0 && (
+        </div>
+        <div className="flex items-center justify-start gap-4">
+          {/* CTA Button - Lower Left */}
+          {content.primaryCta && (
             <motion.div
-              className="flex flex-wrap items-center gap-2 mb-8"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.0 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
             >
-              {content.tags?.map((tag, index) => (
-                <div
-                  key={`${tag.label}-${index}`}
-                  className="flex items-center"
-                >
-                  <div className="rounded-sm px-6 py-2 flex flex-col">
-                    <span className="text-xs uppercase text-white mb-2">
-                      {tag.label}
-                    </span>
-                    <p className="text-3xl font-semibold text-white font-caveat">
-                      {tag.value}
-                    </p>
-                  </div>
-                  {index < (content.tags?.length ?? 0) - 1 && (
-                    <div className="h-16 w-px bg-white/70 mx-2" />
-                  )}
-                </div>
-              ))}
+              <Button
+                asChild
+                aria-label={content.primaryCta.ariaLabel}
+                size="lg"
+                variant="outline"
+              >
+                <Link href={content.primaryCta.href} scroll={true}>
+                  {content.primaryCta.text}
+                </Link>
+              </Button>
+            </motion.div>
+          )}
+
+          {content.secondaryCta && (
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+            >
+              <Button
+                asChild
+                aria-label={content.secondaryCta.ariaLabel}
+                size="lg"
+                variant="white"
+              >
+                <Link href={content.secondaryCta.href} scroll={true}>
+                  {content.secondaryCta.text}
+                </Link>
+              </Button>
             </motion.div>
           )}
         </div>
-        {/* CTA Button - Lower Left */}
-        {content.primaryCta && (
-          <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="mr-auto  md:mr-auto ml-auto md:ml-0"
-          >
-            <Button
-              asChild
-              aria-label={content.primaryCta.ariaLabel}
-              size="lg"
-              variant="outline"
-              className="mr-auto"
-            >
-              <Link href={content.primaryCta.href} scroll={true}>
-                {content.primaryCta.text}
-              </Link>
-            </Button>
-          </motion.div>
-        )}
-
-        {content.secondaryCta && (
-          <motion.div
-            className="absolute bottom-12 left-8 md:bottom-16 md:left-12 lg:left-16 z-10"
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-          >
-            <Button
-              asChild
-              aria-label={content.secondaryCta.ariaLabel}
-              className="border-2 border-white bg-transparent hover:bg-white/10 text-white font-sans text-sm md:text-base uppercase tracking-wider px-6 py-3 rounded-none"
-              size="lg"
-              variant="outline"
-            >
-              <Link href={content.secondaryCta.href} scroll={true}>
-                {content.secondaryCta.text}
-              </Link>
-            </Button>
-          </motion.div>
-        )}
       </div>
 
       {scrollIndicator && (

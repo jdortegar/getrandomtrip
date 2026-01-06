@@ -23,12 +23,14 @@ export default function Paragraph({
       <div>
         <div className="prose prose-md md:max-w-1/2 mx-auto text-center border-gray-200 text-gray-700">
           {content.paragraphs.map((paragraph, index) => (
-            <p key={index} className="leading-relaxed mb-6">
+            <p key={index} className="leading-relaxed mb-6 text-2xl">
               {paragraph}
             </p>
           ))}
         </div>
-        <BrandingAnimation className="flex items-center relative justify-center md:justify-start text-[#4F96B6]" />
+        <div className="flex items-center justify-center mt-20">
+          <BrandingAnimation className=" text-[#4F96B6]" />
+        </div>
       </div>
     </Section>
   );

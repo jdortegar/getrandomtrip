@@ -58,8 +58,9 @@ export interface DetailsContent {
 }
 
 export interface TypePlannerContent {
-  title: string;
+  eyebrow?: string;
   subtitle: string;
+  title: string;
   levels: Level[];
 }
 

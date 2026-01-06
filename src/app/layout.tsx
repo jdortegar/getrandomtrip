@@ -92,7 +92,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light" />
         <meta name="theme-color" content="#fafafa" />
       </head>
-      <body className="bg-neutral-50 text-neutral-900 antialiased overflow-x-hidden font-barlow">
+      <body className="bg-neutral-50 text-neutral-900 antialiased overflow-x-hidden font-sans">
         <SessionProvider>
           {/* <SiteHeaderOffset /> */}
           {/* <HeaderGate /> */}

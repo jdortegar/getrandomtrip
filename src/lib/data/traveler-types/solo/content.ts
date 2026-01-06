@@ -2,23 +2,23 @@ import type { HeroContent } from '@/components/Hero';
 import type { ParagraphContent } from '@/components/Paragraph';
 
 export const soloHeroContent: HeroContent = {
-  title: 'Solo© Randomtrip',
+  title: 'SOLO',
   subtitle:
     'Tu viaje, tus reglas. Descubre destinos únicos diseñados para la libertad de viajar solo.',
   tagline: 'Aventura personal. Sin compromisos.',
   scrollText: 'SCROLL',
-  videoSrc: '/videos/solo-hero-video.mp4',
+  videoSrc: '/videos/hero-solo-video.mp4',
   fallbackImage: '/images/journey-types/solo-traveler.jpg',
-  primaryCta: {
-    text: 'RANDOMTRIPME!',
+  secondaryCta: {
+    text: 'RANDOMTRIP-ME!',
     href: '#solo-planner',
     ariaLabel: 'Ir a la sección de planificación de viaje',
   },
-  // secondaryCta: {
-  //   text: 'Historias inspiradoras',
-  //   href: '#solo-blog',
-  //   ariaLabel: 'Ir a la sección de blog',
-  // },
+  primaryCta: {
+    text: 'Historias inspiradoras',
+    href: '#solo-blog',
+    ariaLabel: 'Ir a la sección de blog',
+  },
 };
 
 export const soloStoryContent = {

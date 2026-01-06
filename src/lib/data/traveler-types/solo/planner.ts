@@ -2,15 +2,16 @@ import type { TypePlannerContent } from '@/types/planner';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 
 export const soloPlannerContent: TypePlannerContent = {
-  title: 'Diseña tu Randomtrip en solitario',
-  subtitle: 'Tres pasos sencillos para una aventura que solo tú podrás contar.',
+  eyebrow: 'Diseña tu Randomtrip en solitario',
+  title: 'tres pasos sencillos',
+  subtitle: 'para una aventura que solo tú podrás contar.',
   levels: [
     {
       id: 'essenza',
       name: 'Essenza',
       subtitle: 'Lo esencial con estilo',
       priceLabel: 'Hasta 300 USD',
-      priceFootnote: '· por persona',
+      priceFootnote: 'x por persona',
       features: [
         { title: 'Duración', description: 'Máx 2 noches' },
         { title: 'Destinos', description: 'Ciudades Nacionales' },
@@ -27,7 +28,8 @@ export const soloPlannerContent: TypePlannerContent = {
         { title: 'Extras', description: 'Guía esencial del destino.' },
         { title: 'Beneficios', description: 'No incluye' },
       ],
-      closingLine: 'Perfecto para una escapada rápida y económica.',
+      closingLine:
+        'Un escape breve para perderte en lo simple y encontrarte en lo inesperado.',
       ctaLabel: 'Elegir Essenza →',
       excuses: getExcusesByType('solo'),
     },
