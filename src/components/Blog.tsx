@@ -1,177 +1,233 @@
 'use client';
 
-import React, { useRef } from 'react';
-import Link from 'next/link';
-import BlogCard from '@/components/BlogCard';
-import Section from './layout/Section';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Carousel } from '@/components/display/Carousel';
+import Section from '@/components/layout/Section';
+import Img from '@/components/common/Img';
+import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
+import { cn } from '@/lib/utils';
 
-interface BlogPost {
-  image: string;
-  category: string;
-  title: string;
-  href?: string;
-}
-
-interface BlogContent {
+interface BlogProps {
+  eyebrow?: string;
   title: string;
   subtitle: string;
   posts: BlogPost[];
-  viewAll?: {
-    title: string;
-    subtitle: string;
-    href: string;
-  };
-}
-
-interface BlogProps {
-  content: BlogContent;
+  viewAll?: BlogViewAll;
   id?: string;
   className?: string;
-  showViewAll?: boolean;
 }
 
-const CARD_WIDTH = { mobile: 288, desktop: 384 } as const;
-const CARD_GAP = 32;
+interface BlogCardProps {
+  post: BlogPost;
+}
 
-function ArrowButton({
-  direction,
-  onClick,
-  className = '',
-  size = 'md',
-}: {
-  direction: 'left' | 'right';
-  onClick: () => void;
-  className?: string;
-  size?: 'md' | 'lg';
-}) {
-  const label = direction === 'left' ? 'Ver anteriores' : 'Ver siguientes';
-  const symbol = direction === 'left' ? '‹' : '›';
-  const sizeClasses =
-    size === 'lg' ? 'h-11 w-11 shadow-lg' : 'h-10 w-10 shadow-sm';
-  const baseClasses =
-    'flex items-center justify-center rounded-full border border-gray-300 bg-white text-lg text-gray-600 transition-all hover:border-primary/50 hover:text-primary disabled:pointer-events-none disabled:opacity-40';
-
+function BlogCard({ post }: BlogCardProps) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={`${baseClasses} ${sizeClasses} ${className}`.trim()}
-    >
-      {symbol}
-    </button>
+    <div className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
+      <div className="relative h-full w-full">
+        <Img
+          alt={post.title}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          height={600}
+          src={post.image}
+          width={400}
+        />
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+
+      <div className="absolute bottom-0 left-0 w-full p-5 text-white md:p-7">
+        <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">
+          {post.category}
+        </span>
+        <h3 className="mt-2 font-barlow-condensed text-xl font-bold leading-tight md:text-2xl">
+          {post.title}
+        </h3>
+        <button
+          className="mt-4 inline-flex items-center gap-2 rounded-full border border-white px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors hover:bg-white hover:text-gray-900 md:text-sm"
+          type="button"
+        >
+          Explorar Trip
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PaginationDots({
+  activeIndex,
+  count,
+  onDotClick,
+}: {
+  activeIndex: number;
+  count: number;
+  onDotClick: (index: number) => void;
+}) {
+  return (
+    <div className="flex items-center justify-center gap-2">
+      {Array.from({ length: count }).map((_, index) => (
+        <button
+          aria-label={`Go to slide ${index + 1}`}
+          className={cn(
+            'h-2 w-2 rounded-full transition-all',
+            index === activeIndex ? 'bg-[#4F96B6]' : 'bg-gray-300',
+          )}
+          key={index}
+          onClick={() => onDotClick(index)}
+          type="button"
+        />
+      ))}
+    </div>
   );
 }
 
 export default function Blog({
-  content,
+  eyebrow,
+  className,
   id,
-  className = '',
-  showViewAll = true,
+  posts,
+  subtitle,
+  title,
+  viewAll,
 }: BlogProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [emblaApi, setEmblaApi] = useState<any>(null);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const handleScroll = (direction: 'left' | 'right') => {
-    const container = scrollRef.current;
-    if (!container) return;
+  useEffect(() => {
+    if (!emblaApi) return;
 
-    const isMobile = window.innerWidth < 768;
-    const width = isMobile ? CARD_WIDTH.mobile : CARD_WIDTH.desktop;
+    const onSelect = () => {
+      setActiveIndex(emblaApi.selectedScrollSnap());
+      setCanScrollPrev(emblaApi.canScrollPrev());
+      setCanScrollNext(emblaApi.canScrollNext());
+    };
 
-    container.scrollBy({
-      left: direction === 'right' ? width + CARD_GAP : -(width + CARD_GAP),
-      behavior: 'smooth',
-    });
+    emblaApi.on('select', onSelect);
+    onSelect();
+
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
+
+  const handleDotClick = (index: number) => {
+    if (emblaApi) {
+      emblaApi.scrollTo(index);
+    }
+  };
+
+  const scrollPrev = () => {
+    if (emblaApi) emblaApi.scrollPrev();
+  };
+
+  const scrollNext = () => {
+    if (emblaApi) emblaApi.scrollNext();
   };
 
   return (
-    <Section
-      id={id}
-      variant="dark"
-      className={`relative overflow-hidden py-24 ${className}`}
-    >
-      <div className="rt-container relative z-10 flex flex-col items-center gap-12 md:flex-row md:items-center md:gap-16">
-        <aside className="flex w-full max-w-xl flex-col items-center text-center md:w-1/3 md:items-start md:text-left md:self-center">
-          <h2 className="font-caveat text-4xl font-bold text-white md:text-6xl">
-            {content.title}
-          </h2>
-          <p className="font-jost mt-4 text-base text-white/75 md:text-lg">
-            {content.subtitle}
-          </p>
-          <div className="mt-6 hidden gap-4 md:flex">
-            <ArrowButton
-              direction="left"
-              onClick={() => handleScroll('left')}
-              size="lg"
-            />
-            <ArrowButton
-              direction="right"
-              onClick={() => handleScroll('right')}
-              size="lg"
-            />
-          </div>
+    <Section className={className} id={id} variant="default">
+      <div className="flex flex-col gap-12 md:flex-row md:items-center md:gap-16">
+        {/* Left Column - Text Content */}
+        <aside className="relative flex w-full flex-col items-center text-center md:w-1/3 md:items-start md:text-left md:self-center">
+          {eyebrow && (
+            <motion.div
+              className="text-base font-bold uppercase tracking-[6px] text-[#4F96B6] md:text-lg md:tracking-[9px]"
+              initial={{ opacity: 0, y: 40 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              viewport={{ margin: '-100px', once: true }}
+              whileInView={{ opacity: 1, y: 0 }}
+            >
+              {eyebrow}
+            </motion.div>
+          )}
+
+          <motion.h2
+            className="font-barlow-condensed mt-4 text-[50px] font-bold uppercase leading-none text-gray-900 md:text-[70px]"
+            initial={{ opacity: 0, y: 60 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            viewport={{ margin: '-100px', once: true }}
+            whileInView={{ opacity: 1, y: 0 }}
+          >
+            {title}
+          </motion.h2>
+
+          <motion.p
+            className="mx-auto mt-8 text-lg text-[#888] md:mx-0"
+            initial={{ opacity: 0, y: 40 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            viewport={{ margin: '-100px', once: true }}
+            whileInView={{ opacity: 1, y: 0 }}
+          >
+            {subtitle}
+          </motion.p>
         </aside>
 
-        <div className="relative flex-1 md:-mr-[40vw] md:pr-16 md:min-w-2/3">
-          <div
-            ref={scrollRef}
-            className="flex gap-8 overflow-x-auto pb-8 pr-8 md:pb-10 hide-scrollbar"
-          >
-            {content.posts.map((post, index) => (
-              <div
-                key={`${post.title}-${index}`}
-                className="w-72 flex-shrink-0 md:w-96"
-              >
-                <BlogCard post={post} />
-              </div>
-            ))}
+        {/* Right Column - Carousel */}
+        <div className="relative flex-1 md:-mr-[40vw] md:min-w-2/3 md:pr-16 md:pl-8 md:py-8">
+          <div className="relative">
+            {/* Custom Navigation Arrows - Top Right */}
+            <div className="absolute right-4 top-4 z-20 flex gap-2 md:right-8 md:top-8">
+              {canScrollPrev && (
+                <button
+                  aria-label="Scroll left"
+                  className={cn(
+                    'bg-white border border-gray-300 rounded-full p-3',
+                    'hover:border-gray-400 transition-colors shadow-lg',
+                    'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
+                  )}
+                  onClick={scrollPrev}
+                  type="button"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+              )}
+              {canScrollNext && (
+                <button
+                  aria-label="Scroll right"
+                  className={cn(
+                    'bg-white border border-gray-300 rounded-full p-3',
+                    'hover:border-gray-400 transition-colors shadow-lg',
+                    'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
+                  )}
+                  onClick={scrollNext}
+                  type="button"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              )}
+            </div>
 
-            {showViewAll && content.viewAll && (
-              <Link
-                className="w-72 flex-shrink-0 md:w-96"
-                href={content.viewAll.href}
-              >
-                <div className="group flex aspect-[3/4] w-full items-center justify-center rounded-2xl border border-white/25 bg-white/10 p-6 text-center text-white transition-transform duration-300 hover:-translate-y-1 md:p-8">
-                  <div>
-                    <h3 className="font-caveat text-3xl font-bold md:text-4xl">
-                      {content.viewAll.title}
-                    </h3>
-                    <p className="font-jost mt-2 text-sm text-white/75 md:text-base">
-                      {content.viewAll.subtitle}
-                    </p>
-                    <span className="mt-5 inline-flex items-center gap-2 font-jost text-xs uppercase tracking-[0.3em] text-white/80 transition-all group-hover:gap-3 md:text-sm">
-                      Explorar blog
-                      <svg
-                        className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M9 5l7 7-7 7"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                  </div>
+            <Carousel
+              className="pb-8 md:pb-10"
+              onEmblaApi={setEmblaApi}
+              showArrows={false}
+              options={{
+                align: 'start',
+                slidesToScroll: 1,
+              }}
+            >
+              {posts.map((post, index) => (
+                <div
+                  className="w-72 flex-shrink-0 pr-8 md:w-96"
+                  key={post.title || index}
+                >
+                  <BlogCard post={post} />
                 </div>
-              </Link>
-            )}
-          </div>
-
-          <div className="mt-4 flex justify-center gap-4 md:hidden">
-            <ArrowButton
-              direction="left"
-              onClick={() => handleScroll('left')}
-            />
-            <ArrowButton
-              direction="right"
-              onClick={() => handleScroll('right')}
-            />
+              ))}
+            </Carousel>
           </div>
         </div>
+      </div>
+      {/* Pagination Dots */}
+      <div className="mt-6 flex w-full justify-center">
+        <PaginationDots
+          activeIndex={activeIndex}
+          count={posts.length}
+          onDotClick={handleDotClick}
+        />
       </div>
     </Section>
   );

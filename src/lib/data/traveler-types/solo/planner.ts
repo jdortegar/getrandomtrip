@@ -30,7 +30,7 @@ export const soloPlannerContent: TypePlannerContent = {
       ],
       closingLine:
         'Un escape breve para perderte en lo simple y encontrarte en lo inesperado.',
-      ctaLabel: 'Elegir Essenza →',
+      ctaLabel: 'Elegir Essenza',
       excuses: getExcusesByType('solo'),
     },
     {
@@ -38,7 +38,7 @@ export const soloPlannerContent: TypePlannerContent = {
       name: 'Modo Explora',
       subtitle: 'Aventura sin límites',
       priceLabel: 'Hasta 550 USD',
-      priceFootnote: '· por persona',
+      priceFootnote: 'x por persona',
       features: [
         { title: 'Duración', description: 'Hasta 4 noches' },
         { title: 'Destinos', description: 'Nacionales + Regionales' },
@@ -61,7 +61,7 @@ export const soloPlannerContent: TypePlannerContent = {
         { title: 'Beneficios', description: 'Soporte 24/7' },
       ],
       closingLine: 'Ideal para explorar más allá de lo obvio.',
-      ctaLabel: 'Elegir Modo Explora →',
+      ctaLabel: 'Elegir Modo Explora',
       excuses: [
         {
           key: 'solo-adventure',
@@ -140,7 +140,7 @@ export const soloPlannerContent: TypePlannerContent = {
       name: 'Explora+',
       subtitle: 'Experiencia premium',
       priceLabel: 'Hasta 1000 USD',
-      priceFootnote: '· por persona',
+      priceFootnote: 'x por persona',
       features: [
         { title: 'Duración', description: 'Hasta 7 noches' },
         {
@@ -166,7 +166,7 @@ export const soloPlannerContent: TypePlannerContent = {
         },
       ],
       closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-      ctaLabel: 'Elegir Explora+ →',
+      ctaLabel: 'Elegir Explora+',
       excuses: [
         {
           key: 'solo-adventure',
@@ -280,7 +280,7 @@ export const soloPlannerContent: TypePlannerContent = {
       name: 'Bivouac',
       subtitle: 'Aventura sin límites',
       priceLabel: 'Hasta 1200 USD',
-      priceFootnote: '· por persona',
+      priceFootnote: 'x por persona',
       features: [
         { title: 'Duración', description: 'Hasta 5 noches' },
         { title: 'Destinos', description: 'Toda América (sin límites)' },
@@ -300,7 +300,7 @@ export const soloPlannerContent: TypePlannerContent = {
         },
       ],
       closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-      ctaLabel: 'Elegir Bivouac →',
+      ctaLabel: 'Elegir Bivouac',
       excuses: getExcusesByType('solo'),
     },
     {
@@ -308,7 +308,7 @@ export const soloPlannerContent: TypePlannerContent = {
       name: 'Atelier Getaway',
       subtitle: 'Experiencia de lujo',
       priceLabel: 'Hasta 1200 USD',
-      priceFootnote: '· por persona',
+      priceFootnote: 'x por persona',
       features: [
         {
           title: 'Duración',
@@ -337,7 +337,7 @@ export const soloPlannerContent: TypePlannerContent = {
         },
       ],
       closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-      ctaLabel: 'Elegir Atelier →',
+      ctaLabel: 'Elegir Atelier',
       excuses: getExcusesByType('solo'),
     },
   ],

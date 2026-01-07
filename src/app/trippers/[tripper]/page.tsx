@@ -136,17 +136,15 @@ export default async function Page({
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (
         <Blog
-          content={{
-            title: `Inspiración de ${t.name}`,
-            subtitle: 'Notas, guías y momentos que inspiran de este tripper.',
-            posts: t.posts,
-            viewAll: {
-              title: 'Ver Todo',
-              subtitle: 'Explora más contenido',
-              href: `/blog?tripperId=${dbTripper.id}&tripper=${t.name}`,
-            },
-          }}
           id="tripper-blog"
+          posts={t.posts}
+          subtitle="Notas, guías y momentos que inspiran de este tripper."
+          title={`Inspiración de ${t.name}`}
+          viewAll={{
+            href: `/blog?tripperId=${dbTripper.id}&tripper=${t.name}`,
+            subtitle: 'Explora más contenido',
+            title: 'Ver Todo',
+          }}
         />
       )}
       {/* Mapa (CSR) */}

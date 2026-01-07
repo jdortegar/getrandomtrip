@@ -33,7 +33,7 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
         <div className="mt-8 overflow-visible px-4 [&_[data-slot=carousel-content]]:overflow-visible">
           <Carousel
             edgeBleed={false}
-            itemClassName="basis-full md:basis-[55%] lg:basis-[27.5%]"
+            itemClassName="!basis-auto"
             slidesToScroll={1}
           >
             {content.levels.map((level, index) => {

@@ -64,12 +64,11 @@ export default function TravelerTypePage({
       />
       <TypePlanner content={typeData.planner} type={typeData.meta.slug} />
       <Blog
-        content={{
-          title: typeData.blog.title,
-          subtitle: typeData.blog.subtitle,
-          posts: typeData.blog.posts,
-          viewAll: typeData.blog.viewAll,
-        }}
+        eyebrow="Lorem ipsum dolor sit amet"
+        title={typeData.blog.title}
+        subtitle={typeData.blog.subtitle}
+        posts={typeData.blog.posts}
+        viewAll={typeData.blog.viewAll}
         id={`${typeData.meta.slug}-blog`}
       />
       <Testimonials

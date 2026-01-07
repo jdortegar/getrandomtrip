@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 interface CarouselProps {
   children: ReactNode;
   className?: string;
+  onEmblaApi?: (api: any) => void;
   showArrows?: boolean;
   arrowClassName?: string;
   options?: any;
@@ -16,11 +17,18 @@ interface CarouselProps {
 export function Carousel({
   children,
   className,
+  onEmblaApi,
   showArrows = true,
   arrowClassName,
   options,
 }: CarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
+
+  React.useEffect(() => {
+    if (emblaApi && onEmblaApi) {
+      onEmblaApi(emblaApi);
+    }
+  }, [emblaApi, onEmblaApi]);
 
   const scrollPrev = () => {
     if (emblaApi) emblaApi.scrollPrev();

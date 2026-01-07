@@ -1,9 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Globe, Plane, Truck, ChevronDown, Check } from 'lucide-react';
 import type { Level } from '@/types/planner';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
 
 interface LevelCardProps {
   featured?: boolean;
@@ -27,6 +30,7 @@ export default function LevelCard({
   onSelect,
   variant = 'light',
 }: LevelCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const isDark = variant === 'dark';
   const textColor = isDark ? 'text-white' : 'text-gray-900';
   const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
@@ -39,8 +43,11 @@ export default function LevelCard({
   const priceDividerColor = 'bg-yellow-400';
   const secondaryTextColor = isDark ? 'text-white' : 'text-gray-600';
 
-  // Get first 3 features (Duration, Destinations, Transport)
-  const displayFeatures = level.features.slice(0, 3);
+  // Show first 3 features when collapsed, all when expanded
+  const displayFeatures = isExpanded
+    ? level.features
+    : level.features.slice(0, 3);
+  const hasMoreFeatures = level.features.length > 3;
 
   const handleClick = () => {
     if (onSelect) {
@@ -48,9 +55,10 @@ export default function LevelCard({
     }
   };
 
-  // Format price: combine priceLabel and priceFootnote
-  const priceText = `${level.priceLabel} ${level.priceFootnote}`;
-
+  const handleExpandClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click when clicking expand button
+    setIsExpanded(!isExpanded);
+  };
   return (
     <div
       className={cn(
@@ -125,47 +133,78 @@ export default function LevelCard({
       </p>
 
       {/* Features */}
-      <div className="flex flex-1 flex-col">
-        {displayFeatures.map((feature, index) => {
-          const IconComponent = FEATURE_ICONS[feature.title] || Globe;
-          const isLast = index === displayFeatures.length - 1;
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <AnimatePresence initial={false}>
+          {displayFeatures.map((feature, index) => {
+            const IconComponent = FEATURE_ICONS[feature.title] || Globe;
+            const isLast = index === displayFeatures.length - 1;
+            const isNewFeature = index >= 3 && isExpanded;
 
-          return (
-            <div key={feature.title}>
-              <div className="flex items-center gap-4 py-4">
-                {/* Icon on the left */}
-                <IconComponent
-                  className={cn('h-6 w-6 flex-shrink-0', secondaryTextColor)}
-                />
-                {/* Text content on the right */}
-                <div className="flex flex-1 flex-col justify-start items-start">
-                  <span
-                    className={cn(
-                      'mb-1 text-xs uppercase tracking-wider leading-none',
-                      secondaryTextColor,
-                    )}
-                  >
-                    {feature.title}
-                  </span>
-                  <p
-                    className={cn(
-                      'text-base font-medium leading-tight text-left',
-                      textColor,
-                    )}
-                  >
-                    {feature.description}
-                  </p>
+            return (
+              <motion.div
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                initial={isNewFeature ? { opacity: 0, height: 0 } : false}
+                key={feature.title}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                <div className="flex items-center gap-4 py-4">
+                  {/* Icon on the left */}
+                  <IconComponent
+                    className={cn('h-6 w-6 flex-shrink-0', secondaryTextColor)}
+                  />
+                  {/* Text content on the right */}
+                  <div className="flex flex-1 flex-col justify-start items-start">
+                    <span
+                      className={cn(
+                        'mb-1 text-xs uppercase tracking-wider leading-none',
+                        secondaryTextColor,
+                      )}
+                    >
+                      {feature.title}
+                    </span>
+                    <p
+                      className={cn(
+                        'text-base font-medium leading-tight text-left',
+                        textColor,
+                      )}
+                    >
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              {!isLast && <div className={cn('border-t', dividerColor)} />}
-            </div>
-          );
-        })}
+                {!isLast && <div className={cn('border-t', dividerColor)} />}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
 
-      {/* Chevron Icon - Bottom Center */}
-      <div className="mt-6 flex justify-center">
-        <ChevronDown className={cn('h-5 w-5', secondaryTextColor)} />
+      {/* Expand/Collapse Button - Bottom Center */}
+      {hasMoreFeatures && (
+        <div className="mt-6 flex justify-center">
+          <button
+            aria-label={isExpanded ? 'Collapse features' : 'Expand features'}
+            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 rounded-full p-2 transition-transform"
+            onClick={handleExpandClick}
+            type="button"
+          >
+            <motion.div
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <ChevronDown className={cn('h-5 w-5', secondaryTextColor)} />
+            </motion.div>
+          </button>
+        </div>
+      )}
+      <div className="mt-6 flex justify-center px-10">
+        <Button
+          asChild
+          className="rounded-full bg-yellow-400 px-8 py-2 text-gray-800 hover:bg-yellow-500 font-normal tracking-normal text-base"
+        >
+          <Link href={`/packages/by-type/${level.id}`}>{level.ctaLabel}</Link>
+        </Button>
       </div>
     </div>
   );
