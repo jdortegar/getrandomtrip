@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Carousel } from '@/components/display/Carousel';
 import Section from '@/components/layout/Section';
 import Img from '@/components/common/Img';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 
 interface BlogProps {
   eyebrow?: string;
@@ -168,38 +169,6 @@ export default function Blog({
         {/* Right Column - Carousel */}
         <div className="relative flex-1 md:-mr-[40vw] md:min-w-2/3 md:pr-16 md:pl-8 md:py-8">
           <div className="relative">
-            {/* Custom Navigation Arrows - Top Right */}
-            <div className="absolute right-4 top-4 z-20 flex gap-2 md:right-8 md:top-8">
-              {canScrollPrev && (
-                <button
-                  aria-label="Scroll left"
-                  className={cn(
-                    'bg-white border border-gray-300 rounded-full p-3',
-                    'hover:border-gray-400 transition-colors shadow-lg',
-                    'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
-                  )}
-                  onClick={scrollPrev}
-                  type="button"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-              )}
-              {canScrollNext && (
-                <button
-                  aria-label="Scroll right"
-                  className={cn(
-                    'bg-white border border-gray-300 rounded-full p-3',
-                    'hover:border-gray-400 transition-colors shadow-lg',
-                    'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
-                  )}
-                  onClick={scrollNext}
-                  type="button"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              )}
-            </div>
-
             <Carousel
               className="pb-8 md:pb-10"
               onEmblaApi={setEmblaApi}
@@ -228,6 +197,37 @@ export default function Blog({
           count={posts.length}
           onDotClick={handleDotClick}
         />
+      </div>
+      {/* Custom Navigation Arrows - Top Right */}
+      <div className="absolute right-4 top-4 z-20 flex gap-2 md:right-8 md:-top-10">
+        <Button
+          aria-label="Scroll left"
+          className={cn(
+            'md:w-12 md:h-12 w-8 h-8 rounded-full bg-[#4F96B6] hover:bg-[#367A95]',
+            'text-white',
+          )}
+          disabled={!canScrollPrev}
+          onClick={scrollPrev}
+          type="button"
+          variant="ghost"
+        >
+          <ArrowLeft className="md:size-[25px] size-[20px] text-white" />
+          <span className="sr-only">Previous slide</span>
+        </Button>
+        <Button
+          aria-label="Scroll right"
+          className={cn(
+            'md:w-12 md:h-12 w-8 h-8 rounded-full bg-[#4F96B6] hover:bg-[#367A95]',
+            'text-white',
+          )}
+          disabled={!canScrollNext}
+          onClick={scrollNext}
+          type="button"
+          variant="ghost"
+        >
+          <ArrowRight className="md:size-[25px] size-[20px] text-white" />
+          <span className="sr-only">Next slide</span>
+        </Button>
       </div>
     </Section>
   );

@@ -5,6 +5,7 @@ import Paragraph from '@/components/Paragraph';
 import Testimonials from '@/components/Testimonials';
 import Blog from '@/components/Blog';
 import TypePlanner from '@/components/by-type/TypePlanner';
+import InspirationBanner from '@/components/InspirationBanner';
 import {
   getTravelerType,
   getAllTravelerTypePaths,
@@ -70,6 +71,13 @@ export default function TravelerTypePage({
         posts={typeData.blog.posts}
         viewAll={typeData.blog.viewAll}
         id={`${typeData.meta.slug}-blog`}
+      />
+      <InspirationBanner
+        buttonHref="/blog"
+        buttonText="Historias inspiradoras"
+        eyebrow="INSPIRACIÓN"
+        image="/images/caravan.png"
+        title="Historias de viajeros solitarios que inspiran "
       />
       <Testimonials
         testimonials={typeData.testimonials.items}
