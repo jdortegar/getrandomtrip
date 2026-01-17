@@ -65,7 +65,7 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
             aria-label="Randomtrip"
             className="flex items-center gap-2 shrink-0 py-2"
           >
-            <Image src={logoSrc} alt="Randomtrip" width={160} height={50} />
+            <Image src={logoSrc} alt="Randomtrip" width={180} height={50} />
           </Link>
 
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">

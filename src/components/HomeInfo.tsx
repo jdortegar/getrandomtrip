@@ -91,7 +91,7 @@ export default function HomeInfo() {
       >
         <Button asChild size="lg" variant="feature">
           <Link href="#exploration-section" scroll={true}>
-            RANDOMTRIPME!
+            GETRANDOMTRIP!
           </Link>
         </Button>
       </motion.div>

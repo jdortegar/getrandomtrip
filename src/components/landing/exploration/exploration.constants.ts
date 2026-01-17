@@ -1,7 +1,7 @@
 export const EXPLORATION_CONSTANTS = {
   EYEBROW: 'Dale forma a tu aventura',
   TITLE: 'Puntos de Partida',
-  SUBTITLE: 'Elige cómo quieres empezar a dar forma a tu aventura.',
+  SUBTITLE: 'Encuentra el punto de partida perfecto para tu próximo viaje.',
   TABS: [
     {
       id: 'By Traveller',

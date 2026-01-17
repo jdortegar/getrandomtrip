@@ -7,7 +7,7 @@ export const HERO_CONTENT = {
     repeatText: 'Repeat',
   },
   primaryCta: {
-    text: 'RANDOMTRIPME!',
+    text: 'GETRANDOMTRIP!',
     href: '#exploration-section',
     ariaLabel:
       "Ir a 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
