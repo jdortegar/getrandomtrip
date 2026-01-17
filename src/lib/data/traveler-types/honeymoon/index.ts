@@ -47,7 +47,7 @@ export const honeymoon: TravelerTypeData = {
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
         priceLabel: 'Hasta 350 USD',
-        priceFootnote: '· por persona',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
@@ -88,7 +88,7 @@ export const honeymoon: TravelerTypeData = {
         name: 'Modo Explora',
         subtitle: 'Aventura sin límites',
         priceLabel: 'Hasta 650 USD',
-        priceFootnote: '· por persona',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
@@ -151,7 +151,7 @@ export const honeymoon: TravelerTypeData = {
         name: 'Explora+',
         subtitle: 'Experiencia premium',
         priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
@@ -215,7 +215,7 @@ export const honeymoon: TravelerTypeData = {
         name: 'Bivouac',
         subtitle: 'Aventura sin límites',
         priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
@@ -277,41 +277,35 @@ export const honeymoon: TravelerTypeData = {
       {
         id: 'atelier',
         name: 'Atelier Getaway',
-        subtitle: 'Experiencia de lujo',
-        priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Amor a medida',
+        priceLabel: 'Desde 1800 USD',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Customizable (5+ noches recomendadas)',
+            description: '100% Flexible (Sin límite de días)',
           },
           {
             title: 'Destinos',
-            description: 'Sin límites geográficos',
+            description: 'Global (El mundo a su alcance)',
           },
           {
             title: 'Transporte',
-            description: 'First class con todas las comodidades.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Máxima flexibilidad, sin restricciones.',
+            description: 'Flex / Premium / Privado (A tu medida)',
           },
           {
             title: 'Alojamiento',
-            description: 'Luxury / de autor / cadenas A1.',
-          },
-          {
-            title: 'Extras',
-            description: 'Co-creación con Luxury Travel Advisor.',
+            description: 'High-End & Hoteles de Autor (Selección Curada)',
           },
           {
             title: 'Beneficios',
-            description: 'Equipo 24/7 + experiencias premium a medida',
+            description:
+              'Co-creación del viaje con un Tripper Travel Advisor + equipo de soporte 24/7.',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Atelier →',
+        closingLine:
+          'Un viaje irrepetible, diseñado como prólogo de una historia que recién comienza',
+        ctaLabel: 'Crear lo extraordinario →',
         excuses: [
           {
             key: 'default-excuse',

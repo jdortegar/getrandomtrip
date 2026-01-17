@@ -47,13 +47,13 @@ export const paws: TravelerTypeData = {
       {
         id: 'essenza',
         name: 'Essenza',
-        subtitle: 'Lo esencial con estilo',
-        priceLabel: 'Hasta 350 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'La escapada express',
+        priceLabel: '490 USD',
+        priceFootnote: 'por persona + pet',
         features: [
           {
             title: 'Duración',
-            description: 'Máx 2 noches',
+            description: 'Max. 2 noches (Escapada Fugaz)',
           },
           {
             title: 'Destinos',
@@ -61,68 +61,54 @@ export const paws: TravelerTypeData = {
           },
           {
             title: 'Transporte',
-            description: 'Low cost (buses o vuelos off-peak).',
-            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Menor disponibilidad, con restricciones y bloqueos.',
+            description: 'Tierra / Low Cost (Llegada práctica)',
           },
           {
             title: 'Alojamiento',
-            description: 'Midscale (3★ o equivalentes).',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía esencial del destino.',
+            description: 'Confort (3★) - Funcional y con onda pet-friendly',
           },
           {
             title: 'Beneficios',
-            description: 'No incluye',
+            description: 'Guía esencial con mapa pet-friendly',
           },
         ],
-        closingLine: 'Perfecto para una escapada rápida y económica.',
-        ctaLabel: 'Elegir Essenza →',
+        closingLine:
+          'Un escape simple, donde tu mascota no es un extra, sino parte del plan.',
+        ctaLabel: 'Empiecen con lo basico',
         excuses: getExcusesByType('paws'),
       },
       {
         id: 'explora',
         name: 'Modo Explora',
-        subtitle: 'Aventura sin límites',
-        priceLabel: 'Hasta 650 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Viaje activo y Flexible',
+        priceLabel: 'Hasta 770 USD',
+        priceFootnote: 'por persona \n+ mascota',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 4 noches',
+            description: 'Max 3 Noches (+Mayor flexibilidad)',
           },
           {
             title: 'Destinos',
-            description: 'Nacionales + Regionales',
+            description: 'Nacionales+ (Más lejos & Regionales)',
           },
           {
             title: 'Transporte',
-            description: 'Económico con opciones de upgrade.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Mayor flexibilidad, algunas restricciones.',
+            description: 'Vuelos Básicos (Mochila en mano)',
           },
           {
             title: 'Alojamiento',
-            description: 'Midscale+ (3-4★ o equivalentes).',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía del destino + 1 experiencia incluida.',
+            description: '+ Estilo (3-4★) - Eleva tu estancia, pet-friendly',
           },
           {
             title: 'Beneficios',
-            description: 'Soporte 24/7',
+            description:
+              'Guía General + Tips, con rutas, spots de juego y actividades pet-friendly.',
           },
         ],
-        closingLine: 'Ideal para explorar más allá de lo obvio.',
-        ctaLabel: 'Elegir Modo Explora →',
+        closingLine:
+          'Senderos y rincones pensados para descubrir junto a tu compañer@, con libertad y sin estrés.',
+        ctaLabel: 'Exploren a 4 patas',
         excuses: [
           {
             key: 'default-excuse',
@@ -151,41 +137,35 @@ export const paws: TravelerTypeData = {
       {
         id: 'exploraPlus',
         name: 'Explora+',
-        subtitle: 'Experiencia premium',
-        priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Más capas, más momentos',
+        priceLabel: 'Hasta 1190 USD',
+        priceFootnote: 'por persona \n+ compañer@ de 4 patas',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 7 noches',
+            description: 'Max 4 Noches (+Puentes & Feriados)',
           },
           {
             title: 'Destinos',
-            description: 'Internacionales + Nacionales Premium',
+            description: '+ Continentales (Nuevas fronteras)',
           },
           {
             title: 'Transporte',
-            description: 'Premium con todas las comodidades.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Máxima flexibilidad, sin restricciones.',
+            description: 'Vuelos Clásicos (Equipaje estándar)',
           },
           {
             title: 'Alojamiento',
-            description: 'Lujo (5★ o equivalentes).',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía personalizada + experiencias exclusivas.',
+            description: '+ Premium (4★) - Upscale & Boutique, pet-friendly',
           },
           {
             title: 'Beneficios',
-            description: 'Concierge 24/7 + upgrades automáticos',
+            description:
+              '1 Experiencia Incluida (ej.: trail o day trip pet-friendly) + Guía Destination Decoded',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Explora+ →',
+        closingLine:
+          'Más días, más juegos, más huellas en la arena y en la memoria.',
+        ctaLabel: 'Suban la aventura',
         excuses: [
           {
             key: 'default-excuse',
@@ -215,41 +195,36 @@ export const paws: TravelerTypeData = {
       {
         id: 'bivouac',
         name: 'Bivouac',
-        subtitle: 'Aventura sin límites',
-        priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Desconexión Total',
+        priceLabel: 'Hasta 1680 USD',
+        priceFootnote: 'por persona \n+ compañer@ de 4 patas',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 5 noches',
+            description: 'Max 5 Noches (Sin restricciones)',
           },
           {
             title: 'Destinos',
-            description: 'Toda América (sin límites)',
+            description: '+ Intercontinental (Destinos soñados)',
           },
           {
             title: 'Transporte',
-            description: 'Multimodal con comodidad priorizada.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Sin bloqueos.',
+            description: 'Vuelos Full (Máxima comodidad)',
           },
           {
             title: 'Alojamiento',
-            description: 'Upper-Upscale.',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía personalizada + experiencias exclusivas.',
+            description:
+              '+ Upper-Scale (4-5★) - Diseño y Servicio, pet-friendly',
           },
           {
             title: 'Beneficios',
-            description: 'Concierge 24/7 + upgrades automáticos',
+            description:
+              '1 Experiencia Exclusiva + Perks. (ej: late check-out, upgrade, amenities, etc.) + Guía Destination Decoded (guía curada por nuestros Tripper Travel Advisors, con claves que pocos conocen)',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Bivouac →',
+        closingLine:
+          'Un viaje premium, curado al detalle para vos y tu compañero de cuatro patas.',
+        ctaLabel: 'Viaje con huellas',
         excuses: [
           {
             key: 'default-excuse',
@@ -279,41 +254,35 @@ export const paws: TravelerTypeData = {
       {
         id: 'atelier',
         name: 'Atelier Getaway',
-        subtitle: 'Experiencia de lujo',
-        priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Tu Tripper Advisor personal',
+        priceLabel: 'Desde 1680 USD',
+        priceFootnote: 'por persona \n+ compañer@ de 4 patas',
         features: [
           {
             title: 'Duración',
-            description: 'Customizable (5+ noches recomendadas)',
+            description: '100% Flexible (Sin límite de días)',
           },
           {
             title: 'Destinos',
-            description: 'Sin límites geográficos',
+            description: 'Global (El mundo a tu alcance)',
           },
           {
             title: 'Transporte',
-            description: 'First class con todas las comodidades.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Máxima flexibilidad, sin restricciones.',
+            description: 'Flex / Premium / Privado (A tu medida)',
           },
           {
             title: 'Alojamiento',
-            description: 'Luxury / de autor / cadenas A1.',
-          },
-          {
-            title: 'Extras',
-            description: 'Co-creación con Luxury Travel Advisor.',
+            description: 'High-End & Hoteles de Autor (Selección Curada)',
           },
           {
             title: 'Beneficios',
-            description: 'Equipo 24/7 + experiencias premium a medida',
+            description:
+              'Co-creación del viaje con un Tripper Travel Advisor + equipo de soporte 24/7.',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Atelier →',
+        closingLine:
+          'Una experiencia exclusiva donde cada momento está diseñado para ambos.',
+        ctaLabel: 'Creen lo extraordinario',
         excuses: [
           {
             key: 'default-excuse',

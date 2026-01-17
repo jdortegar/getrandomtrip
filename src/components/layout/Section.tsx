@@ -35,8 +35,8 @@ const Section = ({
   return (
     <section
       className={cn(
-        'text-center relative flex flex-col items-center justify-center w-full py-20',
-        !fullWidth ? 'px-4' : 'p-0 m-0',
+        'text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32',
+        !fullWidth ? 'px-4' : 'px-0 mx-0',
         {
           'bg-white text-gray-900': variant === 'default',
           'bg-gray-50 text-gray-900': variant === 'light',

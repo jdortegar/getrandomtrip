@@ -2,7 +2,18 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Globe, Plane, Truck, ChevronDown, Check } from 'lucide-react';
+import {
+  Clock,
+  Globe,
+  Plane,
+  Truck,
+  ChevronDown,
+  Check,
+  Bed,
+  Gift,
+  Calendar,
+  Sparkles,
+} from 'lucide-react';
 import type { Level } from '@/types/planner';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
@@ -22,6 +33,10 @@ const FEATURE_ICONS: Record<
   Duración: Clock,
   Destinos: Globe,
   Transporte: Truck,
+  Alojamiento: Bed,
+  Beneficios: Gift,
+  Extras: Sparkles,
+  Fechas: Calendar,
 };
 
 export default function LevelCard({
@@ -62,7 +77,7 @@ export default function LevelCard({
   return (
     <div
       className={cn(
-        'relative flex flex-col justify-center rounded-xl border-2 px-6 py-12 transition-all duration-300 w-full h-full min-h-[400px] max-w-[380px]',
+        'relative flex flex-col justify-center rounded-xl border-2 px-6 py-12 transition-all duration-300 w-full h-full min-h-[650px] max-w-[380px]',
         bgColor,
         borderColor,
         featured && 'shadow-lg',
@@ -112,11 +127,11 @@ export default function LevelCard({
           {level.name}
         </h3>
         <div className={cn('h-12 w-px flex-shrink-0', priceDividerColor)} />
-        <div className="flex flex-col whitespace-nowrap justify-start items-start font-barlow font-semibold text-lg">
-          <span className={cn('leading-none', textColor)}>
+        <div className="flex flex-col justify-start items-start font-barlow font-semibold text-lg text-left">
+          <span className={cn('leading-none whitespace-nowrap', textColor)}>
             {level.priceLabel}
           </span>
-          <span className={cn('leading-none', textColor)}>
+          <span className={cn('leading-none whitespace-pre-line', textColor)}>
             {level.priceFootnote}
           </span>
         </div>
@@ -199,11 +214,10 @@ export default function LevelCard({
         </div>
       )}
       <div className="mt-6 flex justify-center px-10">
-        <Button
-          asChild
-          className="rounded-full bg-yellow-400 px-8 py-2 text-gray-800 hover:bg-yellow-500 font-normal tracking-normal text-base"
-        >
-          <Link href={`/packages/by-type/${level.id}`}>{level.ctaLabel}</Link>
+        <Button asChild variant="feature" size="md">
+          <Link href={`/packages/by-type/${level.id}`} className="uppercase">
+            {level.ctaLabel}
+          </Link>
         </Button>
       </div>
     </div>

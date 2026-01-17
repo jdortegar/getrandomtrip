@@ -22,17 +22,19 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
 
   return (
     <Section
-      className="py-20"
       eyebrow={content.eyebrow}
       subtitle={content.subtitle}
       title={content.title}
     >
       <div className="relative">
         <div id={`${type}-planner`} className="h-0 scroll-mt-24" />
-        <div className="mt-8 overflow-visible [&_[data-slot=carousel-content]]:overflow-visible">
+        <div className="overflow-visible [&_[data-slot=carousel-content]]:overflow-visible">
           <Carousel
             edgeBleed={false}
             itemClassName="!basis-auto"
+            classes={{
+              content: 'items-start',
+            }}
             slidesToScroll={1}
           >
             {content.levels.map((level, index) => {
@@ -53,6 +55,16 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
             })}
           </Carousel>
         </div>
+
+        {type === 'paws' && (
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600 italic">
+              * Sujeto a disponibilidad y políticas pet-friendly de cada
+              proveedor. Pueden aplicar requisitos (certificados sanitarios,
+              vacunas, microchip, etc.).
+            </p>
+          </div>
+        )}
       </div>
     </Section>
   );

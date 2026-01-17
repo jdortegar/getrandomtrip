@@ -42,6 +42,11 @@ interface HeroProps {
   scrollIndicator?: boolean;
 }
 
+// Helper to replace copyright symbol with <sup>(c)</sup>
+function formatTitleWithCopyright(title: string): string {
+  return title.replace(/©/g, '<sup>©</sup>');
+}
+
 function HeroVideoBackground({ content }: { content: HeroContent }) {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -160,13 +165,14 @@ const Hero: React.FC<HeroProps> = ({
 
         <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
           <motion.h2
-            className="mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[140px] z-10 leading-[80px] md:leading-[140px]"
+            className="mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[140px] z-10 leading-[80px] md:leading-[140px] [&_sup]:text-[0.6em] [&_sup]:leading-none"
+            dangerouslySetInnerHTML={{
+              __html: formatTitleWithCopyright(content.title),
+            }}
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            {content.title}
-          </motion.h2>
+          />
 
           <motion.p
             className="font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"

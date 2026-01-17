@@ -45,13 +45,13 @@ export const group: TravelerTypeData = {
       {
         id: 'essenza',
         name: 'Essenza',
-        subtitle: 'Lo esencial con estilo',
+        subtitle: 'Lo esencial, compartido',
         priceLabel: 'Hasta 350 USD',
-        priceFootnote: '· por persona',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Máx 2 noches',
+            description: 'Max. 2 noches (Escapada Fugaz)',
           },
           {
             title: 'Destinos',
@@ -59,68 +59,55 @@ export const group: TravelerTypeData = {
           },
           {
             title: 'Transporte',
-            description: 'Low cost (buses o vuelos off-peak).',
-            footnote: 'Selección de asiento, carry-on y bodega no incluidos.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Menor disponibilidad, con restricciones y bloqueos.',
+            description: 'Tierra / Low Cost (Llegada práctica)',
           },
           {
             title: 'Alojamiento',
-            description: 'Midscale (3★ o equivalentes).',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía esencial del destino.',
+            description: 'Confort (3★) - Funcional y con onda',
           },
           {
             title: 'Beneficios',
-            description: 'No incluye',
+            description:
+              'Guía esencial con recomendaciones simples para el grupo.',
           },
         ],
-        closingLine: 'Perfecto para una escapada rápida y económica.',
-        ctaLabel: 'Elegir Essenza →',
+        closingLine:
+          'Una escapada simple para sincronizar agendas, para que solo se preocupen por disfrutar juntos.',
+        ctaLabel: 'Activen su Essenza',
         excuses: getExcusesByType('group'),
       },
       {
         id: 'explora',
         name: 'Modo Explora',
-        subtitle: 'Aventura sin límites',
-        priceLabel: 'Hasta 650 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Activo y flexible, en equipo',
+        priceLabel: 'Hasta 550 USD',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 4 noches',
+            description: 'Max 3 Noches (+Mayor flexibilidad)',
           },
           {
             title: 'Destinos',
-            description: 'Nacionales + Regionales',
+            description: 'Nacionales+ (Más lejos & Regionales)',
           },
           {
             title: 'Transporte',
-            description: 'Económico con opciones de upgrade.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Mayor flexibilidad, algunas restricciones.',
+            description: 'Vuelos Básicos (Mochila en mano)',
           },
           {
             title: 'Alojamiento',
-            description: 'Midscale+ (3-4★ o equivalentes).',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía del destino + 1 experiencia incluida.',
+            description: '+ Estilo (3-4★) - Eleva tu estancia',
           },
           {
             title: 'Beneficios',
-            description: 'Soporte 24/7',
+            description:
+              'Guia Randomtrip con actividades y sugerencias para distintos ritmos dentro del grupo.',
           },
         ],
-        closingLine: 'Ideal para explorar más allá de lo obvio.',
-        ctaLabel: 'Elegir Modo Explora →',
+        closingLine:
+          'Para grupos que quieren explorar a su ritmo, con la flexibilidad que necesitan.',
+        ctaLabel: 'Activen su Modo Explora',
         excuses: [
           {
             key: 'default-excuse',
@@ -149,41 +136,35 @@ export const group: TravelerTypeData = {
       {
         id: 'exploraPlus',
         name: 'Explora+',
-        subtitle: 'Experiencia premium',
-        priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Más capas, más momentos',
+        priceLabel: 'Hasta 850 USD',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 7 noches',
+            description: 'Max 4 Noches (+Puentes & Feriados)',
           },
           {
             title: 'Destinos',
-            description: 'Internacionales + Nacionales Premium',
+            description: '+ Continentales (Nuevas fronteras)',
           },
           {
             title: 'Transporte',
-            description: 'Premium con todas las comodidades.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Máxima flexibilidad, sin restricciones.',
+            description: 'Vuelos Clásicos (Equipaje estándar)',
           },
           {
             title: 'Alojamiento',
-            description: 'Lujo (5★ o equivalentes).',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía personalizada + experiencias exclusivas.',
+            description: '+ Premium (4★) - Upscale & Boutique',
           },
           {
             title: 'Beneficios',
-            description: 'Concierge 24/7 + upgrades automáticos',
+            description:
+              '1 experiencia curada especial para el grupo (ej.: brindis privado, caminata guiada al atardecer). + Guía Destination Decoded (guía personalizada para que cada día sea una sorpresa curada)',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Explora+ →',
+        closingLine:
+          'Más días, más actividades, más anécdotas que se vuelven leyenda compartida.',
+        ctaLabel: 'Suban de nivel',
         excuses: [
           {
             key: 'default-excuse',
@@ -213,41 +194,35 @@ export const group: TravelerTypeData = {
       {
         id: 'bivouac',
         name: 'Bivouac',
-        subtitle: 'Aventura sin límites',
+        subtitle: 'Desconexión Total',
         priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 5 noches',
+            description: 'Max 5 Noches (Sin restricciones)',
           },
           {
             title: 'Destinos',
-            description: 'Toda América (sin límites)',
+            description: '+ Intercontinental (Destinos soñados)',
           },
           {
             title: 'Transporte',
-            description: 'Multimodal con comodidad priorizada.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Sin bloqueos.',
+            description: 'Vuelos Full (Máxima comodidad)',
           },
           {
             title: 'Alojamiento',
-            description: 'Upper-Upscale.',
-          },
-          {
-            title: 'Extras',
-            description: 'Guía personalizada + experiencias exclusivas.',
+            description: '+ Upper-Scale (4-5★) - Diseño y Servicio',
           },
           {
             title: 'Beneficios',
-            description: 'Concierge 24/7 + upgrades automáticos',
+            description:
+              '1 experiencia premium grupal (ej.: mesa del chef, excursión privada) + perks. (ej: late check-out, upgrade, amenities, etc.) + Guía Destination Decoded (guía curada por nuestros Tripper Travel Advisors, con claves que pocos conocen)',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Bivouac →',
+        closingLine:
+          'Una experiencia grupal única, con detalles que marcan la diferencia.',
+        ctaLabel: 'Viajen distinto',
         excuses: [
           {
             key: 'default-excuse',
@@ -277,41 +252,35 @@ export const group: TravelerTypeData = {
       {
         id: 'atelier',
         name: 'Atelier Getaway',
-        subtitle: 'Experiencia de lujo',
-        priceLabel: 'Hasta 1200 USD',
-        priceFootnote: '· por persona',
+        subtitle: 'Distinción, a medida\n\n (Group Edition)',
+        priceLabel: 'Desde 1200 USD',
+        priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Customizable (5+ noches recomendadas)',
+            description: '100% Flexible (Sin límite de días)',
           },
           {
             title: 'Destinos',
-            description: 'Sin límites geográficos',
+            description: 'Global (El mundo a tu alcance)',
           },
           {
             title: 'Transporte',
-            description: 'First class con todas las comodidades.',
-          },
-          {
-            title: 'Fechas',
-            description: 'Máxima flexibilidad, sin restricciones.',
+            description: 'Flex / Premium / Privado (A tu medida)',
           },
           {
             title: 'Alojamiento',
-            description: 'Luxury / de autor / cadenas A1.',
-          },
-          {
-            title: 'Extras',
-            description: 'Co-creación con Luxury Travel Advisor.',
+            description: 'High-End & Hoteles de Autor (Selección Curada)',
           },
           {
             title: 'Beneficios',
-            description: 'Equipo 24/7 + experiencias premium a medida',
+            description:
+              'Co-creación del viaje con un Tripper Travel Advisor + equipo de soporte 24/7.',
           },
         ],
-        closingLine: 'Para quienes buscan lo mejor de lo mejor.',
-        ctaLabel: 'Elegir Atelier →',
+        closingLine:
+          'La experiencia que convierte cualquier celebración en inolvidable.',
+        ctaLabel: 'A un clic de lo extraordinario',
         excuses: [
           {
             key: 'default-excuse',

@@ -21,9 +21,9 @@ export default function Paragraph({
   return (
     <Section eyebrow={content.eyebrow} title={content.title}>
       <div>
-        <div className="prose prose-md md:max-w-1/2 mx-auto text-center border-gray-200 text-gray-700">
+        <div className="prose prose-md md:max-w-3/4 mx-auto text-center border-gray-200 text-gray-700">
           {content.paragraphs.map((paragraph, index) => (
-            <p key={index} className="leading-relaxed mb-6 text-2xl">
+            <p key={index} className="leading-relaxed mb-6 text-xl">
               {paragraph}
             </p>
           ))}
