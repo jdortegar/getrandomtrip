@@ -193,7 +193,7 @@ const Hero: React.FC<HeroProps> = ({
             </motion.p>
           )}
         </div>
-        <div className="flex items-center justify-start gap-4">
+        <div className="flex items-center justify-center md:justify-start gap-4">
           {/* CTA Button - Lower Left */}
           {content.primaryCta && (
             <motion.div

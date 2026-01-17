@@ -1,10 +1,10 @@
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
-import { groupTestimonials } from '@/lib/data/traveler-types/group/testimonials';
-import { soloTestimonials } from '@/lib/data/traveler-types/solo/testimonials';
-import { familyTestimonials } from '@/lib/data/traveler-types/family/testimonials';
-import { coupleTestimonials } from '@/lib/data/traveler-types/couple/testimonials';
-import { honeymoonTestimonials } from '@/lib/data/traveler-types/honeymoon/testimonials';
-import { pawsTestimonials } from '@/lib/data/traveler-types/paws/testimonials';
+import { couple } from '@/lib/data/traveler-types/couple';
+import { solo } from '@/lib/data/traveler-types/solo';
+import { family } from '@/lib/data/traveler-types/family';
+import { group } from '@/lib/data/traveler-types/group';
+import { honeymoon } from '@/lib/data/traveler-types/honeymoon';
+import { paws } from '@/lib/data/traveler-types/paws';
 import type { Tripper } from '@/content/trippers';
 
 /**
@@ -14,12 +14,12 @@ import type { Tripper } from '@/content/trippers';
 export function getAllTestimonialsForTripper(tripper: Tripper): Testimonial[] {
   // Get all testimonials from different traveler types
   const allTestimonials = [
-    ...groupTestimonials,
-    ...soloTestimonials,
-    ...familyTestimonials,
-    ...coupleTestimonials,
-    ...honeymoonTestimonials,
-    ...pawsTestimonials,
+    ...group.testimonials.items,
+    ...solo.testimonials.items,
+    ...family.testimonials.items,
+    ...couple.testimonials.items,
+    ...honeymoon.testimonials.items,
+    ...paws.testimonials.items,
   ];
 
   // Add tripper's own testimonials (transform to match Testimonial interface)
