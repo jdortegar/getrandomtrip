@@ -4,7 +4,7 @@ import Section from './layout/Section';
 export interface ParagraphContent {
   title: string;
   paragraphs: string[];
-  tagline: string;
+  eyebrow: string;
 }
 
 interface ParagraphProps {
@@ -19,7 +19,7 @@ export default function Paragraph({
   className = '',
 }: ParagraphProps) {
   return (
-    <Section eyebrow={content.tagline} title={content.title}>
+    <Section eyebrow={content.eyebrow} title={content.title}>
       <div>
         <div className="prose prose-md md:max-w-1/2 mx-auto text-center border-gray-200 text-gray-700">
           {content.paragraphs.map((paragraph, index) => (
