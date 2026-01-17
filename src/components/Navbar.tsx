@@ -40,11 +40,13 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
   const headerClass =
     'absolute top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out';
 
-  const logoSrc = useMemo(() => {
-    return overlay
-      ? '/assets/logos/logo_getrandomtrip_1.png'
-      : '/assets/logos/logo_getrandomtrip.png';
-  }, [overlay]);
+  // const logoSrc = useMemo(() => {
+  //   return overlay
+  //     ? '/assets/logos/logo_getrandomtrip_1.png'
+  //     : '/assets/logos/logo_getrandomtrip.png';
+  // }, [overlay]);
+
+  const logoSrc = '/assets/logos/logo_getrandomtrip_1.png';
 
   const primaryLinks = NAVBAR_LINKS.slice(0, 3);
   const extraLinks = NAVBAR_LINKS.slice(3);

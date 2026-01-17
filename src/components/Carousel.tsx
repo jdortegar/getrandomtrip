@@ -31,8 +31,11 @@ type CarouselContextProps = {
   api: ReturnType<typeof useEmblaCarousel>[1];
   scrollPrev: () => void;
   scrollNext: () => void;
+  scrollTo: (index: number) => void;
   canScrollPrev: boolean;
   canScrollNext: boolean;
+  selectedIndex: number;
+  scrollSnaps: number[];
 } & CarouselProps;
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -75,11 +78,21 @@ const CarouselRoot = React.forwardRef<
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+    const scrollTo = React.useCallback(
+      (index: number) => {
+        api?.scrollTo(index);
+      },
+      [api],
+    );
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) return;
       setCanScrollPrev(api.canScrollPrev());
       setCanScrollNext(api.canScrollNext());
+      setSelectedIndex(api.selectedScrollSnap());
     }, []);
 
     const scrollPrev = React.useCallback(() => {
@@ -110,12 +123,17 @@ const CarouselRoot = React.forwardRef<
 
     React.useEffect(() => {
       if (!api) return;
+      setScrollSnaps(api.scrollSnapList());
       onSelect(api);
-      api.on('reInit', onSelect);
+      api.on('reInit', () => {
+        setScrollSnaps(api.scrollSnapList());
+        onSelect(api);
+      });
       api.on('select', onSelect);
 
       return () => {
         api?.off('select', onSelect);
+        api?.off('reInit', onSelect);
       };
     }, [api, onSelect]);
 
@@ -129,8 +147,11 @@ const CarouselRoot = React.forwardRef<
             orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
           scrollPrev,
           scrollNext,
+          scrollTo,
           canScrollPrev,
           canScrollNext,
+          selectedIndex,
+          scrollSnaps,
           edgeBleed,
           edgeBleedSide,
         }}
@@ -228,7 +249,7 @@ const CarouselPrevious = React.forwardRef<
         onClick={scrollPrev}
         {...props}
       >
-        <ArrowLeft className="md:size-[25px] size-[20px] text-white" />
+        <ChevronLeft className="md:size-[25px] size-[20px] text-white" />
         <span className="sr-only">Previous slide</span>
       </Button>
     );
@@ -261,13 +282,52 @@ const CarouselNext = React.forwardRef<
         onClick={scrollNext}
         {...props}
       >
-        <ArrowRight className="md:size-[25px] size-[20px] text-white" />
+        <ChevronRight className="md:size-[25px] size-[20px] text-white" />
         <span className="sr-only">Next slide</span>
       </Button>
     );
   },
 );
 CarouselNext.displayName = 'CarouselNext';
+
+const CarouselDots = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<'div'> & { align?: 'left' | 'center' | 'right' }
+>(({ className, align = 'center', ...props }, ref) => {
+  const { scrollSnaps, scrollTo, selectedIndex } = useCarousel();
+
+  const alignClass =
+    align === 'left'
+      ? 'justify-start'
+      : align === 'right'
+        ? 'justify-end'
+        : 'justify-center';
+
+  return (
+    <div
+      ref={ref}
+      className={cn('flex items-center gap-2', alignClass, className)}
+      data-slot="carousel-dots"
+      {...props}
+    >
+      {scrollSnaps.map((_, index) => (
+        <button
+          key={index}
+          aria-label={`Go to slide ${index + 1}`}
+          className={cn(
+            'w-2 h-2 rounded-full transition-all',
+            selectedIndex === index
+              ? 'bg-[#4F96B6] w-8'
+              : 'bg-[#4F96B6]/30 hover:bg-[#4F96B6]/50',
+          )}
+          onClick={() => scrollTo(index)}
+          type="button"
+        />
+      ))}
+    </div>
+  );
+});
+CarouselDots.displayName = 'CarouselDots';
 
 // High-level Carousel component that handles everything internally
 type CarouselSimpleProps = {
@@ -300,6 +360,7 @@ type CarouselSimpleProps = {
   edgeBleedSide?: EdgeBleedSide;
   fullViewportWidth?: boolean;
   viewportPaddingClassName?: string;
+  dotsAlign?: 'left' | 'center' | 'right';
 };
 
 function Carousel({
@@ -322,6 +383,7 @@ function Carousel({
   edgeBleedSide = 'right',
   fullViewportWidth = false,
   viewportPaddingClassName,
+  dotsAlign = 'center',
 }: CarouselSimpleProps) {
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const [viewportPadding, setViewportPadding] = React.useState<{
@@ -412,24 +474,54 @@ function Carousel({
           edgeBleed={edgeBleed}
           edgeBleedSide={edgeBleedSide}
         >
-          {/* Section Header - Now inside CarouselRoot */}
-          {title && (
-            <div
-              className={cn(
-                'flex flex-col items-center mb-6 gap-3 text-center',
-                classes?.heading,
-              )}
-            >
-              <h3
+          {/* Section Header and Navigation */}
+          <div className="flex items-center justify-between mb-6">
+            {title && (
+              <div
                 className={cn(
-                  'text-[28px] leading-[45px] font-light text-neutral-900 max-w-sm mx-auto text-center',
-                  classes?.title,
+                  'flex flex-col items-center gap-3 text-center flex-1',
+                  classes?.heading,
                 )}
               >
-                {title}
-              </h3>
-            </div>
-          )}
+                <h3
+                  className={cn(
+                    'text-[28px] leading-[45px] font-light text-neutral-900 max-w-sm mx-auto text-center',
+                    classes?.title,
+                  )}
+                >
+                  {title}
+                </h3>
+              </div>
+            )}
+
+            {/* Navigation buttons at top right - outside slide container */}
+            {showNavigation && (
+              <div
+                className={cn(
+                  'flex items-center gap-2 flex-shrink-0',
+                  !title && 'ml-auto',
+                  classes?.navigationContainer,
+                )}
+              >
+                <CarouselPrevious
+                  inHeader
+                  className={cn(
+                    navigationClassName,
+                    classes?.navigationButton,
+                    classes?.navigationPrevious,
+                  )}
+                />
+                <CarouselNext
+                  inHeader
+                  className={cn(
+                    navigationClassName,
+                    classes?.navigationButton,
+                    classes?.navigationNext,
+                  )}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Carousel Content */}
           <CarouselContent
@@ -447,29 +539,12 @@ function Carousel({
             ))}
           </CarouselContent>
 
-          {/* Navigation buttons at bottom center */}
+          {/* Dots navigation at bottom */}
           {showNavigation && (
-            <div
-              className={cn(
-                'flex justify-center items-center gap-2 mt-12',
-                classes?.navigationContainer,
-              )}
-            >
-              <CarouselPrevious
-                inHeader
-                className={cn(
-                  navigationClassName,
-                  classes?.navigationButton,
-                  classes?.navigationPrevious,
-                )}
-              />
-              <CarouselNext
-                inHeader
-                className={cn(
-                  navigationClassName,
-                  classes?.navigationButton,
-                  classes?.navigationNext,
-                )}
+            <div className="w-full flex justify-center mt-8">
+              <CarouselDots
+                align={dotsAlign}
+                className={cn(classes?.navigationContainer)}
               />
             </div>
           )}
@@ -489,4 +564,7 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
+  // Hooks
+  useCarousel,
 };

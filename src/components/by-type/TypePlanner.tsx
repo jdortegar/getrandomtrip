@@ -23,14 +23,13 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
   return (
     <Section
       className="py-20"
-      fullWidth={true}
       eyebrow={content.eyebrow}
       subtitle={content.subtitle}
       title={content.title}
     >
       <div className="relative">
         <div id={`${type}-planner`} className="h-0 scroll-mt-24" />
-        <div className="mt-8 overflow-visible px-4 [&_[data-slot=carousel-content]]:overflow-visible">
+        <div className="mt-8 overflow-visible [&_[data-slot=carousel-content]]:overflow-visible">
           <Carousel
             edgeBleed={false}
             itemClassName="!basis-auto"

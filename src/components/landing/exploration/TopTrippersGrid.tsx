@@ -54,11 +54,7 @@ export function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <Button
-          asChild
-          className="rounded-full bg-yellow-400 px-8 py-4 text-gray-800 hover:bg-yellow-500 font-normal tracking-normal text-base"
-          size="lg"
-        >
+        <Button asChild variant="feature" size="lg">
           <Link href="/trippers">EXPLORAR TRIPPERS</Link>
         </Button>
       </motion.div>

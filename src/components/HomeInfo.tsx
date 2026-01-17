@@ -89,11 +89,7 @@ export default function HomeInfo() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 1 }}
       >
-        <Button
-          asChild
-          className="rounded-full bg-yellow-400 px-8 py-4 text-gray-800 hover:bg-yellow-500 font-normal tracking-normal text-base"
-          size="lg"
-        >
+        <Button asChild size="lg" variant="feature">
           <Link href="#exploration-section" scroll={true}>
             RANDOMTRIPME!
           </Link>

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Carousel } from '@/components/display/Carousel';
+import React, { useEffect, useState } from 'react';
+import { Carousel } from '@/components/Carousel';
 
 interface TwoColumnsCarouselProps {
   children: React.ReactNode;
@@ -49,51 +49,32 @@ export default function TwoColumnsCarousel({
   className = '',
   leftColumn,
 }: TwoColumnsCarouselProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [emblaApi, setEmblaApi] = useState<any>(null);
 
   const childrenArray = React.Children.toArray(children);
   const totalItems = childrenArray.length;
 
-  const updateActiveIndex = () => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const isMobile = window.innerWidth < 768;
-    const cardWidth = isMobile ? CARD_WIDTH.mobile : CARD_WIDTH.desktop;
-    const scrollLeft = container.scrollLeft;
-    const newIndex = Math.round(scrollLeft / (cardWidth + CARD_GAP));
-    setActiveIndex(Math.min(newIndex, totalItems - 1));
-  };
-
-  const handleDotClick = (index: number) => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const isMobile = window.innerWidth < 768;
-    const cardWidth = isMobile ? CARD_WIDTH.mobile : CARD_WIDTH.desktop;
-    const scrollPosition = index * (cardWidth + CARD_GAP);
-
-    container.scrollTo({
-      behavior: 'smooth',
-      left: scrollPosition,
-    });
-  };
-
   useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
+    if (!emblaApi) return;
 
-    updateActiveIndex();
-    container.addEventListener('scroll', updateActiveIndex);
-    window.addEventListener('resize', updateActiveIndex);
+    const onSelect = () => {
+      setActiveIndex(emblaApi.selectedScrollSnap());
+    };
+
+    emblaApi.on('select', onSelect);
+    onSelect();
 
     return () => {
-      container.removeEventListener('scroll', updateActiveIndex);
-      window.removeEventListener('resize', updateActiveIndex);
+      emblaApi.off('select', onSelect);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalItems]);
+  }, [emblaApi]);
+
+  const handleDotClick = (index: number) => {
+    if (emblaApi) {
+      emblaApi.scrollTo(index);
+    }
+  };
 
   return (
     <div
@@ -114,21 +95,20 @@ export default function TwoColumnsCarousel({
       </aside>
 
       <div className="relative flex-1 md:-mr-[40vw] md:min-w-2/3 md:pr-16">
-        <div ref={scrollRef}>
-          <Carousel
-            className="pb-8 md:pb-10"
-            options={{
-              align: 'start',
-              slidesToScroll: 1,
-            }}
-          >
-            {childrenArray.map((child, index) => (
-              <div key={index} className="w-72 flex-shrink-0 md:w-96 pr-8">
-                {child}
-              </div>
-            ))}
-          </Carousel>
-        </div>
+        <Carousel
+          className="pb-8 md:pb-10"
+          setApi={setEmblaApi}
+          opts={{
+            align: 'start',
+            slidesToScroll: 1,
+          }}
+          showNavigation={false}
+          itemClassName="w-72 flex-shrink-0 md:w-96 pr-8"
+        >
+          {childrenArray.map((child, index) => (
+            <div key={index}>{child}</div>
+          ))}
+        </Carousel>
       </div>
 
       <div className="mt-6 flex w-full justify-center">
