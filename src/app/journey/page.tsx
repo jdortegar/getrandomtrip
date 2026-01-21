@@ -5,43 +5,69 @@ import JourneyContentNavigation from '@/components/journey/JourneyContentNavigat
 import JourneyHero from '@/components/journey/JourneyHero';
 import JourneyMainContent from '@/components/journey/JourneyMainContent';
 import JourneyProgressSidebar from '@/components/journey/JourneyProgressSidebar';
+import JourneySummary from '@/components/journey/JourneySummary';
 
-const JOURNEY_STEPS = [
-  {
-    description:
-      'Desde escapadas solo, en grupo o en familia hasta viajes con tu mascota o Honey moon.',
-    isComplete: true,
-    number: 1,
-    title: 'Tipo de viaje',
-  },
-  {
-    description:
-      'Lo único que definís acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros.',
-    isComplete: false,
-    number: 2,
-    title: 'Experiencias',
-  },
-  {
-    description: 'Viajamos por muchas razones, ¿cuál te mueve hoy?',
-    isComplete: false,
-    number: 3,
-    title: 'Excusa',
-  },
-];
+interface Substep {
+  description: string;
+  id: string;
+  title: string;
+}
 
-const CONTENT_TABS = [
-  { id: 'budget', label: 'Presupuesto' },
-  { id: 'excuse', label: 'Excusa' },
-  { id: 'details', label: 'Detalles y planificación' },
-  { id: 'preferences', label: 'Preferencias y filtros' },
-  { id: 'extras', label: 'Extras' },
+interface ContentTab {
+  id: string;
+  label: string;
+  substeps: Substep[];
+}
+
+const CONTENT_TABS: ContentTab[] = [
+  {
+    id: 'budget',
+    label: 'Presupuesto',
+    substeps: [
+      {
+        id: 'travel-type',
+        title: 'TIPO DE VIAJE',
+        description:
+          'Desde escapadas solo, en grupo o en familia hasta viajes con tu mascota o Honey moon.',
+      },
+      {
+        id: 'experience',
+        title: 'EXPERIENCIA',
+        description:
+          'Lo único que definís acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros.',
+      },
+    ],
+  },
+  {
+    id: 'excuse',
+    label: 'Excusa',
+    substeps: [
+      {
+        id: 'reason',
+        title: 'CUÁL ES LA RAZÓN DE MI VIAJE',
+        description: 'Viajamos por muchas razones, ¿cuál te mueve hoy?',
+      },
+      {
+        id: 'refine-details',
+        title: 'AFINAR DETALLES',
+        description: 'Elegí una o más aventuras.',
+      },
+    ],
+  },
+  {
+    id: 'details',
+    label: 'Detalles y planificación',
+    substeps: [],
+  },
+  {
+    id: 'preferences',
+    label: 'Preferencias y filtros',
+    substeps: [],
+  },
 ];
 
 export default function JourneyPage() {
   const [activeTab, setActiveTab] = useState('budget');
-  const [currentStep] = useState(2);
-
-  const progress = Math.round((currentStep / JOURNEY_STEPS.length) * 100);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -60,7 +86,7 @@ export default function JourneyPage() {
       <JourneyContentNavigation
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        tabs={CONTENT_TABS}
+        tabs={CONTENT_TABS.map((tab) => ({ id: tab.id, label: tab.label }))}
         user={{
           name: 'Nombre usuario',
         }}
@@ -68,13 +94,12 @@ export default function JourneyPage() {
 
       {/* Main Content Layout */}
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr_320px] gap-8">
           {/* Progress Sidebar */}
           <div className="lg:sticky lg:top-8 lg:self-start">
             <JourneyProgressSidebar
-              currentStep={currentStep}
-              progress={progress}
-              steps={JOURNEY_STEPS}
+              activeTab={activeTab}
+              tabs={CONTENT_TABS}
             />
           </div>
 
@@ -83,6 +108,24 @@ export default function JourneyPage() {
             {/* Dynamic Content */}
             <JourneyMainContent activeTab={activeTab} />
           </div>
+
+          {/* Summary Sidebar */}
+          <JourneySummary
+            selectedDetails={['Aventura acuática', 'Senderismo y Trekking', 'Deportes extremos']}
+            selectedExcuse="Aventura y Desafío"
+            selectedExperience={{
+              label: 'Modo Explora +',
+              price: 'USD 180 por persona',
+              nights: '4 noches',
+            }}
+            selectedTravelType={{
+              label: 'Viajo solo',
+              price: 'USD 780',
+              rating: 7.0,
+              reviews: 10,
+            }}
+            totalPrice="780 USD"
+          />
         </div>
       </div>
     </div>

@@ -49,6 +49,8 @@ export default function TypePlanner({ content, type }: TypePlannerProps) {
                   key={level.id}
                   level={level}
                   onSelect={handleLevelSelect}
+                  selected={selectedLevel === level.id}
+                  travelerType={type}
                   variant={variant}
                 />
               );

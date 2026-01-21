@@ -79,15 +79,39 @@ export default function JourneyContentNavigation({
           </div>
 
           {/* Right Section: Navigation Tabs */}
-          <div className="flex items-center justify-center gap-6 overflow-x-auto">
+          <div className="flex items-center justify-center gap-10 overflow-x-auto">
             {tabs.map((tab, index) => {
               const isActive = tab.id === activeTab;
+              const stepNumber = index + 1;
 
               return (
-                <div key={tab.id} className="flex items-center gap-6">
-                  {index > 0 && (
-                    <span className="text-gray-300 text-sm">•</span>
-                  )}
+                <div key={tab.id} className="flex items-center gap-1">
+                  {/* Numbered Circle */}
+                  <button
+                    className={cn(
+                      'flex h-6 w-6 items-center justify-center rounded-full border transition-colors',
+                      {
+                        'border-[#4F96B6] bg-[#4F96B6] text-white': isActive,
+                        'border-gray-300 bg-gray-100 text-gray-400': !isActive,
+                      },
+                    )}
+                    onClick={() => onTabChange(tab.id)}
+                    type="button"
+                  >
+                    <span className="text-sm font-medium">{stepNumber}</span>
+                  </button>
+
+                  {/* Bullet Point */}
+                  <span
+                    className={cn('text-sm', {
+                      'text-gray-700': isActive,
+                      'text-gray-300': !isActive,
+                    })}
+                  >
+                    •
+                  </span>
+
+                  {/* Text Label */}
                   <button
                     className={cn(
                       'text-sm font-medium transition-colors whitespace-nowrap',

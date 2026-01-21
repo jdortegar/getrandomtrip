@@ -23,6 +23,8 @@ interface LevelCardProps {
   featured?: boolean;
   level: Level;
   onSelect?: (levelId: string) => void;
+  selected?: boolean;
+  travelerType?: string;
   variant?: 'light' | 'dark';
 }
 
@@ -43,17 +45,19 @@ export default function LevelCard({
   featured = false,
   level,
   onSelect,
+  selected = false,
+  travelerType,
   variant = 'light',
 }: LevelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const isDark = variant === 'dark';
   const textColor = isDark ? 'text-white' : 'text-gray-900';
   const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
-  const borderColor = featured
-    ? 'border-yellow-400'
-    : isDark
-      ? 'border-gray-700'
-      : 'border-transparent';
+  const borderColor = selected
+      ? 'border-[#172C36]'
+      : isDark
+        ? 'border-gray-700'
+        : 'border-transparent';
   const dividerColor = isDark ? 'border-gray-700' : 'border-gray-200';
   const priceDividerColor = 'bg-yellow-400';
   const secondaryTextColor = isDark ? 'text-white' : 'text-gray-600';
@@ -97,11 +101,11 @@ export default function LevelCard({
         </div>
       )}
 
-      {/* Featured Checkmark - Top Right */}
-      {featured && (
+      {/* Selected Checkmark - Top Right */}
+      {selected && (
         <div className="absolute -top-3 -right-[14px] z-10">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-400">
-            <Check className="h-5 w-5 text-gray-900" strokeWidth={3} />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
+            <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
         </div>
       )}
@@ -215,7 +219,14 @@ export default function LevelCard({
       )}
       <div className="mt-6 flex justify-center px-10">
         <Button asChild variant="feature" size="md">
-          <Link href={`/packages/by-type/${level.id}`} className="uppercase">
+          <Link
+            href={
+              travelerType
+                ? `/journey?type=${travelerType}&experience=${level.id}`
+                : `/packages/by-type/${level.id}`
+            }
+            className="uppercase"
+          >
             {level.ctaLabel}
           </Link>
         </Button>
