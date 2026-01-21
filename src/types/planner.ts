@@ -32,6 +32,7 @@ export interface Level {
   id: string;
   name: string;
   subtitle: string;
+  price: number;
   priceLabel: string;
   priceFootnote: string;
   features: LevelFeature[];

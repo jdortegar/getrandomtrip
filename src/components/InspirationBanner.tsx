@@ -1,16 +1,19 @@
 import Img from '@/components/common/Img';
 import Section from '@/components/layout/Section';
+import { Button } from '@/components/ui/Button';
+import { Label } from '@/components/ui/Label';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface InspirationBannerProps {
   image: string;
   imageAlt?: string;
   eyebrow?: string;
+  labelText?: string;
   title: string;
   subtitle?: string;
   buttonText?: string;
-  buttonHref?: string;
-  onButtonClick?: () => void;
+  buttonHref: string;
   profileImage?: string;
   profileInitial?: string;
   className?: string;
@@ -21,31 +24,23 @@ export default function InspirationBanner({
   image,
   imageAlt = 'Inspiration banner',
   eyebrow,
+  labelText,
   title,
   subtitle,
   buttonText,
   buttonHref,
-  onButtonClick,
   className,
 }: InspirationBannerProps) {
-  const handleButtonClick = () => {
-    if (onButtonClick) {
-      onButtonClick();
-    }
-  };
-
-  const buttonContent = (
-    <button
-      className="mt-4 inline-flex items-center gap-2 rounded-full border border-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 md:text-sm"
-      onClick={handleButtonClick}
-      type="button"
-    >
-      {buttonText}
-    </button>
-  );
 
   return (
     <Section className={cn('!text-left !py-12 md:!py-16 ', className)}>
+      {/* Label */}
+      {labelText && (
+          <Label
+            className="absolute translate-x-12 z-10 -translate-y-1/2"
+            text={labelText}
+          />
+        )}
       <div className="relative w-full overflow-hidden rounded-2xl min-h-[300px] items-center flex">
         {/* Background Image */}
         <div className="absolute inset-0">
@@ -89,16 +84,14 @@ export default function InspirationBanner({
           {/* Right Side - Button */}
           {buttonText && (
             <div className="flex items-center">
-              {buttonHref ? (
-                <a
-                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 md:text-sm"
-                  href={buttonHref}
-                >
-                  {buttonText}
-                </a>
-              ) : (
-                buttonContent
-              )}
+              <Button
+                asChild
+                size="md"
+                className="text-md"
+                variant="outline"
+              >
+                <Link href={buttonHref}>{buttonText}</Link>
+              </Button>
             </div>
           )}
         </div>

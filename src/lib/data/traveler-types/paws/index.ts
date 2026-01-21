@@ -48,8 +48,9 @@ export const paws: TravelerTypeData = {
         id: 'essenza',
         name: 'Essenza',
         subtitle: 'La escapada express',
-        priceLabel: '490 USD',
-        priceFootnote: 'por persona + pet',
+        price: 490,
+        priceLabel: 'Hasta',
+        priceFootnote: 'por persona \n+ mascota',
         features: [
           {
             title: 'Duración',
@@ -81,7 +82,8 @@ export const paws: TravelerTypeData = {
         id: 'explora',
         name: 'Modo Explora',
         subtitle: 'Viaje activo y Flexible',
-        priceLabel: 'Hasta 770 USD',
+        price: 770,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona \n+ mascota',
         features: [
           {
@@ -138,8 +140,9 @@ export const paws: TravelerTypeData = {
         id: 'exploraPlus',
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
-        priceLabel: 'Hasta 1190 USD',
-        priceFootnote: 'por persona \n+ compañer@ de 4 patas',
+        price: 1190,
+        priceLabel: 'Hasta',
+        priceFootnote: 'por persona \n+ mascota',
         features: [
           {
             title: 'Duración',
@@ -196,8 +199,9 @@ export const paws: TravelerTypeData = {
         id: 'bivouac',
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
-        priceLabel: 'Hasta 1680 USD',
-        priceFootnote: 'por persona \n+ compañer@ de 4 patas',
+        price: 1680,
+        priceLabel: 'Hasta',
+        priceFootnote: 'por persona \n+ mascota',
         features: [
           {
             title: 'Duración',
@@ -255,8 +259,9 @@ export const paws: TravelerTypeData = {
         id: 'atelier',
         name: 'Atelier Getaway',
         subtitle: 'Tu Tripper Advisor personal',
-        priceLabel: 'Desde 1680 USD',
-        priceFootnote: 'por persona \n+ compañer@ de 4 patas',
+        price: 1680,
+        priceLabel: 'Desde',
+        priceFootnote: 'por persona \n+ mascota',
         features: [
           {
             title: 'Duración',

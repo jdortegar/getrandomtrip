@@ -17,6 +17,7 @@ import {
 import type { Level } from '@/types/planner';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { Label } from '@/components/ui/Label';
 import Link from 'next/link';
 
 interface LevelCardProps {
@@ -91,15 +92,7 @@ export default function LevelCard({
       style={{ boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)' }}
     >
       {/* Featured Badge - Top Left */}
-      {featured && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-          <div className="rounded-md bg-yellow-400 px-3 py-1">
-            <span className="text-xs font-semibold uppercase text-gray-900">
-              Más elegido
-            </span>
-          </div>
-        </div>
-      )}
+      {featured && <Label text="Más elegido" className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"/>}
 
       {/* Selected Checkmark - Top Right */}
       {selected && (
@@ -134,8 +127,11 @@ export default function LevelCard({
         <div className="flex flex-col justify-start items-start font-barlow font-semibold text-lg text-left">
           <span className={cn('leading-none whitespace-nowrap', textColor)}>
             {level.priceLabel}
+            </span>
+          <span className={cn('leading-none whitespace-nowrap', textColor)}>
+            {` ${level.price} USD`}
           </span>
-          <span className={cn('leading-none whitespace-pre-line', textColor)}>
+          <span className={cn('leading-none whitespace-nowrap text-xs', textColor)}>
             {level.priceFootnote}
           </span>
         </div>

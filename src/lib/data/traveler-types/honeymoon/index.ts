@@ -46,7 +46,8 @@ export const honeymoon: TravelerTypeData = {
         id: 'essenza',
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
-        priceLabel: 'Hasta 350 USD',
+        price: 350,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -87,7 +88,8 @@ export const honeymoon: TravelerTypeData = {
         id: 'explora',
         name: 'Modo Explora',
         subtitle: 'Aventura sin límites',
-        priceLabel: 'Hasta 650 USD',
+        price: 650,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -150,7 +152,8 @@ export const honeymoon: TravelerTypeData = {
         id: 'exploraPlus',
         name: 'Explora+',
         subtitle: 'Experiencia premium',
-        priceLabel: 'Hasta 1200 USD',
+        price: 1200,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -214,7 +217,8 @@ export const honeymoon: TravelerTypeData = {
         id: 'bivouac',
         name: 'Bivouac',
         subtitle: 'Aventura sin límites',
-        priceLabel: 'Hasta 1200 USD',
+        price: 1200,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -278,7 +282,8 @@ export const honeymoon: TravelerTypeData = {
         id: 'atelier',
         name: 'Atelier Getaway',
         subtitle: 'Amor a medida',
-        priceLabel: 'Desde 1800 USD',
+        price: 1800,
+        priceLabel: 'Desde',
         priceFootnote: 'por persona',
         features: [
           {

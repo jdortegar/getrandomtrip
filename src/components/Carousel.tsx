@@ -4,7 +4,8 @@ import * as React from 'react';
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import WheelGestures from 'embla-carousel-wheel-gestures';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from './ui/Button';
@@ -69,12 +70,18 @@ const CarouselRoot = React.forwardRef<
     },
     ref,
   ) => {
+    const pluginsArray = React.useMemo(() => {
+      const wheelPlugin = WheelGestures();
+      if (!plugins) return [wheelPlugin];
+      return Array.isArray(plugins) ? [wheelPlugin, ...plugins] : [wheelPlugin, plugins];
+    }, [plugins]);
+
     const [carouselRef, api] = useEmblaCarousel(
       {
         ...opts,
         axis: orientation === 'horizontal' ? 'x' : 'y',
       },
-      plugins,
+      pluginsArray,
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);

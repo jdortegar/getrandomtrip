@@ -14,6 +14,7 @@ import { useCarousel } from '@/components/Carousel';
 import Section from '@/components/layout/Section';
 import Img from '@/components/common/Img';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
+import { Button } from './ui/Button';
 
 interface BlogProps {
   eyebrow?: string;
@@ -74,12 +75,13 @@ function BlogCard({ post }: BlogCardProps) {
         <h3 className="mt-2 font-barlow-condensed text-xl font-bold leading-tight md:text-2xl">
           {post.title}
         </h3>
-        <button
-          className="mt-4 inline-flex items-center gap-2 rounded-full border border-white px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors hover:bg-white hover:text-gray-900 md:text-sm"
-          type="button"
+        <Button
+        className="mt-4 text-xs"
+        size="sm"
+        variant="outline"
         >
           Explorar Trip
-        </button>
+        </Button>
       </div>
     </div>
   );

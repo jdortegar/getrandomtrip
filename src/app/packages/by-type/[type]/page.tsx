@@ -78,6 +78,7 @@ export default function TravelerTypePage({
         eyebrow="INSPIRACIÓN"
         image="/images/caravan.png"
         title="Historias de viajeros solitarios que inspiran "
+        labelText="Historias inspiradoras"
       />
       <Testimonials
         testimonials={typeData.testimonials.items}

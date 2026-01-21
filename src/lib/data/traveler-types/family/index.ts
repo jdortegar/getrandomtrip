@@ -47,7 +47,8 @@ export const family: TravelerTypeData = {
         id: 'essenza',
         name: 'Essenza',
         subtitle: 'La escapada express',
-        priceLabel: 'Hasta 350 USD',
+        price: 350,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -81,7 +82,8 @@ export const family: TravelerTypeData = {
         id: 'explora',
         name: 'Modo Explora',
         subtitle: 'Viaje activo y Flexible',
-        priceLabel: 'Hasta 550 USD',
+        price: 550,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -138,7 +140,8 @@ export const family: TravelerTypeData = {
         id: 'exploraPlus',
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
-        priceLabel: 'Hasta 850 USD',
+        price: 850,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -196,7 +199,8 @@ export const family: TravelerTypeData = {
         id: 'bivouac',
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
-        priceLabel: 'Hasta 1200 USD',
+        price: 1200,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -254,7 +258,8 @@ export const family: TravelerTypeData = {
         id: 'atelier',
         name: 'Atelier Getaway',
         subtitle: 'Experiencia a medida',
-        priceLabel: 'Desde 1200 USD',
+        price: 1200,
+        priceLabel: 'Desde',
         priceFootnote: 'por persona',
         features: [
           {

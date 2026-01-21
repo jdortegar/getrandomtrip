@@ -49,7 +49,8 @@ export const couple: TravelerTypeData = {
         id: 'essenza',
         name: 'Essenza',
         subtitle: 'La escapada express',
-        priceLabel: 'Hasta 350 USD',
+        price: 350,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           { title: 'Duración', description: 'Max. 2 noches (Escapada Fugaz)' },
@@ -76,7 +77,8 @@ export const couple: TravelerTypeData = {
         id: 'explora',
         name: 'Modo Explora',
         subtitle: 'Viaje activo y Flexible',
-        priceLabel: 'Hasta 550 USD',
+        price: 550,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -110,7 +112,8 @@ export const couple: TravelerTypeData = {
         id: 'exploraPlus',
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
-        priceLabel: 'Hasta 850 USD',
+        price: 850,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -144,7 +147,8 @@ export const couple: TravelerTypeData = {
         id: 'bivouac',
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
-        priceLabel: 'Hasta 1200 USD',
+        price: 1200,
+        priceLabel: 'Hasta',
         priceFootnote: 'por persona',
         features: [
           {
@@ -178,7 +182,8 @@ export const couple: TravelerTypeData = {
         id: 'atelier',
         name: 'Atelier Getaway',
         subtitle: 'Amor a medida',
-        priceLabel: 'Desde 1200 USD',
+        price: 1200,
+        priceLabel: 'Desde',
         priceFootnote: 'por persona',
         features: [
           {

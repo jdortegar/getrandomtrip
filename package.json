@@ -48,6 +48,7 @@
     "discord.js": "^14.23.2",
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
+    "embla-carousel-wheel-gestures": "^8.1.0",
     "framer-motion": "^12.23.12",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.528.0",
