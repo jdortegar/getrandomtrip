@@ -1,40 +1,76 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Img from '@/components/common/Img';
+import { getTravelerType } from '@/lib/data/traveler-types';
+import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
+import { formatUSD } from '@/lib/format';
+import { initialTravellerTypes } from '@/lib/data/travelerTypes';
 
 interface JourneySummaryProps {
   className?: string;
-  selectedDetails?: string[];
-  selectedExcuse?: string;
-  selectedExperience?: {
-    label: string;
-    price: string;
-    nights?: string;
-  };
-  selectedTravelType?: {
-    label: string;
-    image?: string;
-    price: string;
-    rating?: number;
-    reviews?: number;
-  };
-  totalPrice?: string;
   onDetailRemove?: (detail: string) => void;
   onEdit?: (section: string) => void;
 }
 
 export default function JourneySummary({
   className,
-  selectedDetails = [],
-  selectedExcuse,
-  selectedExperience,
-  selectedTravelType,
-  totalPrice = '780 USD',
   onDetailRemove,
   onEdit,
 }: JourneySummaryProps) {
+  const searchParams = useSearchParams();
+
+  const travelType = searchParams.get('travelType');
+  const experience = searchParams.get('experience');
+
+  const travelerTypeData = useMemo(() => {
+    if (!travelType) return null;
+    return getTravelerType(travelType);
+  }, [travelType]);
+
+  const selectedLevel = useMemo(() => {
+    if (!experience || !travelerTypeData) return null;
+    return travelerTypeData.planner.levels.find((l) => l.id === experience);
+  }, [experience, travelerTypeData]);
+
+  const selectedTravelTypeInfo = useMemo(() => {
+    if (!travelType) return null;
+
+    const travelerType = initialTravellerTypes.find(
+      (t) => t.travelType.toLowerCase() === travelType.toLowerCase(),
+    );
+
+    return {
+      label: TRAVELER_TYPE_LABELS[travelType] || travelType,
+      image: travelerType?.imageUrl,
+      price: selectedLevel && formatUSD(selectedLevel.price),
+      rating: 7.0,
+      reviews: 10,
+    };
+  }, [travelType, selectedLevel]);
+
+  const selectedExperienceInfo = useMemo(() => {
+    if (!selectedLevel) return null;
+
+    return {
+      label: selectedLevel.name,
+      price: `${formatUSD(selectedLevel.price)} por persona`,
+      nights: '4 noches', // TODO: Get from level data if available
+    };
+  }, [selectedLevel]);
+
+  const totalPrice = useMemo(() => {
+    if (selectedLevel) {
+      return formatUSD(selectedLevel.price);
+    }
+    return '780 USD';
+  }, [selectedLevel]);
+
+  const selectedDetails: string[] = [];
+  const selectedExcuse: string | undefined = undefined;
   return (
     <aside
       className={cn(
@@ -42,75 +78,86 @@ export default function JourneySummary({
         className,
       )}
     >
-      <h2 className="text-xl font-medium font-barlow text-gray-900">Resumen del viaje</h2>
+      <h2 className="text-xl font-medium font-barlow text-gray-900">
+        Resumen del viaje
+      </h2>
 
       {/* Type of Trip Section */}
-      <div className="space-y-3 pb-4 border-b border-gray-200">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1">
-            {selectedTravelType?.image && (
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden">
-                <Img
-                  alt={selectedTravelType.label}
-                  className="w-full h-full object-cover"
-                  height={48}
-                  src={selectedTravelType.image}
-                  width={48}
-                />
+      {selectedTravelTypeInfo && (
+        <div className="space-y-3 pb-4 border-b border-gray-200">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3 flex-1">
+              {selectedTravelTypeInfo.image && (
+                <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden">
+                  <Img
+                    alt={selectedTravelTypeInfo.label}
+                    className="w-full h-full object-cover"
+                    height={48}
+                    src={selectedTravelTypeInfo.image}
+                    width={48}
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 uppercase mb-1">
+                  Tipo de viaje | {selectedTravelTypeInfo.label}
+                </p>
+                <p className="text-xs text-gray-600 mb-2">
+                  Precio base tope por persona
+                </p>
+                <p className="text-lg font-bold text-gray-900">
+                  {selectedTravelTypeInfo.price}
+                </p>
+                {selectedTravelTypeInfo.rating && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    Favorito entre viajeros ★
+                    {selectedTravelTypeInfo.rating.toFixed(1)}
+                    {selectedTravelTypeInfo.reviews &&
+                      ` (${selectedTravelTypeInfo.reviews})`}
+                  </p>
+                )}
               </div>
-            )}
-            <div className="flex-1 min-w-0">
+            </div>
+            <button
+              className="text-sm text-[#4F96B6] hover:underline flex-shrink-0"
+              onClick={() => onEdit?.('travel-type')}
+              type="button"
+            >
+              Cambiar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Experience Section */}
+      {selectedExperienceInfo && (
+        <div className="space-y-2 pb-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
               <p className="text-xs text-gray-500 uppercase mb-1">
-                Tipo de viaje | {selectedTravelType?.label || 'Viajo solo'}
+                Experiencia
               </p>
-              <p className="text-xs text-gray-600 mb-2">
-                Precio base tope por persona
+              <p className="text-sm font-semibold text-gray-900">
+                {selectedExperienceInfo.label}
               </p>
-              <p className="text-lg font-bold text-gray-900">
-                {selectedTravelType?.price || 'USD 780'}
-              </p>
-              {selectedTravelType?.rating && (
-                <p className="text-xs text-gray-600 mt-1">
-                  Favorito entre viajeros ★{selectedTravelType.rating.toFixed(1)}
-                  {selectedTravelType.reviews && ` (${selectedTravelType.reviews})`}
+              {selectedExperienceInfo.price && (
+                <p className="text-sm text-gray-600">
+                  {selectedExperienceInfo.price}
+                  {selectedExperienceInfo.nights &&
+                    ` | ${selectedExperienceInfo.nights}`}
                 </p>
               )}
             </div>
+            <button
+              className="text-sm text-[#4F96B6] hover:underline"
+              onClick={() => onEdit?.('experience')}
+              type="button"
+            >
+              Cambiar
+            </button>
           </div>
-          <button
-            className="text-sm text-[#4F96B6] hover:underline flex-shrink-0"
-            onClick={() => onEdit?.('travel-type')}
-            type="button"
-          >
-            Cambiar
-          </button>
         </div>
-      </div>
-
-      {/* Experience Section */}
-      <div className="space-y-2 pb-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-500 uppercase mb-1">Experiencia</p>
-            <p className="text-sm font-semibold text-gray-900">
-              {selectedExperience?.label || 'Modo Explora +'}
-            </p>
-            {selectedExperience?.price && (
-              <p className="text-sm text-gray-600">
-                {selectedExperience.price}
-                {selectedExperience.nights && ` | ${selectedExperience.nights}`}
-              </p>
-            )}
-          </div>
-          <button
-            className="text-sm text-[#4F96B6] hover:underline"
-            onClick={() => onEdit?.('experience')}
-            type="button"
-          >
-            Cambiar
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* Excuse Section */}
       {selectedExcuse && (
@@ -169,11 +216,13 @@ export default function JourneySummary({
       )}
 
       {/* Total Price */}
-      <div className="space-y-1">
-        <p className="text-sm font-bold text-gray-900">Total USD</p>
-        <p className="text-xs text-gray-500">Por persona</p>
-        <p className="text-xl font-bold text-gray-900">{totalPrice}</p>
-      </div>
+      {(selectedTravelTypeInfo || selectedExperienceInfo) && (
+        <div className="space-y-1">
+          <p className="text-sm font-bold text-gray-900">Total USD</p>
+          <p className="text-xs text-gray-500">Por persona</p>
+          <p className="text-xl font-bold text-gray-900">{totalPrice}</p>
+        </div>
+      )}
 
       {/* Bottom Banner */}
       <div className="bg-[#4F96B6] text-white p-4 rounded-lg text-center">

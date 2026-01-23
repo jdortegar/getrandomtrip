@@ -73,7 +73,9 @@ const CarouselRoot = React.forwardRef<
     const pluginsArray = React.useMemo(() => {
       const wheelPlugin = WheelGestures();
       if (!plugins) return [wheelPlugin];
-      return Array.isArray(plugins) ? [wheelPlugin, ...plugins] : [wheelPlugin, plugins];
+      return Array.isArray(plugins)
+        ? [wheelPlugin, ...plugins]
+        : [wheelPlugin, plugins];
     }, [plugins]);
 
     const [carouselRef, api] = useEmblaCarousel(
@@ -192,7 +194,7 @@ const CarouselContent = React.forwardRef<
   return (
     <div
       ref={carouselRef}
-      className={cn('overflow-hidden', viewportClassName)}
+      className={cn(viewportClassName)}
       style={viewportStyle}
       data-slot="carousel-content"
     >
@@ -356,7 +358,8 @@ type CarouselSimpleProps = {
   title?: string;
   className?: string;
   itemClassName?: string;
-  showNavigation?: boolean;
+  showArrows?: boolean;
+  showDots?: boolean;
   navigationClassName?: string;
   slidesToScroll?: number;
   opts?: CarouselOptions;
@@ -376,9 +379,10 @@ function Carousel({
   title,
   className,
   itemClassName,
-  showNavigation = true,
+  showArrows = true,
+  showDots = true,
   navigationClassName,
-  slidesToScroll = 2,
+  slidesToScroll = 1,
   opts = {
     align: 'start',
     loop: false,
@@ -502,7 +506,7 @@ function Carousel({
             )}
 
             {/* Navigation buttons at top right - outside slide container */}
-            {showNavigation && (
+            {showArrows && (
               <div
                 className={cn(
                   'flex items-center gap-2 flex-shrink-0',
@@ -547,7 +551,7 @@ function Carousel({
           </CarouselContent>
 
           {/* Dots navigation at bottom */}
-          {showNavigation && (
+          {showDots && (
             <div className="w-full flex justify-center mt-8">
               <CarouselDots
                 align={dotsAlign}

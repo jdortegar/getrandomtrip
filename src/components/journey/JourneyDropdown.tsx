@@ -59,7 +59,7 @@ export function JourneyDropdown({
       </AccordionPrimitive.Header>
 
       <AccordionPrimitive.Content className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-        <div className="py-10">{children}</div>
+        <div className="py-4">{children}</div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>
   );

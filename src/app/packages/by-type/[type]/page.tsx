@@ -63,7 +63,11 @@ export default function TravelerTypePage({
         content={typeData.content.story}
         id={`${typeData.meta.slug}-story`}
       />
-      <TypePlanner content={typeData.planner} type={typeData.meta.slug} />
+      <TypePlanner
+        content={typeData.planner}
+        type={typeData.meta.slug}
+        fullViewportWidth
+      />
       <Blog
         eyebrow="Lorem ipsum dolor sit amet"
         title={typeData.blog.title}

@@ -110,22 +110,7 @@ export default function JourneyPage() {
           </div>
 
           {/* Summary Sidebar */}
-          <JourneySummary
-            selectedDetails={['Aventura acuática', 'Senderismo y Trekking', 'Deportes extremos']}
-            selectedExcuse="Aventura y Desafío"
-            selectedExperience={{
-              label: 'Modo Explora +',
-              price: 'USD 180 por persona',
-              nights: '4 noches',
-            }}
-            selectedTravelType={{
-              label: 'Viajo solo',
-              price: 'USD 780',
-              rating: 7.0,
-              reviews: 10,
-            }}
-            totalPrice="780 USD"
-          />
+          <JourneySummary />
         </div>
       </div>
     </div>

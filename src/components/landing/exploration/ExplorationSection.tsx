@@ -36,7 +36,7 @@ export function ExplorationSection({ trippers = [] }: ExplorationSectionProps) {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'By Traveller':
-        return <TravelerTypesCarousel />;
+        return <TravelerTypesCarousel fullViewportWidth />;
       case 'Top Trippers':
         return <TopTrippersGrid trippers={trippers} />;
       case 'Roadtrips':

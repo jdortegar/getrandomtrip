@@ -6,31 +6,42 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface TravelerTypeCardProps {
-  title: string;
-  description: string;
-  imageUrl: string;
-  href?: string;
-  disabled?: boolean;
   className?: string;
+  description: string;
+  disabled?: boolean;
+  href?: string;
+  imageUrl: string;
+  onClick?: () => void;
+  selected?: boolean;
+  title: string;
 }
 
 const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
-  title,
-  description,
-  imageUrl,
-  href = '', // Provide a default empty string
-  disabled = false,
   className,
+  description,
+  disabled = false,
+  href,
+  imageUrl,
+  onClick,
+  selected = false,
+  title,
 }) => {
-  return (
-    <Link
-      className={cn(
-        'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full cursor-pointer',
-        className,
-        disabled ? 'cursor-not-allowed opacity-50' : '',
-      )}
-      href={href}
-    >
+  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    } else if (href === '#') {
+      e.preventDefault();
+    }
+  };
+
+  const cardContent = (
+    <>
       <Image
         alt={title}
         className="transition-transform duration-300 group-hover:scale-110"
@@ -62,6 +73,33 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
           {description}
         </p>
       </div>
+    </>
+  );
+
+  const baseClassName = cn(
+    'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full',
+    className,
+    disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+    selected && 'ring-4 ring-yellow-400',
+  );
+
+  // If onClick is provided, render as button; otherwise render as Link
+  if (onClick || !href) {
+    return (
+      <button
+        className={baseClassName}
+        disabled={disabled}
+        onClick={handleClick}
+        type="button"
+      >
+        {cardContent}
+      </button>
+    );
+  }
+
+  return (
+    <Link className={baseClassName} href={href} onClick={handleClick}>
+      {cardContent}
     </Link>
   );
 };

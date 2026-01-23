@@ -16,7 +16,7 @@ export type Currency = 'USD' | 'EUR' | 'MXN' | 'ARS' | 'COP' | 'CLP' | 'PEN';
 // ============================================================================
 
 export type UserRole = 'client' | 'tripper' | 'admin';
-export type TravelerType = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa';
+export type TravelerType = 'solo' | 'couple' | 'family' | 'group' | 'honeymoon' | 'paws';
 export type BudgetLevel = 'low' | 'mid' | 'high';
 
 export interface User {
