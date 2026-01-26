@@ -106,7 +106,10 @@ export default function JourneyPage() {
           {/* Main Content Area */}
           <div>
             {/* Dynamic Content */}
-            <JourneyMainContent activeTab={activeTab} />
+            <JourneyMainContent
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+            />
           </div>
 
           {/* Summary Sidebar */}

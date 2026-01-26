@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft, Check, User } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 interface Tab {
@@ -28,6 +29,27 @@ export default function JourneyContentNavigation({
   tabs,
   user,
 }: JourneyContentNavigationProps) {
+  const searchParams = useSearchParams();
+
+  const isTabComplete = (tabId: string): boolean => {
+    const travelType = searchParams.get('travelType');
+    const experience = searchParams.get('experience');
+    const excuse = searchParams.get('excuse');
+
+    switch (tabId) {
+      case 'budget':
+        return !!(travelType && experience);
+      case 'excuse':
+        return !!(travelType && experience && excuse);
+      case 'details':
+      case 'preferences':
+        // These tabs are not yet implemented, so they should not show as complete
+        return false;
+      default:
+        return false;
+    }
+  };
+
   return (
     <nav
       className={cn('w-full bg-white border-b border-gray-200 py-4', className)}
@@ -83,22 +105,29 @@ export default function JourneyContentNavigation({
             {tabs.map((tab, index) => {
               const isActive = tab.id === activeTab;
               const stepNumber = index + 1;
+              const isCompleted = isTabComplete(tab.id);
 
               return (
                 <div key={tab.id} className="flex items-center gap-1">
-                  {/* Numbered Circle */}
+                  {/* Numbered Circle or Check Icon */}
                   <button
                     className={cn(
                       'flex h-6 w-6 items-center justify-center rounded-full border transition-colors',
                       {
-                        'border-[#4F96B6] bg-[#4F96B6] text-white': isActive,
-                        'border-gray-300 bg-gray-100 text-gray-400': !isActive,
+                        'border-[#4F96B6] bg-[#4F96B6] text-white':
+                          isActive || isCompleted,
+                        'border-gray-300 bg-gray-100 text-gray-400':
+                          !isActive && !isCompleted,
                       },
                     )}
                     onClick={() => onTabChange(tab.id)}
                     type="button"
                   >
-                    <span className="text-sm font-medium">{stepNumber}</span>
+                    {isCompleted ? (
+                      <Check className="w-4 h-4" strokeWidth={3} />
+                    ) : (
+                      <span className="text-sm font-medium">{stepNumber}</span>
+                    )}
                   </button>
 
                   {/* Bullet Point */}

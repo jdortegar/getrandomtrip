@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 interface Substep {
@@ -26,27 +27,72 @@ export default function JourneyProgressSidebar({
   className,
   tabs,
 }: JourneyProgressSidebarProps) {
+  const searchParams = useSearchParams();
+
   const getActiveTabIndex = () => {
     return tabs.findIndex((tab) => tab.id === activeTab);
   };
 
   const activeIndex = getActiveTabIndex();
 
+  const isTabComplete = (tabId: string): boolean => {
+    const travelType = searchParams.get('travelType');
+    const experience = searchParams.get('experience');
+    const excuse = searchParams.get('excuse');
+
+    switch (tabId) {
+      case 'budget':
+        return !!(travelType && experience);
+      case 'excuse':
+        return !!(travelType && experience && excuse);
+      case 'details':
+      case 'preferences':
+        return false;
+      default:
+        return false;
+    }
+  };
+
+  const isSubstepComplete = (
+    tabId: string,
+    substepId: string,
+  ): boolean => {
+    const travelType = searchParams.get('travelType');
+    const experience = searchParams.get('experience');
+    const excuse = searchParams.get('excuse');
+    const refineDetails = searchParams.get('refineDetails');
+
+    if (tabId === 'budget') {
+      if (substepId === 'travel-type') {
+        return !!travelType;
+      }
+      if (substepId === 'experience') {
+        return !!experience;
+      }
+    }
+
+    if (tabId === 'excuse') {
+      if (substepId === 'reason') {
+        return !!excuse;
+      }
+      if (substepId === 'refine-details') {
+        return !!refineDetails;
+      }
+    }
+
+    return false;
+  };
+
   return (
     <aside
-      className={cn(
-        'w-full md:w-80 flex-shrink-0 bg-white p-6',
-        className,
-      )}
+      className={cn('w-full md:w-80 flex-shrink-0 bg-white p-6', className)}
     >
       <div className="relative pl-5">
-       
-
         {/* Steps */}
         <div className="space-y-8">
           {tabs.map((tab, tabIndex) => {
             const isActive = tab.id === activeTab;
-            const isCompleted = tabIndex < activeIndex;
+            const isCompleted = isTabComplete(tab.id);
             const isUpcoming = tabIndex > activeIndex;
             const stepNumber = tabIndex + 1;
             const hasSubsteps = tab.substeps.length > 0;
@@ -57,13 +103,10 @@ export default function JourneyProgressSidebar({
                 {/* Connecting line from main circle to next step */}
                 {tabIndex < tabs.length - 1 && (
                   <div
-                    className={cn(
-                      'absolute left-[20px] top-10 w-0.5',
-                      {
-                        'bg-[#4F96B6]': isActive || isCompleted,
-                        'bg-gray-300': isUpcoming,
-                      },
-                    )}
+                    className={cn('absolute left-[20px] top-10 w-0.5', {
+                      'bg-[#4F96B6]': isActive || isCompleted,
+                      'bg-gray-300': !isActive && !isCompleted,
+                    })}
                     style={{
                       bottom: '-2rem',
                     }}
@@ -81,7 +124,7 @@ export default function JourneyProgressSidebar({
                           'bg-white border-2 border-[#4F96B6] text-[#4F96B6]':
                             isActive && !isCompleted,
                           'bg-white border-2 border-gray-300 text-gray-400':
-                            isUpcoming,
+                            !isActive && !isCompleted,
                         },
                       )}
                     >
@@ -97,11 +140,12 @@ export default function JourneyProgressSidebar({
                   <div className="flex-1 pt-1">
                     <h2
                       className={cn('text-lg font-bold mb-6', {
-                        'text-gray-900': isActive || isCompleted,
+                        'text-[#4F96B6]': isActive && !isCompleted,
+                        'text-gray-900': isCompleted,
                         'text-gray-400': isUpcoming,
                       })}
                     >
-                      {tabIndex === 0 ? tab.label : `${stepNumber} ${tab.label}`}
+                      {tab.label}
                     </h2>
 
                     {/* Substeps */}
@@ -110,9 +154,10 @@ export default function JourneyProgressSidebar({
                         {tab.substeps.map((substep, substepIndex) => {
                           const isSubstepActive =
                             isActive && substepIndex === 0;
-                          const isSubstepCompleted =
-                            isCompleted ||
-                            (isActive && substepIndex < tab.substeps.length);
+                          const isSubstepCompleted = isSubstepComplete(
+                            tab.id,
+                            substep.id,
+                          );
                           const isLastSubstep =
                             substepIndex === tab.substeps.length - 1;
 
@@ -123,30 +168,25 @@ export default function JourneyProgressSidebar({
                             >
                               {/* Horizontal line connecting to vertical timeline */}
                               <div
-                                className={cn(
-                                  'absolute top-[7px] h-0.5',
-                                  {
-                                    'bg-[#4F96B6]':
-                                      isSubstepActive || isSubstepCompleted,
-                                    'bg-gray-300':
-                                      !isSubstepActive && !isSubstepCompleted,
-                                  },
-                                )}
+                                className={cn('absolute top-[7px] h-0.5', {
+                                  'bg-[#4F96B6]':
+                                    isSubstepActive || isSubstepCompleted,
+                                  'bg-gray-300':
+                                    !isSubstepActive && !isSubstepCompleted,
+                                })}
                                 style={{ width: '40px', left: '-36px' }}
                               />
 
                               {/* Substep Bullet */}
                               <div className="relative z-10 flex-shrink-0 mt-1">
                                 <div
-                                  className={cn(
-                                    'w-2 h-2 rounded-full',
-                                    {
-                                      'bg-[#4F96B6]':
-                                        isSubstepActive || isSubstepCompleted,
-                                      'bg-white border border-gray-300':
-                                        !isSubstepActive && !isSubstepCompleted,
-                                    },
-                                  )}
+                                  className={cn('w-2 h-2 rounded-full', {
+                                    'bg-[#4F96B6]': isSubstepCompleted,
+                                    'bg-white border border-[#4F96B6]':
+                                      isSubstepActive && !isSubstepCompleted,
+                                    'bg-white border border-gray-300':
+                                      !isSubstepActive && !isSubstepCompleted,
+                                  })}
                                 />
                               </div>
 
