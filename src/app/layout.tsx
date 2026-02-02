@@ -15,6 +15,7 @@ import SessionProvider from '@/components/providers/SessionProvider';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/layout/Footer';
+import AppTracking from '@/components/tracking/AppTracking';
 import { Toaster } from '@/components/ui/toaster';
 
 const barlow = Barlow({
@@ -96,6 +97,7 @@ export default function RootLayout({
         <SessionProvider>
           {/* <SiteHeaderOffset /> */}
           {/* <HeaderGate /> */}
+          <AppTracking />
           <Navbar />
           {children}
           <Footer />
