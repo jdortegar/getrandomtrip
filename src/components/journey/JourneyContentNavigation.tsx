@@ -35,6 +35,11 @@ export default function JourneyContentNavigation({
     const travelType = searchParams.get('travelType');
     const experience = searchParams.get('experience');
     const excuse = searchParams.get('excuse');
+    const originCountry = searchParams.get('originCountry');
+    const originCity = searchParams.get('originCity');
+    const startDate = searchParams.get('startDate');
+    const nights = searchParams.get('nights');
+    const transport = searchParams.get('transport');
 
     switch (tabId) {
       case 'budget':
@@ -42,9 +47,9 @@ export default function JourneyContentNavigation({
       case 'excuse':
         return !!(travelType && experience && excuse);
       case 'details':
+        return !!(originCountry && originCity && startDate && nights);
       case 'preferences':
-        // These tabs are not yet implemented, so they should not show as complete
-        return false;
+        return !!transport;
       default:
         return false;
     }

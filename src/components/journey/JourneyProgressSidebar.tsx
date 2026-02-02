@@ -39,6 +39,11 @@ export default function JourneyProgressSidebar({
     const travelType = searchParams.get('travelType');
     const experience = searchParams.get('experience');
     const excuse = searchParams.get('excuse');
+    const originCountry = searchParams.get('originCountry');
+    const originCity = searchParams.get('originCity');
+    const startDate = searchParams.get('startDate');
+    const nights = searchParams.get('nights');
+    const transport = searchParams.get('transport');
 
     switch (tabId) {
       case 'budget':
@@ -46,8 +51,9 @@ export default function JourneyProgressSidebar({
       case 'excuse':
         return !!(travelType && experience && excuse);
       case 'details':
+        return !!(originCountry && originCity && startDate && nights);
       case 'preferences':
-        return false;
+        return !!transport;
       default:
         return false;
     }

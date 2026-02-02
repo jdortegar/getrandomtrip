@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Accordion } from '@/components/ui/accordion';
 import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
@@ -8,6 +8,8 @@ import { TravelerTypesCarousel } from '@/components/landing/exploration/Traveler
 import { ExcusesCarousel } from '@/components/journey/ExcusesCarousel';
 import { RefineDetailsCarousel } from '@/components/journey/RefineDetailsCarousel';
 import TypePlanner from '@/components/by-type/TypePlanner';
+import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
+import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
 import {
@@ -34,6 +36,15 @@ export default function JourneyMainContent({
   const updateQuery = useQuerySync();
   const [accordionValue, setAccordionValue] = useState<string>('');
 
+  // Auto-open first section when tab changes
+  useEffect(() => {
+    if (activeTab === 'details' && accordionValue !== 'origin' && accordionValue !== 'dates') {
+      setAccordionValue('origin');
+    } else if (activeTab === 'preferences' && accordionValue !== 'filters' && accordionValue !== 'addons') {
+      setAccordionValue('filters');
+    }
+  }, [activeTab, accordionValue]);
+
   const travelType = useMemo(() => {
     return searchParams.get('travelType') || undefined;
   }, [searchParams]);
@@ -52,10 +63,57 @@ export default function JourneyMainContent({
     return details.split(',').filter(Boolean);
   }, [searchParams]);
 
+  const originCountry = useMemo(() => {
+    return searchParams.get('originCountry') || '';
+  }, [searchParams]);
+
+  const originCity = useMemo(() => {
+    return searchParams.get('originCity') || '';
+  }, [searchParams]);
+
+  const startDate = useMemo(() => {
+    return searchParams.get('startDate') || undefined;
+  }, [searchParams]);
+
+  const nights = useMemo(() => {
+    const raw = searchParams.get('nights');
+    const parsed = raw ? Number(raw) : NaN;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  }, [searchParams]);
+
+  const transport = useMemo(() => {
+    return searchParams.get('transport') || undefined;
+  }, [searchParams]);
+
+  const departPref = useMemo(() => {
+    return searchParams.get('departPref') || undefined;
+  }, [searchParams]);
+
+  const arrivePref = useMemo(() => {
+    return searchParams.get('arrivePref') || undefined;
+  }, [searchParams]);
+
+  const maxTravelTime = useMemo(() => {
+    return searchParams.get('maxTravelTime') || undefined;
+  }, [searchParams]);
+
+  const climate = useMemo(() => {
+    return searchParams.get('climate') || undefined;
+  }, [searchParams]);
+
+  const addons = useMemo(() => {
+    return searchParams.get('addons') || undefined;
+  }, [searchParams]);
+
   const travelerTypeData = useMemo(() => {
     if (!travelType) return null;
     return getTravelerType(travelType);
   }, [travelType]);
+
+  const selectedExperienceLevel = useMemo(() => {
+    if (!travelerTypeData || !experience) return null;
+    return travelerTypeData.planner.levels.find((l) => l.id === experience) || null;
+  }, [experience, travelerTypeData]);
 
   const excuses = useMemo(() => {
     if (!travelType) return [];
@@ -107,6 +165,56 @@ export default function JourneyMainContent({
     });
   };
 
+  const handleOriginCountryChange = (value: string) => {
+    updateQuery({
+      originCountry: value || undefined,
+      originCity: undefined,
+    });
+  };
+
+  const handleOriginCityChange = (value: string) => {
+    updateQuery({
+      originCity: value || undefined,
+    });
+    if (value) setAccordionValue('dates');
+  };
+
+  const handleStartDateChange = (value: string | undefined) => {
+    updateQuery({
+      startDate: value,
+    });
+  };
+
+  const handleNightsChange = (value: number) => {
+    updateQuery({
+      nights: String(value),
+    });
+  };
+
+  const handleTransportChange = (value: string) => {
+    updateQuery({ transport: value });
+  };
+
+  const handleDepartPrefChange = (value: string) => {
+    updateQuery({ departPref: value });
+  };
+
+  const handleArrivePrefChange = (value: string) => {
+    updateQuery({ arrivePref: value });
+  };
+
+  const handleMaxTravelTimeChange = (value: string) => {
+    updateQuery({ maxTravelTime: value });
+  };
+
+  const handleClimateChange = (value: string) => {
+    updateQuery({ climate: value });
+  };
+
+  const handleAddonsChange = (value: string | undefined) => {
+    updateQuery({ addons: value });
+  };
+
   const getTravelTypeLabel = () => {
     if (!travelType) return 'Elegí tu experiencia';
     return TRAVELER_TYPE_LABELS[travelType] || travelType;
@@ -139,10 +247,20 @@ export default function JourneyMainContent({
 
   const handleClearAll = () => {
     updateQuery({
+      addons: undefined,
+      arrivePref: undefined,
+      climate: undefined,
       travelType: undefined,
+      departPref: undefined,
       experience: undefined,
       excuse: undefined,
       refineDetails: undefined,
+      maxTravelTime: undefined,
+      nights: undefined,
+      originCity: undefined,
+      originCountry: undefined,
+      startDate: undefined,
+      transport: undefined,
     });
     setAccordionValue('');
     // Reset to first tab
@@ -163,6 +281,10 @@ export default function JourneyMainContent({
         return travelType && experience;
       case 'excuse':
         return travelType && experience && excuse;
+      case 'details':
+        return originCountry && originCity && startDate && nights;
+      case 'preferences':
+        return Boolean(transport);
       default:
         return true;
     }
@@ -172,11 +294,25 @@ export default function JourneyMainContent({
     const nextTab = getNextTab();
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
+      if (nextTab === 'details') setAccordionValue('origin');
+      if (nextTab === 'preferences') setAccordionValue('filters');
     }
   };
 
   const hasSelections =
-    travelType || experience || excuse || refineDetails.length > 0;
+    addons ||
+    arrivePref ||
+    climate ||
+    departPref ||
+    experience ||
+    excuse ||
+    maxTravelTime ||
+    originCity ||
+    originCountry ||
+    refineDetails.length > 0 ||
+    startDate ||
+    transport ||
+    travelType;
 
   const renderContent = () => {
     switch (activeTab) {
@@ -310,26 +446,67 @@ export default function JourneyMainContent({
           </div>
         );
       case 'details':
+        if (!travelType || !experience || !excuse) {
+          return (
+            <div className="py-12 text-center">
+              <p className="text-gray-500">
+                Primero completá Presupuesto y Excusa.
+              </p>
+            </div>
+          );
+        }
+
         return (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Detalles y planificación
-            </h2>
-            <p className="text-gray-600">Configura los detalles de tu viaje.</p>
-            {/* Placeholder for details components */}
-          </div>
+          <JourneyDetailsStep
+            experienceLevel={selectedExperienceLevel}
+            nights={nights}
+            onNavigateToAddons={() => {
+              if (onTabChange) onTabChange('preferences');
+              setAccordionValue('addons');
+            }}
+            onNavigateToFilters={() => {
+              if (onTabChange) onTabChange('preferences');
+              setAccordionValue('filters');
+            }}
+            onNightsChange={handleNightsChange}
+            onOpenSection={setAccordionValue}
+            onOriginCityChange={handleOriginCityChange}
+            onOriginCountryChange={handleOriginCountryChange}
+            onStartDateChange={handleStartDateChange}
+            openSectionId={accordionValue || 'origin'}
+            originCity={originCity}
+            originCountry={originCountry}
+            startDate={startDate}
+          />
         );
       case 'preferences':
+        if (!originCountry || !originCity || !startDate) {
+          return (
+            <div className="py-12 text-center">
+              <p className="text-gray-500">
+                Primero completá Origen y Fechas en Detalles y planificación.
+              </p>
+            </div>
+          );
+        }
+
         return (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Preferencias y filtros
-            </h2>
-            <p className="text-gray-600">
-              Personaliza tus preferencias de viaje.
-            </p>
-            {/* Placeholder for preferences components */}
-          </div>
+          <JourneyPreferencesStep
+            addons={addons}
+            arrivePref={arrivePref}
+            climate={climate}
+            departPref={departPref}
+            maxTravelTime={maxTravelTime}
+            onAddonsChange={handleAddonsChange}
+            onArrivePrefChange={handleArrivePrefChange}
+            onClimateChange={handleClimateChange}
+            onDepartPrefChange={handleDepartPrefChange}
+            onMaxTravelTimeChange={handleMaxTravelTimeChange}
+            onOpenSection={setAccordionValue}
+            onTransportChange={handleTransportChange}
+            openSectionId={accordionValue || 'filters'}
+            transport={transport}
+          />
         );
       case 'extras':
         return (
