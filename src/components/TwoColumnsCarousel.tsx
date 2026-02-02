@@ -97,13 +97,14 @@ export default function TwoColumnsCarousel({
       <div className="relative flex-1 md:-mr-[40vw] md:min-w-2/3 md:pr-16">
         <Carousel
           className="pb-8 md:pb-10"
-          setApi={setEmblaApi}
+          itemClassName="w-72 flex-shrink-0 md:w-96 pr-8"
           opts={{
             align: 'start',
             slidesToScroll: 1,
           }}
-          showNavigation={false}
-          itemClassName="w-72 flex-shrink-0 md:w-96 pr-8"
+          setApi={setEmblaApi}
+          showArrows={false}
+          showDots={false}
         >
           {childrenArray.map((child, index) => (
             <div key={index}>{child}</div>

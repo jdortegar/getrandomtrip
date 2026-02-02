@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import './globals.css';
 import '@/styles/rt.css';
 import {
@@ -97,7 +98,9 @@ export default function RootLayout({
         <SessionProvider>
           {/* <SiteHeaderOffset /> */}
           {/* <HeaderGate /> */}
-          <AppTracking />
+          <Suspense fallback={null}>
+            <AppTracking />
+          </Suspense>
           <Navbar />
           {children}
           <Footer />
