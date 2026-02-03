@@ -26,8 +26,8 @@ export function getAllTestimonialsForTripper(tripper: Tripper): Testimonial[] {
   const tripperTestimonials: Testimonial[] = (tripper.testimonials || []).map(
     (t) => ({
       author: t.author,
+      country: tripper.location || 'Ciudad',
       quote: t.quote,
-      city: tripper.location || 'Ciudad', // Use tripper's location as default city
     }),
   );
 

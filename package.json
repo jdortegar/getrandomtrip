@@ -43,6 +43,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "country-flag-icons": "^1.6.12",
+    "country-to-iso": "^1.6.1",
     "cypress": "^14.5.3",
     "date-fns": "^4.1.0",
     "discord.js": "^14.23.2",

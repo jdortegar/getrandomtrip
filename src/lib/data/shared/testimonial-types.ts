@@ -1,7 +1,10 @@
 export interface Testimonial {
   author: string;
-  city: string;
+  avatarUrl?: string;
+  country: string;
+  countryCode?: string;
   quote: string;
+  reviewUrl?: string;
 }
 
 export interface TestimonialsData {

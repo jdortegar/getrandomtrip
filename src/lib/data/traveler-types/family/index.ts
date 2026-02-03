@@ -363,37 +363,37 @@ export const family: TravelerTypeData = {
         quote:
           'Todos disfrutaron, desde el más chico hasta los abuelos. Muy bien balanceado.',
         author: 'Familia Gómez',
-        city: 'Rosario',
+        country: 'Argentina',
       },
       {
         quote:
           'Actividades para todas las edades. Se nota que pensaron en cada detalle.',
         author: 'Familia López',
-        city: 'Córdoba',
+        country: 'Argentina',
       },
       {
         quote:
           'Los chicos querían quedarse un día más. Hermosos recuerdos para todos.',
         author: 'Familia Fernández',
-        city: 'Buenos Aires',
+        country: 'Argentina',
       },
       {
         quote:
           'Flexibilidad sin perder estructura. Fue fácil movernos con los nenes.',
         author: 'Familia Martínez',
-        city: 'Mendoza',
+        country: 'Argentina',
       },
       {
         quote:
           'Un viaje del que todavía hablamos en las cenas. Vale cada peso.',
         author: 'Familia Silva',
-        city: 'Santiago',
+        country: 'Chile',
       },
       {
         quote:
           'Descubrimos lugares que no hubiéramos encontrado solos. Gran experiencia.',
         author: 'Familia Rodríguez',
-        city: 'Lima',
+        country: 'Peru',
       },
     ] as Testimonial[],
   },
