@@ -1,6 +1,10 @@
-export const BLOG_CONSTANTS = {
-  title: 'Explora las historias de nuestros Trippers',
+import type { BlogContent } from '@/lib/data/shared/blog-types';
+
+export const BLOG_CONSTANTS: BlogContent & {
+  SCROLL: { AMOUNT: number };
+} = {
   subtitle: 'Experiencias memorables para inspirar tu mente.',
+  title: 'Explora las historias de nuestros Trippers',
   posts: [
     {
       image: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
@@ -29,11 +33,9 @@ export const BLOG_CONSTANTS = {
     },
   ],
   viewAll: {
-    title: 'Más Historias',
-    subtitle: 'Descubre todas nuestras aventuras y experiencias únicas',
     href: '/blog',
+    subtitle: 'Descubre todas nuestras aventuras y experiencias únicas',
+    title: 'Más Historias',
   },
-  SCROLL: {
-    AMOUNT: 0.5,
-  },
+  SCROLL: { AMOUNT: 0.5 },
 };

@@ -107,7 +107,15 @@ const Section = ({
           )}
         </div>
       )}
-      <div className={cn('mx-auto', !fullWidth && 'container')}>{children}</div>
+      <motion.div
+        className={cn('mx-auto w-full', !fullWidth && 'container')}
+        initial={{ opacity: 0, y: 40 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+        viewport={{ once: true, margin: '-100px' }}
+        whileInView={{ opacity: 1, y: 0 }}
+      >
+        {children}
+      </motion.div>
     </section>
   );
 };
