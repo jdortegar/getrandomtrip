@@ -18,6 +18,7 @@ export type GTMEvents =
     }
   | { event: 'sign_up'; method: string }
   | { event: 'click_button'; label: string }
+  | { event: 'scroll_depth'; page_path: string; percent: number }
   | { event: 'set_user'; user_id: string }
   | { event: 'set_user_properties'; user_type: string };
 
@@ -53,6 +54,10 @@ export function trackSignUp(method: string): void {
 
 export function trackButtonClick(label: string): void {
   pushToDataLayer({ event: 'click_button', label });
+}
+
+export function trackScrollDepth(percent: number, page_path: string): void {
+  pushToDataLayer({ event: 'scroll_depth', page_path, percent });
 }
 
 export function setUser(user_id: string): void {

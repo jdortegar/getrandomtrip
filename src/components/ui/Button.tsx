@@ -1,7 +1,10 @@
+'use client';
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
+import { trackButtonClick } from '@/lib/helpers/tracking/gtm';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
@@ -42,22 +45,37 @@ const buttonVariants = cva(
   },
 );
 
+interface ButtonProps
+  extends React.ComponentProps<'button'>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  /** When set, sends a GTM click_button event with this label on click */
+  trackClick?: string;
+}
+
 function Button({
-  className,
-  variant = 'default',
-  size,
   asChild = false,
+  className,
+  size,
+  trackClick,
+  variant = 'default',
+  onClick,
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
+}: ButtonProps) {
   const Comp = asChild ? Slot : 'button';
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (trackClick) {
+      trackButtonClick(trackClick);
+    }
+    onClick?.(e);
+  };
 
   return (
     <Comp
+      className={cn(buttonVariants({ className, size, variant }))}
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
       {...props}
     />
   );
