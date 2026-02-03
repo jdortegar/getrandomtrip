@@ -24,26 +24,58 @@ import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 interface JourneyMainContentProps {
   activeTab: string;
   className?: string;
+  onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
+  openSectionId?: string;
 }
 
 export default function JourneyMainContent({
   activeTab,
   className,
+  onOpenSection,
   onTabChange,
+  openSectionId,
 }: JourneyMainContentProps) {
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
-  const [accordionValue, setAccordionValue] = useState<string>('');
+  const [internalAccordion, setInternalAccordion] = useState<string>('');
+  const isControlled =
+    openSectionId !== undefined && onOpenSection !== undefined;
+  const accordionValue = isControlled
+    ? (openSectionId ?? '')
+    : internalAccordion;
+  const setAccordionValue = isControlled
+    ? onOpenSection!
+    : setInternalAccordion;
 
   // Auto-open first section when tab changes
   useEffect(() => {
-    if (activeTab === 'details' && accordionValue !== 'origin' && accordionValue !== 'dates') {
+    if (
+      activeTab === 'budget' &&
+      accordionValue !== 'travel-type' &&
+      accordionValue !== 'experience'
+    ) {
+      setAccordionValue('travel-type');
+    } else if (
+      activeTab === 'excuse' &&
+      accordionValue !== 'excuse' &&
+      accordionValue !== 'refine-details'
+    ) {
+      setAccordionValue('excuse');
+    } else if (
+      activeTab === 'details' &&
+      accordionValue !== 'origin' &&
+      accordionValue !== 'dates'
+    ) {
       setAccordionValue('origin');
-    } else if (activeTab === 'preferences' && accordionValue !== 'filters' && accordionValue !== 'addons') {
+    } else if (
+      activeTab === 'preferences' &&
+      accordionValue !== 'filters' &&
+      accordionValue !== 'addons'
+    ) {
       setAccordionValue('filters');
     }
-  }, [activeTab, accordionValue]);
+  }, [activeTab, accordionValue, setAccordionValue]);
 
   const travelType = useMemo(() => {
     return searchParams.get('travelType') || undefined;
@@ -112,7 +144,9 @@ export default function JourneyMainContent({
 
   const selectedExperienceLevel = useMemo(() => {
     if (!travelerTypeData || !experience) return null;
-    return travelerTypeData.planner.levels.find((l) => l.id === experience) || null;
+    return (
+      travelerTypeData.planner.levels.find((l) => l.id === experience) || null
+    );
   }, [experience, travelerTypeData]);
 
   const excuses = useMemo(() => {
@@ -374,7 +408,7 @@ export default function JourneyMainContent({
         );
       case 'excuse':
         return (
-          <div>
+          <div className="min-w-0 w-full">
             <Accordion
               collapsible
               onValueChange={setAccordionValue}
@@ -436,7 +470,7 @@ export default function JourneyMainContent({
                         selectedOptions={refineDetails}
                         showArrows={false}
                         classes={{
-                          wrapper: 'w-full px-2',
+                          wrapper: 'w-full p-2',
                         }}
                       />
                     </div>

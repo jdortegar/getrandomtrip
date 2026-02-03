@@ -19,12 +19,14 @@ interface ContentTab {
 interface JourneyProgressSidebarProps {
   activeTab: string;
   className?: string;
+  onStepClick?: (tabId: string, substepId?: string) => void;
   tabs: ContentTab[];
 }
 
 export default function JourneyProgressSidebar({
   activeTab,
   className,
+  onStepClick,
   tabs,
 }: JourneyProgressSidebarProps) {
   const searchParams = useSearchParams();
@@ -59,10 +61,7 @@ export default function JourneyProgressSidebar({
     }
   };
 
-  const isSubstepComplete = (
-    tabId: string,
-    substepId: string,
-  ): boolean => {
+  const isSubstepComplete = (tabId: string, substepId: string): boolean => {
     const travelType = searchParams.get('travelType');
     const experience = searchParams.get('experience');
     const excuse = searchParams.get('excuse');
@@ -105,7 +104,19 @@ export default function JourneyProgressSidebar({
             const lastTabIndex = tabs.length - 1;
 
             return (
-              <div key={tab.id} className="relative">
+              <div
+                className="cursor-pointer relative"
+                key={tab.id}
+                onClick={() => onStepClick?.(tab.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onStepClick?.(tab.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
                 {/* Connecting line from main circle to next step */}
                 {tabIndex < tabs.length - 1 && (
                   <div
@@ -169,8 +180,21 @@ export default function JourneyProgressSidebar({
 
                           return (
                             <div
+                              className="cursor-pointer flex gap-3 items-start relative"
                               key={substep.id}
-                              className="relative flex items-start gap-3"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onStepClick?.(tab.id, substep.id);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  onStepClick?.(tab.id, substep.id);
+                                }
+                              }}
+                              role="button"
+                              tabIndex={0}
                             >
                               {/* Horizontal line connecting to vertical timeline */}
                               <div

@@ -66,11 +66,32 @@ const CONTENT_TABS: ContentTab[] = [
   },
 ];
 
+function getAccordionForStep(tabId: string, substepId?: string): string {
+  switch (tabId) {
+    case 'budget':
+      return substepId === 'experience' ? 'experience' : 'travel-type';
+    case 'excuse':
+      return substepId === 'refine-details' ? 'refine-details' : 'excuse';
+    case 'details':
+      return 'origin';
+    case 'preferences':
+      return 'filters';
+    default:
+      return '';
+  }
+}
+
 export default function JourneyPage() {
   const [activeTab, setActiveTab] = useState('budget');
+  const [openSectionId, setOpenSectionId] = useState('travel-type');
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
+  };
+
+  const handleStepClick = (tabId: string, substepId?: string) => {
+    setActiveTab(tabId);
+    setOpenSectionId(getAccordionForStep(tabId, substepId));
   };
 
   return (
@@ -109,16 +130,19 @@ export default function JourneyPage() {
             <div className="lg:sticky lg:top-8 lg:self-start">
               <JourneyProgressSidebar
                 activeTab={activeTab}
+                onStepClick={handleStepClick}
                 tabs={CONTENT_TABS}
               />
             </div>
 
-            {/* Main Content Area */}
-            <div>
+            {/* Main Content Area - min-w-0 so column doesn't grow when accordion content is wide */}
+            <div className="min-w-0">
               {/* Dynamic Content */}
               <JourneyMainContent
                 activeTab={activeTab}
+                onOpenSection={setOpenSectionId}
                 onTabChange={handleTabChange}
+                openSectionId={openSectionId}
               />
             </div>
 

@@ -27,7 +27,10 @@ export function JourneyDropdown({
 }: JourneyDropdownProps) {
   return (
     <AccordionPrimitive.Item
-      className={cn('bg-white rounded-lg p-6 shadow-md', className)}
+      className={cn(
+        'min-w-0 w-full bg-white rounded-lg p-6 shadow-md',
+        className,
+      )}
       value={value}
     >
       <AccordionPrimitive.Header className="flex">
@@ -58,8 +61,8 @@ export function JourneyDropdown({
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
 
-      <AccordionPrimitive.Content className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-        <div className="py-4">{children}</div>
+      <AccordionPrimitive.Content className="min-w-0 overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+        <div className="min-w-0 py-4">{children}</div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>
   );

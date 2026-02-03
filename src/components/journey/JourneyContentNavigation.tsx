@@ -148,7 +148,7 @@ export default function JourneyContentNavigation({
                   {/* Text Label */}
                   <button
                     className={cn(
-                      'text-sm font-medium transition-colors whitespace-nowrap',
+                      'text-sm font-medium transition-colors whitespace-nowrap cursor-pointer',
                       {
                         'text-gray-900': isActive,
                         'text-gray-500 hover:text-gray-700': !isActive,
