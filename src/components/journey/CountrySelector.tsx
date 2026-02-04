@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { searchCountries } from '@/lib/data/shared/countries';
+import { cn } from '@/lib/utils';
 
 interface Country {
   name: string;
@@ -81,30 +82,36 @@ export default function CountrySelector({
   };
 
   return (
-    <div className={`relative ${className}`} ref={ref}>
-      <Input
-        value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
-          setOpen(true);
-        }}
-        onFocus={() => setOpen(true)}
-        onKeyDown={onKeyDown}
-        type="text"
-        placeholder={placeholder}
-        autoComplete="off"
-        disabled={disabled}
-        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${
-          size === 'lg'
-            ? 'h-12 text-base'
-            : size === 'sm'
-              ? 'h-8 text-sm'
-              : 'h-10'
-        }`}
-      />
+    <div className="relative" ref={ref}>
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-600" />
+        <Input
+          autoComplete="off"
+          className={cn(
+            'border-gray-300 bg-white pl-11 ring-0 focus-visible:ring-0',
+            size === 'lg'
+              ? 'h-12 text-base'
+              : size === 'sm'
+                ? 'h-8 text-sm'
+                : 'h-10',
+            className,
+            open && 'rounded-b-none',
+          )}
+          disabled={disabled}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onKeyDown}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(true);
+          }}
+          placeholder={placeholder}
+          type="text"
+          value={value}
+        />
+      </div>
 
       {open && (
-        <div className="absolute z-50 w-full -mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto border-t-0 rounded-t-none">
+        <div className="absolute z-50 w-full -mt-px bg-white border border-gray-300 border-t-0 rounded-b-md shadow-lg max-h-60 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-2">
               <Loader2 className="animate-spin rounded-full h-4 w-4" />

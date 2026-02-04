@@ -1,67 +1,117 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LocateFixed, Search } from 'lucide-react';
+import { Accordion } from '@/components/ui/accordion';
 import CitySelector from '@/components/journey/CitySelector';
 import CountrySelector from '@/components/journey/CountrySelector';
 import { JourneyDatesPicker } from '@/components/journey/JourneyDatesPicker';
-import { JourneySectionCard } from '@/components/journey/JourneySectionCard';
-import { reverseGeocodeGoogle } from '@/lib/geocode';
+import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
+import { JourneyFiltersForm } from '@/components/journey/JourneyFiltersForm';
+import TransportSelector, {
+  TRANSPORT_OPTIONS,
+} from '@/components/journey/TransportSelector';
+import { getTravelerType } from '@/lib/data/traveler-types';
 import { getCountryByCode } from '@/lib/data/shared/countries';
-import { cn } from '@/lib/utils';
+import { reverseGeocodeGoogle } from '@/lib/geocode';
+import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 
-function getMaxNightsFromPlannerLevel(level: {
-  features?: Array<{ description?: string; title?: string }>;
-}) {
-  const duration = level.features?.find((f) => f.title === 'Duración');
-  const text = duration?.description || '';
-  const match = text.match(/(\d+)/);
-  const parsed = match ? Number(match[1]) : NaN;
-  return Number.isFinite(parsed) ? parsed : 2;
+const DEFAULT_MAX_NIGHTS = 2;
+
+const MONTH_NAMES_ES = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+
+function formatDatesRange(startDate: string, nights: number): string {
+  const [y, m, d] = startDate.split('-').map(Number);
+  const start = new Date(y, m - 1, d);
+  const end = new Date(start);
+  end.setDate(end.getDate() + nights);
+
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+  const startMonth = start.getMonth();
+  const endMonth = end.getMonth();
+
+  if (startMonth === endMonth) {
+    return `${MONTH_NAMES_ES[startMonth]}, del ${startDay} al ${endDay}`;
+  }
+  return `del ${startDay} de ${MONTH_NAMES_ES[startMonth]} al ${endDay} de ${MONTH_NAMES_ES[endMonth]}`;
 }
 
 interface JourneyDetailsStepProps {
-  experienceLevel?: {
-    features?: Array<{ description?: string; title?: string }>;
-    name: string;
-  } | null;
-  openSectionId: string;
+  arrivePref: string | undefined;
+  climate: string | undefined;
+  departPref: string | undefined;
+  experience?: string;
+  maxTravelTime: string | undefined;
+  nights: number;
+  onArrivePrefChange: (value: string) => void;
+  onClimateChange: (value: string) => void;
+  onDepartPrefChange: (value: string) => void;
+  onMaxTravelTimeChange: (value: string) => void;
   onNavigateToAddons: () => void;
-  onNavigateToFilters: () => void;
+  onNightsChange: (nights: number) => void;
   onOpenSection: (id: string) => void;
   onOriginCityChange: (value: string) => void;
   onOriginCountryChange: (value: string) => void;
+  onRangeChange?: (startDate: string | undefined, nights: number) => void;
   onStartDateChange: (startDate: string | undefined) => void;
-  onNightsChange: (nights: number) => void;
+  onTransportOrderChange: (orderedIds: string[]) => void;
+  openSectionId: string;
   originCity: string;
   originCountry: string;
   startDate: string | undefined;
-  nights: number;
+  transportOrder: string[];
+  travelType?: string;
 }
 
 export function JourneyDetailsStep({
-  experienceLevel,
+  arrivePref,
+  climate,
+  departPref,
+  experience,
+  maxTravelTime,
   nights,
+  onArrivePrefChange,
+  onClimateChange,
+  onDepartPrefChange,
+  onMaxTravelTimeChange,
   onNavigateToAddons,
-  onNavigateToFilters,
   onNightsChange,
   onOpenSection,
   onOriginCityChange,
   onOriginCountryChange,
+  onRangeChange,
   onStartDateChange,
+  onTransportOrderChange,
   openSectionId,
   originCity,
   originCountry,
   startDate,
+  transportOrder,
+  travelType,
 }: JourneyDetailsStepProps) {
   const [isLocating, setIsLocating] = useState(false);
-  const isOriginOpen = openSectionId === 'origin';
-  const isDatesOpen = openSectionId === 'dates';
 
   const maxNights = useMemo(() => {
-    if (!experienceLevel) return 2;
-    return getMaxNightsFromPlannerLevel(experienceLevel);
-  }, [experienceLevel]);
+    if (!travelType || !experience) return DEFAULT_MAX_NIGHTS;
+    const travelerTypeData = getTravelerType(travelType);
+    const level = travelerTypeData?.planner?.levels?.find(
+      (l) => l.id === experience,
+    );
+    return level?.maxNights ?? DEFAULT_MAX_NIGHTS;
+  }, [experience, travelType]);
 
   const handleLocateMe = async () => {
     if (!navigator.geolocation) return;
@@ -96,27 +146,58 @@ export function JourneyDetailsStep({
 
   const datesSummary =
     startDate && nights
-      ? `${startDate} · ${nights + 1} días`
+      ? formatDatesRange(startDate, nights)
       : 'Elegí cantidad de días y fecha de inicio';
 
+  const transportSummary =
+    transportOrder.length > 0
+      ? `${TRANSPORT_OPTIONS.find((o) => o.id === transportOrder[0])?.label ?? transportOrder[0]} *`
+      : 'Definí el orden de preferencia arrastrando';
+
+  const filtersSummary = useMemo(() => {
+    const parts: string[] = [];
+    if (departPref && departPref !== 'indistinto') {
+      const opt = FILTER_OPTIONS.departPref.options.find(
+        (o) => o.key === departPref,
+      );
+      if (opt) parts.push(`Salida: ${opt.label}`);
+    }
+    if (arrivePref && arrivePref !== 'indistinto') {
+      const opt = FILTER_OPTIONS.arrivePref.options.find(
+        (o) => o.key === arrivePref,
+      );
+      if (opt) parts.push(`Llegada: ${opt.label}`);
+    }
+    if (maxTravelTime && maxTravelTime !== 'sin-limite') {
+      const opt = FILTER_OPTIONS.maxTravelTime.options.find(
+        (o) => o.key === maxTravelTime,
+      );
+      if (opt) parts.push(`Tiempo de viaje: ${opt.label}`);
+    }
+    if (climate && climate !== 'indistinto') {
+      const opt = FILTER_OPTIONS.climate.options.find((o) => o.key === climate);
+      if (opt) parts.push(`Clima: ${opt.label}`);
+    }
+    return parts.length > 0
+      ? parts.join(', ')
+      : 'Horarios, clima, tiempo, destinos a evitar';
+  }, [arrivePref, climate, departPref, maxTravelTime]);
+
   return (
-    <div className="space-y-6">
-      <JourneySectionCard
-        actionLabel={isOriginOpen ? 'Cerrar' : 'Editar'}
-        description="Elegí dónde empieza tu aventura"
-        isOpen={isOriginOpen}
-        onActionClick={() => onOpenSection(isOriginOpen ? '' : 'origin')}
-        title="Origen"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              País de salida
-            </label>
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 z-10" />
+    <Accordion
+      collapsible
+      onValueChange={onOpenSection}
+      type="single"
+      value={openSectionId}
+    >
+      <div className="space-y-4">
+        <JourneyDropdown content={originSummary} label="Origen" value="origin">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div className="flex min-w-0 flex-col gap-2">
+              <label className="text-base font-bold text-gray-700">
+                País de salida
+              </label>
               <CountrySelector
-                className="pl-11 rounded-full"
                 onChange={(value) => {
                   onOriginCountryChange(value);
                   if (originCity) onOriginCityChange('');
@@ -126,76 +207,86 @@ export function JourneyDetailsStep({
                 value={originCountry}
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Ciudad de salida
-            </label>
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 z-10" />
+            <div className="flex min-w-0 flex-col gap-2">
+              <label className="text-base font-bold text-gray-700">
+                Ciudad de salida
+              </label>
               <CitySelector
-                className="pl-11 rounded-full"
                 countryValue={originCountry}
                 onChange={onOriginCityChange}
+                onOptionSelect={() => onOpenSection('dates')}
                 placeholder="Escribir ciudad de salida"
                 size="lg"
                 value={originCity}
               />
             </div>
           </div>
-        </div>
+        </JourneyDropdown>
 
-        <button
-          className={cn(
-            'mt-6 flex items-center gap-4 rounded-lg border border-gray-200 bg-gray-50 px-5 py-4 text-left',
-            'hover:bg-gray-100 transition-colors',
-          )}
-          disabled={isLocating}
-          onClick={handleLocateMe}
-          type="button"
+        <JourneyDropdown content={datesSummary} label="Fechas" value="dates">
+          <JourneyDatesPicker
+            maxNights={maxNights}
+            nights={nights}
+            onConfirm={() => onOpenSection('filters')}
+            onNightsChange={onNightsChange}
+            onRangeChange={onRangeChange}
+            onStartDateChange={onStartDateChange}
+            startDate={startDate}
+          />
+        </JourneyDropdown>
+        <JourneyDropdown
+          content={transportSummary}
+          label="Transporte: Orden de preferencia"
+          value="transport"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
-            <LocateFixed className="h-6 w-6 text-gray-700" />
-          </span>
-          <span className="flex flex-col">
-            <span className="text-base font-medium text-gray-900">
-              {isLocating ? 'Buscando…' : 'Localizarme'}
-            </span>
-            <span className="text-sm text-gray-500">Buscar mi locación</span>
-          </span>
-        </button>
-      </JourneySectionCard>
+          <TransportSelector
+            onChange={onTransportOrderChange}
+            value={transportOrder}
+          />
+        </JourneyDropdown>
 
-      <JourneySectionCard
-        actionLabel={isDatesOpen ? 'Cerrar' : 'Agregar fechas'}
-        description={datesSummary}
-        isOpen={isDatesOpen}
-        onActionClick={() => onOpenSection(isDatesOpen ? '' : 'dates')}
-        title="Fechas"
-      >
-        <JourneyDatesPicker
-          maxNights={maxNights}
-          nights={nights}
-          onNightsChange={onNightsChange}
-          onStartDateChange={onStartDateChange}
-          startDate={startDate}
-        />
-      </JourneySectionCard>
+        <JourneyDropdown
+          content={filtersSummary}
+          label="Filtros"
+          value="filters"
+        >
+          <JourneyFiltersForm
+            arrivePref={arrivePref}
+            climate={climate}
+            departPref={departPref}
+            experience={experience}
+            maxTravelTime={maxTravelTime}
+            onArrivePrefChange={onArrivePrefChange}
+            onClear={() => {
+              onArrivePrefChange('indistinto');
+              onClimateChange('indistinto');
+              onDepartPrefChange('indistinto');
+              onMaxTravelTimeChange('sin-limite');
+            }}
+            onClimateChange={onClimateChange}
+            onDepartPrefChange={onDepartPrefChange}
+            onMaxTravelTimeChange={onMaxTravelTimeChange}
+            onSave={() => onOpenSection('addons')}
+            originCity={originCity}
+            originCountry={originCountry}
+          />
+        </JourneyDropdown>
 
-      <JourneySectionCard
-        actionLabel="Filtrar"
-        description="Horarios preferidos, clima, destinos a evitar, tiempo máximo de viaje, tipo de transporte."
-        onActionClick={onNavigateToFilters}
-        title="Filtros"
-      />
-
-      <JourneySectionCard
-        actionLabel="Add-ons"
-        description="Elegí tus add-ons."
-        onActionClick={onNavigateToAddons}
-        title="Extras"
-      />
-    </div>
+        <JourneyDropdown
+          content="Elegí tus add-ons."
+          label="Extras"
+          value="addons"
+        >
+          <button
+            className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100"
+            onClick={onNavigateToAddons}
+            type="button"
+          >
+            Add-ons
+          </button>
+        </JourneyDropdown>
+      </div>
+    </Accordion>
   );
 }

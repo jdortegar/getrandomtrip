@@ -61,7 +61,7 @@ export function JourneyDropdown({
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
 
-      <AccordionPrimitive.Content className="min-w-0 overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+      <AccordionPrimitive.Content className="min-w-0 overflow-visible text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         <div className="min-w-0 py-4">{children}</div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { getCitiesByCountry } from '@/lib/data/shared/countries';
+import { cn } from '@/lib/utils';
 
 interface City {
   name: string;
@@ -11,23 +12,25 @@ interface City {
 }
 
 interface CitySelectorProps {
-  value: string;
-  onChange: (value: string) => void;
-  countryValue: string;
-  placeholder?: string;
   className?: string;
+  countryValue: string;
   disabled?: boolean;
+  onChange: (value: string) => void;
+  onOptionSelect?: () => void;
+  placeholder?: string;
   size?: 'sm' | 'md' | 'lg';
+  value: string;
 }
 
 export default function CitySelector({
-  value,
-  onChange,
-  countryValue,
-  placeholder = 'Ciudad de salida',
   className = '',
+  countryValue,
   disabled = false,
+  onChange,
+  onOptionSelect,
+  placeholder = 'Ciudad de salida',
   size = 'md',
+  value,
 }: CitySelectorProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,32 +100,41 @@ export default function CitySelector({
     }
     onChange(city.name);
     setOpen(false);
+    onOptionSelect?.();
   };
 
   return (
     <div className="relative" ref={ref}>
-      <Input
-        value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
-          setOpen(true);
-        }}
-        onFocus={() => setOpen(true)}
-        type="text"
-        placeholder={countryValue ? placeholder : 'Selecciona un país primero'}
-        disabled={disabled || !countryValue}
-        autoComplete="off"
-        className={`bg-white border-gray-300 ring-0 focus-visible:ring-0 ${
-          size === 'lg'
-            ? 'h-12 text-base'
-            : size === 'sm'
-              ? 'h-8 text-sm'
-              : 'h-10'
-        } ${className}`}
-      />
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-600" />
+        <Input
+          autoComplete="off"
+          className={cn(
+            'border-gray-300 bg-white pl-11 ring-0 focus-visible:ring-0',
+            size === 'lg'
+              ? 'h-12 text-base'
+              : size === 'sm'
+                ? 'h-8 text-sm'
+                : 'h-10',
+            className,
+            open && 'rounded-b-none',
+          )}
+          disabled={disabled || !countryValue}
+          onFocus={() => setOpen(true)}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(true);
+          }}
+          placeholder={
+            countryValue ? placeholder : 'Selecciona un país primero'
+          }
+          type="text"
+          value={value}
+        />
+      </div>
 
       {open && countryValue && (
-        <div className="absolute z-50 w-full -mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto border-t-0 rounded-t-none">
+        <div className="absolute z-50 w-full -mt-px border border-gray-300 border-t-0 rounded-b-md bg-white shadow-lg max-h-60 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-2">
               <Loader2 className="animate-spin rounded-full h-4 w-4" />

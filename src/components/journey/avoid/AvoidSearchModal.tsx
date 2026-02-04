@@ -74,32 +74,53 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative w-full max-w-xl bg-gray-100 p-4 rounded-md mx-auto mb-12 border border-gray-200 shadow-lg">
-        <h4 className="text-lg font-semibold">Agregar destinos a evitar</h4>
-        <p className="text-sm text-neutral-600 mb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={onClose}
+        aria-hidden
+      />
+      <div
+        className="relative w-full max-w-xl rounded-lg border border-gray-200 bg-white p-6 shadow-md"
+        role="dialog"
+        aria-labelledby="avoid-modal-title"
+        aria-modal="true"
+      >
+        <h2
+          className="text-base font-bold text-gray-900"
+          id="avoid-modal-title"
+        >
+          Agregar destinos a evitar
+        </h2>
+        <p className="mt-1 text-sm text-gray-500">
           Seleccionados: {current.length + local.length} / {max}
         </p>
 
-        <div className="flex flex-col md:flex-row items-center gap-4">
+        <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
           <CitySearchSelector
-            value={query}
+            className="min-w-0 flex-1"
+            onKeyDown={onKeyDown}
             onChange={setQuery}
             onSelect={handleCitySelect}
-            onKeyDown={onKeyDown}
-            className="flex-1"
+            value={query}
           />
           <Button
-            onClick={() => add(query)}
+            className="h-9 text-sm font-normal normal-case rounded-md"
             disabled={!query.trim() || current.length + local.length >= max}
+            onClick={() => add(query)}
+            size="sm"
+            type="button"
+            variant="default"
           >
             Agregar
           </Button>
         </div>
 
         {(current.length > 0 || local.length > 0) && (
-          <div className="mt-4">
+          <div className="mt-6 space-y-2">
+            <p className="text-sm font-semibold text-gray-900">
+              Destinos seleccionados
+            </p>
             <div className="flex flex-wrap gap-2">
               {current.map((n) => (
                 <Badge
@@ -107,8 +128,8 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
                   color="secondary"
                   item={{
                     key: `cur-${n}`,
-                    value: n,
                     label: 'Ciudad',
+                    value: n,
                   }}
                 />
               ))}
@@ -118,9 +139,9 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
                   color="primary"
                   item={{
                     key: `loc-${n}`,
-                    value: n,
                     label: 'Ciudad',
                     onRemove: () => removeLocal(n),
+                    value: n,
                   }}
                 />
               ))}
@@ -128,11 +149,21 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
           </div>
         )}
 
-        <div className="mt-5 flex justify-end gap-2">
-          <Button onClick={onClose} variant="secondary">
+        <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
+          <button
+            className="text-sm font-medium text-gray-900 underline hover:no-underline"
+            onClick={onClose}
+            type="button"
+          >
             Cancelar
-          </Button>
-          <Button onClick={save} variant="default">
+          </button>
+          <Button
+            className="text-sm font-normal normal-case"
+            onClick={save}
+            size="md"
+            type="button"
+            variant="default"
+          >
             Guardar destinos
           </Button>
         </div>

@@ -46,6 +46,7 @@ export const paws: TravelerTypeData = {
     levels: [
       {
         id: 'essenza',
+        maxNights: 2,
         name: 'Essenza',
         subtitle: 'La escapada express',
         price: 490,
@@ -80,6 +81,7 @@ export const paws: TravelerTypeData = {
       },
       {
         id: 'explora',
+        maxNights: 3,
         name: 'Modo Explora',
         subtitle: 'Viaje activo y Flexible',
         price: 770,
@@ -138,6 +140,7 @@ export const paws: TravelerTypeData = {
       },
       {
         id: 'exploraPlus',
+        maxNights: 4,
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
         price: 1190,
@@ -197,6 +200,7 @@ export const paws: TravelerTypeData = {
       },
       {
         id: 'bivouac',
+        maxNights: 5,
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
         price: 1680,
@@ -257,6 +261,7 @@ export const paws: TravelerTypeData = {
       },
       {
         id: 'atelier',
+        maxNights: 7,
         name: 'Atelier Getaway',
         subtitle: 'Tu Tripper Advisor personal',
         price: 1680,

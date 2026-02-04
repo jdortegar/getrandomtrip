@@ -30,6 +30,7 @@ export interface Excuse {
 
 export interface Level {
   id: string;
+  maxNights: number;
   name: string;
   subtitle: string;
   price: number;

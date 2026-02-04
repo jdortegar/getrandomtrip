@@ -44,6 +44,7 @@ export const honeymoon: TravelerTypeData = {
     levels: [
       {
         id: 'essenza',
+        maxNights: 2,
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
         price: 350,
@@ -86,6 +87,7 @@ export const honeymoon: TravelerTypeData = {
       },
       {
         id: 'explora',
+        maxNights: 4,
         name: 'Modo Explora',
         subtitle: 'Aventura sin límites',
         price: 650,
@@ -150,6 +152,7 @@ export const honeymoon: TravelerTypeData = {
       },
       {
         id: 'exploraPlus',
+        maxNights: 7,
         name: 'Explora+',
         subtitle: 'Experiencia premium',
         price: 1200,
@@ -215,6 +218,7 @@ export const honeymoon: TravelerTypeData = {
       },
       {
         id: 'bivouac',
+        maxNights: 5,
         name: 'Bivouac',
         subtitle: 'Aventura sin límites',
         price: 1200,
@@ -280,6 +284,7 @@ export const honeymoon: TravelerTypeData = {
       },
       {
         id: 'atelier',
+        maxNights: 7,
         name: 'Atelier Getaway',
         subtitle: 'Amor a medida',
         price: 1800,

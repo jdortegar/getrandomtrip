@@ -52,6 +52,7 @@ export const solo: TravelerTypeData = {
     levels: [
       {
         id: 'essenza',
+        maxNights: 2,
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
         price: 450,
@@ -80,6 +81,7 @@ export const solo: TravelerTypeData = {
       },
       {
         id: 'explora',
+        maxNights: 3,
         name: 'Modo Explora',
         subtitle: 'Activo y Flexible',
         price: 650,
@@ -185,6 +187,7 @@ export const solo: TravelerTypeData = {
       },
       {
         id: 'exploraPlus',
+        maxNights: 4,
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
         price: 1100,
@@ -326,6 +329,7 @@ export const solo: TravelerTypeData = {
       },
       {
         id: 'bivouac',
+        maxNights: 5,
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
         price: 1550,
@@ -361,6 +365,7 @@ export const solo: TravelerTypeData = {
       },
       {
         id: 'atelier',
+        maxNights: 7,
         name: 'Atelier Getaway',
         subtitle: 'Distinción, sin esfuerzo',
         price: 1550,

@@ -9,6 +9,9 @@ import { ExcusesCarousel } from '@/components/journey/ExcusesCarousel';
 import { RefineDetailsCarousel } from '@/components/journey/RefineDetailsCarousel';
 import TypePlanner from '@/components/by-type/TypePlanner';
 import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
+import {
+  DEFAULT_TRANSPORT_ORDER,
+} from '@/components/journey/TransportSelector';
 import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
@@ -64,8 +67,11 @@ export default function JourneyMainContent({
       setAccordionValue('excuse');
     } else if (
       activeTab === 'details' &&
+      accordionValue !== 'addons' &&
+      accordionValue !== 'dates' &&
+      accordionValue !== 'filters' &&
       accordionValue !== 'origin' &&
-      accordionValue !== 'dates'
+      accordionValue !== 'transport'
     ) {
       setAccordionValue('origin');
     } else if (
@@ -115,6 +121,13 @@ export default function JourneyMainContent({
 
   const transport = useMemo(() => {
     return searchParams.get('transport') || undefined;
+  }, [searchParams]);
+
+  const transportOrder = useMemo(() => {
+    const raw = searchParams.get('transportOrder');
+    if (!raw) return DEFAULT_TRANSPORT_ORDER;
+    const ids = raw.split(',').map((s) => s.trim()).filter(Boolean);
+    return ids.length === 4 ? ids : DEFAULT_TRANSPORT_ORDER;
   }, [searchParams]);
 
   const departPref = useMemo(() => {
@@ -210,7 +223,6 @@ export default function JourneyMainContent({
     updateQuery({
       originCity: value || undefined,
     });
-    if (value) setAccordionValue('dates');
   };
 
   const handleStartDateChange = (value: string | undefined) => {
@@ -225,8 +237,22 @@ export default function JourneyMainContent({
     });
   };
 
+  const handleRangeChange = (startDate: string | undefined, nights: number) => {
+    updateQuery({
+      nights: String(nights),
+      startDate: startDate ?? undefined,
+    });
+  };
+
   const handleTransportChange = (value: string) => {
     updateQuery({ transport: value });
+  };
+
+  const handleTransportOrderChange = (orderedIds: string[]) => {
+    updateQuery({
+      transport: orderedIds[0],
+      transportOrder: orderedIds.join(','),
+    });
   };
 
   const handleDepartPrefChange = (value: string) => {
@@ -284,17 +310,18 @@ export default function JourneyMainContent({
       addons: undefined,
       arrivePref: undefined,
       climate: undefined,
-      travelType: undefined,
       departPref: undefined,
       experience: undefined,
       excuse: undefined,
-      refineDetails: undefined,
       maxTravelTime: undefined,
       nights: undefined,
       originCity: undefined,
       originCountry: undefined,
+      refineDetails: undefined,
       startDate: undefined,
       transport: undefined,
+      transportOrder: undefined,
+      travelType: undefined,
     });
     setAccordionValue('');
     // Reset to first tab
@@ -492,25 +519,33 @@ export default function JourneyMainContent({
 
         return (
           <JourneyDetailsStep
-            experienceLevel={selectedExperienceLevel}
+            arrivePref={arrivePref}
+            climate={climate}
+            departPref={departPref}
+            experience={experience}
+            maxTravelTime={maxTravelTime}
             nights={nights}
+            onArrivePrefChange={handleArrivePrefChange}
+            onClimateChange={handleClimateChange}
+            onDepartPrefChange={handleDepartPrefChange}
+            onMaxTravelTimeChange={handleMaxTravelTimeChange}
             onNavigateToAddons={() => {
               if (onTabChange) onTabChange('preferences');
               setAccordionValue('addons');
-            }}
-            onNavigateToFilters={() => {
-              if (onTabChange) onTabChange('preferences');
-              setAccordionValue('filters');
             }}
             onNightsChange={handleNightsChange}
             onOpenSection={setAccordionValue}
             onOriginCityChange={handleOriginCityChange}
             onOriginCountryChange={handleOriginCountryChange}
+            onRangeChange={handleRangeChange}
             onStartDateChange={handleStartDateChange}
+            onTransportOrderChange={handleTransportOrderChange}
             openSectionId={accordionValue || 'origin'}
             originCity={originCity}
             originCountry={originCountry}
             startDate={startDate}
+            transportOrder={transportOrder}
+            travelType={travelType}
           />
         );
       case 'preferences':
