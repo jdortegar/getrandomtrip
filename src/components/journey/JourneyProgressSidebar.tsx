@@ -66,6 +66,13 @@ export default function JourneyProgressSidebar({
     const experience = searchParams.get('experience');
     const excuse = searchParams.get('excuse');
     const refineDetails = searchParams.get('refineDetails');
+    const originCountry = searchParams.get('originCountry');
+    const originCity = searchParams.get('originCity');
+    const startDate = searchParams.get('startDate');
+    const nights = searchParams.get('nights');
+    const transportOrder = searchParams.get('transportOrder');
+    const transport = searchParams.get('transport');
+    const addons = searchParams.get('addons');
 
     if (tabId === 'budget') {
       if (substepId === 'travel-type') {
@@ -82,6 +89,27 @@ export default function JourneyProgressSidebar({
       }
       if (substepId === 'refine-details') {
         return !!refineDetails;
+      }
+    }
+
+    if (tabId === 'details') {
+      if (substepId === 'origin') {
+        return !!(originCountry && originCity);
+      }
+      if (substepId === 'dates') {
+        return !!(startDate && nights);
+      }
+      if (substepId === 'transport') {
+        return !!transportOrder;
+      }
+    }
+
+    if (tabId === 'preferences') {
+      if (substepId === 'filters') {
+        return !!transport;
+      }
+      if (substepId === 'addons') {
+        return !!addons;
       }
     }
 
@@ -124,9 +152,18 @@ export default function JourneyProgressSidebar({
                       'bg-[#4F96B6]': isActive || isCompleted,
                       'bg-gray-300': !isActive && !isCompleted,
                     })}
-                    style={{
-                      bottom: '-2rem',
-                    }}
+                    style={{ bottom: '-2rem' }}
+                  />
+                )}
+
+                {/* Vertical line for last step: from circle down to last substep */}
+                {tabIndex === lastTabIndex && hasSubsteps && isActive && (
+                  <div
+                    className={cn('absolute left-[20px] top-10 w-0.5', {
+                      'bg-[#4F96B6]': isActive || isCompleted,
+                      'bg-gray-300': !isActive && !isCompleted,
+                    })}
+                    style={{ height: 'calc(100% - 4.75rem)' }}
                   />
                 )}
 
@@ -165,8 +202,8 @@ export default function JourneyProgressSidebar({
                       {tab.label}
                     </h2>
 
-                    {/* Substeps */}
-                    {hasSubsteps && (
+                    {/* Substeps (only when this step is active) */}
+                    {hasSubsteps && isActive && (
                       <div className="space-y-6 ml-0">
                         {tab.substeps.map((substep, substepIndex) => {
                           const isSubstepActive =

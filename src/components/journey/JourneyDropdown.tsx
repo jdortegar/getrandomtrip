@@ -36,7 +36,7 @@ export function JourneyDropdown({
       <AccordionPrimitive.Header className="flex">
         <AccordionPrimitive.Trigger
           className={cn(
-            'flex flex-1 items-center justify-between',
+            'flex flex-1 items-center justify-between cursor-pointer',
             'hover:text-gray-900',
             '[&[data-state=open]>div:first-child>span:first-child]:text-xl',
             '[&[data-state=closed]>div:first-child>span:first-child]:text-base',

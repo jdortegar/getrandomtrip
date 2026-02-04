@@ -57,12 +57,42 @@ const CONTENT_TABS: ContentTab[] = [
   {
     id: 'details',
     label: 'Detalles y planificación',
-    substeps: [],
+    substeps: [
+      {
+        id: 'origin',
+        title: 'ORIGEN',
+        description: 'Elegí país y ciudad de salida.',
+      },
+      {
+        id: 'dates',
+        title: 'FECHAS',
+        description:
+          'Elegí cantidad de días y la fecha de inicio. Fin de semana o flexible.',
+      },
+      {
+        id: 'transport',
+        title: 'TRANSPORTE',
+        description:
+          'Definí el orden de preferencia de medios de transporte arrastrando.',
+      },
+    ],
   },
   {
     id: 'preferences',
     label: 'Preferencias y filtros',
-    substeps: [],
+    substeps: [
+      {
+        id: 'filters',
+        title: 'FILTROS',
+        description:
+          'Horarios preferidos, clima, destinos a evitar, Tiempo máximo de viaje, Tipo de transporte.',
+      },
+      {
+        id: 'addons',
+        title: 'Extras',
+        description: 'Elegí tus add-ons.',
+      },
+    ],
   },
 ];
 
@@ -73,9 +103,11 @@ function getAccordionForStep(tabId: string, substepId?: string): string {
     case 'excuse':
       return substepId === 'refine-details' ? 'refine-details' : 'excuse';
     case 'details':
+      if (substepId === 'dates') return 'dates';
+      if (substepId === 'transport') return 'transport';
       return 'origin';
     case 'preferences':
-      return 'filters';
+      return substepId === 'addons' ? 'addons' : 'filters';
     default:
       return '';
   }

@@ -4,7 +4,7 @@ import { Bus, Plane, Ship, Train } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-const TRANSPORT_ICONS: Record<string, typeof Plane> = {
+export const TRANSPORT_ICONS: Record<string, typeof Plane> = {
   avion: Plane,
   barco: Ship,
   bus: Bus,

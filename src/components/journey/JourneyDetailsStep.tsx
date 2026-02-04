@@ -6,14 +6,12 @@ import CitySelector from '@/components/journey/CitySelector';
 import CountrySelector from '@/components/journey/CountrySelector';
 import { JourneyDatesPicker } from '@/components/journey/JourneyDatesPicker';
 import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
-import { JourneyFiltersForm } from '@/components/journey/JourneyFiltersForm';
 import TransportSelector, {
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import { getCountryByCode } from '@/lib/data/shared/countries';
 import { reverseGeocodeGoogle } from '@/lib/geocode';
-import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 
 const DEFAULT_MAX_NIGHTS = 2;
 
@@ -50,17 +48,8 @@ function formatDatesRange(startDate: string, nights: number): string {
 }
 
 interface JourneyDetailsStepProps {
-  arrivePref: string | undefined;
-  climate: string | undefined;
-  departPref: string | undefined;
   experience?: string;
-  maxTravelTime: string | undefined;
   nights: number;
-  onArrivePrefChange: (value: string) => void;
-  onClimateChange: (value: string) => void;
-  onDepartPrefChange: (value: string) => void;
-  onMaxTravelTimeChange: (value: string) => void;
-  onNavigateToAddons: () => void;
   onNightsChange: (nights: number) => void;
   onOpenSection: (id: string) => void;
   onOriginCityChange: (value: string) => void;
@@ -77,17 +66,8 @@ interface JourneyDetailsStepProps {
 }
 
 export function JourneyDetailsStep({
-  arrivePref,
-  climate,
-  departPref,
   experience,
-  maxTravelTime,
   nights,
-  onArrivePrefChange,
-  onClimateChange,
-  onDepartPrefChange,
-  onMaxTravelTimeChange,
-  onNavigateToAddons,
   onNightsChange,
   onOpenSection,
   onOriginCityChange,
@@ -154,35 +134,6 @@ export function JourneyDetailsStep({
       ? `${TRANSPORT_OPTIONS.find((o) => o.id === transportOrder[0])?.label ?? transportOrder[0]} *`
       : 'Definí el orden de preferencia arrastrando';
 
-  const filtersSummary = useMemo(() => {
-    const parts: string[] = [];
-    if (departPref && departPref !== 'indistinto') {
-      const opt = FILTER_OPTIONS.departPref.options.find(
-        (o) => o.key === departPref,
-      );
-      if (opt) parts.push(`Salida: ${opt.label}`);
-    }
-    if (arrivePref && arrivePref !== 'indistinto') {
-      const opt = FILTER_OPTIONS.arrivePref.options.find(
-        (o) => o.key === arrivePref,
-      );
-      if (opt) parts.push(`Llegada: ${opt.label}`);
-    }
-    if (maxTravelTime && maxTravelTime !== 'sin-limite') {
-      const opt = FILTER_OPTIONS.maxTravelTime.options.find(
-        (o) => o.key === maxTravelTime,
-      );
-      if (opt) parts.push(`Tiempo de viaje: ${opt.label}`);
-    }
-    if (climate && climate !== 'indistinto') {
-      const opt = FILTER_OPTIONS.climate.options.find((o) => o.key === climate);
-      if (opt) parts.push(`Clima: ${opt.label}`);
-    }
-    return parts.length > 0
-      ? parts.join(', ')
-      : 'Horarios, clima, tiempo, destinos a evitar';
-  }, [arrivePref, climate, departPref, maxTravelTime]);
-
   return (
     <Accordion
       collapsible
@@ -228,7 +179,7 @@ export function JourneyDetailsStep({
           <JourneyDatesPicker
             maxNights={maxNights}
             nights={nights}
-            onConfirm={() => onOpenSection('filters')}
+            onConfirm={() => onOpenSection('')}
             onNightsChange={onNightsChange}
             onRangeChange={onRangeChange}
             onStartDateChange={onStartDateChange}
@@ -244,47 +195,6 @@ export function JourneyDetailsStep({
             onChange={onTransportOrderChange}
             value={transportOrder}
           />
-        </JourneyDropdown>
-
-        <JourneyDropdown
-          content={filtersSummary}
-          label="Filtros"
-          value="filters"
-        >
-          <JourneyFiltersForm
-            arrivePref={arrivePref}
-            climate={climate}
-            departPref={departPref}
-            experience={experience}
-            maxTravelTime={maxTravelTime}
-            onArrivePrefChange={onArrivePrefChange}
-            onClear={() => {
-              onArrivePrefChange('indistinto');
-              onClimateChange('indistinto');
-              onDepartPrefChange('indistinto');
-              onMaxTravelTimeChange('sin-limite');
-            }}
-            onClimateChange={onClimateChange}
-            onDepartPrefChange={onDepartPrefChange}
-            onMaxTravelTimeChange={onMaxTravelTimeChange}
-            onSave={() => onOpenSection('addons')}
-            originCity={originCity}
-            originCountry={originCountry}
-          />
-        </JourneyDropdown>
-
-        <JourneyDropdown
-          content="Elegí tus add-ons."
-          label="Extras"
-          value="addons"
-        >
-          <button
-            className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100"
-            onClick={onNavigateToAddons}
-            type="button"
-          >
-            Add-ons
-          </button>
         </JourneyDropdown>
       </div>
     </Accordion>

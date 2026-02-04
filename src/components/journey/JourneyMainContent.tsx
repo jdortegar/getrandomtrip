@@ -9,9 +9,7 @@ import { ExcusesCarousel } from '@/components/journey/ExcusesCarousel';
 import { RefineDetailsCarousel } from '@/components/journey/RefineDetailsCarousel';
 import TypePlanner from '@/components/by-type/TypePlanner';
 import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
-import {
-  DEFAULT_TRANSPORT_ORDER,
-} from '@/components/journey/TransportSelector';
+import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
 import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
@@ -67,15 +65,14 @@ export default function JourneyMainContent({
       setAccordionValue('excuse');
     } else if (
       activeTab === 'details' &&
-      accordionValue !== 'addons' &&
       accordionValue !== 'dates' &&
-      accordionValue !== 'filters' &&
       accordionValue !== 'origin' &&
       accordionValue !== 'transport'
     ) {
       setAccordionValue('origin');
     } else if (
       activeTab === 'preferences' &&
+      accordionValue !== '' &&
       accordionValue !== 'filters' &&
       accordionValue !== 'addons'
     ) {
@@ -126,7 +123,10 @@ export default function JourneyMainContent({
   const transportOrder = useMemo(() => {
     const raw = searchParams.get('transportOrder');
     if (!raw) return DEFAULT_TRANSPORT_ORDER;
-    const ids = raw.split(',').map((s) => s.trim()).filter(Boolean);
+    const ids = raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     return ids.length === 4 ? ids : DEFAULT_TRANSPORT_ORDER;
   }, [searchParams]);
 
@@ -351,6 +351,17 @@ export default function JourneyMainContent({
     }
   };
 
+  const isAllStepsComplete = Boolean(
+    travelType &&
+      experience &&
+      excuse &&
+      originCountry &&
+      originCity &&
+      startDate &&
+      nights &&
+      transport,
+  );
+
   const handleContinue = () => {
     const nextTab = getNextTab();
     if (nextTab && onTabChange) {
@@ -519,20 +530,8 @@ export default function JourneyMainContent({
 
         return (
           <JourneyDetailsStep
-            arrivePref={arrivePref}
-            climate={climate}
-            departPref={departPref}
             experience={experience}
-            maxTravelTime={maxTravelTime}
             nights={nights}
-            onArrivePrefChange={handleArrivePrefChange}
-            onClimateChange={handleClimateChange}
-            onDepartPrefChange={handleDepartPrefChange}
-            onMaxTravelTimeChange={handleMaxTravelTimeChange}
-            onNavigateToAddons={() => {
-              if (onTabChange) onTabChange('preferences');
-              setAccordionValue('addons');
-            }}
             onNightsChange={handleNightsChange}
             onOpenSection={setAccordionValue}
             onOriginCityChange={handleOriginCityChange}
@@ -565,6 +564,7 @@ export default function JourneyMainContent({
             arrivePref={arrivePref}
             climate={climate}
             departPref={departPref}
+            experience={experience}
             maxTravelTime={maxTravelTime}
             onAddonsChange={handleAddonsChange}
             onArrivePrefChange={handleArrivePrefChange}
@@ -573,7 +573,9 @@ export default function JourneyMainContent({
             onMaxTravelTimeChange={handleMaxTravelTimeChange}
             onOpenSection={setAccordionValue}
             onTransportChange={handleTransportChange}
-            openSectionId={accordionValue || 'filters'}
+            openSectionId={accordionValue}
+            originCity={originCity}
+            originCountry={originCountry}
             transport={transport}
           />
         );
@@ -609,12 +611,23 @@ export default function JourneyMainContent({
 
         {canContinue && (
           <Button
-            variant="default"
+            className="text-sm font-normal normal-case"
             onClick={handleContinue}
             size="md"
-            className="text-sm font-normal normal-case"
+            variant="default"
           >
             Siguiente
+          </Button>
+        )}
+
+        {isAllStepsComplete && !canContinue && (
+          <Button
+            className="text-sm font-normal normal-case"
+            onClick={() => {}}
+            size="md"
+            variant="default"
+          >
+            Ver resumen
           </Button>
         )}
       </div>
