@@ -1,6 +1,7 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import JourneyContentNavigation from '@/components/journey/JourneyContentNavigation';
 import JourneyHero from '@/components/journey/JourneyHero';
 import JourneyMainContent from '@/components/journey/JourneyMainContent';
@@ -133,9 +134,38 @@ function getTabForSection(sectionId: string): string {
   }
 }
 
+function getInitialStepFromParams(params: URLSearchParams): {
+  sectionId: string;
+  tabId: string;
+} {
+  const travelType = params.get('travelType');
+  const experience = params.get('experience');
+  const excuse = params.get('excuse');
+  const originCountry = params.get('originCountry');
+  const originCity = params.get('originCity');
+  const startDate = params.get('startDate');
+  const nights = params.get('nights');
+  const transport = params.get('transport');
+
+  if (!travelType) return { tabId: 'budget', sectionId: 'travel-type' };
+  if (!experience) return { tabId: 'budget', sectionId: 'experience' };
+  if (!excuse) return { tabId: 'excuse', sectionId: 'excuse' };
+  if (!originCountry || !originCity) return { tabId: 'details', sectionId: 'origin' };
+  if (!startDate || !nights) return { tabId: 'details', sectionId: 'dates' };
+  if (!transport) return { tabId: 'details', sectionId: 'transport' };
+  return { tabId: 'preferences', sectionId: 'filters' };
+}
+
 export default function JourneyPage() {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('budget');
   const [openSectionId, setOpenSectionId] = useState('travel-type');
+
+  useEffect(() => {
+    const { tabId, sectionId } = getInitialStepFromParams(searchParams);
+    setActiveTab(tabId);
+    setOpenSectionId(sectionId);
+  }, [searchParams]);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);

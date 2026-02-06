@@ -55,10 +55,10 @@ export default function LevelCard({
   const textColor = isDark ? 'text-white' : 'text-gray-900';
   const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
   const borderColor = selected
-      ? 'border-[#172C36]'
-      : isDark
-        ? 'border-gray-700'
-        : 'border-transparent';
+    ? 'border-[#172C36]'
+    : isDark
+      ? 'border-gray-700'
+      : 'border-transparent';
   const dividerColor = isDark ? 'border-gray-700' : 'border-gray-200';
   const priceDividerColor = 'bg-yellow-400';
   const secondaryTextColor = isDark ? 'text-white' : 'text-gray-600';
@@ -92,7 +92,12 @@ export default function LevelCard({
       style={{ boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)' }}
     >
       {/* Featured Badge - Top Left */}
-      {featured && <Label text="Más elegido" className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"/>}
+      {featured && (
+        <Label
+          text="Más elegido"
+          className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+        />
+      )}
 
       {/* Selected Checkmark - Top Right */}
       {selected && (
@@ -127,11 +132,13 @@ export default function LevelCard({
         <div className="flex flex-col justify-start items-start font-barlow font-semibold text-lg text-left">
           <span className={cn('leading-none whitespace-nowrap', textColor)}>
             {level.priceLabel}
-            </span>
+          </span>
           <span className={cn('leading-none whitespace-nowrap', textColor)}>
             {` ${level.price} USD`}
           </span>
-          <span className={cn('leading-none whitespace-nowrap text-xs', textColor)}>
+          <span
+            className={cn('leading-none whitespace-nowrap text-xs', textColor)}
+          >
             {level.priceFootnote}
           </span>
         </div>
@@ -218,7 +225,7 @@ export default function LevelCard({
           <Link
             href={
               travelerType
-                ? `/journey?type=${travelerType}&experience=${level.id}`
+                ? `/journey?travelType=${travelerType}&experience=${level.id}`
                 : `/packages/by-type/${level.id}`
             }
             className="uppercase"
