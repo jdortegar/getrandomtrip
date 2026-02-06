@@ -18,6 +18,7 @@ import {
   getExcuseOptions,
 } from '@/lib/helpers/excuse-helper';
 import { useQuerySync } from '@/hooks/useQuerySync';
+import { useStore } from '@/store/store';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
@@ -39,6 +40,7 @@ export default function JourneyMainContent({
 }: JourneyMainContentProps) {
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
+  const { filters, setPartial } = useStore();
   const [internalAccordion, setInternalAccordion] = useState<string>('');
   const isControlled =
     openSectionId !== undefined && onOpenSection !== undefined;
@@ -269,6 +271,26 @@ export default function JourneyMainContent({
 
   const handleClimateChange = (value: string) => {
     updateQuery({ climate: value });
+  };
+
+  const handleClearFilters = () => {
+    updateQuery({
+      arrivePref: 'indistinto',
+      avoidDestinations: undefined,
+      climate: 'indistinto',
+      departPref: 'indistinto',
+      maxTravelTime: 'sin-limite',
+    });
+    setPartial({
+      filters: {
+        ...filters,
+        avoidDestinations: [],
+        arrivePref: 'indistinto',
+        climate: 'indistinto',
+        departPref: 'indistinto',
+        maxTravelTime: 'sin-limite',
+      },
+    });
   };
 
   const handleAddonsChange = (value: string | undefined) => {
@@ -568,11 +590,11 @@ export default function JourneyMainContent({
             maxTravelTime={maxTravelTime}
             onAddonsChange={handleAddonsChange}
             onArrivePrefChange={handleArrivePrefChange}
+            onClearFilters={handleClearFilters}
             onClimateChange={handleClimateChange}
             onDepartPrefChange={handleDepartPrefChange}
             onMaxTravelTimeChange={handleMaxTravelTimeChange}
             onOpenSection={setAccordionValue}
-            onTransportChange={handleTransportChange}
             openSectionId={accordionValue}
             originCity={originCity}
             originCountry={originCountry}

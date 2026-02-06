@@ -113,6 +113,26 @@ function getAccordionForStep(tabId: string, substepId?: string): string {
   }
 }
 
+function getTabForSection(sectionId: string): string {
+  switch (sectionId) {
+    case 'travel-type':
+    case 'experience':
+      return 'budget';
+    case 'excuse':
+    case 'refine-details':
+      return 'excuse';
+    case 'origin':
+    case 'dates':
+    case 'transport':
+      return 'details';
+    case 'filters':
+    case 'addons':
+      return 'preferences';
+    default:
+      return 'budget';
+  }
+}
+
 export default function JourneyPage() {
   const [activeTab, setActiveTab] = useState('budget');
   const [openSectionId, setOpenSectionId] = useState('travel-type');
@@ -124,6 +144,11 @@ export default function JourneyPage() {
   const handleStepClick = (tabId: string, substepId?: string) => {
     setActiveTab(tabId);
     setOpenSectionId(getAccordionForStep(tabId, substepId));
+  };
+
+  const handleSummaryEdit = (sectionId: string) => {
+    setActiveTab(getTabForSection(sectionId));
+    setOpenSectionId(sectionId);
   };
 
   return (
@@ -179,7 +204,7 @@ export default function JourneyPage() {
             </div>
 
             {/* Summary Sidebar */}
-            <JourneySummary />
+            <JourneySummary onEdit={handleSummaryEdit} />
           </div>
         </div>
       </div>

@@ -28,8 +28,12 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
   const current = filters.avoidDestinations || [];
   const max = 15;
 
-  const add = (cityFullName: string) => {
-    const name = cityFullName.trim();
+  /** Normalize to city name only so URL param (comma-separated list) does not break. */
+  const toCityOnly = (value: string) =>
+    value.trim().split(',')[0].trim() || value.trim();
+
+  const add = (input: string) => {
+    const name = toCityOnly(input);
     if (!name) return;
     const pool = [...current, ...local];
     const exists = pool.some((n) => n.toLowerCase() === name.toLowerCase());
@@ -43,8 +47,7 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
   };
 
   const handleCitySelect = (city: AvoidCity) => {
-    const cityFullName = `${city.name}, ${city.country}`;
-    add(cityFullName);
+    add(city.name);
   };
 
   const removeLocal = (name: string) => {
@@ -55,6 +58,7 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
 
   const save = () => {
     const merged = [...current, ...local]
+      .map(toCityOnly)
       .filter(Boolean)
       .filter(
         (v, i, a) =>

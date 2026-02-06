@@ -7,42 +7,6 @@ import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
 import { JourneyFiltersForm } from '@/components/journey/JourneyFiltersForm';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
-import { cn } from '@/lib/utils';
-
-interface Option {
-  key: string;
-  label: string;
-}
-
-function Seg({
-  onChange,
-  options,
-  value,
-}: {
-  onChange: (v: string) => void;
-  options: Option[];
-  value: string | undefined;
-}) {
-  return (
-    <div className="inline-flex flex-wrap gap-2">
-      {options.map((opt) => (
-        <button
-          className={cn(
-            'rounded-full border px-3 py-1.5 text-sm transition',
-            value === opt.key
-              ? 'border-gray-900 bg-gray-900 text-white'
-              : 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-200',
-          )}
-          key={opt.key}
-          onClick={() => onChange(opt.key)}
-          type="button"
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 interface JourneyPreferencesStepProps {
   addons: string | undefined;
@@ -53,11 +17,11 @@ interface JourneyPreferencesStepProps {
   maxTravelTime: string | undefined;
   onAddonsChange: (value: string | undefined) => void;
   onArrivePrefChange: (value: string) => void;
+  onClearFilters: () => void;
   onClimateChange: (value: string) => void;
   onDepartPrefChange: (value: string) => void;
   onMaxTravelTimeChange: (value: string) => void;
   onOpenSection: (id: string) => void;
-  onTransportChange: (value: string) => void;
   openSectionId: string;
   originCity: string;
   originCountry: string;
@@ -73,11 +37,11 @@ export function JourneyPreferencesStep({
   maxTravelTime,
   onAddonsChange,
   onArrivePrefChange,
+  onClearFilters,
   onClimateChange,
   onDepartPrefChange,
   onMaxTravelTimeChange,
   onOpenSection,
-  onTransportChange,
   openSectionId,
   originCity,
   originCountry,
@@ -145,17 +109,6 @@ export function JourneyPreferencesStep({
           value="filters"
         >
           <div className="space-y-10">
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-gray-900">
-                Transporte preferido (obligatorio)
-              </h3>
-              <Seg
-                onChange={onTransportChange}
-                options={FILTER_OPTIONS.transport.options}
-                value={transport}
-              />
-            </div>
-
             <JourneyFiltersForm
               arrivePref={arrivePref}
               climate={climate}
@@ -163,12 +116,7 @@ export function JourneyPreferencesStep({
               experience={experience}
               maxTravelTime={maxTravelTime}
               onArrivePrefChange={onArrivePrefChange}
-              onClear={() => {
-                onArrivePrefChange('indistinto');
-                onClimateChange('indistinto');
-                onDepartPrefChange('indistinto');
-                onMaxTravelTimeChange('sin-limite');
-              }}
+              onClear={onClearFilters}
               onClimateChange={onClimateChange}
               onDepartPrefChange={onDepartPrefChange}
               onMaxTravelTimeChange={onMaxTravelTimeChange}

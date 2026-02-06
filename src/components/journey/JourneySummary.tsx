@@ -280,8 +280,17 @@ export default function JourneySummary({
       .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
   }, [addonIds]);
 
+  const filterCost = useMemo(() => {
+    const n = activeFilters.length;
+    if (n <= 1) return 0;
+    if (n === 2) return 18;
+    if (n === 3) return 18 + 18;
+    return 18 + 18 + (n - 3) * 25;
+  }, [activeFilters.length]);
+
   const totalPrice = useMemo(() => {
     let base = selectedLevel?.price ?? 0;
+    base += filterCost;
     selectedAddons.forEach((addon) => {
       if (addon.priceType === 'currency') {
         base += addon.price;
@@ -290,7 +299,7 @@ export default function JourneySummary({
       }
     });
     return formatUSD(Math.round(base));
-  }, [selectedLevel, selectedAddons]);
+  }, [filterCost, selectedLevel, selectedAddons]);
 
   const hasAnySummary =
     selectedTravelTypeInfo ||
@@ -320,8 +329,8 @@ export default function JourneySummary({
       <h2 className="text-xl font-bold text-gray-900">Resumen del viaje</h2>
 
       {/* Tipo de viaje */}
-      {selectedTravelTypeInfo && (
-        <div className="flex items-stretch justify-between gap-3 border-b border-gray-200 pb-4">
+      <div className="flex items-stretch justify-between gap-3 border-b border-gray-200 pb-4">
+        {selectedTravelTypeInfo ? (
           <div className="flex min-w-0 flex-1 items-stretch gap-3">
             {selectedTravelTypeInfo.image && (
               <div className="w-20 flex-shrink-0 overflow-hidden rounded-lg">
@@ -357,225 +366,341 @@ export default function JourneySummary({
               </div>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+            <p className={cn('min-w-0 flex-1', sectionTitleClass)}>
+              Tipo de viaje
+            </p>
+            <button
+              className={cn(actionButtonClass, 'flex-shrink-0')}
+              onClick={() => onEdit?.('travel-type')}
+              type="button"
+            >
+              Agregar
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Experiencia */}
-      {selectedExperienceInfo && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Experiencia</p>
-          <div className="mt-2 flex items-center justify-between">
-            <div>
-              <p className={detailClass}>{selectedExperienceInfo.label}</p>
-              {selectedExperienceInfo.price && (
-                <p className="text-sm font-normal text-gray-500">
-                  {selectedExperienceInfo.price}
-                </p>
-              )}
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>Experiencia</p>
+        <div className="mt-2 flex items-center justify-between">
+          {selectedExperienceInfo ? (
+            <>
+              <div>
+                <p className={detailClass}>{selectedExperienceInfo.label}</p>
+                {selectedExperienceInfo.price && (
+                  <p className="text-sm font-normal text-gray-500">
+                    {selectedExperienceInfo.price}
+                  </p>
+                )}
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('experience')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full justify-end">
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('experience')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('experience')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Excusa */}
-      {excuseTitle && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Excusa</p>
-          <div className="mt-2 flex items-center justify-between">
-            <p className={detailClass}>{excuseTitle}</p>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('excuse')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>Excusa</p>
+        <div className="mt-2 flex items-center justify-between">
+          {excuseTitle ? (
+            <>
+              <p className={detailClass}>{excuseTitle}</p>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('excuse')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full justify-end">
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('excuse')}
+                type="button"
+              >
+                Agregar
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Afinar detalles */}
-      {refineDetailEntries.length > 0 && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Detalles</p>
-          <div className="mt-2 flex items-start justify-between gap-3">
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              {refineDetailEntries.map(({ key, label }) => (
-                <div
-                  className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
-                  key={key}
-                >
-                  <span>{label}</span>
-                  <button
-                    aria-label="Quitar"
-                    className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
-                    onClick={() => handleRemoveDetail(key)}
-                    type="button"
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>Detalles</p>
+        <div className="mt-2 flex items-start justify-between gap-3">
+          {refineDetailEntries.length > 0 ? (
+            <>
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                {refineDetailEntries.map(({ key, label }) => (
+                  <div
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                    key={key}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
+                    <span>{label}</span>
+                    <button
+                      aria-label="Quitar"
+                      className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                      onClick={() => handleRemoveDetail(key)}
+                      type="button"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('refine-details')}
+                type="button"
+              >
+                Editar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full items-center justify-between gap-3">
+              <p className={detailClass}>Sin detalles</p>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('refine-details')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('refine-details')}
-              type="button"
-            >
-              Editar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Origen */}
-      {originCity && originCountry && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Origen</p>
-          <div className="mt-2 flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <MapPin className="h-4 w-4 flex-shrink-0 text-gray-900" />
-              <p className={detailClass}>
-                {originCity}, {originCountry}.
-              </p>
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>Origen</p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          {originCity && originCountry ? (
+            <>
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <MapPin className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                <p className={detailClass}>
+                  {originCity}, {originCountry}.
+                </p>
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('origin')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full justify-end">
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('origin')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('origin')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Fechas */}
-      {startDate && nights > 0 && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Fechas</p>
-          <div className="mt-2 flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <Calendar className="h-4 w-4 flex-shrink-0 text-gray-900" />
-              <p className={detailClass}>
-                {formatDatesSummary(startDate, nights)}
-              </p>
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>Fechas</p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          {startDate && nights > 0 ? (
+            <>
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <Calendar className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                <p className={detailClass}>
+                  {formatDatesSummary(startDate, nights)}
+                </p>
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('dates')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full justify-end">
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('dates')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('dates')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Transporte * */}
-      {transportLabel && TransportIcon && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>
-            Transporte de preferencia
-          </p>
-          <div className="mt-2 flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <TransportIcon className="h-4 w-4 flex-shrink-0 text-gray-900" />
-              <p className={detailClass}>
-                {transportLabel}
-                <span className="font-normal text-gray-500">*</span>
-              </p>
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>
+          Transporte de preferencia
+        </p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          {transportLabel && TransportIcon ? (
+            <>
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <TransportIcon className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                <p className={detailClass}>
+                  {transportLabel}
+                  <span className="font-normal text-gray-500">*</span>
+                </p>
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('transport')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full justify-end">
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('transport')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('filters')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Filtros (opcionales) */}
-      {activeFilters.length > 0 && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Filtros</p>
-          <div className="mt-2 flex items-start justify-between gap-3">
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              {activeFilters.map(({ id, kind, label, value }) => (
-                <div
-                  className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
-                  key={id}
-                >
-                  <span>{label}</span>
-                  <button
-                    aria-label="Quitar filtro"
-                    className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
-                    onClick={() => handleRemoveFilter(kind, value)}
-                    type="button"
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>
+          Filtros {activeFilters.length > 0 ? `(${activeFilters.length})` : ''}
+        </p>
+        <div className="mt-2 flex items-start justify-between gap-3">
+          {activeFilters.length > 0 ? (
+            <>
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                {activeFilters.map(({ id, kind, label, value }) => (
+                  <div
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                    key={id}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
+                    <span>{label}</span>
+                    <button
+                      aria-label="Quitar filtro"
+                      className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                      onClick={() => handleRemoveFilter(kind, value)}
+                      type="button"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('filters')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full items-center justify-between gap-3">
+              <p className={detailClass}>Sin Filtros</p>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('filters')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('filters')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Extras (add-ons) */}
-      {selectedAddons.length > 0 && (
-        <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>Extras</p>
-          <div className="mt-2 flex items-start justify-between gap-3">
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              {selectedAddons.map((addon) => (
-                <div
-                  className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
-                  key={addon.id}
-                >
-                  <span>
-                    {addon.title}
-                    {addon.priceType === 'currency'
-                      ? ` — USD ${addon.price}`
-                      : ` — ${addon.price}%`}
-                  </span>
-                  <button
-                    aria-label="Quitar extra"
-                    className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
-                    onClick={() => handleRemoveAddon(addon.id)}
-                    type="button"
+      <div className="border-b border-gray-200 pb-4">
+        <p className={cn('w-full', sectionTitleClass)}>
+          Extras {selectedAddons.length > 0 ? `(${selectedAddons.length})` : ''}
+        </p>
+        <div className="mt-2 flex items-start justify-between gap-3">
+          {selectedAddons.length > 0 ? (
+            <>
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                {selectedAddons.map((addon) => (
+                  <div
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                    key={addon.id}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
+                    <span>
+                      {addon.title}
+                      {addon.priceType === 'currency'
+                        ? ` — USD ${addon.price}`
+                        : ` — ${addon.price}%`}
+                    </span>
+                    <button
+                      aria-label="Quitar extra"
+                      className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                      onClick={() => handleRemoveAddon(addon.id)}
+                      type="button"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('addons')}
+                type="button"
+              >
+                Cambiar
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full items-center justify-between gap-3">
+              <p className={detailClass}>Sin Extras</p>
+              <button
+                className={actionButtonClass}
+                onClick={() => onEdit?.('addons')}
+                type="button"
+              >
+                Agregar
+              </button>
             </div>
-            <button
-              className={actionButtonClass}
-              onClick={() => onEdit?.('addons')}
-              type="button"
-            >
-              Cambiar
-            </button>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Total USD */}
       {hasAnySummary && (

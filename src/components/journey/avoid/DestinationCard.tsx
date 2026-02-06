@@ -45,7 +45,7 @@ export default function DestinationCard({
 
     // Sincroniza URL para que el hero muestre los chips correctos
     // (si tu hook acepta arrays, podés pasar `next`; si no, usar join)
-    sync({ avoidDestinations: next.join(',') });
+    sync({ avoidDestinations: next.length ? next : undefined });
   };
 
   return (

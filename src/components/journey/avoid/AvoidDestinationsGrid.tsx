@@ -12,12 +12,8 @@ import AvoidSearchModal from './AvoidSearchModal';
 import { Button } from '@/components/ui/Button';
 
 function isCitySelected(selected: string[], cityName: string): boolean {
-  const cityLower = cityName.toLowerCase();
-  return selected.some(
-    (n) =>
-      n.toLowerCase() === cityLower ||
-      n.toLowerCase().startsWith(cityLower + ','),
-  );
+  const cityLower = cityName.toLowerCase().trim();
+  return selected.some((n) => n.toLowerCase().trim() === cityLower);
 }
 
 const MAX_SELECTION = 15;
@@ -102,19 +98,18 @@ export function AvoidDestinationsGrid({
   );
 
   const toggle = useCallback(
-    (city: string, country: string) => {
-      const full = `${city}, ${country}`;
-      const isSelected = isCitySelected(selected, city);
+    (city: string) => {
+      const cityNorm = city.trim();
+      if (!cityNorm) return;
+      const isSelected = isCitySelected(selected, cityNorm);
       let next: string[];
       if (isSelected) {
         next = selected.filter(
-          (n) =>
-            n.toLowerCase() !== city.toLowerCase() &&
-            !n.toLowerCase().startsWith(city.toLowerCase() + ','),
+          (n) => n.toLowerCase().trim() !== cityNorm.toLowerCase(),
         );
       } else {
         if (selected.length >= MAX_SELECTION) return;
-        next = [...selected.filter((n) => !isCitySelected([n], city)), full];
+        next = [...selected.filter((n) => !isCitySelected([n], cityNorm)), cityNorm];
       }
       setPartial({ filters: { ...filters, avoidDestinations: next } });
       sync({ avoidDestinations: next.length ? next : undefined });
@@ -141,7 +136,7 @@ export function AvoidDestinationsGrid({
                     isSelected ? 'ring-2 ring-primary' : 'border-gray-200',
                   )}
                   key={d.slug}
-                  onClick={() => toggle(d.city, d.country)}
+                  onClick={() => toggle(d.city)}
                   type="button"
                 >
                   <div className="aspect-square w-full">

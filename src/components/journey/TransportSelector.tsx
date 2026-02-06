@@ -35,9 +35,7 @@ function TransportSelector({ onChange, value }: TransportSelectorProps) {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const orderedOptions =
-    value.length === TRANSPORT_OPTIONS.length
-      ? value
-      : DEFAULT_TRANSPORT_ORDER;
+    value.length === TRANSPORT_OPTIONS.length ? value : DEFAULT_TRANSPORT_ORDER;
   const optionsById = Object.fromEntries(
     TRANSPORT_OPTIONS.map((o) => [o.id, o]),
   );
@@ -90,6 +88,7 @@ function TransportSelector({ onChange, value }: TransportSelectorProps) {
       <div className="flex flex-wrap items-center justify-center gap-4">
         {orderedOptions.map((id, index) => {
           const option = optionsById[id];
+          debugger;
           const Icon = TRANSPORT_ICONS[id];
           if (!option || !Icon) return null;
           const isFirst = index === 0;
