@@ -156,7 +156,7 @@ function getInitialStepFromParams(params: URLSearchParams): {
   return { tabId: 'preferences', sectionId: 'filters' };
 }
 
-export default function JourneyPage() {
+function JourneyPageContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('budget');
   const [openSectionId, setOpenSectionId] = useState('travel-type');
@@ -182,6 +182,50 @@ export default function JourneyPage() {
   };
 
   return (
+    <div className="min-h-screen bg-gray-50">
+      <JourneyHero
+        description="¿Con quién vas a escribir tu próxima historia?"
+        subtitle="PUNTO DE PARTIDA"
+        title="Empezá la aventura"
+      />
+
+      <JourneyContentNavigation
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        tabs={CONTENT_TABS.map((tab) => ({ id: tab.id, label: tab.label }))}
+        user={{
+          name: 'Nombre usuario',
+        }}
+      />
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr_320px]">
+          <div className="lg:sticky lg:top-8 lg:self-start">
+            <JourneyProgressSidebar
+              activeTab={activeTab}
+              onStepClick={handleStepClick}
+              tabs={CONTENT_TABS}
+            />
+          </div>
+
+          <div className="min-w-0">
+            <JourneyMainContent
+              activeTab={activeTab}
+              onOpenSection={setOpenSectionId}
+              onTabChange={handleTabChange}
+              openSectionId={openSectionId}
+            />
+          </div>
+
+          <JourneySummary onEdit={handleSummaryEdit} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function JourneyPage() {
+  return (
     <Suspense
       fallback={
         <div className="min-h-screen bg-gray-50 animate-pulse" aria-hidden>
@@ -192,52 +236,7 @@ export default function JourneyPage() {
         </div>
       }
     >
-      <div className="min-h-screen bg-gray-50">
-        {/* Hero Section */}
-        <JourneyHero
-          description="¿Con quién vas a escribir tu próxima historia?"
-          subtitle="PUNTO DE PARTIDA"
-          title="Empezá la aventura"
-        />
-
-        {/* Full Width Navigation Bar */}
-        <JourneyContentNavigation
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          tabs={CONTENT_TABS.map((tab) => ({ id: tab.id, label: tab.label }))}
-          user={{
-            name: 'Nombre usuario',
-          }}
-        />
-
-        {/* Main Content Layout */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr_320px]">
-            {/* Progress Sidebar */}
-            <div className="lg:sticky lg:top-8 lg:self-start">
-              <JourneyProgressSidebar
-                activeTab={activeTab}
-                onStepClick={handleStepClick}
-                tabs={CONTENT_TABS}
-              />
-            </div>
-
-            {/* Main Content Area - min-w-0 so column doesn't grow when accordion content is wide */}
-            <div className="min-w-0">
-              {/* Dynamic Content */}
-              <JourneyMainContent
-                activeTab={activeTab}
-                onOpenSection={setOpenSectionId}
-                onTabChange={handleTabChange}
-                openSectionId={openSectionId}
-              />
-            </div>
-
-            {/* Summary Sidebar */}
-            <JourneySummary onEdit={handleSummaryEdit} />
-          </div>
-        </div>
-      </div>
+      <JourneyPageContent />
     </Suspense>
   );
 }
