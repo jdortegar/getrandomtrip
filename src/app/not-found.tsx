@@ -1,33 +1,37 @@
 import Link from 'next/link';
-import { Home, Plane, MapPin, Users, Heart, HelpCircle } from 'lucide-react';
+import {
+  Heart,
+  HelpCircle,
+  Home,
+  MapPin,
+  Plane,
+  Users,
+} from 'lucide-react';
+
+export const metadata = {
+  description:
+    'La página que buscas no existe. Descubre increíbles destinos con RandomTrip.',
+  title: 'Página No Encontrada - RandomTrip',
+};
 
 export default function NotFoundPage() {
   return (
-    <html lang="es">
-      <head>
-        <title>Página No Encontrada - RandomTrip</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-          name="description"
-          content="La página que buscas no existe. Descubre increíbles destinos con RandomTrip."
+    <div className="relative font-sans min-h-screen bg-gray-50 text-gray-900 antialiased">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary/10 opacity-30 mix-blend-multiply filter blur-xl animate-pulse" />
+        <div
+          className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/5 opacity-30 mix-blend-multiply filter blur-xl animate-pulse"
+          style={{ animationDelay: '2s' }}
         />
-      </head>
-      <body className="font-sans bg-gray-50 text-gray-900 antialiased min-h-screen">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-          <div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
-            style={{ animationDelay: '2s' }}
-          ></div>
-          <div
-            className="absolute top-40 left-1/2 w-80 h-80 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"
-            style={{ animationDelay: '4s' }}
-          ></div>
-        </div>
+        <div
+          className="absolute left-1/2 top-40 h-80 w-80 rounded-full bg-primary/8 opacity-30 mix-blend-multiply filter blur-xl animate-pulse"
+          style={{ animationDelay: '4s' }}
+        />
+      </div>
 
-        <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
-          <div className="w-full max-w-4xl mx-auto">
+      <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
+        <div className="mx-auto w-full max-w-4xl">
             {/* Main Content Card */}
             <div className="bg-white rounded-3xl shadow-2xl border border-neutral-200 p-8 md:p-12 text-center">
               {/* 404 Number with Animation */}
@@ -164,10 +168,9 @@ export default function NotFoundPage() {
                   Contáctanos
                 </Link>
               </p>
-            </div>
           </div>
         </div>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

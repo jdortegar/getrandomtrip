@@ -2,13 +2,8 @@
 
 import type { Tripper } from '@/content/trippers';
 import type { TripperProfile } from '@/types/tripper';
+import CountryFlag from '@/components/common/CountryFlag';
 import SafeImage from '@/components/common/SafeImage';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Button } from '@/components/ui/Button';
 import { useMemo } from 'react';
 
@@ -17,176 +12,120 @@ interface TripperHeroProps {
   dbTripper?: TripperProfile | null;
 }
 
+function truncateTagline(bio: string | null | undefined, maxLength: number) {
+  if (!bio) return null;
+  if (bio.length <= maxLength) return bio;
+  return `${bio.slice(0, maxLength).trim()} ......`;
+}
+
+/** Derive country name/code from location string (e.g. "MÉXICO CITY, MÉXICO" → "MÉXICO") for flag. */
+function getCountryFromLocation(
+  location: string | null | undefined,
+): string | null {
+  if (!location?.trim()) return null;
+  const parts = location
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1]! : location;
+}
+
 export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
-  const videoId = 'xDEsbj4mDR0';
   const firstName = useMemo(
     () => t.name?.split(' ')[0] ?? t.name ?? '',
     [t.name],
   );
 
-  // Use database data when available, fallback to static data
   const tripperName = dbTripper?.name || t.name;
   const tripperAvatar = dbTripper?.avatarUrl || t.avatar;
   const tripperHeroImage =
     dbTripper?.heroImage || t.heroImage || dbTripper?.avatarUrl;
   const tripperBio = dbTripper?.bio || t.bio;
   const tripperLocation = dbTripper?.location || t.location;
-  const tripperTierLevel = dbTripper?.tierLevel || t.tierLevel;
-  const tripperInterests = dbTripper?.interests || t.interests || [];
-  const tripperDestinations = dbTripper?.destinations || t.destinations || [];
 
-  const hasLists = Boolean(
-    tripperInterests?.length || tripperDestinations?.length,
+  const tagline = useMemo(() => truncateTagline(tripperBio, 50), [tripperBio]);
+  const countryForFlag = useMemo(
+    () => getCountryFromLocation(tripperLocation),
+    [tripperLocation],
   );
+
+  const bannerAlt = useMemo(
+    () => [tripperName, tripperBio].filter(Boolean).join('. ') || 'Tripper banner',
+    [tripperName, tripperBio],
+  );
+  const bannerSrc = tripperHeroImage || tripperAvatar || undefined;
+  const avatarSrc = tripperAvatar || tripperHeroImage || undefined;
 
   return (
     <section
-      className="relative bg-slate-950 text-white pb-20"
+      className="relative bg-slate-950 pb-20 text-white"
       id="tripper-hero"
     >
-      {/* Hero sentinel for navbar detection */}
       <div
         id="hero-sentinel"
         aria-hidden
-        className="absolute top-0 left-0 h-px w-px"
+        className="absolute left-0 top-0 h-px w-px"
       />
-      <div className="mx-auto">
-        <div className="">
-          {/* Header Image */}
-          <div className="relative h-[40vh] w-full overflow-hidden z-0">
-            <SafeImage
-              alt={`Banner de ${tripperName}`}
-              className="object-cover"
-              fill
-              priority
-              sizes="100vw"
-              src={tripperHeroImage || tripperAvatar || null}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 to-slate-950/80"></div>
-          </div>
 
-          {/* Right Column - Content */}
-          <div className="relative flex flex-col gap-8 px-6 mt-[-100px] z-10 rt-container">
-            {/* Avatar */}
-            <div className="flex gap-6 items-end">
-              <div className="h-80 w-80 overflow-hidden rounded-sm bg-slate-800 ring-4 ring-white/70 shadow-2xl ">
-                <SafeImage
-                  alt={`Retrato de ${tripperName}`}
-                  className="object-cover"
-                  fill
-                  priority
-                  sizes="(max-width: 640px) 128px, 160px"
-                  src={tripperAvatar || tripperHeroImage || null}
-                />
-              </div>
+      {/* Full-bleed hero with background image (70vh cap) */}
+      <div className="relative h-[70vh] w-full overflow-hidden">
+        <SafeImage
+          alt={bannerAlt}
+          className="object-cover"
+          fill
+          priority
+          sizes="100vw"
+          src={bannerSrc}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 to-slate-950/80" />
 
-              {/* Name, Location & Tier */}
-              <div className="flex flex-col gap-6">
-                <div className="text-center lg:text-left">
-                  <h1 className="font-caveat text-5xl font-bold leading-tight sm:text-6xl">
-                    {tripperName}
-                  </h1>
-                  {tripperLocation && (
-                    <p className="mt-2 text-lg text-white/80">
-                      {tripperLocation}
-                    </p>
-                  )}
-                  {tripperTierLevel && (
-                    <div className="mt-3 flex flex-wrap gap-2 justify-center lg:justify-start">
-                      <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs uppercase tracking-wide text-white/80">
-                        Tier: {tripperTierLevel}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <Button asChild size="lg" variant="outline">
-                    <a
-                      aria-label={`Planear un Randomtrip con ${firstName}`}
-                      href="#planner"
-                    >
-                      Randomtrip ft. {firstName}
-                    </a>
-                  </Button>
-                  <Button asChild size="lg" variant="secondary">
-                    <a
-                      aria-label={`Ver las mejores historias de ${firstName}`}
-                      href="#tripper-blog"
-                    >
-                      Las mejores historias
-                    </a>
-                  </Button>
-                </div>
-              </div>
+        {/* Centered content block: avatar left, text right */}
+        <div className="absolute inset-0 flex items-center justify-center px-4">
+          <div className="rt-container flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-center lg:gap-12">
+            {/* Circular profile image with white border */}
+            <div className="relative h-40 w-40 flex-shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl md:h-52 md:w-52">
+              <SafeImage
+                alt={`Retrato de ${tripperName || 'tripper'}`}
+                className="object-cover"
+                fill
+                priority
+                sizes="(max-width: 768px) 160px, 208px"
+                src={avatarSrc}
+              />
             </div>
-            {/* Accordion */}
-            <Accordion
-              className="border-t border-white/10"
-              defaultValue="bio"
-              type="single"
-              collapsible
-            >
-              <AccordionItem className="border-white/10" value="bio">
-                <AccordionTrigger className="text-lg font-semibold text-white hover:text-white/80 hover:no-underline">
-                  Biografía
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4 text-base leading-relaxed text-white/90">
-                    {tripperBio ? (
-                      <p>{tripperBio}</p>
-                    ) : (
-                      <p className="text-white/60">
-                        Pronto conocerás más sobre {firstName}.
-                      </p>
-                    )}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
 
-              {hasLists && (
-                <>
-                  <AccordionItem className="border-white/10" value="expertise">
-                    <AccordionTrigger className="text-lg font-semibold text-white hover:text-white/80 hover:no-underline">
-                      Áreas de Expertise
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        {tripperInterests?.length ? (
-                          <div>
-                            <ul className="mt-3 space-y-2 text-sm text-white/80">
-                              {tripperInterests.map((interest) => (
-                                <li key={interest}>• {interest}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : null}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem
-                    className="border-white/10"
-                    value="paises-ciudades"
-                  >
-                    <AccordionTrigger className="text-lg font-semibold text-white hover:text-white/80 hover:no-underline">
-                      Países/Ciudades
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-4 text-base leading-relaxed text-white/90">
-                        {tripperDestinations?.length ? (
-                          <ul className="mt-3 space-y-2 text-sm text-white/80">
-                            {tripperDestinations.map((destination) => (
-                              <li key={destination}>• {destination}</li>
-                            ))}
-                          </ul>
-                        ) : null}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </>
+            {/* Location, name, tagline, CTA — Hero.tsx text styles */}
+            <div className="flex flex-col items-center text-center md:items-start md:text-left">
+              {tripperLocation && (
+                <div className="flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-amber-400 md:text-base leading-none">
+                  {countryForFlag && (
+                    <CountryFlag
+                      className="inline-block shrink-0 align-baseline"
+                      country={countryForFlag}
+                      title={tripperLocation}
+                    />
+                  )}
+                  <span>{tripperLocation}</span>
+                </div>
               )}
-            </Accordion>
+
+              <h1 className="mb-4 font-barlow-condensed font-extrabold leading-none text-7xl uppercase text-white sm:text-5xl md:text-7xl">
+                {tripperName}
+              </h1>
+              {tripperBio && (
+                <p className="mb-4 max-w-xl font-barlow text-base font-normal leading-relaxed text-white">
+                  {tripperBio}
+                </p>
+              )}
+              <Button asChild className="mt-2" size="lg" variant="white">
+                <a
+                  aria-label={`Planear un Randomtrip con ${firstName}`}
+                  href="#planner"
+                >
+                  RANDOMTRIP-ME!
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

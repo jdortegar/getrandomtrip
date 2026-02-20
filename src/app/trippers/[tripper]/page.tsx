@@ -7,27 +7,28 @@ import {
   getTripperPackagesByTypeAndLevel,
   getTripperPublishedBlogs,
 } from '@/lib/db/tripper-queries';
-import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
 import TripperHero from '@/components/tripper/TripperHero';
 import TripperPlanner from '@/components/tripper/TripperPlanner';
 import TripperInspirationGallery from '@/components/tripper/TripperInspirationGallery';
 import Blog from '@/components/Blog';
-import Section from '@/components/layout/Section';
-import dynamic from 'next/dynamic';
-const TripperVisitedMap = dynamic(
+import nextDynamic from 'next/dynamic';
+const TripperVisitedMap = nextDynamic(
   () => import('@/components/tripper/TripperVisitedMap'),
   {
-    ssr: false,
     loading: () => <div className="h-72 rounded-xl bg-gray-100" />,
+    ssr: false,
   },
 );
 import Testimonials from '@/components/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import HomeInfo from '@/components/HomeInfo';
-import { ExplorationSection } from '@/components/landing/exploration';
+import { TripperTravelerTypesSection } from '@/components/tripper/TripperTravelerTypesSection';
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from '@/components/tripper/TripperIntroVideoGate';
+
+// Always fetch fresh data so carousel shows only types that have packages
+export const dynamic = 'force-dynamic';
 
 export async function generateStaticParams() {
   // For now, we'll use the static TRIPPERS list
@@ -69,18 +70,14 @@ export default async function Page({
   const dbTripper = await getTripperBySlug(params.tripper);
   const featuredTrips = await getTripperFeaturedTrips(params.tripper, 3);
 
-  // Fetch tripper packages for filtering
-  const tripperPackages = dbTripper
-    ? await getTripperAvailableTypesAndLevels(dbTripper.id)
-    : [];
-
-  // Fetch tripper packages organized by type and level
-  const tripperPackagesByType = dbTripper
-    ? await getTripperPackagesByTypeAndLevel(dbTripper.id)
-    : {};
-
   // Must have database tripper data
   if (!dbTripper) return notFound();
+
+  const tripperPackagesByType = await getTripperPackagesByTypeAndLevel(
+    dbTripper.id,
+  );
+  // availableTypesFromPackages = distinct types from this tripper's packages (from getTripperBySlug)
+  const availableTypesFromPackages = dbTripper.availableTypes ?? [];
 
   // Fetch published blog posts for this tripper
   const publishedBlogs = await getTripperPublishedBlogs(dbTripper.id, 6);
@@ -113,11 +110,6 @@ export default async function Page({
       /> */}
       {/* Hero */}
       <TripperHero t={t} dbTripper={dbTripper} />
-      <HomeInfo />
-      {/* Featured Trips Gallery */}
-      {featuredTrips.length > 0 && (
-        <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
-      )}
 
       {/* Planner: with DB data */}
       {dbTripper && dbTripper.tripperSlug && (
@@ -128,11 +120,27 @@ export default async function Page({
             slug: dbTripper.tripperSlug,
             commission: dbTripper.commission || 0,
             availableTypes: dbTripper.availableTypes as string[],
+            destinations: dbTripper.destinations?.length
+              ? dbTripper.destinations
+              : undefined,
+            interests: dbTripper.interests?.length
+              ? dbTripper.interests
+              : undefined,
           }}
-          tripperPackages={tripperPackages}
           tripperPackagesByType={tripperPackagesByType}
         />
       )}
+      {/* Featured Trips Gallery */}
+      {featuredTrips.length > 0 && (
+        <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
+      )}
+      <HomeInfo />
+      <TripperTravelerTypesSection
+        availableTypes={availableTypesFromPackages}
+        tripperName={dbTripper.name}
+        tripperSlug={dbTripper.tripperSlug}
+      />
+
       {/* Blog / inspiración */}
       {t.posts && t.posts.length > 0 && (
         <Blog

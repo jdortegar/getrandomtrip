@@ -10,6 +10,8 @@ export { default as getUnicodeFlagIcon } from 'country-flag-icons/unicode';
 /** Overrides for names not in country-to-iso (e.g. Spanish). Prefer storing countryCode in data when possible. */
 const COUNTRY_NAME_OVERRIDES: Record<string, string> = {
   españa: 'ES',
+  méxico: 'MX',
+  mexico: 'MX',
   perú: 'PE',
 };
 

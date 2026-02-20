@@ -548,6 +548,183 @@ async function seedTrippersAndPackages() {
         isActive: true,
         isFeatured: true,
       },
+      // David Ortega packages (solo, couple, family, group)
+      {
+        ownerId: createdTrippers[3].id,
+        type: 'solo',
+        level: 'essenza',
+        minNights: 2,
+        maxNights: 5,
+        minPax: 1,
+        maxPax: 1,
+        title: 'Aventura Solo con David',
+        teaser: 'Experiencias auténticas para viajeros independientes',
+        description:
+          'Rutas diseñadas para quienes buscan aventura y autenticidad en destinos de América Latina y Europa.',
+        heroImage: '/images/urban-adventure.jpg',
+        tags: ['solo', 'adventure', 'culture'],
+        highlights: [
+          '2-5 noches',
+          'Destinos auténticos',
+          'Experiencias locales',
+        ],
+        destinationCountry: 'México',
+        destinationCity: 'Ciudad de México',
+        excuseKey: 'solo-adventure',
+        hotels: [
+          {
+            name: 'Hotel Céntrico',
+            rating: 4.5,
+            amenities: ['WiFi', 'Breakfast'],
+          },
+        ],
+        activities: [
+          { name: 'Tour cultural', duration: '4 horas', type: 'cultural' },
+        ],
+        itinerary: { day1: 'Llegada', day2: 'Exploración', day3: 'Salida' },
+        inclusions: ['Hotel', 'Desayuno', 'Tour'],
+        exclusions: ['Vuelos', 'Almuerzos'],
+        basePriceUsd: 420,
+        displayPrice: 'USD 420',
+        isActive: true,
+        isFeatured: true,
+      },
+      {
+        ownerId: createdTrippers[3].id,
+        type: 'couple',
+        level: 'exploraPlus',
+        minNights: 3,
+        maxNights: 6,
+        minPax: 2,
+        maxPax: 2,
+        title: 'Escapada en Pareja',
+        teaser: 'Experiencias románticas y memorables',
+        description:
+          'Viajes para parejas que buscan conexión y destinos con encanto.',
+        heroImage: '/images/romantic-getaway.jpg',
+        tags: ['couple', 'romantic', 'getaway'],
+        highlights: [
+          '3-6 noches',
+          'Hoteles con encanto',
+          'Experiencias en pareja',
+        ],
+        destinationCountry: 'España',
+        destinationCity: 'Barcelona',
+        excuseKey: 'romantic-getaway',
+        hotels: [
+          {
+            name: 'Boutique Hotel',
+            rating: 4.8,
+            amenities: ['Spa', 'Restaurant'],
+          },
+        ],
+        activities: [
+          { name: 'Cena con vistas', duration: '3 horas', type: 'romantic' },
+        ],
+        itinerary: {
+          day1: 'Check-in',
+          day2: 'Ciudad',
+          day3: 'Experiencia',
+          day4: 'Salida',
+        },
+        inclusions: ['Hotel', 'Desayuno', 'Una cena'],
+        exclusions: ['Vuelos'],
+        basePriceUsd: 980,
+        displayPrice: 'USD 980',
+        isActive: true,
+        isFeatured: true,
+      },
+      {
+        ownerId: createdTrippers[3].id,
+        type: 'family',
+        level: 'essenza',
+        minNights: 4,
+        maxNights: 7,
+        minPax: 3,
+        maxPax: 6,
+        title: 'Viaje en Familia',
+        teaser: 'Aventuras para todas las edades',
+        description:
+          'Planes familiares que combinan cultura, naturaleza y diversión.',
+        heroImage: '/images/family-adventure.jpg',
+        tags: ['family', 'kids', 'nature'],
+        highlights: [
+          '4-7 noches',
+          'Actividades para niños',
+          'Alojamiento familiar',
+        ],
+        destinationCountry: 'Argentina',
+        destinationCity: 'Buenos Aires',
+        excuseKey: 'family-getaway',
+        hotels: [
+          {
+            name: 'Family Resort',
+            rating: 4.2,
+            amenities: ['Pool', 'Kids club'],
+          },
+        ],
+        activities: [
+          { name: 'Día en familia', duration: '6 horas', type: 'family' },
+        ],
+        itinerary: {
+          day1: 'Llegada',
+          day2: 'Parque',
+          day3: 'Museo',
+          day4: 'Libre',
+          day5: 'Salida',
+        },
+        inclusions: ['Hotel', 'Desayunos', 'Actividades familiares'],
+        exclusions: ['Vuelos', 'Cenas'],
+        basePriceUsd: 1100,
+        displayPrice: 'USD 1,100',
+        isActive: true,
+        isFeatured: true,
+      },
+      {
+        ownerId: createdTrippers[3].id,
+        type: 'group',
+        level: 'modo-explora',
+        minNights: 3,
+        maxNights: 5,
+        minPax: 4,
+        maxPax: 10,
+        title: 'Aventura en Grupo',
+        teaser: 'Experiencias compartidas con amigos',
+        description:
+          'Viajes diseñados para grupos que buscan aventura y buen ritmo.',
+        heroImage: '/images/friends-group.jpg',
+        tags: ['group', 'friends', 'adventure'],
+        highlights: [
+          '3-5 noches',
+          'Alojamiento grupal',
+          'Actividades en equipo',
+        ],
+        destinationCountry: 'Colombia',
+        destinationCity: 'Cartagena',
+        excuseKey: 'group-adventure',
+        hotels: [
+          {
+            name: 'Hostal Grupo',
+            rating: 4.0,
+            amenities: ['Common areas', 'Tours'],
+          },
+        ],
+        activities: [
+          { name: 'Tour grupal', duration: '5 horas', type: 'adventure' },
+        ],
+        itinerary: {
+          day1: 'Llegada',
+          day2: 'Exploración',
+          day3: 'Playa',
+          day4: 'Salida',
+        },
+        inclusions: ['Alojamiento', 'Desayuno', 'Un tour'],
+        exclusions: ['Vuelos', 'Resto de comidas'],
+        basePriceUsd: 380,
+        displayPrice: 'USD 380',
+        isActive: true,
+        isFeatured: true,
+      },
     ];
 
     // Create packages
@@ -563,7 +740,7 @@ async function seedTrippersAndPackages() {
     // Create blog posts for Dawson (first tripper)
     console.log('\n📝 Creating blog posts for Dawson...');
     const dawson = createdTrippers[0];
-    
+
     const blogPosts = [
       {
         authorId: dawson.id,
@@ -600,7 +777,8 @@ async function seedTrippersAndPackages() {
         status: BlogStatus.PUBLISHED,
         seo: {
           title: 'Mi Primera Aventura en Buenos Aires - Blog de Dawson',
-          description: 'Descubre los secretos de Buenos Aires a través de la experiencia de un tripper experimentado',
+          description:
+            'Descubre los secretos de Buenos Aires a través de la experiencia de un tripper experimentado',
           keywords: ['buenos aires', 'viajes', 'aventura', 'patagonia'],
         },
         publishedAt: new Date('2024-01-15'),
@@ -635,7 +813,8 @@ async function seedTrippersAndPackages() {
         status: BlogStatus.PUBLISHED,
         seo: {
           title: 'Ruta del Café en Colombia - Guía de Viaje',
-          description: 'Descubre la ruta del café colombiano y las mejores fincas para visitar',
+          description:
+            'Descubre la ruta del café colombiano y las mejores fincas para visitar',
           keywords: ['colombia', 'cafe', 'gastronomia', 'turismo'],
         },
         publishedAt: new Date('2024-02-10'),
@@ -670,7 +849,8 @@ async function seedTrippersAndPackages() {
         status: BlogStatus.PUBLISHED,
         seo: {
           title: 'Fotografía Urbana: Guía Completa',
-          description: 'Aprende técnicas de fotografía urbana con consejos de un experto',
+          description:
+            'Aprende técnicas de fotografía urbana con consejos de un experto',
           keywords: ['fotografia', 'urbana', 'tecnica', 'viajes'],
         },
         publishedAt: new Date('2024-03-05'),
@@ -700,7 +880,8 @@ async function seedTrippersAndPackages() {
         status: BlogStatus.DRAFT,
         seo: {
           title: 'Guía de Mercados Locales para Viajeros',
-          description: 'Descubre los mejores mercados locales del mundo y cómo disfrutarlos',
+          description:
+            'Descubre los mejores mercados locales del mundo y cómo disfrutarlos',
           keywords: ['mercados', 'gastronomia', 'viajes', 'cultura'],
         },
       },
@@ -725,7 +906,8 @@ async function seedTrippersAndPackages() {
         status: BlogStatus.DRAFT,
         seo: {
           title: 'Guía de Vida Nocturna para Viajeros',
-          description: 'Descubre la mejor vida nocturna de las ciudades que visitas',
+          description:
+            'Descubre la mejor vida nocturna de las ciudades que visitas',
           keywords: ['vida nocturna', 'bares', 'cultura', 'viajes'],
         },
       },
@@ -735,9 +917,7 @@ async function seedTrippersAndPackages() {
       const blog = await prisma.blogPost.create({
         data: blogData,
       });
-      console.log(
-        `✅ Created blog post: ${blog.title} (${blog.status})`,
-      );
+      console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
 
     console.log('🎉 Successfully seeded trippers, packages, and blog posts!');
