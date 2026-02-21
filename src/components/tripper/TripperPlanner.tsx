@@ -5,6 +5,7 @@ import CountryFlag from '@/components/common/CountryFlag';
 
 import Section from '@/components/layout/Section';
 import { Button } from '@/components/ui/Button';
+import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from '@/components/tripper/TripperTravelerTypesSection';
 import {
   TRAVELLER_TYPE_OPTIONS,
   TRAVELLER_TYPE_MAP,
@@ -91,15 +92,20 @@ export default function TripperPlanner({
     return getTravelerType(mappedType);
   }, [travellerType]);
 
-  const scrollPlanner = () => {
-    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const scrollToTravelerTypes = () => {
+    document
+      .getElementById(TRIPPER_TRAVELER_TYPES_ANCHOR_ID)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const h = window.location.hash;
     if (h === '#planner' || h === '#start-your-journey-anchor') {
-      scrollPlanner();
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (h === `#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`) {
+      scrollToTravelerTypes();
     }
   }, []);
 
@@ -159,12 +165,12 @@ export default function TripperPlanner({
           </div>
 
           <Button
+            asChild
             className="mt-20"
-            onClick={scrollPlanner}
             size="lg"
             variant="pill"
           >
-            Get Randomtrip con {firstName}
+            <a href={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`}>Get Randomtrip con {firstName}</a>
           </Button>
         </div>
       </Section>

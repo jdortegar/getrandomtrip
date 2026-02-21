@@ -6,6 +6,7 @@ import CountryFlag from '@/components/common/CountryFlag';
 import SafeImage from '@/components/common/SafeImage';
 import { Button } from '@/components/ui/Button';
 import { useMemo } from 'react';
+import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from '@/components/tripper/TripperTravelerTypesSection';
 
 interface TripperHeroProps {
   t: Tripper;
@@ -120,7 +121,7 @@ export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
               <Button asChild className="mt-2" size="lg" variant="white">
                 <a
                   aria-label={`Planear un Randomtrip con ${firstName}`}
-                  href="#planner"
+                  href={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`}
                 >
                   RANDOMTRIP-ME!
                 </a>

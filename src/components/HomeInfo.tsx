@@ -32,7 +32,14 @@ const HOME_INFO_CONSTANTS = {
   SECTION_ARIA_LABEL: 'Información sobre Random Trip',
 };
 
-export default function HomeInfo() {
+const DEFAULT_CTA_SCROLL_TARGET = '#exploration-section';
+
+interface HomeInfoProps {
+  /** Anchor hash for the CTA button (e.g. #tripper-traveler-types on tripper pages). */
+  ctaScrollTarget?: string;
+}
+
+export default function HomeInfo({ ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET }: HomeInfoProps) {
   const [activeTab, setActiveTab] = useState<string>(
     HOME_INFO_CONSTANTS.TABS[0].id,
   );
@@ -90,7 +97,7 @@ export default function HomeInfo() {
         transition={{ duration: 0.6, delay: 1 }}
       >
         <Button asChild size="lg" variant="feature">
-          <Link href="#exploration-section" scroll={true}>
+          <Link href={ctaScrollTarget} scroll={true}>
             GETRANDOMTRIP!
           </Link>
         </Button>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { TRIPPERS } from '@/content/trippers';
+import type { BlogPost } from '@/lib/data/shared/blog-types';
 import {
   getTripperBySlug,
   getTripperFeaturedTrips,
@@ -22,10 +23,35 @@ const TripperVisitedMap = nextDynamic(
 import Testimonials from '@/components/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import HomeInfo from '@/components/HomeInfo';
-import { TripperTravelerTypesSection } from '@/components/tripper/TripperTravelerTypesSection';
+import {
+  TRIPPER_TRAVELER_TYPES_ANCHOR_ID,
+  TripperTravelerTypesSection,
+} from '@/components/tripper/TripperTravelerTypesSection';
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from '@/components/tripper/TripperIntroVideoGate';
+
+// Fallback blog posts when tripper has no published posts
+const MOCK_BLOG_POSTS: BlogPost[] = [
+  {
+    category: 'Viajes',
+    href: '/blog',
+    image: '/images/fallbacks/tripper-avatar.jpg',
+    title: 'Rutas secretas que no aparecen en las guías',
+  },
+  {
+    category: 'Inspiración',
+    href: '/blog',
+    image: '/images/fallbacks/tripper-avatar.jpg',
+    title: 'Cómo planear tu próxima aventura sin estrés',
+  },
+  {
+    category: 'Tips',
+    href: '/blog',
+    image: '/images/fallbacks/tripper-avatar.jpg',
+    title: 'Lo que aprendí viajando por Latinoamérica',
+  },
+];
 
 // Always fetch fresh data so carousel shows only types that have packages
 export const dynamic = 'force-dynamic';
@@ -82,14 +108,17 @@ export default async function Page({
   // Fetch published blog posts for this tripper
   const publishedBlogs = await getTripperPublishedBlogs(dbTripper.id, 6);
 
-  // Create tripper object from database data
+  // Create tripper object from database data; use mock posts when none published
+  const posts: BlogPost[] =
+    publishedBlogs.length > 0 ? publishedBlogs : MOCK_BLOG_POSTS;
+
   const t = {
     name: dbTripper.name,
     slug: dbTripper.tripperSlug || params.tripper,
     avatar: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
     heroImage: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
     interests: dbTripper.interests || [],
-    posts: publishedBlogs,
+    posts,
     bio: dbTripper.bio || '',
     location: dbTripper.location || '',
     agency: 'Randomtrip', // Default agency name
@@ -134,7 +163,7 @@ export default async function Page({
       {featuredTrips.length > 0 && (
         <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
       )}
-      <HomeInfo />
+      <HomeInfo ctaScrollTarget={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`} />
       <TripperTravelerTypesSection
         availableTypes={availableTypesFromPackages}
         tripperName={dbTripper.name}
