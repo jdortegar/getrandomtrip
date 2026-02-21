@@ -69,14 +69,10 @@ export const metadata = {
   title: 'Randomtrip',
   icons: {
     icon: [
-      {
-        url: '/assets/icons/favicon-32x32.png',
-        sizes: '32x32',
-        type: 'image/png',
-      },
+      { url: '/favicon.png', sizes: 'any', type: 'image/png' },
     ],
-    shortcut: { url: '/assets/icons/favicon-32x32.png', type: 'image/png' },
-    apple: { url: '/assets/icons/favicon-32x32.png' },
+    shortcut: { url: '/favicon.png', type: 'image/png' },
+    apple: { url: '/favicon.png' },
   },
 };
 

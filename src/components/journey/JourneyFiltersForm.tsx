@@ -2,7 +2,7 @@
 
 import { Cloud, Snowflake, Sun, Thermometer } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { AvoidDestinationsGrid } from '@/components/journey/avoid/AvoidDestinationsGrid';
+import AvoidGrid from '@/components/journey/avoid/AvoidGrid';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import { cn } from '@/lib/utils';
 
@@ -145,11 +145,7 @@ export function JourneyFiltersForm({
           Destinos a evitar (opcional)
         </h3>
         <p className="text-sm text-gray-500">Seleccioná hasta 15</p>
-        <AvoidDestinationsGrid
-          experience={experience}
-          originCity={originCity}
-          originCountry={originCountry}
-        />
+        <AvoidGrid />
       </div>
 
       <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
