@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 function RevealContent() {
   const searchParams = useSearchParams();
@@ -72,7 +73,7 @@ function RevealContent() {
 
 export default function RevealPage() {
     return (
-        <Suspense fallback={<div className="bg-[#111827] h-screen text-white flex items-center justify-center">Cargando...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
             <RevealContent />
         </Suspense>
     );

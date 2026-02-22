@@ -3,17 +3,30 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-interface JourneyHeroProps {
+const DEFAULT_DESCRIPTION = (
+  <>
+    ¿<strong>Con quién</strong> vas a escribir tu próxima historia?
+  </>
+);
+
+const DEFAULT_SUBTITLE = (
+  <>
+    PUNTO DE <span className="text-[#F2C53D]">PARTIDA</span>
+  </>
+);
+
+interface HeaderHeroProps {
   backgroundImage?: string;
   className?: string;
-  description?: string;
+  description?: React.ReactNode;
+  eyebrowColor?: string;
   fallbackImage?: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   title: string;
   videoSrc?: string;
 }
 
-function JourneyHeroVideoBackground({
+function HeaderHeroVideoBackground({
   fallbackImage,
   videoSrc,
 }: {
@@ -59,11 +72,11 @@ function JourneyHeroVideoBackground({
   }, [isVideoReady, hasError]);
 
   return (
-    <div className="absolute inset-0 w-full h-full">
+    <div className="absolute inset-0 h-full w-full">
       {/* Fallback Image */}
       {fallbackImage && (
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${fallbackImage})` }}
         />
       )}
@@ -73,14 +86,14 @@ function JourneyHeroVideoBackground({
         <video
           ref={videoRef}
           autoPlay
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+            isVideoReady ? 'opacity-100' : 'opacity-0'
+          }`}
           loop
           muted
           playsInline
-          preload="metadata"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            isVideoReady ? 'opacity-100' : 'opacity-0'
-          }`}
           poster={fallbackImage}
+          preload="metadata"
         >
           <source src={videoSrc.replace('.mp4', '.webm')} type="video/webm" />
           <source src={videoSrc} type="video/mp4" />
@@ -93,25 +106,26 @@ function JourneyHeroVideoBackground({
   );
 }
 
-export default function JourneyHero({
+export default function HeaderHero({
   backgroundImage,
   className,
-  description,
+  description = DEFAULT_DESCRIPTION,
+  eyebrowColor,
   fallbackImage = '/images/bg-playa-mexico.jpg',
-  subtitle,
+  subtitle = DEFAULT_SUBTITLE,
   title,
   videoSrc = '/videos/hero-video-1.mp4',
-}: JourneyHeroProps) {
+}: HeaderHeroProps) {
   return (
     <section
       className={cn(
-        'relative min-h-[40vh] flex items-center justify-center overflow-hidden',
+        'relative flex min-h-[40vh] items-center justify-center overflow-hidden',
         className,
       )}
     >
       {/* Video Background */}
       {videoSrc ? (
-        <JourneyHeroVideoBackground
+        <HeaderHeroVideoBackground
           fallbackImage={fallbackImage || backgroundImage}
           videoSrc={videoSrc}
         />
@@ -131,18 +145,19 @@ export default function JourneyHero({
       )}
 
       {/* Content */}
-      <div className="relative z-10 mx-auto px-6 text-left text-white min-w-7/12">
-        <p className="text-sm md:text-base font-bold mb-2 uppercase tracking-[0.4em]">
-          PUNTO DE <span className="text-[#F2C53D]">PARTIDA</span>
+      <div className="relative z-10 mx-auto min-w-7/12 px-6 text-left text-white">
+        <p
+          className="mb-2 font-bold text-sm uppercase tracking-[0.4em] md:text-base"
+          style={eyebrowColor ? { color: eyebrowColor } : undefined}
+        >
+          {subtitle}
         </p>
 
-        <h1 className="text-7xl font-extrabold mb-6 font-barlow-condensed">
+        <h1 className="mb-6 font-barlow-condensed text-7xl font-extrabold">
           {title}
         </h1>
 
-        <p className="text-base">
-          ¿<strong>Con quién</strong> vas a escribir tu próxima historia?
-        </p>
+        <p className="text-base">{description}</p>
       </div>
     </section>
   );

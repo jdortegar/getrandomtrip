@@ -15,6 +15,7 @@ import { Calendar, Share2, Mail } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
 import { useCountdown } from '@/hooks/useCountdown';
 import { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { Loader2 } from 'lucide-react';
 
 function ConfirmationPageContent() {
@@ -342,25 +343,7 @@ function ConfirmationPageContent() {
 
 export default function ConfirmationPage() {
   return (
-    <Suspense
-      fallback={
-        <>
-          <Hero
-            content={{
-              title: 'Procesando...',
-              subtitle: 'Confirmando tu pago',
-              videoSrc: '/videos/hero-video.mp4',
-              fallbackImage: '/images/bg-playa-mexico.jpg',
-            }}
-          />
-          <Section>
-            <div className="flex justify-center items-center min-h-[400px]">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            </div>
-          </Section>
-        </>
-      }
-    >
+    <Suspense fallback={<LoadingSpinner />}>
       <ConfirmationPageContent />
     </Suspense>
   );

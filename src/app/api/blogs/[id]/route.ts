@@ -56,7 +56,7 @@ export async function GET(
       title: blog.title,
       subtitle: blog.subtitle || '',
       tagline: blog.tagline || '',
-      coverUrl: blog.coverUrl || '/images/placeholders/cover-1.jpg',
+      coverUrl: blog.coverUrl,
       blocks: blog.blocks as any,
       tags: blog.tags,
       format: blog.format.toLowerCase(),

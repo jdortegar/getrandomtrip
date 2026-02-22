@@ -18,15 +18,17 @@ export default function BlogList({ posts }: BlogListProps) {
       ) : (
         posts.map((post) => (
           <div key={post.id} className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
-            <div className="relative w-full h-40">
-              <Image
-                src={post.coverUrl ?? "/images/placeholders/cover-1.jpg"}
-                alt={post.title}
-                width={640}
-                height={360}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {post.coverUrl && (
+              <div className="relative w-full h-40">
+                <Image
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                  height={360}
+                  src={post.coverUrl}
+                  width={640}
+                />
+              </div>
+            )}
             <div className="p-5">
               <h3 className="text-lg font-semibold text-neutral-800 mb-2">{post.title}</h3>
               <p className="text-sm text-neutral-600 mb-3">{post.subtitle}</p>

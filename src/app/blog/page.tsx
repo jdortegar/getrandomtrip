@@ -5,20 +5,38 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
+import {
+  BlogFilterHeader,
+  type BlogFilterState,
+} from '@/components/blog/BlogFilterHeader';
+import type { TripperFilterOption } from '@/lib/constants/blog-filters';
+import HeaderHero from '@/components/journey/HeaderHero';
 import GlassCard from '@/components/ui/GlassCard';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { Book, User, Calendar } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Book } from 'lucide-react';
+
+/** Single source of truth for blog page hero (SOLID: single responsibility, no duplication). */
+const BLOG_HERO_CONFIG = {
+  className: '!min-h-[40vh]',
+  eyebrowColor: '#F2C53D',
+  fallbackImage: '/images/bg-playa-mexico.jpg',
+  subtitle: 'BLOG',
+  videoSrc: '/videos/hero-video.mp4',
+} as const;
 
 interface BlogPost {
   id: string;
   title: string;
   subtitle: string;
   tagline?: string;
-  coverUrl: string;
+  coverUrl: string | null;
   tags: string[];
   format: string;
   publishedAt?: string;
+  travelType: string | null;
+  excuseKey: string | null;
+  /** Single author (tripper) per post. */
   author: {
     id: string;
     name: string;
@@ -51,6 +69,49 @@ function BlogListContent() {
   const [total, setTotal] = useState(0);
   const observerTarget = useRef<HTMLDivElement>(null);
 
+  const [filter, setFilter] = useState<BlogFilterState>({
+    excuseKey: null,
+    tripperId: tripperId ?? null,
+    travelTypeKey: '',
+  });
+  const [trippers, setTrippers] = useState<TripperFilterOption[]>([]);
+
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      tripperId: tripperId ?? null,
+    }));
+  }, [tripperId]);
+
+  useEffect(() => {
+    async function loadTrippers() {
+      try {
+        const res = await fetch('/api/trippers');
+        if (!res.ok) return;
+        const data = await res.json();
+        const list: TripperFilterOption[] = (
+          Array.isArray(data) ? data : []
+        ).map(
+          (u: {
+            id: string;
+            name: string;
+            tripperSlug: string | null;
+            avatarUrl: string | null;
+          }) => ({
+            avatarUrl: u.avatarUrl ?? null,
+            id: u.id,
+            name: u.name,
+            slug: u.tripperSlug ?? u.id,
+          }),
+        );
+        setTrippers(list);
+      } catch {
+        setTrippers([]);
+      }
+    }
+    loadTrippers();
+  }, []);
+
   const fetchBlogs = useCallback(
     async (pageNum: number, append: boolean = false) => {
       try {
@@ -61,12 +122,19 @@ function BlogListContent() {
         }
 
         const params = new URLSearchParams({
-          page: pageNum.toString(),
           limit: '12',
+          page: pageNum.toString(),
         });
 
-        if (tripperId) {
-          params.append('tripperId', tripperId);
+        if (filter.tripperId) {
+          params.append('tripperId', filter.tripperId);
+        }
+
+        if (filter.travelTypeKey) {
+          params.append('travelType', filter.travelTypeKey);
+        }
+        if (filter.excuseKey) {
+          params.append('excuseKey', filter.excuseKey);
         }
 
         const response = await fetch(`/api/blogs?${params.toString()}`);
@@ -90,7 +158,7 @@ function BlogListContent() {
         setLoadingMore(false);
       }
     },
-    [tripperId],
+    [filter.excuseKey, filter.tripperId, filter.travelTypeKey],
   );
 
   useEffect(() => {
@@ -124,172 +192,149 @@ function BlogListContent() {
     };
   }, [hasMore, loadingMore, loading, page, fetchBlogs]);
 
-  if (loading && blogs.length === 0) {
-    return (
-      <>
-        <Hero
-          content={{
-            title: tripperName
-              ? `Blog de ${tripperName}`
-              : 'Blog de Randomtrip',
-            subtitle: 'Descubre historias, guías y experiencias de nuestros trippers',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
-          }}
-          className="!h-[40vh]"
-        />
-        <Section>
-          <div className="rt-container">
-            <LoadingSpinner />
-          </div>
-        </Section>
-      </>
-    );
-  }
-
   return (
     <>
-      <Hero
-        content={{
-          title: tripperName ? `Blog de ${tripperName}` : 'Blog de Randomtrip',
-          subtitle: 'Descubre historias, guías y experiencias de nuestros trippers',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-        }}
-        className="!h-[40vh]"
+      <HeaderHero
+        {...BLOG_HERO_CONFIG}
+        description={
+          'Descubre historias, guías y experiencias de nuestros trippers'
+        }
+        title={tripperName ? `Blog de ${tripperName}` : "TRIPPER'S INSPIRATION"}
       />
 
       <Section>
         <div className="rt-container">
-          {tripperName && (
-            <div className="mb-6">
-              <Link
-                href={`/trippers/${tripperId}`}
-                className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm"
-              >
-                ← Volver al perfil de {tripperName}
-              </Link>
-            </div>
-          )}
-
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-neutral-800 mb-2">
-              {tripperName ? `Posts de ${tripperName}` : 'Todos los Posts'}
-            </h1>
-            <p className="text-neutral-600">
-              {total > 0
-                ? `${total} ${total === 1 ? 'post publicado' : 'posts publicados'}`
-                : 'No hay posts publicados aún'}
-            </p>
-          </div>
-
-          {blogs.length === 0 ? (
-            <GlassCard>
-              <div className="p-12 text-center">
-                <Book className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-                <p className="text-neutral-500 text-lg mb-2">
-                  Aún no hay posts publicados
-                </p>
-                <p className="text-neutral-400 text-sm">
-                  Los trippers están trabajando en contenido increíble. ¡Vuelve
-                  pronto!
-                </p>
-              </div>
-            </GlassCard>
+          <BlogFilterHeader
+            className="mb-8"
+            onChange={setFilter}
+            trippers={trippers}
+            value={filter}
+          />
+          {loading && blogs.length === 0 ? (
+            <LoadingSpinner />
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogs.map((post) => (
+              {tripperName && (
+                <div className="mb-6">
                   <Link
-                    key={post.id}
-                    href={`/blogs/${post.id}`}
-                    className="group block"
+                    href={`/trippers/${tripperId}`}
+                    className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm"
                   >
-                    <GlassCard className="h-full hover:shadow-lg transition-shadow">
-                      <div className="p-0 overflow-hidden rounded-xl">
-                        {post.coverUrl && (
-                          <div className="relative w-full h-48">
-                            <Image
-                              src={post.coverUrl}
-                              alt={post.title}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        )}
-                        <div className="p-6">
-                          <div className="flex items-center gap-2 mb-3">
-                            {post.tags.slice(0, 2).map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                          <h3 className="text-xl font-semibold text-neutral-900 mb-2 group-hover:text-blue-600 transition-colors">
-                            {post.title}
-                          </h3>
-                          {post.subtitle && (
-                            <p className="text-sm text-neutral-600 mb-4 line-clamp-2">
-                              {post.subtitle}
-                            </p>
-                          )}
-                          <div className="flex items-center justify-between text-xs text-neutral-500 pt-4 border-t border-neutral-200">
-                            <div className="flex items-center gap-2">
-                              {post.author.avatarUrl ? (
-                                <Image
-                                  src={post.author.avatarUrl}
-                                  alt={post.author.name}
-                                  width={24}
-                                  height={24}
-                                  className="rounded-full"
-                                />
-                              ) : (
-                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                                  <User className="w-4 h-4 text-blue-600" />
-                                </div>
-                              )}
-                              <span className="font-medium">
-                                {post.author.name}
-                              </span>
-                            </div>
-                            {post.publishedAt && (
-                              <div className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                <span>
-                                  {new Date(
-                                    post.publishedAt,
-                                  ).toLocaleDateString('es-ES', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                  })}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </GlassCard>
+                    ← Volver al perfil de {tripperName}
                   </Link>
-                ))}
-              </div>
-
-              {/* Infinite scroll trigger */}
-              {hasMore && (
-                <div
-                  ref={observerTarget}
-                  className="flex justify-center py-8"
-                >
-                  {loadingMore && <LoadingSpinner />}
                 </div>
               )}
 
-              {!hasMore && blogs.length > 0 && (
-                <div className="text-center py-8 text-neutral-500">
-                  <p>Has visto todos los posts disponibles</p>
-                </div>
+              {blogs.length === 0 ? (
+                <GlassCard>
+                  <div className="p-12 text-center">
+                    <Book className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+                    <p className="text-neutral-500 text-lg mb-2">
+                      Aún no hay posts publicados
+                    </p>
+                    <p className="text-neutral-400 text-sm">
+                      Los trippers están trabajando en contenido increíble.
+                      ¡Vuelve pronto!
+                    </p>
+                  </div>
+                </GlassCard>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:gap-6">
+                    {blogs.map((post, index) => {
+                      const pattern = index % 6;
+                      const colSpan =
+                        pattern === 0 || pattern === 1
+                          ? 'md:col-span-3'
+                          : pattern === 2
+                            ? 'md:col-span-6'
+                            : 'md:col-span-2';
+                      const isLarge = pattern === 2;
+                      return (
+                        <Link
+                          key={post.id}
+                          href={`/blog/${post.id}`}
+                          className={cn('group block', colSpan)}
+                        >
+                          <GlassCard className="relative h-full overflow-hidden rounded-xl transition-shadow hover:shadow-lg">
+                            <div className="relative h-[304.83px] w-full overflow-hidden">
+                              {post.coverUrl ? (
+                                <>
+                                  <Image
+                                    alt={post.title}
+                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                    fill
+                                    sizes={
+                                      isLarge
+                                        ? '(min-width: 768px) 100vw, 100vw'
+                                        : '(min-width: 768px) 50vw, 100vw'
+                                    }
+                                    src={post.coverUrl}
+                                  />
+                                  <div
+                                    aria-hidden
+                                    className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                                  />
+                                </>
+                              ) : (
+                                <div className="absolute inset-0 bg-neutral-200" />
+                              )}
+                              <div
+                                className={cn(
+                                  'absolute bottom-10 left-0 flex w-full flex-col items-center justify-center p-4',
+                                  post.coverUrl
+                                    ? 'text-white'
+                                    : 'text-neutral-900',
+                                )}
+                              >
+                                <div className="flex flex-col gap-6 text-left">
+                                  <h3
+                                    className={cn(
+                                      'font-barlow-condensed text-lg font-extrabold uppercase tracking-wide transition-colors sm:text-xl md:text-4xl',
+                                      post.coverUrl
+                                        ? 'text-white group-hover:text-blue-200'
+                                        : 'text-neutral-900 group-hover:text-blue-600',
+                                    )}
+                                  >
+                                    {post.title}
+                                  </h3>
+                                  {post.subtitle && (
+                                    <p
+                                      className={cn(
+                                        'mt-2 line-clamp-2 text-base font-normal',
+                                        post.coverUrl
+                                          ? 'text-white/95'
+                                          : 'text-neutral-600',
+                                      )}
+                                    >
+                                      {post.subtitle}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </GlassCard>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Infinite scroll trigger (observer pattern) */}
+                  {hasMore && (
+                    <div
+                      ref={observerTarget}
+                      className="flex justify-center py-8"
+                    >
+                      {loadingMore && <LoadingSpinner />}
+                    </div>
+                  )}
+
+                  {!hasMore && blogs.length > 0 && (
+                    <div className="text-center py-8 text-neutral-500">
+                      <p>Has visto todos los posts disponibles</p>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -301,26 +346,7 @@ function BlogListContent() {
 
 function BlogPageContent() {
   return (
-    <Suspense
-      fallback={
-        <>
-          <Hero
-            content={{
-              title: 'Blog de Randomtrip',
-              subtitle: 'Cargando...',
-              videoSrc: '/videos/hero-video.mp4',
-              fallbackImage: '/images/bg-playa-mexico.jpg',
-            }}
-            className="!h-[40vh]"
-          />
-          <Section>
-            <div className="rt-container">
-              <LoadingSpinner />
-            </div>
-          </Section>
-        </>
-      }
-    >
+    <Suspense fallback={<LoadingSpinner />}>
       <BlogListContent />
     </Suspense>
   );

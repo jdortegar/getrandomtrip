@@ -1,7 +1,13 @@
+import 'dotenv/config';
 import { PrismaClient, BlogStatus, BlogFormat } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+const adapter = connectionString ? new PrismaPg({ connectionString }) : undefined;
+const prisma = new PrismaClient(
+  (adapter ? { adapter, log: ['error'] } : { log: ['error'] }) as object,
+);
 
 async function seedTrippersAndPackages() {
   console.log('🌱 Seeding trippers and packages...');
@@ -79,6 +85,21 @@ async function seedTrippersAndPackages() {
           'sostenibilidad',
         ],
         destinations: ['Mundial', 'América Latina', 'Europa', 'Asia', 'África'],
+      },
+      {
+        email: 'david@randomtrip.com',
+        name: 'David Ortega',
+        password: tripperPassword,
+        tripperSlug: 'david-ortega',
+        commission: 0.12,
+        availableTypes: ['solo', 'couple', 'family', 'group'],
+        role: 'TRIPPER' as const,
+        bio: 'Experiencias auténticas para viajeros que buscan aventura y cultura en América Latina y Europa.',
+        heroImage: '/images/trippers/david-hero.jpg',
+        location: 'Ciudad de México, México',
+        tierLevel: 'pro',
+        interests: ['aventura', 'cultura', 'gastronomía', 'naturaleza'],
+        destinations: ['México', 'España', 'Argentina', 'Colombia'],
       },
     ];
 
@@ -747,7 +768,7 @@ async function seedTrippersAndPackages() {
         title: 'Mi Primera Aventura en Buenos Aires',
         subtitle: 'Un viaje inolvidable por la Patagonia urbana',
         tagline: 'Descubre los secretos del sur argentino a través de mis ojos',
-        coverUrl: '/images/placeholders/cover-1.jpg',
+        coverUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=80',
         blocks: [
           {
             type: 'paragraph',
@@ -755,7 +776,7 @@ async function seedTrippersAndPackages() {
           },
           {
             type: 'image',
-            url: '/images/placeholders/photo-1.jpg',
+            url: 'https://images.unsplash.com/photo-1480714374509-5c2c2c0e0c0e?w=800&q=80',
             caption: 'Atardecer en San Telmo',
           },
           {
@@ -773,6 +794,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['aventura', 'patagonia', 'buenos-aires', 'urban-exploration'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -788,7 +811,7 @@ async function seedTrippersAndPackages() {
         title: 'Ruta del Café en Colombia',
         subtitle: 'Explorando los sabores de la tierra cafetera',
         tagline: 'Un recorrido por las fincas más auténticas del Eje Cafetero',
-        coverUrl: '/images/placeholders/cover-2.jpg',
+        coverUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=80',
         blocks: [
           {
             type: 'paragraph',
@@ -796,7 +819,7 @@ async function seedTrippersAndPackages() {
           },
           {
             type: 'image',
-            url: '/images/placeholders/photo-2.jpg',
+            url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80',
             caption: 'Finca cafetera en el Eje Cafetero',
           },
           {
@@ -809,6 +832,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['cafe', 'colombia', 'gastronomia', 'eje-cafetero'],
+        travelType: 'solo',
+        excuseKey: 'cultural-immersion',
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -824,7 +849,7 @@ async function seedTrippersAndPackages() {
         title: 'Fotografía Urbana: Capturando la Esencia de las Ciudades',
         subtitle: 'Técnicas y consejos para fotografiar ciudades',
         tagline: 'La ciudad como lienzo',
-        coverUrl: '/images/placeholders/cover-3.jpg',
+        coverUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&q=80',
         blocks: [
           {
             type: 'paragraph',
@@ -832,7 +857,7 @@ async function seedTrippersAndPackages() {
           },
           {
             type: 'image',
-            url: '/images/placeholders/photo-3.jpg',
+            url: 'https://images.unsplash.com/photo-1515041219749-89347f832391?w=800&q=80',
             caption: 'Calle de La Habana, Cuba',
           },
           {
@@ -845,6 +870,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['fotografia', 'urban', 'tecnica', 'arte'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
         format: BlogFormat.PHOTO,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -860,7 +887,7 @@ async function seedTrippersAndPackages() {
         title: 'Los Mercados Locales: El Corazón de Cada Ciudad',
         subtitle: 'Descubriendo la gastronomía auténtica',
         tagline: 'Donde los locales compran, los viajeros descubren',
-        coverUrl: '/images/placeholders/cover-4.jpg',
+        coverUrl: 'https://images.unsplash.com/photo-1488459716781-31db59582ba4?w=1200&q=80',
         blocks: [
           {
             type: 'paragraph',
@@ -876,6 +903,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['gastronomia', 'mercados', 'cultura-local', 'comida'],
+        travelType: 'couple',
+        excuseKey: 'cultural-immersion',
         format: BlogFormat.ARTICLE,
         status: BlogStatus.DRAFT,
         seo: {
@@ -890,7 +919,7 @@ async function seedTrippersAndPackages() {
         title: 'Aventuras Nocturnas: La Vida Nocturna de las Ciudades',
         subtitle: 'Explorando la ciudad después del atardecer',
         tagline: 'Cuando el sol se pone, la ciudad se transforma',
-        coverUrl: '/images/placeholders/cover-5.jpg',
+        coverUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&q=80',
         blocks: [
           {
             type: 'paragraph',
@@ -902,6 +931,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ['noche', 'vida-nocturna', 'cultura', 'aventura'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
         format: BlogFormat.MIXED,
         status: BlogStatus.DRAFT,
         seo: {
@@ -914,6 +945,173 @@ async function seedTrippersAndPackages() {
     ];
 
     for (const blogData of blogPosts) {
+      const blog = await prisma.blogPost.create({
+        data: blogData,
+      });
+      console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
+    }
+
+    // Blog posts for Alma (second tripper)
+    const alma = createdTrippers[1];
+    const almaBlogPosts = [
+      {
+        authorId: alma.id,
+        title: 'Viajes en Familia: Creando Recuerdos que Duran',
+        subtitle: 'Consejos para planificar la mejor aventura familiar',
+        tagline: 'La familia que viaja junta, crece junta',
+        coverUrl: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1200&q=80',
+        travelType: 'family',
+        excuseKey: 'family-adventure',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Después de años diseñando viajes para familias, he aprendido que el secreto está en el equilibrio: actividades para todos los gustos y edades, y momentos de calma para reconectar.',
+          },
+          {
+            type: 'paragraph',
+            text: 'España e Italia son destinos increíbles para familias. Playas seguras, cultura accesible y gastronomía que encanta a pequeños y mayores.',
+          },
+        ],
+        tags: ['familia', 'espana', 'italia', 'consejos'],
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Viajes en Familia - Blog de Alma',
+          description: 'Consejos y destinos para viajar en familia',
+          keywords: ['familia', 'viajes', 'espana', 'italia'],
+        },
+        publishedAt: new Date('2024-03-01'),
+      },
+      {
+        authorId: alma.id,
+        title: 'Lunas de Miel Sostenibles',
+        subtitle: 'Cómo disfrutar del viaje de tus sueños con conciencia',
+        tagline: 'Romance con propósito',
+        coverUrl: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
+        travelType: 'honeymoon',
+        excuseKey: 'romantic-getaway',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Una luna de miel memorable no tiene que costarle al planeta. Te comparto destinos y prácticas que hacen la diferencia.',
+          },
+        ],
+        tags: ['luna-de-miel', 'sostenibilidad', 'pareja'],
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Lunas de Miel Sostenibles - Blog de Alma',
+          description: 'Ideas para una luna de miel responsable',
+          keywords: ['luna de miel', 'sostenible', 'viajes'],
+        },
+        publishedAt: new Date('2024-04-12'),
+      },
+    ];
+
+    console.log('\n📝 Creating blog posts for Alma...');
+    for (const blogData of almaBlogPosts) {
+      const blog = await prisma.blogPost.create({
+        data: blogData,
+      });
+      console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
+    }
+
+    // Blog posts for Randomtrip (third tripper)
+    const randomtrip = createdTrippers[2];
+    const randomtripBlogPosts = [
+      {
+        authorId: randomtrip.id,
+        title: 'El Arte del Viaje Sorpresa',
+        subtitle: 'Por qué dejar que el destino te elija a ti',
+        tagline: 'Menos planificación, más descubrimiento',
+        coverUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80',
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'En Randomtrip creemos que la magia del viaje está en la sorpresa. Nuestros trippers diseñan experiencias únicas que se revelan en el momento justo.',
+          },
+          {
+            type: 'paragraph',
+            text: 'Desde aventuras urbanas hasta escapadas en la naturaleza, cada viaje es una historia por escribir.',
+          },
+        ],
+        tags: ['sorpresa', 'randomtrip', 'inspiracion'],
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'El Arte del Viaje Sorpresa - Randomtrip',
+          description: 'Descubre la filosofía detrás del viaje sorpresa',
+          keywords: ['viaje sorpresa', 'randomtrip', 'aventura'],
+        },
+        publishedAt: new Date('2024-05-01'),
+      },
+    ];
+
+    console.log('\n📝 Creating blog posts for Randomtrip...');
+    for (const blogData of randomtripBlogPosts) {
+      const blog = await prisma.blogPost.create({
+        data: blogData,
+      });
+      console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
+    }
+
+    // Blog posts for David Ortega (fourth tripper)
+    const david = createdTrippers[3];
+    const davidBlogPosts = [
+      {
+        authorId: david.id,
+        title: 'Aventura Solo en Ciudad de México',
+        subtitle: 'Rutas auténticas para viajeros independientes',
+        tagline: 'La capital que no te esperas',
+        coverUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=80',
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Ciudad de México es un laberinto de barrios, sabores y historias. Te comparto rutas que he diseñado para quienes viajan solos y buscan autenticidad.',
+          },
+        ],
+        tags: ['cdmx', 'solo', 'aventura', 'cultura'],
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Aventura Solo en CDMX - David Ortega',
+          description: 'Rutas y consejos para viajar solo en Ciudad de México',
+          keywords: ['cdmx', 'solo', 'viajes', 'méxico'],
+        },
+        publishedAt: new Date('2024-06-01'),
+      },
+      {
+        authorId: david.id,
+        title: 'Escapada en Pareja por España',
+        subtitle: 'Destinos románticos más allá de lo obvio',
+        tagline: 'Menos turismo, más conexión',
+        coverUrl: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
+        travelType: 'couple',
+        excuseKey: 'romantic-getaway',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'España tiene rincones ideales para parejas que buscan calma y buena mesa. Te cuento mis favoritos fuera de las guías clásicas.',
+          },
+        ],
+        tags: ['pareja', 'espana', 'romantico'],
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Escapada en Pareja España - David Ortega',
+          description: 'Ideas para una escapada en pareja por España',
+          keywords: ['pareja', 'espana', 'viajes'],
+        },
+        publishedAt: new Date('2024-07-15'),
+      },
+    ];
+
+    console.log('\n📝 Creating blog posts for David Ortega...');
+    for (const blogData of davidBlogPosts) {
       const blog = await prisma.blogPost.create({
         data: blogData,
       });

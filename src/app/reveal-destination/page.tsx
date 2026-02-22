@@ -1,6 +1,7 @@
 import RevealDestinationClient from './RevealDestinationClient';
 import ProgressBar from '../../components/ProgressBar';
 import { Suspense } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 export const metadata = {
   title: 'Your Destination Revealed!',
@@ -18,7 +19,7 @@ export default function RevealDestinationPage() {
         </div>
       </header>
       <main className="flex-grow">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <RevealDestinationClient />
         </Suspense>
       </main>

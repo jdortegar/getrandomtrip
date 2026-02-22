@@ -112,7 +112,7 @@ function EditBlogContent() {
           title: post.title || 'Editar Post',
           subtitle: post.subtitle || 'Modifica tu contenido',
           videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: post.coverUrl || '/images/bg-playa-mexico.jpg',
+          fallbackImage: post.coverUrl ?? undefined,
         }}
         className="!h-[40vh]"
       />

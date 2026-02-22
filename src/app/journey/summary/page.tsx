@@ -6,6 +6,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import ChatFab from '@/components/chrome/ChatFab';
 import AuthModal from '@/components/auth/AuthModal';
 
@@ -508,7 +509,7 @@ function SummaryPageContent() {
 export default function SummaryPage() {
   return (
     <Suspense
-      fallback={<Loader2 className="h-12 w-12 animate-spin text-primary" />}
+      fallback={<LoadingSpinner />}
     >
       <SummaryPageContent />
     </Suspense>

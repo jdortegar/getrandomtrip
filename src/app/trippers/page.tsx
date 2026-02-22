@@ -3,21 +3,17 @@
 import React from 'react';
 import Section from '@/components/layout/Section';
 import TopTrippersGridComponent from '@/components/tripper/TopTrippersGrid';
-import Hero from '@/components/Hero';
+import HeaderHero from '@/components/journey/HeaderHero';
 
 export default function TrippersPage() {
   return (
     <main className="min-h-screen bg-white">
-      <Hero
-        content={{
-          title: 'Nuestros Trippers',
-          subtitle:
-            'Explora perfiles de viajeros expertos que curan experiencias auténticas y memorables',
-          videoSrc: '/videos/trippers-hero.mp4',
-          fallbackImage: '/images/bg/trippers-hero.jpg',
-        }}
-        id="trippers-hero"
-        className="!h-[50vh]"
+      <HeaderHero
+        className="!min-h-[50vh]"
+        description="Explora perfiles de viajeros expertos que curan experiencias auténticas y memorables."
+        subtitle="NUESTROS TRIPPERS"
+        title="Nuestros Trippers"
+        videoSrc="/videos/trippers-hero.mp4"
       />
 
       {/* Main Content */}

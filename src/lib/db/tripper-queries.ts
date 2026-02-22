@@ -756,13 +756,15 @@ export async function getTripperPublishedBlogs(
       take: limit,
     });
 
-    // Transform to match Blog component format
-    return blogs.map((blog) => ({
-      image: blog.coverUrl || '/images/placeholders/cover-1.jpg',
-      category: blog.tags[0] || 'Viajes',
-      title: blog.title,
-      href: `/blogs/${blog.id}`,
-    }));
+    // Transform to match Blog component format; only include posts with a cover
+    return blogs
+      .filter((blog): blog is typeof blog & { coverUrl: string } => blog.coverUrl != null)
+      .map((blog) => ({
+        category: blog.tags[0] ?? 'Viajes',
+        href: `/blog/${blog.id}`,
+        image: blog.coverUrl,
+        title: blog.title,
+      }));
   } catch (error) {
     console.error('Error fetching tripper published blogs:', error);
     return [];

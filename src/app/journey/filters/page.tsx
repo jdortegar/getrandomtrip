@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import React, { Suspense, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 type Pace = 'relajado' | 'balanceado' | 'intenso';
 
@@ -215,7 +216,7 @@ function FiltersPageClient() {
 
 export default function FiltersPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-neutral-50 p-8">Cargando filtros…</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <FiltersPageClient />
     </Suspense>
   );

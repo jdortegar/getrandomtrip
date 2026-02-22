@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import TripperCard from '@/components/TripperCard';
+import TripperSearchModal from '@/components/tripper/TripperSearchModal';
 
 export default function TopTrippersGrid() {
   const [trippers, setTrippers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     async function fetchTrippers() {
@@ -70,16 +71,17 @@ export default function TopTrippersGrid() {
           </motion.div>
         ))}
 
-        {/* Link to dedicated trippers page */}
+        {/* CTA: open tripper search modal */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
+          viewport={{ once: true }}
         >
-          <Link
-            href="/trippers"
-            className="group rounded-md w-full h-64 overflow-hidden shadow-xl hover:scale-[1.03] transition-all cursor-pointer  bg-gradient-to-br from-primary to-primary-800 text-white flex flex-col items-center justify-center p-6"
+          <button
+            className="group flex w-full flex-col items-center justify-center rounded-lg overflow-hidden shadow-xl hover:scale-[1.03] transition-all cursor-pointer bg-gradient-to-br from-primary to-primary-800 text-white p-6 aspect-[269/230] text-left"
+            onClick={() => setSearchOpen(true)}
+            type="button"
           >
             <div className="text-center">
               <h3 className="font-caveat text-2xl font-bold text-white mb-2">
@@ -105,9 +107,15 @@ export default function TopTrippersGrid() {
                 </svg>
               </div>
             </div>
-          </Link>
+          </button>
         </motion.div>
       </div>
+
+      <TripperSearchModal
+        onClose={() => setSearchOpen(false)}
+        open={searchOpen}
+        trippers={trippers}
+      />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export interface HeroContent {
   tagline?: string;
   scrollText?: string;
   videoSrc: string;
-  fallbackImage: string;
+  fallbackImage?: string;
   branding?: {
     text: string;
     repeatText?: string;
@@ -113,7 +113,7 @@ function HeroVideoBackground({ content }: { content: HeroContent }) {
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
             isVideoReady ? 'opacity-100' : 'opacity-0'
           }`}
-          poster={content.fallbackImage}
+          poster={content.fallbackImage ?? undefined}
           onLoadStart={() => console.log('Video load started')}
           onLoadedMetadata={() => console.log('Video metadata loaded')}
           onCanPlay={() => console.log('Video can play event')}

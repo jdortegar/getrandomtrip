@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useStore } from '@/store/store';
 import { usePayment } from '@/hooks/usePayment';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import Section from '@/components/layout/Section';
 import Hero from '@/components/Hero';
 import { Button } from '@/components/ui/Button';
@@ -224,7 +225,7 @@ function CheckoutPageContent() {
 export default function CheckoutPage() {
   return (
     <Suspense
-      fallback={<Loader2 className="h-12 w-12 animate-spin text-primary" />}
+      fallback={<LoadingSpinner />}
     >
       <CheckoutPageContent />
     </Suspense>

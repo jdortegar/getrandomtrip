@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import PrimaryButton from '@/components/PrimaryButton';
 import { Booking } from '@/types';
 
@@ -132,7 +133,7 @@ function PremiumFiltersContent() {
 
 export default function PremiumFiltersPage() {
   return (
-    <Suspense fallback={<div className="bg-[#111827] h-screen text-white flex items-center justify-center">Cargando filtros...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <PremiumFiltersContent />
     </Suspense>
   );

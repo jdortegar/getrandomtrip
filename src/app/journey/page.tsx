@@ -1,9 +1,10 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { useSearchParams } from 'next/navigation';
 import JourneyContentNavigation from '@/components/journey/JourneyContentNavigation';
-import JourneyHero from '@/components/journey/JourneyHero';
+import HeaderHero from '@/components/journey/HeaderHero';
 import JourneyMainContent from '@/components/journey/JourneyMainContent';
 import JourneyProgressSidebar from '@/components/journey/JourneyProgressSidebar';
 import JourneySummary from '@/components/journey/JourneySummary';
@@ -150,7 +151,8 @@ function getInitialStepFromParams(params: URLSearchParams): {
   if (!travelType) return { tabId: 'budget', sectionId: 'travel-type' };
   if (!experience) return { tabId: 'budget', sectionId: 'experience' };
   if (!excuse) return { tabId: 'excuse', sectionId: 'excuse' };
-  if (!originCountry || !originCity) return { tabId: 'details', sectionId: 'origin' };
+  if (!originCountry || !originCity)
+    return { tabId: 'details', sectionId: 'origin' };
   if (!startDate || !nights) return { tabId: 'details', sectionId: 'dates' };
   if (!transport) return { tabId: 'details', sectionId: 'transport' };
   return { tabId: 'preferences', sectionId: 'filters' };
@@ -183,9 +185,8 @@ function JourneyPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <JourneyHero
+      <HeaderHero
         description="¿Con quién vas a escribir tu próxima historia?"
-        subtitle="PUNTO DE PARTIDA"
         title="Empezá la aventura"
       />
 
@@ -226,16 +227,7 @@ function JourneyPageContent() {
 
 export default function JourneyPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-gray-50 animate-pulse" aria-hidden>
-          <div className="h-64 bg-gray-200" />
-          <div className="container mx-auto px-4 py-8">
-            <div className="h-96 bg-gray-100 rounded" />
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingSpinner />}>
       <JourneyPageContent />
     </Suspense>
   );

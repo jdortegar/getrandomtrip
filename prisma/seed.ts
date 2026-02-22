@@ -1,12 +1,18 @@
+import 'dotenv/config';
 import {
   PrismaClient,
   TripRequestStatus,
   PackageStatus,
   UserRole,
 } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+const adapter = connectionString ? new PrismaPg({ connectionString }) : undefined;
+const prisma = new PrismaClient(
+  (adapter ? { adapter, log: ['error'] } : { log: ['error'] }) as object,
+);
 
 // NOTE: This seed file is outdated and needs to be updated for the new schema
 // For now, we're using the custom seed script in scripts/seed-trippers-packages.ts

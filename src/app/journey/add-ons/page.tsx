@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { useStore } from '@/store/store';
 import SummaryCard from '@/components/journey/SummaryCard';
 import AddonsGallery from '@/components/journey/addons/AddonsGallery';
@@ -59,7 +60,7 @@ function AddOnsContent() {
 
 export default function AddOnsPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto px-4 py-24">Cargando add-ons…</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <AddOnsContent />
     </Suspense>
   );
