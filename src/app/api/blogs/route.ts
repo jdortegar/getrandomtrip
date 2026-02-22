@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
         orderBy: { publishedAt: 'desc' },
         select: {
           id: true,
+          slug: true,
           title: true,
           subtitle: true,
           tagline: true,
@@ -89,6 +90,7 @@ export async function GET(request: NextRequest) {
       format: blog.format.toLowerCase(),
       id: blog.id,
       publishedAt: blog.publishedAt?.toISOString(),
+      slug: blog.slug ?? blog.id,
       subtitle: blog.subtitle ?? '',
       tagline: blog.tagline ?? '',
       tags: blog.tags,

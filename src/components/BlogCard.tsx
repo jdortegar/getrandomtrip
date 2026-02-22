@@ -1,7 +1,7 @@
 'use client';
 
+import Link from 'next/link';
 import Img from '@/components/common/Img';
-import { Button } from '@/components/ui/Button';
 import type { BlogPost } from '@/lib/data/shared/blog-types';
 
 interface BlogCardProps {
@@ -9,8 +9,13 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post }: BlogCardProps) {
+  const href = post.href ?? '#';
+
   return (
-    <div className="group relative block aspect-[3/4] w-full max-w-[380px] overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
+    <Link
+      className="group relative block aspect-[3/4] w-full max-w-[380px] overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1"
+      href={href}
+    >
       <div className="relative h-full w-full">
         <Img
           alt={post.title}
@@ -29,10 +34,13 @@ export default function BlogCard({ post }: BlogCardProps) {
         <h3 className="mt-2 font-barlow-condensed text-xl font-bold leading-tight md:text-2xl">
           {post.title}
         </h3>
-        <Button className="mt-4 text-xs" size="sm" variant="outline">
+        <span
+          className="mt-4 inline-flex h-9 items-center justify-center rounded-md border border-white/50 bg-transparent px-4 text-xs font-medium ring-offset-background transition-colors hover:bg-white/10"
+          aria-hidden
+        >
           Explorar Trip
-        </Button>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

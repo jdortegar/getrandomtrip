@@ -27,6 +27,7 @@ const BLOG_HERO_CONFIG = {
 
 interface BlogPost {
   id: string;
+  slug: string;
   title: string;
   subtitle: string;
   tagline?: string;
@@ -253,7 +254,7 @@ function BlogListContent() {
                       return (
                         <Link
                           key={post.id}
-                          href={`/blog/${post.id}`}
+                          href={`/blog/${post.slug}`}
                           className={cn('group block', colSpan)}
                         >
                           <GlassCard className="relative h-full overflow-hidden rounded-xl transition-shadow hover:shadow-lg">

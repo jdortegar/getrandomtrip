@@ -1,8 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import React from 'react';
 import {
   CarouselRoot,
   CarouselContent,
@@ -14,6 +12,7 @@ import { useCarousel } from '@/components/Carousel';
 import BlogCard from '@/components/BlogCard';
 import Section from '@/components/layout/Section';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
+import { motion } from 'framer-motion';
 
 interface BlogProps {
   eyebrow?: string;
@@ -58,7 +57,12 @@ export default function Blog({
   viewAll,
 }: BlogProps) {
   return (
-    <Section className="pl-[8%]" id={id} variant="default" fullWidth>
+    <Section
+      className="overflow-visible pl-4 md:pl-[8%]"
+      id={id}
+      variant="default"
+      fullWidth
+    >
       <CarouselRoot
         className="relative p-0 m-0"
         edgeBleed={false}

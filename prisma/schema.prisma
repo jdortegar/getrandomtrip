@@ -31,11 +31,13 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
-  bio          String? // Tripper biography/description
-  heroImage    String? // Hero banner image
-  location     String? // Tripper location
-  tierLevel    String? // Tripper tier level
-  destinations String[] @default([]) // Countries/cities they specialize in
+  bio             String? // Tripper biography/description
+  heroImage       String? // Hero banner image
+  location        String? // Tripper location
+  motto           String? // Inspirational quote for testimonial banner
+  specialization  String? // e.g. "Tripper especializada en aventuras acuáticas"
+  tierLevel       String? // Tripper tier level
+  destinations    String[] @default([]) // Countries/cities they specialize in
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -274,12 +276,15 @@ model BlogPost {
 
   // Basic info
   title    String
+  slug     String?  @unique // SEO-friendly URL (e.g. aventura-acuatica)
   subtitle String?
   tagline  String?
   coverUrl String? // Hero/cover image URL
 
-  // Content blocks (JSON array for flexibility)
-  // Each block can be: paragraph, image, video, embed, quote
+  // Rich text body (HTML from editor)
+  content String? @db.Text
+
+  // Legacy content blocks (JSON); kept for backward compat / gallery extraction
   blocks Json @default("[]")
 
   // Metadata
@@ -289,6 +294,9 @@ model BlogPost {
 
   // SEO
   seo Json? // { title?: string, description?: string, keywords?: string[] }
+
+  // FAQ (array of { question: string, answer: string })
+  faq Json?
 
   // Timestamps
   createdAt   DateTime  @default(now())

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { PrismaClient, BlogStatus, BlogFormat } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
+import { slugify } from '../src/lib/helpers/slugify';
 
 const connectionString = process.env.DATABASE_URL;
 const adapter = connectionString ? new PrismaPg({ connectionString }) : undefined;
@@ -100,6 +101,25 @@ async function seedTrippersAndPackages() {
         tierLevel: 'pro',
         interests: ['aventura', 'cultura', 'gastronomía', 'naturaleza'],
         destinations: ['México', 'España', 'Argentina', 'Colombia'],
+      },
+      {
+        email: 'sofia@randomtrip.com',
+        name: 'Sofia',
+        password: tripperPassword,
+        tripperSlug: 'sofia',
+        commission: 0.09,
+        availableTypes: ['solo', 'couple', 'group'],
+        role: 'TRIPPER' as const,
+        bio: 'Urban explorer y especialista en ciudades. Ayudo a viajeros a descubrir rincones secretos y la cultura de grandes ciudades.',
+        heroImage:
+          'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
+        location: 'São Paulo, Brasil',
+        motto:
+          'Descubrir una ciudad es encontrarse a uno mismo en cada esquina.',
+        specialization: 'Tripper especializada en experiencias urbanas',
+        tierLevel: 'pro',
+        interests: ['urbano', 'cultura', 'vida nocturna'],
+        destinations: ['Brasil', 'Argentina', 'México', 'España'],
       },
     ];
 
@@ -762,6 +782,150 @@ async function seedTrippersAndPackages() {
     console.log('\n📝 Creating blog posts for Dawson...');
     const dawson = createdTrippers[0];
 
+    // Mockup post with fixed id for /blog/cmly0imzt000bgg1gosc0dow9 (or slug aventura-acuatica)
+    const mockupPostId = 'cmly0imzt000bgg1gosc0dow9';
+    await prisma.blogPost.upsert({
+      where: { id: mockupPostId },
+      create: {
+        id: mockupPostId,
+        authorId: dawson.id,
+        slug: 'aventura-acuatica',
+        title: 'Aventura Acuática en el Caribe',
+        subtitle: 'Buceo, snorkel y playas secretas en una semana',
+        tagline: 'Guía práctica para tu primera escapada al mar',
+        coverUrl:
+          'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'El Caribe no es solo sol y playa: es buceo en arrecifes vivos, snorkel con tortugas y atardeceres que no se olvidan. En esta guía te cuento cómo armé mi primera semana acuática y qué me hubiera gustado saber antes.',
+          },
+          {
+            type: 'image',
+            url: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&q=80',
+            caption: 'Snorkel en aguas cristalinas',
+          },
+          {
+            type: 'paragraph',
+            text: 'Elegí una base en la costa y desde ahí hice excursiones de un día. Así evité cambiar de alojamiento cada noche y pude repetir los spots que más me gustaron. La clave está en contratar lanchas locales y salir temprano.',
+          },
+          {
+            type: 'quote',
+            text: 'El mar nos devuelve lo que le damos: respeto y curiosidad.',
+            cite: 'Jacques Cousteau',
+          },
+          {
+            type: 'paragraph',
+            text: 'Si es tu primera vez, invierte en un buen curso de snorkel o un bautismo de buceo. La diferencia entre ver peces desde la superficie y bajar unos metros es enorme. Yo lo hice el segundo día y no me arrepiento.',
+          },
+          {
+            type: 'image',
+            url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80',
+            caption: 'Atardecer desde la playa',
+          },
+          {
+            type: 'paragraph',
+            text: 'Lleva protector solar biodegradable y no toques el coral. Con pequeños gestos mantenemos estos lugares para los que vienen después.',
+          },
+        ],
+        tags: ['caribe', 'buceo', 'snorkel', 'playas', 'aventura'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Aventura Acuática en el Caribe - Guía práctica',
+          description:
+            'Buceo, snorkel y playas secretas: cómo planear tu primera semana en el Caribe',
+          keywords: ['caribe', 'buceo', 'snorkel', 'playas', 'guía'],
+        },
+        publishedAt: new Date('2024-05-20'),
+        faq: {
+          items: [
+            {
+              question: '¿Hace falta saber nadar para hacer snorkel?',
+              answer:
+                'Sí, es recomendable sentirse cómodo en el agua. En muchas excursiones te dan chaleco y puedes flotar sin esfuerzo, pero saber nadar te da seguridad y te permite moverte mejor.',
+            },
+            {
+              question: '¿Cuál es la mejor época para el Caribe?',
+              answer:
+                'Diciembre a abril suele tener menos lluvia y mar más tranquilo. De junio a noviembre es temporada de huracanes en la región; sigue el pronóstico si viajas en esas fechas.',
+            },
+            {
+              question: '¿Necesito certificación para bucear?',
+              answer:
+                'Para un bautismo (inmersión guiada hasta ~12 m) no. Para inmersiones más profundas o repetidas, sí: el curso Open Water es el estándar y vale la pena.',
+            },
+          ],
+        },
+      },
+      update: {
+        slug: 'aventura-acuatica',
+        title: 'Aventura Acuática en el Caribe',
+        subtitle: 'Buceo, snorkel y playas secretas en una semana',
+        tagline: 'Guía práctica para tu primera escapada al mar',
+        coverUrl:
+          'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'El Caribe no es solo sol y playa: es buceo en arrecifes vivos, snorkel con tortugas y atardeceres que no se olvidan. En esta guía te cuento cómo armé mi primera semana acuática y qué me hubiera gustado saber antes.',
+          },
+          {
+            type: 'image',
+            url: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&q=80',
+            caption: 'Snorkel en aguas cristalinas',
+          },
+          {
+            type: 'paragraph',
+            text: 'Elegí una base en la costa y desde ahí hice excursiones de un día. Así evité cambiar de alojamiento cada noche y pude repetir los spots que más me gustaron. La clave está en contratar lanchas locales y salir temprano.',
+          },
+          {
+            type: 'quote',
+            text: 'El mar nos devuelve lo que le damos: respeto y curiosidad.',
+            cite: 'Jacques Cousteau',
+          },
+          {
+            type: 'paragraph',
+            text: 'Si es tu primera vez, invierte en un buen curso de snorkel o un bautismo de buceo. La diferencia entre ver peces desde la superficie y bajar unos metros es enorme. Yo lo hice el segundo día y no me arrepiento.',
+          },
+          {
+            type: 'image',
+            url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80',
+            caption: 'Atardecer desde la playa',
+          },
+          {
+            type: 'paragraph',
+            text: 'Lleva protector solar biodegradable y no toques el coral. Con pequeños gestos mantenemos estos lugares para los que vienen después.',
+          },
+        ],
+        tags: ['caribe', 'buceo', 'snorkel', 'playas', 'aventura'],
+        faq: {
+          items: [
+            {
+              question: '¿Hace falta saber nadar para hacer snorkel?',
+              answer:
+                'Sí, es recomendable sentirse cómodo en el agua. En muchas excursiones te dan chaleco y puedes flotar sin esfuerzo, pero saber nadar te da seguridad y te permite moverte mejor.',
+            },
+            {
+              question: '¿Cuál es la mejor época para el Caribe?',
+              answer:
+                'Diciembre a abril suele tener menos lluvia y mar más tranquilo. De junio a noviembre es temporada de huracanes en la región; sigue el pronóstico si viajas en esas fechas.',
+            },
+            {
+              question: '¿Necesito certificación para bucear?',
+              answer:
+                'Para un bautismo (inmersión guiada hasta ~12 m) no. Para inmersiones más profundas o repetidas, sí: el curso Open Water es el estándar y vale la pena.',
+            },
+          ],
+        },
+        publishedAt: new Date('2024-05-20'),
+        status: BlogStatus.PUBLISHED,
+      },
+    });
+    console.log(`✅ Upserted mockup blog post: Aventura Acuática (${mockupPostId})`);
+
     const blogPosts = [
       {
         authorId: dawson.id,
@@ -805,6 +969,20 @@ async function seedTrippersAndPackages() {
           keywords: ['buenos aires', 'viajes', 'aventura', 'patagonia'],
         },
         publishedAt: new Date('2024-01-15'),
+        faq: {
+          items: [
+            {
+              question: '¿Cuántos días recomiendas para Buenos Aires?',
+              answer:
+                'Mínimo 3–4 días para ver lo esencial. Si quieres sumar barrios y día en Tigre o Colonia, una semana está bien.',
+            },
+            {
+              question: '¿Es seguro caminar de noche por San Telmo?',
+              answer:
+                'Sí, las zonas turísticas suelen estar bien. Como en cualquier ciudad grande, evita zonas vacías y ten cuidado con los objetos de valor.',
+            },
+          ],
+        },
       },
       {
         authorId: dawson.id,
@@ -843,6 +1021,20 @@ async function seedTrippersAndPackages() {
           keywords: ['colombia', 'cafe', 'gastronomia', 'turismo'],
         },
         publishedAt: new Date('2024-02-10'),
+        faq: {
+          items: [
+            {
+              question: '¿Cuál es la mejor época para visitar el Eje Cafetero?',
+              answer:
+                'Entre diciembre y marzo, y julio y agosto, suele hacer mejor clima. La cosecha principal es de octubre a diciembre.',
+            },
+            {
+              question: '¿Hay que reservar las visitas a las fincas?',
+              answer:
+                'Sí, sobre todo en temporada alta. Muchas fincas ofrecen tour + degustación con reserva previa.',
+            },
+          ],
+        },
       },
       {
         authorId: dawson.id,
@@ -945,8 +1137,15 @@ async function seedTrippersAndPackages() {
     ];
 
     for (const blogData of blogPosts) {
+      const baseSlug = slugify(blogData.title) || 'post';
+      let slug = baseSlug;
+      let suffix = 0;
+      while (await prisma.blogPost.findUnique({ where: { slug } })) {
+        suffix += 1;
+        slug = `${baseSlug}-${suffix}`;
+      }
       const blog = await prisma.blogPost.create({
-        data: blogData,
+        data: { ...blogData, slug },
       });
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
@@ -1010,8 +1209,15 @@ async function seedTrippersAndPackages() {
 
     console.log('\n📝 Creating blog posts for Alma...');
     for (const blogData of almaBlogPosts) {
+      const baseSlug = slugify(blogData.title) || 'post';
+      let slug = baseSlug;
+      let suffix = 0;
+      while (await prisma.blogPost.findUnique({ where: { slug } })) {
+        suffix += 1;
+        slug = `${baseSlug}-${suffix}`;
+      }
       const blog = await prisma.blogPost.create({
-        data: blogData,
+        data: { ...blogData, slug },
       });
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
@@ -1051,8 +1257,15 @@ async function seedTrippersAndPackages() {
 
     console.log('\n📝 Creating blog posts for Randomtrip...');
     for (const blogData of randomtripBlogPosts) {
+      const baseSlug = slugify(blogData.title) || 'post';
+      let slug = baseSlug;
+      let suffix = 0;
+      while (await prisma.blogPost.findUnique({ where: { slug } })) {
+        suffix += 1;
+        slug = `${baseSlug}-${suffix}`;
+      }
       const blog = await prisma.blogPost.create({
-        data: blogData,
+        data: { ...blogData, slug },
       });
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
@@ -1112,8 +1325,98 @@ async function seedTrippersAndPackages() {
 
     console.log('\n📝 Creating blog posts for David Ortega...');
     for (const blogData of davidBlogPosts) {
+      const baseSlug = slugify(blogData.title) || 'post';
+      let slug = baseSlug;
+      let suffix = 0;
+      while (await prisma.blogPost.findUnique({ where: { slug } })) {
+        suffix += 1;
+        slug = `${baseSlug}-${suffix}`;
+      }
       const blog = await prisma.blogPost.create({
-        data: blogData,
+        data: { ...blogData, slug },
+      });
+      console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
+    }
+
+    // Sofia: 3 posts with text-only rich content
+    const sofia = createdTrippers[4];
+    const sofiaBlogPosts = [
+      {
+        authorId: sofia.id,
+        title: 'Mi primer sorpresa en la nieve',
+        subtitle: 'Cuando el invierno se convierte en aventura',
+        tagline: 'Una experiencia que no olvidaré',
+        coverUrl:
+          'https://images.unsplash.com/photo-1551582045-6ec9c11d8697?w=1200&q=80',
+        content: `<p>Nunca había visto tanta nieve junta. El paisaje blanco, el silencio y la sensación de estar en otro mundo me marcaron para siempre. En este post quiero compartir cómo fue mi primera vez en la montaña en temporada invernal.</p><p>La clave fue ir bien equipado y con una actitud de descubrimiento. Cada paso sobre la nieve era una pequeña aventura. Al final del día, una taza de chocolate caliente frente a la ventana con vista a los picos fue el broche de oro.</p>`,
+        blocks: [],
+        tags: ['invierno', 'nieve', 'aventura', 'naturaleza'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Mi primer sorpresa en la nieve - Sofia',
+          description: 'Mi primera experiencia en la nieve y en la montaña',
+          keywords: ['nieve', 'invierno', 'aventura', 'montaña'],
+        },
+        publishedAt: new Date('2024-08-01'),
+      },
+      {
+        authorId: sofia.id,
+        title: 'Viajar Solo: La Mejor Decisión Que Podés Tomar',
+        subtitle: 'Reflexiones sobre viajar en solitario',
+        tagline: 'Libertad, introspección y nuevos amigos',
+        coverUrl:
+          'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80',
+        content: `<p>Viajar sola me enseñó más sobre mí misma que cualquier otro año de mi vida. Al principio daba miedo; después se volvió adictivo. La libertad de elegir cada paso, cada restaurante, cada ruta sin tener que negociar con nadie es una sensación que recomiendo a todo el mundo probar al menos una vez.</p><p>Lo que más me sorprendió fue la cantidad de gente que conocés cuando vas sola. La gente se acerca más, te invitan a la mesa, te cuentan historias. Si estás dudando, mi consejo es: empezá por un viaje corto y cercano. El resto viene solo.</p>`,
+        blocks: [],
+        tags: ['solo', 'libertad', 'reflexión', 'viajes'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Viajar Solo: La Mejor Decisión - Sofia',
+          description: 'Por qué viajar en solitario puede ser la mejor decisión',
+          keywords: ['viajar solo', 'solo', 'aventura', 'libertad'],
+        },
+        publishedAt: new Date('2024-08-15'),
+      },
+      {
+        authorId: sofia.id,
+        title: 'Ciudades que no duermen: noches en São Paulo',
+        subtitle: 'Guía rápida para disfrutar la noche paulista',
+        tagline: 'Bares, música y encuentros inolvidables',
+        coverUrl:
+          'https://images.unsplash.com/photo-1544980912-4f582ef6d23a?w=1200&q=80',
+        content: `<p>São Paulo es una ciudad que cobra vida cuando el sol se esconde. Los bares se llenan, la música suena en cada esquina y la energía es única. En este post te cuento mis rincones favoritos para vivir la noche paulista sin gastar una fortuna.</p><p>Desde bares con vista hasta fiestas en galerías de arte, la oferta es infinita. Lo importante es ir con ganas de caminar, de hablar con desconocidos y de dejarse llevar. La noche en São Paulo te devuelve lo que vos le das.</p>`,
+        blocks: [],
+        tags: ['sao-paulo', 'noche', 'bares', 'cultura'],
+        travelType: 'solo',
+        excuseKey: 'solo-adventure',
+        format: BlogFormat.ARTICLE,
+        status: BlogStatus.PUBLISHED,
+        seo: {
+          title: 'Ciudades que no duermen: São Paulo - Sofia',
+          description: 'Guía para disfrutar la noche en São Paulo',
+          keywords: ['são paulo', 'noche', 'bares', 'viajes'],
+        },
+        publishedAt: new Date('2024-09-01'),
+      },
+    ];
+
+    console.log('\n📝 Creating blog posts for Sofia...');
+    for (const blogData of sofiaBlogPosts) {
+      const baseSlug = slugify(blogData.title) || 'post';
+      let slug = baseSlug;
+      let suffix = 0;
+      while (await prisma.blogPost.findUnique({ where: { slug } })) {
+        suffix += 1;
+        slug = `${baseSlug}-${suffix}`;
+      }
+      const blog = await prisma.blogPost.create({
+        data: { ...blogData, slug },
       });
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }

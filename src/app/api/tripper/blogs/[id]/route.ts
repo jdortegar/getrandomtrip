@@ -48,7 +48,9 @@ export async function GET(
         subtitle: true,
         tagline: true,
         coverUrl: true,
+        content: true,
         blocks: true,
+        faq: true,
         tags: true,
         format: true,
         status: true,
@@ -132,7 +134,9 @@ export async function PATCH(
       title,
       subtitle,
       tagline,
+      content,
       blocks,
+      faq,
       tags,
       format,
       status,
@@ -149,11 +153,28 @@ export async function PATCH(
     }
 
     // Convert string enums to uppercase for Prisma
+    const { slugify } = await import('@/lib/helpers/slugify');
     const updateData: any = {};
-    if (title !== undefined) updateData.title = title;
+    if (title !== undefined) {
+      updateData.title = title;
+      const baseSlug = slugify(title) || 'post';
+      let slug = baseSlug;
+      let suffix = 0;
+      while (true) {
+        const existing = await prisma.blogPost.findFirst({
+          where: { slug, id: { not: blogId } },
+        });
+        if (!existing) break;
+        suffix += 1;
+        slug = `${baseSlug}-${suffix}`;
+      }
+      updateData.slug = slug;
+    }
     if (subtitle !== undefined) updateData.subtitle = subtitle || null;
     if (tagline !== undefined) updateData.tagline = tagline || null;
+    if (content !== undefined) updateData.content = content ?? null;
     if (blocks !== undefined) updateData.blocks = blocks;
+    if (faq !== undefined) updateData.faq = faq ?? null;
     if (tags !== undefined) updateData.tags = tags;
     if (coverUrl !== undefined) updateData.coverUrl = coverUrl || null;
     if (seo !== undefined) updateData.seo = seo || null;
@@ -187,7 +208,9 @@ export async function PATCH(
         subtitle: true,
         tagline: true,
         coverUrl: true,
+        content: true,
         blocks: true,
+        faq: true,
         tags: true,
         format: true,
         status: true,

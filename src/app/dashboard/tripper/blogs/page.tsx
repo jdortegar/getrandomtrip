@@ -179,7 +179,7 @@ function BlogListContent() {
                           </Link>
                           {post.status === 'published' && (
                             <Link
-                              href={`/blog/${post.id}`}
+                              href={`/blog/${post.slug ?? post.id}`}
                               target="_blank"
                               className="flex items-center justify-center gap-2 px-3 py-2 text-sm bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors"
                             >

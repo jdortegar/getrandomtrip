@@ -746,6 +746,7 @@ export async function getTripperPublishedBlogs(
       },
       select: {
         id: true,
+        slug: true,
         title: true,
         subtitle: true,
         coverUrl: true,
@@ -761,7 +762,7 @@ export async function getTripperPublishedBlogs(
       .filter((blog): blog is typeof blog & { coverUrl: string } => blog.coverUrl != null)
       .map((blog) => ({
         category: blog.tags[0] ?? 'Viajes',
-        href: `/blog/${blog.id}`,
+        href: `/blog/${blog.slug ?? blog.id}`,
         image: blog.coverUrl,
         title: blog.title,
       }));

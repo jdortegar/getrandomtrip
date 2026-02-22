@@ -22,21 +22,23 @@ type CarouselProps = {
   plugins?: CarouselPlugin;
   orientation?: 'horizontal' | 'vertical';
   setApi?: (api: CarouselApi) => void;
+  showNavWithSingleSlide?: boolean;
 } & {
   edgeBleed?: boolean;
   edgeBleedSide?: EdgeBleedSide;
 };
 
 type CarouselContextProps = {
-  carouselRef: ReturnType<typeof useEmblaCarousel>[0];
   api: ReturnType<typeof useEmblaCarousel>[1];
-  scrollPrev: () => void;
-  scrollNext: () => void;
-  scrollTo: (index: number) => void;
-  canScrollPrev: boolean;
   canScrollNext: boolean;
-  selectedIndex: number;
+  canScrollPrev: boolean;
+  carouselRef: ReturnType<typeof useEmblaCarousel>[0];
+  forceEnableNavigation: boolean;
+  scrollNext: () => void;
+  scrollPrev: () => void;
   scrollSnaps: number[];
+  scrollTo: (index: number) => void;
+  selectedIndex: number;
 } & CarouselProps;
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
@@ -58,14 +60,15 @@ const CarouselRoot = React.forwardRef<
 >(
   (
     {
-      orientation = 'horizontal',
-      opts,
-      setApi,
-      plugins,
-      className,
       children,
+      className,
       edgeBleed = false,
       edgeBleedSide = 'right',
+      orientation = 'horizontal',
+      opts,
+      plugins,
+      setApi,
+      showNavWithSingleSlide = false,
       ...props
     },
     ref,
@@ -149,20 +152,22 @@ const CarouselRoot = React.forwardRef<
     return (
       <CarouselContext.Provider
         value={{
-          carouselRef,
           api: api,
+          canScrollNext,
+          canScrollPrev,
+          carouselRef,
+          edgeBleed,
+          edgeBleedSide,
+          forceEnableNavigation:
+            showNavWithSingleSlide && scrollSnaps.length <= 1,
           opts,
           orientation:
             orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
-          scrollPrev,
           scrollNext,
-          scrollTo,
-          canScrollPrev,
-          canScrollNext,
-          selectedIndex,
+          scrollPrev,
           scrollSnaps,
-          edgeBleed,
-          edgeBleedSide,
+          scrollTo,
+          selectedIndex,
         }}
       >
         <div
@@ -241,7 +246,8 @@ const CarouselPrevious = React.forwardRef<
     { className, variant = 'ghost', size = 'icon', inHeader = false, ...props },
     ref,
   ) => {
-    const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+    const { canScrollPrev, forceEnableNavigation, orientation, scrollPrev } =
+      useCarousel();
 
     return (
       <Button
@@ -254,7 +260,7 @@ const CarouselPrevious = React.forwardRef<
           'text-white',
           className,
         )}
-        disabled={!canScrollPrev}
+        disabled={!forceEnableNavigation && !canScrollPrev}
         onClick={scrollPrev}
         {...props}
       >
@@ -274,7 +280,8 @@ const CarouselNext = React.forwardRef<
     { className, variant = 'ghost', size = 'icon', inHeader = false, ...props },
     ref,
   ) => {
-    const { orientation, scrollNext, canScrollNext } = useCarousel();
+    const { canScrollNext, forceEnableNavigation, orientation, scrollNext } =
+      useCarousel();
 
     return (
       <Button
@@ -287,7 +294,7 @@ const CarouselNext = React.forwardRef<
           'text-white',
           className,
         )}
-        disabled={!canScrollNext}
+        disabled={!forceEnableNavigation && !canScrollNext}
         onClick={scrollNext}
         {...props}
       >
@@ -371,30 +378,32 @@ type CarouselSimpleProps = {
   fullViewportWidth?: boolean;
   viewportPaddingClassName?: string;
   dotsAlign?: 'left' | 'center' | 'right';
+  showNavWithSingleSlide?: boolean;
 };
 
 function Carousel({
   children,
   classes,
-  title,
   className,
+  dotsAlign = 'center',
+  edgeBleed = true,
+  edgeBleedSide = 'right',
+  fullViewportWidth = false,
   itemClassName,
-  showArrows = true,
-  showDots = true,
   navigationClassName,
-  slidesToScroll = 1,
   opts = {
     align: 'start',
     loop: false,
   },
-  plugins,
   orientation = 'horizontal',
+  plugins,
   setApi,
-  edgeBleed = true,
-  edgeBleedSide = 'right',
-  fullViewportWidth = false,
+  showArrows = true,
+  showDots = true,
+  showNavWithSingleSlide = false,
+  slidesToScroll = 1,
+  title,
   viewportPaddingClassName,
-  dotsAlign = 'center',
 }: CarouselSimpleProps) {
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const [viewportPadding, setViewportPadding] = React.useState<{
@@ -474,16 +483,17 @@ function Carousel({
     >
       <div className={cn(wrapperClass)}>
         <CarouselRoot
+          className={cn('w-full', classes?.root)}
+          edgeBleed={edgeBleed}
+          edgeBleedSide={edgeBleedSide}
           opts={{
             ...opts,
             slidesToScroll: slidesToScroll,
           }}
-          plugins={plugins}
           orientation={orientation}
+          plugins={plugins}
           setApi={setApi}
-          className={cn('w-full', classes?.root)}
-          edgeBleed={edgeBleed}
-          edgeBleedSide={edgeBleedSide}
+          showNavWithSingleSlide={showNavWithSingleSlide}
         >
           {/* Section Header and Navigation */}
           <div className="flex items-center justify-between mb-6">

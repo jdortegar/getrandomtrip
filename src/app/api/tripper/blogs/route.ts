@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { slugify } from '@/lib/helpers/slugify';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
@@ -40,7 +41,9 @@ export async function GET(request: NextRequest) {
         subtitle: true,
         tagline: true,
         coverUrl: true,
+        content: true,
         blocks: true,
+        faq: true,
         tags: true,
         format: true,
         status: true,
@@ -97,7 +100,9 @@ export async function POST(request: NextRequest) {
       title,
       subtitle,
       tagline,
+      content,
       blocks,
+      faq,
       tags,
       format,
       status,
@@ -124,14 +129,26 @@ export async function POST(request: NextRequest) {
     };
     const prismaFormat = formatMap[blogFormat.toLowerCase()] || 'ARTICLE';
 
-    // Create blog in database
+    const baseSlug = slugify(title) || 'post';
+    let slug = baseSlug;
+    let suffix = 0;
+    while (true) {
+      const existing = await prisma.blogPost.findUnique({ where: { slug } });
+      if (!existing) break;
+      suffix += 1;
+      slug = `${baseSlug}-${suffix}`;
+    }
+
     const blog = await prisma.blogPost.create({
       data: {
         authorId: user.id,
         title,
+        slug,
         subtitle: subtitle || null,
         tagline: tagline || null,
+        content: content ?? null,
         blocks: blocks || [],
+        faq: faq ?? null,
         tags: tags || [],
         format: prismaFormat,
         status: blogStatus,
@@ -146,7 +163,9 @@ export async function POST(request: NextRequest) {
         subtitle: true,
         tagline: true,
         coverUrl: true,
+        content: true,
         blocks: true,
+        faq: true,
         tags: true,
         format: true,
         status: true,
