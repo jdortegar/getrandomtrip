@@ -1,209 +1,200 @@
 import Link from 'next/link';
-import Img from '../common/Img';
+import Img from '@/components/common/Img';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
+import type { Locale } from '@/lib/i18n/config';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
 
-export default function Footer() {
+interface FooterProps {
+  dict: Dictionary;
+  locale: Locale;
+}
+
+export default function Footer({ dict, locale }: FooterProps) {
   const year = new Date().getFullYear();
+  const f = dict.footer;
 
   return (
-    <footer className="relative bg-gray-900 text-white overflow-hidden">
-      {/* Elegant gradient background overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50 pointer-events-none" />
-
-      {/* Subtle accent glow */}
-      <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl pointer-events-none" />
+    <footer className="relative overflow-hidden bg-gray-900 text-white">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50" />
+      <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
 
       <div className="relative">
-        {/* Decorative top border */}
         <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        {/* Main Footer Content */}
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
-            {/* Company Section */}
             <div className="flex items-center justify-center">
               <Img
-                src="/assets/logos/logo_getrandomtrip_white.png"
-                alt="Randomtrip"
-                width={240}
+                alt={dict.common.siteName}
                 height={40}
+                src="/assets/logos/logo_getrandomtrip_white.png"
+                width={240}
               />
             </div>
 
-            {/* Quick Links */}
             <div>
               <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
-                Enlaces Rápidos
+                {f.quickLinksTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/about"
+                    href={pathForLocale(locale, '/nosotros')}
                   >
-                    Nosotros
+                    {f.about}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/how-it-works"
+                    href={pathForLocale(locale, '/how-it-works')}
                   >
-                    Cómo Funciona
+                    {f.howItWorks}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/blog"
+                    href={pathForLocale(locale, '/blog')}
                   >
-                    Inspiración
+                    {f.inspiration}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/faq"
+                    href={pathForLocale(locale, '/faq')}
                   >
-                    Preguntas Frecuentes
+                    {f.faq}
                   </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Traveler Types */}
             <div>
               <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
-                Viajeros
+                {f.travelersTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/packages/by-type/solo"
+                    href={pathForLocale(locale, '/packages/by-type/solo')}
                   >
-                    Solo
+                    {f.solo}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/packages/by-type/couple"
+                    href={pathForLocale(locale, '/packages/by-type/couple')}
                   >
-                    Pareja
+                    {f.couple}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/packages/by-type/family"
+                    href={pathForLocale(locale, '/packages/by-type/family')}
                   >
-                    Familia
+                    {f.family}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/packages/by-type/group"
+                    href={pathForLocale(locale, '/packages/by-type/group')}
                   >
-                    Grupos
+                    {f.group}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/packages/by-type/honeymoon"
+                    href={pathForLocale(locale, '/packages/by-type/honeymoon')}
                   >
-                    Luna de miel
+                    {f.honeymoon}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/packages/by-type/paws"
+                    href={pathForLocale(locale, '/packages/by-type/paws')}
                   >
-                    Paws
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            {/* Legal */}
-            <div>
-              <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
-                Legal
-              </h4>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/terms"
-                  >
-                    Términos de Servicio
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/privacy"
-                  >
-                    Política de Privacidad
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/cookies"
-                  >
-                    Política de Cookies
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/refund"
-                  >
-                    Política de Reembolso
+                    {f.paws}
                   </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Contact & Social */}
             <div>
               <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
-                Contáctanos
+                {f.legalTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/contact"
+                    href={pathForLocale(locale, '/terms')}
                   >
-                    Contacto
+                    {f.termsOfService}
                   </Link>
                 </li>
                 <li>
                   <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="/support"
+                    href={pathForLocale(locale, '/privacy')}
                   >
-                    Soporte
+                    {f.privacyPolicy}
                   </Link>
                 </li>
-                {/* <li>
-                  <a
+                <li>
+                  <Link
                     className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
-                    href="mailto:hello@randomtrip.com"
+                    href={pathForLocale(locale, '/cookies')}
                   >
-                    hello@randomtrip.com
-                  </a>
-                </li> */}
+                    {f.cookiePolicy}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href={pathForLocale(locale, '/refund')}
+                  >
+                    {f.refundPolicy}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-jost mb-6 text-sm font-semibold uppercase tracking-wider text-white">
+                {f.contactTitle}
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href={pathForLocale(locale, '/contact')}
+                  >
+                    {f.contact}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="font-jost text-sm text-gray-300/90 transition-colors hover:text-primary"
+                    href={pathForLocale(locale, '/support')}
+                  >
+                    {f.support}
+                  </Link>
+                </li>
               </ul>
 
-              {/* Social Links */}
               <div className="mt-8 flex gap-4">
                 <a
-                  aria-label="Facebook"
+                  aria-label={f.ariaFacebook}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10"
                   href="https://facebook.com"
                   rel="noopener noreferrer"
@@ -218,7 +209,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  aria-label="Instagram"
+                  aria-label={f.ariaInstagram}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10"
                   href="https://instagram.com"
                   rel="noopener noreferrer"
@@ -233,7 +224,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  aria-label="Twitter"
+                  aria-label={f.ariaTwitter}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10"
                   href="https://twitter.com"
                   rel="noopener noreferrer"
@@ -252,15 +243,14 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="border-t border-white/10">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
               <p className="font-caveat text-center text-lg text-gray-400">
-                Where the routine ends, the adventure begins.
+                {f.tagline}
               </p>
               <p className="font-jost text-sm text-gray-400">
-                © {year} Randomtrip. Todos los derechos reservados.
+                © {year} {dict.common.siteName}. {f.copyright}
               </p>
             </div>
           </div>

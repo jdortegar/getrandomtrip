@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
-import SkeletonLoader from '../../components/SkeletonLoader';
+import PrimaryButton from '@/components/PrimaryButton';
+import SkeletonLoader from '@/components/SkeletonLoader';
 
 interface BookingConfirmation {
   success: boolean;

@@ -1,5 +1,5 @@
 import RevealDestinationClient from './RevealDestinationClient';
-import ProgressBar from '../../components/ProgressBar';
+import ProgressBar from '@/components/ProgressBar';
 import { Suspense } from 'react';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 

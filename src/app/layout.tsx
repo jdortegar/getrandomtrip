@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import './globals.css';
 import '@/styles/rt.css';
 import {
@@ -10,14 +10,6 @@ import {
   Caveat,
   Nothing_You_Could_Do,
 } from 'next/font/google';
-import HeaderGate from '@/components/layout/HeaderGate';
-import SiteHeaderOffset from '@/components/layout/SiteHeaderOffset';
-import SessionProvider from '@/components/providers/SessionProvider';
-import dynamic from 'next/dynamic';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/layout/Footer';
-import AppTracking from '@/components/tracking/AppTracking';
-import { Toaster } from '@/components/ui/toaster';
 
 const barlow = Barlow({
   subsets: ['latin'],
@@ -59,18 +51,10 @@ const nothingYouCouldDo = Nothing_You_Could_Do({
   display: 'swap',
 });
 
-// Carga del client component sin SSR
-const NewsletterBar = dynamic(
-  () => import('@/components/newsletter/NewsletterBar'),
-  { ssr: false },
-);
-
 export const metadata = {
   title: 'Randomtrip',
   icons: {
-    icon: [
-      { url: '/favicon.png', sizes: 'any', type: 'image/png' },
-    ],
+    icon: [{ url: '/favicon.png', sizes: 'any', type: 'image/png' }],
     shortcut: { url: '/favicon.png', type: 'image/png' },
     apple: { url: '/favicon.png' },
   },
@@ -91,18 +75,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#fafafa" />
       </head>
       <body className="bg-neutral-50 text-neutral-900 antialiased overflow-x-hidden font-sans">
-        <SessionProvider>
-          {/* <SiteHeaderOffset /> */}
-          {/* <HeaderGate /> */}
-          <Suspense fallback={null}>
-            <AppTracking />
-          </Suspense>
-          <Navbar />
-          {children}
-          <Footer />
-          {/* <NewsletterBar /> 👈 persistente en todo el sitio */}
-          <Toaster />
-        </SessionProvider>
+        {children}
       </body>
     </html>
   );

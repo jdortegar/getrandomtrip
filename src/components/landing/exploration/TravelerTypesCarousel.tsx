@@ -3,7 +3,10 @@
 import React from 'react';
 import TravelerTypeCard from '@/components/TravelerTypeCard';
 import { slugify } from '@/lib/slugify';
-import { initialTravellerTypes } from '@/lib/data/travelerTypes';
+import {
+  initialTravellerTypes,
+  type TravelerType,
+} from '@/lib/data/travelerTypes';
 import { Carousel } from '@/components/Carousel';
 import { motion } from 'framer-motion';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
@@ -26,29 +29,34 @@ interface TravelerTypesCarouselProps {
   tripperMode?: boolean;
   /** When set, card links go to this tripper’s packages page. */
   tripperSlug?: string;
+  /** Localized traveler types (title + description). When not set, uses initialTravellerTypes. */
+  travelerTypes?: TravelerType[];
 }
 
 export function TravelerTypesCarousel({
   availableTypes,
-  showArrows = true,
-  showDots = true,
   classes,
   fullViewportWidth,
   itemsPerView = 4,
   onSelect,
   selectedTravelType,
+  showArrows = true,
+  showDots = true,
+  travelerTypes,
   tripperMode = false,
   tripperSlug,
 }: TravelerTypesCarouselProps) {
+  const baseTypes = travelerTypes ?? initialTravellerTypes;
+
   const getSlugFromTravelType = (travelType: string): TravelerTypeSlug => {
     const normalized = travelType.toLowerCase();
     const mapping: Record<string, TravelerTypeSlug> = {
       couple: 'couple',
-      solo: 'solo',
       family: 'family',
       group: 'group',
       honeymoon: 'honeymoon',
       paws: 'paws',
+      solo: 'solo',
     };
     return mapping[normalized] || (normalized as TravelerTypeSlug);
   };
@@ -62,17 +70,17 @@ export function TravelerTypesCarousel({
   const typesToShow = React.useMemo(() => {
     if (isTripperContext) {
       if (!allowedSet || allowedSet.size === 0) return [];
-      return initialTravellerTypes.filter((type) =>
+      return baseTypes.filter((type) =>
         allowedSet.has(type.travelType.toLowerCase()),
       );
     }
-    if (!allowedSet) return initialTravellerTypes;
-    return initialTravellerTypes.filter((type) =>
+    if (!allowedSet) return baseTypes;
+    return baseTypes.filter((type) =>
       allowedSet.has(type.travelType.toLowerCase()),
     );
-  }, [isTripperContext, allowedSet]);
+  }, [isTripperContext, allowedSet, baseTypes]);
 
-  const handleCardClick = (type: (typeof initialTravellerTypes)[0]) => {
+  const handleCardClick = (type: TravelerType) => {
     if (!type.enabled || !onSelect) return;
     const slug = getSlugFromTravelType(type.travelType);
     onSelect(slug);
@@ -87,7 +95,7 @@ export function TravelerTypesCarousel({
     return 'w-[280px] h-[332px] flex-shrink-0';
   };
 
-  const getHref = (type: (typeof initialTravellerTypes)[0]) => {
+  const getHref = (type: TravelerType) => {
     if (onSelect) return undefined;
     if (tripperSlug) {
       return `/packages/by-tripper/${tripperSlug}`;
@@ -145,7 +153,7 @@ export function TravelerTypesCarousel({
           const isSelected = selectedTravelType === slug;
           return (
             <div
-              key={t.title}
+              key={t.travelType}
               className="h-[332px] w-[280px] shrink-0"
             >
               <TravelerTypeCard
@@ -187,7 +195,7 @@ export function TravelerTypesCarousel({
 
           return (
             <TravelerTypeCard
-              key={t.title}
+              key={t.travelType}
               className="h-full w-full"
               description={t.description}
               disabled={!t.enabled}

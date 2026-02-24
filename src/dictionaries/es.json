@@ -1,0 +1,152 @@
+{
+  "nav": {
+    "labelTrippers": "Trippers",
+    "labelInspiration": "Inspiración",
+    "labelNosotros": "Nosotros",
+    "labelTripbuddy": "North IA",
+    "labelBitacoras": "Off the Record",
+    "ariaLabelTrippers": "Ir a la página de Trippers",
+    "ariaLabelInspiration": "Ir a la sección de inspiración",
+    "ariaLabelNosotros": "Ir a la página sobre nosotros",
+    "ariaLabelTripbuddy": "Ir a North IA (TripBuddy)",
+    "ariaLabelBitacoras": "Ir a Off the Record: Bitácoras del Continente",
+    "ariaLabelLogo": "Randomtrip",
+    "openMenu": "Abrir menú de navegación",
+    "search": "Buscar",
+    "selectLanguage": "Seleccionar idioma",
+    "signIn": "Iniciar sesión",
+    "whatsApp": "WhatsApp"
+  },
+  "common": {
+    "siteName": "Randomtrip"
+  },
+  "auth": {
+    "close": "Cerrar",
+    "continueWithGoogle": "Continuar con Google",
+    "createAccount": "Crear Cuenta",
+    "createAccountSubtitle": "Crea tu cuenta para empezar",
+    "email": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "fillAllFields": "Por favor completa todos los campos",
+    "invalidEmail": "Por favor ingresa un email válido",
+    "loginFailed": "Algo salió mal",
+    "loginSubtitle": "Ingresa a tu cuenta para continuar",
+    "nameLabel": "Nombre completo",
+    "namePlaceholder": "Juan Pérez",
+    "nameRequired": "El nombre es requerido",
+    "orContinueWith": "o continúa con",
+    "password": "Contraseña",
+    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+    "signIn": "Iniciar Sesión",
+    "signUp": "Regístrate",
+    "noAccount": "¿No tienes cuenta?",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "loading": "Cargando..."
+  },
+  "home": {
+    "blogCarouselSlideAriaLabel": "Ir al slide {0}",
+    "blogEyebrow": "Historias de viajeros",
+    "blogSubtitle": "Experiencias memorables para inspirar tu mente.",
+    "blogTitle": "Explora las historias de nuestros Trippers",
+    "blogViewAllSubtitle": "Descubre todas nuestras aventuras y experiencias únicas",
+    "blogViewAllTitle": "Más Historias",
+    "explorationButtonTrippers": "EXPLORAR TRIPPERS",
+    "explorationComingSoon": "¡Pronto podrás explorar esta sección!",
+    "explorationEyebrow": "Dale forma a tu aventura",
+    "explorationSubtitle": "Encuentra el punto de partida perfecto para tu próximo viaje.",
+    "explorationTabs": [
+      { "id": "byTraveller", "label": "Por Viajero" },
+      { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
+    ],
+    "explorationTitle": "Puntos de Partida",
+    "explorationTravelerTypes": [
+      { "key": "couple", "title": "En Pareja", "description": "Escapadas románticas." },
+      { "key": "solo", "title": "Solo", "description": "Un viaje único." },
+      { "key": "family", "title": "En Familia", "description": "Recuerdos juntos." },
+      { "key": "group", "title": "En Grupo", "description": "Experiencias compartidas." },
+      { "key": "honeymoon", "title": "Honeymoon", "description": "El comienzo perfecto." },
+      { "key": "paws", "title": "PAWS", "description": "Aventuras con tu mascota." }
+    ],
+    "heroBrandingRepeatText": "Repeat",
+    "heroBrandingText": "WONDER • WANDER",
+    "heroPrimaryCtaAriaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
+    "heroPrimaryCtaText": "GETRANDOMTRIP!",
+    "heroScrollText": "SCROLL",
+    "heroSubtitle": "Viví lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
+    "heroTitle": "SERENDIPIA DISEÑADA",
+    "homeInfoCtaText": "GETRANDOMTRIP!",
+    "homeInfoEyebrow": "Tres pasos, cero stress",
+    "homeInfoSectionAriaLabel": "Información sobre Random Trip",
+    "homeInfoTabBenefits": "Beneficios clave",
+    "homeInfoTabHow": "¿Cómo funciona?",
+    "homeInfoTitle": "¿Qué hacemos?",
+    "testimonialsEyebrow": "Opiniones de viajeros",
+    "testimonialsSubtitle": "Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.",
+    "testimonialsTitle": "Lo que dicen sobre RandomTrip",
+    "testimonialsViewFullReview": "Ver opinión completa",
+    "howItWorksNote": "* El destino se revela 48 horas antes para preservar la sorpresa. Se envía guía y checklist.",
+    "howItWorksSteps": [
+      {
+        "title": "PLANIFICÁ",
+        "description": "Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.",
+        "imageAlt": "Camino entre bosque verde"
+      },
+      {
+        "title": "RECIBÍ LA SORPRESA",
+        "description": "Confirmá tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
+        "imageAlt": "Interior de avión de noche"
+      },
+      {
+        "title": "VIAJÁ SIN STRESS",
+        "description": "Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
+        "imageAlt": "Vista desde ventanilla del avión"
+      }
+    ],
+    "howItWorksSubtitle": "Tres pasos. Cero estrés. Más descubrimiento.",
+    "howItWorksTitle": "¿Cómo funciona?",
+    "benefitsSteps": [
+      {
+        "title": "sin stress y flexible",
+        "description": "Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.",
+        "imageAlt": "Camino entre bosque verde"
+      },
+      {
+        "title": "Todo resuelto",
+        "description": "Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.",
+        "imageAlt": "Interior de avión de noche"
+      },
+      {
+        "title": "descubrimiento auténtico",
+        "description": "Viví la emoción de lo inesperado con curaduría real, no al azar.",
+        "imageAlt": "Vista desde ventanilla del avión"
+      }
+    ]
+  },
+  "footer": {
+    "quickLinksTitle": "Enlaces Rápidos",
+    "about": "Nosotros",
+    "howItWorks": "Cómo Funciona",
+    "inspiration": "Inspiración",
+    "faq": "Preguntas Frecuentes",
+    "travelersTitle": "Viajeros",
+    "solo": "Solo",
+    "couple": "Pareja",
+    "family": "Familia",
+    "group": "Grupos",
+    "honeymoon": "Luna de miel",
+    "paws": "Paws",
+    "legalTitle": "Legal",
+    "termsOfService": "Términos de Servicio",
+    "privacyPolicy": "Política de Privacidad",
+    "cookiePolicy": "Política de Cookies",
+    "refundPolicy": "Política de Reembolso",
+    "contactTitle": "Contáctanos",
+    "contact": "Contacto",
+    "support": "Soporte",
+    "ariaFacebook": "Facebook",
+    "ariaInstagram": "Instagram",
+    "ariaTwitter": "Twitter",
+    "tagline": "Donde termina la rutina, comienza la aventura.",
+    "copyright": "Todos los derechos reservados."
+  }
+}

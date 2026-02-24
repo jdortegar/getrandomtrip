@@ -1,0 +1,152 @@
+{
+  "nav": {
+    "labelTrippers": "Trippers",
+    "labelInspiration": "Inspiration",
+    "labelNosotros": "About us",
+    "labelTripbuddy": "North IA",
+    "labelBitacoras": "Off the Record",
+    "ariaLabelTrippers": "Go to Trippers page",
+    "ariaLabelInspiration": "Go to inspiration section",
+    "ariaLabelNosotros": "Go to about us page",
+    "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
+    "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
+    "ariaLabelLogo": "Randomtrip",
+    "openMenu": "Open navigation menu",
+    "search": "Search",
+    "selectLanguage": "Select language",
+    "signIn": "Sign in",
+    "whatsApp": "WhatsApp"
+  },
+  "common": {
+    "siteName": "Randomtrip"
+  },
+  "auth": {
+    "close": "Close",
+    "continueWithGoogle": "Continue with Google",
+    "createAccount": "Create Account",
+    "createAccountSubtitle": "Create your account to get started",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "fillAllFields": "Please fill in all fields",
+    "invalidEmail": "Please enter a valid email",
+    "loginFailed": "Something went wrong",
+    "loginSubtitle": "Sign in to your account to continue",
+    "nameLabel": "Full name",
+    "namePlaceholder": "John Doe",
+    "nameRequired": "Name is required",
+    "orContinueWith": "or continue with",
+    "password": "Password",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "signIn": "Sign In",
+    "signUp": "Sign up",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "loading": "Loading..."
+  },
+  "home": {
+    "blogCarouselSlideAriaLabel": "Go to slide {0}",
+    "blogEyebrow": "Traveler stories",
+    "blogSubtitle": "Memorable experiences to inspire you.",
+    "blogTitle": "Explore our Trippers' stories",
+    "blogViewAllSubtitle": "Discover all our adventures and unique experiences",
+    "blogViewAllTitle": "More stories",
+    "explorationButtonTrippers": "EXPLORE TRIPPERS",
+    "explorationComingSoon": "Coming soon! You'll be able to explore this section.",
+    "explorationEyebrow": "Shape your adventure",
+    "explorationSubtitle": "Find the perfect starting point for your next trip.",
+    "explorationTabs": [
+      { "id": "byTraveller", "label": "By Traveller" },
+      { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
+    ],
+    "explorationTitle": "Starting Points",
+    "explorationTravelerTypes": [
+      { "key": "couple", "title": "Couple", "description": "Romantic getaways." },
+      { "key": "solo", "title": "Solo", "description": "A unique trip." },
+      { "key": "family", "title": "Family", "description": "Memories together." },
+      { "key": "group", "title": "Group", "description": "Shared experiences." },
+      { "key": "honeymoon", "title": "Honeymoon", "description": "The perfect beginning." },
+      { "key": "paws", "title": "PAWS", "description": "Adventures with your pet." }
+    ],
+    "heroBrandingRepeatText": "Repeat",
+    "heroBrandingText": "WONDER • WANDER",
+    "heroPrimaryCtaAriaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
+    "heroPrimaryCtaText": "GETRANDOMTRIP!",
+    "heroScrollText": "SCROLL",
+    "heroSubtitle": "Live the unexpected without improvising. We design your trip <br/>and <strong>reveal the destination 48 hours before.</strong>",
+    "heroTitle": "DESIGNED SERENDIPITY",
+    "homeInfoCtaText": "GETRANDOMTRIP!",
+    "homeInfoEyebrow": "Three steps, zero stress",
+    "homeInfoSectionAriaLabel": "Information about Random Trip",
+    "homeInfoTabBenefits": "Key benefits",
+    "homeInfoTabHow": "How does it work?",
+    "homeInfoTitle": "What do we do?",
+    "testimonialsEyebrow": "Traveler reviews",
+    "testimonialsSubtitle": "Your next unforgettable memory is just one click away. Don't think twice.",
+    "testimonialsTitle": "What people say about RandomTrip",
+    "testimonialsViewFullReview": "View full review",
+    "howItWorksNote": "* The destination is revealed 48 hours before to preserve the surprise. Guide and checklist are sent.",
+    "howItWorksSteps": [
+      {
+        "title": "PLAN",
+        "description": "Choose dates, origin city, duration and budget. Add filters and mood if you like.",
+        "imageAlt": "Road through green forest"
+      },
+      {
+        "title": "GET THE SURPRISE",
+        "description": "Confirm your trip. We reveal the destination 48 hours before and send you the guide for that mood.",
+        "imageAlt": "Airplane interior at night"
+      },
+      {
+        "title": "TRAVEL STRESS-FREE",
+        "description": "Pack your bags. Flights and accommodation ready; human support when you need it.",
+        "imageAlt": "Airplane window view"
+      }
+    ],
+    "howItWorksSubtitle": "Three steps. Zero stress. More discovery.",
+    "howItWorksTitle": "How does it work?",
+    "benefitsSteps": [
+      {
+        "title": "stress-free and flexible",
+        "description": "You say how much you want to spend and when; with options and filters to tailor the surprise to you. We take care of the rest.",
+        "imageAlt": "Road through green forest"
+      },
+      {
+        "title": "All taken care of",
+        "description": "Flights and accommodation aligned to your budget and travel style.",
+        "imageAlt": "Airplane interior at night"
+      },
+      {
+        "title": "authentic discovery",
+        "description": "Experience the thrill of the unexpected with real curation, not random.",
+        "imageAlt": "Airplane window view"
+      }
+    ]
+  },
+  "footer": {
+    "quickLinksTitle": "Quick Links",
+    "about": "About us",
+    "howItWorks": "How it works",
+    "inspiration": "Inspiration",
+    "faq": "FAQ",
+    "travelersTitle": "Travelers",
+    "solo": "Solo",
+    "couple": "Couple",
+    "family": "Family",
+    "group": "Group",
+    "honeymoon": "Honeymoon",
+    "paws": "Paws",
+    "legalTitle": "Legal",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "refundPolicy": "Refund Policy",
+    "contactTitle": "Contact",
+    "contact": "Contact",
+    "support": "Support",
+    "ariaFacebook": "Facebook",
+    "ariaInstagram": "Instagram",
+    "ariaTwitter": "Twitter",
+    "tagline": "Where the routine ends, the adventure begins.",
+    "copyright": "All rights reserved."
+  }
+}

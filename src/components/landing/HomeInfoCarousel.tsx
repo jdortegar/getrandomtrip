@@ -7,8 +7,8 @@ import { TabSelector } from '../ui/TabSelector';
 import { BudgetBandsSection } from '@/components/BudgetBandsSection';
 import ThreeColumns from '../ThreeColumns';
 import {
-  HOW_IT_WORKS_CONSTANTS,
-  BENEFITS_CONSTANTS,
+  FALLBACK_BENEFITS_STEPS,
+  FALLBACK_HOW_IT_WORKS_STEPS,
 } from '@/lib/data/how-it-works';
 
 const HOME_INFO_CAROUSEL_CONSTANTS = {
@@ -54,10 +54,10 @@ export default function HomeInfoCarousel({
 
     switch (currentTab.contentKey) {
       case 'howItWorks':
-        return <ThreeColumns items={HOW_IT_WORKS_CONSTANTS.STEPS} />;
+        return <ThreeColumns items={FALLBACK_HOW_IT_WORKS_STEPS} />;
 
       case 'benefits':
-        return <ThreeColumns items={BENEFITS_CONSTANTS.STEPS} />;
+        return <ThreeColumns items={FALLBACK_BENEFITS_STEPS} />;
 
       case 'budgetBands':
         return <BudgetBandsSection variant={variant} defaultOpenDetails />;

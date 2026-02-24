@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import PrimaryButton from '@/components/PrimaryButton';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import SkeletonLoader from '../../components/SkeletonLoader';
+import SkeletonLoader from '@/components/SkeletonLoader';
 import { useClearFormAfterPurchase } from '@/hooks/useClearFormAfterPurchase';
 
 interface TripSummary {

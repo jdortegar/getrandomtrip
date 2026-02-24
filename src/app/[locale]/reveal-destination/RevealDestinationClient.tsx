@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import PrimaryButton from '../../components/PrimaryButton';
-import SkeletonLoader from '../../components/SkeletonLoader';
+import PrimaryButton from '@/components/PrimaryButton';
+import SkeletonLoader from '@/components/SkeletonLoader';
 
 interface DestinationData {
   name: string;

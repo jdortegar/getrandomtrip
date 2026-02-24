@@ -1,42 +1,51 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { handleI18n } from '@/lib/i18n/middleware';
+import { pathWithoutLocale } from '@/lib/i18n/pathForLocale';
+import { LOCALES } from '@/lib/i18n/config';
 
-// Variantes -> canónico
+// Variantes -> canónico (solo para path sin locale o con locale)
 const CANON_MAP: Record<string, string> = {
   families: 'family',
   familia: 'family',
 };
 
-export function middleware(req: NextRequest) {
+function applyCanonRedirect(req: NextRequest): NextResponse | null {
+  const pathname = pathWithoutLocale(req.nextUrl.pathname);
+  if (!pathname.startsWith('/packages/by-type/')) return null;
+
   const url = req.nextUrl.clone();
-  const { pathname, search, hash } = url;
-
-  // Sólo intervenir en /packages/by-type/...
-  if (!pathname.startsWith('/packages/by-type/')) {
-    return NextResponse.next();
-  }
-
-  // ["packages","by-type","<type>", ...]
+  const { search, hash } = url;
   const parts = pathname.split('/').filter(Boolean);
-  const type = parts[2];
-  if (!type) return NextResponse.next();
+  // pathname can be /packages/by-type/X or /en/packages/by-type/X - pathWithoutLocale gives /packages/by-type/X
+  const typeIndex = parts.indexOf('by-type') + 1;
+  const type = parts[typeIndex];
+  if (!type) return null;
 
   const target = CANON_MAP[type];
-  if (!target || target === type) {
-    return NextResponse.next();
-  }
+  if (!target || target === type) return null;
 
-  // Reescribe solo el segmento <type>, preservando subrutas, query y hash
-  parts[2] = target;
-  url.pathname = '/' + parts.join('/');
+  parts[typeIndex] = target;
+  const newPath = '/' + parts.join('/');
+  // If request had locale prefix, preserve it
+  const first = req.nextUrl.pathname.split('/').filter(Boolean)[0];
+  const hasLocale = first && LOCALES.includes(first as 'es' | 'en');
+  url.pathname = hasLocale ? `/${first}${newPath}` : newPath;
   url.search = search;
   url.hash = hash;
-
-  // 308 para redirección única y cacheable
   return NextResponse.redirect(url, 308);
 }
 
-// Limita el alcance del middleware
+export function middleware(req: NextRequest) {
+  const i18nResponse = handleI18n(req);
+  if (i18nResponse) return i18nResponse;
+
+  const canonResponse = applyCanonRedirect(req);
+  if (canonResponse) return canonResponse;
+
+  return NextResponse.next();
+}
+
 export const config = {
-  matcher: ['/packages/by-type/:path*'],
+  matcher: ['/((?!_next|api|favicon\\.png|.*\\..*).*)'],
 };

@@ -23,26 +23,33 @@ function getInitial(name: string): string {
 interface TestimonialCardProps {
   index: number;
   testimonial: TestimonialData;
+  viewFullReviewLabel: string;
 }
 
-function TestimonialCard({ index, testimonial }: TestimonialCardProps) {
+function TestimonialCard({
+  index,
+  testimonial,
+  viewFullReviewLabel,
+}: TestimonialCardProps) {
   const { author, avatarUrl, country, countryCode, quote, reviewUrl } =
     testimonial;
   const initial = getInitial(author);
 
+  console.log(reviewUrl, viewFullReviewLabel);
+
   return (
-    <div className="relative flex h-full min-h-[250px] flex-col justify-around overflow-visible rounded-md border border-neutral-200 bg-white p-6 shadow-sm text-center">
-      <p className="mb-6 font-barlow leading-relaxed text-lg text-[#888]">
+    <div className="relative flex h-full min-h-[250px] flex-col justify-around overflow-visible rounded-md border border-neutral-200 bg-white p-6 text-center shadow-sm">
+      <p className="mb-6 font-barlow text-lg leading-relaxed text-[#888]">
         &quot;{quote}&quot;
       </p>
 
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#333] font-semibold text-base text-white">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#333] font-barlow text-base font-semibold text-white">
             {avatarUrl ? (
               <Img
                 alt={author}
-                className="h-full object-cover w-full"
+                className="h-full w-full object-cover"
                 height={40}
                 src={avatarUrl}
                 width={40}
@@ -51,9 +58,9 @@ function TestimonialCard({ index, testimonial }: TestimonialCardProps) {
               <span aria-hidden>{initial}</span>
             )}
           </div>
-          <div className="flex flex-col font-barlow items-start text-left">
-            <h4 className="font-semibold  text-xl text-[#333]">{author}</h4>
-            <p className="font-medium text-[#666] text-xs">
+          <div className="flex flex-col items-start text-left font-barlow">
+            <h4 className="font-semibold text-xl text-[#333]">{author}</h4>
+            <p className="text-xs font-medium text-[#666]">
               <span className="inline-flex items-center gap-1.5">
                 {(countryCode || country) && (
                   <CountryFlag
@@ -68,14 +75,16 @@ function TestimonialCard({ index, testimonial }: TestimonialCardProps) {
             </p>
           </div>
         </div>
-        <a
-          className="mt-6 block font-barlow text-[#1A73E8] text-base font-medium cursor-pointer hover:underline"
-          href={reviewUrl}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Ver opinión completa
-        </a>
+        {reviewUrl && (
+          <a
+            className="mt-6 block cursor-pointer font-barlow text-base font-medium text-[#1A73E8] hover:underline"
+            href={reviewUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {viewFullReviewLabel}
+          </a>
+        )}
       </div>
     </div>
   );
@@ -83,16 +92,22 @@ function TestimonialCard({ index, testimonial }: TestimonialCardProps) {
 
 interface TestimonialsProps {
   eyebrow?: string;
+  subtitle?: string;
   testimonials: TestimonialData[];
   title: string;
   testId?: string;
+  viewFullReviewLabel?: string;
 }
+
+const DEFAULT_VIEW_FULL_REVIEW = 'Ver opinión completa';
 
 export default function Testimonials({
   eyebrow,
+  subtitle,
   testimonials,
   title,
   testId = 'testimonials',
+  viewFullReviewLabel = DEFAULT_VIEW_FULL_REVIEW,
 }: TestimonialsProps) {
   const testimonialGroups = React.useMemo(() => {
     const groups = [];
@@ -105,8 +120,8 @@ export default function Testimonials({
   return (
     <Section
       className="min-h-[60vh]"
-      eyebrow="opiniones de viajeros"
-      subtitle="Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más."
+      eyebrow={eyebrow}
+      subtitle={subtitle}
       title={title}
     >
       <div className="relative">
@@ -128,6 +143,7 @@ export default function Testimonials({
                   index={index}
                   key={`${testimonial.author}-${index}`}
                   testimonial={testimonial}
+                  viewFullReviewLabel={viewFullReviewLabel}
                 />
               ))}
             </div>

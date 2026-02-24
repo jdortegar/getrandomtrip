@@ -9,54 +9,62 @@ import { Button } from '@/components/ui/Button';
 import ThreeColumns from './ThreeColumns';
 import Section from './layout/Section';
 import {
-  HOW_IT_WORKS_CONSTANTS,
-  BENEFITS_CONSTANTS,
+  FALLBACK_BENEFITS_STEPS,
+  FALLBACK_HOW_IT_WORKS_STEPS,
 } from '@/lib/data/how-it-works';
+import type { ThreeColumnsItem } from './ThreeColumns';
 
-// Constants
-const HOME_INFO_CONSTANTS = {
-  EYEBROW: 'Tres pasos, cero stress',
-  TITLE: '¿Qué hacemos?',
-  TABS: [
-    {
-      id: 'how',
-      label: '¿Cómo funciona?',
-      contentKey: 'howItWorks',
-    },
-    {
-      id: 'benefits',
-      label: 'Beneficios clave',
-      contentKey: 'benefits',
-    },
-  ],
-  SECTION_ARIA_LABEL: 'Información sobre Random Trip',
-};
+const TAB_IDS = [
+  { id: 'how', contentKey: 'howItWorks' as const },
+  { id: 'benefits', contentKey: 'benefits' as const },
+] as const;
 
 const DEFAULT_CTA_SCROLL_TARGET = '#exploration-section';
 
 interface HomeInfoProps {
+  /** Localized benefits steps (title, description, imageSrc, imageAlt). */
+  benefitsSteps?: ThreeColumnsItem[];
   /** Anchor hash for the CTA button (e.g. #tripper-traveler-types on tripper pages). */
   ctaScrollTarget?: string;
+  /** Localized copy (from dictionary). When provided, overrides defaults. */
+  ctaText?: string;
+  eyebrow?: string;
+  /** Localized how-it-works steps (title, description, imageSrc, imageAlt). */
+  howItWorksSteps?: ThreeColumnsItem[];
+  sectionAriaLabel?: string;
+  tabBenefitsLabel?: string;
+  tabHowLabel?: string;
+  title?: string;
 }
 
-export default function HomeInfo({ ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET }: HomeInfoProps) {
-  const [activeTab, setActiveTab] = useState<string>(
-    HOME_INFO_CONSTANTS.TABS[0].id,
-  );
+export default function HomeInfo({
+  benefitsSteps,
+  ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET,
+  ctaText = 'GETRANDOMTRIP!',
+  eyebrow = 'Tres pasos, cero stress',
+  howItWorksSteps,
+  sectionAriaLabel,
+  tabBenefitsLabel = 'Beneficios clave',
+  tabHowLabel = '¿Cómo funciona?',
+  title = '¿Qué hacemos?',
+}: HomeInfoProps) {
+  const howSteps = howItWorksSteps?.length ? howItWorksSteps : FALLBACK_HOW_IT_WORKS_STEPS;
+  const benefitSteps = benefitsSteps?.length ? benefitsSteps : FALLBACK_BENEFITS_STEPS;
+  const tabs = [
+    { id: TAB_IDS[0].id, label: tabHowLabel, contentKey: TAB_IDS[0].contentKey },
+    { id: TAB_IDS[1].id, label: tabBenefitsLabel, contentKey: TAB_IDS[1].contentKey },
+  ];
+  const [activeTab, setActiveTab] = useState<string>(tabs[0].id);
 
   const renderActiveTab = () => {
-    const currentTab = HOME_INFO_CONSTANTS.TABS.find(
-      (tab) => tab.id === activeTab,
-    );
+    const currentTab = tabs.find((tab) => tab.id === activeTab);
     if (!currentTab) return null;
 
     switch (currentTab.contentKey) {
       case 'howItWorks':
-        return <ThreeColumns items={HOW_IT_WORKS_CONSTANTS.STEPS} />;
-
+        return <ThreeColumns items={howSteps} />;
       case 'benefits':
-        return <ThreeColumns items={BENEFITS_CONSTANTS.STEPS} />;
-
+        return <ThreeColumns items={benefitSteps} />;
       default:
         return null;
     }
@@ -64,11 +72,9 @@ export default function HomeInfo({ ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET }
 
   return (
     <Section
-      eyebrow={HOME_INFO_CONSTANTS.EYEBROW}
-      // subtitle={HOME_INFO_CONSTANTS.SUBTITLE}
-      title={HOME_INFO_CONSTANTS.TITLE}
+      eyebrow={eyebrow}
+      title={title}
     >
-      {/* Tab Navigation */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -78,18 +84,13 @@ export default function HomeInfo({ ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET }
           activeTab={activeTab}
           layoutId="activeTabHomeInfo"
           onTabChange={setActiveTab}
-          tabs={HOME_INFO_CONSTANTS.TABS.map(({ id, label }) => ({
-            id,
-            label,
-          }))}
+          tabs={tabs.map(({ id, label }) => ({ id, label }))}
         />
       </motion.div>
 
-      {/* Tab Content */}
       <AnimatePresence mode="wait">
         <div key={activeTab}>{renderActiveTab()}</div>
       </AnimatePresence>
-      {/* CTA - Enhanced */}
       <motion.div
         className="mt-12 flex justify-center"
         initial={{ y: 40, opacity: 0 }}
@@ -98,7 +99,7 @@ export default function HomeInfo({ ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET }
       >
         <Button asChild size="lg" variant="feature">
           <Link href={ctaScrollTarget} scroll={true}>
-            GETRANDOMTRIP!
+            {ctaText}
           </Link>
         </Button>
       </motion.div>

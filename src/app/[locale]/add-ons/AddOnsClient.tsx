@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import PrimaryButton from '../../components/PrimaryButton';
-import SkeletonLoader from '../../components/SkeletonLoader';
+import PrimaryButton from '@/components/PrimaryButton';
+import SkeletonLoader from '@/components/SkeletonLoader';
 
 interface AddOn {
   id: string;

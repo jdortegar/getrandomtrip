@@ -7,17 +7,23 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 interface TopTrippersGridProps {
+  buttonHref: string;
+  buttonText: string;
   trippers: Array<{
-    id: string;
-    name: string;
-    tripperSlug: string | null;
     avatarUrl: string | null;
     bio: string | null;
+    id: string;
     instagramUrl?: string | null;
+    name: string;
+    tripperSlug: string | null;
   }>;
 }
 
-export function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
+export function TopTrippersGrid({
+  buttonHref,
+  buttonText,
+  trippers,
+}: TopTrippersGridProps) {
   const displayedTrippers = trippers
     .filter((tripper) => tripper.avatarUrl)
     .slice(0, 8);
@@ -54,8 +60,8 @@ export function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <Button asChild variant="feature" size="lg">
-          <Link href="/trippers">EXPLORAR TRIPPERS</Link>
+        <Button asChild size="lg" variant="feature">
+          <Link href={buttonHref}>{buttonText}</Link>
         </Button>
       </motion.div>
     </div>

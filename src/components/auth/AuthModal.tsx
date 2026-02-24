@@ -6,27 +6,28 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { X, Mail, Lock, User } from 'lucide-react';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
 
 interface AuthModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   defaultMode?: 'login' | 'register';
+  dict?: Dictionary;
+  onClose: () => void;
+  isOpen: boolean;
 }
 
 export default function AuthModal({
+  defaultMode = 'login',
+  dict,
   isOpen,
   onClose,
-  defaultMode = 'login',
 }: AuthModalProps) {
-  // Early return before any hooks to avoid Rules of Hooks violation
   if (!isOpen) return null;
 
-  const router = useRouter();
+  const t = dict?.auth;
   const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -66,29 +67,24 @@ export default function AuthModal({
     }
   }, [isOpen, handleClose]);
 
-  // Form validation
   const validateForm = () => {
     if (!email || !password) {
-      setError('Por favor completa todos los campos');
+      setError(t?.fillAllFields ?? 'Please fill in all fields');
       return false;
     }
-
     if (mode === 'register' && !name) {
-      setError('El nombre es requerido');
+      setError(t?.nameRequired ?? 'Name is required');
       return false;
     }
-
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+      setError(t?.passwordMinLength ?? 'Password must be at least 6 characters');
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Por favor ingresa un email válido');
+      setError(t?.invalidEmail ?? 'Please enter a valid email');
       return false;
     }
-
     return true;
   };
 
@@ -114,7 +110,7 @@ export default function AuthModal({
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Registration failed');
+          throw new Error(data.error || (t?.loginFailed ?? 'Something went wrong'));
         }
 
         // Auto-login after successful registration
@@ -125,7 +121,7 @@ export default function AuthModal({
         });
 
         if (result?.error) {
-          throw new Error('Login failed after registration');
+          throw new Error(t?.loginFailed ?? 'Something went wrong');
         }
 
         // Handle successful authentication
@@ -139,14 +135,14 @@ export default function AuthModal({
         });
 
         if (result?.error) {
-          throw new Error('Invalid email or password');
+          throw new Error(t?.loginFailed ?? 'Invalid email or password');
         }
 
         // Handle successful authentication
         handleAuthSuccess();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : (t?.loginFailed ?? 'Something went wrong'));
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +177,7 @@ export default function AuthModal({
             handleClose();
           }}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors z-20 p-1 rounded-md hover:bg-neutral-100 cursor-pointer"
-          aria-label="Cerrar"
+          aria-label={t?.close ?? 'Close'}
         >
           <X className="w-5 h-5" />
         </button>
@@ -190,12 +186,12 @@ export default function AuthModal({
           {/* Header */}
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-neutral-900 font-jost">
-              {mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+              {mode === 'login' ? (t?.signIn ?? 'Sign In') : (t?.createAccount ?? 'Create Account')}
             </h2>
             <p className="text-sm text-neutral-600 mt-2">
               {mode === 'login'
-                ? 'Ingresa a tu cuenta para continuar'
-                : 'Crea tu cuenta para empezar'}
+                ? (t?.loginSubtitle ?? 'Sign in to your account to continue')
+                : (t?.createAccountSubtitle ?? 'Create your account to get started')}
             </p>
           </div>
 
@@ -216,7 +212,7 @@ export default function AuthModal({
             {mode === 'register' && (
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Nombre completo
+                  {t?.nameLabel ?? 'Full name'}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -225,7 +221,7 @@ export default function AuthModal({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="pl-10"
-                    placeholder="Juan Pérez"
+                    placeholder={t?.namePlaceholder ?? 'John Doe'}
                     required
                     aria-describedby={error ? 'error-message' : undefined}
                     autoComplete="name"
@@ -234,10 +230,9 @@ export default function AuthModal({
               </div>
             )}
 
-            {/* Email field */}
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Email
+                {t?.email ?? 'Email'}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -246,7 +241,7 @@ export default function AuthModal({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
-                  placeholder="tu@email.com"
+                  placeholder={t?.emailPlaceholder ?? 'you@email.com'}
                   required
                   aria-describedby={error ? 'error-message' : undefined}
                   autoComplete="email"
@@ -254,10 +249,9 @@ export default function AuthModal({
               </div>
             </div>
 
-            {/* Password field */}
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Contraseña
+                {t?.password ?? 'Password'}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -285,10 +279,10 @@ export default function AuthModal({
               size="lg"
             >
               {isLoading
-                ? 'Cargando...'
+                ? (t?.loading ?? 'Loading...')
                 : mode === 'login'
-                  ? 'Iniciar Sesión'
-                  : 'Crear Cuenta'}
+                  ? (t?.signIn ?? 'Sign In')
+                  : (t?.createAccount ?? 'Create Account')}
             </Button>
           </form>
 
@@ -299,7 +293,7 @@ export default function AuthModal({
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-4 text-neutral-500">
-                o continúa con
+                {t?.orContinueWith ?? 'or continue with'}
               </span>
             </div>
           </div>
@@ -331,20 +325,20 @@ export default function AuthModal({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Continuar con Google
+            {t?.continueWithGoogle ?? 'Continue with Google'}
           </Button>
 
           {/* Toggle mode */}
           <div className="mt-6 text-center text-sm">
             <span className="text-neutral-600">
-              {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+              {mode === 'login' ? (t?.noAccount ?? "Don't have an account?") : (t?.haveAccount ?? 'Already have an account?')}
             </span>{' '}
             <button
               type="button"
               onClick={toggleMode}
               className="text-primary hover:text-primary/90 font-medium transition-colors"
             >
-              {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
+              {mode === 'login' ? (t?.signUp ?? 'Sign up') : (t?.signIn ?? 'Sign in')}
             </button>
           </div>
         </div>

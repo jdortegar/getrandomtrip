@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import PrimaryButton from '@/components/PrimaryButton';
 
 
 interface ExperienceLevel {

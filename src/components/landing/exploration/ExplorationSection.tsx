@@ -1,60 +1,107 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { TravelerTypesCarousel } from './TravelerTypesCarousel';
-import { TopTrippersGrid } from './TopTrippersGrid';
-import { RoadtripsGrid } from './RoadtripsGrid';
-// import TrippersDecodeSearch from '@/app/trippers-decode/TrippersDecodePageContent';
-import { EXPLORATION_CONSTANTS } from './exploration.constants';
+import { AnimatePresence, motion } from 'framer-motion';
 import Section from '@/components/layout/Section';
 import { TabSelector } from '@/components/ui/TabSelector';
+import type { TravelerType } from '@/lib/data/travelerTypes';
+import { TopTrippersGrid } from './TopTrippersGrid';
+import { TravelerTypesCarousel } from './TravelerTypesCarousel';
 
-const ComingSoon: React.FC = () => (
-  <div className="py-4">
-    <p className="text-center text-gray-600 italic font-jost text-lg">
-      ¡Pronto podrás explorar esta sección!
-    </p>
-  </div>
-);
-
-interface ExplorationSectionProps {
-  trippers?: Array<{
-    id: string;
-    name: string;
-    tripperSlug: string | null;
-    avatarUrl: string | null;
-    bio: string | null;
-    instagramUrl?: string | null;
-  }>;
+interface ExplorationTab {
+  href?: string;
+  id: string;
+  label: string;
 }
 
-export function ExplorationSection({ trippers = [] }: ExplorationSectionProps) {
-  const [activeTab, setActiveTab] = useState('By Traveller');
+interface ExplorationSectionProps {
+  comingSoonText: string;
+  eyebrow: string;
+  subtitle: string;
+  tabs: ExplorationTab[];
+  title: string;
+  trippers?: Array<{
+    avatarUrl: string | null;
+    bio: string | null;
+    id: string;
+    instagramUrl?: string | null;
+    name: string;
+    tripperSlug: string | null;
+  }>;
+  trippersButtonText: string;
+  trippersHref: string;
+  travelerTypes?: TravelerType[];
+}
+
+function ComingSoon({ message }: { message: string }) {
+  return (
+    <div className="py-4">
+      <p className="text-center font-jost text-lg italic text-gray-600">
+        {message}
+      </p>
+    </div>
+  );
+}
+
+export function ExplorationSection({
+  comingSoonText,
+  eyebrow,
+  subtitle,
+  tabs,
+  title,
+  trippers = [],
+  trippersButtonText,
+  trippersHref,
+  travelerTypes,
+}: ExplorationSectionProps) {
+  const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? 'byTraveller');
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case 'By Traveller':
-        return <TravelerTypesCarousel fullViewportWidth />;
-      case 'Top Trippers':
-        return <TopTrippersGrid trippers={trippers} />;
-      case 'Roadtrips':
-        return <ComingSoon />;
-      case 'Trippers Decode':
-        return <ComingSoon />;
+      case 'byTraveller':
+        return (
+          <TravelerTypesCarousel
+            fullViewportWidth
+            travelerTypes={travelerTypes}
+          />
+        );
+      case 'topTrippers':
+        return (
+          <TopTrippersGrid
+            buttonHref={trippersHref}
+            buttonText={trippersButtonText}
+            trippers={trippers}
+          />
+        );
+      case 'roadtrips':
+        return <ComingSoon message={comingSoonText} />;
+      case 'trippersDecode':
+        return <ComingSoon message={comingSoonText} />;
       default:
-        return <TravelerTypesCarousel />;
+        return (
+          <TravelerTypesCarousel
+            fullViewportWidth
+            travelerTypes={travelerTypes}
+          />
+        );
     }
   };
+
+  const tabSelectorTabs = tabs.map((tab) => ({
+    disabled: false,
+    href: tab.href,
+    id: tab.id,
+    label: tab.label,
+  }));
 
   return (
     <Section
       className="relative flex min-h-screen items-center overflow-hidden py-20"
+      eyebrow={eyebrow}
       id="exploration-section"
-      eyebrow={EXPLORATION_CONSTANTS.EYEBROW}
-      subtitle={EXPLORATION_CONSTANTS.SUBTITLE}
-      title={EXPLORATION_CONSTANTS.TITLE}
+      subtitle={subtitle}
+      title={title}
     >
       {/* Tab Navigation */}
       <motion.div
@@ -64,19 +111,19 @@ export function ExplorationSection({ trippers = [] }: ExplorationSectionProps) {
         whileInView={{ y: 0, opacity: 1 }}
       >
         <TabSelector
-          tabs={EXPLORATION_CONSTANTS.TABS}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
           layoutId="activeTab"
+          onTabChange={setActiveTab}
+          tabs={tabSelectorTabs}
         />
       </motion.div>
 
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          className="mt-12 flex justify-center container mx-auto md:px-20 px-4"
-          initial={{ y: 40, opacity: 0 }}
+          className="container mx-auto mt-12 flex justify-center px-4 md:px-20"
           animate={{ y: 0, opacity: 1 }}
+          initial={{ y: 40, opacity: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
         >
           {renderActiveTab()}

@@ -15,25 +15,32 @@ import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import { motion } from 'framer-motion';
 
 interface BlogProps {
-  eyebrow?: string;
-  title: string;
-  subtitle: string;
-  posts: BlogPost[];
-  viewAll?: BlogViewAll;
-  id?: string;
+  carouselSlideAriaLabel?: string;
   className?: string;
+  eyebrow?: string;
+  id?: string;
+  posts: BlogPost[];
+  subtitle: string;
+  title: string;
+  viewAll?: BlogViewAll;
 }
 
-function BlogCarouselDots({ posts }: { posts: BlogPost[] }) {
+function BlogCarouselDots({
+  posts,
+  slideAriaLabelPattern,
+}: {
+  posts: BlogPost[];
+  slideAriaLabelPattern: string;
+}) {
   const { selectedIndex, scrollSnaps, scrollTo } = useCarousel();
 
   return (
-    <div className="w-full flex justify-center mt-8">
+    <div className="mt-8 flex w-full justify-center">
       <div className="flex items-center gap-2">
         {scrollSnaps.map((_: unknown, index: number) => (
           <button
             key={index}
-            aria-label={`Go to slide ${index + 1}`}
+            aria-label={slideAriaLabelPattern.replace('{0}', String(index + 1))}
             className={`h-2 rounded-full transition-all ${
               selectedIndex === index
                 ? 'bg-[#4F96B6] w-8'
@@ -49,6 +56,7 @@ function BlogCarouselDots({ posts }: { posts: BlogPost[] }) {
 }
 
 export default function Blog({
+  carouselSlideAriaLabel = 'Go to slide {0}',
   eyebrow,
   id,
   posts,
@@ -132,7 +140,10 @@ export default function Blog({
             {/* Custom Dots - Centered in full container width */}
           </div>
           <div className="absolute bottom-0 left-0 w-full">
-            <BlogCarouselDots posts={posts} />
+            <BlogCarouselDots
+              posts={posts}
+              slideAriaLabelPattern={carouselSlideAriaLabel}
+            />
           </div>
         </div>
       </CarouselRoot>

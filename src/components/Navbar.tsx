@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import { Phone, User, Search, Menu, Globe } from 'lucide-react';
 import { useUserStore } from '@/store/slices/userStore';
 import { useScrollDetection } from '@/hooks/useScrollDetection';
@@ -10,46 +10,55 @@ import AuthModal from '@/components/auth/AuthModal';
 import { useAuthModal } from '@/hooks/useAuthModal';
 import { NavbarProfile } from './NavbarProfile';
 import { useMenuState } from '@/hooks/useMenuState';
+import { NAVBAR_CONSTANTS } from '@/lib/data/constants/navbar';
 import {
-  NAVBAR_CONSTANTS,
-  NAVBAR_STYLES,
-  NAVBAR_LINKS,
-} from '@/lib/data/constants/navbar';
+  COOKIE_LOCALE,
+  LOCALE_LABELS,
+  type Locale,
+} from '@/lib/i18n/config';
+import { pathForLocale, pathWithoutLocale } from '@/lib/i18n/pathForLocale';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
 
 // Types
 export type NavbarVariant = 'overlay' | 'auto' | 'solid';
 
+const PRIMARY_LINK_KEYS = [
+  { href: '/trippers', labelKey: 'labelTrippers', ariaKey: 'ariaLabelTrippers' },
+  { href: '/blog', labelKey: 'labelInspiration', ariaKey: 'ariaLabelInspiration' },
+  { href: '/nosotros', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
+] as const;
+const EXTRA_LINK_KEYS = [
+  { href: '/tripbuddy', labelKey: 'labelTripbuddy', ariaKey: 'ariaLabelTripbuddy' },
+  { href: '/bitacoras', labelKey: 'labelBitacoras', ariaKey: 'ariaLabelBitacoras' },
+] as const;
+
 export interface NavbarProps {
+  dict?: Dictionary;
+  locale?: Locale;
   variant?: NavbarVariant;
 }
 
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
 // Main Navbar Component
-export default function Navbar({ variant = 'auto' }: NavbarProps) {
-  const overlay = useScrollDetection({ variant });
+export default function Navbar({
+  dict,
+  locale: localeProp,
+  variant = 'auto',
+}: NavbarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  useScrollDetection({ variant });
   const { isAuthed, user, signOut, session } = useUserStore();
   const { isOpen, mode, close, openLogin } = useAuthModal();
   const linksMenu = useMenuState();
   const languageMenu = useMenuState();
-  const [language, setLanguage] = useState<'es' | 'en'>('es');
-
-  // const headerClass = useMemo(() => {
-
-  //   return overlay ? NAVBAR_STYLES.OVERLAY : NAVBAR_STYLES.SOLID;
-  // }, [overlay]);
+  const currentLocale: Locale = localeProp ?? 'es';
+  const nav = dict?.nav;
 
   const headerClass =
     'absolute top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out';
-
-  // const logoSrc = useMemo(() => {
-  //   return overlay
-  //     ? '/assets/logos/logo_getrandomtrip_1.png'
-  //     : '/assets/logos/logo_getrandomtrip.png';
-  // }, [overlay]);
-
   const logoSrc = '/assets/logos/logo_getrandomtrip_1.png';
-
-  const primaryLinks = NAVBAR_LINKS.slice(0, 3);
-  const extraLinks = NAVBAR_LINKS.slice(3);
 
   return (
     <>
@@ -61,63 +70,68 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
           className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT}  ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between container`}
         >
           <Link
-            href="/"
-            aria-label="Randomtrip"
+            aria-label={nav?.ariaLabelLogo ?? 'Randomtrip'}
             className="flex items-center gap-2 shrink-0 py-2"
+            href={pathForLocale(currentLocale, '/')}
           >
-            <Image src={logoSrc} alt="Randomtrip" width={180} height={50} />
+            <Image
+              alt={nav?.ariaLabelLogo ?? 'Randomtrip'}
+              height={50}
+              src={logoSrc}
+              width={180}
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <button
-              type="button"
+              aria-label={nav?.search ?? 'Search'}
               className="p-2 rounded-lg hover:bg-white/10"
-              aria-label="Buscar"
               onClick={() => {}}
+              type="button"
             >
               <Search className="h-5 w-5" />
             </button>
-            {primaryLinks.map((link) => (
+            {PRIMARY_LINK_KEYS.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
-                aria-label={link.ariaLabel}
+                aria-label={nav?.[link.ariaKey] ?? link.href}
                 className="hover:underline underline-offset-4 uppercase text-base font-barlow "
+                href={pathForLocale(currentLocale, link.href)}
               >
-                {link.label}
+                {nav?.[link.labelKey] ?? link.href}
               </Link>
             ))}
           </div>
 
           <div className="flex items-center gap-2">
-            {extraLinks.length > 0 && (
+            {EXTRA_LINK_KEYS.length > 0 && (
               <div className="relative" ref={linksMenu.menuRef}>
                 <button
-                  type="button"
-                  onClick={linksMenu.toggle}
-                  aria-label="Abrir menú de navegación"
-                  aria-haspopup="menu"
                   aria-expanded={linksMenu.isOpen}
+                  aria-haspopup="menu"
+                  aria-label={nav?.openMenu ?? 'Open menu'}
                   className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10"
+                  onClick={linksMenu.toggle}
+                  type="button"
                 >
                   <Menu className="h-5 w-5" />
                 </button>
 
                 {linksMenu.isOpen && (
                   <div
-                    role="menu"
                     className="absolute right-0 mt-3 w-60 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                    role="menu"
                   >
-                    {extraLinks.map((link) => (
+                    {EXTRA_LINK_KEYS.map((link) => (
                       <Link
                         key={link.href}
-                        role="menuitem"
-                        href={link.href}
-                        aria-label={link.ariaLabel}
+                        aria-label={nav?.[link.ariaKey] ?? link.href}
                         className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                        href={pathForLocale(currentLocale, link.href)}
+                        role="menuitem"
                         onClick={() => linksMenu.close()}
                       >
-                        {link.label}
+                        {nav?.[link.labelKey] ?? link.href}
                       </Link>
                     ))}
                   </div>
@@ -126,18 +140,18 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
             )}
 
             <a
-              href="https://wa.me/526241928208"
-              target="_blank"
-              rel="noopener"
-              aria-label="WhatsApp"
+              aria-label={nav?.whatsApp ?? 'WhatsApp'}
               className="p-2 rounded-lg hover:bg-white/10"
+              href="https://wa.me/526241928208"
+              rel="noopener"
+              target="_blank"
             >
               <Phone className="h-5 w-5" />
             </a>
 
             {!isAuthed && (
               <button
-                aria-label="Iniciar sesión"
+                aria-label={nav?.signIn ?? 'Sign in'}
                 className="p-2 rounded-lg hover:bg-white/10"
                 onClick={() => openLogin()}
               >
@@ -154,16 +168,16 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
             )}
             <div className="relative" ref={languageMenu.menuRef}>
               <button
-                type="button"
-                onClick={languageMenu.toggle}
-                aria-label="Seleccionar idioma"
-                aria-haspopup="menu"
                 aria-expanded={languageMenu.isOpen}
+                aria-haspopup="menu"
+                aria-label={nav?.selectLanguage ?? 'Select language'}
                 className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10"
+                onClick={languageMenu.toggle}
+                type="button"
               >
                 <Globe className="h-5 w-5" />
                 <span className="hidden lg:inline text-sm font-medium">
-                  {language === 'es' ? 'ES' : 'EN'}
+                  {currentLocale === 'es' ? 'ES' : 'EN'}
                 </span>
               </button>
 
@@ -172,28 +186,22 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
                   role="menu"
                   className="absolute right-0 mt-3 w-40 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
                 >
-                  <button
-                    role="menuitemradio"
-                    aria-checked={language === 'es'}
-                    className={`w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50 ${language === 'es' ? 'bg-neutral-100 font-semibold' : ''}`}
-                    onClick={() => {
-                      setLanguage('es');
-                      languageMenu.close();
-                    }}
-                  >
-                    Español
-                  </button>
-                  <button
-                    role="menuitemradio"
-                    aria-checked={language === 'en'}
-                    className={`w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50 ${language === 'en' ? 'bg-neutral-100 font-semibold' : ''}`}
-                    onClick={() => {
-                      setLanguage('en');
-                      languageMenu.close();
-                    }}
-                  >
-                    English
-                  </button>
+                  {(['es', 'en'] as const).map((loc) => (
+                    <button
+                      key={loc}
+                      role="menuitemradio"
+                      aria-checked={currentLocale === loc}
+                      className={`w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50 ${currentLocale === loc ? 'bg-neutral-100 font-semibold' : ''}`}
+                      onClick={() => {
+                        languageMenu.close();
+                        document.cookie = `${COOKIE_LOCALE}=${loc}; path=/; max-age=${COOKIE_MAX_AGE}; sameSite=lax`;
+                        const pathWithout = pathWithoutLocale(pathname);
+                        router.push(pathForLocale(loc, pathWithout || '/'));
+                      }}
+                    >
+                      {LOCALE_LABELS[loc]}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -201,7 +209,12 @@ export default function Navbar({ variant = 'auto' }: NavbarProps) {
         </nav>
       </header>
 
-      <AuthModal isOpen={isOpen} onClose={close} defaultMode={mode} />
+      <AuthModal
+        defaultMode={mode}
+        dict={dict}
+        isOpen={isOpen}
+        onClose={close}
+      />
     </>
   );
 }

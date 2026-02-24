@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import PrimaryButton from '../../../components/PrimaryButton';
-import SkeletonLoader from '../../../components/SkeletonLoader';
+import PrimaryButton from '@/components/PrimaryButton';
+import SkeletonLoader from '@/components/SkeletonLoader';
 
 
 export default function BasicConfigClient() {
