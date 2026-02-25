@@ -326,7 +326,7 @@ function DashboardContent() {
                 <div className="lg:col-span-2">
                   <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-neutral-900 font-jost">
+                      <h2 className="text-xl font-semibold text-neutral-900">
                         Próximos Viajes
                       </h2>
                       <Button variant="outline" size="sm" asChild>
@@ -416,7 +416,7 @@ function DashboardContent() {
                 <div className="space-y-6">
                   {/* Quick Actions */}
                   <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                       Acciones Rápidas
                     </h3>
                     <div className="space-y-3">
@@ -451,7 +451,7 @@ function DashboardContent() {
 
                   {/* Recent Payments Summary */}
                   <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                       Resumen Financiero
                     </h3>
                     <div className="space-y-3">
@@ -497,7 +497,7 @@ function DashboardContent() {
               <div className="mt-8">
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-neutral-900 font-jost">
+                    <h2 className="text-xl font-semibold text-neutral-900">
                       Historial de Pagos
                     </h2>
                     <span className="text-sm text-neutral-600">
@@ -580,7 +580,7 @@ function DashboardContent() {
                 <div className="mt-8">
                   <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-neutral-900 font-jost">
+                      <h2 className="text-xl font-semibold text-neutral-900">
                         Todos Mis Viajes
                       </h2>
                       <span className="text-sm text-neutral-600">

@@ -38,7 +38,7 @@ export function TrippersDecodeSearch({
   return (
     <div className="py-8">
       {showSubtitle && (
-        <p className="text-center text-gray-600 mb-12 italic font-jost text-lg max-w-2xl mx-auto">
+        <p className="text-center text-gray-600 mb-12 italic text-lg max-w-2xl mx-auto">
           {EXPLORATION_CONSTANTS.TAB_DESCRIPTIONS['Trippers Decode']}
         </p>
       )}

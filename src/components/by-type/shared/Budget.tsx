@@ -53,12 +53,12 @@ const LevelCard = ({
           <h3 className="text-3xl font-bold text-gray-900 font-caveat">
             {level.name}
           </h3>
-          <p className="text-gray-600 font-jost text-sm">{level.subtitle}</p>
+          <p className="text-gray-600 text-sm">{level.subtitle}</p>
         </div>
 
         {/* Pricing */}
         <div className="text-center h-[60px] items-center flex justify-center">
-          <div className="font-bold text-xl text-primary-700 font-jost">
+          <div className="font-bold text-xl text-primary-700">
             {level.priceLabel}
           </div>
         </div>
@@ -71,7 +71,7 @@ const LevelCard = ({
           return (
             <div key={category}>
               <div className="flex items-center h-[40px] justify-center px-2">
-                <span className="text-sm text-gray-700 font-jost text-center">
+                <span className="text-sm text-gray-700 text-center">
                   {featureText}
                 </span>
               </div>
@@ -169,17 +169,17 @@ export default function Budget({
         <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-12 min-w-[200px]">
           {/* Plan Name */}
           <div className="h-[80px] text-left">
-            <h3 className="text-2xl font-bold text-primary-700 font-jost">
+            <h3 className="text-2xl font-bold text-primary-700">
               Planes
             </h3>
-            <p className="text-primary-600 font-jost text-[12px]">
+            <p className="text-primary-600 text-[12px]">
               Elige tu presupuesto
             </p>
           </div>
 
           {/* Pricing Category */}
           <div className="h-[60px] text-left items-center flex">
-            <h4 className="font-semibold text-primary-700 font-jost text-sm">
+            <h4 className="font-semibold text-primary-700 text-sm">
               Precio por persona
             </h4>
           </div>
@@ -188,7 +188,7 @@ export default function Budget({
           {featureCategories.map((label) => (
             <div key={label}>
               <div className="h-[40px] items-center flex">
-                <h4 className="font-semibold text-primary-700 font-jost text-sm">
+                <h4 className="font-semibold text-primary-700 text-sm">
                   {label}
                 </h4>
               </div>
@@ -215,7 +215,7 @@ export default function Budget({
 
       {/* Footer Message */}
       <div className="text-center mt-10">
-        <p className="text-gray-900 text-sm font-jost">
+        <p className="text-gray-900 text-sm">
           Selecciona tu presupuesto para continuar con el diseño de tu viaje
         </p>
       </div>

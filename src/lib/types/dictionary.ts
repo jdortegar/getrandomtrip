@@ -5,12 +5,14 @@
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
+    ariaLabelExperiences: string;
     ariaLabelInspiration: string;
     ariaLabelLogo: string;
     ariaLabelNosotros: string;
     ariaLabelTripbuddy: string;
     ariaLabelTrippers: string;
     labelBitacoras: string;
+    labelExperiences: string;
     labelInspiration: string;
     labelNosotros: string;
     labelTrippers: string;
@@ -87,6 +89,15 @@ export interface MarketingDictionary {
     testimonialsSubtitle: string;
     testimonialsTitle: string;
     testimonialsViewFullReview: string;
+  };
+  experiencias: {
+    heroCtaAriaLabel: string;
+    heroCtaText: string;
+    heroSubtitle: string;
+    heroTitle: string;
+    travelTypeEyebrow: string;
+    travelTypeSubtitle: string;
+    travelTypeTitle: string;
   };
   footer: {
     ariaFacebook: string;

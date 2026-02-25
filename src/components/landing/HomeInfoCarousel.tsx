@@ -81,7 +81,7 @@ export default function HomeInfoCarousel({
         >
           {HOME_INFO_CAROUSEL_CONSTANTS.TITLE}
         </h2>
-        <p className="font-jost text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
           {HOME_INFO_CAROUSEL_CONSTANTS.SUBTITLE}
         </p>
       </div>

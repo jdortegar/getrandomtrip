@@ -308,14 +308,14 @@ function SummaryPageContent() {
         {/* <div id="hero-sentinel" aria-hidden className="h-px w-px" /> */}
         {/* <BgCarousel scrim={0.65} /> */}
 
-        <div className="flex gap-6 w-full font-jost">
+        <div className="flex gap-6 w-full">
           {/* Columna izquierda */}
           <div className="flex-1 space-y-4">
             <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
               <h2 className="text-xl font-semibold text-neutral-900 mb-8">
                 Logística de tu viaje
               </h2>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm font-jost">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
                 <ItemBlock
                   title="País de Salida"
                   value={logistics.country ?? '—'}

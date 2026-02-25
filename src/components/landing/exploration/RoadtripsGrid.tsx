@@ -9,7 +9,7 @@ import { EXPLORATION_CONSTANTS } from './exploration.constants';
 export function RoadtripsGrid() {
   return (
     <div className="py-8">
-      <p className="text-center text-gray-600 mb-8 italic font-jost text-lg">
+      <p className="text-center text-gray-600 mb-8 italic text-lg">
         {EXPLORATION_CONSTANTS.TAB_DESCRIPTIONS['Roadtrips']}
       </p>
 

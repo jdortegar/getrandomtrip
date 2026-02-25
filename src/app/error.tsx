@@ -41,7 +41,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
               <AlertTriangle className="w-10 h-10 text-red-600" />
             </div>
 
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4 font-jost">
+            <h1 className="text-3xl font-bold text-neutral-900 mb-4">
               Error Inesperado
             </h1>
 

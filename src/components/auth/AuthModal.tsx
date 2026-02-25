@@ -185,7 +185,7 @@ export default function AuthModal({
         <div className="p-8">
           {/* Header */}
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-neutral-900 font-jost">
+            <h2 className="text-2xl font-bold text-neutral-900">
               {mode === 'login' ? (t?.signIn ?? 'Sign In') : (t?.createAccount ?? 'Create Account')}
             </h2>
             <p className="text-sm text-neutral-600 mt-2">

@@ -37,7 +37,7 @@ interface ExplorationSectionProps {
 function ComingSoon({ message }: { message: string }) {
   return (
     <div className="py-4">
-      <p className="text-center font-jost text-lg italic text-gray-600">
+      <p className="text-center text-lg italic text-gray-600">
         {message}
       </p>
     </div>

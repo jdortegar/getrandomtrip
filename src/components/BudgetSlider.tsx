@@ -57,7 +57,7 @@ export default function BudgetSlider({
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 text-center md:mb-10">
-          <p className="font-jost mb-6 text-center text-lg italic text-gray-600 md:text-xl">
+          <p className="mb-6 text-center text-lg italic text-gray-600 md:text-xl">
             Cada dólar cuenta. Mueve el slider y descubre cómo tu presupuesto
             transforma completamente la experiencia de tu viaje.
           </p>
@@ -67,10 +67,10 @@ export default function BudgetSlider({
         <div className="bg-white rounded-2xl">
           <div className="mb-4 md:mb-6">
             <div className="flex justify-between items-center mb-3 md:mb-4">
-              <span className="text-xs font-medium text-gray-700 font-jost md:text-sm">
+              <span className="text-xs font-medium text-gray-700 md:text-sm">
                 Presupuesto por persona
               </span>
-              <span className="text-xl font-bold text-gray-900 font-jost md:text-2xl">
+              <span className="text-xl font-bold text-gray-900 md:text-2xl">
                 {currentStepIndex <= 0 ? 'desde ' : ''}US$ {budget}
               </span>
             </div>
@@ -101,7 +101,7 @@ export default function BudgetSlider({
                 <div className="font-bold text-primary-700 text-3xl font-caveat md:text-4xl">
                   {currentPackage.name}
                 </div>
-                <div className="text-primary-600 font-jost text-sm max-w-xs md:text-base">
+                <div className="text-primary-600 text-sm max-w-xs md:text-base">
                   {currentPackage.subtitle}
                 </div>
               </div>
@@ -117,10 +117,10 @@ export default function BudgetSlider({
                   <div className="mb-2 flex justify-center md:mb-3">
                     <MapPin className="h-8 w-8 text-primary-600 md:h-10 md:w-10" />
                   </div>
-                  <div className="font-jost mb-1 text-base font-semibold text-gray-900 md:mb-2 md:text-lg">
+                  <div className="mb-1 text-base font-semibold text-gray-900 md:mb-2 md:text-lg">
                     Duración
                   </div>
-                  <div className="font-jost text-sm text-primary-700 md:text-base">
+                  <div className="text-sm text-primary-700 md:text-base">
                     {
                       currentPackage.features.find(
                         (f) => f.label === 'Duración',
@@ -136,10 +136,10 @@ export default function BudgetSlider({
                   <div className="mb-2 flex justify-center md:mb-3">
                     <Plane className="h-8 w-8 text-primary-600 md:h-10 md:w-10" />
                   </div>
-                  <div className="font-jost mb-1 text-base font-semibold text-gray-900 md:mb-2 md:text-lg">
+                  <div className="mb-1 text-base font-semibold text-gray-900 md:mb-2 md:text-lg">
                     Transporte
                   </div>
-                  <div className="font-jost text-sm text-primary-700 md:text-base">
+                  <div className="text-sm text-primary-700 md:text-base">
                     {
                       currentPackage.features.find(
                         (f) => f.label === 'Transporte',
@@ -155,10 +155,10 @@ export default function BudgetSlider({
                   <div className="mb-2 flex justify-center md:mb-3">
                     <Bed className="h-8 w-8 text-primary-600 md:h-10 md:w-10" />
                   </div>
-                  <div className="font-jost mb-1 text-base font-semibold text-gray-900 md:mb-2 md:text-lg">
+                  <div className="mb-1 text-base font-semibold text-gray-900 md:mb-2 md:text-lg">
                     Alojamiento
                   </div>
-                  <div className="font-jost text-sm text-primary-700 md:text-base">
+                  <div className="text-sm text-primary-700 md:text-base">
                     {
                       currentPackage.features.find(
                         (f) => f.label === 'Alojamiento',
@@ -188,10 +188,10 @@ export default function BudgetSlider({
                       />
                     </svg>
                   </div>
-                  <div className="font-jost mb-1 text-sm font-semibold text-gray-900 md:mb-2 md:text-base">
+                  <div className="mb-1 text-sm font-semibold text-gray-900 md:mb-2 md:text-base">
                     Experiencia
                   </div>
-                  <div className="font-jost text-xs text-gray-600 md:text-sm">
+                  <div className="text-xs text-gray-600 md:text-sm">
                     {budget < 500
                       ? 'Básica pero auténtica'
                       : budget < 800
@@ -222,10 +222,10 @@ export default function BudgetSlider({
                       />
                     </svg>
                   </div>
-                  <div className="font-jost mb-1 text-sm font-semibold text-gray-900 md:mb-2 md:text-base">
+                  <div className="mb-1 text-sm font-semibold text-gray-900 md:mb-2 md:text-base">
                     Flexibilidad
                   </div>
-                  <div className="font-jost text-xs text-gray-600 md:text-sm">
+                  <div className="text-xs text-gray-600 md:text-sm">
                     {budget < 500
                       ? 'Fechas limitadas'
                       : budget < 800
@@ -256,10 +256,10 @@ export default function BudgetSlider({
                       />
                     </svg>
                   </div>
-                  <div className="font-jost mb-1 text-sm font-semibold text-gray-900 md:mb-2 md:text-base">
+                  <div className="mb-1 text-sm font-semibold text-gray-900 md:mb-2 md:text-base">
                     Soporte
                   </div>
-                  <div className="font-jost text-xs text-gray-600 md:text-sm">
+                  <div className="text-xs text-gray-600 md:text-sm">
                     {budget < 500
                       ? 'Guía esencial'
                       : budget < 800
@@ -278,10 +278,10 @@ export default function BudgetSlider({
               <div className="flex items-center gap-3 text-left">
                 <Gift className="h-5 w-5 text-primary-600 flex-shrink-0 md:h-6 md:w-6" />
                 <div>
-                  <div className="font-semibold text-gray-900 mb-1 font-jost text-sm md:mb-2 md:text-base">
+                  <div className="font-semibold text-gray-900 mb-1 text-sm md:mb-2 md:text-base">
                     Extras incluidos:
                   </div>
-                  <div className="text-xs text-primary-700 font-jost md:text-sm">
+                  <div className="text-xs text-primary-700 md:text-sm">
                     {
                       currentPackage.features.find((f) => f.label === 'Extras')
                         ?.value

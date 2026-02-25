@@ -28,7 +28,7 @@ export default function TripperInspirationGallery({
           <h2 className="font-caveat text-4xl font-bold text-white md:text-6xl mb-6">
             Experiencias que {firstName} ha creado
           </h2>
-          <p className="mx-auto max-w-3xl text-xl text-white/90 leading-relaxed font-jost">
+          <p className="mx-auto max-w-3xl text-xl text-white/90 leading-relaxed">
             Inspírate con estos viajes sorpresa diseñados por {tripperName}.
             Cada experiencia está pensada para crear recuerdos únicos.
           </p>
@@ -60,11 +60,11 @@ export default function TripperInspirationGallery({
 
                   {/* Badges */}
                   <div className="absolute left-6 top-6 flex flex-wrap gap-3">
-                    <span className="rounded-sm border border-white/40 bg-black/60 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md shadow-lg font-jost">
+                    <span className="rounded-sm border border-white/40 bg-black/60 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md shadow-lg">
                       {typeLabel}
                     </span>
                     <span
-                      className={`rounded-sm px-4 py-2 text-sm font-semibold text-white shadow-lg font-jost ${tierBadge.color}`}
+                      className={`rounded-sm px-4 py-2 text-sm font-semibold text-white shadow-lg ${tierBadge.color}`}
                     >
                       {tierBadge.label}
                     </span>
@@ -76,7 +76,7 @@ export default function TripperInspirationGallery({
                       className="h-5 w-5 text-secondary"
                       fill="currentColor"
                     />
-                    <span className="text-sm font-semibold text-white font-jost">
+                    <span className="text-sm font-semibold text-white">
                       {trip.likes}
                     </span>
                   </div>
@@ -87,7 +87,7 @@ export default function TripperInspirationGallery({
                   <h3 className="text-xl font-bold text-white mb-2 group-hover:text-secondary transition-colors font-caveat">
                     {trip.title}
                   </h3>
-                  <p className="text-white/90 mb-4 leading-relaxed font-jost">
+                  <p className="text-white/90 mb-4 leading-relaxed">
                     {trip.teaser}
                   </p>
 
@@ -100,7 +100,7 @@ export default function TripperInspirationGallery({
                           className="flex items-start gap-3 text-white/90"
                         >
                           <span className="mt-1 text-secondary text-lg">✓</span>
-                          <span className="text-sm font-jost">{highlight}</span>
+                          <span className="text-sm">{highlight}</span>
                         </li>
                       ))}
                     </ul>
@@ -112,7 +112,7 @@ export default function TripperInspirationGallery({
                       {trip.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-sm bg-white/15 px-3 py-1 text-xs text-white/80 backdrop-blur-sm font-jost"
+                          className="rounded-sm bg-white/15 px-3 py-1 text-xs text-white/80 backdrop-blur-sm"
                         >
                           #{tag}
                         </span>
@@ -125,11 +125,11 @@ export default function TripperInspirationGallery({
                     <div className="flex items-center gap-4 text-sm text-white/70 justify-center w-full">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
-                        <span className="font-jost">{trip.nights} noches</span>
+                        <span className="">{trip.nights} noches</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />
-                        <span className="font-jost">{trip.pax} personas</span>
+                        <span className="">{trip.pax} personas</span>
                       </div>
                     </div>
                   </div>

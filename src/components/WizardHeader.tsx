@@ -83,7 +83,7 @@ export function WizardHeader({
                   </div>
                   <span
                     className={`
-                      ml-2 text-sm font-medium transition-colors duration-200 text-left font-jost
+                      ml-2 text-sm font-medium transition-colors duration-200 text-left
                       ${
                         isCurrent
                           ? 'text-primary'

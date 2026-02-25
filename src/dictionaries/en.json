@@ -1,12 +1,14 @@
 {
   "nav": {
     "labelTrippers": "Trippers",
-    "labelInspiration": "Inspiration",
+    "labelInspiration": "Tripper’s Inspiration",
     "labelNosotros": "About us",
     "labelTripbuddy": "North IA",
     "labelBitacoras": "Off the Record",
+    "labelExperiences": "Experiences",
     "ariaLabelTrippers": "Go to Trippers page",
     "ariaLabelInspiration": "Go to inspiration section",
+    "ariaLabelExperiences": "Go to Experiences",
     "ariaLabelNosotros": "Go to about us page",
     "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
     "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
@@ -60,12 +62,32 @@
     ],
     "explorationTitle": "Starting Points",
     "explorationTravelerTypes": [
-      { "key": "couple", "title": "Couple", "description": "Romantic getaways." },
+      {
+        "key": "couple",
+        "title": "Couple",
+        "description": "Romantic getaways."
+      },
       { "key": "solo", "title": "Solo", "description": "A unique trip." },
-      { "key": "family", "title": "Family", "description": "Memories together." },
-      { "key": "group", "title": "Group", "description": "Shared experiences." },
-      { "key": "honeymoon", "title": "Honeymoon", "description": "The perfect beginning." },
-      { "key": "paws", "title": "PAWS", "description": "Adventures with your pet." }
+      {
+        "key": "family",
+        "title": "Family",
+        "description": "Memories together."
+      },
+      {
+        "key": "group",
+        "title": "Group",
+        "description": "Shared experiences."
+      },
+      {
+        "key": "honeymoon",
+        "title": "Honeymoon",
+        "description": "The perfect beginning."
+      },
+      {
+        "key": "paws",
+        "title": "PAWS",
+        "description": "Adventures with your pet."
+      }
     ],
     "heroBrandingRepeatText": "Repeat",
     "heroBrandingText": "WONDER • WANDER",
@@ -121,6 +143,15 @@
         "imageAlt": "Airplane window view"
       }
     ]
+  },
+  "experiencias": {
+    "heroCtaAriaLabel": "Go to plans by traveler type section",
+    "heroCtaText": "GET RANDOMTRIP",
+    "heroSubtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
+    "heroTitle": "EXPERIENCES",
+    "travelTypeEyebrow": "Starting point",
+    "travelTypeSubtitle": "Choose who you're traveling with for this experience.",
+    "travelTypeTitle": "By traveler type"
   },
   "footer": {
     "quickLinksTitle": "Quick Links",

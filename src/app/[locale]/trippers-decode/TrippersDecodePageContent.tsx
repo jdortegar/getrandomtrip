@@ -21,7 +21,7 @@ export function TrippersDecodePageContent() {
             <h1 className="font-caveat text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               {TRIPPERS_DECODE_CONSTANTS.TITLE}
             </h1>
-            <p className="font-jost text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               {TRIPPERS_DECODE_CONSTANTS.SUBTITLE}
             </p>
           </div>

@@ -100,7 +100,7 @@ const EventFinder: React.FC = () => {
         </div>
 
         {/* Subtitle */}
-        <p className="font-jost mx-auto mb-8 max-w-2xl text-base text-gray-300/90 leading-relaxed mt-4 px-4 md:text-lg md:mb-10 md:mt-6">
+        <p className="mx-auto mb-8 max-w-2xl text-base text-gray-300/90 leading-relaxed mt-4 px-4 md:text-lg md:mb-10 md:mt-6">
           Conquista conciertos, festivales y eventos únicos. Boletos al
           instante, aventuras inolvidables. Solo elige tu ciudad y tus fechas.
         </p>
@@ -139,7 +139,7 @@ const EventFinder: React.FC = () => {
           >
             {isLoading ? 'Buscando…' : 'Explorar eventos'}
           </Button>
-          <p className="font-jost mt-3 text-xs text-gray-300/90 px-4 md:mt-4 md:text-sm">
+          <p className="mt-3 text-xs text-gray-300/90 px-4 md:mt-4 md:text-sm">
             Sorpresa, sí. Estrés, nunca. Solo define tus fechas y déjate llevar.
           </p>
         </div>

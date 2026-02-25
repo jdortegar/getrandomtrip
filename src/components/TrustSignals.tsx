@@ -76,11 +76,11 @@ function TrustSignal({
           <Icon className="h-5 w-5 flex-shrink-0 text-primary md:h-6 md:w-6" />
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="font-jost text-sm font-semibold text-neutral-800 whitespace-nowrap md:text-base">
+          <span className="text-sm font-semibold text-neutral-800 whitespace-nowrap md:text-base">
             {signal.text}
           </span>
           {showDescription && (
-            <p className="font-jost text-[10px] text-neutral-500 whitespace-nowrap md:text-xs">
+            <p className="text-[10px] text-neutral-500 whitespace-nowrap md:text-xs">
               {signal.description}
             </p>
           )}

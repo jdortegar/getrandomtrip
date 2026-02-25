@@ -66,11 +66,11 @@ export default function ExcuseOptionCard({
       )}
 
       <div className="absolute inset-x-0 bottom-0 p-4">
-        <span className="inline-block rounded-md text-sm font-semibold text-white font-jost">
+        <span className="inline-block rounded-md text-sm font-semibold text-white">
           {label}
         </span>
         {desc && (
-          <p className="mt-2 text-sm text-white/90 leading-relaxed line-clamp-3 font-jost">
+          <p className="mt-2 text-sm text-white/90 leading-relaxed line-clamp-3">
             {desc}
           </p>
         )}

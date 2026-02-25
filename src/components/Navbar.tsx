@@ -25,6 +25,7 @@ export type NavbarVariant = 'overlay' | 'auto' | 'solid';
 const PRIMARY_LINK_KEYS = [
   { href: '/trippers', labelKey: 'labelTrippers', ariaKey: 'ariaLabelTrippers' },
   { href: '/blog', labelKey: 'labelInspiration', ariaKey: 'ariaLabelInspiration' },
+  { href: '/experiencias', labelKey: 'labelExperiences', ariaKey: 'ariaLabelExperiences' },
   { href: '/nosotros', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
 ] as const;
 const EXTRA_LINK_KEYS = [

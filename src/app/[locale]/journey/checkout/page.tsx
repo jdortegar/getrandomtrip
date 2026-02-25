@@ -67,7 +67,7 @@ function CheckoutPageContent() {
       />
 
       <Section>
-        <div className="flex gap-6 w-full font-jost">
+        <div className="flex gap-6 w-full">
           {/* Main Content */}
           <div className="flex-1">
             {isReturnFromMP ? (
@@ -78,7 +78,7 @@ function CheckoutPageContent() {
                     <AlertTriangle className="w-10 h-10 text-yellow-600" />
                   </div>
 
-                  <h1 className="text-3xl font-bold text-neutral-900 mb-4 font-jost">
+                  <h1 className="text-3xl font-bold text-neutral-900 mb-4">
                     Pago No Completado
                   </h1>
 
@@ -169,7 +169,7 @@ function CheckoutPageContent() {
                   <RefreshCw className="w-10 h-10 text-blue-600 animate-spin" />
                 </div>
 
-                <h1 className="text-2xl font-bold text-neutral-900 mb-4 font-jost">
+                <h1 className="text-2xl font-bold text-neutral-900 mb-4">
                   Procesando...
                 </h1>
 

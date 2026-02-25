@@ -164,13 +164,13 @@ export default function Details({
             {spec.title}
           </h3>
           <p
-            className="mt-2 max-w-3xl text-white/90 font-jost mx-auto w-full"
+            className="mt-2 max-w-3xl text-white/90 mx-auto w-full"
             data-testid="tab4-core"
           >
             {spec.core}
           </p>
           {budgetLevel && (
-            <p className="mt-2 text-sm text-white/75 font-jost">
+            <p className="mt-2 text-sm text-white/75">
               Presupuesto elegido:{' '}
               <span className="font-semibold">{budgetLevel}</span>
             </p>

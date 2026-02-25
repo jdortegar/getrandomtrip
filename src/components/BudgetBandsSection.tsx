@@ -61,7 +61,7 @@ export function BudgetBandsSection({
         >
           <p
             className={
-              'text-center text-gray-600  italic font-jost text-lg mb-6'
+              'text-center text-gray-600  italic text-lg mb-6'
             }
           >
             Tu presupuesto marca el punto de partida. Nosotros transformamos

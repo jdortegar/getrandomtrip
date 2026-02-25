@@ -263,7 +263,7 @@ function ProfileContent() {
               </div>
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold text-neutral-900 mb-2 font-jost">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
                   {currentUser?.name || 'Usuario'}
                 </h1>
                 <p className="text-neutral-600 mb-3">
@@ -301,7 +301,7 @@ function ProfileContent() {
             <div className="space-y-6">
               {/* Personal Information */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h2 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                <h2 className="text-xl font-semibold text-neutral-900 mb-4">
                   Información Personal
                 </h2>
                 <div className="space-y-4">
@@ -344,7 +344,7 @@ function ProfileContent() {
 
               {/* Travel Preferences */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h2 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                <h2 className="text-xl font-semibold text-neutral-900 mb-4">
                   Preferencias de Viaje
                 </h2>
                 <div className="space-y-4">
@@ -428,7 +428,7 @@ function ProfileContent() {
             <div className="space-y-6">
               {/* Stats Card */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Estadísticas
                 </h3>
                 <div className="space-y-4">
@@ -465,7 +465,7 @@ function ProfileContent() {
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-white border-b flex items-center justify-between">
                 <div className="flex-1 p-6">
-                  <h3 className="text-xl font-semibold text-neutral-900 font-jost">
+                  <h3 className="text-xl font-semibold text-neutral-900">
                     Editar Perfil
                   </h3>
                 </div>

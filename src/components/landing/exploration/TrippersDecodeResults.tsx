@@ -65,7 +65,7 @@ export function TrippersDecodeResults({
           <h4 className="font-caveat text-3xl text-primary font-bold mb-4">
             {TRIPPERS_DECODE_CONSTANTS.KAI.TITLE}
           </h4>
-          <p className="font-jost text-lg text-gray-700 italic leading-relaxed">
+          <p className="text-lg text-gray-700 italic leading-relaxed">
             {kaiSuggestion}
           </p>
         </motion.div>
@@ -84,7 +84,7 @@ export function TrippersDecodeResults({
           >
             <div className="bg-gray-50 rounded-xl p-8 max-w-md mx-auto">
               <div className="text-4xl mb-4">🔍</div>
-              <p className="font-jost text-gray-600 text-lg">
+              <p className="text-gray-600 text-lg">
                 {TRIPPERS_DECODE_CONSTANTS.SEARCH.NO_RESULTS_TEXT}
               </p>
             </div>

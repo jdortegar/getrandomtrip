@@ -124,7 +124,7 @@ function FlipCard({
             width={420}
           />
           <div className="absolute inset-0 bg-black/70 p-4 flex flex-col justify-center items-center text-center">
-            <p className="text-sm leading-relaxed mb-4 font-jost text-white">
+            <p className="text-sm leading-relaxed mb-4 text-white">
               {item.description}
             </p>
             <Button variant="outline">Elegir y continuar →</Button>

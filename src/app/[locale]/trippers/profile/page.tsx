@@ -189,7 +189,7 @@ function TripperProfileContent() {
           <h1 className="text-4xl font-bold text-white mb-4 font-caveat">
             Mi Perfil de Tripper
           </h1>
-          <p className="text-xl text-white/90 font-jost">
+          <p className="text-xl text-white/90">
             Gestiona tu negocio de viajes
           </p>
         </div>
@@ -208,7 +208,7 @@ function TripperProfileContent() {
               </div>
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold text-neutral-900 mb-2 font-jost">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
                   {currentUser?.name || 'Tripper'}
                 </h1>
                 <p className="text-neutral-600 mb-3">
@@ -243,7 +243,7 @@ function TripperProfileContent() {
                   {/* Bio Section */}
                   {(currentUser as any)?.bio && (
                     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                      <h2 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                      <h2 className="text-xl font-semibold text-neutral-900 mb-4">
                         Sobre Mí
                       </h2>
                       <p className="text-neutral-700 leading-relaxed">
@@ -255,7 +255,7 @@ function TripperProfileContent() {
                   {/* Destinations */}
                   {(currentUser as any)?.destinations?.length > 0 && (
                     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                      <h2 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                      <h2 className="text-xl font-semibold text-neutral-900 mb-4">
                         Mis Destinos
                       </h2>
                       <div className="flex flex-wrap gap-2">
@@ -276,7 +276,7 @@ function TripperProfileContent() {
                   {/* Available Types */}
                   {(currentUser as any)?.availableTypes?.length > 0 && (
                     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                      <h2 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                      <h2 className="text-xl font-semibold text-neutral-900 mb-4">
                         Tipos de Viaje que Ofrezco
                       </h2>
                       <div className="flex flex-wrap gap-2">
@@ -300,7 +300,7 @@ function TripperProfileContent() {
               {activeTab === 'packages' && (
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-neutral-900 font-jost">
+                    <h2 className="text-xl font-semibold text-neutral-900">
                       Mis Paquetes
                     </h2>
                     <Button
@@ -391,7 +391,7 @@ function TripperProfileContent() {
               {activeTab === 'performance' && (
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-neutral-900 font-jost">
+                    <h2 className="text-xl font-semibold text-neutral-900">
                       Rendimiento
                     </h2>
                     <Button
@@ -462,7 +462,7 @@ function TripperProfileContent() {
             <div className="space-y-6">
               {/* Navigation Tabs */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Navegación
                 </h3>
                 <div className="space-y-2">
@@ -511,7 +511,7 @@ function TripperProfileContent() {
 
               {/* Quick Stats */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Estadísticas Rápidas
                 </h3>
                 <div className="space-y-3">
@@ -547,7 +547,7 @@ function TripperProfileContent() {
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-white border-b flex items-center justify-between">
                 <div className="flex-1 p-6">
-                  <h3 className="text-xl font-semibold text-neutral-900 font-jost">
+                  <h3 className="text-xl font-semibold text-neutral-900">
                     Editar Perfil de Tripper
                   </h3>
                 </div>

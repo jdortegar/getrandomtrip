@@ -258,7 +258,7 @@ function TripDetailsContent() {
               {/* Trip Overview */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                 <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-neutral-900 font-jost">
+                  <h2 className="text-2xl font-bold text-neutral-900">
                     Detalles del Viaje
                   </h2>
                   <span
@@ -354,7 +354,7 @@ function TripDetailsContent() {
 
               {/* Filters & Preferences */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-xl font-semibold text-neutral-900 mb-4">
                   Filtros y Preferencias ({filterChips.length})
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -398,7 +398,7 @@ function TripDetailsContent() {
               {/* Add-ons */}
               {addonChips.length > 0 && (
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                  <h3 className="text-xl font-semibold text-neutral-900 mb-4">
                     Add-ons ({addonChips.length})
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -421,7 +421,7 @@ function TripDetailsContent() {
               {/* Customer Review */}
               {trip.customerRating && (
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-4 font-jost">
+                  <h3 className="text-xl font-semibold text-neutral-900 mb-4">
                     Mi Reseña
                   </h3>
                   <div className="flex items-center gap-2 mb-3">
@@ -450,7 +450,7 @@ function TripDetailsContent() {
             <div className="space-y-6">
               {/* Pricing Summary */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Resumen de Costos
                 </h3>
                 <div className="space-y-3">
@@ -494,7 +494,7 @@ function TripDetailsContent() {
               {/* Payment Info */}
               {trip.payment && (
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                  <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                     Información de Pago
                   </h3>
                   <div className="space-y-3">
@@ -563,7 +563,7 @@ function TripDetailsContent() {
 
               {/* Trip Timeline */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Línea de Tiempo
                 </h3>
                 <div className="space-y-4">
@@ -638,7 +638,7 @@ function TripDetailsContent() {
             <div className="space-y-6">
               {/* Actions */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4 font-jost">
+                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                   Acciones
                 </h3>
                 <div className="space-y-3">
