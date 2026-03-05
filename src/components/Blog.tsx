@@ -122,10 +122,12 @@ export default function Blog({
 
           {/* Right Column - Carousel */}
           <div className="relative z-0 flex-1 md:min-w-2/3 mt-8 pl-6 pr-8 md:pl-8 md:pr-12">
-            {/* Navigation buttons at top right */}
-            <div className="absolute -top-20 right-[12.5%] z-10 flex items-center gap-2">
-              <CarouselPrevious />
-              <CarouselNext />
+            {/* Arrows above cards, aligned to carousel content (top position like in design) */}
+            <div className="mb-6 flex justify-end">
+              <div className="flex flex-shrink-0 gap-2 items-center">
+                <CarouselPrevious inHeader />
+                <CarouselNext inHeader />
+              </div>
             </div>
 
             {/* Carousel Content */}

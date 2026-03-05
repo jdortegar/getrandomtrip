@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * Carousel module – Embla-based carousel with consistent behavior across the app.
+ * Follows Embla docs pattern: viewport + container + slides, with optional prev/next and dots.
+ * SOLID: hooks own Embla state (prev/next, dots); root provides context; UI components consume only what they need.
+ */
+
 import * as React from 'react';
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -10,6 +16,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/Button';
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
 type CarouselOptions = UseCarouselParameters[0];
@@ -17,46 +27,115 @@ type CarouselPlugin = UseCarouselParameters[1];
 
 type EdgeBleedSide = 'right' | 'both';
 
-type CarouselProps = {
-  opts?: CarouselOptions;
-  plugins?: CarouselPlugin;
-  orientation?: 'horizontal' | 'vertical';
-  setApi?: (api: CarouselApi) => void;
-  showNavWithSingleSlide?: boolean;
-} & {
+/** Props for the low-level root (viewport + context). */
+type CarouselRootProps = {
   edgeBleed?: boolean;
   edgeBleedSide?: EdgeBleedSide;
+  opts?: CarouselOptions;
+  orientation?: 'horizontal' | 'vertical';
+  plugins?: CarouselPlugin;
+  setApi?: (api: CarouselApi) => void;
 };
 
-type CarouselContextProps = {
-  api: ReturnType<typeof useEmblaCarousel>[1];
+/** Everything provided by context to carousel UI (buttons, dots, content). */
+type CarouselContextValue = {
+  api: CarouselApi | undefined;
   canScrollNext: boolean;
   canScrollPrev: boolean;
   carouselRef: ReturnType<typeof useEmblaCarousel>[0];
-  forceEnableNavigation: boolean;
+  opts: CarouselOptions | undefined;
+  orientation: 'horizontal' | 'vertical';
   scrollNext: () => void;
   scrollPrev: () => void;
   scrollSnaps: number[];
   scrollTo: (index: number) => void;
   selectedIndex: number;
-} & CarouselProps;
+} & CarouselRootProps;
 
-const CarouselContext = React.createContext<CarouselContextProps | null>(null);
+// -----------------------------------------------------------------------------
+// Embla control hooks (DRY – same idea as Embla docs: usePrevNextButtons, useDotButton)
+// -----------------------------------------------------------------------------
 
-function useCarousel() {
-  const context = React.useContext(CarouselContext);
+/** Syncs prev/next button state with Embla and returns scroll handlers. */
+function usePrevNextButtons(api: CarouselApi | undefined) {
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
+  const [canScrollNext, setCanScrollNext] = React.useState(false);
 
-  if (!context) {
-    throw new Error('useCarousel must be used within a <Carousel />');
-  }
+  const scrollPrev = React.useCallback(() => api?.scrollPrev(), [api]);
+  const scrollNext = React.useCallback(() => api?.scrollNext(), [api]);
 
-  return context;
+  const sync = React.useCallback(() => {
+    if (!api) return;
+    setCanScrollPrev(api.canScrollPrev());
+    setCanScrollNext(api.canScrollNext());
+  }, [api]);
+
+  React.useEffect(() => {
+    if (!api) return;
+    sync();
+    api.on('reInit', sync);
+    api.on('select', sync);
+    return () => {
+      api.off('select', sync);
+      api.off('reInit', sync);
+    };
+  }, [api, sync]);
+
+  return { canScrollPrev, canScrollNext, scrollPrev, scrollNext };
 }
 
-// Low-level carousel components (renamed from original)
+/** Syncs dot state (selected index + snap list) with Embla and returns scroll-to handler. */
+function useDotButton(api: CarouselApi | undefined) {
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+  const scrollTo = React.useCallback(
+    (index: number) => api?.scrollTo(index),
+    [api],
+  );
+
+  const sync = React.useCallback(() => {
+    if (!api) return;
+    setScrollSnaps(api.scrollSnapList());
+    setSelectedIndex(api.selectedScrollSnap());
+  }, [api]);
+
+  React.useEffect(() => {
+    if (!api) return;
+    sync();
+    api.on('reInit', sync);
+    api.on('select', sync);
+    return () => {
+      api.off('select', sync);
+      api.off('reInit', sync);
+    };
+  }, [api, sync]);
+
+  return { selectedIndex, scrollSnaps, scrollTo };
+}
+
+// -----------------------------------------------------------------------------
+// Context and public hook
+// -----------------------------------------------------------------------------
+
+const CarouselContext = React.createContext<CarouselContextValue | null>(null);
+
+/** Use inside CarouselRoot to get api, scroll state, and control handlers. */
+function useCarousel(): CarouselContextValue {
+  const ctx = React.useContext(CarouselContext);
+  if (!ctx) {
+    throw new Error('useCarousel must be used within a CarouselRoot');
+  }
+  return ctx;
+}
+
+// -----------------------------------------------------------------------------
+// CarouselRoot – Embla viewport + context provider (single source of truth)
+// -----------------------------------------------------------------------------
+
 const CarouselRoot = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<'div'> & CarouselProps
+  React.ComponentProps<'div'> & CarouselRootProps
 >(
   (
     {
@@ -68,115 +147,92 @@ const CarouselRoot = React.forwardRef<
       opts,
       plugins,
       setApi,
-      showNavWithSingleSlide = false,
       ...props
     },
     ref,
   ) => {
-    const pluginsArray = React.useMemo(() => {
-      const wheelPlugin = WheelGestures();
-      if (!plugins) return [wheelPlugin];
-      return Array.isArray(plugins)
-        ? [wheelPlugin, ...plugins]
-        : [wheelPlugin, plugins];
+    const pluginsList = React.useMemo(() => {
+      const wheel = WheelGestures();
+      if (!plugins) return [wheel];
+      return Array.isArray(plugins) ? [wheel, ...plugins] : [wheel, plugins];
     }, [plugins]);
 
-    const [carouselRef, api] = useEmblaCarousel(
+    const [emblaRef, api] = useEmblaCarousel(
       {
         ...opts,
         axis: orientation === 'horizontal' ? 'x' : 'y',
       },
-      pluginsArray,
-    );
-    const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-    const [canScrollNext, setCanScrollNext] = React.useState(false);
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
-    const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
-
-    const scrollTo = React.useCallback(
-      (index: number) => {
-        api?.scrollTo(index);
-      },
-      [api],
+      pluginsList,
     );
 
-    const onSelect = React.useCallback((api: CarouselApi) => {
-      if (!api) return;
-      setCanScrollPrev(api.canScrollPrev());
-      setCanScrollNext(api.canScrollNext());
-      setSelectedIndex(api.selectedScrollSnap());
-    }, []);
-
-    const scrollPrev = React.useCallback(() => {
-      api?.scrollPrev();
-    }, [api]);
-
-    const scrollNext = React.useCallback(() => {
-      api?.scrollNext();
-    }, [api]);
-
-    const handleKeyDown = React.useCallback(
-      (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'ArrowLeft') {
-          event.preventDefault();
-          scrollPrev();
-        } else if (event.key === 'ArrowRight') {
-          event.preventDefault();
-          scrollNext();
-        }
-      },
-      [scrollPrev, scrollNext],
-    );
+    const prevNext = usePrevNextButtons(api);
+    const dots = useDotButton(api);
 
     React.useEffect(() => {
       if (!api || !setApi) return;
       setApi(api);
     }, [api, setApi]);
 
-    React.useEffect(() => {
-      if (!api) return;
-      setScrollSnaps(api.scrollSnapList());
-      onSelect(api);
-      api.on('reInit', () => {
-        setScrollSnaps(api.scrollSnapList());
-        onSelect(api);
-      });
-      api.on('select', onSelect);
+    const orientationResolved: 'horizontal' | 'vertical' =
+      orientation ?? (opts?.axis === 'y' ? 'vertical' : 'horizontal');
 
-      return () => {
-        api?.off('select', onSelect);
-        api?.off('reInit', onSelect);
-      };
-    }, [api, onSelect]);
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          prevNext.scrollPrev();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          prevNext.scrollNext();
+        }
+      },
+      [prevNext],
+    );
+
+    const value: CarouselContextValue = React.useMemo(
+      () => ({
+        api,
+        canScrollNext: prevNext.canScrollNext,
+        canScrollPrev: prevNext.canScrollPrev,
+        carouselRef: emblaRef,
+        edgeBleed,
+        edgeBleedSide,
+        opts,
+        orientation: orientationResolved,
+        scrollNext: prevNext.scrollNext,
+        scrollPrev: prevNext.scrollPrev,
+        scrollSnaps: dots.scrollSnaps,
+        scrollTo: dots.scrollTo,
+        selectedIndex: dots.selectedIndex,
+        setApi,
+      }),
+      [
+        api,
+        emblaRef,
+        edgeBleed,
+        edgeBleedSide,
+        opts,
+        orientationResolved,
+        prevNext.canScrollNext,
+        prevNext.canScrollPrev,
+        prevNext.scrollNext,
+        prevNext.scrollPrev,
+        dots.scrollSnaps,
+        dots.scrollTo,
+        dots.selectedIndex,
+        setApi,
+      ],
+    );
 
     return (
-      <CarouselContext.Provider
-        value={{
-          api: api,
-          canScrollNext,
-          canScrollPrev,
-          carouselRef,
-          edgeBleed,
-          edgeBleedSide,
-          forceEnableNavigation:
-            showNavWithSingleSlide && scrollSnaps.length <= 1,
-          opts,
-          orientation:
-            orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
-          scrollNext,
-          scrollPrev,
-          scrollSnaps,
-          scrollTo,
-          selectedIndex,
-        }}
-      >
+      <CarouselContext.Provider value={value}>
         <div
           ref={ref}
-          onKeyDownCapture={handleKeyDown}
           className={cn('relative', className)}
+          data-slot="carousel"
+          onKeyDownCapture={handleKeyDown}
           role="region"
           aria-roledescription="carousel"
-          data-slot="carousel"
           {...props}
         >
           {children}
@@ -186,6 +242,10 @@ const CarouselRoot = React.forwardRef<
   },
 );
 CarouselRoot.displayName = 'CarouselRoot';
+
+// -----------------------------------------------------------------------------
+// CarouselContent – viewport (overflow hidden) + flex container for slides
+// -----------------------------------------------------------------------------
 
 const CarouselContent = React.forwardRef<
   HTMLDivElement,
@@ -200,8 +260,8 @@ const CarouselContent = React.forwardRef<
     <div
       ref={carouselRef}
       className={cn(viewportClassName)}
+      data-slot="carousel-viewport"
       style={viewportStyle}
-      data-slot="carousel-content"
     >
       <div
         ref={ref}
@@ -219,52 +279,56 @@ const CarouselContent = React.forwardRef<
 });
 CarouselContent.displayName = 'CarouselContent';
 
+// -----------------------------------------------------------------------------
+// CarouselItem – single slide (flex child, no grow/shrink)
+// -----------------------------------------------------------------------------
+
 const CarouselItem = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
 >(({ className, ...props }, ref) => {
-  const { orientation } = useCarousel();
-
   return (
     <div
       ref={ref}
-      role="group"
       aria-roledescription="slide"
-      data-slot="carousel-item"
       className={cn('min-w-0 shrink-0 grow-0 basis-full', className)}
+      data-slot="carousel-item"
+      role="group"
       {...props}
     />
   );
 });
 CarouselItem.displayName = 'CarouselItem';
 
+// -----------------------------------------------------------------------------
+// CarouselPrevious / CarouselNext – prev/next buttons using context
+// -----------------------------------------------------------------------------
+
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button> & { inHeader?: boolean }
 >(
   (
-    { className, variant = 'ghost', size = 'icon', inHeader = false, ...props },
+    { className, inHeader = false, size = 'icon', variant = 'ghost', ...props },
     ref,
   ) => {
-    const { canScrollPrev, forceEnableNavigation, orientation, scrollPrev } =
-      useCarousel();
+    const { canScrollPrev, scrollPrev } = useCarousel();
 
     return (
       <Button
         ref={ref}
-        data-slot="carousel-previous"
-        variant={variant}
-        size={size}
         className={cn(
-          'md:w-12 md:h-12 w-8 h-8 rounded-full bg-[#4F96B6] hover:bg-[#367A95]',
-          'text-white',
+          'h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-12 md:w-12',
           className,
         )}
-        disabled={!forceEnableNavigation && !canScrollPrev}
+        data-slot="carousel-previous"
+        disabled={!canScrollPrev}
         onClick={scrollPrev}
+        size={size}
+        variant={variant}
         {...props}
       >
-        <ChevronLeft className="md:size-[25px] size-[20px] text-white" />
+        <ChevronLeft className="size-[20px] text-white md:size-[25px]" />
         <span className="sr-only">Previous slide</span>
       </Button>
     );
@@ -277,28 +341,26 @@ const CarouselNext = React.forwardRef<
   React.ComponentProps<typeof Button> & { inHeader?: boolean }
 >(
   (
-    { className, variant = 'ghost', size = 'icon', inHeader = false, ...props },
+    { className, inHeader = false, size = 'icon', variant = 'ghost', ...props },
     ref,
   ) => {
-    const { canScrollNext, forceEnableNavigation, orientation, scrollNext } =
-      useCarousel();
+    const { canScrollNext, scrollNext } = useCarousel();
 
     return (
       <Button
         ref={ref}
-        data-slot="carousel-next"
-        variant={variant}
-        size={size}
         className={cn(
-          'md:w-12 md:h-12 w-8 h-8 rounded-full bg-[#4F96B6] hover:bg-[#367A95]',
-          'text-white',
+          'h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-12 md:w-12',
           className,
         )}
-        disabled={!forceEnableNavigation && !canScrollNext}
+        data-slot="carousel-next"
+        disabled={!canScrollNext}
         onClick={scrollNext}
+        size={size}
+        variant={variant}
         {...props}
       >
-        <ChevronRight className="md:size-[25px] size-[20px] text-white" />
+        <ChevronRight className="size-[20px] text-white md:size-[25px]" />
         <span className="sr-only">Next slide</span>
       </Button>
     );
@@ -306,10 +368,14 @@ const CarouselNext = React.forwardRef<
 );
 CarouselNext.displayName = 'CarouselNext';
 
+// -----------------------------------------------------------------------------
+// CarouselDots – dot indicators that call scrollTo(index)
+// -----------------------------------------------------------------------------
+
 const CarouselDots = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & { align?: 'left' | 'center' | 'right' }
->(({ className, align = 'center', ...props }, ref) => {
+>(({ align = 'center', className, ...props }, ref) => {
   const { scrollSnaps, scrollTo, selectedIndex } = useCarousel();
 
   const alignClass =
@@ -331,9 +397,9 @@ const CarouselDots = React.forwardRef<
           key={index}
           aria-label={`Go to slide ${index + 1}`}
           className={cn(
-            'w-2 h-2 rounded-full transition-all',
+            'h-2 w-2 rounded-full transition-all',
             selectedIndex === index
-              ? 'bg-[#4F96B6] w-8'
+              ? 'w-8 bg-[#4F96B6]'
               : 'bg-[#4F96B6]/30 hover:bg-[#4F96B6]/50',
           )}
           onClick={() => scrollTo(index)}
@@ -345,40 +411,43 @@ const CarouselDots = React.forwardRef<
 });
 CarouselDots.displayName = 'CarouselDots';
 
-// High-level Carousel component that handles everything internally
-type CarouselSimpleProps = {
+// -----------------------------------------------------------------------------
+// High-level Carousel – preset layout (section + optional title + arrows + content + dots)
+// Use this when you want one consistent layout; use CarouselRoot + parts for custom layouts (e.g. Blog).
+// -----------------------------------------------------------------------------
+
+type CarouselPresetProps = {
   children: React.ReactNode;
   classes?: {
+    content?: string;
+    heading?: string;
+    item?: string;
+    navigationButton?: string;
+    navigationContainer?: string;
+    navigationNext?: string;
+    navigationPrevious?: string;
+    root?: string;
     section?: string;
+    title?: string;
     viewport?: string;
     wrapper?: string;
-    root?: string;
-    heading?: string;
-    title?: string;
-    navigationContainer?: string;
-    navigationButton?: string;
-    navigationPrevious?: string;
-    navigationNext?: string;
-    content?: string;
-    item?: string;
   };
-  title?: string;
   className?: string;
-  itemClassName?: string;
-  showArrows?: boolean;
-  showDots?: boolean;
-  navigationClassName?: string;
-  slidesToScroll?: number;
-  opts?: CarouselOptions;
-  plugins?: CarouselPlugin;
-  orientation?: 'horizontal' | 'vertical';
-  setApi?: (api: CarouselApi) => void;
+  dotsAlign?: 'left' | 'center' | 'right';
   edgeBleed?: boolean;
   edgeBleedSide?: EdgeBleedSide;
   fullViewportWidth?: boolean;
+  itemClassName?: string;
+  navigationClassName?: string;
+  opts?: CarouselOptions;
+  orientation?: 'horizontal' | 'vertical';
+  plugins?: CarouselPlugin;
+  setApi?: (api: CarouselApi) => void;
+  showArrows?: boolean;
+  showDots?: boolean;
+  slidesToScroll?: number;
+  title?: string;
   viewportPaddingClassName?: string;
-  dotsAlign?: 'left' | 'center' | 'right';
-  showNavWithSingleSlide?: boolean;
 };
 
 function Carousel({
@@ -391,20 +460,16 @@ function Carousel({
   fullViewportWidth = false,
   itemClassName,
   navigationClassName,
-  opts = {
-    align: 'start',
-    loop: false,
-  },
+  opts = { align: 'start', loop: false },
   orientation = 'horizontal',
   plugins,
   setApi,
   showArrows = true,
   showDots = true,
-  showNavWithSingleSlide = false,
   slidesToScroll = 1,
   title,
   viewportPaddingClassName,
-}: CarouselSimpleProps) {
+}: CarouselPresetProps) {
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const [viewportPadding, setViewportPadding] = React.useState<{
     left: number;
@@ -414,7 +479,6 @@ function Carousel({
   const defaultViewportPadding = 'pl-[5vw] pr-[5vw] lg:pl-[10vw] lg:pr-[10vw]';
 
   const shouldApplyEdgeBleed = edgeBleed && !fullViewportWidth;
-
   const wrapperClass = cn(
     shouldApplyEdgeBleed
       ? edgeBleedSide === 'both'
@@ -431,37 +495,28 @@ function Carousel({
   );
 
   const updateViewportPadding = React.useCallback(() => {
-    if (!fullViewportWidth) return;
-    if (typeof window === 'undefined') return;
-
+    if (!fullViewportWidth || typeof window === 'undefined') return;
     const section = sectionRef.current;
     if (!section) return;
-
     const rect = section.getBoundingClientRect();
     const left = Math.max(rect.left, 0);
     const right = Math.max(window.innerWidth - rect.right, 0);
-
-    setViewportPadding((prev) => {
-      if (prev && prev.left === left && prev.right === right) {
-        return prev;
-      }
-
-      return { left, right };
-    });
+    setViewportPadding((prev) =>
+      prev && prev.left === left && prev.right === right
+        ? prev
+        : { left, right },
+    );
   }, [fullViewportWidth]);
 
   React.useEffect(() => {
     if (!fullViewportWidth) return;
-
     updateViewportPadding();
     window.addEventListener('resize', updateViewportPadding);
-
     let observer: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined' && sectionRef.current) {
-      observer = new ResizeObserver(() => updateViewportPadding());
+      observer = new ResizeObserver(updateViewportPadding);
       observer.observe(sectionRef.current);
     }
-
     return () => {
       window.removeEventListener('resize', updateViewportPadding);
       observer?.disconnect();
@@ -477,36 +532,29 @@ function Carousel({
       : undefined;
 
   return (
-    <section
-      ref={sectionRef}
-      className={cn('w-full', classes?.section, className)}
-    >
+    <div ref={sectionRef} className={cn('w-full', classes?.section, className)}>
       <div className={cn(wrapperClass)}>
         <CarouselRoot
-          className={cn('w-full', classes?.root)}
           edgeBleed={edgeBleed}
           edgeBleedSide={edgeBleedSide}
-          opts={{
-            ...opts,
-            slidesToScroll: slidesToScroll,
-          }}
+          opts={{ ...opts, slidesToScroll }}
           orientation={orientation}
           plugins={plugins}
           setApi={setApi}
-          showNavWithSingleSlide={showNavWithSingleSlide}
+          className={cn('w-full', classes?.root)}
         >
-          {/* Section Header and Navigation */}
-          <div className="flex items-center justify-between mb-6">
+          {/* Header row: optional title + arrows (same layout every time) */}
+          <div className="mb-6 flex items-center justify-between">
             {title && (
               <div
                 className={cn(
-                  'flex flex-col items-center gap-3 text-center flex-1',
+                  'flex flex-1 flex-col items-center gap-3 text-center',
                   classes?.heading,
                 )}
               >
                 <h3
                   className={cn(
-                    'text-[28px] leading-[45px] font-light text-neutral-900 max-w-sm mx-auto text-center',
+                    'mx-auto max-w-sm text-center text-[28px] font-light leading-[45px] text-neutral-900',
                     classes?.title,
                   )}
                 >
@@ -514,41 +562,39 @@ function Carousel({
                 </h3>
               </div>
             )}
-
-            {/* Navigation buttons at top right - outside slide container */}
             {showArrows && (
               <div
                 className={cn(
-                  'flex items-center gap-2 flex-shrink-0',
+                  'flex flex-shrink-0 items-center gap-2',
                   !title && 'ml-auto',
                   classes?.navigationContainer,
                 )}
               >
                 <CarouselPrevious
-                  inHeader
                   className={cn(
                     navigationClassName,
                     classes?.navigationButton,
                     classes?.navigationPrevious,
                   )}
+                  inHeader
                 />
                 <CarouselNext
-                  inHeader
                   className={cn(
                     navigationClassName,
                     classes?.navigationButton,
                     classes?.navigationNext,
                   )}
+                  inHeader
                 />
               </div>
             )}
           </div>
 
-          {/* Carousel Content */}
+          {/* Viewport + slide container */}
           <CarouselContent
+            className={cn(classes?.content)}
             viewportClassName={viewportClassName}
             viewportStyle={viewportInlineStyle}
-            className={cn(classes?.content)}
           >
             {React.Children.map(children, (child, index) => (
               <CarouselItem
@@ -560,9 +606,8 @@ function Carousel({
             ))}
           </CarouselContent>
 
-          {/* Dots navigation at bottom */}
           {showDots && (
-            <div className="w-full flex justify-center mt-8">
+            <div className="mt-8 flex w-full justify-center">
               <CarouselDots
                 align={dotsAlign}
                 className={cn(classes?.navigationContainer)}
@@ -571,21 +616,22 @@ function Carousel({
           )}
         </CarouselRoot>
       </div>
-    </section>
+    </div>
   );
 }
 
+// -----------------------------------------------------------------------------
+// Exports
+// -----------------------------------------------------------------------------
+
 export {
-  type CarouselApi,
-  // High-level simple carousel
   Carousel,
-  // Low-level compound components
-  CarouselRoot,
   CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
   CarouselDots,
-  // Hooks
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  CarouselRoot,
   useCarousel,
+  type CarouselApi,
 };

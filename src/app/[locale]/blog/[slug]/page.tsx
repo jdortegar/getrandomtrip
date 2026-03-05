@@ -346,7 +346,6 @@ function BlogDetailContent() {
               opts={{ align: 'start', loop: true }}
               showArrows
               showDots
-              showNavWithSingleSlide
               slidesToScroll={3}
             >
               {carouselImages.map((url, index) => (
