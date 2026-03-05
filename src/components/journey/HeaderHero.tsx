@@ -21,7 +21,7 @@ interface HeaderHeroProps {
   description?: React.ReactNode;
   eyebrowColor?: string;
   fallbackImage?: string;
-  subtitle?: React.ReactNode;
+  subtitle?: React.ReactNode | string;
   title: string;
   videoSrc?: string;
 }
@@ -149,9 +149,10 @@ export default function HeaderHero({
         <p
           className="mb-2 font-bold text-sm uppercase tracking-[0.4em] md:text-base"
           style={eyebrowColor ? { color: eyebrowColor } : undefined}
-        >
-          {subtitle}
-        </p>
+          {...(typeof subtitle === 'string'
+            ? { dangerouslySetInnerHTML: { __html: subtitle } }
+            : { children: subtitle })}
+        />
 
         <h1 className="mb-6 font-barlow-condensed text-7xl font-extrabold">
           {title}

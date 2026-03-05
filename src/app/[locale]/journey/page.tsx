@@ -8,95 +8,9 @@ import HeaderHero from '@/components/journey/HeaderHero';
 import JourneyMainContent from '@/components/journey/JourneyMainContent';
 import JourneyProgressSidebar from '@/components/journey/JourneyProgressSidebar';
 import JourneySummary from '@/components/journey/JourneySummary';
-
-interface Substep {
-  description: string;
-  id: string;
-  title: string;
-}
-
-interface ContentTab {
-  id: string;
-  label: string;
-  substeps: Substep[];
-}
-
-const CONTENT_TABS: ContentTab[] = [
-  {
-    id: 'budget',
-    label: 'Presupuesto',
-    substeps: [
-      {
-        id: 'travel-type',
-        title: 'TIPO DE VIAJE',
-        description:
-          'Desde escapadas solo, en grupo o en familia hasta viajes con tu mascota o Honey moon.',
-      },
-      {
-        id: 'experience',
-        title: 'EXPERIENCIA',
-        description:
-          'Lo único que definís acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros.',
-      },
-    ],
-  },
-  {
-    id: 'excuse',
-    label: 'Excusa',
-    substeps: [
-      {
-        id: 'reason',
-        title: 'CUÁL ES LA RAZÓN DE MI VIAJE',
-        description: 'Viajamos por muchas razones, ¿cuál te mueve hoy?',
-      },
-      {
-        id: 'refine-details',
-        title: 'AFINAR DETALLES',
-        description: 'Elegí una o más aventuras.',
-      },
-    ],
-  },
-  {
-    id: 'details',
-    label: 'Detalles y planificación',
-    substeps: [
-      {
-        id: 'origin',
-        title: 'ORIGEN',
-        description: 'Elegí país y ciudad de salida.',
-      },
-      {
-        id: 'dates',
-        title: 'FECHAS',
-        description:
-          'Elegí cantidad de días y la fecha de inicio. Fin de semana o flexible.',
-      },
-      {
-        id: 'transport',
-        title: 'TRANSPORTE',
-        description:
-          'Definí el orden de preferencia de medios de transporte arrastrando.',
-      },
-    ],
-  },
-  {
-    id: 'preferences',
-    label: 'Preferencias y filtros',
-    substeps: [
-      {
-        id: 'filters',
-        title: 'FILTROS',
-        description:
-          'Horarios preferidos, clima, destinos a evitar, Tiempo máximo de viaje, Tipo de transporte.',
-      },
-      {
-        id: 'addons',
-        title: 'Extras',
-        description: 'Elegí tus add-ons.',
-      },
-    ],
-  },
-];
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale } from '@/lib/i18n/config';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
 
 function getAccordionForStep(tabId: string, substepId?: string): string {
   switch (tabId) {
@@ -158,10 +72,17 @@ function getInitialStepFromParams(params: URLSearchParams): {
   return { tabId: 'preferences', sectionId: 'filters' };
 }
 
-function JourneyPageContent() {
+function JourneyPageContent({ locale }: { locale?: string }) {
   const searchParams = useSearchParams();
+  const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState('budget');
   const [openSectionId, setOpenSectionId] = useState('travel-type');
+
+  const resolvedLocale = hasLocale(locale) ? locale : 'es';
+
+  useEffect(() => {
+    getDictionary(resolvedLocale).then(setDict);
+  }, [resolvedLocale]);
 
   useEffect(() => {
     const { tabId, sectionId } = getInitialStepFromParams(searchParams);
@@ -183,19 +104,31 @@ function JourneyPageContent() {
     setOpenSectionId(sectionId);
   };
 
+  if (!dict) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  const journey = dict.journey;
+  const contentTabs = journey.contentTabs;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <HeaderHero
-        description="¿Con quién vas a escribir tu próxima historia?"
-        title="Empezá la aventura"
+        description={journey.hero.description}
+        subtitle={journey.hero.subtitle}
+        title={journey.hero.title}
       />
 
       <JourneyContentNavigation
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        tabs={CONTENT_TABS.map((tab) => ({ id: tab.id, label: tab.label }))}
+        tabs={contentTabs.map((tab) => ({ id: tab.id, label: tab.label }))}
         user={{
-          name: 'Nombre usuario',
+          name: journey.userNamePlaceholder,
         }}
       />
 
@@ -205,7 +138,7 @@ function JourneyPageContent() {
             <JourneyProgressSidebar
               activeTab={activeTab}
               onStepClick={handleStepClick}
-              tabs={CONTENT_TABS}
+              tabs={contentTabs}
             />
           </div>
 
@@ -225,10 +158,14 @@ function JourneyPageContent() {
   );
 }
 
-export default function JourneyPage() {
+export default function JourneyPage({
+  params,
+}: {
+  params?: { locale?: string };
+}) {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <JourneyPageContent />
+      <JourneyPageContent locale={params?.locale} />
     </Suspense>
   );
 }

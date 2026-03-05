@@ -162,6 +162,85 @@
       "title": "Stories from solo travelers that inspire"
     }
   },
+  "journey": {
+    "hero": {
+      "title": "Start the adventure",
+      "description": "Who will you write your next story with?",
+      "subtitle": "STARTING <span style=\"color: #F2C53D\">POINT</span>"
+    },
+    "userNamePlaceholder": "User name",
+    "contentTabs": [
+      {
+        "id": "budget",
+        "label": "Budget",
+        "substeps": [
+          {
+            "id": "travel-type",
+            "title": "TRAVEL TYPE",
+            "description": "From solo getaways to group, family, pet-friendly trips or honeymoon."
+          },
+          {
+            "id": "experience",
+            "title": "EXPERIENCE",
+            "description": "The only thing you define here is the per-person budget for travel and accommodation. That's your ceiling. We take care of the rest."
+          }
+        ]
+      },
+      {
+        "id": "excuse",
+        "label": "Excuse",
+        "substeps": [
+          {
+            "id": "reason",
+            "title": "WHAT'S THE REASON FOR MY TRIP",
+            "description": "We travel for many reasons—what's driving you today?"
+          },
+          {
+            "id": "refine-details",
+            "title": "REFINE DETAILS",
+            "description": "Choose one or more adventures."
+          }
+        ]
+      },
+      {
+        "id": "details",
+        "label": "Details and planning",
+        "substeps": [
+          {
+            "id": "origin",
+            "title": "ORIGIN",
+            "description": "Choose country and city of departure."
+          },
+          {
+            "id": "dates",
+            "title": "DATES",
+            "description": "Choose number of days and start date. Weekend or flexible."
+          },
+          {
+            "id": "transport",
+            "title": "TRANSPORT",
+            "description": "Set your preferred order of transport options by dragging."
+          }
+        ]
+      },
+      {
+        "id": "preferences",
+        "label": "Preferences and filters",
+        "substeps": [
+          {
+            "id": "filters",
+            "title": "FILTERS",
+            "description": "Preferred times, weather, destinations to avoid, max travel time, transport type."
+          },
+          {
+            "id": "addons",
+            "title": "Extras",
+            "description": "Choose your add-ons."
+          }
+        ]
+      }
+    ]
+  },
   "footer": {
     "quickLinksTitle": "Quick Links",
     "about": "About us",

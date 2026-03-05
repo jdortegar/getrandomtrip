@@ -108,6 +108,23 @@ export interface MarketingDictionary {
       title: string;
     };
   };
+  journey: {
+    contentTabs: Array<{
+      id: string;
+      label: string;
+      substeps: Array<{
+        description: string;
+        id: string;
+        title: string;
+      }>;
+    }>;
+    hero: {
+      description: string;
+      subtitle: string;
+      title: string;
+    };
+    userNamePlaceholder: string;
+  };
   footer: {
     ariaFacebook: string;
     ariaInstagram: string;
