@@ -9,10 +9,15 @@ import InspirationBanner from '@/components/InspirationBanner';
 import {
   getTravelerType,
   getAllTravelerTypePaths,
+  type TravelerTypeSlug,
 } from '@/lib/data/traveler-types';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale, type Locale } from '@/lib/i18n/config';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
 
 /**
- * Generate static paths for all traveler types and their aliases
+ * Generate static paths for all traveler types and their aliases.
+ * Parent [locale] segment provides locale; we only provide type.
  */
 export async function generateStaticParams() {
   const paths = getAllTravelerTypePaths();
@@ -25,9 +30,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { type: string };
+  params: { locale?: string; type: string };
 }): Promise<Metadata> {
-  const typeData = getTravelerType(params.type);
+  const locale = hasLocale(params?.locale) ? (params.locale as Locale) : ('es' as Locale);
+  const typeData = getTravelerType(params.type, locale);
 
   if (!typeData) {
     return { title: 'Randomtrip' };
@@ -39,18 +45,26 @@ export async function generateMetadata({
 }
 
 /**
- * Main page component
+ * Main page component. Params include parent [locale] and this segment [type].
  */
-export default function TravelerTypePage({
+export default async function TravelerTypePage({
   params,
 }: {
-  params: { type: string };
+  params: { locale?: string; type: string };
 }) {
-  const typeData = getTravelerType(params.type);
+  const locale = hasLocale(params.locale) ? (params.locale as Locale) : ('es' as Locale);
+  const typeData = getTravelerType(params.type, locale);
 
   if (!typeData) {
     notFound();
   }
+
+  const dict = await getDictionary(locale);
+  const { blogEyebrow, inspirationBanner } = dict.packagesByType;
+  const blogHref = pathForLocale(locale, '/blog');
+  const viewAll = typeData.blog.viewAll
+    ? { ...typeData.blog.viewAll, href: pathForLocale(locale, typeData.blog.viewAll.href) }
+    : undefined;
 
   return (
     <main className="relative">
@@ -65,24 +79,24 @@ export default function TravelerTypePage({
       />
       <TypePlanner
         content={typeData.planner}
-        type={typeData.meta.slug}
         fullViewportWidth
+        type={typeData.meta.slug as TravelerTypeSlug}
       />
       <Blog
-        eyebrow="Lorem ipsum dolor sit amet"
-        title={typeData.blog.title}
-        subtitle={typeData.blog.subtitle}
-        posts={typeData.blog.posts}
-        viewAll={typeData.blog.viewAll}
+        eyebrow={blogEyebrow}
         id={`${typeData.meta.slug}-blog`}
+        posts={typeData.blog.posts}
+        subtitle={typeData.blog.subtitle}
+        title={typeData.blog.title}
+        viewAll={viewAll}
       />
       <InspirationBanner
-        buttonHref="/blog"
-        buttonText="Historias inspiradoras"
-        eyebrow="INSPIRACIÓN"
+        buttonHref={blogHref}
+        buttonText={inspirationBanner.buttonText}
+        eyebrow={inspirationBanner.eyebrow}
         image="/images/caravan.png"
-        title="Historias de viajeros solitarios que inspiran "
-        labelText="Historias inspiradoras"
+        labelText={inspirationBanner.labelText}
+        title={inspirationBanner.title}
       />
       <Testimonials
         testimonials={typeData.testimonials.items}

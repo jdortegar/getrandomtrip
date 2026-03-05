@@ -99,6 +99,15 @@ export interface MarketingDictionary {
     travelTypeSubtitle: string;
     travelTypeTitle: string;
   };
+  packagesByType: {
+    blogEyebrow: string;
+    inspirationBanner: {
+      buttonText: string;
+      eyebrow: string;
+      labelText: string;
+      title: string;
+    };
+  };
   footer: {
     ariaFacebook: string;
     ariaInstagram: string;

@@ -56,8 +56,17 @@ export default function TypePlanner({
     return 'w-[280px] h-[332px] flex-shrink-0';
   };
 
-  const contentElement = (
-    <div className="relative">
+  // if (compact) {
+  //   return contentElement;
+  // }
+
+  return (
+    <Section
+      eyebrow={content.eyebrow}
+      subtitle={content.subtitle}
+      title={content.title}
+    >
+      <div className="container mx-auto mt-12 px-4 md:px-20">
       <Carousel
         classes={{ ...classes, content: 'items-start' }}
         fullViewportWidth={fullViewportWidth}
@@ -96,19 +105,6 @@ export default function TypePlanner({
         </div>
       )}
     </div>
-  );
-
-  if (compact) {
-    return contentElement;
-  }
-
-  return (
-    <Section
-      eyebrow={content.eyebrow}
-      subtitle={content.subtitle}
-      title={content.title}
-    >
-      {contentElement}
     </Section>
   );
 }

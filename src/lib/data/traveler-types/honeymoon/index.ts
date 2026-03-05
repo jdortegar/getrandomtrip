@@ -5,8 +5,9 @@ import type { TypePlannerContent } from '@/types/planner';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
+import type { Locale } from '@/lib/i18n/config';
 
-export const honeymoon: TravelerTypeData = {
+const honeymoonEs: TravelerTypeData = {
   meta: {
     slug: 'honeymoon',
     label: 'Luna de Miel',
@@ -349,31 +350,37 @@ export const honeymoon: TravelerTypeData = {
     subtitle: 'El comienzo perfecto para su vida juntos.',
     posts: [
       {
+        href: '/blogs/honeymoon',
         image: 'https://images.unsplash.com/photo-1519741497674-611481863552',
         category: 'Romance',
         title: 'Los destinos más románticos para luna de miel',
       },
       {
+        href: '/blogs/honeymoon',
         image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
         category: 'Consejos',
         title: 'Cómo planificar la luna de miel perfecta',
       },
       {
+        href: '/blogs/honeymoon',
         image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd',
         category: 'Experiencias',
         title: 'Nuestra luna de miel sorpresa en la Toscana',
       },
       {
+        href: '/blogs/honeymoon',
         image: 'https://images.unsplash.com/photo-1543248939-ff40856f65d4',
         category: 'Guías',
         title: 'Actividades románticas para recién casados',
       },
       {
+        href: '/blogs/honeymoon',
         image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
         category: 'Aventura',
         title: 'Luna de miel con adrenalina',
       },
       {
+        href: '/blogs/honeymoon',
         image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
         category: 'Cultura',
         title: 'Experiencias únicas para comenzar juntos',
@@ -422,4 +429,9 @@ export const honeymoon: TravelerTypeData = {
       },
     ] as Testimonial[],
   },
+};
+
+export const honeymoon: Record<Locale, TravelerTypeData> = {
+  es: honeymoonEs,
+  en: honeymoonEs,
 };

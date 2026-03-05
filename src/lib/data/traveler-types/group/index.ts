@@ -5,8 +5,9 @@ import type { TypePlannerContent } from '@/types/planner';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
+import type { Locale } from '@/lib/i18n/config';
 
-export const group: TravelerTypeData = {
+const groupEs: TravelerTypeData = {
   meta: {
     slug: 'group',
     label: 'Entre Amigos',
@@ -324,31 +325,37 @@ export const group: TravelerTypeData = {
     subtitle: 'Aventuras compartidas que se convierten en leyendas.',
     posts: [
       {
+        href: '/blogs/group',
         image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
         category: 'Historias',
         title: '10 momentos que solo pasan viajando en grupo',
       },
       {
+        href: '/blogs/group',
         image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
         category: 'Consejos',
         title: 'Cómo organizar un viaje con amigos sin drama',
       },
       {
+        href: '/blogs/group',
         image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429',
         category: 'Experiencias',
         title: 'La ruta del vino que hicimos entre 8',
       },
       {
+        href: '/blogs/group',
         image: 'https://images.unsplash.com/photo-1543248939-ff40856f65d4',
         category: 'Guías',
         title: 'Destinos ideales para grupos grandes',
       },
       {
+        href: '/blogs/group',
         image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
         category: 'Aventura',
         title: 'Trekking en grupo: tips y risas',
       },
       {
+        href: '/blogs/group',
         image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
         category: 'Cultura',
         title: 'Festivales para ir con la barra',
@@ -400,4 +407,9 @@ export const group: TravelerTypeData = {
       },
     ] as Testimonial[],
   },
+};
+
+export const group: Record<Locale, TravelerTypeData> = {
+  es: groupEs,
+  en: groupEs,
 };

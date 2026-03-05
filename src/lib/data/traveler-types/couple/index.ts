@@ -5,8 +5,10 @@ import type { TypePlannerContent } from '@/types/planner';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
+import type { Locale } from '@/lib/i18n/config';
+import { coupleEn } from './en';
 
-export const couple: TravelerTypeData = {
+export const coupleEs: TravelerTypeData = {
   meta: {
     slug: 'couple',
     label: 'En Pareja',
@@ -222,31 +224,37 @@ export const couple: TravelerTypeData = {
     subtitle: 'Experiencias únicas que solo ustedes dos podrán vivir.',
     posts: [
       {
+        href: '/blogs/couple',
         image: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
         category: 'Romance',
         title: '5 Razones para Amar un Viaje Sorpresa en Pareja',
       },
       {
+        href: '/blogs/couple',
         image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
         category: 'Consejos',
         title: 'Cómo Hacer la Valija para un Destino Desconocido',
       },
       {
+        href: '/blogs/couple',
         image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1',
         category: 'Experiencias',
         title: 'La Historia de un Randomtrip a los Alpes',
       },
       {
+        href: '/blogs/couple',
         image: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3',
         category: 'Guías',
         title: 'Sabores del Sudeste Asiático',
       },
       {
+        href: '/blogs/couple',
         image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
         category: 'Aventura',
         title: 'Recorriendo la Carretera Austral',
       },
       {
+        href: '/blogs/couple',
         image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
         category: 'Inspiración',
         title: 'Playas Escondidas de América Latina',
@@ -299,4 +307,9 @@ export const couple: TravelerTypeData = {
       },
     ] as Testimonial[],
   },
+};
+
+export const couple: Record<Locale, TravelerTypeData> = {
+  es: coupleEs,
+  en: coupleEn,
 };

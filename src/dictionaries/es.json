@@ -153,6 +153,15 @@
     "travelTypeSubtitle": "Elegí con quién vas a vivir esta experiencia.",
     "travelTypeTitle": "Por tipo de viajero"
   },
+  "packagesByType": {
+    "blogEyebrow": "Historias de viajeros",
+    "inspirationBanner": {
+      "eyebrow": "INSPIRACIÓN",
+      "buttonText": "Historias inspiradoras",
+      "labelText": "Historias inspiradoras",
+      "title": "Historias de viajeros solitarios que inspiran"
+    }
+  },
   "footer": {
     "quickLinksTitle": "Enlaces Rápidos",
     "about": "Nosotros",
