@@ -7,7 +7,7 @@ import {
   initialTravellerTypes,
   type TravelerType,
 } from '@/lib/data/travelerTypes';
-import { Carousel } from '@/components/Carousel';
+import { EmblaCarousel } from '@/components/EmblaCarousel';
 import { motion } from 'framer-motion';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
@@ -22,6 +22,8 @@ interface TravelerTypesCarouselProps {
   fullViewportWidth?: boolean;
   itemsPerView?: number;
   onSelect?: (slug: TravelerTypeSlug) => void;
+  /** Pixels of the next slide to show (peek). */
+  peek?: number;
   selectedTravelType?: TravelerTypeSlug;
   showArrows?: boolean;
   showDots?: boolean;
@@ -37,8 +39,9 @@ export function TravelerTypesCarousel({
   availableTypes,
   classes,
   fullViewportWidth,
-  itemsPerView = 4,
+  itemsPerView = 3,
   onSelect,
+  peek = 0,
   selectedTravelType,
   showArrows = true,
   showDots = true,
@@ -67,75 +70,20 @@ export function TravelerTypesCarousel({
     );
   }, [isTripperContext, allowedSet, baseTypes]);
 
-  const slug = (t: TravelerType): TravelerTypeSlug =>
-    t.travelType.toLowerCase() as TravelerTypeSlug;
-  const href = (t: TravelerType) =>
-    onSelect
-      ? undefined
-      : tripperSlug
-        ? `/packages/by-tripper/${tripperSlug}`
-        : `/packages/by-type/${slugify(t.travelType)}`;
+  function getSlug(t: TravelerType): TravelerTypeSlug {
+    return t.travelType.toLowerCase() as TravelerTypeSlug;
+  }
+
+  function getHref(t: TravelerType): string {
+    return `/packages/by-type/${slugify(t.travelType)}`;
+  }
 
   if (isTripperContext && !typesToShow.length) {
     return null;
   }
 
-  if (typesToShow.length === 1) {
-    const t = typesToShow[0];
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="flex w-full justify-center"
-      >
-        <div className="w-full max-w-[280px]">
-          <TravelerTypeCard
-            className="h-full w-full"
-            description={t.description}
-            disabled={!t.enabled}
-            href={href(t)}
-            imageUrl={t.imageUrl}
-            onClick={onSelect ? () => onSelect(slug(t)) : undefined}
-            selected={selectedTravelType === slug(t)}
-            title={t.title}
-          />
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (typesToShow.length <= itemsPerView) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="flex w-full justify-center gap-4 md:gap-6 lg:gap-8"
-      >
-        {typesToShow.map((t) => (
-          <div key={t.travelType} className="h-[332px] w-[280px] shrink-0">
-            <TravelerTypeCard
-              className="h-full w-full"
-              description={t.description}
-              disabled={!t.enabled}
-              href={href(t)}
-              imageUrl={t.imageUrl}
-              onClick={onSelect ? () => onSelect(slug(t)) : undefined}
-              selected={selectedTravelType === slug(t)}
-              title={t.title}
-            />
-          </div>
-        ))}
-      </motion.div>
-    );
-  }
-
   const gapPx = 16;
-  const totalGaps = gapPx * (itemsPerView - 1);
-  const itemClassName = `basis-[calc((100%-${totalGaps}px)/${itemsPerView})] h-[332px] flex-shrink-0`;
+  const fewerSlidesThanView = typesToShow.length < itemsPerView;
 
   return (
     <motion.div
@@ -145,28 +93,30 @@ export function TravelerTypesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <Carousel
-        classes={classes}
-        fullViewportWidth={fullViewportWidth}
-        itemClassName={itemClassName}
+      <EmblaCarousel
+        align={fewerSlidesThanView ? 'center' : 'start'}
+        className={classes?.section}
+        contentClassName={classes?.wrapper}
+        gap={gapPx}
+        peek={peek}
         showArrows={showArrows}
         showDots={showDots}
+        slidesPerView={itemsPerView}
         slidesToScroll={itemsPerView}
+        viewportClassName={classes?.viewport}
       >
         {typesToShow.map((t) => (
-          <TravelerTypeCard
-            key={t.travelType}
-            className="h-full w-full"
-            description={t.description}
-            disabled={!t.enabled}
-            href={href(t)}
-            imageUrl={t.imageUrl}
-            onClick={onSelect ? () => onSelect(slug(t)) : undefined}
-            selected={selectedTravelType === slug(t)}
-            title={t.title}
-          />
+          <div key={t.travelType} className="aspect-[280/332] w-full min-h-0">
+            <TravelerTypeCard
+              fill
+              href={getHref(t)}
+              item={t}
+              onClick={onSelect ? () => onSelect(getSlug(t)) : undefined}
+              selected={selectedTravelType === getSlug(t)}
+            />
+          </div>
         ))}
-      </Carousel>
+      </EmblaCarousel>
     </motion.div>
   );
 }

@@ -97,7 +97,7 @@ export function ExplorationSection({
 
   return (
     <Section
-      className="relative flex min-h-screen items-center overflow-hidden py-20"
+      className="relative flex min-h-screen items-center py-20"
       eyebrow={eyebrow}
       id="exploration-section"
       subtitle={subtitle}
@@ -121,7 +121,7 @@ export function ExplorationSection({
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          className="container mx-auto mt-12 flex justify-center px-4 md:px-20"
+          className="container mx-auto mt-12 flex justify-center overflow-x-visible px-4 md:px-20"
           animate={{ y: 0, opacity: 1 }}
           initial={{ y: 40, opacity: 0 }}
           transition={{ duration: 0.6, delay: 1 }}

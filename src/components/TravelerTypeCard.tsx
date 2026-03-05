@@ -3,33 +3,45 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
+
+import { type TravelerType } from '@/lib/data/travelerTypes';
 import { cn } from '@/lib/utils';
 
 interface TravelerTypeCardProps {
   className?: string;
-  description: string;
+  /** When set, provides title, description, imageUrl, and disabled. */
+  item?: TravelerType;
+  description?: string;
   disabled?: boolean;
+  /** When true, card fills its container (no fixed width/height). */
+  fill?: boolean;
   height?: number;
   href?: string;
-  imageUrl: string;
+  imageUrl?: string;
   onClick?: () => void;
   selected?: boolean;
-  title: string;
+  title?: string;
   width?: number;
 }
 
 const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   className,
-  description,
-  disabled = false,
-  height = 350,
+  description: descriptionProp,
+  disabled: disabledProp,
+  fill = false,
+  height = 150,
   href,
-  imageUrl,
+  imageUrl: imageUrlProp,
+  item,
   onClick,
   selected = false,
-  title,
-  width = 300,
+  title: titleProp,
+  width = 100,
 }) => {
+  const title = item?.title ?? titleProp ?? '';
+  const description = item?.description ?? descriptionProp ?? '';
+  const imageUrl = item?.imageUrl ?? imageUrlProp ?? '';
+  const disabled = item !== undefined ? !item.enabled : (disabledProp ?? false);
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (disabled) {
       e.preventDefault();
@@ -82,12 +94,13 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
   const baseClassName = cn(
     'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center',
+    fill && 'h-full w-full',
     className,
     disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
     selected && 'ring-4 ring-yellow-400',
   );
 
-  const sizeStyle = { height, width };
+  const sizeStyle = fill ? undefined : { height, width };
 
   // If onClick is provided, render as button; otherwise render as Link
   if (onClick || !href) {
@@ -105,7 +118,12 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   }
 
   return (
-    <Link className={baseClassName} href={href} onClick={handleClick} style={sizeStyle}>
+    <Link
+      className={baseClassName}
+      href={href}
+      onClick={handleClick}
+      style={sizeStyle}
+    >
       {cardContent}
     </Link>
   );

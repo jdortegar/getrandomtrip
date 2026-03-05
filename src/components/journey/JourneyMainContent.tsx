@@ -420,7 +420,7 @@ export default function JourneyMainContent({
               value={accordionValue}
             >
               <JourneyDropdown
-                className="mb-4"
+                className="mb-4 overflow-hidden"
                 content={getTravelTypeLabel()}
                 label="Tipo de Viaje"
                 value="travel-type"
@@ -431,9 +431,7 @@ export default function JourneyMainContent({
                   onSelect={handleTravelTypeSelect}
                   selectedTravelType={travelType as TravelerTypeSlug}
                   showArrows={false}
-                  classes={{
-                    wrapper: 'w-full',
-                  }}
+    
                 />
               </JourneyDropdown>
 
