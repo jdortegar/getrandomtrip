@@ -17,35 +17,29 @@ import {
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
 import { cn } from '@/lib/utils';
+import type { MarketingDictionary } from '@/lib/types/dictionary';
 
-const MONTH_SHORT_ES = [
-  'ene',
-  'feb',
-  'mar',
-  'abr',
-  'may',
-  'jun',
-  'jul',
-  'ago',
-  'sep',
-  'oct',
-  'nov',
-  'dic',
-];
+type JourneySummaryDict = MarketingDictionary['journey']['summary'];
 
-function formatDatesSummary(startDate: string, nights: number): string {
+function formatDatesSummary(
+  startDate: string,
+  nights: number,
+  template: string,
+  monthsShort: string[],
+): string {
   const [y, m, d] = startDate.split('-').map(Number);
   const start = new Date(y, m - 1, d);
   const end = new Date(start);
   end.setDate(end.getDate() + nights);
   const startDay = start.getDate();
   const endDay = end.getDate();
-  const startMonth = MONTH_SHORT_ES[start.getMonth()];
-  const endMonth = MONTH_SHORT_ES[end.getMonth()];
-  if (startMonth === endMonth) {
-    return `Del ${startDay} de ${startMonth} al ${endDay} de ${endMonth}`;
-  }
-  return `Del ${startDay} de ${startMonth} al ${endDay} de ${endMonth}`;
+  const startMonth = monthsShort[start.getMonth()] ?? '';
+  const endMonth = monthsShort[end.getMonth()] ?? '';
+  return template
+    .replace('{startDay}', String(startDay))
+    .replace('{endDay}', String(endDay))
+    .replace('{startMonth}', startMonth)
+    .replace('{endMonth}', endMonth);
 }
 
 function getFilterLabel(
@@ -60,12 +54,14 @@ interface JourneySummaryProps {
   className?: string;
   onDetailRemove?: (detail: string) => void;
   onEdit?: (section: string) => void;
+  summary: JourneySummaryDict;
 }
 
 export default function JourneySummary({
   className,
   onDetailRemove,
   onEdit,
+  summary,
 }: JourneySummaryProps) {
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
@@ -155,9 +151,9 @@ export default function JourneySummary({
     if (!selectedLevel) return null;
     return {
       label: selectedLevel.name,
-      price: `${formatUSD(selectedLevel.price)} por persona`,
+      price: `${formatUSD(selectedLevel.price)} ${summary.experiencePerPerson}`,
     };
-  }, [selectedLevel]);
+  }, [selectedLevel, summary.experiencePerPerson]);
 
   const excuseTitle = useMemo(
     () => (excuse ? getExcuseTitle(excuse) : undefined),
@@ -203,28 +199,28 @@ export default function JourneySummary({
       list.push({
         id: `depart-${departPref}`,
         kind: 'departPref',
-        label: `Salida: ${getFilterLabel('departPref', departPref)}`,
+        label: `${summary.filterLabelDepart}: ${getFilterLabel('departPref', departPref)}`,
       });
     }
     if (arrivePref && arrivePref !== 'indistinto') {
       list.push({
         id: `arrive-${arrivePref}`,
         kind: 'arrivePref',
-        label: `Llegada: ${getFilterLabel('arrivePref', arrivePref)}`,
+        label: `${summary.filterLabelArrive}: ${getFilterLabel('arrivePref', arrivePref)}`,
       });
     }
     if (maxTravelTime && maxTravelTime !== 'sin-limite') {
       list.push({
         id: `time-${maxTravelTime}`,
         kind: 'maxTravelTime',
-        label: `Tiempo: ${getFilterLabel('maxTravelTime', maxTravelTime)}`,
+        label: `${summary.filterLabelTime}: ${getFilterLabel('maxTravelTime', maxTravelTime)}`,
       });
     }
     if (climate && climate !== 'indistinto') {
       list.push({
         id: `climate-${climate}`,
         kind: 'climate',
-        label: `Clima: ${getFilterLabel('climate', climate)}`,
+        label: `${summary.filterLabelClimate}: ${getFilterLabel('climate', climate)}`,
       });
     }
     avoidDestinations.forEach((city) => {
@@ -236,7 +232,17 @@ export default function JourneySummary({
       });
     });
     return list;
-  }, [arrivePref, avoidDestinations, climate, departPref, maxTravelTime]);
+  }, [
+    arrivePref,
+    avoidDestinations,
+    climate,
+    departPref,
+    maxTravelTime,
+    summary.filterLabelArrive,
+    summary.filterLabelClimate,
+    summary.filterLabelDepart,
+    summary.filterLabelTime,
+  ]);
 
   const handleRemoveFilter = useCallback(
     (kind: FilterKind, value?: string) => {
@@ -326,7 +332,7 @@ export default function JourneySummary({
         className,
       )}
     >
-      <h2 className="text-xl font-bold text-gray-900">Resumen del viaje</h2>
+      <h2 className="text-xl font-bold text-gray-900">{summary.title}</h2>
 
       {/* Tipo de viaje */}
       <div className="flex items-stretch justify-between gap-3 border-b border-gray-200 pb-4">
@@ -345,12 +351,12 @@ export default function JourneySummary({
             )}
             <div className="min-w-0 flex-1">
               <p className={cn('mb-1', sectionTitleClass)}>
-                Tipo de viaje | {selectedTravelTypeInfo.label}
+                {summary.travelTypeSection} | {selectedTravelTypeInfo.label}
               </p>
               <div className="flex items-center justify-between">
                 {selectedTravelTypeInfo.rating != null && (
                   <p className={cn('mt-1', captionClass)}>
-                    Favorito entre viajeros ★
+                    {summary.favoriteAmongTravelers}
                     {selectedTravelTypeInfo.rating.toFixed(1)}
                     {selectedTravelTypeInfo.reviews != null &&
                       ` (${selectedTravelTypeInfo.reviews})`}
@@ -361,7 +367,7 @@ export default function JourneySummary({
                   onClick={() => onEdit?.('travel-type')}
                   type="button"
                 >
-                  Cambiar
+                  {summary.change}
                 </button>
               </div>
             </div>
@@ -369,14 +375,14 @@ export default function JourneySummary({
         ) : (
           <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
             <p className={cn('min-w-0 flex-1', sectionTitleClass)}>
-              Tipo de viaje
+              {summary.travelTypeSection}
             </p>
             <button
               className={cn(actionButtonClass, 'flex-shrink-0')}
               onClick={() => onEdit?.('travel-type')}
               type="button"
             >
-              Agregar
+              {summary.add}
             </button>
           </div>
         )}
@@ -384,7 +390,9 @@ export default function JourneySummary({
 
       {/* Experiencia */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>Experiencia</p>
+        <p className={cn('w-full', sectionTitleClass)}>
+          {summary.experienceSection}
+        </p>
         <div className="mt-2 flex items-center justify-between">
           {selectedExperienceInfo ? (
             <>
@@ -401,7 +409,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('experience')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
@@ -411,7 +419,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('experience')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -420,7 +428,9 @@ export default function JourneySummary({
 
       {/* Excusa */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>Excusa</p>
+        <p className={cn('w-full', sectionTitleClass)}>
+          {summary.excuseSection}
+        </p>
         <div className="mt-2 flex items-center justify-between">
           {excuseTitle ? (
             <>
@@ -430,7 +440,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('excuse')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
@@ -440,7 +450,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('excuse')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -449,7 +459,9 @@ export default function JourneySummary({
 
       {/* Afinar detalles */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>Detalles</p>
+        <p className={cn('w-full', sectionTitleClass)}>
+          {summary.detailsSection}
+        </p>
         <div className="mt-2 flex items-start justify-between gap-3">
           {refineDetailEntries.length > 0 ? (
             <>
@@ -461,7 +473,7 @@ export default function JourneySummary({
                   >
                     <span>{label}</span>
                     <button
-                      aria-label="Quitar"
+                      aria-label={summary.detailRemoveAria}
                       className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
                       onClick={() => handleRemoveDetail(key)}
                       type="button"
@@ -476,18 +488,18 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('refine-details')}
                 type="button"
               >
-                Editar
+                {summary.edit}
               </button>
             </>
           ) : (
             <div className="flex w-full items-center justify-between gap-3">
-              <p className={detailClass}>Sin detalles</p>
+              <p className={detailClass}>{summary.noDetails}</p>
               <button
                 className={actionButtonClass}
                 onClick={() => onEdit?.('refine-details')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -496,7 +508,9 @@ export default function JourneySummary({
 
       {/* Origen */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>Origen</p>
+        <p className={cn('w-full', sectionTitleClass)}>
+          {summary.originSection}
+        </p>
         <div className="mt-2 flex items-center justify-between gap-3">
           {originCity && originCountry ? (
             <>
@@ -511,7 +525,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('origin')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
@@ -521,7 +535,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('origin')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -530,14 +544,21 @@ export default function JourneySummary({
 
       {/* Fechas */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>Fechas</p>
+        <p className={cn('w-full', sectionTitleClass)}>
+          {summary.datesSection}
+        </p>
         <div className="mt-2 flex items-center justify-between gap-3">
           {startDate && nights > 0 ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
                 <Calendar className="h-4 w-4 flex-shrink-0 text-gray-900" />
                 <p className={detailClass}>
-                  {formatDatesSummary(startDate, nights)}
+                  {formatDatesSummary(
+                    startDate,
+                    nights,
+                    summary.dateRangeTemplate,
+                    summary.monthsShort,
+                  )}
                 </p>
               </div>
               <button
@@ -545,7 +566,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('dates')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
@@ -555,7 +576,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('dates')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -565,7 +586,7 @@ export default function JourneySummary({
       {/* Transporte * */}
       <div className="border-b border-gray-200 pb-4">
         <p className={cn('w-full', sectionTitleClass)}>
-          Transporte de preferencia
+          {summary.transportSection}
         </p>
         <div className="mt-2 flex items-center justify-between gap-3">
           {transportLabel && TransportIcon ? (
@@ -574,7 +595,9 @@ export default function JourneySummary({
                 <TransportIcon className="h-4 w-4 flex-shrink-0 text-gray-900" />
                 <p className={detailClass}>
                   {transportLabel}
-                  <span className="font-normal text-gray-500">*</span>
+                  <span className="font-normal text-gray-500">
+                    {summary.transportOptionalNote}
+                  </span>
                 </p>
               </div>
               <button
@@ -582,7 +605,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('transport')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
@@ -592,7 +615,7 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('transport')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -602,7 +625,12 @@ export default function JourneySummary({
       {/* Filtros (opcionales) */}
       <div className="border-b border-gray-200 pb-4">
         <p className={cn('w-full', sectionTitleClass)}>
-          Filtros {activeFilters.length > 0 ? `(${activeFilters.length})` : ''}
+          {activeFilters.length > 0
+            ? summary.filtersSectionCount.replace(
+                '{count}',
+                String(activeFilters.length),
+              )
+            : summary.filtersSection}
         </p>
         <div className="mt-2 flex items-start justify-between gap-3">
           {activeFilters.length > 0 ? (
@@ -615,7 +643,7 @@ export default function JourneySummary({
                   >
                     <span>{label}</span>
                     <button
-                      aria-label="Quitar filtro"
+                      aria-label={summary.filterRemoveAria}
                       className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
                       onClick={() => handleRemoveFilter(kind, value)}
                       type="button"
@@ -630,18 +658,18 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('filters')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
             <div className="flex w-full items-center justify-between gap-3">
-              <p className={detailClass}>Sin Filtros</p>
+              <p className={detailClass}>{summary.noFilters}</p>
               <button
                 className={actionButtonClass}
                 onClick={() => onEdit?.('filters')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -651,7 +679,12 @@ export default function JourneySummary({
       {/* Extras (add-ons) */}
       <div className="border-b border-gray-200 pb-4">
         <p className={cn('w-full', sectionTitleClass)}>
-          Extras {selectedAddons.length > 0 ? `(${selectedAddons.length})` : ''}
+          {selectedAddons.length > 0
+            ? summary.addonsSectionCount.replace(
+                '{count}',
+                String(selectedAddons.length),
+              )
+            : summary.addonsSection}
         </p>
         <div className="mt-2 flex items-start justify-between gap-3">
           {selectedAddons.length > 0 ? (
@@ -669,7 +702,7 @@ export default function JourneySummary({
                         : ` — ${addon.price}%`}
                     </span>
                     <button
-                      aria-label="Quitar extra"
+                      aria-label={summary.addonRemoveAria}
                       className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
                       onClick={() => handleRemoveAddon(addon.id)}
                       type="button"
@@ -684,18 +717,18 @@ export default function JourneySummary({
                 onClick={() => onEdit?.('addons')}
                 type="button"
               >
-                Cambiar
+                {summary.change}
               </button>
             </>
           ) : (
             <div className="flex w-full items-center justify-between gap-3">
-              <p className={detailClass}>Sin Extras</p>
+              <p className={detailClass}>{summary.noAddons}</p>
               <button
                 className={actionButtonClass}
                 onClick={() => onEdit?.('addons')}
                 type="button"
               >
-                Agregar
+                {summary.add}
               </button>
             </div>
           )}
@@ -707,9 +740,9 @@ export default function JourneySummary({
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xl font-bold text-gray-900">
-              Total <span className="underline">USD</span>
+              {summary.totalUsd} <span className="underline">USD</span>
             </p>
-            <p className={captionClass}>Por persona</p>
+            <p className={captionClass}>{summary.perPerson}</p>
           </div>
           <p className="text-right text-xl font-bold text-gray-900">
             {totalPrice} USD
@@ -724,13 +757,15 @@ export default function JourneySummary({
             aria-hidden
             className="h-4 w-4 shrink-0 text-[#5B7A8C] fill-[#5B7A8C]"
           />
-          <span className="text-base font-bold text-gray-900">IMPORTANTE</span>
+          <span className="text-base font-bold text-gray-900">
+            {summary.importantTitle}
+          </span>
         </div>
         <ul className="list-outside list-disc pl-4 space-y-1 text-sm font-normal text-gray-900">
-          <li>Transporte es obligatorio y no suma costo.</li>
-          <li>Freemium: el primer filtro opcional es gratis.</li>
-          <li>2-3 filtros: USD 18 c/u.</li>
-          <li>4+ filtros: USD 25 c/u.</li>
+          <li>{summary.importantNote1}</li>
+          <li>{summary.importantNote2}</li>
+          <li>{summary.importantNote3}</li>
+          <li>{summary.importantNote4}</li>
         </ul>
       </div>
     </aside>

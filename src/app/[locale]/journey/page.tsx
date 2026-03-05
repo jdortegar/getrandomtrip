@@ -151,7 +151,10 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             />
           </div>
 
-          <JourneySummary onEdit={handleSummaryEdit} />
+          <JourneySummary
+            onEdit={handleSummaryEdit}
+            summary={journey.summary}
+          />
         </div>
       </div>
     </div>

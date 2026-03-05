@@ -239,7 +239,47 @@
           }
         ]
       }
-    ]
+    ],
+    "summary": {
+      "add": "Agregar",
+      "addonRemoveAria": "Quitar extra",
+      "addonsSection": "Extras",
+      "addonsSectionCount": "Extras ({count})",
+      "change": "Cambiar",
+      "dateRangeTemplate": "Del {startDay} de {startMonth} al {endDay} de {endMonth}",
+      "datesSection": "Fechas",
+      "detailRemoveAria": "Quitar",
+      "detailsSection": "Detalles",
+      "edit": "Editar",
+      "experiencePerPerson": "por persona",
+      "experienceSection": "Experiencia",
+      "excuseSection": "Excusa",
+      "favoriteAmongTravelers": "Favorito entre viajeros ★",
+      "filterLabelArrive": "Llegada",
+      "filterLabelClimate": "Clima",
+      "filterLabelDepart": "Salida",
+      "filterLabelTime": "Tiempo",
+      "filterRemoveAria": "Quitar filtro",
+      "filtersSection": "Filtros",
+      "filtersSectionCount": "Filtros ({count})",
+      "importantNote1": "Transporte es obligatorio y no suma costo.",
+      "importantNote2": "Freemium: el primer filtro opcional es gratis.",
+      "importantNote3": "2-3 filtros: USD 18 c/u.",
+      "importantNote4": "4+ filtros: USD 25 c/u.",
+      "importantTitle": "IMPORTANTE",
+      "monthsShort": ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
+      "noAddons": "Sin Extras",
+      "noDetails": "Sin detalles",
+      "noFilters": "Sin Filtros",
+      "originSection": "Origen",
+      "perPerson": "Por persona",
+      "totalUsd": "Total",
+      "travelTypeSection": "Tipo de viaje",
+      "transportSection": "Transporte de preferencia",
+      "transportOptionalNote": "*",
+      "title": "Resumen del viaje"
+    },
+    "userNamePlaceholder": "Nombre usuario"
   },
   "footer": {
     "quickLinksTitle": "Enlaces Rápidos",

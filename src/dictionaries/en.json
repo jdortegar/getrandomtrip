@@ -239,7 +239,47 @@
           }
         ]
       }
-    ]
+    ],
+    "summary": {
+      "add": "Add",
+      "addonRemoveAria": "Remove extra",
+      "addonsSection": "Extras",
+      "addonsSectionCount": "Extras ({count})",
+      "change": "Change",
+      "dateRangeTemplate": "From {startMonth} {startDay} to {endMonth} {endDay}",
+      "datesSection": "Dates",
+      "detailRemoveAria": "Remove",
+      "detailsSection": "Details",
+      "edit": "Edit",
+      "experiencePerPerson": "per person",
+      "experienceSection": "Experience",
+      "excuseSection": "Excuse",
+      "favoriteAmongTravelers": "Favorite among travelers ★",
+      "filterLabelArrive": "Arrival",
+      "filterLabelClimate": "Weather",
+      "filterLabelDepart": "Departure",
+      "filterLabelTime": "Time",
+      "filterRemoveAria": "Remove filter",
+      "filtersSection": "Filters",
+      "filtersSectionCount": "Filters ({count})",
+      "importantNote1": "Transport is required and does not add cost.",
+      "importantNote2": "Freemium: the first optional filter is free.",
+      "importantNote3": "2-3 filters: USD 18 each.",
+      "importantNote4": "4+ filters: USD 25 each.",
+      "importantTitle": "IMPORTANT",
+      "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      "noAddons": "No Extras",
+      "noDetails": "No details",
+      "noFilters": "No Filters",
+      "originSection": "Origin",
+      "perPerson": "Per person",
+      "totalUsd": "Total",
+      "travelTypeSection": "Travel type",
+      "transportSection": "Preferred transport",
+      "transportOptionalNote": "*",
+      "title": "Trip summary"
+    },
+    "userNamePlaceholder": "User name"
   },
   "footer": {
     "quickLinksTitle": "Quick Links",
