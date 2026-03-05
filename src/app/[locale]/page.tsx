@@ -3,7 +3,7 @@ import HomeInfo from '@/components/HomeInfo';
 import Hero from '@/components/Hero';
 import { ExplorationSection } from '@/components/landing/exploration';
 import Testimonials from '@/components/Testimonials';
-import Blog from '@/components/Blog';
+import { HomeWrapper } from '@/components/waitlist/HomeWrapper';
 import { BLOG_CONSTANTS } from '@/lib/data/constants/blog';
 import {
   BENEFITS_IMAGE_SRCS,
@@ -12,10 +12,10 @@ import {
 import { HERO_STATIC } from '@/lib/data/home-hero';
 import { HOME_TESTIMONIALS } from '@/lib/data/home-testimonials';
 import { initialTravellerTypes } from '@/lib/data/travelerTypes';
+import { getAllTrippers } from '@/lib/db/tripper-queries';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import { getAllTrippers } from '@/lib/db/tripper-queries';
 
 export default async function HomePage({
   params,
@@ -65,52 +65,42 @@ export default async function HomePage({
   };
 
   return (
-    <main style={{ scrollBehavior: 'smooth' }}>
-      <Hero content={heroContent} scrollIndicator />
-      <HomeInfo
-        benefitsSteps={benefitsSteps}
-        ctaText={home.homeInfoCtaText}
-        eyebrow={home.homeInfoEyebrow}
-        howItWorksSteps={howItWorksSteps}
-        sectionAriaLabel={home.homeInfoSectionAriaLabel}
-        tabBenefitsLabel={home.homeInfoTabBenefits}
-        tabHowLabel={home.homeInfoTabHow}
-        title={home.homeInfoTitle}
-      />
-      <ExplorationSection
-        comingSoonText={home.explorationComingSoon}
-        eyebrow={home.explorationEyebrow}
-        subtitle={home.explorationSubtitle}
-        tabs={home.explorationTabs.map((tab) => ({
-          ...tab,
-          href: tab.href ? pathForLocale(locale, tab.href) : undefined,
-        }))}
-        title={home.explorationTitle}
-        travelerTypes={travelerTypes}
-        trippers={trippers as any}
-        trippersButtonText={home.explorationButtonTrippers}
-        trippersHref={pathForLocale(locale, '/trippers')}
-      />
-      <Blog
-        carouselSlideAriaLabel={home.blogCarouselSlideAriaLabel}
-        eyebrow={home.blogEyebrow}
-        id="home-blog"
-        posts={BLOG_CONSTANTS.posts}
-        subtitle={home.blogSubtitle}
-        title={home.blogTitle}
-        viewAll={{
-          href: pathForLocale(locale, '/blog'),
-          subtitle: home.blogViewAllSubtitle,
-          title: home.blogViewAllTitle,
-        }}
-      />
-      <Testimonials
-        eyebrow={home.testimonialsEyebrow}
-        subtitle={home.testimonialsSubtitle}
-        testimonials={HOME_TESTIMONIALS.items}
-        title={home.testimonialsTitle}
-        viewFullReviewLabel={home.testimonialsViewFullReview}
-      />
-    </main>
+    <HomeWrapper dict={dict}>
+      <main style={{ scrollBehavior: 'smooth' }}>
+        <Hero content={heroContent} scrollIndicator />
+        <HomeInfo
+          benefitsSteps={benefitsSteps}
+          ctaText={home.homeInfoCtaText}
+          eyebrow={home.homeInfoEyebrow}
+          howItWorksSteps={howItWorksSteps}
+          sectionAriaLabel={home.homeInfoSectionAriaLabel}
+          tabBenefitsLabel={home.homeInfoTabBenefits}
+          tabHowLabel={home.homeInfoTabHow}
+          title={home.homeInfoTitle}
+        />
+        <ExplorationSection
+          comingSoonText={home.explorationComingSoon}
+          eyebrow={home.explorationEyebrow}
+          subtitle={home.explorationSubtitle}
+          tabs={home.explorationTabs.map((tab) => ({
+            ...tab,
+            href: tab.href ? pathForLocale(locale, tab.href) : undefined,
+          }))}
+          title={home.explorationTitle}
+          travelerTypes={travelerTypes}
+          trippers={trippers as any}
+          trippersButtonText={home.explorationButtonTrippers}
+          trippersHref={pathForLocale(locale, '/trippers')}
+        />
+        {/* <Blog ... /> */}
+        <Testimonials
+          eyebrow={home.testimonialsEyebrow}
+          subtitle={home.testimonialsSubtitle}
+          testimonials={HOME_TESTIMONIALS.items}
+          title={home.testimonialsTitle}
+          viewFullReviewLabel={home.testimonialsViewFullReview}
+        />
+      </main>
+    </HomeWrapper>
   );
 }

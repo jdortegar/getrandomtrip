@@ -54,9 +54,9 @@ const nothingYouCouldDo = Nothing_You_Could_Do({
 export const metadata = {
   title: 'Randomtrip',
   icons: {
-    icon: [{ url: '/favicon.png', sizes: 'any', type: 'image/png' }],
-    shortcut: { url: '/favicon.png', type: 'image/png' },
-    apple: { url: '/favicon.png' },
+    apple: [{ url: '/favicon.png', sizes: '180x180', type: 'image/png' }],
+    icon: [{ url: '/favicon.png', sizes: '48x48', type: 'image/png' }],
+    shortcut: [{ url: '/favicon.png', sizes: '48x48', type: 'image/png' }],
   },
 };
 

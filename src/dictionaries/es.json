@@ -179,5 +179,22 @@
     "ariaTwitter": "Twitter",
     "tagline": "Donde termina la rutina, comienza la aventura.",
     "copyright": "Todos los derechos reservados."
+  },
+  "waitlist": {
+    "headline": "Accedé antes que nadie al lanzamiento de RandomTrip",
+    "subheadline": "Sumate a la lista y te avisamos cuando estemos listos.",
+    "namePlaceholder": "Nombre",
+    "lastNamePlaceholder": "Apellido",
+    "emailPlaceholder": "tu@email.com",
+    "submitButton": "Quiero acceso anticipado",
+    "successMessage": "¡Listo! Te vamos a avisar cuando sea tu turno.",
+    "adminLoginLabel": "¿Admin? Iniciar sesión",
+    "loginModal": {
+      "title": "Acceso para administradores",
+      "description": "Ingresá usuario y contraseña para acceder.",
+      "usernamePlaceholder": "Usuario",
+      "passwordPlaceholder": "Contraseña",
+      "submitButton": "Entrar"
+    }
   }
 }

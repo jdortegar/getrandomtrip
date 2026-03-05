@@ -3,7 +3,6 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import Negotiator from 'negotiator';
 import {
   COOKIE_LOCALE,
   DEFAULT_LOCALE,
@@ -19,14 +18,7 @@ function getLocaleFromRequest(request: NextRequest): Locale {
   const cookie = request.cookies.get(COOKIE_LOCALE)?.value;
   if (hasLocale(cookie)) return cookie;
 
-  const acceptLanguage = request.headers.get('accept-language') ?? '';
-  const negotiator = new Negotiator({
-    headers: { 'accept-language': acceptLanguage },
-  } as any);
-  const preferred = negotiator.languages(LOCALES as unknown as string[]);
-  const first = preferred?.[0];
-  if (hasLocale(first)) return first;
-
+  // No cookie: use default locale so / always stays on default (es), no redirect to /en
   return DEFAULT_LOCALE;
 }
 

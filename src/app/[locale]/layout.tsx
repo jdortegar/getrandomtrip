@@ -2,10 +2,9 @@ import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import SessionProvider from '@/components/providers/SessionProvider';
 import SetLocaleLang from '@/components/providers/SetLocaleLang';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/layout/Footer';
 import AppTracking from '@/components/tracking/AppTracking';
 import { Toaster } from '@/components/ui/toaster';
+import { GateAwareChrome } from '@/components/waitlist/GateAwareChrome';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale, type Locale } from '@/lib/i18n/config';
 
@@ -34,9 +33,9 @@ export default async function LocaleLayout({
       <Suspense fallback={null}>
         <AppTracking />
       </Suspense>
-      <Navbar dict={dict} locale={localeTyped} />
-      {children}
-      <Footer dict={dict} locale={localeTyped} />
+      <GateAwareChrome dict={dict} locale={localeTyped}>
+        {children}
+      </GateAwareChrome>
       <Toaster />
     </SessionProvider>
   );

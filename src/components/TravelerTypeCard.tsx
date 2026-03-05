@@ -9,22 +9,26 @@ interface TravelerTypeCardProps {
   className?: string;
   description: string;
   disabled?: boolean;
+  height?: number;
   href?: string;
   imageUrl: string;
   onClick?: () => void;
   selected?: boolean;
   title: string;
+  width?: number;
 }
 
 const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   className,
   description,
   disabled = false,
+  height = 350,
   href,
   imageUrl,
   onClick,
   selected = false,
   title,
+  width = 300,
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (disabled) {
@@ -77,11 +81,13 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   );
 
   const baseClassName = cn(
-    'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full',
+    'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center',
     className,
     disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
     selected && 'ring-4 ring-yellow-400',
   );
+
+  const sizeStyle = { height, width };
 
   // If onClick is provided, render as button; otherwise render as Link
   if (onClick || !href) {
@@ -90,6 +96,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         className={baseClassName}
         disabled={disabled}
         onClick={handleClick}
+        style={sizeStyle}
         type="button"
       >
         {cardContent}
@@ -98,7 +105,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   }
 
   return (
-    <Link className={baseClassName} href={href} onClick={handleClick}>
+    <Link className={baseClassName} href={href} onClick={handleClick} style={sizeStyle}>
       {cardContent}
     </Link>
   );

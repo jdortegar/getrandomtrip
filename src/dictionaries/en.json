@@ -179,5 +179,22 @@
     "ariaTwitter": "Twitter",
     "tagline": "Where the routine ends, the adventure begins.",
     "copyright": "All rights reserved."
+  },
+  "waitlist": {
+    "headline": "Get early access to RandomTrip's launch",
+    "subheadline": "Join the list and we'll notify you when we're ready.",
+    "namePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "emailPlaceholder": "you@email.com",
+    "submitButton": "I want early access",
+    "successMessage": "You're in! We'll notify you when it's your turn.",
+    "adminLoginLabel": "Admin? Log in",
+    "loginModal": {
+      "title": "Admin access",
+      "description": "Enter username and password to access.",
+      "usernamePlaceholder": "Username",
+      "passwordPlaceholder": "Password",
+      "submitButton": "Sign in"
+    }
   }
 }

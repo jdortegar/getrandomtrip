@@ -370,3 +370,18 @@ enum BlogFormat {
   VIDEO
   MIXED
 }
+
+// ============================================================================
+// WAITLIST (marketing gate – early access signup)
+// ============================================================================
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  lastName  String?
+  name      String?
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("waitlist_entries")
+}
