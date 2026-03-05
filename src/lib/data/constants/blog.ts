@@ -10,26 +10,31 @@ export const BLOG_CONSTANTS: BlogContent & {
       image: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
       category: 'Inspiración',
       title: '5 Razones para Amar un Viaje Sorpresa',
+      href: '/blog/5-razones-para-amar-un-viaje-sorpresa',
     },
     {
       image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
       category: 'Consejos',
       title: 'Cómo Hacer la Valija para un Destino Desconocido',
+      href: '/blog/como-hacer-la-valija-para-un-destino-desconocido',
     },
     {
       image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1',
       category: 'Experiencias',
       title: 'La Historia de un Randomtrip a los Alpes',
+      href: '/blog/la-historia-de-un-randomtrip-a-los-alpes',
     },
     {
       image: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3',
       category: 'Guías',
       title: 'Sabores del Sudeste Asiático',
+      href: '/blog/sabores-del-sudeste-asiatico',
     },
     {
       image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
       category: 'Aventura',
       title: 'Recorriendo la Carretera Austral',
+      href: '/blog/recorriendo-la-carretera-austral',
     },
   ],
   viewAll: {

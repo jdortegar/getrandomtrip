@@ -48,71 +48,40 @@ export function TravelerTypesCarousel({
 }: TravelerTypesCarouselProps) {
   const baseTypes = travelerTypes ?? initialTravellerTypes;
 
-  const getSlugFromTravelType = (travelType: string): TravelerTypeSlug => {
-    const normalized = travelType.toLowerCase();
-    const mapping: Record<string, TravelerTypeSlug> = {
-      couple: 'couple',
-      family: 'family',
-      group: 'group',
-      honeymoon: 'honeymoon',
-      paws: 'paws',
-      solo: 'solo',
-    };
-    return mapping[normalized] || (normalized as TravelerTypeSlug);
-  };
-
   const isTripperContext = tripperMode || Boolean(tripperSlug);
   const allowedSet = React.useMemo(() => {
-    if (!availableTypes || availableTypes.length === 0) return null;
+    if (!availableTypes?.length) return null;
     return new Set(availableTypes.map((t) => String(t).toLowerCase().trim()));
   }, [availableTypes]);
 
   const typesToShow = React.useMemo(() => {
     if (isTripperContext) {
-      if (!allowedSet || allowedSet.size === 0) return [];
-      return baseTypes.filter((type) =>
-        allowedSet.has(type.travelType.toLowerCase()),
+      if (!allowedSet?.size) return [];
+      return baseTypes.filter((t) =>
+        allowedSet.has(t.travelType.toLowerCase()),
       );
     }
     if (!allowedSet) return baseTypes;
-    return baseTypes.filter((type) =>
-      allowedSet.has(type.travelType.toLowerCase()),
+    return baseTypes.filter((t) =>
+      allowedSet.has(t.travelType.toLowerCase()),
     );
   }, [isTripperContext, allowedSet, baseTypes]);
 
-  const handleCardClick = (type: TravelerType) => {
-    if (!type.enabled || !onSelect) return;
-    const slug = getSlugFromTravelType(type.travelType);
-    onSelect(slug);
-  };
+  const slug = (t: TravelerType): TravelerTypeSlug =>
+    t.travelType.toLowerCase() as TravelerTypeSlug;
+  const href = (t: TravelerType) =>
+    onSelect
+      ? undefined
+      : tripperSlug
+        ? `/packages/by-tripper/${tripperSlug}`
+        : `/packages/by-type/${slugify(t.travelType)}`;
 
-  const getItemClassName = () => {
-    if (itemsPerView) {
-      const gapPx = 16;
-      const totalGaps = gapPx * (itemsPerView - 1);
-      return `basis-[calc((100%-${totalGaps}px)/${itemsPerView})] h-[332px] flex-shrink-0`;
-    }
-    return 'w-[280px] h-[332px] flex-shrink-0';
-  };
-
-  const getHref = (type: TravelerType) => {
-    if (onSelect) return undefined;
-    if (tripperSlug) {
-      return `/packages/by-tripper/${tripperSlug}`;
-    }
-    return `/packages/by-type/${slugify(type.travelType)}`;
-  };
-
-  if (isTripperContext && typesToShow.length === 0) {
+  if (isTripperContext && !typesToShow.length) {
     return null;
   }
 
-  const singleSlide = typesToShow.length === 1;
-  const type = typesToShow[0];
-
-  if (singleSlide && type) {
-    const slug = getSlugFromTravelType(type.travelType);
-    const isSelected = selectedTravelType === slug;
+  if (typesToShow.length === 1) {
+    const t = typesToShow[0];
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -124,22 +93,20 @@ export function TravelerTypesCarousel({
         <div className="w-full max-w-[280px]">
           <TravelerTypeCard
             className="h-full w-full"
-            description={type.description}
-            disabled={!type.enabled}
-            href={getHref(type)}
-            imageUrl={type.imageUrl}
-            onClick={onSelect ? () => handleCardClick(type) : undefined}
-            selected={isSelected}
-            title={type.title}
+            description={t.description}
+            disabled={!t.enabled}
+            href={href(t)}
+            imageUrl={t.imageUrl}
+            onClick={onSelect ? () => onSelect(slug(t)) : undefined}
+            selected={selectedTravelType === slug(t)}
+            title={t.title}
           />
         </div>
       </motion.div>
     );
   }
 
-  const allFitInOneView = typesToShow.length <= itemsPerView;
-
-  if (allFitInOneView) {
+  if (typesToShow.length <= itemsPerView) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -148,30 +115,27 @@ export function TravelerTypesCarousel({
         transition={{ duration: 0.6 }}
         className="flex w-full justify-center gap-4 md:gap-6 lg:gap-8"
       >
-        {typesToShow.map((t) => {
-          const slug = getSlugFromTravelType(t.travelType);
-          const isSelected = selectedTravelType === slug;
-          return (
-            <div
-              key={t.travelType}
-              className="h-[332px] w-[280px] shrink-0"
-            >
-              <TravelerTypeCard
-                className="h-full w-full"
-                description={t.description}
-                disabled={!t.enabled}
-                href={getHref(t)}
-                imageUrl={t.imageUrl}
-                onClick={onSelect ? () => handleCardClick(t) : undefined}
-                selected={isSelected}
-                title={t.title}
-              />
-            </div>
-          );
-        })}
+        {typesToShow.map((t) => (
+          <div key={t.travelType} className="h-[332px] w-[280px] shrink-0">
+            <TravelerTypeCard
+              className="h-full w-full"
+              description={t.description}
+              disabled={!t.enabled}
+              href={href(t)}
+              imageUrl={t.imageUrl}
+              onClick={onSelect ? () => onSelect(slug(t)) : undefined}
+              selected={selectedTravelType === slug(t)}
+              title={t.title}
+            />
+          </div>
+        ))}
       </motion.div>
     );
   }
+
+  const gapPx = 16;
+  const totalGaps = gapPx * (itemsPerView - 1);
+  const itemClassName = `basis-[calc((100%-${totalGaps}px)/${itemsPerView})] h-[332px] flex-shrink-0`;
 
   return (
     <motion.div
@@ -182,31 +146,26 @@ export function TravelerTypesCarousel({
       className="w-full"
     >
       <Carousel
-        classes={{ ...classes }}
+        classes={classes}
         fullViewportWidth={fullViewportWidth}
-        itemClassName={getItemClassName()}
+        itemClassName={itemClassName}
         showArrows={showArrows}
         showDots={showDots}
-        slidesToScroll={itemsPerView || 1}
+        slidesToScroll={itemsPerView}
       >
-        {typesToShow.map((t) => {
-          const slug = getSlugFromTravelType(t.travelType);
-          const isSelected = selectedTravelType === slug;
-
-          return (
-            <TravelerTypeCard
-              key={t.travelType}
-              className="h-full w-full"
-              description={t.description}
-              disabled={!t.enabled}
-              href={getHref(t)}
-              imageUrl={t.imageUrl}
-              onClick={onSelect ? () => handleCardClick(t) : undefined}
-              selected={isSelected}
-              title={t.title}
-            />
-          );
-        })}
+        {typesToShow.map((t) => (
+          <TravelerTypeCard
+            key={t.travelType}
+            className="h-full w-full"
+            description={t.description}
+            disabled={!t.enabled}
+            href={href(t)}
+            imageUrl={t.imageUrl}
+            onClick={onSelect ? () => onSelect(slug(t)) : undefined}
+            selected={selectedTravelType === slug(t)}
+            title={t.title}
+          />
+        ))}
       </Carousel>
     </motion.div>
   );

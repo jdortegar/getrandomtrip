@@ -1,6 +1,7 @@
 import React from 'react';
 import HomeInfo from '@/components/HomeInfo';
 import Hero from '@/components/Hero';
+import Blog from '@/components/Blog';
 import { ExplorationSection } from '@/components/landing/exploration';
 import Testimonials from '@/components/Testimonials';
 import { HomeWrapper } from '@/components/waitlist/HomeWrapper';
@@ -92,7 +93,21 @@ export default async function HomePage({
           trippersButtonText={home.explorationButtonTrippers}
           trippersHref={pathForLocale(locale, '/trippers')}
         />
-        {/* <Blog ... /> */}
+        <Blog
+          carouselSlideAriaLabel={home.blogCarouselSlideAriaLabel}
+          eyebrow={home.blogEyebrow}
+          posts={BLOG_CONSTANTS.posts}
+          subtitle={home.blogSubtitle}
+          title={home.blogTitle}
+          viewAll={
+            BLOG_CONSTANTS.viewAll
+              ? {
+                  ...BLOG_CONSTANTS.viewAll,
+                  href: pathForLocale(locale, BLOG_CONSTANTS.viewAll.href),
+                }
+              : undefined
+          }
+        />
         <Testimonials
           eyebrow={home.testimonialsEyebrow}
           subtitle={home.testimonialsSubtitle}

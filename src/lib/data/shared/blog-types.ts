@@ -2,7 +2,7 @@ export interface BlogPost {
   image: string;
   category: string;
   title: string;
-  href?: string;
+  href: string;
 }
 
 export interface BlogViewAll {
