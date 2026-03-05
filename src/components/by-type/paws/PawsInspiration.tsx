@@ -6,42 +6,12 @@ import BlogCard from '@/components/BlogCard';
 
 const PawsInspiration: React.FC = () => {
   const posts = [
-    {
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-      category: 'Patagonia',
-      title: 'Patagonia con tu mejor amigo',
-      slug: 'patagonia-paws',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-      category: 'Hoteles',
-      title: 'Hoteles pet-friendly en la costa',
-      slug: 'hoteles-costa-paws',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1526312426976-593c2d0a3d5b',
-      category: 'Actividades',
-      title: 'Actividades al aire libre dog-friendly',
-      slug: 'actividades-paws',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1510626176961-4fbad03',
-      category: 'Viajes',
-      title: 'Viajes en auto con mascotas',
-      slug: 'viajes-auto-paws',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
-      category: 'Salud',
-      title: 'Salud y seguridad en viajes con mascotas',
-      slug: 'salud-seguridad-paws',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063',
-      category: 'Destinos',
-      title: 'Destinos internacionales pet-friendly',
-      slug: 'destinos-internacionales-paws',
-    },
+    { href: '/blogs/paws', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e', category: 'Patagonia', title: 'Patagonia con tu mejor amigo' },
+    { href: '/blogs/paws', image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee', category: 'Hoteles', title: 'Hoteles pet-friendly en la costa' },
+    { href: '/blogs/paws', image: 'https://images.unsplash.com/photo-1526312426976-593c2d0a3d5b', category: 'Actividades', title: 'Actividades al aire libre dog-friendly' },
+    { href: '/blogs/paws', image: 'https://images.unsplash.com/photo-1510626176961-4fbad03', category: 'Viajes', title: 'Viajes en auto con mascotas' },
+    { href: '/blogs/paws', image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470', category: 'Salud', title: 'Salud y seguridad en viajes con mascotas' },
+    { href: '/blogs/paws', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063', category: 'Destinos', title: 'Destinos internacionales pet-friendly' },
   ];
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);

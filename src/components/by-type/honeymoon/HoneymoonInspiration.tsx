@@ -7,36 +7,12 @@ import BlogCard from '@/components/BlogCard';
 const HoneymoonInspiration: React.FC = () => {
   // Posts de ejemplo (luego podés mapear a tu data real)
   const posts = [
-    {
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-      category: 'Playas & Dunas',
-      title: 'Arenas doradas y promesas al atardecer',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-      category: 'Naturaleza',
-      title: 'Cordilleras, lagos y la calma de estar a dos',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1526312426976-593c2d0a3d5b',
-      category: 'Cultura',
-      title: 'Ciudades que susurran historias para dos',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03',
-      category: 'Gastronomía',
-      title: 'Viñedos, sobremesas y conversaciones infinitas',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
-      category: 'Aventura',
-      title: 'Roadtrips, miradas y playlists compartidas',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063',
-      category: 'Música',
-      title: 'Pequeñas salas, grandes canciones',
-    },
+    { href: '/blogs/honeymoon', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e', category: 'Playas & Dunas', title: 'Arenas doradas y promesas al atardecer' },
+    { href: '/blogs/honeymoon', image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee', category: 'Naturaleza', title: 'Cordilleras, lagos y la calma de estar a dos' },
+    { href: '/blogs/honeymoon', image: 'https://images.unsplash.com/photo-1526312426976-593c2d0a3d5b', category: 'Cultura', title: 'Ciudades que susurran historias para dos' },
+    { href: '/blogs/honeymoon', image: 'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03', category: 'Gastronomía', title: 'Viñedos, sobremesas y conversaciones infinitas' },
+    { href: '/blogs/honeymoon', image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470', category: 'Aventura', title: 'Roadtrips, miradas y playlists compartidas' },
+    { href: '/blogs/honeymoon', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063', category: 'Música', title: 'Pequeñas salas, grandes canciones' },
   ];
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);

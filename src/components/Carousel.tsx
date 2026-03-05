@@ -470,7 +470,7 @@ function Carousel({
   title,
   viewportPaddingClassName,
 }: CarouselPresetProps) {
-  const sectionRef = React.useRef<HTMLElement | null>(null);
+  const sectionRef = React.useRef<HTMLDivElement | null>(null);
   const [viewportPadding, setViewportPadding] = React.useState<{
     left: number;
     right: number;

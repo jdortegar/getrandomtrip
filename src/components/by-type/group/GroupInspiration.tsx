@@ -7,36 +7,12 @@ import BlogCard from '@/components/BlogCard';
 const GroupInspiration: React.FC = () => {
   // Posts de ejemplo (reemplazá por data real cuando la tengas)
   const posts = [
-    {
-      image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-      category: 'Historias',
-      title: '10 momentos que solo pasan viajando en grupo',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b',
-      category: 'Consejos',
-      title: 'Cómo alinear expectativas sin matar la sorpresa',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1520975916090-3105956dac38',
-      category: 'Experiencias',
-      title: 'Un Randomtrip con amigos que terminó en ritual',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1474631245212-32dc3c8310c6',
-      category: 'Guías',
-      title: 'Offsite inolvidable: 6 ideas para equipos',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-      category: 'Fantasía',
-      title: 'Vivir una saga: rutas para cinéfilos y gamers',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063',
-      category: 'Música',
-      title: 'Festivales & escenas locales: cómo elegir',
-    },
+    { href: '/blogs/group', image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee', category: 'Historias', title: '10 momentos que solo pasan viajando en grupo' },
+    { href: '/blogs/group', image: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b', category: 'Consejos', title: 'Cómo alinear expectativas sin matar la sorpresa' },
+    { href: '/blogs/group', image: 'https://images.unsplash.com/photo-1520975916090-3105956dac38', category: 'Experiencias', title: 'Un Randomtrip con amigos que terminó en ritual' },
+    { href: '/blogs/group', image: 'https://images.unsplash.com/photo-1474631245212-32dc3c8310c6', category: 'Guías', title: 'Offsite inolvidable: 6 ideas para equipos' },
+    { href: '/blogs/group', image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e', category: 'Fantasía', title: 'Vivir una saga: rutas para cinéfilos y gamers' },
+    { href: '/blogs/group', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063', category: 'Música', title: 'Festivales & escenas locales: cómo elegir' },
   ];
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);

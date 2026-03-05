@@ -8,35 +8,41 @@ const CoupleInspiration: React.FC = () => {
   // Duplicate posts to ensure at least 6 cards are rendered
   const posts = [
     {
+      href: '/blogs/couple',
       image: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
       category: 'Inspiración',
       title: '5 Razones para Amar un Viaje Sorpresa',
     },
     {
+      href: '/blogs/couple',
       image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
       category: 'Consejos',
       title: 'Cómo Hacer la Valija para un Destino Desconocido',
     },
     {
+      href: '/blogs/couple',
       image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1',
       category: 'Experiencias',
       title: 'La Historia de un Randomtrip a los Alpes',
     },
     {
+      href: '/blogs/couple',
       image: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3',
       category: 'Guías',
       title: 'Sabores del Sudeste Asiático',
     },
     {
+      href: '/blogs/couple',
       image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
       category: 'Aventura',
       title: 'Recorriendo la Carretera Austral',
     },
     {
+      href: '/blogs/couple',
       image: 'https://images.unsplash.com/photo-1526772662000-3f88f10405ff',
       category: 'Inspiración',
       title: 'Otra Historia de Parejas',
-    }, // Duplicated for 6 cards
+    },
   ];
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
