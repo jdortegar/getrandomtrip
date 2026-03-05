@@ -66,7 +66,7 @@ export default function Blog({
 }: BlogProps) {
   return (
     <Section
-      className="overflow-visible pl-4 md:pl-[8%]"
+      // className="overflow-visible pl-4 md:pl-[8%]"
       id={id}
       variant="default"
       fullWidth
@@ -79,7 +79,15 @@ export default function Blog({
           slidesToScroll: 1,
         }}
       >
-        <div className="relative flex flex-col gap-12 md:flex-row md:items-stretch md:gap-8">
+        <div className="container mx-auto px-4 md:px-20">
+          <div className="flex justify-end mb-6">
+            <div className="flex flex-shrink-0 gap-2 items-center">
+              <CarouselPrevious inHeader />
+              <CarouselNext inHeader />
+            </div>
+          </div>
+        </div>
+        <div className="relative flex flex-col gap-12 md:flex-row md:items-stretch md:gap-8 overflow-visible pl-4 md:pl-[8%]">
           {/* Left Column - Full-height white panel so carousel never bleeds through */}
           <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 md:ml-[-8vw] md:w-1/3 md:min-w-[calc(33.333%+8vw)] md:items-start md:justify-center md:pl-[8vw] md:pr-8 md:text-left">
             {eyebrow && (
@@ -123,12 +131,6 @@ export default function Blog({
           {/* Right Column - Carousel */}
           <div className="relative z-0 flex-1 md:min-w-2/3 mt-8 pl-6 pr-8 md:pl-8 md:pr-12">
             {/* Arrows above cards, aligned to carousel content (top position like in design) */}
-            <div className="mb-6 flex justify-end">
-              <div className="flex flex-shrink-0 gap-2 items-center">
-                <CarouselPrevious inHeader />
-                <CarouselNext inHeader />
-              </div>
-            </div>
 
             {/* Carousel Content */}
             <CarouselContent className="pb-8 md:pb-10 ">

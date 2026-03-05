@@ -35,8 +35,6 @@ function TestimonialCard({
     testimonial;
   const initial = getInitial(author);
 
-  console.log(reviewUrl, viewFullReviewLabel);
-
   return (
     <div className="relative flex h-full min-h-[250px] flex-col justify-around overflow-visible rounded-md border border-neutral-200 bg-white p-6 text-center shadow-sm">
       <p className="mb-6 font-barlow text-lg leading-relaxed text-[#888]">
@@ -124,7 +122,7 @@ export default function Testimonials({
       subtitle={subtitle}
       title={title}
     >
-      <div className="relative">
+      <div className="container mx-auto mt-12 px-4 md:px-20">
         <Carousel
           classes={{ content: 'items-start' }}
           fullViewportWidth
