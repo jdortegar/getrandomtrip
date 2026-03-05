@@ -8,6 +8,9 @@ import { GateAwareChrome } from '@/components/waitlist/GateAwareChrome';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale, type Locale } from '@/lib/i18n/config';
 
+/** Avoid SSG so SessionProvider/useSession have request context (no "auth" destructure error during prerender). */
+export const dynamic = 'force-dynamic';
+
 export function generateStaticParams() {
   return [{ locale: 'es' }, { locale: 'en' }];
 }
