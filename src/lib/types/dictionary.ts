@@ -54,6 +54,9 @@ export interface MarketingDictionary {
     blogCarouselSlideAriaLabel: string;
     blogEyebrow: string;
     explorationButtonTrippers: string;
+    explorationCarouselNextLabel: string;
+    explorationCarouselPrevLabel: string;
+    explorationCarouselSlideLabel: string;
     explorationComingSoon: string;
     explorationEyebrow: string;
     explorationSubtitle: string;

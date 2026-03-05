@@ -26,6 +26,8 @@ import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 interface JourneyMainContentProps {
   activeTab: string;
   className?: string;
+  /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). */
+  localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
   onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
   openSectionId?: string;
@@ -34,6 +36,7 @@ interface JourneyMainContentProps {
 export default function JourneyMainContent({
   activeTab,
   className,
+  localizedTravelerTypes,
   onOpenSection,
   onTabChange,
   openSectionId,
@@ -428,6 +431,7 @@ export default function JourneyMainContent({
                 <TravelerTypesCarousel
                   fullViewportWidth={false}
                   itemsPerView={4}
+                  localizedTravelerTypes={localizedTravelerTypes}
                   onSelect={handleTravelTypeSelect}
                   selectedTravelType={travelType as TravelerTypeSlug}
                   showArrows={false}

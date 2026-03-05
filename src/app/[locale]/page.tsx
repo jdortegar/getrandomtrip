@@ -12,7 +12,6 @@ import {
 } from '@/lib/data/how-it-works';
 import { HERO_STATIC } from '@/lib/data/home-hero';
 import { HOME_TESTIMONIALS } from '@/lib/data/home-testimonials';
-import { initialTravellerTypes } from '@/lib/data/travelerTypes';
 import { getAllTrippers } from '@/lib/db/tripper-queries';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
@@ -35,18 +34,6 @@ export default async function HomePage({
     ...step,
     imageSrc: BENEFITS_IMAGE_SRCS[i] ?? '',
   }));
-
-  const dictTypesByKey = Object.fromEntries(
-    home.explorationTravelerTypes.map((t) => [t.key, t]),
-  );
-  const travelerTypes = initialTravellerTypes.map((type) => {
-    const localized = dictTypesByKey[type.travelType.toLowerCase()];
-    return {
-      ...type,
-      description: localized?.description ?? type.description,
-      title: localized?.title ?? type.title,
-    };
-  });
 
   const heroContent = {
     branding: {
@@ -80,15 +67,18 @@ export default async function HomePage({
           title={home.homeInfoTitle}
         />
         <ExplorationSection
+          carouselAriaLabelNext={home.explorationCarouselNextLabel}
+          carouselAriaLabelPrev={home.explorationCarouselPrevLabel}
+          carouselAriaLabelSlide={home.explorationCarouselSlideLabel}
           comingSoonText={home.explorationComingSoon}
           eyebrow={home.explorationEyebrow}
+          localizedTravelerTypes={home.explorationTravelerTypes}
           subtitle={home.explorationSubtitle}
           tabs={home.explorationTabs.map((tab) => ({
             ...tab,
             href: tab.href ? pathForLocale(locale, tab.href) : undefined,
           }))}
           title={home.explorationTitle}
-          travelerTypes={travelerTypes}
           trippers={trippers as any}
           trippersButtonText={home.explorationButtonTrippers}
           trippersHref={pathForLocale(locale, '/trippers')}

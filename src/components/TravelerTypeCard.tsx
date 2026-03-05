@@ -81,11 +81,12 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       </div>
 
       {/* Card Content */}
-      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white pb-20">
-        <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase leading-tight md:text-5xl">
+      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white @[300px]:pb-20">
+        <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase leading-tight @[300px]:text-5xl">
           {title}
         </h3>
-        <p className="font-barlow text-base text-white/90 md:text-lg">
+        <p className="font-barlow text-base text-white/90 @md:text-lg @[300px]:text-lg
+        ">
           {description}
         </p>
       </div>
@@ -93,7 +94,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   );
 
   const baseClassName = cn(
-    'group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center',
+    '@container group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center',
     fill && 'h-full w-full',
     className,
     disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',

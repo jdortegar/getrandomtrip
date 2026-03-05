@@ -14,6 +14,12 @@ import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 interface TravelerTypesCarouselProps {
   /** When set, only these traveler type slugs are shown (e.g. tripper’s available types). */
   availableTypes?: string[];
+  /** Localized aria-label for carousel next button. */
+  ariaLabelNext?: string;
+  /** Localized aria-label for carousel previous button. */
+  ariaLabelPrev?: string;
+  /** Localized aria-label for dot "Go to slide N". Use {n} for slide number (1-based). */
+  ariaLabelSlide?: string;
   classes?: {
     section?: string;
     viewport?: string;
@@ -21,6 +27,8 @@ interface TravelerTypesCarouselProps {
   };
   fullViewportWidth?: boolean;
   itemsPerView?: number;
+  /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). Merged with base data to produce card content. */
+  localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   /** Pixels of the next slide to show (peek). */
   peek?: number;
@@ -31,15 +39,19 @@ interface TravelerTypesCarouselProps {
   tripperMode?: boolean;
   /** When set, card links go to this tripper’s packages page. */
   tripperSlug?: string;
-  /** Localized traveler types (title + description). When not set, uses initialTravellerTypes. */
+  /** Localized traveler types (title + description). When not set, uses initialTravellerTypes (or merged with localizedTravelerTypes when provided). */
   travelerTypes?: TravelerType[];
 }
 
 export function TravelerTypesCarousel({
   availableTypes,
+  ariaLabelNext,
+  ariaLabelPrev,
+  ariaLabelSlide,
   classes,
   fullViewportWidth,
   itemsPerView = 3,
+  localizedTravelerTypes,
   onSelect,
   peek = 0,
   selectedTravelType,
@@ -49,7 +61,21 @@ export function TravelerTypesCarousel({
   tripperMode = false,
   tripperSlug,
 }: TravelerTypesCarouselProps) {
-  const baseTypes = travelerTypes ?? initialTravellerTypes;
+  const baseTypes = React.useMemo(() => {
+    if (travelerTypes?.length) return travelerTypes;
+    if (localizedTravelerTypes?.length) {
+      const byKey = Object.fromEntries(
+        localizedTravelerTypes.map((t) => [t.key.toLowerCase(), t]),
+      );
+      return initialTravellerTypes.map((type) => {
+        const loc = byKey[type.travelType.toLowerCase()];
+        return loc
+          ? { ...type, description: loc.description, title: loc.title }
+          : type;
+      });
+    }
+    return initialTravellerTypes;
+  }, [travelerTypes, localizedTravelerTypes]);
 
   const isTripperContext = tripperMode || Boolean(tripperSlug);
   const allowedSet = React.useMemo(() => {
@@ -95,6 +121,9 @@ export function TravelerTypesCarousel({
     >
       <EmblaCarousel
         align={fewerSlidesThanView ? 'center' : 'start'}
+        ariaLabelNext={ariaLabelNext}
+        ariaLabelPrev={ariaLabelPrev}
+        ariaLabelSlide={ariaLabelSlide}
         className={classes?.section}
         contentClassName={classes?.wrapper}
         gap={gapPx}

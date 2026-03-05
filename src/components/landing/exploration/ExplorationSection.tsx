@@ -15,7 +15,17 @@ interface ExplorationTab {
   label: string;
 }
 
+interface LocalizedTravelerType {
+  description: string;
+  key: string;
+  title: string;
+}
+
 interface ExplorationSectionProps {
+  /** Localized carousel aria labels (prev, next, slide). */
+  carouselAriaLabelNext?: string;
+  carouselAriaLabelPrev?: string;
+  carouselAriaLabelSlide?: string;
   comingSoonText: string;
   eyebrow: string;
   subtitle: string;
@@ -31,6 +41,8 @@ interface ExplorationSectionProps {
   }>;
   trippersButtonText: string;
   trippersHref: string;
+  /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). When set, carousel merges with base data for card content. */
+  localizedTravelerTypes?: LocalizedTravelerType[];
   travelerTypes?: TravelerType[];
 }
 
@@ -45,8 +57,12 @@ function ComingSoon({ message }: { message: string }) {
 }
 
 export function ExplorationSection({
+  carouselAriaLabelNext,
+  carouselAriaLabelPrev,
+  carouselAriaLabelSlide,
   comingSoonText,
   eyebrow,
+  localizedTravelerTypes,
   subtitle,
   tabs,
   title,
@@ -62,7 +78,11 @@ export function ExplorationSection({
       case 'byTraveller':
         return (
           <TravelerTypesCarousel
+            ariaLabelNext={carouselAriaLabelNext}
+            ariaLabelPrev={carouselAriaLabelPrev}
+            ariaLabelSlide={carouselAriaLabelSlide}
             fullViewportWidth
+            localizedTravelerTypes={localizedTravelerTypes}
             travelerTypes={travelerTypes}
           />
         );
@@ -81,7 +101,11 @@ export function ExplorationSection({
       default:
         return (
           <TravelerTypesCarousel
+            ariaLabelNext={carouselAriaLabelNext}
+            ariaLabelPrev={carouselAriaLabelPrev}
+            ariaLabelSlide={carouselAriaLabelSlide}
             fullViewportWidth
+            localizedTravelerTypes={localizedTravelerTypes}
             travelerTypes={travelerTypes}
           />
         );

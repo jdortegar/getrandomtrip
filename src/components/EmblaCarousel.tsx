@@ -21,6 +21,12 @@ type CarouselApi = UseEmblaCarouselType[1];
 export interface EmblaCarouselProps {
   /** Alignment when fewer slides than view: 'start' | 'center' | 'end'. */
   align?: 'center' | 'end' | 'start';
+  /** Localized aria-label for dot "Go to slide N". Use {n} for slide number (1-based). */
+  ariaLabelSlide?: string;
+  /** Localized aria-label for next button. */
+  ariaLabelNext?: string;
+  /** Localized aria-label for previous button. */
+  ariaLabelPrev?: string;
   /** Gap between slides in px. */
   gap?: number;
   /** Pixels of the next slide to show (peek). */
@@ -92,6 +98,9 @@ function useDots(api: CarouselApi | undefined) {
 
 export function EmblaCarousel({
   align = 'start',
+  ariaLabelNext = 'Next slide',
+  ariaLabelPrev = 'Previous slide',
+  ariaLabelSlide = 'Go to slide {n}',
   children,
   className,
   contentClassName,
@@ -136,7 +145,7 @@ export function EmblaCarousel({
       {showArrows && (
         <div className="mb-4 flex items-center justify-end gap-2">
           <Button
-            aria-label="Previous slide"
+            aria-label={ariaLabelPrev}
             className="h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-10 md:w-10"
             disabled={!prevNext.canPrev}
             onClick={prevNext.scrollPrev}
@@ -147,7 +156,7 @@ export function EmblaCarousel({
             <ChevronLeft className="size-5 text-white" />
           </Button>
           <Button
-            aria-label="Next slide"
+            aria-label={ariaLabelNext}
             className="h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-10 md:w-10"
             disabled={!prevNext.canNext}
             onClick={prevNext.scrollNext}
@@ -193,7 +202,7 @@ export function EmblaCarousel({
           {dots.snaps.map((_, i) => (
             <button
               key={i}
-              aria-label={`Go to slide ${i + 1}`}
+              aria-label={ariaLabelSlide.replace('{n}', String(i + 1))}
               className={cn(
                 'h-2 rounded-full transition-all',
                 i === dots.selectedIndex ? 'w-8 bg-[#4F96B6]' : 'w-2 bg-[#4F96B6]/30 hover:bg-[#4F96B6]/50',
