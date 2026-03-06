@@ -111,7 +111,6 @@ function buildStateUpdate(
         maxTravelTime: 'sin-limite',
         departPref: 'indistinto',
         arrivePref: 'indistinto',
-        avoidDestinations: [],
       },
       addons: { selected: [] },
       filtersCostUsd: 0,

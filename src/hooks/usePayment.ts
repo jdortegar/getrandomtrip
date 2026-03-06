@@ -13,6 +13,8 @@ interface PaymentData {
   logistics: Logistics;
   filters: Filters;
   addons: { selected: AddonSelection[] };
+  /** Count of avoid destinations (from URL param); not in store */
+  avoidCount?: number;
 }
 
 interface PaymentTotals {
@@ -32,7 +34,7 @@ export function usePayment(paymentData: PaymentData) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { data: session } = useSession();
 
-  const { basePriceUsd, logistics, filters, addons } = paymentData;
+  const { basePriceUsd, logistics, filters, addons, avoidCount = 0 } = paymentData;
   const pax = logistics.pax || 1;
 
   /**
@@ -43,7 +45,11 @@ export function usePayment(paymentData: PaymentData) {
     const basePerPax = basePriceUsd || 0;
 
     // Calculate filters cost (total trip cost, not per person)
-    const filtersTripTotal = computeFiltersCostPerTrip(filters, pax);
+    const filtersTripTotal = computeFiltersCostPerTrip(
+      filters,
+      pax,
+      avoidCount,
+    );
     const filtersPerPax = filtersTripTotal / pax;
 
     // Calculate addons cost per person (excluding cancellation insurance)

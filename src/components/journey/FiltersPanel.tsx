@@ -85,27 +85,6 @@ export default function FiltersPanel() {
           ))}
         </div>
       </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Destinos a evitar
-        </label>
-        <input
-          type="text"
-          placeholder="Escribe destinos separados por comas"
-          onChange={(e) =>
-            handleFilterChange(
-              'avoidDestinations',
-              e.target.value.split(',').map((s) => s.trim()),
-            )
-          }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
-        <p className="mt-1 text-xs text-gray-500">
-          Este conjunto cuenta como 1 filtro opcional, sin importar cuántos
-          destinos elijan.
-        </p>
-      </div>
     </div>
   );
 }

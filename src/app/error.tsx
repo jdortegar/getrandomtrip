@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
+import HeaderHero from '@/components/journey/HeaderHero';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
 
@@ -23,14 +23,13 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
     <>
       <Navbar />
 
-      <Hero
-        content={{
-          title: '¡Ups! Algo salió mal',
-          subtitle: 'Ha ocurrido un error inesperado',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-        }}
-        className="!h-[40vh]"
+      <HeaderHero
+        className="!min-h-[40vh]"
+        description="Ha ocurrido un error inesperado"
+        fallbackImage="/images/bg-playa-mexico.jpg"
+        subtitle="ERROR"
+        title="¡Ups! Algo salió mal"
+        videoSrc="/videos/hero-video.mp4"
       />
 
       <Section>

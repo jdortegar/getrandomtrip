@@ -1,123 +1,252 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Loader2 } from 'lucide-react';
+import { Calendar, Loader2, MapPin, Sparkle } from 'lucide-react';
 
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import ChatFab from '@/components/chrome/ChatFab';
 import AuthModal from '@/components/auth/AuthModal';
+import HeaderHero from '@/components/journey/HeaderHero';
+import Img from '@/components/common/Img';
+import {
+  TRANSPORT_ICONS,
+  TRANSPORT_OPTIONS,
+} from '@/components/journey/TransportSelector';
 
 import { useStore } from '@/store/store';
 import { useUserStore } from '@/store/slices/userStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
-
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-
-import Chip from '@/components/badge';
+import type { Logistics, Filters } from '@/store/slices/journeyStore';
+import pricingCatalog from '@/data/pricing-catalog.json' assert { type: 'json' };
+import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
+import { initialTravellerTypes } from '@/lib/data/travelerTypes';
+import { formatUSD } from '@/lib/format';
+import { getExcuseOptions, getExcuseTitle } from '@/lib/helpers/excuse-helper';
+import { getTravelerType } from '@/lib/data/traveler-types';
 import { Button } from '@/components/ui/Button';
-import { usePlanData } from '@/hooks/usePlanData';
-import { useSaveTrip } from '@/hooks/useSaveTrip';
-import { useCallback, useRef } from 'react';
 import { usePayment } from '@/hooks/usePayment';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale } from '@/lib/i18n/config';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
+import { cn } from '@/lib/utils';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
 
+const DEFAULT_PAX = 2;
+
+type TravelerType =
+  | 'couple'
+  | 'solo'
+  | 'family'
+  | 'group'
+  | 'honeymoon'
+  | 'paws';
+
+/** Normalize experience from URL to catalog/planner key (e.g. explora-plus, modo-explora). */
+function normalizeLevelForCatalog(raw?: string | null): string | undefined {
+  if (!raw) return undefined;
+  const normalized = raw
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace('explora+', 'explora-plus');
+  if (normalized === 'exploraplus') return 'explora-plus';
+  if (normalized === 'modoexplora' || normalized === 'explora') return 'modo-explora';
+  return normalized || undefined;
+}
+
+function getFilterLabel(
+  group: keyof typeof FILTER_OPTIONS,
+  key: string,
+  filterOptions?: Record<string, { options: Array<{ key: string; label: string }> }>,
+): string {
+  const fromDict = filterOptions?.[group]?.options?.find((o) => o.key === key)?.label;
+  if (fromDict) return fromDict;
+  const opt = FILTER_OPTIONS[group]?.options?.find((o) => o.key === key);
+  return opt?.label ?? key;
+}
+
+function formatDatesSummary(
+  startDate: string,
+  nights: number,
+  template: string,
+  monthsShort: string[],
+): string {
+  const [y, m, d] = startDate.split('-').map(Number);
+  const start = new Date(y, m - 1, d);
+  const end = new Date(start);
+  end.setDate(end.getDate() + nights);
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+  const startMonth = monthsShort[start.getMonth()] ?? '';
+  const endMonth = monthsShort[end.getMonth()] ?? '';
+  return template
+    .replace('{startDay}', String(startDay))
+    .replace('{endDay}', String(endDay))
+    .replace('{startMonth}', startMonth)
+    .replace('{endMonth}', endMonth);
+}
+
+/** Get base price per person from pricing catalog by travelType and experience (level). */
+function getBasePriceFromCatalog(
+  travelType: string | null,
+  experience: string | null,
+): number {
+  const type = (travelType || 'couple') as TravelerType;
+  const level = normalizeLevelForCatalog(experience);
+  if (!level) return 0;
+  const byTraveller = (pricingCatalog as { byTraveller?: Record<string, Record<string, { base?: number }>> }).byTraveller;
+  const tierPrices = byTraveller?.[type];
+  const base = tierPrices?.[level]?.base;
+  return typeof base === 'number' ? base : 0;
+}
+
+/** Build logistics from URL params (and optional store fallback for pax). */
+function logisticsFromParams(
+  searchParams: URLSearchParams,
+  storePax?: number,
+): Logistics {
+  const originCountry = searchParams.get('originCountry') ?? '';
+  const originCity = searchParams.get('originCity') ?? '';
+  const startDateRaw = searchParams.get('startDate');
+  const nightsRaw = searchParams.get('nights');
+  const nights = nightsRaw ? Math.max(1, parseInt(nightsRaw, 10) || 1) : 1;
+  const pax = storePax ?? DEFAULT_PAX;
+
+  let startDate: Date | undefined;
+  let endDate: Date | undefined;
+  if (startDateRaw) {
+    startDate = new Date(startDateRaw);
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + nights);
+  }
+
+  return {
+    city: originCity,
+    country: originCountry,
+    endDate,
+    nights,
+    pax,
+    startDate,
+  };
+}
+
+/** Build filters from URL params. */
+function filtersFromParams(searchParams: URLSearchParams): Filters {
+  const transport = searchParams.get('transport') ?? 'avion';
+  const climate = searchParams.get('climate') ?? 'indistinto';
+  const maxTravelTime = searchParams.get('maxTravelTime') ?? 'sin-limite';
+  const departPref = searchParams.get('departPref') ?? 'indistinto';
+  const arrivePref = searchParams.get('arrivePref') ?? 'indistinto';
+  const avoidRaw = searchParams.get('avoidDestinations');
+  const avoidDestinations = avoidRaw
+    ? avoidRaw.split(',').map((s) => s.trim()).filter(Boolean)
+    : [];
+
+  return {
+    arrivePref,
+    avoidDestinations,
+    climate,
+    departPref,
+    maxTravelTime,
+    transport,
+  };
+}
+
+/** Build addons.selected from URL param (comma-separated ids). */
+function addonsFromParams(searchParams: URLSearchParams): {
+  selected: Array<{ id: string; qty: number }>;
+} {
+  const raw = searchParams.get('addons');
+  if (!raw) return { selected: [] };
+  const ids = raw.split(',').map((s) => s.trim()).filter(Boolean);
+  return {
+    selected: ids.map((id) => ({ id, qty: 1 })),
+  };
+}
+
 function SummaryPageContent() {
-  const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const locale = (params?.locale as string) ?? 'es';
+  const resolvedLocale = hasLocale(locale) ? locale : 'es';
+
   const { data: session, status } = useSession();
   const { isAuthed, authModalOpen, closeAuth } = useUserStore();
-  const {
-    saveTrip,
-    debouncedSaveTrip,
-    isLoading: isSaving,
-    error: saveError,
-  } = useSaveTrip();
-  const [savedTripId, setSavedTripId] = useState<string | null>(null);
-  const hasAttemptedSave = useRef(false);
+  const storeLogistics = useStore((s) => s.logistics);
+  const storeBasePriceUsd = useStore((s) => s.basePriceUsd);
 
-  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  const {
-    basePriceUsd,
-    displayPrice,
-    logistics,
-    filters,
-    addons,
-    level,
-    type,
-  } = useStore();
+  const [dict, setDict] = useState<Dictionary | null>(null);
+  const [paxOverride, setPaxOverride] = useState<number | null>(null);
 
-  const { tags } = usePlanData();
+  useEffect(() => {
+    getDictionary(resolvedLocale).then(setDict);
+  }, [resolvedLocale]);
 
-  // Payment hook with consolidated logic
+  const logistics = useMemo(
+    () => logisticsFromParams(searchParams, storeLogistics?.pax),
+    [searchParams, storeLogistics?.pax],
+  );
+  const filters = useMemo(
+    () => filtersFromParams(searchParams),
+    [searchParams],
+  );
+  const addons = useMemo(
+    () => addonsFromParams(searchParams),
+    [searchParams],
+  );
+  const basePriceUsd = useMemo(() => {
+    const pbp = searchParams.get('pbp');
+    if (pbp) {
+      const n = Number(pbp);
+      if (Number.isFinite(n)) return n;
+    }
+    const fromCatalog = getBasePriceFromCatalog(
+      searchParams.get('travelType'),
+      searchParams.get('experience'),
+    );
+    if (fromCatalog > 0) return fromCatalog;
+    return storeBasePriceUsd || 0;
+  }, [searchParams, storeBasePriceUsd]);
+
+  const avoidDestinations = filters.avoidDestinations;
+
+  const effectiveLogistics = useMemo(
+    () => ({
+      ...logistics,
+      pax: paxOverride ?? logistics.pax ?? 1,
+    }),
+    [logistics, paxOverride],
+  );
+
   const { isProcessing, calculateTotals, initiatePayment } = usePayment({
-    basePriceUsd: basePriceUsd || 0,
-    logistics,
-    filters,
     addons,
+    avoidCount: avoidDestinations.length,
+    basePriceUsd,
+    filters,
+    logistics: effectiveLogistics,
   });
 
-  // Define handleSaveTrip before any early returns
-  const handleSaveTrip = useCallback(async () => {
-    try {
-      console.log('🚀 Attempting to save trip...', { savedTripId, isSaving });
-      const trip = await saveTrip(savedTripId || undefined);
-      console.log('✅ Trip saved successfully:', trip);
-      if (trip?.id) {
-        setSavedTripId(trip.id);
-        hasAttemptedSave.current = false; // Reset for potential future saves
-      }
-    } catch (error) {
-      console.error('❌ Failed to save trip:', error);
-    }
-  }, [saveTrip, savedTripId, isSaving]);
-
-  // Open auth modal if not authenticated
   useEffect(() => {
     if (status === 'loading') return;
-
     if (!session && !isAuthed) {
-      // Open auth modal using the user store
       const { openAuth } = useUserStore.getState();
       openAuth('signin');
     }
   }, [session, isAuthed, status]);
 
-  // Auto-save trip when user arrives (if authenticated)
-  useEffect(() => {
-    console.log('🔄 Auto-save useEffect triggered:', {
-      session: !!session,
-      isAuthed,
-      savedTripId,
-      isSaving,
-      hasAttemptedSave: hasAttemptedSave.current,
-    });
-
-    if (
-      (session || isAuthed) &&
-      !savedTripId &&
-      !isSaving &&
-      !hasAttemptedSave.current
-    ) {
-      console.log('✅ Conditions met, calling handleSaveTrip');
-      hasAttemptedSave.current = true;
-      handleSaveTrip();
-    } else {
-      console.log('❌ Conditions not met for auto-save');
-    }
-  }, [session, isAuthed, savedTripId, isSaving, handleSaveTrip]);
-
-  // Show loading while checking auth
   if (status === 'loading') {
-    return <Loader2 className="h-12 w-12 animate-spin text-primary" />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  // Calculate pricing using consolidated logic (DRY principle)
-  const pax = logistics.pax || 1;
+  const pax = effectiveLogistics.pax || 1;
   const {
     basePerPax,
     filtersPerPax,
@@ -127,390 +256,489 @@ function SummaryPageContent() {
     totalTrip,
   } = calculateTotals();
 
-  // Generate filter chips using FILTER_OPTIONS
-  const filterChips: Array<{ key: string; label: string; value: string }> = [];
-
-  // Transport (always shown)
-  const transportOption = FILTER_OPTIONS.transport.options.find(
-    (opt) => opt.key === filters.transport,
+  const travelType = searchParams.get('travelType') || undefined;
+  const experience = searchParams.get('experience') || undefined;
+  const excuse = searchParams.get('excuse') || undefined;
+  const refineDetailsRaw = searchParams.get('refineDetails');
+  const refineDetails = useMemo(
+    () => (refineDetailsRaw ? refineDetailsRaw.split(',').filter(Boolean) : []),
+    [refineDetailsRaw],
   );
-  if (transportOption) {
-    filterChips.push({
-      key: 'transport',
-      label: FILTER_OPTIONS.transport.label,
-      value: transportOption.label,
+  const startDateParam = searchParams.get('startDate') || undefined;
+  const nightsParam = searchParams.get('nights');
+  const nightsNum = useMemo(() => {
+    const n = nightsParam ? Number(nightsParam) : NaN;
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }, [nightsParam]);
+  const transport = searchParams.get('transport') || undefined;
+  const departPref = searchParams.get('departPref') || undefined;
+  const arrivePref = searchParams.get('arrivePref') || undefined;
+  const maxTravelTime = searchParams.get('maxTravelTime') || undefined;
+  const climate = searchParams.get('climate') || undefined;
+
+  const travelerTypeData = useMemo(
+    () => (travelType ? getTravelerType(travelType, resolvedLocale) : null),
+    [travelType, resolvedLocale],
+  );
+  const selectedLevel = useMemo(() => {
+    if (!experience || !travelerTypeData) return null;
+    const normalized = normalizeLevelForCatalog(experience);
+    return (
+      travelerTypeData.planner.levels.find((l) => l.id === experience) ??
+      (normalized
+        ? travelerTypeData.planner.levels.find((l) => l.id === normalized)
+        : null)
+    );
+  }, [experience, travelerTypeData]);
+  const selectedTravelTypeInfo = useMemo(() => {
+    if (!travelType) return null;
+    const travelerType = initialTravellerTypes.find(
+      (t) => t.travelType.toLowerCase() === travelType.toLowerCase(),
+    );
+    return {
+      image: travelerType?.imageUrl,
+      label: TRAVELER_TYPE_LABELS[travelType] || travelType,
+      price: selectedLevel ? formatUSD(selectedLevel.price) : undefined,
+      rating: 7.0,
+      reviews: 10,
+    };
+  }, [travelType, selectedLevel]);
+  const selectedExperienceInfo = useMemo(() => {
+    if (!selectedLevel) return null;
+    const sum = dict?.journey?.summary;
+    return {
+      label: selectedLevel.name,
+      price: sum
+        ? `${formatUSD(selectedLevel.price)} ${sum.experiencePerPerson}`
+        : `${formatUSD(selectedLevel.price)} por persona`,
+    };
+  }, [selectedLevel, dict?.journey?.summary]);
+  const excuseTitleRes = useMemo(
+    () => (excuse ? getExcuseTitle(excuse) : undefined),
+    [excuse],
+  );
+  const refineDetailEntries = useMemo(() => {
+    if (!excuse || refineDetails.length === 0) return [];
+    const options = getExcuseOptions(excuse);
+    return refineDetails.map((key) => ({
+      key,
+      label: options.find((o) => o.key === key)?.label ?? key,
+    }));
+  }, [excuse, refineDetails]);
+  const transportLabel = useMemo(() => {
+    if (!transport) return undefined;
+    const sum = dict?.journey?.summary;
+    const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
+    return (
+      TRANSPORT_OPTIONS.find((o) => o.id === transport)?.label ??
+      getFilterLabel('transport', transport, filterOpts)
+    );
+  }, [transport, dict?.journey?.summary, dict?.journey?.preferencesStep?.filterOptions]);
+  const TransportIcon = transport
+    ? (TRANSPORT_ICONS[transport] ?? TRANSPORT_ICONS.avion)
+    : null;
+
+  type FilterKind =
+    | 'arrivePref'
+    | 'avoid'
+    | 'climate'
+    | 'departPref'
+    | 'maxTravelTime';
+  const sumLabels = dict?.journey?.summary;
+  const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
+  const activeFilters = useMemo(() => {
+    const list: { id: string; kind: FilterKind; label: string; value?: string }[] = [];
+    if (departPref && departPref !== 'indistinto') {
+      list.push({
+        id: `depart-${departPref}`,
+        kind: 'departPref',
+        label: `${sumLabels?.filterLabelDepart ?? 'Salida'}: ${getFilterLabel('departPref', departPref, filterOpts)}`,
+      });
+    }
+    if (arrivePref && arrivePref !== 'indistinto') {
+      list.push({
+        id: `arrive-${arrivePref}`,
+        kind: 'arrivePref',
+        label: `${sumLabels?.filterLabelArrive ?? 'Llegada'}: ${getFilterLabel('arrivePref', arrivePref, filterOpts)}`,
+      });
+    }
+    if (maxTravelTime && maxTravelTime !== 'sin-limite') {
+      list.push({
+        id: `time-${maxTravelTime}`,
+        kind: 'maxTravelTime',
+        label: `${sumLabels?.filterLabelTime ?? 'Tiempo máx.'}: ${getFilterLabel('maxTravelTime', maxTravelTime, filterOpts)}`,
+      });
+    }
+    if (climate && climate !== 'indistinto') {
+      list.push({
+        id: `climate-${climate}`,
+        kind: 'climate',
+        label: `${sumLabels?.filterLabelClimate ?? 'Clima'}: ${getFilterLabel('climate', climate, filterOpts)}`,
+      });
+    }
+    avoidDestinations.forEach((city) => {
+      list.push({ id: `avoid-${city}`, kind: 'avoid', label: city, value: city });
     });
-  }
+    return list;
+  }, [
+    arrivePref,
+    avoidDestinations,
+    climate,
+    departPref,
+    maxTravelTime,
+    sumLabels,
+    filterOpts,
+  ]);
 
-  // Climate
-  if (filters.climate !== 'indistinto') {
-    const climateOption = FILTER_OPTIONS.climate.options.find(
-      (opt) => opt.key === filters.climate,
-    );
-    if (climateOption) {
-      filterChips.push({
-        key: 'climate',
-        label: FILTER_OPTIONS.climate.label,
-        value: climateOption.label,
-      });
-    }
-  }
+  const selectedAddons = useMemo(
+    () =>
+      addons.selected
+        .map((s) => ADDONS.find((a) => a.id === s.id))
+        .filter((a): a is (typeof ADDONS)[number] => Boolean(a)),
+    [addons.selected],
+  );
 
-  // Max Travel Time
-  if (filters.maxTravelTime !== 'sin-limite') {
-    const maxTravelTimeOption = FILTER_OPTIONS.maxTravelTime.options.find(
-      (opt) => opt.key === filters.maxTravelTime,
-    );
-    if (maxTravelTimeOption) {
-      filterChips.push({
-        key: 'maxTravelTime',
-        label: FILTER_OPTIONS.maxTravelTime.label,
-        value: maxTravelTimeOption.label,
-      });
-    }
-  }
-
-  // Depart Preference
-  if (filters.departPref !== 'indistinto') {
-    const departOption = FILTER_OPTIONS.departPref.options.find(
-      (opt) => opt.key === filters.departPref,
-    );
-    if (departOption) {
-      filterChips.push({
-        key: 'departPref',
-        label: 'Salida',
-        value: departOption.label,
-      });
-    }
-  }
-
-  // Arrive Preference
-  if (filters.arrivePref !== 'indistinto') {
-    const arriveOption = FILTER_OPTIONS.arrivePref.options.find(
-      (opt) => opt.key === filters.arrivePref,
-    );
-    if (arriveOption) {
-      filterChips.push({
-        key: 'arrivePref',
-        label: 'Llegada',
-        value: arriveOption.label,
-      });
-    }
-  }
-
-  // Avoid Destinations
-  (filters.avoidDestinations || []).forEach((dest) => {
-    filterChips.push({
-      key: `avoid-${dest}`,
-      label: 'Evitar',
-      value: dest,
-    });
-  });
-
-  // Generate addon rows with per-person pricing
-  const addonRows = addons.selected
-    .map((s) => {
-      const a = ADDONS.find((x) => x.id === s.id);
-      if (!a) return null;
-      const qty = s.qty || 1;
-
-      let pricePerPax = 0;
-
-      if (a.id === 'cancel-ins') {
-        // Special case: cancellation insurance is 15% of subtotal
-        pricePerPax = cancelInsurancePerPax;
-      } else {
-        const totalPrice = a.price * qty;
-
-        if (a.type === 'perPax') {
-          // For perPax addons, divide by quantity (which usually matches pax)
-          pricePerPax = totalPrice / qty;
-        } else {
-          // For perTrip addons, divide by number of passengers
-          pricePerPax = totalPrice / pax;
-        }
-      }
-
-      return {
-        id: s.id,
-        title: qty > 1 ? `${a.title} ×${qty}` : a.title,
-        pricePerPax,
-        type: a.type,
-      };
-    })
-    .filter(Boolean) as {
-    id: string;
-    title: string;
-    pricePerPax: number;
-    type: 'perPax' | 'perTrip';
-  }[];
-
-  // Totals are already calculated by the payment hook (DRY principle)
-
-  // Build URL with params
-  const buildUrlWithParams = (path: string) => {
-    const params = new URLSearchParams();
-    params.set('type', type);
-    params.set('level', level);
-    if (basePriceUsd > 0) {
-      params.set('pbp', basePriceUsd.toString());
-    }
-    return `${path}?${params.toString()}`;
-  };
-
-  const backToConfig = () =>
-    router.push(buildUrlWithParams('/journey/basic-config'));
+  const journeyQueryString = searchParams.toString();
+  const backToJourneyHref = `/${locale}/journey${journeyQueryString ? `?${journeyQueryString}` : ''}`;
 
   const payNow = async () => {
-    console.log('💳 PayNow called with savedTripId:', savedTripId);
-
-    // Update trip status to PENDING_PAYMENT before payment
-    if (savedTripId) {
-      try {
-        console.log('🔄 Updating trip before payment...');
-        await saveTrip(savedTripId);
-        console.log('✅ Trip updated successfully');
-      } catch (error) {
-        console.error('❌ Failed to update trip:', error);
-      }
-    } else {
-      console.log('⚠️ No savedTripId - trip may not be saved yet');
-    }
-
-    // Initiate MercadoPago payment directly
-    console.log('🚀 Initiating payment with tripId:', savedTripId || undefined);
-    await initiatePayment(savedTripId || undefined);
+    await initiatePayment(undefined);
   };
 
-  const ItemBlock = ({ title, value }: { title: string; value: string }) => (
-    <div className="text-neutral-600 text-sm  flex flex-col px-2 py-1">
-      <span className="font-medium text-neutral-900 uppercase">{title}</span>
-      <p className="font-bold text-neutral-900 text-xl">{value}</p>
-    </div>
-  );
+  const journey = dict?.journey;
+  const summary = journey?.summary;
+  const heroTitle = summary?.title ?? 'Resumen del viaje';
+  const heroDescription = 'Revisá tu viaje y confirmá los detalles';
+
+  const sectionTitleClass = 'text-lg font-bold text-gray-900';
+  const detailClass = 'text-base font-normal text-gray-900';
+  const captionClass = 'text-sm font-normal text-gray-500';
+
+  if (!dict) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
-    <>
-      <Hero
-        content={{
-          title: 'Resumen del viaje',
-          subtitle: 'Revisa tu viaje y confirma los detalles',
-          scrollText: '',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-          tags,
-        }}
-        className="!h-[40vh]"
-        scrollIndicator={false}
+    <div className="min-h-screen bg-gray-50">
+      <HeaderHero
+        description={heroDescription}
+        fallbackImage="/images/bg-playa-mexico.jpg"
+        subtitle=""
+        title={heroTitle}
+        videoSrc="/videos/hero-video.mp4"
       />
-      <Section>
-        {/* <Navbar /> */}
-        {/* <div id="hero-sentinel" aria-hidden className="h-px w-px" /> */}
-        {/* <BgCarousel scrim={0.65} /> */}
 
-        <div className="flex gap-6 w-full">
-          {/* Columna izquierda */}
-          <div className="flex-1 space-y-4">
-            <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
-              <h2 className="text-xl font-semibold text-neutral-900 mb-8">
-                Logística de tu viaje
-              </h2>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-                <ItemBlock
-                  title="País de Salida"
-                  value={logistics.country ?? '—'}
-                />
-                <ItemBlock
-                  title="Ciudad de Salida"
-                  value={logistics.city ?? '—'}
-                />
-                <ItemBlock
-                  title="Fecha de inicio"
-                  value={
-                    logistics.startDate
-                      ? new Date(logistics.startDate).toLocaleDateString()
-                      : '—'
-                  }
-                />
-                <ItemBlock
-                  title="Fecha de fin"
-                  value={
-                    logistics.endDate
-                      ? new Date(logistics.endDate).toLocaleDateString()
-                      : '—'
-                  }
-                />
-                <ItemBlock
-                  title="Noches"
-                  value={
-                    logistics.nights > 0 ? logistics.nights.toString() : '—'
-                  }
-                />
-                <ItemBlock title="Viajeros" value={pax.toString()} />
-              </div>
-            </div>
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="flex w-full flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-gray-900">{summary?.title ?? 'Resumen del viaje'}</h2>
 
-            <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
-              <h2 className="text-base font-semibold text-neutral-900 mb-3">
-                Filtros y Preferencias
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {filterChips.length ? (
-                  filterChips.map((chip) => (
-                    <Chip
-                      key={chip.key}
-                      item={{
-                        key: chip.key,
-                        label: chip.label,
-                        value: chip.value,
-                      }}
-                      color="primary"
-                      size="md"
+          {/* Tipo de viaje */}
+          <div className="flex items-stretch justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.travelTypeSection}
+            </p>
+            {selectedTravelTypeInfo ? (
+              <div className="flex min-w-0 flex-1 justify-end gap-3">
+                {selectedTravelTypeInfo.image && (
+                  <div className="w-20 flex-shrink-0 overflow-hidden rounded-lg">
+                    <Img
+                      alt={selectedTravelTypeInfo.label}
+                      className="h-full w-full object-cover"
+                      height={48}
+                      src={selectedTravelTypeInfo.image}
+                      width={80}
                     />
-                  ))
-                ) : (
-                  <span className="text-sm text-neutral-600">
-                    Sin filtros adicionales.
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-gray-100 p-6 rounded-md border border-gray-200">
-              <h2 className="text-base font-semibold text-neutral-900 mb-3">
-                Tus add-ons ({addonRows.length})
-              </h2>
-              <div className="divide-y divide-neutral-200">
-                {addonRows.length ? (
-                  addonRows.map((r) => (
-                    <div
-                      key={r.id}
-                      className="flex items-center justify-between py-3"
-                    >
-                      <div className="font-medium text-neutral-900">
-                        {r.title}
-                      </div>
-                      <div className="text-sm font-medium text-neutral-900">
-                        {usd(r.pricePerPax)}{' '}
-                        {r.type === 'perPax' ? 'per pasajero' : 'por viaje'}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-neutral-700 py-2">
-                    No agregaste add-ons.
                   </div>
                 )}
+                <div className="min-w-0 text-right">
+                  <p className={detailClass}>
+                    {selectedTravelTypeInfo.label}
+                  </p>
+                  {selectedTravelTypeInfo.rating != null && (
+                    <p className={cn('mt-1', captionClass)}>
+                      {summary?.favoriteAmongTravelers}
+                      {selectedTravelTypeInfo.rating.toFixed(1)}
+                      {selectedTravelTypeInfo.reviews != null &&
+                        ` (${selectedTravelTypeInfo.reviews})`}
+                    </p>
+                  )}
+                </div>
               </div>
+            ) : (
+              <p className={cn('text-right', detailClass)}>—</p>
+            )}
+          </div>
+
+          {/* Experiencia */}
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.experienceSection}
+            </p>
+            <div className="min-w-0 text-right">
+              {selectedExperienceInfo ? (
+                <>
+                  <p className={detailClass}>{selectedExperienceInfo.label}</p>
+                  {selectedExperienceInfo.price && (
+                    <p className={captionClass}>
+                      {selectedExperienceInfo.price}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className={detailClass}>—</p>
+              )}
             </div>
           </div>
 
-          {/* Columna derecha */}
-          <aside className="sticky top-20 self-start w-80 flex-shrink-0 max-w-[300px]">
-            <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-neutral-900">
-                  Precio
-                </h3>
-              </div>
+          {/* Excusa */}
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.excuseSection}
+            </p>
+            <p className={cn('min-w-0 text-right', detailClass)}>
+              {excuseTitleRes ?? '—'}
+            </p>
+          </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-700">Base por persona</span>
-                  <span className="font-medium text-neutral-900">
-                    {displayPrice || usd(basePerPax)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-700">
-                    Filtros premium ({filterChips.length})
-                  </span>
-                  <span className="font-medium text-neutral-900">
-                    {usd(filtersPerPax)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-700">
-                    Add-ons ({addonRows.length})
-                  </span>
-                  <span className="font-medium text-neutral-900">
-                    {usd(addonsPerPax + cancelInsurancePerPax)}
-                  </span>
-                </div>
-
-                <div className="h-px bg-neutral-200 my-1" />
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-700">
-                    Total por persona ({pax})
-                  </span>
-                  <span className="font-semibold text-neutral-900">
-                    {usd(totalPerPax)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-neutral-700">Total (x{pax})</span>
-                  <span className="font-semibold text-neutral-900">
-                    {usd(totalTrip)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                <Button asChild variant="secondary" className="w-full">
-                  <Link href={buildUrlWithParams('/journey/basic-config')}>
-                    ← Volver a editar
-                  </Link>
-                </Button>
-
-                <Button
-                  onClick={
-                    !session && !isAuthed
-                      ? () => {
-                          const { openAuth } = useUserStore.getState();
-                          openAuth('signin');
-                        }
-                      : payNow
-                  }
-                  disabled={isProcessing || isSaving}
-                  className="w-full"
-                >
-                  {isProcessing || isSaving ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      Procesando pago...
-                    </div>
-                  ) : !session && !isAuthed ? (
-                    'Inicia sesión para continuar'
-                  ) : (
-                    'Continuar a pago'
-                  )}
-                </Button>
-              </div>
+          {/* Afinar detalles */}
+          <div className="flex items-start justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.detailsSection}
+            </p>
+            <div className="flex min-w-0 flex-wrap justify-end gap-2">
+              {refineDetailEntries.length > 0 ? (
+                refineDetailEntries.map(({ key, label }) => (
+                  <div
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-sm font-normal text-gray-900"
+                    key={key}
+                  >
+                    <span>{label}</span>
+                  </div>
+                ))
+              ) : (
+                <p className={detailClass}>{summary?.noDetails ?? 'Sin detalles adicionales.'}</p>
+              )}
             </div>
-          </aside>
+          </div>
+
+          {/* Origen */}
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.originSection}
+            </p>
+            <div className="flex min-w-0 items-center justify-end gap-2">
+              {logistics.city && logistics.country ? (
+                <>
+                  <MapPin className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                  <p className={detailClass}>
+                    {logistics.city}, {logistics.country}.
+                  </p>
+                </>
+              ) : (
+                <p className={detailClass}>—</p>
+              )}
+            </div>
+          </div>
+
+          {/* Fechas */}
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.datesSection}
+            </p>
+            <div className="flex min-w-0 items-center justify-end gap-2">
+              {startDateParam && nightsNum > 0 ? (
+                <>
+                  <Calendar className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                  <p className={detailClass}>
+                    {summary?.dateRangeTemplate && summary?.monthsShort
+                      ? formatDatesSummary(
+                          startDateParam,
+                          nightsNum,
+                          summary.dateRangeTemplate,
+                          summary.monthsShort,
+                        )
+                      : `${startDateParam} — ${nightsNum} noches`}
+                  </p>
+                </>
+              ) : (
+                <p className={detailClass}>—</p>
+              )}
+            </div>
+          </div>
+
+          {/* Transporte */}
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {summary?.transportSection}
+            </p>
+            <div className="flex min-w-0 items-center justify-end gap-2">
+              {transportLabel && TransportIcon ? (
+                <>
+                  <TransportIcon className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                  <p className={detailClass}>
+                    {transportLabel}
+                    <span className="font-normal text-gray-500">
+                      {summary?.transportOptionalNote}
+                    </span>
+                  </p>
+                </>
+              ) : (
+                <p className={detailClass}>—</p>
+              )}
+            </div>
+          </div>
+
+          {/* Filtros */}
+          <div className="flex items-start justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {activeFilters.length > 0
+                ? summary?.filtersSectionCount?.replace(
+                    '{count}',
+                    String(activeFilters.length),
+                  ) ?? `Filtros (${activeFilters.length})`
+                : summary?.filtersSection}
+            </p>
+            <div className="flex min-w-0 flex-wrap justify-end gap-2">
+              {activeFilters.length > 0 ? (
+                activeFilters.map(({ id, label }) => (
+                  <div
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-sm font-normal text-gray-900"
+                    key={id}
+                  >
+                    <span>{label}</span>
+                  </div>
+                ))
+              ) : (
+                <p className={detailClass}>{summary?.noFilters ?? 'Sin filtros adicionales.'}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Add-ons */}
+          <div className="flex items-start justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              {selectedAddons.length > 0
+                ? summary?.addonsSectionCount?.replace(
+                    '{count}',
+                    String(selectedAddons.length),
+                  ) ?? `Extras (${selectedAddons.length})`
+                : summary?.addonsSection}
+            </p>
+            <div className="flex min-w-0 flex-wrap justify-end gap-2">
+              {selectedAddons.length > 0 ? (
+                selectedAddons.map((addon) => (
+                  <div
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-sm font-normal text-gray-900"
+                    key={addon.id}
+                  >
+                    <span>
+                      {journey?.addons?.[addon.id]?.title ?? addon.title}
+                      {addon.priceType === 'currency'
+                        ? ` — USD ${addon.price}`
+                        : ` — ${addon.price}%`}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className={detailClass}>{summary?.noAddons ?? 'No agregaste add-ons.'}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Cantidad de viajeros */}
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-4">
+            <p className={cn('flex-shrink-0', sectionTitleClass)}>
+              Cantidad de viajeros
+            </p>
+            <div className="flex min-w-0 items-center justify-end gap-3">
+              <label className="sr-only" htmlFor="summary-pax">
+                Número de viajeros
+              </label>
+              <select
+                className="rounded-md border border-gray-300 bg-white px-3 py-2 text-base font-normal text-gray-900 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                id="summary-pax"
+                onChange={(e) => setPaxOverride(Math.max(1, Math.min(20, Number(e.target.value) || 1)))}
+                value={pax}
+              >
+                {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? 'viajero' : 'viajeros'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Total USD */}
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xl font-bold text-gray-900">
+                {summary?.totalUsd ?? 'Total'} <span className="underline">USD</span>
+              </p>
+              <p className={captionClass}>{summary?.perPerson ?? 'Por persona'}</p>
+            </div>
+            <p className="text-right text-xl font-bold text-gray-900">
+              {usd(totalPerPax)} USD
+            </p>
+          </div>
+          <div className="flex items-center justify-between border-t border-gray-200 pt-2">
+            <p className={captionClass}>Total del viaje (×{pax} personas)</p>
+            <p className="text-right text-lg font-bold text-gray-900">
+              {usd(totalTrip)} USD
+            </p>
+          </div>
+
+
+          {/* Actions */}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button asChild className="w-full sm:w-auto" variant="secondary">
+              <Link href={backToJourneyHref}>← Volver a editar</Link>
+            </Button>
+            <Button
+              className="w-full sm:w-auto"
+              disabled={isProcessing}
+              onClick={
+                !session && !isAuthed
+                  ? () => {
+                      const { openAuth } = useUserStore.getState();
+                      openAuth('signin');
+                    }
+                  : payNow
+              }
+            >
+              {isProcessing ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Procesando pago...
+                </div>
+              ) : !session && !isAuthed ? (
+                'Inicia sesión para continuar'
+              ) : (
+                'Continuar a pago'
+              )}
+            </Button>
+          </div>
         </div>
 
         <ChatFab />
-      </Section>
+      </div>
 
       <AuthModal
+        defaultMode="login"
         isOpen={authModalOpen}
         onClose={closeAuth}
-        defaultMode="login"
       />
-    </>
+    </div>
   );
 }
 
 export default function SummaryPage() {
   return (
-    <Suspense
-      fallback={<LoadingSpinner />}
-    >
+    <Suspense fallback={<LoadingSpinner />}>
       <SummaryPageContent />
     </Suspense>
   );

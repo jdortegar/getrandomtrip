@@ -3,8 +3,10 @@
 
 import React from 'react';
 import Img from '@/components/common/Img'; // Added import
-import { useStore } from '@/store/store';
-// Updated to work with countries data and landmarks
+import { useSearchParams } from 'next/navigation';
+import { useQuerySync } from '@/hooks/useQuerySync';
+import { Check } from 'lucide-react';
+
 interface AvoidSuggestion {
   slug: string;
   city: string;
@@ -13,39 +15,47 @@ interface AvoidSuggestion {
   landmark?: string;
   description?: string;
 }
-import { Check } from 'lucide-react';
-import { useQuerySync } from '@/hooks/useQuerySync';
 
 export default function DestinationCard({
   suggestion,
 }: {
   suggestion: AvoidSuggestion;
 }) {
-  const { filters, setPartial } = useStore();
-  const sync = useQuerySync();
+  const searchParams = useSearchParams();
+  const updateQuery = useQuerySync();
 
-  const selected = filters.avoidDestinations ?? [];
+  const selected = React.useMemo(() => {
+    const raw = searchParams.get('avoidDestinations');
+    return raw
+      ? raw
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+  }, [searchParams]);
+
+  const fullName = `${suggestion.city}, ${suggestion.country}`;
   const isSelected = selected.some(
-    (n) => n.toLowerCase() === suggestion.city.toLowerCase(),
+    (n) =>
+      n.toLowerCase() === fullName.toLowerCase() ||
+      n.toLowerCase() === suggestion.city.toLowerCase(),
   );
 
   const toggle = () => {
-    let next = selected;
+    let next: string[];
     if (isSelected) {
       next = selected.filter(
-        (n) => n.toLowerCase() !== suggestion.city.toLowerCase(),
+        (n) =>
+          n.toLowerCase() !== fullName.toLowerCase() &&
+          n.toLowerCase() !== suggestion.city.toLowerCase(),
       );
     } else {
-      if (selected.length >= 15) return; // límite duro
+      if (selected.length >= 15) return;
       next = [...selected, suggestion.city];
     }
-
-    // Actualiza store
-    setPartial({ filters: { ...filters, avoidDestinations: next } });
-
-    // Sincroniza URL para que el hero muestre los chips correctos
-    // (si tu hook acepta arrays, podés pasar `next`; si no, usar join)
-    sync({ avoidDestinations: next.join(',') });
+    updateQuery({
+      avoidDestinations: next.length > 0 ? next : undefined,
+    });
   };
 
   return (

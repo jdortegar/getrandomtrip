@@ -1,4 +1,6 @@
 'use client';
+import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
 
 const LABELS = {
@@ -50,8 +52,14 @@ function Chip({
 
 export default function TopFiltersSummary() {
   const { filters, setPartial } = useStore();
+  const searchParams = useSearchParams();
   const goPrefs = () => setPartial({ activeTab: 'preferences' as const });
   const goAvoid = () => setPartial({ activeTab: 'addons' as const });
+
+  const avoidCount = useMemo(() => {
+    const raw = searchParams.get('avoidDestinations');
+    return raw ? raw.split(',').map((s) => s.trim()).filter(Boolean).length : 0;
+  }, [searchParams]);
 
   const items: Array<{
     key: string;
@@ -130,12 +138,11 @@ export default function TopFiltersSummary() {
     });
   }
 
-  // Destinos a evitar -> chip compacto con contador
-  const avoids = filters.avoidDestinations?.length ?? 0;
-  if (avoids > 0) {
+  // Destinos a evitar -> chip compacto con contador (from URL)
+  if (avoidCount > 0) {
     items.push({
       key: 'avoid',
-      node: <Chip>Evitar: {avoids}</Chip>,
+      node: <Chip>Evitar: {avoidCount}</Chip>,
       onClick: goAvoid,
     });
   }

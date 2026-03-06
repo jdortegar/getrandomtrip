@@ -2,8 +2,12 @@
 import { ADDONS, Addon } from '@/lib/data/shared/addons-catalog';
 import { countOptionalFilters } from '@/lib/helpers/journey';
 
-export function computeFiltersCostPerTrip(filters: any, pax: number): number {
-  const optional = countOptionalFilters(filters);
+export function computeFiltersCostPerTrip(
+  filters: any,
+  pax: number,
+  avoidCount = 0,
+): number {
+  const optional = countOptionalFilters(filters, avoidCount);
   let unit = 0;
   if (optional >= 2 && optional <= 3) unit = 18;
   if (optional >= 4) unit = 25;

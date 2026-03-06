@@ -55,6 +55,16 @@ function getFilterLabel(
 }
 
 interface JourneySummaryProps {
+  /** Localized addon copy keyed by addon id (journey.addons). */
+  addonLabels?: Record<
+    string,
+    {
+      category: string;
+      longDescription: string;
+      shortDescription: string;
+      title: string;
+    }
+  >;
   className?: string;
   /** Localized filter option labels (e.g. journey.preferencesStep.filterOptions). */
   filterOptions?: {
@@ -70,6 +80,7 @@ interface JourneySummaryProps {
 }
 
 export default function JourneySummary({
+  addonLabels,
   className,
   filterOptions,
   onDetailRemove,
@@ -709,7 +720,7 @@ export default function JourneySummary({
                     key={addon.id}
                   >
                     <span>
-                      {addon.title}
+                      {addonLabels?.[addon.id]?.title ?? addon.title}
                       {addon.priceType === 'currency'
                         ? ` — USD ${addon.price}`
                         : ` — ${addon.price}%`}

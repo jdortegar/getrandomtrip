@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { countOptionalFilters } from '@/lib/helpers/journey';
@@ -20,10 +21,15 @@ export default function FiltersTab() {
   const originCountry = searchParams.get('originCountry') ?? '';
   const experience = searchParams.get('experience') ?? undefined;
 
+  const avoidCount = useMemo(() => {
+    const raw = searchParams.get('avoidDestinations');
+    return raw ? raw.split(',').map((s) => s.trim()).filter(Boolean).length : 0;
+  }, [searchParams]);
+
   const handleFilterChange = <K extends keyof typeof filters>(key: K, value: (typeof filters)[K]) => {
     const newFilters = { ...filters, [key]: value };
 
-    const optionalFilterCount = countOptionalFilters(newFilters);
+    const optionalFilterCount = countOptionalFilters(newFilters, avoidCount);
     const newFilterCost = calculateFilterCost(optionalFilterCount);
     const newTotalPerPax = basePriceUsd + (newFilterCost / logistics.pax);
 

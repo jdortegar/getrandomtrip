@@ -2,7 +2,7 @@ import { X, Lock } from 'lucide-react';
 
 type Item = {
   key: string;
-  label: string;
+  label?: string;
   value: string | string[];
   locked?: boolean;
   onRemove?: () => void;
@@ -84,19 +84,21 @@ export default function Chip({
   const sizeClasses = getSizeClasses(size);
 
   if (item.key === 'indistinto' || item.key === 'sin-limite') return null;
+  const displayText =
+    item.label && item.label.trim() !== ''
+      ? `${item.label}: ${item.value}`
+      : String(item.value);
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full ${sizeClasses} ${base}`}
     >
-      {item.label === 'Evitar'
-        ? `${item.label}: ${item.value}`
-        : `${item.label}: ${item.value}`}
+      {displayText}
       {item.locked ? (
         <Lock size={14} className="opacity-60" />
       ) : item.onRemove ? (
         <button
           type="button"
-          aria-label={`Quitar ${item.label}`}
+          aria-label={`Quitar ${item.label ?? item.value}`}
           onClick={item.onRemove}
           className={`ml-1 -mr-1 rounded p-0.5 ${getHoverColor(color)}`}
         >

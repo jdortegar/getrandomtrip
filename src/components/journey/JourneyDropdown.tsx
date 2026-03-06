@@ -7,9 +7,10 @@ import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { cn } from '@/lib/utils';
 
 interface JourneyDropdownProps {
-  className?: string;
   children: ReactNode;
+  className?: string;
   content: string;
+  id?: string;
   label: string;
   linkLabel?: string;
   linkHref?: string;
@@ -20,6 +21,7 @@ export function JourneyDropdown({
   children,
   className,
   content,
+  id,
   label,
   linkLabel,
   linkHref,
@@ -31,6 +33,7 @@ export function JourneyDropdown({
         'min-w-0 w-full bg-white rounded-lg p-6 shadow-md',
         className,
       )}
+      id={id}
       value={value}
     >
       <AccordionPrimitive.Header className="flex">

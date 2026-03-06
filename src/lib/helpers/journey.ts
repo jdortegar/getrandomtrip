@@ -2,14 +2,15 @@ import type { Filters } from '@/store/slices/journeyStore';
 
 /**
  * Count the number of optional filters selected
- * Excludes transport (which is mandatory) and only counts non-default values
+ * Excludes transport (which is mandatory) and only counts non-default values.
+ * avoidCount is from URL (avoidDestinations query param) and is not in store.
  */
-export function countOptionalFilters(f: Filters): number {
+export function countOptionalFilters(f: Filters, avoidCount = 0): number {
   let n = 0;
   if (f.climate !== 'indistinto') n++;
   if (f.maxTravelTime !== 'sin-limite') n++;
   if (f.departPref !== 'indistinto') n++;
   if (f.arrivePref !== 'indistinto') n++;
-  n += f.avoidDestinations?.length ?? 0; // cada destino suma 1
+  n += avoidCount;
   return n;
 }

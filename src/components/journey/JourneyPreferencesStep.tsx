@@ -10,8 +10,12 @@ import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 
 export interface JourneyPreferencesStepLabels {
+  addonsClearButton?: string;
+  addonsEmptyMessage?: string;
+  addonsHint?: string;
   addonsLabel: string;
   addonsPlaceholder: string;
+  addonsSaveButton?: string;
   filtersForm: JourneyFiltersFormLabels;
   filtersLabel: string;
   filterOptions?: {
@@ -30,6 +34,15 @@ export interface JourneyPreferencesStepLabels {
 
 interface JourneyPreferencesStepProps {
   addons: string | undefined;
+  addonLabels?: Record<
+    string,
+    {
+      category: string;
+      longDescription: string;
+      shortDescription: string;
+      title: string;
+    }
+  >;
   arrivePref: string | undefined;
   climate: string | undefined;
   departPref: string | undefined;
@@ -44,6 +57,8 @@ interface JourneyPreferencesStepProps {
   onMaxTravelTimeChange: (value: string) => void;
   onOpenSection: (id: string) => void;
   onSaveFilters?: () => void;
+  /** Called after addons save (e.g. scroll to actions). */
+  onAfterAddonsSave?: () => void;
   openSectionId: string;
   originCity: string;
   originCountry: string;
@@ -52,6 +67,7 @@ interface JourneyPreferencesStepProps {
 
 export function JourneyPreferencesStep({
   addons,
+  addonLabels,
   arrivePref,
   climate,
   departPref,
@@ -66,6 +82,7 @@ export function JourneyPreferencesStep({
   onMaxTravelTimeChange,
   onOpenSection,
   onSaveFilters,
+  onAfterAddonsSave,
   openSectionId,
   originCity,
   originCountry,
@@ -73,8 +90,16 @@ export function JourneyPreferencesStep({
 }: JourneyPreferencesStepProps) {
   const labels = useMemo(
     () => ({
+      addonsClearButton: labelsProp?.addonsClearButton ?? 'Borrar',
+      addonsEmptyMessage:
+        labelsProp?.addonsEmptyMessage ??
+        'Completá tipo de viaje y experiencia para ver add-ons disponibles.',
+      addonsHint:
+        labelsProp?.addonsHint ??
+        'Opcional. Sumá seguros, asientos o equipaje según tu nivel.',
       addonsLabel: labelsProp?.addonsLabel ?? 'Extras',
       addonsPlaceholder: labelsProp?.addonsPlaceholder ?? 'Elegí tus add-ons.',
+      addonsSaveButton: labelsProp?.addonsSaveButton ?? 'Guardar Add-ons',
       filtersForm: {
         arrivePrefLabel: labelsProp?.filtersForm?.arrivePrefLabel ?? 'Horarios preferidos de llegada',
         avoidGridButton: labelsProp?.filtersForm?.avoidGridButton ?? 'Otros destinos a evitar',
@@ -132,10 +157,15 @@ export function JourneyPreferencesStep({
       .filter(Boolean);
     if (ids.length === 0) return labels.addonsPlaceholder;
     const labelList = ids
-      .map((id) => ADDONS.find((a) => a.id === id)?.title ?? id)
+      .map(
+        (id) =>
+          addonLabels?.[id]?.title ??
+          ADDONS.find((a) => a.id === id)?.title ??
+          id,
+      )
       .filter(Boolean);
     return labelList.length > 0 ? labelList.join(', ') : labels.addonsPlaceholder;
-  }, [addons, labels.addonsPlaceholder]);
+  }, [addons, addonLabels, labels.addonsPlaceholder]);
 
   return (
     <Accordion
@@ -170,18 +200,30 @@ export function JourneyPreferencesStep({
           </div>
         </JourneyDropdown>
 
-        <JourneyDropdown
-          content={addonsSummary}
-          label={labels.addonsLabel}
-          value="addons"
-        >
-          <AddonsSelector
-            experience={experience}
-            onChange={onAddonsChange}
-            onSave={() => onOpenSection('')}
-            value={addons}
-          />
-        </JourneyDropdown>
+        <div id="journey-addons">
+          <JourneyDropdown
+            content={addonsSummary}
+            label={labels.addonsLabel}
+            value="addons"
+          >
+            <AddonsSelector
+              experience={experience}
+              labels={{
+                addonLabels,
+                addonsClearButton: labels.addonsClearButton,
+                addonsEmptyMessage: labels.addonsEmptyMessage,
+                addonsHint: labels.addonsHint,
+                addonsSaveButton: labels.addonsSaveButton,
+              }}
+              onChange={onAddonsChange}
+              onSave={() => {
+                onOpenSection('');
+                onAfterAddonsSave?.();
+              }}
+              value={addons}
+            />
+          </JourneyDropdown>
+        </div>
       </div>
     </Accordion>
   );

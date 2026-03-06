@@ -28,7 +28,7 @@ export type Filters = {
   maxTravelTime: FilterOption['key'];
   departPref: FilterOption['key'];
   arrivePref: FilterOption['key'];
-  avoidDestinations: string[]; // máx 15 (cada uno cuenta 1 filtro)
+  avoidDestinations: string[];
 };
 
 // Available filter option keys only (labels come from dictionary)
@@ -73,9 +73,6 @@ export const FILTER_OPTION_KEYS = {
       { key: 'noche' },
     ],
   },
-  avoidDestinations: {
-    options: [] as Array<{ key: string }>,
-  },
 } as const;
 
 /** Filter options with keys only; labels come from dictionary (journey.preferencesStep.filterOptions). */
@@ -88,7 +85,6 @@ export const FILTER_OPTIONS: Record<
   maxTravelTime: { options: [...FILTER_OPTION_KEYS.maxTravelTime.options.map((o) => ({ ...o, label: o.key }))] },
   departPref: { options: [...FILTER_OPTION_KEYS.departPref.options.map((o) => ({ ...o, label: o.key }))] },
   arrivePref: { options: [...FILTER_OPTION_KEYS.arrivePref.options.map((o) => ({ ...o, label: o.key }))] },
-  avoidDestinations: { options: [] },
 };
 
 export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';

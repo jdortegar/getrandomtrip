@@ -164,6 +164,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           <div className="min-w-0">
             <JourneyMainContent
               activeTab={activeTab}
+              addonLabels={journey.addons}
               detailsStepLabels={journey.detailsStep}
               localizedExcuses={journey.excuses}
               localizedRefineOptions={journey.refineDetailOptions}
@@ -177,6 +178,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           </div>
 
           <JourneySummary
+            addonLabels={journey.addons}
             filterOptions={journey.preferencesStep?.filterOptions}
             onEdit={handleSummaryEdit}
             summary={journey.summary}

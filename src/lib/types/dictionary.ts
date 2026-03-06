@@ -112,6 +112,16 @@ export interface MarketingDictionary {
     };
   };
   journey: {
+    /** Localized addon copy keyed by addon id. When present, overrides catalog title/descriptions. */
+    addons?: Record<
+      string,
+      {
+        category: string;
+        longDescription: string;
+        shortDescription: string;
+        title: string;
+      }
+   >;
     contentTabs: Array<{
       id: string;
       label: string;
@@ -139,6 +149,8 @@ export interface MarketingDictionary {
       experienceLabel: string;
       experiencePlaceholder: string;
       experienceStepDescription: string;
+      extrasTabDescription: string;
+      extrasTabTitle: string;
       next: string;
       refineDetailsLabel: string;
       refineDetailsPlaceholder: string;
@@ -176,8 +188,12 @@ export interface MarketingDictionary {
       };
     };
     preferencesStep?: {
+      addonsClearButton?: string;
+      addonsEmptyMessage?: string;
+      addonsHint?: string;
       addonsLabel: string;
       addonsPlaceholder: string;
+      addonsSaveButton?: string;
       filterOptions?: {
         arrivePref: { label: string; options: Array<{ key: string; label: string }> };
         climate: { label: string; options: Array<{ key: string; label: string }> };
@@ -194,7 +210,6 @@ export interface MarketingDictionary {
         avoidLabel: string;
         avoidSearchModal?: {
           addButton: string;
-          badgeLabelCity: string;
           cancelButton: string;
           saveDestinationsButton: string;
           selectedCountTemplate: string;

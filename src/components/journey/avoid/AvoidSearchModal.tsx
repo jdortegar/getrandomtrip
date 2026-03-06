@@ -1,6 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useStore } from '@/store/store';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { Button } from '@/components/ui/Button';
 import Badge from '@/components/badge';
@@ -9,7 +9,6 @@ import type { AvoidCity } from '@/lib/helpers/avoid-cities';
 
 export interface AvoidSearchModalLabels {
   addButton: string;
-  badgeLabelCity: string;
   cancelButton: string;
   saveDestinationsButton: string;
   selectedCountTemplate: string;
@@ -25,7 +24,6 @@ interface AvoidSearchModalProps {
 
 const DEFAULT_LABELS: AvoidSearchModalLabels = {
   addButton: 'Agregar',
-  badgeLabelCity: 'Ciudad',
   cancelButton: 'Cancelar',
   saveDestinationsButton: 'Guardar destinos',
   selectedCountTemplate: 'Seleccionados: {count} / {max}',
@@ -39,10 +37,20 @@ export default function AvoidSearchModal({
   open,
 }: AvoidSearchModalProps) {
   const labels = labelsProp ?? DEFAULT_LABELS;
-  const { filters, setPartial } = useStore();
-  const sync = useQuerySync();
+  const searchParams = useSearchParams();
+  const updateQuery = useQuerySync();
   const [query, setQuery] = useState('');
   const [local, setLocal] = useState<string[]>([]);
+
+  const current = useMemo(() => {
+    const raw = searchParams.get('avoidDestinations');
+    return raw
+      ? raw
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+  }, [searchParams]);
 
   // Reset al abrir
   useEffect(() => {
@@ -54,7 +62,6 @@ export default function AvoidSearchModal({
 
   if (!open) return null;
 
-  const current = filters.avoidDestinations || [];
   const max = 15;
   const totalCount = current.length + local.length;
   const selectedCountText = labels.selectedCountTemplate
@@ -94,8 +101,9 @@ export default function AvoidSearchModal({
           a.findIndex((x) => x.toLowerCase() === v.toLowerCase()) === i,
       )
       .slice(0, max);
-    setPartial({ filters: { ...filters, avoidDestinations: merged } });
-    sync({ avoidDestinations: merged });
+    updateQuery({
+      avoidDestinations: merged.length > 0 ? merged : undefined,
+    });
     onClose();
   };
 
@@ -158,7 +166,6 @@ export default function AvoidSearchModal({
                   color="secondary"
                   item={{
                     key: `cur-${n}`,
-                    label: labels.badgeLabelCity,
                     value: n,
                   }}
                   key={`cur-${n}`}
@@ -169,7 +176,6 @@ export default function AvoidSearchModal({
                   color="primary"
                   item={{
                     key: `loc-${n}`,
-                    label: labels.badgeLabelCity,
                     onRemove: () => removeLocal(n),
                     value: n,
                   }}

@@ -16,7 +16,6 @@ export interface AvoidGridProps {
     otherDestinationsButton?: string;
     searchModal?: {
       addButton: string;
-      badgeLabelCity: string;
       cancelButton: string;
       saveDestinationsButton: string;
       selectedCountTemplate: string;
@@ -45,7 +44,6 @@ export default function AvoidGrid({
       labelsProp?.otherDestinationsButton ?? 'Otros destinos a evitar',
     searchModal: labelsProp?.searchModal ?? {
       addButton: 'Agregar',
-      badgeLabelCity: 'Ciudad',
       cancelButton: 'Cancelar',
       saveDestinationsButton: 'Guardar destinos',
       selectedCountTemplate: 'Seleccionados: {count} / {max}',
@@ -126,10 +124,11 @@ export default function AvoidGrid({
           )}
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 flex justify-center">
           <Button
             onClick={() => setShowSearch(true)}
-            variant="secondary"
+            variant="link"
+            className='underline normal-case font-medium'
           >
             {labels.otherDestinationsButton}
           </Button>

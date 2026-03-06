@@ -54,7 +54,6 @@ export interface JourneyFiltersFormLabels {
   avoidLabel: string;
   avoidSearchModal?: {
     addButton: string;
-    badgeLabelCity: string;
     cancelButton: string;
     saveDestinationsButton: string;
     selectedCountTemplate: string;
@@ -122,7 +121,6 @@ export function JourneyFiltersForm({
     avoidLabel: labelsProp?.avoidLabel ?? 'Destinos a evitar (opcional)',
     avoidSearchModal: labelsProp?.avoidSearchModal ?? {
       addButton: 'Agregar',
-      badgeLabelCity: 'Ciudad',
       cancelButton: 'Cancelar',
       saveDestinationsButton: 'Guardar destinos',
       selectedCountTemplate: 'Seleccionados: {count} / {max}',

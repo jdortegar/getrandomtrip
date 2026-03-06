@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Accordion } from '@/components/ui/accordion';
 import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
 import { TravelerTypesCarousel } from '@/components/landing/exploration/TravelerTypesCarousel';
@@ -24,6 +24,7 @@ import { useStore } from '@/store/store';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+import Link from 'next/link';
 
 interface JourneyMainContentLabels {
   clearAll: string;
@@ -38,6 +39,8 @@ interface JourneyMainContentLabels {
   experienceLabel: string;
   experiencePlaceholder: string;
   experienceStepDescription: string;
+  extrasTabDescription: string;
+  extrasTabTitle: string;
   next: string;
   refineDetailsLabel: string;
   refineDetailsPlaceholder: string;
@@ -51,6 +54,16 @@ interface JourneyMainContentLabels {
 
 interface JourneyMainContentProps {
   activeTab: string;
+  /** Localized addon copy keyed by addon id (journey.addons). */
+  addonLabels?: Record<
+    string,
+    {
+      category: string;
+      longDescription: string;
+      shortDescription: string;
+      title: string;
+    }
+  >;
   className?: string;
   /** Localized excuse titles/descriptions (journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
@@ -74,6 +87,7 @@ interface JourneyMainContentProps {
 
 export default function JourneyMainContent({
   activeTab,
+  addonLabels,
   className,
   detailsStepLabels,
   localizedExcuses,
@@ -86,7 +100,13 @@ export default function JourneyMainContent({
   preferencesStepLabels,
 }: JourneyMainContentProps) {
   const labels = mainContentLabels;
+  const params = useParams();
   const searchParams = useSearchParams();
+  const locale = (params?.locale as string) ?? 'es';
+  const summaryHref = useMemo(
+    () => `/${locale}/journey/summary?${searchParams.toString()}`,
+    [locale, searchParams],
+  );
   const updateQuery = useQuerySync();
   const { filters, setPartial } = useStore();
   const [internalAccordion, setInternalAccordion] = useState<string>('');
@@ -98,6 +118,17 @@ export default function JourneyMainContent({
   const setAccordionValue = isControlled
     ? onOpenSection!
     : setInternalAccordion;
+
+  const scrollToActions = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('journey-actions')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    });
+  };
 
   // Auto-open first section when tab changes
   useEffect(() => {
@@ -360,17 +391,11 @@ export default function JourneyMainContent({
 
   const handleTravelTypeSelect = (slug: string) => {
     updateQuery({ ...paramsToResetAfterTravelType, travelType: slug });
-    setPartial({
-      filters: { ...filters, avoidDestinations: [] },
-    });
     setAccordionValue('experience');
   };
 
   const handleExperienceSelect = (levelId: string) => {
     updateQuery({ ...paramsToResetAfterExperience, experience: levelId });
-    setPartial({
-      filters: { ...filters, avoidDestinations: [] },
-    });
     if (onTabChange) onTabChange('excuse');
     setAccordionValue('excuse');
   };
@@ -409,8 +434,11 @@ export default function JourneyMainContent({
       setDraftStartDate(undefined);
       setDraftNights(1);
       setDraftTransportOrder(DEFAULT_TRANSPORT_ORDER);
+      setPartial({ filters: { ...filters, avoidDestinations: [] } });
+      updateQuery({ avoidDestinations: undefined });
     } else {
       updateQuery({
+        avoidDestinations: undefined,
         nights: undefined,
         originCity: undefined,
         originCountry: value || undefined,
@@ -418,6 +446,7 @@ export default function JourneyMainContent({
         transport: undefined,
         transportOrder: undefined,
       });
+      setPartial({ filters: { ...filters, avoidDestinations: [] } });
     }
   };
 
@@ -427,14 +456,18 @@ export default function JourneyMainContent({
       setDraftStartDate(undefined);
       setDraftNights(1);
       setDraftTransportOrder(DEFAULT_TRANSPORT_ORDER);
+      setPartial({ filters: { ...filters, avoidDestinations: [] } });
+      updateQuery({ avoidDestinations: undefined });
     } else {
       updateQuery({
+        avoidDestinations: undefined,
         nights: undefined,
         originCity: value || undefined,
         startDate: undefined,
         transport: undefined,
         transportOrder: undefined,
       });
+      setPartial({ filters: { ...filters, avoidDestinations: [] } });
     }
   };
 
@@ -514,6 +547,7 @@ export default function JourneyMainContent({
       maxTravelTime: draftMaxTravelTime,
     });
     setAccordionValue('addons');
+    scrollToActions();
   };
 
   const handleClearFilters = () => {
@@ -531,7 +565,6 @@ export default function JourneyMainContent({
     setPartial({
       filters: {
         ...filters,
-        avoidDestinations: [],
         arrivePref: 'indistinto',
         climate: 'indistinto',
         departPref: 'indistinto',
@@ -586,6 +619,7 @@ export default function JourneyMainContent({
     updateQuery({
       addons: undefined,
       arrivePref: undefined,
+      avoidDestinations: undefined,
       climate: undefined,
       departPref: undefined,
       experience: undefined,
@@ -650,6 +684,7 @@ export default function JourneyMainContent({
       onTabChange(nextTab);
       if (nextTab === 'details') setAccordionValue('origin');
       if (nextTab === 'preferences') setAccordionValue('filters');
+      scrollToActions();
     }
   };
 
@@ -879,6 +914,7 @@ export default function JourneyMainContent({
         return (
           <JourneyPreferencesStep
             addons={addons}
+            addonLabels={addonLabels}
             arrivePref={effectiveArrivePref}
             climate={effectiveClimate}
             departPref={effectiveDepartPref}
@@ -886,6 +922,7 @@ export default function JourneyMainContent({
             labels={preferencesStepLabels}
             maxTravelTime={effectiveMaxTravelTime}
             onAddonsChange={handleAddonsChange}
+            onAfterAddonsSave={scrollToActions}
             onArrivePrefChange={handleArrivePrefChange}
             onClearFilters={handleClearFilters}
             onClimateChange={handleClimateChange}
@@ -902,9 +939,12 @@ export default function JourneyMainContent({
       case 'extras':
         return (
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Extras</h2>
-            <p className="text-gray-600">Agrega extras a tu viaje.</p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {labels.extrasTabTitle}
+            </h2>
+            <p className="text-gray-600">{labels.extrasTabDescription}</p>
             {/* Placeholder for extras components */}
+            Here
           </div>
         );
       default:
@@ -917,10 +957,13 @@ export default function JourneyMainContent({
 
   return (
     <div className={cn('flex-1 min-h-0 flex flex-col', className)}>
-      <div className="flex-1">{renderContent()}</div>
+      <div className="flex-1" id="journey-actions">{renderContent()}</div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-gray-200">
+      <div
+        className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-gray-200"
+        
+      >
         <button
           className="text-gray-900 underline hover:no-underline text-sm font-medium"
           onClick={handleClearAll}
@@ -942,12 +985,12 @@ export default function JourneyMainContent({
 
         {isAllStepsComplete && !canContinue && (
           <Button
-            className="text-sm font-normal normal-case"
-            onClick={() => {}}
+            asChild
+            className="text-sm font-normal normal-case" 
             size="md"
             variant="default"
           >
-            {labels.viewSummary}
+            <Link href={summaryHref}>{labels.viewSummary}</Link>
           </Button>
         )}
       </div>
