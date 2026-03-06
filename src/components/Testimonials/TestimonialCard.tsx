@@ -1,24 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Carousel } from '@/components/Carousel';
 import CountryFlag from '@/components/common/CountryFlag';
 import Img from '@/components/common/Img';
-import Section from './layout/Section';
-
-export interface TestimonialData {
-  author: string;
-  avatarUrl?: string;
-  country: string;
-  countryCode?: string;
-  quote: string;
-  reviewUrl?: string;
-}
-
-function getInitial(name: string): string {
-  const trimmed = name.trim();
-  return trimmed ? trimmed.charAt(0).toUpperCase() : '?';
-}
+import { getInitial } from '@/lib/helpers/stringHelpers';
+import type { TestimonialData } from './types';
 
 interface TestimonialCardProps {
   index: number;
@@ -26,7 +12,7 @@ interface TestimonialCardProps {
   viewFullReviewLabel: string;
 }
 
-function TestimonialCard({
+export function TestimonialCard({
   index,
   testimonial,
   viewFullReviewLabel,
@@ -85,69 +71,5 @@ function TestimonialCard({
         )}
       </div>
     </div>
-  );
-}
-
-interface TestimonialsProps {
-  eyebrow?: string;
-  subtitle?: string;
-  testimonials: TestimonialData[];
-  title: string;
-  testId?: string;
-  viewFullReviewLabel?: string;
-}
-
-const DEFAULT_VIEW_FULL_REVIEW = 'Ver opinión completa';
-
-export default function Testimonials({
-  eyebrow,
-  subtitle,
-  testimonials,
-  title,
-  testId = 'testimonials',
-  viewFullReviewLabel = DEFAULT_VIEW_FULL_REVIEW,
-}: TestimonialsProps) {
-  const testimonialGroups = React.useMemo(() => {
-    const groups = [];
-    for (let i = 0; i < testimonials.length; i += 3) {
-      groups.push(testimonials.slice(i, i + 3));
-    }
-    return groups;
-  }, [testimonials]);
-
-  return (
-    <Section
-      className="min-h-[60vh]"
-      eyebrow={eyebrow}
-      subtitle={subtitle}
-      title={title}
-    >
-      <div className="container mx-auto mt-12 px-4 md:px-20">
-        <Carousel
-          classes={{ content: 'items-start' }}
-          fullViewportWidth
-          itemClassName="min-w-0 shrink-0 basis-full"
-          showArrows
-          showDots
-          slidesToScroll={1}
-        >
-          {testimonialGroups.map((group, groupIndex) => (
-            <div
-              className="grid auto-rows-fr gap-6 px-4 md:grid-cols-3"
-              key={groupIndex}
-            >
-              {group.map((testimonial, index) => (
-                <TestimonialCard
-                  index={index}
-                  key={`${testimonial.author}-${index}`}
-                  testimonial={testimonial}
-                  viewFullReviewLabel={viewFullReviewLabel}
-                />
-              ))}
-            </div>
-          ))}
-        </Carousel>
-      </div>
-    </Section>
   );
 }

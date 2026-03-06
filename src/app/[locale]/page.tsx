@@ -14,7 +14,6 @@ import { HOME_TESTIMONIALS } from '@/lib/data/home-testimonials';
 import { getAllTrippers } from '@/lib/db/tripper-queries';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
 
 export default async function HomePage({
   params,
@@ -25,68 +24,34 @@ export default async function HomePage({
   const dict = await getDictionary(locale);
   const trippers = await getAllTrippers();
   const home = dict.home;
-  const howItWorksSteps = home.howItWorksSteps.map((step, i) => ({
-    ...step,
-    imageSrc: HOW_IT_WORKS_IMAGE_SRCS[i] ?? '',
-  }));
-  const benefitsSteps = home.benefitsSteps.map((step, i) => ({
-    ...step,
-    imageSrc: BENEFITS_IMAGE_SRCS[i] ?? '',
-  }));
+  const homeInfoContent = {
+    ...home.homeInfo,
+    benefitsSteps: home.homeInfo.benefitsSteps.map((step, i) => ({
+      ...step,
+      imageSrc: BENEFITS_IMAGE_SRCS[i] ?? '',
+    })),
+    howItWorksSteps: home.homeInfo.howItWorksSteps.map((step, i) => ({
+      ...step,
+      imageSrc: HOW_IT_WORKS_IMAGE_SRCS[i] ?? '',
+    })),
+  };
 
   return (
     <HomeWrapper dict={dict}>
       <main style={{ scrollBehavior: 'smooth' }}>
         <Hero content={home.hero} scrollIndicator />
-        <HomeInfo
-          benefitsSteps={benefitsSteps}
-          ctaScrollTarget={home.homeInfoCtaScrollTarget}
-          ctaText={home.homeInfoCtaText}
-          eyebrow={home.homeInfoEyebrow}
-          howItWorksSteps={howItWorksSteps}
-          sectionAriaLabel={home.homeInfoSectionAriaLabel}
-          tabBenefitsLabel={home.homeInfoTabBenefits}
-          tabHowLabel={home.homeInfoTabHow}
-          title={home.homeInfoTitle}
-        />
+        <HomeInfo content={homeInfoContent} />
         <ExplorationSection
-          carouselAriaLabelNext={home.explorationCarouselNextLabel}
-          carouselAriaLabelPrev={home.explorationCarouselPrevLabel}
-          carouselAriaLabelSlide={home.explorationCarouselSlideLabel}
-          comingSoonText={home.explorationComingSoon}
-          eyebrow={home.explorationEyebrow}
-          localizedTravelerTypes={home.explorationTravelerTypes}
-          subtitle={home.explorationSubtitle}
-          tabs={home.explorationTabs.map((tab) => ({
-            ...tab,
-            href: tab.href ? pathForLocale(locale, tab.href) : undefined,
-          }))}
-          title={home.explorationTitle}
+          content={home.exploration}
           trippers={trippers as any}
-          trippersButtonText={home.explorationButtonTrippers}
-          trippersHref={pathForLocale(locale, '/trippers')}
         />
         <Blog
-          carouselSlideAriaLabel={home.blogCarouselSlideAriaLabel}
-          eyebrow={home.blogEyebrow}
+          content={home.blog}
           posts={BLOG_CONSTANTS.posts}
-          subtitle={home.blogSubtitle}
-          title={home.blogTitle}
-          viewAll={
-            BLOG_CONSTANTS.viewAll
-              ? {
-                  ...BLOG_CONSTANTS.viewAll,
-                  href: pathForLocale(locale, BLOG_CONSTANTS.viewAll.href),
-                }
-              : undefined
-          }
         />
         <Testimonials
-          eyebrow={home.testimonialsEyebrow}
-          subtitle={home.testimonialsSubtitle}
+          content={home.testimonials}
           testimonials={HOME_TESTIMONIALS.items}
-          title={home.testimonialsTitle}
-          viewFullReviewLabel={home.testimonialsViewFullReview}
         />
       </main>
     </HomeWrapper>

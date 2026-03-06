@@ -72,7 +72,7 @@ interface JourneyMainContentProps {
     string,
     Record<string, Array<{ key: string; label: string; desc: string }>>
   >;
-  /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). */
+  /** Localized traveler type labels from dictionary (home.exploration.travelerTypes). */
   localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
   /** Labels for dropdowns and step copy (journey.mainContent). */
   mainContentLabels: JourneyMainContentLabels;

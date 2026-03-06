@@ -28,7 +28,7 @@ interface TravelerTypesCarouselProps {
   /** When true, carousel can break out of container to full viewport width. */
   fullViewportWidth?: boolean;
   itemsPerView?: number;
-  /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). Merged with base data to produce card content. */
+  /** Localized traveler type labels from dictionary (home.exploration.travelerTypes). Merged with base data to produce card content. */
   localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   /** Pixels of the next slide to show (peek). */

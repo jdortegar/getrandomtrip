@@ -168,7 +168,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               detailsStepLabels={journey.detailsStep}
               localizedExcuses={journey.excuses}
               localizedRefineOptions={journey.refineDetailOptions}
-              localizedTravelerTypes={dict.home.explorationTravelerTypes}
+              localizedTravelerTypes={dict.home.exploration.travelerTypes}
               mainContentLabels={journey.mainContent}
               onOpenSection={setOpenSectionId}
               onTabChange={handleTabChange}

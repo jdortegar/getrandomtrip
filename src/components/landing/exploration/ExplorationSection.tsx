@@ -9,28 +9,33 @@ import type { TravelerType } from '@/lib/data/travelerTypes';
 import { TopTrippersGrid } from './TopTrippersGrid';
 import { TravelerTypesCarousel } from './TravelerTypesCarousel';
 
-interface ExplorationTab {
-  href?: string;
-  id: string;
-  label: string;
-}
-
-interface LocalizedTravelerType {
-  description: string;
-  key: string;
-  title: string;
-}
-
-interface ExplorationSectionProps {
-  /** Localized carousel aria labels (prev, next, slide). */
-  carouselAriaLabelNext?: string;
-  carouselAriaLabelPrev?: string;
-  carouselAriaLabelSlide?: string;
+export interface ExplorationContent {
+  buttonTrippers: string;
+  carousel: {
+    ariaLabelNext: string;
+    ariaLabelPrev: string;
+    ariaLabelSlide: string;
+  };
   comingSoonText: string;
   eyebrow: string;
   subtitle: string;
-  tabs: ExplorationTab[];
+  tabs: Array<{
+    disabled?: boolean;
+    href?: string;
+    id: string;
+    label: string;
+  }>;
   title: string;
+  travelerTypes: {
+    description: string;
+    key: string;
+    title: string;
+  }[];
+  trippersHref: string;
+}
+
+interface ExplorationSectionProps {
+  content: ExplorationContent;
   trippers?: Array<{
     avatarUrl: string | null;
     bio: string | null;
@@ -39,10 +44,6 @@ interface ExplorationSectionProps {
     name: string;
     tripperSlug: string | null;
   }>;
-  trippersButtonText: string;
-  trippersHref: string;
-  /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). When set, carousel merges with base data for card content. */
-  localizedTravelerTypes?: LocalizedTravelerType[];
   travelerTypes?: TravelerType[];
 }
 
@@ -57,30 +58,31 @@ function ComingSoon({ message }: { message: string }) {
 }
 
 export function ExplorationSection({
-  carouselAriaLabelNext,
-  carouselAriaLabelPrev,
-  carouselAriaLabelSlide,
-  comingSoonText,
-  eyebrow,
-  localizedTravelerTypes,
-  subtitle,
-  tabs,
-  title,
+  content,
   trippers = [],
-  trippersButtonText,
-  trippersHref,
   travelerTypes,
 }: ExplorationSectionProps) {
-  const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? 'byTraveller');
+  const {
+    buttonTrippers: trippersButtonText,
+    carousel,
+    comingSoonText,
+    eyebrow,
+    subtitle,
+    tabs,
+    title,
+    travelerTypes: localizedTravelerTypes,
+    trippersHref,
+  } = content;
+  const [activeTab, setActiveTab] = useState(tabs[0]?.id);
 
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'byTraveller':
         return (
           <TravelerTypesCarousel
-            ariaLabelNext={carouselAriaLabelNext}
-            ariaLabelPrev={carouselAriaLabelPrev}
-            ariaLabelSlide={carouselAriaLabelSlide}
+            ariaLabelNext={carousel.ariaLabelNext}
+            ariaLabelPrev={carousel.ariaLabelPrev}
+            ariaLabelSlide={carousel.ariaLabelSlide}
             hideOverflow={false}
             localizedTravelerTypes={localizedTravelerTypes}
             travelerTypes={travelerTypes}
@@ -99,29 +101,13 @@ export function ExplorationSection({
       case 'trippersDecode':
         return <ComingSoon message={comingSoonText} />;
       default:
-        return (
-          <TravelerTypesCarousel
-            ariaLabelNext={carouselAriaLabelNext}
-            ariaLabelPrev={carouselAriaLabelPrev}
-            ariaLabelSlide={carouselAriaLabelSlide}
-            fullViewportWidth
-            localizedTravelerTypes={localizedTravelerTypes}
-            travelerTypes={travelerTypes}
-          />
-        );
+        return null;
     }
   };
 
-  const tabSelectorTabs = tabs.map((tab) => ({
-    disabled: false,
-    href: tab.href,
-    id: tab.id,
-    label: tab.label,
-  }));
-
   return (
     <Section
-      className="relative flex min-h-screen items-center py-20"
+      className="relative flex items-center py-20"
       eyebrow={eyebrow}
       id="exploration-section"
       subtitle={subtitle}
@@ -138,7 +124,7 @@ export function ExplorationSection({
           activeTab={activeTab}
           layoutId="activeTab"
           onTabChange={setActiveTab}
-          tabs={tabSelectorTabs}
+          tabs={tabs}
         />
       </motion.div>
 

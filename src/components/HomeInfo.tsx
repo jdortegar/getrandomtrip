@@ -15,7 +15,7 @@ const TAB_IDS = [
   { id: 'benefits', contentKey: 'benefits' as const },
 ] as const;
 
-interface HomeInfoProps {
+export interface HomeInfoContent {
   benefitsSteps: ThreeColumnsItem[];
   ctaScrollTarget: string;
   ctaText: string;
@@ -27,17 +27,21 @@ interface HomeInfoProps {
   title: string;
 }
 
-export default function HomeInfo({
-  benefitsSteps,
-  ctaScrollTarget,
-  ctaText,
-  eyebrow,
-  howItWorksSteps,
-  sectionAriaLabel,
-  tabBenefitsLabel,
-  tabHowLabel,
-  title,
-}: HomeInfoProps) {
+interface HomeInfoProps {
+  content: HomeInfoContent;
+}
+
+export default function HomeInfo({ content }: HomeInfoProps) {
+  const {
+    benefitsSteps,
+    ctaScrollTarget,
+    ctaText,
+    eyebrow,
+    howItWorksSteps,
+    tabBenefitsLabel,
+    tabHowLabel,
+    title,
+  } = content;
   const tabs = [
     { id: TAB_IDS[0].id, label: tabHowLabel, contentKey: TAB_IDS[0].contentKey },
     { id: TAB_IDS[1].id, label: tabBenefitsLabel, contentKey: TAB_IDS[1].contentKey },

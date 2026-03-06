@@ -312,25 +312,20 @@ const CarouselPrevious = React.forwardRef<
     { className, inHeader = false, size = 'icon', variant = 'ghost', ...props },
     ref,
   ) => {
-    const { canScrollPrev, scrollPrev } = useCarousel();
+    const { scrollPrev, canScrollPrev } = useCarousel();
 
     return (
       <Button
-        ref={ref}
-        className={cn(
-          'h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-12 md:w-12',
-          className,
-        )}
-        data-slot="carousel-previous"
-        disabled={!canScrollPrev}
-        onClick={scrollPrev}
-        size={size}
-        variant={variant}
-        {...props}
-      >
-        <ChevronLeft className="size-[20px] text-white md:size-[25px]" />
-        <span className="sr-only">Previous slide</span>
-      </Button>
+      aria-label="Previous slide"
+      className="h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-10 md:w-10"
+      disabled={!canScrollPrev}
+      onClick={scrollPrev}
+      size="icon"
+      type="button"
+      variant="ghost"
+    >
+      <ChevronLeft className="size-5 text-white" />
+    </Button>
     );
   },
 );
@@ -349,10 +344,7 @@ const CarouselNext = React.forwardRef<
     return (
       <Button
         ref={ref}
-        className={cn(
-          'h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-12 md:w-12',
-          className,
-        )}
+        className="h-8 w-8 rounded-full bg-[#4F96B6] text-white hover:bg-[#367A95] md:h-10 md:w-10"
         data-slot="carousel-next"
         disabled={!canScrollNext}
         onClick={scrollNext}
@@ -360,7 +352,7 @@ const CarouselNext = React.forwardRef<
         variant={variant}
         {...props}
       >
-        <ChevronRight className="size-[20px] text-white md:size-[25px]" />
+        <ChevronRight className="size-5 text-white" />
         <span className="sr-only">Next slide</span>
       </Button>
     );

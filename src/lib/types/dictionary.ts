@@ -50,27 +50,6 @@ export interface MarketingDictionary {
     loading: string;
   };
   home: {
-    benefitsSteps: Array<{ description: string; imageAlt: string; title: string }>;
-    blogCarouselSlideAriaLabel: string;
-    blogEyebrow: string;
-    explorationButtonTrippers: string;
-    explorationCarouselNextLabel: string;
-    explorationCarouselPrevLabel: string;
-    explorationCarouselSlideLabel: string;
-    explorationComingSoon: string;
-    explorationEyebrow: string;
-    explorationSubtitle: string;
-    explorationTabs: Array<{ href?: string; id: string; label: string }>;
-    explorationTitle: string;
-    explorationTravelerTypes: Array<{
-      description: string;
-      key: string;
-      title: string;
-    }>;
-    blogSubtitle: string;
-    blogTitle: string;
-    blogViewAllSubtitle: string;
-    blogViewAllTitle: string;
     hero: {
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
@@ -80,21 +59,50 @@ export interface MarketingDictionary {
       title: string;
       videoSrc: string;
     };
-    homeInfoCtaText: string;
-    homeInfoCtaScrollTarget: string;
-    homeInfoEyebrow: string;
-    homeInfoSectionAriaLabel: string;
-    homeInfoTabBenefits: string;
-    homeInfoTabHow: string;
-    homeInfoTitle: string;
-    howItWorksNote: string;
-    howItWorksSteps: Array<{ description: string; imageAlt: string; title: string }>;
-    howItWorksSubtitle: string;
-    howItWorksTitle: string;
-    testimonialsEyebrow: string;
-    testimonialsSubtitle: string;
-    testimonialsTitle: string;
-    testimonialsViewFullReview: string;
+    homeInfo: {
+      benefitsSteps: Array<{ description: string; imageAlt: string; title: string }>;
+      ctaScrollTarget: string;
+      ctaText: string;
+      eyebrow: string;
+      howItWorksSteps: Array<{ description: string; imageAlt: string; title: string }>;
+      sectionAriaLabel: string;
+      tabBenefitsLabel: string;
+      tabHowLabel: string;
+      title: string;
+    };
+    exploration: {
+      buttonTrippers: string;
+      carousel: {
+        ariaLabelNext: string;
+        ariaLabelPrev: string;
+        ariaLabelSlide: string;
+      };
+      comingSoonText: string;
+      eyebrow: string;
+      subtitle: string;
+      tabs: Array<{
+        disabled?: boolean;
+        href?: string;
+        id: string;
+        label: string;
+      }>;
+      title: string;
+      travelerTypes: Array<{ description: string; key: string; title: string }>;
+      trippersHref: string;
+    };
+    blog: {
+      carouselSlideAriaLabel: string;
+      eyebrow: string;
+      subtitle: string;
+      title: string;
+      viewAll: { href: string; subtitle: string; title: string };
+    };
+    testimonials: {
+      eyebrow: string;
+      subtitle: string;
+      title: string;
+      viewFullReviewLabel: string;
+    };
   };
   experiencias: {
     hero: {

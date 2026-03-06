@@ -29,7 +29,7 @@ const PRIMARY_LINK_KEYS = [
   { href: '/nosotros', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
 ] as const;
 const EXTRA_LINK_KEYS = [
-  { href: '/tripbuddy', labelKey: 'labelTripbuddy', ariaKey: 'ariaLabelTripbuddy' },
+  // { href: '/tripbuddy', labelKey: 'labelTripbuddy', ariaKey: 'ariaLabelTripbuddy' },
 ] as const;
 
 export interface NavbarProps {

@@ -46,24 +46,6 @@
     "loading": "Cargando..."
   },
   "home": {
-    "blogCarouselSlideAriaLabel": "Ir al slide {0}",
-    "blogEyebrow": "Historias de viajeros",
-    "blogSubtitle": "Experiencias memorables para inspirar tu mente.",
-    "blogTitle": "Explora las historias de nuestros Trippers",
-    "blogViewAllSubtitle": "Descubre todas nuestras aventuras y experiencias únicas",
-    "blogViewAllTitle": "Más Historias",
-    "explorationButtonTrippers": "EXPLORAR TRIPPERS",
-    "explorationCarouselNextLabel": "Diapositiva siguiente",
-    "explorationCarouselPrevLabel": "Diapositiva anterior",
-    "explorationCarouselSlideLabel": "Ir a diapositiva {n}",
-    "explorationComingSoon": "¡Pronto podrás explorar esta sección!",
-    "explorationEyebrow": "Dale forma a tu aventura",
-    "explorationSubtitle": "Encuentra el punto de partida perfecto para tu próximo viaje.",
-    "explorationTabs": [
-      { "id": "byTraveller", "label": "Por Viajero" },
-      { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
-    ],
-    "explorationTitle": "Puntos de Partida",
     "hero": {
       "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
       "fallbackImage": "/images/bg-playa-mexico.jpg",
@@ -77,82 +59,91 @@
       "title": "SERENDIPIA DISEÑADA",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
-    "explorationTravelerTypes": [
-      {
-        "key": "couple",
-        "title": "En Pareja",
-        "description": "Escapadas románticas."
+    "homeInfo": {
+      "benefitsSteps": [
+        {
+          "title": "sin stress y flexible",
+          "description": "Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.",
+          "imageAlt": "Camino entre bosque verde"
+        },
+        {
+          "title": "Todo resuelto",
+          "description": "Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.",
+          "imageAlt": "Interior de avión de noche"
+        },
+        {
+          "title": "descubrimiento auténtico",
+          "description": "Viví la emoción de lo inesperado con curaduría real, no al azar.",
+          "imageAlt": "Vista desde ventanilla del avión"
+        }
+      ],
+      "ctaScrollTarget": "#exploration-section",
+      "ctaText": "GETRANDOMTRIP!",
+      "eyebrow": "Tres pasos, cero stress",
+      "howItWorksSteps": [
+        {
+          "title": "PLANIFICÁ",
+          "description": "Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.",
+          "imageAlt": "Camino entre bosque verde"
+        },
+        {
+          "title": "RECIBÍ LA SORPRESA",
+          "description": "Confirmá tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
+          "imageAlt": "Interior de avión de noche"
+        },
+        {
+          "title": "VIAJÁ SIN STRESS",
+          "description": "Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
+          "imageAlt": "Vista desde ventanilla del avión"
+        }
+      ],
+      "sectionAriaLabel": "Información sobre Random Trip",
+      "tabBenefitsLabel": "Beneficios clave",
+      "tabHowLabel": "¿Cómo funciona?",
+      "title": "¿Qué hacemos?"
+    },
+    "exploration": {
+      "buttonTrippers": "EXPLORAR TRIPPERS",
+      "carousel": {
+        "ariaLabelNext": "Diapositiva siguiente",
+        "ariaLabelPrev": "Diapositiva anterior",
+        "ariaLabelSlide": "Ir a diapositiva {n}"
       },
-      { "key": "solo", "title": "Solo", "description": "Un viaje único." },
-      {
-        "key": "family",
-        "title": "En Familia",
-        "description": "Recuerdos juntos."
-      },
-      {
-        "key": "group",
-        "title": "En Grupo",
-        "description": "Experiencias compartidas."
-      },
-      {
-        "key": "honeymoon",
-        "title": "Honeymoon",
-        "description": "El comienzo perfecto."
-      },
-      {
-        "key": "paws",
-        "title": "PAWS",
-        "description": "Aventuras con tu mascota."
+      "comingSoonText": "¡Pronto podrás explorar esta sección!",
+      "eyebrow": "Dale forma a tu aventura",
+      "subtitle": "Encuentra el punto de partida perfecto para tu próximo viaje.",
+      "tabs": [
+        { "id": "byTraveller", "label": "Por Viajero" },
+        { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
+      ],
+      "title": "Puntos de Partida",
+      "travelerTypes": [
+        { "key": "couple", "title": "En Pareja", "description": "Escapadas románticas." },
+        { "key": "solo", "title": "Solo", "description": "Un viaje único." },
+        { "key": "family", "title": "En Familia", "description": "Recuerdos juntos." },
+        { "key": "group", "title": "En Grupo", "description": "Experiencias compartidas." },
+        { "key": "honeymoon", "title": "Honeymoon", "description": "El comienzo perfecto." },
+        { "key": "paws", "title": "PAWS", "description": "Aventuras con tu mascota." }
+      ],
+      "trippersHref": "/trippers"
+    },
+    "blog": {
+      "carouselSlideAriaLabel": "Ir al slide {0}",
+      "eyebrow": "Historias de viajeros",
+      "subtitle": "Experiencias memorables para inspirar tu mente.",
+      "title": "Explora las historias de nuestros Trippers",
+      "viewAll": {
+        "href": "/blog",
+        "subtitle": "Descubre todas nuestras aventuras y experiencias únicas",
+        "title": "Más Historias"
       }
-    ],
-    "homeInfoCtaText": "GETRANDOMTRIP!",
-    "homeInfoCtaScrollTarget": "#exploration-section",
-    "homeInfoEyebrow": "Tres pasos, cero stress",
-    "homeInfoSectionAriaLabel": "Información sobre Random Trip",
-    "homeInfoTabBenefits": "Beneficios clave",
-    "homeInfoTabHow": "¿Cómo funciona?",
-    "homeInfoTitle": "¿Qué hacemos?",
-    "testimonialsEyebrow": "Opiniones de viajeros",
-    "testimonialsSubtitle": "Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.",
-    "testimonialsTitle": "Lo que dicen sobre RandomTrip",
-    "testimonialsViewFullReview": "Ver opinión completa",
-    "howItWorksNote": "* El destino se revela 48 horas antes para preservar la sorpresa. Se envía guía y checklist.",
-    "howItWorksSteps": [
-      {
-        "title": "PLANIFICÁ",
-        "description": "Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.",
-        "imageAlt": "Camino entre bosque verde"
-      },
-      {
-        "title": "RECIBÍ LA SORPRESA",
-        "description": "Confirmá tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
-        "imageAlt": "Interior de avión de noche"
-      },
-      {
-        "title": "VIAJÁ SIN STRESS",
-        "description": "Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
-        "imageAlt": "Vista desde ventanilla del avión"
-      }
-    ],
-    "howItWorksSubtitle": "Tres pasos. Cero estrés. Más descubrimiento.",
-    "howItWorksTitle": "¿Cómo funciona?",
-    "benefitsSteps": [
-      {
-        "title": "sin stress y flexible",
-        "description": "Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.",
-        "imageAlt": "Camino entre bosque verde"
-      },
-      {
-        "title": "Todo resuelto",
-        "description": "Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.",
-        "imageAlt": "Interior de avión de noche"
-      },
-      {
-        "title": "descubrimiento auténtico",
-        "description": "Viví la emoción de lo inesperado con curaduría real, no al azar.",
-        "imageAlt": "Vista desde ventanilla del avión"
-      }
-    ]
+    },
+    "testimonials": {
+      "eyebrow": "Opiniones de viajeros",
+      "subtitle": "Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.",
+      "title": "Lo que dicen sobre RandomTrip",
+      "viewFullReviewLabel": "Ver opinión completa"
+    }
   },
   "experiencias": {
     "hero": {

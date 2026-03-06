@@ -52,7 +52,7 @@ export default function ExperienciasPage({
   const home = dict.home;
 
   const dictTypesByKey = Object.fromEntries(
-    home.explorationTravelerTypes.map((t) => [t.key, t]),
+    home.exploration.travelerTypes.map((t) => [t.key, t]),
   );
   const travelerTypes: TravelerType[] = initialTravellerTypes.map((type) => {
     const localized = dictTypesByKey[type.travelType.toLowerCase()];

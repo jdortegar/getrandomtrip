@@ -14,14 +14,22 @@ import Section from '@/components/layout/Section';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import { motion } from 'framer-motion';
 
+export interface BlogContent {
+  carouselSlideAriaLabel: string;
+  eyebrow: string;
+  subtitle: string;
+  title: string;
+  viewAll: BlogViewAll;
+}
+
 interface BlogProps {
-  carouselSlideAriaLabel?: string;
   className?: string;
+  content?: BlogContent;
   eyebrow?: string;
   id?: string;
   posts: BlogPost[];
-  subtitle: string;
-  title: string;
+  subtitle?: string;
+  title?: string;
   viewAll?: BlogViewAll;
 }
 
@@ -56,7 +64,8 @@ function BlogCarouselDots({
 }
 
 export default function Blog({
-  carouselSlideAriaLabel = 'Go to slide {0}',
+  className,
+  content,
   eyebrow,
   id = 'blog',
   posts,
@@ -64,6 +73,19 @@ export default function Blog({
   title,
   viewAll,
 }: BlogProps) {
+  const resolved: BlogContent = content ?? {
+    carouselSlideAriaLabel: 'Go to slide {0}',
+    eyebrow: eyebrow ?? '',
+    subtitle: subtitle ?? '',
+    title: title ?? '',
+    viewAll: viewAll ?? { href: '/blog', subtitle: '', title: '' },
+  };
+  const {
+    carouselSlideAriaLabel,
+    eyebrow: resolvedEyebrow,
+    subtitle: resolvedSubtitle,
+    title: resolvedTitle,
+  } = resolved;
   return (
     <Section
       // className="overflow-visible pl-4 md:pl-[8%]"
@@ -90,7 +112,7 @@ export default function Blog({
         <div className="relative flex flex-col gap-12 md:flex-row md:items-stretch md:gap-8 overflow-visible pl-4 md:pl-[8%]">
           {/* Left Column - Full-height white panel so carousel never bleeds through */}
           <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 md:ml-[-8vw] md:w-1/3 md:min-w-[calc(33.333%+8vw)] md:items-start md:justify-center md:pl-[8vw] md:pr-8 md:text-left">
-            {eyebrow && (
+            {resolvedEyebrow && (
               <motion.div
                 className="text-base font-bold uppercase tracking-[6px] text-[#4F96B6] md:text-lg md:tracking-[9px]"
                 initial={{ opacity: 0, y: 40 }}
@@ -98,7 +120,7 @@ export default function Blog({
                 viewport={{ margin: '-100px', once: true }}
                 whileInView={{ opacity: 1, y: 0 }}
               >
-                {eyebrow}
+                {resolvedEyebrow}
               </motion.div>
             )}
 
@@ -109,7 +131,7 @@ export default function Blog({
               viewport={{ margin: '-100px', once: true }}
               whileInView={{ opacity: 1, y: 0 }}
             >
-              {title}
+              {resolvedTitle}
             </motion.h2>
 
             <motion.p
@@ -119,7 +141,7 @@ export default function Blog({
               viewport={{ margin: '-100px', once: true }}
               whileInView={{ opacity: 1, y: 0 }}
             >
-              {subtitle}
+              {resolvedSubtitle}
             </motion.p>
             {/* Gradient on right edge of white panel, over carousel: white → transparent (left side of carousel) */}
             <div
