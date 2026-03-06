@@ -92,7 +92,12 @@ export interface AvoidCity {
 }
 
 /**
- * Get cities to show in AvoidGrid based on level and departure location
+ * Get cities to show in AvoidGrid based on level and departure location.
+ * Scope by level:
+ * - essenza: national only (departure country)
+ * - modo-explora: national + neighboring countries
+ * - explora-plus: national + neighboring + full region (e.g. south-america)
+ * - bivouac / atelier-getaway: all American countries (international)
  */
 export function getAvoidCities(
   departureCountry: string,

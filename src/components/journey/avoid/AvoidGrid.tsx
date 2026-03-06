@@ -1,40 +1,76 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
 import DestinationCard from './DestinationCard';
 import { getAvoidCities } from '@/lib/helpers/avoid-cities';
-import { getCityImage, getLandmarkImageForCountry } from '@/lib/api/unsplash';
+import { getCityImage } from '@/lib/api/unsplash';
 import AvoidSearchModal from './AvoidSearchModal';
 import { Button } from '@/components/ui/Button';
-import { useStore } from '@/store/store';
 
-export default function AvoidGrid() {
+export interface AvoidGridProps {
+  /** Experience/level id (e.g. from query param `experience`). */
+  experienceLevel?: string;
+  /** Optional labels for loading state, button, and search modal. */
+  labels?: {
+    loading?: string;
+    otherDestinationsButton?: string;
+    searchModal?: {
+      addButton: string;
+      badgeLabelCity: string;
+      cancelButton: string;
+      saveDestinationsButton: string;
+      selectedCountTemplate: string;
+      selectedDestinationsHeading: string;
+      title: string;
+    };
+  };
+  /** Origin city (e.g. from query param `originCity`). */
+  originCity?: string;
+  /** Origin country (e.g. from query param `originCountry`). */
+  originCountry?: string;
+  /** When set, suggestions that match these destinations are filtered out (e.g. tripper package destinations). */
+  tripperPackageDestinations?: Array<{ city: string; country: string }>;
+}
+
+export default function AvoidGrid({
+  experienceLevel,
+  labels: labelsProp,
+  originCity: originCityProp,
+  originCountry: originCountryProp,
+  tripperPackageDestinations,
+}: AvoidGridProps = {}) {
+  const labels = {
+    loading: labelsProp?.loading ?? 'Cargando ciudades...',
+    otherDestinationsButton:
+      labelsProp?.otherDestinationsButton ?? 'Otros destinos a evitar',
+    searchModal: labelsProp?.searchModal ?? {
+      addButton: 'Agregar',
+      badgeLabelCity: 'Ciudad',
+      cancelButton: 'Cancelar',
+      saveDestinationsButton: 'Guardar destinos',
+      selectedCountTemplate: 'Seleccionados: {count} / {max}',
+      selectedDestinationsHeading: 'Destinos seleccionados',
+      title: 'Agregar destinos a evitar',
+    },
+  };
   const [showSearch, setShowSearch] = useState(false);
   const [suggestions, setSuggestions] = useState<
     Array<{ slug: string; city: string; country: string; image: string }>
   >([]);
-  const { logistics, level, _tripperPackageDestinations } = useStore();
 
-  // Get cities based on level and departure location
-  const avoidCities = getAvoidCities(
-    logistics.country,
-    logistics.city,
-    level,
-    12,
-  );
+  const originCountry = originCountryProp ?? '';
+  const originCity = originCityProp ?? '';
+  const level = experienceLevel ?? 'modo-explora';
 
-  // Load city images asynchronously
+  // Level controls scope: essenza = national; modo-explora = national + neighbors;
+  // explora-plus = region; bivouac/atelier-getaway = all Americas (see getAvoidCities)
+  const avoidCities = getAvoidCities(originCountry, originCity, level, 12);
+
   useEffect(() => {
     async function loadCityImages() {
-      console.log(
-        `🏙️ Loading images for ${avoidCities.length} cities:`,
-        avoidCities.map((c) => `${c.name}, ${c.countryCode}`),
-      );
-
       const citiesWithImages = await Promise.all(
         avoidCities.map(async (city) => {
-          console.log(`🔄 Processing city: ${city.name}, ${city.countryCode}`);
           const image = await getCityImage(city.name, city.countryCode);
-          console.log(`🖼️ Got image for ${city.name}: ${image}`);
           return {
             slug: city.id,
             city: city.name,
@@ -44,24 +80,18 @@ export default function AvoidGrid() {
         }),
       );
 
-      console.log(`✅ All cities loaded:`, citiesWithImages);
-
-      // Filter out tripper package destinations to avoid spoiling surprises
       const filteredCities = citiesWithImages.filter((city) => {
         if (
-          !_tripperPackageDestinations ||
-          _tripperPackageDestinations.length === 0
+          !tripperPackageDestinations ||
+          tripperPackageDestinations.length === 0
         ) {
           return true;
         }
-
-        // Check if this city is in the tripper's packages
-        const isPackageDestination = _tripperPackageDestinations.some(
+        const isPackageDestination = tripperPackageDestinations.some(
           (pkg) =>
             pkg.city.toLowerCase() === city.city.toLowerCase() &&
             pkg.country.toLowerCase() === city.country.toLowerCase(),
         );
-
         return !isPackageDestination;
       });
 
@@ -73,7 +103,12 @@ export default function AvoidGrid() {
     } else {
       setSuggestions([]);
     }
-  }, [logistics.country, logistics.city, level, _tripperPackageDestinations]);
+  }, [
+    originCountry,
+    originCity,
+    level,
+    tripperPackageDestinations,
+  ]);
 
   return (
     <div className="space-y-4">
@@ -81,8 +116,8 @@ export default function AvoidGrid() {
         {/* Grid 3 filas x 4 col */}
         <div className="grid grid-cols-4 gap-4 w-full">
           {suggestions.length === 0 ? (
-            <div className="col-span-4 text-center py-8 text-neutral-500">
-              Cargando ciudades...
+            <div className="col-span-4 py-8 text-center text-neutral-500">
+              {labels.loading}
             </div>
           ) : (
             suggestions.map((d) => (
@@ -92,16 +127,20 @@ export default function AvoidGrid() {
         </div>
 
         <div className="mt-6">
-          <Button variant="secondary" onClick={() => setShowSearch(true)}>
-            Otros destinos a evitar
+          <Button
+            onClick={() => setShowSearch(true)}
+            variant="secondary"
+          >
+            {labels.otherDestinationsButton}
           </Button>
         </div>
       </div>
 
       {/* Modal buscador */}
       <AvoidSearchModal
-        open={showSearch}
+        labels={labels.searchModal}
         onClose={() => setShowSearch(false)}
+        open={showSearch}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { useSearchParams } from 'next/navigation';
 import JourneyContentNavigation from '@/components/journey/JourneyContentNavigation';
@@ -82,6 +82,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState('budget');
   const [openSectionId, setOpenSectionId] = useState('travel-type');
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const resolvedLocale = hasLocale(locale) ? locale : 'es';
 
@@ -93,7 +94,17 @@ function JourneyPageContent({ locale }: { locale?: string }) {
     const { tabId, sectionId } = getInitialStepFromParams(searchParams);
     setActiveTab(tabId);
     setOpenSectionId(sectionId);
-  }, [searchParams]);
+    // Only re-sync when step-determining params change (not on every keystroke in origin/dates/transport)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- stepKey: only travelType, experience, excuse drive step
+  }, [
+    searchParams.get('travelType'),
+    searchParams.get('experience'),
+    searchParams.get('excuse'),
+  ]);
+
+  useEffect(() => {
+    contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeTab]);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -137,7 +148,10 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         }}
       />
 
-      <div className="container mx-auto px-4 py-8">
+      <div
+        className="container mx-auto px-4 py-8"
+        ref={contentRef}
+      >
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr_320px]">
           <div className="lg:sticky lg:top-8 lg:self-start">
             <JourneyProgressSidebar
@@ -150,6 +164,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           <div className="min-w-0">
             <JourneyMainContent
               activeTab={activeTab}
+              detailsStepLabels={journey.detailsStep}
               localizedExcuses={journey.excuses}
               localizedRefineOptions={journey.refineDetailOptions}
               localizedTravelerTypes={dict.home.explorationTravelerTypes}
@@ -157,10 +172,12 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               onOpenSection={setOpenSectionId}
               onTabChange={handleTabChange}
               openSectionId={openSectionId}
+              preferencesStepLabels={journey.preferencesStep}
             />
           </div>
 
           <JourneySummary
+            filterOptions={journey.preferencesStep?.filterOptions}
             onEdit={handleSummaryEdit}
             summary={journey.summary}
           />

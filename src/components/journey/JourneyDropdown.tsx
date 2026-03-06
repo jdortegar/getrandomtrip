@@ -28,7 +28,7 @@ export function JourneyDropdown({
   return (
     <AccordionPrimitive.Item
       className={cn(
-        'min-w-0 w-full bg-white rounded-lg p-6 shadow-md overflow-hidden',
+        'min-w-0 w-full bg-white rounded-lg p-6 shadow-md',
         className,
       )}
       value={value}
@@ -61,7 +61,7 @@ export function JourneyDropdown({
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
 
-      <AccordionPrimitive.Content className="min-w-0 overflow-visible text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+      <AccordionPrimitive.Content className="min-w-0 text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         <div className="min-w-0 py-4">{children}</div>
       </AccordionPrimitive.Content>
     </AccordionPrimitive.Item>

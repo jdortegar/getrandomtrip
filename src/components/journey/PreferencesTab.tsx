@@ -3,6 +3,7 @@
 import SelectedFiltersChips from './SelectedFiltersChips';
 import { useStore } from '@/store/store';
 import { useQuerySync } from '@/hooks/useQuerySync';
+import { useSearchParams } from 'next/navigation';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FILTER_OPTIONS, FilterOption } from '@/store/slices/journeyStore';
@@ -35,7 +36,11 @@ const Seg = ({
 );
 
 export default function PreferencesTab() {
-  const { filters, setPartial } = useStore();
+  const searchParams = useSearchParams();
+  const { filters, setPartial, _tripperPackageDestinations } = useStore();
+  const originCity = searchParams.get('originCity') ?? '';
+  const originCountry = searchParams.get('originCountry') ?? '';
+  const experience = searchParams.get('experience') ?? undefined;
   // const sync = useQuerySync();
 
   const setAndSync = (patch: Partial<typeof filters>) => {
@@ -117,7 +122,12 @@ export default function PreferencesTab() {
             <p className="text-sm text-neutral-500 text-left mb-6">
               Seleccioná hasta 15
             </p>
-            <AvoidGrid />
+            <AvoidGrid
+              experienceLevel={experience}
+              originCity={originCity}
+              originCountry={originCountry}
+              tripperPackageDestinations={_tripperPackageDestinations}
+            />
           </div>
         </div>
       </div>

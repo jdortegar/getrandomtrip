@@ -149,6 +149,70 @@ export interface MarketingDictionary {
       travelTypePlaceholder: string;
       viewSummary: string;
     };
+    detailsStep?: {
+      cityLabel: string;
+      cityPlaceholder: string;
+      countryLabel: string;
+      countryPlaceholder: string;
+      datesLabel: string;
+      datesPlaceholder: string;
+      datesPicker?: {
+        availableFromHint: string;
+        clearAll: string;
+        confirmDates: string;
+        daysLabel: string;
+        nightsLabel: string;
+      };
+      monthNames: string[];
+      originLabel: string;
+      originPlaceholder: string;
+      transportLabel: string;
+      transportPlaceholder: string;
+      transportSelector?: {
+        ariaPreferenceTemplate: string;
+        hintOrder: string;
+        hintTransfers: string;
+        optionLabels: Record<string, string>;
+      };
+    };
+    preferencesStep?: {
+      addonsLabel: string;
+      addonsPlaceholder: string;
+      filterOptions?: {
+        arrivePref: { label: string; options: Array<{ key: string; label: string }> };
+        climate: { label: string; options: Array<{ key: string; label: string }> };
+        departPref: { label: string; options: Array<{ key: string; label: string }> };
+        maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
+        transport: { label: string; options: Array<{ key: string; label: string }> };
+      };
+      filtersLabel: string;
+      filtersForm: {
+        arrivePrefLabel: string;
+        avoidGridButton: string;
+        avoidGridLoading: string;
+        avoidHint: string;
+        avoidLabel: string;
+        avoidSearchModal?: {
+          addButton: string;
+          badgeLabelCity: string;
+          cancelButton: string;
+          saveDestinationsButton: string;
+          selectedCountTemplate: string;
+          selectedDestinationsHeading: string;
+          title: string;
+        };
+        clearButton: string;
+        climateLabel: string;
+        departPrefLabel: string;
+        maxTravelTimeLabel: string;
+        saveFiltersButton: string;
+      };
+      filtersSummaryArrive: string;
+      filtersSummaryClimate: string;
+      filtersSummaryDefault: string;
+      filtersSummaryDepart: string;
+      filtersSummaryTime: string;
+    };
     excuses: Array<{
       key: string;
       title: string;

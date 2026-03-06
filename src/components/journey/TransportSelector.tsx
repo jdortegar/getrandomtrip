@@ -25,19 +25,50 @@ export const DEFAULT_TRANSPORT_ORDER: string[] = [
   'barco',
 ];
 
+const DEFAULT_OPTION_LABELS: Record<string, string> = {
+  avion: 'Avión',
+  barco: 'Barco',
+  bus: 'Bus',
+  tren: 'Tren',
+};
+
+export interface TransportSelectorLabels {
+  ariaPreferenceTemplate: string;
+  hintOrder: string;
+  hintTransfers: string;
+  optionLabels: Record<string, string>;
+}
+
 interface TransportSelectorProps {
+  labels?: TransportSelectorLabels;
   onChange: (orderedIds: string[]) => void;
   value: string[];
 }
 
-function TransportSelector({ onChange, value }: TransportSelectorProps) {
+function TransportSelector({ labels: labelsProp, onChange, value }: TransportSelectorProps) {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const labels = {
+    ariaPreferenceTemplate:
+      labelsProp?.ariaPreferenceTemplate ??
+      '{label}, preferencia {position}. Arrastrar para reordenar.',
+    hintOrder:
+      labelsProp?.hintOrder ??
+      'No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el destino podríamos usar otra opción de la lista.',
+    hintTransfers:
+      labelsProp?.hintTransfers ??
+      'Tren y Barco podrían requerir traslados extra.',
+    optionLabels: { ...DEFAULT_OPTION_LABELS, ...labelsProp?.optionLabels },
+  };
 
   const orderedOptions =
     value.length === TRANSPORT_OPTIONS.length ? value : DEFAULT_TRANSPORT_ORDER;
   const optionsById = Object.fromEntries(
-    TRANSPORT_OPTIONS.map((o) => [o.id, o]),
+    TRANSPORT_OPTIONS.map((o) => [
+      o.id,
+      { id: o.id, label: labels.optionLabels[o.id] ?? o.label },
+    ]),
   );
 
   const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
@@ -88,14 +119,17 @@ function TransportSelector({ onChange, value }: TransportSelectorProps) {
       <div className="flex flex-wrap items-center justify-center gap-4">
         {orderedOptions.map((id, index) => {
           const option = optionsById[id];
-          debugger;
           const Icon = TRANSPORT_ICONS[id];
           if (!option || !Icon) return null;
           const isFirst = index === 0;
           const isDragging = draggedId === id;
           const isDragOver = dragOverId === id;
+          const ariaLabel = labels.ariaPreferenceTemplate
+            .replace('{label}', option.label)
+            .replace('{position}', String(index + 1));
           return (
             <div
+              aria-label={ariaLabel}
               className={cn(
                 'flex min-w-[100px] cursor-grab flex-col items-center justify-center gap-2 rounded-xl border-2 py-4 px-5 transition-colors active:cursor-grabbing',
                 isFirst
@@ -113,7 +147,6 @@ function TransportSelector({ onChange, value }: TransportSelectorProps) {
               onDrop={(e) => handleDrop(e, id)}
               role="button"
               tabIndex={0}
-              aria-label={`${option.label}, preferencia ${index + 1}. Arrastrar para reordenar.`}
             >
               <Icon
                 className={isFirst ? 'text-white' : 'text-gray-500'}
@@ -127,12 +160,11 @@ function TransportSelector({ onChange, value }: TransportSelectorProps) {
           );
         })}
       </div>
-      <p className="text-sm text-gray-500 text-center">
-        No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el
-        destino podríamos usar otra opción de la lista.
+      <p className="text-center text-sm text-gray-500">
+        {labels.hintOrder}
       </p>
-      <p className="text-sm text-gray-500 text-center">
-        Tren y Barco podrían requerir traslados extra.
+      <p className="text-center text-sm text-gray-500">
+        {labels.hintTransfers}
       </p>
     </div>
   );

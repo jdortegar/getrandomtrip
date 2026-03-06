@@ -31,57 +31,64 @@ export type Filters = {
   avoidDestinations: string[]; // máx 15 (cada uno cuenta 1 filtro)
 };
 
-// Available filter options
-export const FILTER_OPTIONS = {
+// Available filter option keys only (labels come from dictionary)
+export const FILTER_OPTION_KEYS = {
   transport: {
-    label: 'Transporte',
     options: [
-      { key: 'avion', label: 'Avión' },
-      { key: 'bus', label: 'Bus' },
-      { key: 'tren', label: 'Tren' },
-      { key: 'barco', label: 'Barco/Crucero' },
+      { key: 'avion' },
+      { key: 'bus' },
+      { key: 'tren' },
+      { key: 'barco' },
     ],
   },
   climate: {
-    label: 'Clima',
     options: [
-      { key: 'indistinto', label: 'Indistinto' },
-      { key: 'calido', label: 'Cálido' },
-      { key: 'frio', label: 'Frío' },
-      { key: 'templado', label: 'Templado' },
+      { key: 'indistinto' },
+      { key: 'calido' },
+      { key: 'frio' },
+      { key: 'templado' },
     ],
   },
   maxTravelTime: {
-    label: 'Tiempo máximo de viaje',
     options: [
-      { key: 'sin-limite', label: 'Sin límite' },
-      { key: '3h', label: 'Hasta 3h' },
-      { key: '5h', label: 'Hasta 5h' },
-      { key: '8h', label: 'Hasta 8h' },
+      { key: 'sin-limite' },
+      { key: '3h' },
+      { key: '5h' },
+      { key: '8h' },
     ],
   },
   departPref: {
-    label: 'Salida',
     options: [
-      { key: 'indistinto', label: 'Indistinto' },
-      { key: 'manana', label: 'Mañana' },
-      { key: 'tarde', label: 'Tarde' },
-      { key: 'noche', label: 'Noche' },
+      { key: 'indistinto' },
+      { key: 'manana' },
+      { key: 'tarde' },
+      { key: 'noche' },
     ],
   },
   arrivePref: {
-    label: 'Llegada',
     options: [
-      { key: 'indistinto', label: 'Indistinto' },
-      { key: 'manana', label: 'Mañana' },
-      { key: 'tarde', label: 'Tarde' },
-      { key: 'noche', label: 'Noche' },
+      { key: 'indistinto' },
+      { key: 'manana' },
+      { key: 'tarde' },
+      { key: 'noche' },
     ],
   },
   avoidDestinations: {
-    label: 'Destinos a evitar',
-    options: [],
+    options: [] as Array<{ key: string }>,
   },
+} as const;
+
+/** Filter options with keys only; labels come from dictionary (journey.preferencesStep.filterOptions). */
+export const FILTER_OPTIONS: Record<
+  keyof typeof FILTER_OPTION_KEYS,
+  { label?: string; options: Array<{ key: string; label?: string }> }
+> = {
+  transport: { options: [...FILTER_OPTION_KEYS.transport.options.map((o) => ({ ...o, label: o.key }))] },
+  climate: { options: [...FILTER_OPTION_KEYS.climate.options.map((o) => ({ ...o, label: o.key }))] },
+  maxTravelTime: { options: [...FILTER_OPTION_KEYS.maxTravelTime.options.map((o) => ({ ...o, label: o.key }))] },
+  departPref: { options: [...FILTER_OPTION_KEYS.departPref.options.map((o) => ({ ...o, label: o.key }))] },
+  arrivePref: { options: [...FILTER_OPTION_KEYS.arrivePref.options.map((o) => ({ ...o, label: o.key }))] },
+  avoidDestinations: { options: [] },
 };
 
 export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
@@ -113,6 +120,8 @@ export type JourneyState = {
   resetAddons: () => void;
   resetJourney: () => void;
   clearFormAfterPurchase: () => void;
+  /** Updates origin and resets preference filters (and their cost). Call when country or city changes. */
+  setOriginAndResetFilters: (country: string, city: string) => void;
 };
 
 export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
@@ -215,4 +224,21 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
       totalPerPaxUsd: 0,
       activeTab: 'logistics',
     }),
+  setOriginAndResetFilters: (country, city) => {
+    const state = get();
+    const pax = Math.max(1, state.logistics.pax ?? 1);
+    set({
+      filters: {
+        transport: 'avion',
+        climate: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        departPref: 'indistinto',
+        arrivePref: 'indistinto',
+        avoidDestinations: [],
+      },
+      filtersCostUsd: 0,
+      logistics: { ...state.logistics, city, country },
+      totalPerPaxUsd: (state.basePriceUsd + state.addonsCostUsd) / pax,
+    });
+  },
 });

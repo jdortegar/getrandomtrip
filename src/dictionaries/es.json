@@ -266,6 +266,115 @@
       "travelTypePlaceholder": "Elegí tu experiencia",
       "viewSummary": "Ver resumen"
     },
+    "detailsStep": {
+      "cityLabel": "Ciudad de salida",
+      "cityPlaceholder": "Escribir ciudad de salida",
+      "countryLabel": "País de salida",
+      "countryPlaceholder": "Escribir país de salida",
+      "datesLabel": "Fechas",
+      "datesPlaceholder": "Elegí cantidad de días y fecha de inicio",
+      "datesPicker": {
+        "availableFromHint": "Fechas disponibles a partir de 7 días.",
+        "clearAll": "Borrar todo",
+        "confirmDates": "Confirmar fechas",
+        "daysLabel": "días",
+        "nightsLabel": "noches"
+      },
+      "monthNames": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+      "originLabel": "Origen",
+      "originPlaceholder": "Elegí país y ciudad de salida",
+      "transportLabel": "Transporte: Orden de preferencia",
+      "transportPlaceholder": "Definí el orden de preferencia arrastrando",
+      "transportSelector": {
+        "ariaPreferenceTemplate": "{label}, preferencia {position}. Arrastrar para reordenar.",
+        "hintOrder": "No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el destino podríamos usar otra opción de la lista.",
+        "hintTransfers": "Tren y Barco podrían requerir traslados extra.",
+        "optionLabels": {
+          "avion": "Avión",
+          "barco": "Barco",
+          "bus": "Bus",
+          "tren": "Tren"
+        }
+      }
+    },
+    "preferencesStep": {
+      "addonsLabel": "Extras",
+      "addonsPlaceholder": "Elegí tus add-ons.",
+      "filterOptions": {
+        "arrivePref": {
+          "label": "Llegada",
+          "options": [
+            { "key": "indistinto", "label": "Indistinto" },
+            { "key": "manana", "label": "Mañana" },
+            { "key": "tarde", "label": "Tarde" },
+            { "key": "noche", "label": "Noche" }
+          ]
+        },
+        "climate": {
+          "label": "Clima",
+          "options": [
+            { "key": "indistinto", "label": "Indistinto" },
+            { "key": "calido", "label": "Cálido" },
+            { "key": "frio", "label": "Frío" },
+            { "key": "templado", "label": "Templado" }
+          ]
+        },
+        "departPref": {
+          "label": "Salida",
+          "options": [
+            { "key": "indistinto", "label": "Indistinto" },
+            { "key": "manana", "label": "Mañana" },
+            { "key": "tarde", "label": "Tarde" },
+            { "key": "noche", "label": "Noche" }
+          ]
+        },
+        "maxTravelTime": {
+          "label": "Tiempo máximo de viaje",
+          "options": [
+            { "key": "sin-limite", "label": "Sin límite" },
+            { "key": "3h", "label": "Hasta 3h" },
+            { "key": "5h", "label": "Hasta 5h" },
+            { "key": "8h", "label": "Hasta 8h" }
+          ]
+        },
+        "transport": {
+          "label": "Transporte",
+          "options": [
+            { "key": "avion", "label": "Avión" },
+            { "key": "bus", "label": "Bus" },
+            { "key": "tren", "label": "Tren" },
+            { "key": "barco", "label": "Barco/Crucero" }
+          ]
+        }
+      },
+      "filtersLabel": "Filtros",
+      "filtersForm": {
+        "arrivePrefLabel": "Horarios preferidos de llegada",
+        "avoidHint": "Seleccioná hasta 15",
+        "avoidLabel": "Destinos a evitar (opcional)",
+        "avoidGridLoading": "Cargando ciudades...",
+        "avoidGridButton": "Otros destinos a evitar",
+        "avoidSearchModal": {
+          "addButton": "Agregar",
+          "badgeLabelCity": "Ciudad",
+          "cancelButton": "Cancelar",
+          "saveDestinationsButton": "Guardar destinos",
+          "selectedCountTemplate": "Seleccionados: {count} / {max}",
+          "selectedDestinationsHeading": "Destinos seleccionados",
+          "title": "Agregar destinos a evitar"
+        },
+        "clearButton": "Borrar",
+        "climateLabel": "Clima preferencial",
+        "departPrefLabel": "Horarios preferidos de salida (opcional)",
+        "maxTravelTimeLabel": "Tiempo máximo de viaje",
+        "saveFiltersButton": "Guardar Filtros"
+      },
+      "filtersSummaryArrive": "Llegada",
+      "filtersSummaryClimate": "Clima",
+      "filtersSummaryDefault": "Transporte, horarios, clima, destinos a evitar",
+      "filtersSummaryDepart": "Salida",
+      "filtersSummaryTime": "Tiempo"
+    },
     "excuses": [
       { "key": "solo-adventure", "title": "Aventura en Solitario", "description": "Descubrir el mundo a tu ritmo, sin compromisos ni horarios." },
       { "key": "cultural-immersion", "title": "Inmersión Cultural", "description": "Sumergirse en tradiciones, sabores y costumbres locales." },

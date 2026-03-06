@@ -6,6 +6,7 @@ import StepperNav from './StepperNav';
 import CountrySelector from './CountrySelector';
 import CitySelector from './CitySelector';
 import { Level } from '@/lib/data/shared/levels';
+import { useQuerySync } from '@/hooks/useQuerySync';
 import { useStore } from '@/store/store';
 
 interface LogisticsTabProps {
@@ -13,7 +14,8 @@ interface LogisticsTabProps {
 }
 
 export default function LogisticsTab({ level }: LogisticsTabProps) {
-  const { logistics, setPartial, _originLocked } = useStore();
+  const { logistics, setOriginAndResetFilters, setPartial, _originLocked } = useStore();
+  const updateQuery = useQuerySync();
 
   // Local state for form values
   const [countryValue, setCountryValue] = useState(logistics.country || '');
@@ -46,29 +48,17 @@ export default function LogisticsTab({ level }: LogisticsTabProps) {
   const handleCountryChange = (value: string) => {
     if (isOriginLocked) return; // Prevent changes when locked
     setCountryValue(value);
-    setPartial({
-      logistics: {
-        ...logistics,
-        country: value,
-        city: '', // Clear city when country changes
-      },
-    });
-    // Clear city when country changes
-    if (value !== countryValue) {
-      setCityValue('');
-    }
+    setCityValue('');
+    setOriginAndResetFilters(value, '');
+    updateQuery({ avoidDestinations: undefined });
   };
 
   // Handle city change
   const handleCityChange = (value: string) => {
     if (isOriginLocked) return; // Prevent changes when locked
     setCityValue(value);
-    setPartial({
-      logistics: {
-        ...logistics,
-        city: value,
-      },
-    });
+    setOriginAndResetFilters(logistics.country ?? '', value);
+    updateQuery({ avoidDestinations: undefined });
   };
 
   return (

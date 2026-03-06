@@ -266,6 +266,115 @@
       "travelTypePlaceholder": "Choose your experience",
       "viewSummary": "View summary"
     },
+    "detailsStep": {
+      "cityLabel": "Departure city",
+      "cityPlaceholder": "Type departure city",
+      "countryLabel": "Departure country",
+      "countryPlaceholder": "Type departure country",
+      "datesLabel": "Dates",
+      "datesPlaceholder": "Choose number of days and start date",
+      "datesPicker": {
+        "availableFromHint": "Dates available from 7 days from now.",
+        "clearAll": "Clear all",
+        "confirmDates": "Confirm dates",
+        "daysLabel": "days",
+        "nightsLabel": "nights"
+      },
+      "monthNames": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      "originLabel": "Origin",
+      "originPlaceholder": "Choose country and city of departure",
+      "transportLabel": "Transport: Order of preference",
+      "transportPlaceholder": "Set order of preference by dragging",
+      "transportSelector": {
+        "ariaPreferenceTemplate": "{label}, preference {position}. Drag to reorder.",
+        "hintOrder": "It's not a single option: rank 1 to 4 by preference. Depending on the destination we may use another option from the list.",
+        "hintTransfers": "Train and Ship may require extra transfers.",
+        "optionLabels": {
+          "avion": "Plane",
+          "barco": "Ship",
+          "bus": "Bus",
+          "tren": "Train"
+        }
+      }
+    },
+    "preferencesStep": {
+      "addonsLabel": "Extras",
+      "addonsPlaceholder": "Choose your add-ons.",
+      "filterOptions": {
+        "arrivePref": {
+          "label": "Arrival",
+          "options": [
+            { "key": "indistinto", "label": "Any" },
+            { "key": "manana", "label": "Morning" },
+            { "key": "tarde", "label": "Afternoon" },
+            { "key": "noche", "label": "Night" }
+          ]
+        },
+        "climate": {
+          "label": "Climate",
+          "options": [
+            { "key": "indistinto", "label": "Any" },
+            { "key": "calido", "label": "Warm" },
+            { "key": "frio", "label": "Cold" },
+            { "key": "templado", "label": "Mild" }
+          ]
+        },
+        "departPref": {
+          "label": "Departure",
+          "options": [
+            { "key": "indistinto", "label": "Any" },
+            { "key": "manana", "label": "Morning" },
+            { "key": "tarde", "label": "Afternoon" },
+            { "key": "noche", "label": "Night" }
+          ]
+        },
+        "maxTravelTime": {
+          "label": "Max travel time",
+          "options": [
+            { "key": "sin-limite", "label": "No limit" },
+            { "key": "3h", "label": "Up to 3h" },
+            { "key": "5h", "label": "Up to 5h" },
+            { "key": "8h", "label": "Up to 8h" }
+          ]
+        },
+        "transport": {
+          "label": "Transport",
+          "options": [
+            { "key": "avion", "label": "Flight" },
+            { "key": "bus", "label": "Bus" },
+            { "key": "tren", "label": "Train" },
+            { "key": "barco", "label": "Boat/Cruise" }
+          ]
+        }
+      },
+      "filtersLabel": "Filters",
+      "filtersForm": {
+        "arrivePrefLabel": "Preferred arrival times",
+        "avoidHint": "Select up to 15",
+        "avoidLabel": "Destinations to avoid (optional)",
+        "avoidGridLoading": "Loading cities...",
+        "avoidGridButton": "Other destinations to avoid",
+        "avoidSearchModal": {
+          "addButton": "Add",
+          "badgeLabelCity": "City",
+          "cancelButton": "Cancel",
+          "saveDestinationsButton": "Save destinations",
+          "selectedCountTemplate": "Selected: {count} / {max}",
+          "selectedDestinationsHeading": "Selected destinations",
+          "title": "Add destinations to avoid"
+        },
+        "clearButton": "Clear",
+        "climateLabel": "Preferred climate",
+        "departPrefLabel": "Preferred departure times (optional)",
+        "maxTravelTimeLabel": "Maximum travel time",
+        "saveFiltersButton": "Save Filters"
+      },
+      "filtersSummaryArrive": "Arrival",
+      "filtersSummaryClimate": "Climate",
+      "filtersSummaryDefault": "Transport, schedules, climate, destinations to avoid",
+      "filtersSummaryDepart": "Departure",
+      "filtersSummaryTime": "Time"
+    },
     "excuses": [
       { "key": "solo-adventure", "title": "Solo Adventure", "description": "Discover the world at your own pace, with no commitments or schedules." },
       { "key": "cultural-immersion", "title": "Cultural Immersion", "description": "Dive into traditions, flavors, and local customs." },

@@ -7,9 +7,38 @@ import Badge from '@/components/badge';
 import CitySearchSelector from './CitySearchSelector';
 import type { AvoidCity } from '@/lib/helpers/avoid-cities';
 
-type Props = { open: boolean; onClose: () => void };
+export interface AvoidSearchModalLabels {
+  addButton: string;
+  badgeLabelCity: string;
+  cancelButton: string;
+  saveDestinationsButton: string;
+  selectedCountTemplate: string;
+  selectedDestinationsHeading: string;
+  title: string;
+}
 
-export default function AvoidSearchModal({ open, onClose }: Props) {
+interface AvoidSearchModalProps {
+  labels?: AvoidSearchModalLabels;
+  onClose: () => void;
+  open: boolean;
+}
+
+const DEFAULT_LABELS: AvoidSearchModalLabels = {
+  addButton: 'Agregar',
+  badgeLabelCity: 'Ciudad',
+  cancelButton: 'Cancelar',
+  saveDestinationsButton: 'Guardar destinos',
+  selectedCountTemplate: 'Seleccionados: {count} / {max}',
+  selectedDestinationsHeading: 'Destinos seleccionados',
+  title: 'Agregar destinos a evitar',
+};
+
+export default function AvoidSearchModal({
+  labels: labelsProp,
+  onClose,
+  open,
+}: AvoidSearchModalProps) {
+  const labels = labelsProp ?? DEFAULT_LABELS;
   const { filters, setPartial } = useStore();
   const sync = useQuerySync();
   const [query, setQuery] = useState('');
@@ -27,6 +56,10 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
 
   const current = filters.avoidDestinations || [];
   const max = 15;
+  const totalCount = current.length + local.length;
+  const selectedCountText = labels.selectedCountTemplate
+    .replace('{count}', String(totalCount))
+    .replace('{max}', String(max));
 
   const add = (cityFullName: string) => {
     const name = cityFullName.trim();
@@ -90,11 +123,9 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
           className="text-base font-bold text-gray-900"
           id="avoid-modal-title"
         >
-          Agregar destinos a evitar
+          {labels.title}
         </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Seleccionados: {current.length + local.length} / {max}
-        </p>
+        <p className="mt-1 text-sm text-gray-500">{selectedCountText}</p>
 
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
           <CitySearchSelector
@@ -105,44 +136,44 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
             value={query}
           />
           <Button
-            className="h-9 text-sm font-normal normal-case rounded-md"
-            disabled={!query.trim() || current.length + local.length >= max}
+            className="h-9 rounded-md text-sm font-normal normal-case"
+            disabled={!query.trim() || totalCount >= max}
             onClick={() => add(query)}
             size="sm"
             type="button"
             variant="default"
           >
-            Agregar
+            {labels.addButton}
           </Button>
         </div>
 
         {(current.length > 0 || local.length > 0) && (
           <div className="mt-6 space-y-2">
             <p className="text-sm font-semibold text-gray-900">
-              Destinos seleccionados
+              {labels.selectedDestinationsHeading}
             </p>
             <div className="flex flex-wrap gap-2">
               {current.map((n) => (
                 <Badge
-                  key={`cur-${n}`}
                   color="secondary"
                   item={{
                     key: `cur-${n}`,
-                    label: 'Ciudad',
+                    label: labels.badgeLabelCity,
                     value: n,
                   }}
+                  key={`cur-${n}`}
                 />
               ))}
               {local.map((n) => (
                 <Badge
-                  key={`loc-${n}`}
                   color="primary"
                   item={{
                     key: `loc-${n}`,
-                    label: 'Ciudad',
+                    label: labels.badgeLabelCity,
                     onRemove: () => removeLocal(n),
                     value: n,
                   }}
+                  key={`loc-${n}`}
                 />
               ))}
             </div>
@@ -155,7 +186,7 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
             onClick={onClose}
             type="button"
           >
-            Cancelar
+            {labels.cancelButton}
           </button>
           <Button
             className="text-sm font-normal normal-case"
@@ -164,7 +195,7 @@ export default function AvoidSearchModal({ open, onClose }: Props) {
             type="button"
             variant="default"
           >
-            Guardar destinos
+            {labels.saveDestinationsButton}
           </Button>
         </div>
       </div>

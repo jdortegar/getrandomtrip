@@ -1,5 +1,6 @@
-
 'use client';
+
+import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { countOptionalFilters } from '@/lib/helpers/journey';
 import { useRouter } from 'next/navigation';
@@ -13,7 +14,11 @@ const calculateFilterCost = (filterCount: number): number => {
 
 export default function FiltersTab() {
   const router = useRouter();
-  const { filters, setPartial, basePriceUsd, logistics } = useStore();
+  const searchParams = useSearchParams();
+  const { filters, setPartial, basePriceUsd, logistics, _tripperPackageDestinations } = useStore();
+  const originCity = searchParams.get('originCity') ?? '';
+  const originCountry = searchParams.get('originCountry') ?? '';
+  const experience = searchParams.get('experience') ?? undefined;
 
   const handleFilterChange = <K extends keyof typeof filters>(key: K, value: (typeof filters)[K]) => {
     const newFilters = { ...filters, [key]: value };
@@ -46,7 +51,12 @@ export default function FiltersTab() {
 
       {/* Other filters will go here */}
 
-      <AvoidGrid />
+      <AvoidGrid
+        experienceLevel={experience}
+        originCity={originCity}
+        originCountry={originCountry}
+        tripperPackageDestinations={_tripperPackageDestinations}
+      />
 
       <div className="flex justify-end pt-4">
         <button

@@ -29,6 +29,8 @@ export interface EmblaCarouselProps {
   ariaLabelPrev?: string;
   /** Gap between slides in px. */
   gap?: number;
+  /** When true (default), viewport clips overflow (overflow-hidden). When false, next slide can peek (overflow-visible). */
+  hideOverflow?: boolean;
   /** Pixels of the next slide to show (peek). */
   peek?: number;
   /** Show prev/next arrows. */
@@ -106,6 +108,7 @@ export function EmblaCarousel({
   className,
   contentClassName,
   gap = 16,
+  hideOverflow = true,
   peek = 0,
   showArrows = true,
   showDots = true,
@@ -173,7 +176,11 @@ export function EmblaCarousel({
 
       <div
         ref={viewportRef}
-        className={cn('overflow-visible', viewportClassName)}
+        className={cn(
+          hideOverflow ? 'overflow-hidden' : 'overflow-visible',
+          viewportClassName,
+          'p-1'
+        )}
         data-slot="embla-viewport"
       >
         <div

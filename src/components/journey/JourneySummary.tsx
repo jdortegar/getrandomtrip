@@ -45,13 +45,25 @@ function formatDatesSummary(
 function getFilterLabel(
   group: keyof typeof FILTER_OPTIONS,
   key: string,
+  filterOptions?: JourneySummaryProps['filterOptions'],
 ): string {
+  const fo = filterOptions as Record<string, { options: Array<{ key: string; label: string }> }> | undefined;
+  const fromDict = fo?.[group]?.options?.find((o) => o.key === key)?.label;
+  if (fromDict) return fromDict;
   const opt = FILTER_OPTIONS[group]?.options?.find((o) => o.key === key);
   return opt?.label ?? key;
 }
 
 interface JourneySummaryProps {
   className?: string;
+  /** Localized filter option labels (e.g. journey.preferencesStep.filterOptions). */
+  filterOptions?: {
+    arrivePref: { label: string; options: Array<{ key: string; label: string }> };
+    climate: { label: string; options: Array<{ key: string; label: string }> };
+    departPref: { label: string; options: Array<{ key: string; label: string }> };
+    maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
+    transport: { label: string; options: Array<{ key: string; label: string }> };
+  };
   onDetailRemove?: (detail: string) => void;
   onEdit?: (section: string) => void;
   summary: JourneySummaryDict;
@@ -59,6 +71,7 @@ interface JourneySummaryProps {
 
 export default function JourneySummary({
   className,
+  filterOptions,
   onDetailRemove,
   onEdit,
   summary,
@@ -173,7 +186,7 @@ export default function JourneySummary({
     if (!transport) return undefined;
     return (
       TRANSPORT_OPTIONS.find((o) => o.id === transport)?.label ??
-      getFilterLabel('transport', transport)
+      getFilterLabel('transport', transport, filterOptions)
     );
   }, [transport]);
 
@@ -199,28 +212,28 @@ export default function JourneySummary({
       list.push({
         id: `depart-${departPref}`,
         kind: 'departPref',
-        label: `${summary.filterLabelDepart}: ${getFilterLabel('departPref', departPref)}`,
+        label: `${summary.filterLabelDepart}: ${getFilterLabel('departPref', departPref, filterOptions)}`,
       });
     }
     if (arrivePref && arrivePref !== 'indistinto') {
       list.push({
         id: `arrive-${arrivePref}`,
         kind: 'arrivePref',
-        label: `${summary.filterLabelArrive}: ${getFilterLabel('arrivePref', arrivePref)}`,
+        label: `${summary.filterLabelArrive}: ${getFilterLabel('arrivePref', arrivePref, filterOptions)}`,
       });
     }
     if (maxTravelTime && maxTravelTime !== 'sin-limite') {
       list.push({
         id: `time-${maxTravelTime}`,
         kind: 'maxTravelTime',
-        label: `${summary.filterLabelTime}: ${getFilterLabel('maxTravelTime', maxTravelTime)}`,
+        label: `${summary.filterLabelTime}: ${getFilterLabel('maxTravelTime', maxTravelTime, filterOptions)}`,
       });
     }
     if (climate && climate !== 'indistinto') {
       list.push({
         id: `climate-${climate}`,
         kind: 'climate',
-        label: `${summary.filterLabelClimate}: ${getFilterLabel('climate', climate)}`,
+        label: `${summary.filterLabelClimate}: ${getFilterLabel('climate', climate, filterOptions)}`,
       });
     }
     avoidDestinations.forEach((city) => {
