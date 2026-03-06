@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Section from '@/components/layout/Section';
-import { Carousel } from '@/components/Carousel';
+import { EmblaCarousel } from '@/components/EmblaCarousel';
 import LevelCard from '@/components/by-type/shared/LevelCard';
+import { cn } from '@/lib/utils';
 import type { TypePlannerContent } from '@/types/planner';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
@@ -20,6 +21,7 @@ interface TypePlannerProps {
   showDots?: boolean;
   type: TravelerTypeSlug;
   itemsPerView?: number;
+  gap?: number;
 }
 
 export default function TypePlanner({
@@ -33,6 +35,7 @@ export default function TypePlanner({
   showDots = true,
   type,
   itemsPerView = 4,
+  gap = 16,
 }: TypePlannerProps) {
   const [internalSelectedLevel, setInternalSelectedLevel] = useState<
     string | null
@@ -45,35 +48,19 @@ export default function TypePlanner({
     onSelect?.(levelId);
   };
 
-  const getItemClassName = () => {
-    if (itemsPerView) {
-      // Calculate: (100% - (gap * (itemsPerView - 1))) / itemsPerView
-      // gap-x-4 = 16px, so we need to account for (itemsPerView - 1) gaps
-      const gapPx = 16;
-      const totalGaps = gapPx * (itemsPerView - 1);
-      return `basis-[calc((100%-${totalGaps}px)/${itemsPerView})] flex-shrink-0`;
-    }
-    return 'w-[280px] h-[332px] flex-shrink-0';
-  };
-
-  // if (compact) {
-  //   return contentElement;
-  // }
-
-  return (
-    <Section
-      eyebrow={content.eyebrow}
-      subtitle={content.subtitle}
-      title={content.title}
-    >
-      <div className="container mx-auto mt-12 px-4 md:px-20">
-      <Carousel
-        classes={{ ...classes, content: 'items-start' }}
-        fullViewportWidth={fullViewportWidth}
-        itemClassName={getItemClassName()}
+  const contentElement = (
+    <div className="relative flex min-h-[650px] w-full flex-col @container">
+      <EmblaCarousel
+        align={content.levels.length < itemsPerView ? 'center' : 'start'}
+        className={cn('flex flex-1 flex-col min-h-0', classes?.wrapper)}
+        contentClassName="h-full items-stretch"
+        gap={gap}
         showArrows={showArrows}
         showDots={showDots}
+        slideClassName="h-full"
+        slidesPerView={itemsPerView}
         slidesToScroll={1}
+        viewportClassName="h-full min-h-[650px]"
       >
         {content.levels.map((level, index) => {
           // Alternate between light and dark variants
@@ -93,7 +80,7 @@ export default function TypePlanner({
             />
           );
         })}
-      </Carousel>
+      </EmblaCarousel>
 
       {type === 'paws' && (
         <div className="mt-8 text-center">
@@ -105,6 +92,19 @@ export default function TypePlanner({
         </div>
       )}
     </div>
+  );
+
+  if (compact) {
+    return contentElement;
+  }
+
+  return (
+    <Section
+      eyebrow={content.eyebrow}
+      subtitle={content.subtitle}
+      title={content.title}
+    >
+      {contentElement}
     </Section>
   );
 }

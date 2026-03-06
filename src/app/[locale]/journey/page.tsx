@@ -146,6 +146,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             <JourneyMainContent
               activeTab={activeTab}
               localizedTravelerTypes={dict.home.explorationTravelerTypes}
+              mainContentLabels={journey.mainContent}
               onOpenSection={setOpenSectionId}
               onTabChange={handleTabChange}
               openSectionId={openSectionId}

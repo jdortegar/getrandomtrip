@@ -12,7 +12,6 @@ import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
 import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
 import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
 import { getTravelerType } from '@/lib/data/traveler-types';
-import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
 import {
   getExcusesByType,
   getExcuseOptions,
@@ -23,11 +22,35 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
+interface JourneyMainContentLabels {
+  clearAll: string;
+  completeBudgetAndExcuse: string;
+  completeBudgetFirst: string;
+  completeOriginFirst: string;
+  excuseLabel: string;
+  excusePlaceholder: string;
+  excuseStepDescription: string;
+  experienceLabel: string;
+  experiencePlaceholder: string;
+  experienceStepDescription: string;
+  next: string;
+  refineDetailsLabel: string;
+  refineDetailsPlaceholder: string;
+  refineDetailsOneSelected: string;
+  refineDetailsCountSelected: string;
+  refineDetailsStepDescription: string;
+  travelTypeLabel: string;
+  travelTypePlaceholder: string;
+  viewSummary: string;
+}
+
 interface JourneyMainContentProps {
   activeTab: string;
   className?: string;
   /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). */
   localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
+  /** Labels for dropdowns and step copy (journey.mainContent). */
+  mainContentLabels: JourneyMainContentLabels;
   onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
   openSectionId?: string;
@@ -37,10 +60,12 @@ export default function JourneyMainContent({
   activeTab,
   className,
   localizedTravelerTypes,
+  mainContentLabels,
   onOpenSection,
   onTabChange,
   openSectionId,
 }: JourneyMainContentProps) {
+  const labels = mainContentLabels;
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
   const { filters, setPartial } = useStore();
@@ -301,12 +326,13 @@ export default function JourneyMainContent({
   };
 
   const getTravelTypeLabel = () => {
-    if (!travelType) return 'Elegí tu experiencia';
-    return TRAVELER_TYPE_LABELS[travelType] || travelType;
+    if (!travelType) return labels.travelTypePlaceholder;
+    const localized = localizedTravelerTypes?.find((t) => t.key === travelType);
+    return localized?.title || travelType;
   };
 
   const getExperienceLabel = () => {
-    if (!experience || !travelerTypeData) return 'Qué quiero de mi viaje';
+    if (!experience || !travelerTypeData) return labels.experiencePlaceholder;
     const level = travelerTypeData.planner.levels.find(
       (l) => l.id === experience,
     );
@@ -314,20 +340,23 @@ export default function JourneyMainContent({
   };
 
   const getExcuseLabel = () => {
-    if (!excuse) return 'Elegí tu excusa';
+    if (!excuse) return labels.excusePlaceholder;
     const selectedExcuseData = excuses.find((e) => e.key === excuse);
     return selectedExcuseData?.title || excuse;
   };
 
   const getRefineDetailsLabel = () => {
-    if (refineDetails.length === 0) return 'Afinar detalles';
+    if (refineDetails.length === 0) return labels.refineDetailsPlaceholder;
     if (refineDetails.length === 1) {
       const option = refineDetailsOptions.find(
         (o) => o.key === refineDetails[0],
       );
-      return option?.label || '1 detalle seleccionado';
+      return option?.label || labels.refineDetailsOneSelected;
     }
-    return `${refineDetails.length} detalles seleccionados`;
+    return labels.refineDetailsCountSelected.replace(
+      '{count}',
+      String(refineDetails.length),
+    );
   };
 
   const handleClearAll = () => {
@@ -423,14 +452,14 @@ export default function JourneyMainContent({
               value={accordionValue}
             >
               <JourneyDropdown
-                className="mb-4 overflow-hidden"
+                className="mb-4 "
                 content={getTravelTypeLabel()}
-                label="Tipo de Viaje"
+                label={labels.travelTypeLabel}
                 value="travel-type"
               >
                 <TravelerTypesCarousel
                   fullViewportWidth={false}
-                  itemsPerView={4}
+                  itemsPerView={3}
                   localizedTravelerTypes={localizedTravelerTypes}
                   onSelect={handleTravelTypeSelect}
                   selectedTravelType={travelType as TravelerTypeSlug}
@@ -442,25 +471,23 @@ export default function JourneyMainContent({
               {travelType && travelerTypeData && (
                 <JourneyDropdown
                   content={getExperienceLabel()}
-                  label="Experiencia"
+                  label={labels.experienceLabel}
                   value="experience"
                 >
                   <div className="space-y-4">
                     <p className="text-gray-600">
-                      Selecciona el nivel de experiencia que más se adapte a tu
-                      presupuesto y preferencias.
+                      {labels.experienceStepDescription}
                     </p>
                     <TypePlanner
                       compact
+                      gap={12}
                       content={travelerTypeData.planner}
                       fullViewportWidth={false}
                       onSelect={handleExperienceSelect}
+                      itemsPerView={2}
                       selectedLevel={experience}
                       showArrows={false}
                       type={travelType as TravelerTypeSlug}
-                      classes={{
-                        wrapper: 'w-full px-2',
-                      }}
                     />
                   </div>
                 </JourneyDropdown>
@@ -480,13 +507,13 @@ export default function JourneyMainContent({
               <JourneyDropdown
                 className="mb-4"
                 content={getExcuseLabel()}
-                label="Excusa"
+                label={labels.excuseLabel}
                 value="excuse"
               >
                 {travelType && experience ? (
                   <div className="space-y-4">
                     <p className="text-gray-600">
-                      Toda escapada tiene su “porque sí”. 
+                      {labels.excuseStepDescription}
                     </p>
                     <ExcusesCarousel
                       excuses={excuses}
@@ -503,8 +530,7 @@ export default function JourneyMainContent({
                 ) : (
                   <div className="py-8 text-center">
                     <p className="text-gray-500">
-                      Primero completa el tipo de viaje y la experiencia en la
-                      sección Presupuesto.
+                      {labels.completeBudgetFirst}
                     </p>
                   </div>
                 )}
@@ -517,12 +543,12 @@ export default function JourneyMainContent({
                   <JourneyDropdown
                     className="mb-4"
                     content={getRefineDetailsLabel()}
-                    label="Afinar detalles"
+                    label={labels.refineDetailsLabel}
                     value="refine-details"
                   >
                     <div className="space-y-4">
                       <p className="text-gray-600">
-                        Cuando lo desconocido se convierte en tu mejor compañía.
+                        {labels.refineDetailsStepDescription}
                       </p>
                       <RefineDetailsCarousel
                         fullViewportWidth={false}
@@ -546,7 +572,7 @@ export default function JourneyMainContent({
           return (
             <div className="py-12 text-center">
               <p className="text-gray-500">
-                Primero completá Presupuesto y Excusa.
+                {labels.completeBudgetAndExcuse}
               </p>
             </div>
           );
@@ -576,7 +602,7 @@ export default function JourneyMainContent({
           return (
             <div className="py-12 text-center">
               <p className="text-gray-500">
-                Primero completá Origen y Fechas en Detalles y planificación.
+                {labels.completeOriginFirst}
               </p>
             </div>
           );
@@ -630,7 +656,7 @@ export default function JourneyMainContent({
           onClick={handleClearAll}
           type="button"
         >
-          Borrar todo
+          {labels.clearAll}
         </button>
 
         {canContinue && (
@@ -640,7 +666,7 @@ export default function JourneyMainContent({
             size="md"
             variant="default"
           >
-            Siguiente
+            {labels.next}
           </Button>
         )}
 
@@ -651,7 +677,7 @@ export default function JourneyMainContent({
             size="md"
             variant="default"
           >
-            Ver resumen
+            {labels.viewSummary}
           </Button>
         )}
       </div>

@@ -126,6 +126,27 @@ export interface MarketingDictionary {
       subtitle: string;
       title: string;
     };
+    mainContent: {
+      clearAll: string;
+      completeBudgetAndExcuse: string;
+      completeBudgetFirst: string;
+      completeOriginFirst: string;
+      excuseLabel: string;
+      excusePlaceholder: string;
+      excuseStepDescription: string;
+      experienceLabel: string;
+      experiencePlaceholder: string;
+      experienceStepDescription: string;
+      next: string;
+      refineDetailsLabel: string;
+      refineDetailsPlaceholder: string;
+      refineDetailsOneSelected: string;
+      refineDetailsCountSelected: string;
+      refineDetailsStepDescription: string;
+      travelTypeLabel: string;
+      travelTypePlaceholder: string;
+      viewSummary: string;
+    };
     summary: {
       add: string;
       addonRemoveAria: string;

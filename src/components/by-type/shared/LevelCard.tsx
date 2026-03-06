@@ -82,7 +82,7 @@ export default function LevelCard({
   return (
     <div
       className={cn(
-        'relative flex flex-col justify-center rounded-xl border-2 px-6 py-12 transition-all duration-300 w-full h-full min-h-[650px] max-w-[380px]',
+        '@container relative flex flex-col justify-center rounded-xl border-2 px-4 py-8 transition-all duration-300 w-full h-full@[300px]:min-h-[650px]  @[300px]:px-6 @[300px]:py-12',
         bgColor,
         borderColor,
         featured && 'shadow-lg',
@@ -95,13 +95,13 @@ export default function LevelCard({
       {featured && (
         <Label
           text="Más elegido"
-          className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+          className="absolute left-1/2 z-10 -translate-x-1/2 -top-2 @[300px]:-top-3"
         />
       )}
 
       {/* Selected Checkmark - Top Right */}
       {selected && (
-        <div className="absolute -top-3 -right-[14px] z-10">
+        <div className="absolute -right-[9.8px] -top-2 z-10 @[300px]:-right-[14px] @[300px]:-top-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
@@ -111,7 +111,7 @@ export default function LevelCard({
       {/* Eyebrow Text */}
       <p
         className={cn(
-          'mb-3 text-xs font-bold uppercase tracking-[6px] font-barlow',
+          'mb-2 font-barlow font-bold uppercase tracking-[4.2px] text-xs @[300px]:mb-3 @[300px]:tracking-[6px] text-center',
           secondaryTextColor,
         )}
       >
@@ -119,17 +119,17 @@ export default function LevelCard({
       </p>
 
       {/* Title and Price Row */}
-      <div className="mb-4 flex items-end gap-4">
+      <div className="mb-3 flex items-end gap-3 @[300px]:mb-4 @[300px]:gap-4">
         <h3
           className={cn(
-            'flex-1 text-5xl font-barlow-condensed font-extrabold uppercase leading-none text-left',
+            'flex-1 font-barlow-condensed font-extrabold uppercase leading-none text-left text-[2.1rem] @[300px]:text-5xl',
             textColor,
           )}
         >
           {level.name}
         </h3>
-        <div className={cn('h-12 w-px flex-shrink-0', priceDividerColor)} />
-        <div className="flex flex-col justify-start items-start font-barlow font-semibold text-lg text-left">
+        <div className={cn('h-8 w-px flex-shrink-0 @[300px]:h-12', priceDividerColor)} />
+        <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[300px]:text-lg">
           <span className={cn('leading-none whitespace-nowrap', textColor)}>
             {level.priceLabel}
           </span>
@@ -137,7 +137,7 @@ export default function LevelCard({
             {` ${level.price} USD`}
           </span>
           <span
-            className={cn('leading-none whitespace-nowrap text-xs', textColor)}
+            className={cn('leading-none whitespace-nowrap text-[0.525rem] @[300px]:text-xs', textColor)}
           >
             {level.priceFootnote}
           </span>
@@ -147,7 +147,7 @@ export default function LevelCard({
       {/* Description */}
       <p
         className={cn(
-          'mb-6 text-sm text-left',
+          'mb-4 text-left text-[0.6125rem] @[300px]:mb-6 @[300px]:text-sm',
           isDark ? 'text-white' : 'text-gray-700',
         )}
       >
@@ -170,16 +170,16 @@ export default function LevelCard({
                 key={feature.title}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
               >
-                <div className="flex items-center gap-4 py-4">
+                <div className="flex items-center gap-3 py-3 @[300px]:gap-4 @[300px]:py-4">
                   {/* Icon on the left */}
                   <IconComponent
-                    className={cn('h-6 w-6 flex-shrink-0', secondaryTextColor)}
+                    className={cn('h-4 w-4 flex-shrink-0 @[300px]:h-6 @[300px]:w-6', secondaryTextColor)}
                   />
                   {/* Text content on the right */}
                   <div className="flex flex-1 flex-col justify-start items-start">
                     <span
                       className={cn(
-                        'mb-1 text-xs uppercase tracking-wider leading-none',
+                        'mb-0.5 uppercase tracking-wider leading-none text-[0.525rem] @[300px]:mb-1 @[300px]:text-xs',
                         secondaryTextColor,
                       )}
                     >
@@ -187,7 +187,7 @@ export default function LevelCard({
                     </span>
                     <p
                       className={cn(
-                        'text-base font-medium leading-tight text-left',
+                        'font-medium leading-tight text-left text-[0.7rem] @[300px]:text-base',
                         textColor,
                       )}
                     >
@@ -204,7 +204,7 @@ export default function LevelCard({
 
       {/* Expand/Collapse Button - Bottom Center */}
       {hasMoreFeatures && (
-        <div className="mt-6 flex justify-center">
+        <div className="mt-4 flex justify-center @[300px]:mt-6">
           <button
             aria-label={isExpanded ? 'Collapse features' : 'Expand features'}
             className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 rounded-full p-2 transition-transform"
@@ -215,13 +215,13 @@ export default function LevelCard({
               animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <ChevronDown className={cn('h-5 w-5', secondaryTextColor)} />
+              <ChevronDown className={cn('h-3.5 w-3.5 @[300px]:h-5 @[300px]:w-5', secondaryTextColor)} />
             </motion.div>
           </button>
         </div>
       )}
-      <div className="mt-6 flex justify-center px-10">
-        <Button asChild variant="feature" size="md">
+      <div className="mt-4 flex justify-center px-7 @[300px]:mt-6 @[300px]:px-10">
+        <Button asChild variant="feature" size="sm" >
           <Link
             href={
               travelerType

@@ -81,6 +81,7 @@ export default async function TravelerTypePage({
         content={typeData.planner}
         fullViewportWidth
         type={typeData.meta.slug as TravelerTypeSlug}
+        itemsPerView={3}
       />
       <Blog
         eyebrow={blogEyebrow}

@@ -243,6 +243,27 @@
         ]
       }
     ],
+    "mainContent": {
+      "clearAll": "Borrar todo",
+      "completeBudgetAndExcuse": "Primero completá Presupuesto y Excusa.",
+      "completeBudgetFirst": "Primero completa el tipo de viaje y la experiencia en la sección Presupuesto.",
+      "completeOriginFirst": "Primero completá Origen y Fechas en Detalles y planificación.",
+      "excuseLabel": "Excusa",
+      "excusePlaceholder": "Elegí tu excusa",
+      "excuseStepDescription": "Toda escapada tiene su \"porque sí\".",
+      "experienceLabel": "Experiencia",
+      "experiencePlaceholder": "Qué quiero de mi viaje",
+      "experienceStepDescription": "Selecciona el nivel de experiencia que más se adapte a tu presupuesto y preferencias.",
+      "next": "Siguiente",
+      "refineDetailsLabel": "Afinar detalles",
+      "refineDetailsPlaceholder": "Afinar detalles",
+      "refineDetailsOneSelected": "1 detalle seleccionado",
+      "refineDetailsCountSelected": "{count} detalles seleccionados",
+      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía.",
+      "travelTypeLabel": "Tipo de Viaje",
+      "travelTypePlaceholder": "Elegí tu experiencia",
+      "viewSummary": "Ver resumen"
+    },
     "summary": {
       "add": "Agregar",
       "addonRemoveAria": "Quitar extra",

@@ -243,6 +243,27 @@
         ]
       }
     ],
+    "mainContent": {
+      "clearAll": "Clear all",
+      "completeBudgetAndExcuse": "First complete Budget and Excuse.",
+      "completeBudgetFirst": "First complete travel type and experience in the Budget section.",
+      "completeOriginFirst": "First complete Origin and Dates in Details and planning.",
+      "excuseLabel": "Excuse",
+      "excusePlaceholder": "Choose your excuse",
+      "excuseStepDescription": "Every getaway has its \"just because\".",
+      "experienceLabel": "Experience",
+      "experiencePlaceholder": "What I want from my trip",
+      "experienceStepDescription": "Select the experience level that best fits your budget and preferences.",
+      "next": "Next",
+      "refineDetailsLabel": "Refine details",
+      "refineDetailsPlaceholder": "Refine details",
+      "refineDetailsOneSelected": "1 detail selected",
+      "refineDetailsCountSelected": "{count} details selected",
+      "refineDetailsStepDescription": "When the unknown becomes your best companion.",
+      "travelTypeLabel": "Travel type",
+      "travelTypePlaceholder": "Choose your experience",
+      "viewSummary": "View summary"
+    },
     "summary": {
       "add": "Add",
       "addonRemoveAria": "Remove extra",

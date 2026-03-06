@@ -42,6 +42,7 @@ export interface EmblaCarouselProps {
   children: React.ReactNode;
   className?: string;
   contentClassName?: string;
+  slideClassName?: string;
   viewportClassName?: string;
 }
 
@@ -108,6 +109,7 @@ export function EmblaCarousel({
   peek = 0,
   showArrows = true,
   showDots = true,
+  slideClassName,
   slidesPerView = 1,
   slidesToScroll = 1,
   viewportClassName,
@@ -175,7 +177,7 @@ export function EmblaCarousel({
         data-slot="embla-viewport"
       >
         <div
-          className={cn('flex touch-pan-y', contentClassName)}
+          className={cn('flex h-full touch-pan-y', contentClassName)}
           data-slot="embla-container"
           style={{
             gap: gapPx,
@@ -186,7 +188,7 @@ export function EmblaCarousel({
             <div
               key={index}
               aria-roledescription="slide"
-              className="min-w-0 shrink-0 grow-0"
+              className={cn('min-w-0 shrink-0 grow-0', slideClassName)}
               data-slot="embla-slide"
               role="group"
               style={{ flexBasis: slideBasis }}
