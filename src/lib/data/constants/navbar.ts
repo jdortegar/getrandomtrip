@@ -27,12 +27,6 @@ export const NAVBAR_LINKS = [
     label: 'North IA',
     ariaLabel: 'Ir a IA TripBuddy',
   },
-  {
-    href: '/bitacoras',
-    label: 'Off the Record',
-    // label: 'Off the Record: Bitácoras del Continente',
-    ariaLabel: 'Ir a Off the Record: Bitácoras del Continente',
-  },
 ] as const;
 
 export const NAVBAR_STYLES = {

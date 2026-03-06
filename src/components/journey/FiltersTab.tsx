@@ -41,7 +41,7 @@ export default function FiltersTab() {
   };
 
   const handleContinue = () => {
-    // TODO: Change to router.push('/journey/add-ons') when the page exists
+    // journey/add-ons page was removed; continue flow from journey/summary or package flow
     console.log("Continuing to add-ons...");
   };
 

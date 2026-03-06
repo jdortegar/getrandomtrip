@@ -330,7 +330,7 @@ function DashboardContent() {
                         Próximos Viajes
                       </h2>
                       <Button variant="outline" size="sm" asChild>
-                        <Link href="/journey/basic-config">
+                        <Link href="/journey">
                           <Plus className="w-4 h-4 mr-2" />
                           Nuevo Viaje
                         </Link>
@@ -347,7 +347,7 @@ function DashboardContent() {
                           ¡Comienza tu próxima aventura ahora!
                         </p>
                         <Button asChild>
-                          <Link href="/journey/basic-config">
+                          <Link href="/journey">
                             <Plus className="w-4 h-4 mr-2" />
                             Planificar Viaje
                           </Link>
@@ -421,7 +421,7 @@ function DashboardContent() {
                     </h3>
                     <div className="space-y-3">
                       <Button asChild className="w-full justify-start">
-                        <Link href="/journey/basic-config">
+                        <Link href="/journey">
                           <Plus className="w-4 h-4 mr-2" />
                           Planificar Nuevo Viaje
                         </Link>

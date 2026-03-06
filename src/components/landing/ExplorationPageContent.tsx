@@ -300,7 +300,7 @@ function ExplorationPageContent() {
                         icon={item.icon}
                         description={item.description}
                         bgImage={item.bgImage}
-                        href="/journey/basic-config" // 👈 usamos Link
+                        href="/journey" // 👈 usamos Link
                       />
                     </motion.div>
                   ))}

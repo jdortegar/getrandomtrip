@@ -27,7 +27,7 @@ export function RoadtripsGrid() {
               icon={item.icon}
               description={item.description}
               bgImage={item.bgImage}
-              href="/journey/basic-config"
+              href="/journey"
             />
           </motion.div>
         ))}

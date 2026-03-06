@@ -38,7 +38,7 @@ export function gotoBasicConfig(
   if (opts.extra) Object.assign(query, opts.extra);
 
   const searchParams = new URLSearchParams(query);
-  const href = `/journey/basic-config?${searchParams.toString()}`;
+  const href = `/journey?${searchParams.toString()}`;
 
   router.push(href);
 }

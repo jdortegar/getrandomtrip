@@ -30,7 +30,6 @@ const PRIMARY_LINK_KEYS = [
 ] as const;
 const EXTRA_LINK_KEYS = [
   { href: '/tripbuddy', labelKey: 'labelTripbuddy', ariaKey: 'ariaLabelTripbuddy' },
-  { href: '/bitacoras', labelKey: 'labelBitacoras', ariaKey: 'ariaLabelBitacoras' },
 ] as const;
 
 export interface NavbarProps {

@@ -18,7 +18,7 @@ export default function TripperTiers({ tripperSlug }: { tripperSlug: string }) {
               <button
                 data-testid={t.testid}
                 className="w-full inline-flex items-center justify-center rounded-full bg-neutral-900 text-white px-4 py-2 text-sm font-semibold hover:bg-neutral-800"
-                onClick={() => router.push(`/journey/basic-config?from=tripper&tripper=${tripperSlug}&tier=${t.key}`)}
+                onClick={() => router.push(`/journey?from=tripper&tripper=${tripperSlug}&tier=${t.key}`)}
               >
                 {t.cta}
               </button>

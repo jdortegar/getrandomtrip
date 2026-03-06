@@ -37,14 +37,8 @@ export function useTrippersDecodeSearch({
     if (destination.trim()) params.set('destination', destination.trim());
     if (month.trim()) params.set('month', month.trim());
 
-    // Redirect to trippers-decode page with parameters
-    const queryString = params.toString();
-    const url = queryString
-      ? `/trippers-decode?${queryString}`
-      : '/trippers-decode';
-
-    // Use window.location for navigation to preserve the current page context
-    window.location.href = url;
+    // Redirect to trippers page (trippers-decode page was removed)
+    window.location.href = '/trippers';
 
     setIsSearching(false);
   };

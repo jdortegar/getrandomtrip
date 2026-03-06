@@ -89,9 +89,9 @@ export async function POST(request: NextRequest) {
         email: userEmail || 'cliente@example.com',
       },
       back_urls: {
-        success: `${baseUrl}/journey/confirmation`,
-        failure: `${baseUrl}/journey/checkout`,
-        pending: `${baseUrl}/journey/checkout`,
+        success: `${baseUrl}/post-purchase`,
+        failure: `${baseUrl}/checkout`,
+        pending: `${baseUrl}/checkout`,
       },
       auto_return: 'approved' as const,
       notification_url: `${baseUrl}/api/mercadopago/webhook`,

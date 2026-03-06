@@ -110,7 +110,7 @@ export default function PawsPetConfiguratorTab({ levelId, onBackToLevels, onNext
     query.set('kidFriendly', kidFriendly);
     query.set('dogFriendly', dogFriendly);
   }
-  const continueHref = `/journey/basic-config?${query.toString()}`;
+  const continueHref = `/journey?${query.toString()}`;
 
   const norm = normalizeLevel(levelId);
   const labelMap: Record<typeof norm, string> = {
