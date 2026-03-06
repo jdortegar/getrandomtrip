@@ -24,9 +24,14 @@ const pawsEs: TravelerTypeData = {
       videoSrc: '/videos/paws-hero-video.mp4',
       fallbackImage: '/images/journey-types/paws-card.jpg',
       primaryCta: {
-        text: '🐾 RANDOMTRIP-paws!',
-        href: '#paws-planner',
+        ariaLabel: 'Ir a la sección de blog',
+        href: '#blog',
+        text: 'Historias inspiradoras',
+      },
+      secondaryCta: {
         ariaLabel: 'Comienza tu viaje con tu mascota',
+        href: '#type-planner',
+        text: '🐾 RANDOMTRIP-paws!',
       },
     } as HeroContent,
     story: {

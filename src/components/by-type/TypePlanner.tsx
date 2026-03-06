@@ -14,7 +14,9 @@ interface TypePlannerProps {
   };
   compact?: boolean;
   content: TypePlannerContent;
+  /** When true, planner can break out of container to full viewport width. */
   fullViewportWidth?: boolean;
+  hideOverflow?: boolean;
   onSelect?: (levelId: string) => void;
   selectedLevel?: string;
   showArrows?: boolean;
@@ -28,7 +30,8 @@ export default function TypePlanner({
   classes,
   compact = false,
   content,
-  fullViewportWidth = false,
+  fullViewportWidth: _fullViewportWidth,
+  hideOverflow = true,
   onSelect,
   selectedLevel: externalSelectedLevel,
   showArrows = true,
@@ -49,18 +52,19 @@ export default function TypePlanner({
   };
 
   const contentElement = (
-    <div className="relative flex min-h-[650px] w-full flex-col @container">
+    <div className="relative flex w-full flex-col">
       <EmblaCarousel
         align={content.levels.length < itemsPerView ? 'center' : 'start'}
-        className={cn('flex flex-1 flex-col min-h-0', classes?.wrapper)}
-        contentClassName="h-full items-stretch"
+        className={classes?.wrapper}
+        
         gap={gap}
         showArrows={showArrows}
         showDots={showDots}
         slideClassName="h-full"
         slidesPerView={itemsPerView}
         slidesToScroll={1}
-        viewportClassName="h-full min-h-[650px]"
+        viewportClassName="h-full"
+        hideOverflow={hideOverflow}
       >
         {content.levels.map((level, index) => {
           // Alternate between light and dark variants
@@ -69,6 +73,7 @@ export default function TypePlanner({
           const isFeatured = index === 2;
 
           return (
+            <div className="h-full @container">
             <LevelCard
               featured={isFeatured}
               key={level.id}
@@ -78,6 +83,7 @@ export default function TypePlanner({
               travelerType={type}
               variant={variant}
             />
+            </div>
           );
         })}
       </EmblaCarousel>
@@ -103,6 +109,7 @@ export default function TypePlanner({
       eyebrow={content.eyebrow}
       subtitle={content.subtitle}
       title={content.title}
+      id="type-planner"
     >
       {contentElement}
     </Section>

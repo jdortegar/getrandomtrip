@@ -81,7 +81,7 @@ export function ExplorationSection({
             ariaLabelNext={carouselAriaLabelNext}
             ariaLabelPrev={carouselAriaLabelPrev}
             ariaLabelSlide={carouselAriaLabelSlide}
-            fullViewportWidth
+            hideOverflow={false}
             localizedTravelerTypes={localizedTravelerTypes}
             travelerTypes={travelerTypes}
           />

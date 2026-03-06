@@ -24,9 +24,14 @@ const familyEs: TravelerTypeData = {
       videoSrc: '/videos/family-hero-video.mp4',
       fallbackImage: '/images/journey-types/family-traveler.jpg',
       primaryCta: {
-        text: 'RANDOMTRIP-we!',
-        href: '#family-planner',
+        ariaLabel: 'Ir a la sección de blog',
+        href: '#blog',
+        text: 'Historias inspiradoras',
+      },
+      secondaryCta: {
         ariaLabel: 'Comienza tu viaje en familia',
+        href: '#type-planner',
+        text: 'RANDOMTRIP-we!',
       },
     } as HeroContent,
     story: {

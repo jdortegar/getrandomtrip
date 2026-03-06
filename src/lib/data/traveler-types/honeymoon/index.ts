@@ -24,9 +24,14 @@ const honeymoonEs: TravelerTypeData = {
       videoSrc: '/videos/honeymoon-video.mp4',
       fallbackImage: '/images/journey-types/honeymoon-same-sex.jpg',
       primaryCta: {
-        text: 'RANDOMTRIP-us!',
-        href: '#honeymoon-planner',
+        ariaLabel: 'Ir a la sección de blog',
+        href: '#blog',
+        text: 'Historias inspiradoras',
+      },
+      secondaryCta: {
         ariaLabel: 'Comienza tu luna de miel',
+        href: '#type-planner',
+        text: 'RANDOMTRIP-us!',
       },
     } as HeroContent,
     story: {

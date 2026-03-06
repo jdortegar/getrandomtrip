@@ -25,12 +25,12 @@ const soloEs: TravelerTypeData = {
       fallbackImage: '/images/journey-types/solo-traveler.jpg',
       secondaryCta: {
         text: 'RANDOMTRIP-ME!',
-        href: '#solo-planner',
+        href: '#type-planner',
         ariaLabel: 'Ir a la sección de planificación de viaje',
       },
       primaryCta: {
         text: 'Historias inspiradoras',
-        href: '#solo-blog',
+        href: '#blog',
         ariaLabel: 'Ir a la sección de blog',
       },
     } as HeroContent,

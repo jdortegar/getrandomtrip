@@ -79,9 +79,10 @@ export default async function TravelerTypePage({
       />
       <TypePlanner
         content={typeData.planner}
-        fullViewportWidth
+        hideOverflow={false}
         type={typeData.meta.slug as TravelerTypeSlug}
-        itemsPerView={3}
+        itemsPerView={4}
+
       />
       <Blog
         eyebrow={blogEyebrow}

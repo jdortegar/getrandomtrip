@@ -82,7 +82,7 @@ export default function LevelCard({
   return (
     <div
       className={cn(
-        '@container relative flex flex-col justify-center rounded-xl border-2 px-4 py-8 transition-all duration-300 w-full h-full@[300px]:min-h-[650px]  @[300px]:px-6 @[300px]:py-12',
+        'relative flex h-full w-full flex-col justify-center rounded-xl border-2 px-4 py-8 transition-all duration-300 @[300px]:min-h-[660px] @[300px]:px-6 @[300px]:py-12',
         bgColor,
         borderColor,
         featured && 'shadow-lg',
@@ -221,7 +221,7 @@ export default function LevelCard({
         </div>
       )}
       <div className="mt-4 flex justify-center px-7 @[300px]:mt-6 @[300px]:px-10">
-        <Button asChild variant="feature" size="sm" >
+        <Button asChild variant="feature" size="md" >
           <Link
             href={
               travelerType

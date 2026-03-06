@@ -24,9 +24,14 @@ export const coupleEn: TravelerTypeData = {
         'https://ocqketmaavn5dczt.public.blob.vercel-storage.com/videos/couple-hero-video.mp4',
       fallbackImage: '/images/journey-types/couple-traveler.jpg',
       primaryCta: {
-        text: 'RANDOMTRIP-us!',
-        href: '#couple-planner',
+        ariaLabel: 'Go to blog section',
+        href: '#blog',
+        text: 'Inspiring stories',
+      },
+      secondaryCta: {
         ariaLabel: 'Go to trip planning section',
+        href: '#type-planner',
+        text: 'RANDOMTRIP-us!',
       },
     } as HeroContent,
     story: {

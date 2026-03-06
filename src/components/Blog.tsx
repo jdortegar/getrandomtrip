@@ -58,7 +58,7 @@ function BlogCarouselDots({
 export default function Blog({
   carouselSlideAriaLabel = 'Go to slide {0}',
   eyebrow,
-  id,
+  id = 'blog',
   posts,
   subtitle,
   title,

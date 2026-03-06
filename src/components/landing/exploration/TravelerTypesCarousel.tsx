@@ -25,6 +25,7 @@ interface TravelerTypesCarouselProps {
     viewport?: string;
     wrapper?: string;
   };
+  /** When true, carousel can break out of container to full viewport width. */
   fullViewportWidth?: boolean;
   itemsPerView?: number;
   /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). Merged with base data to produce card content. */
@@ -41,6 +42,8 @@ interface TravelerTypesCarouselProps {
   tripperSlug?: string;
   /** Localized traveler types (title + description). When not set, uses initialTravellerTypes (or merged with localizedTravelerTypes when provided). */
   travelerTypes?: TravelerType[];
+  /** When true (default), viewport clips overflow (overflow-hidden). When false, next slide can peek (overflow-visible). */
+  hideOverflow?: boolean;
 }
 
 export function TravelerTypesCarousel({
@@ -49,7 +52,7 @@ export function TravelerTypesCarousel({
   ariaLabelPrev,
   ariaLabelSlide,
   classes,
-  fullViewportWidth,
+  fullViewportWidth: _fullViewportWidth,
   itemsPerView = 3,
   localizedTravelerTypes,
   onSelect,
@@ -60,6 +63,7 @@ export function TravelerTypesCarousel({
   travelerTypes,
   tripperMode = false,
   tripperSlug,
+  hideOverflow = true,
 }: TravelerTypesCarouselProps) {
   const baseTypes = React.useMemo(() => {
     if (travelerTypes?.length) return travelerTypes;
@@ -133,6 +137,7 @@ export function TravelerTypesCarousel({
         slidesPerView={itemsPerView}
         slidesToScroll={itemsPerView}
         viewportClassName={classes?.viewport}
+        hideOverflow={hideOverflow}
       >
         {typesToShow.map((t) => (
           <div key={t.travelType} className="aspect-[280/332] w-full min-h-0">

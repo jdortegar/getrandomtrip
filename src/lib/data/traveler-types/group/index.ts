@@ -24,9 +24,14 @@ const groupEs: TravelerTypeData = {
       videoSrc: '/videos/group-hero-video.mp4',
       fallbackImage: '/images/journey-types/friends-group.jpg',
       primaryCta: {
-        text: 'RANDOMTRIP-all!',
-        href: '#group-planner',
+        ariaLabel: 'Ir a la sección de blog',
+        href: '#blog',
+        text: 'Historias inspiradoras',
+      },
+      secondaryCta: {
         ariaLabel: 'Comienza tu viaje en grupo',
+        href: '#type-planner',
+        text: 'RANDOMTRIP-all!',
       },
     } as HeroContent,
     story: {
