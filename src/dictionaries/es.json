@@ -367,6 +367,11 @@
         "clearButton": "Borrar",
         "climateLabel": "Clima preferencial",
         "departPrefLabel": "Horarios preferidos de salida (opcional)",
+        "importantNote1": "El precio mostrado es por persona.",
+        "importantNote2": "Incluye alojamiento y actividades según el nivel elegido.",
+        "importantNote3": "No incluye vuelos ni traslados hasta el destino.",
+        "importantNote4": "Sujeto a disponibilidad al confirmar.",
+        "importantTitle": "Importante",
         "maxTravelTimeLabel": "Tiempo máximo de viaje",
         "saveFiltersButton": "Guardar Filtros"
       },

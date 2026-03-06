@@ -76,6 +76,13 @@ interface JourneySummaryProps {
   };
   onDetailRemove?: (detail: string) => void;
   onEdit?: (section: string) => void;
+  /** Localized excuse titles/descriptions (journey.excuses). Used for excuse section label. */
+  localizedExcuses?: Array<{ key: string; title: string; description: string }>;
+  /** Localized refine-detail option labels (journey.refineDetailOptions). Keyed by travelType then excuse key. */
+  refineDetailOptions?: Record<
+    string,
+    Record<string, Array<{ key: string; label: string; desc: string }>>
+  >;
   summary: JourneySummaryDict;
 }
 
@@ -83,8 +90,10 @@ export default function JourneySummary({
   addonLabels,
   className,
   filterOptions,
+  localizedExcuses,
   onDetailRemove,
   onEdit,
+  refineDetailOptions,
   summary,
 }: JourneySummaryProps) {
   const searchParams = useSearchParams();
@@ -180,18 +189,25 @@ export default function JourneySummary({
   }, [selectedLevel, summary.experiencePerPerson]);
 
   const excuseTitle = useMemo(
-    () => (excuse ? getExcuseTitle(excuse) : undefined),
-    [excuse],
+    () =>
+      excuse
+        ? (localizedExcuses?.find((e) => e.key === excuse)?.title ??
+            getExcuseTitle(excuse))
+        : undefined,
+    [excuse, localizedExcuses],
   );
 
   const refineDetailEntries = useMemo(() => {
     if (!excuse || refineDetails.length === 0) return [];
-    const options = getExcuseOptions(excuse);
-    return refineDetails.map((key) => ({
-      key,
-      label: options.find((o) => o.key === key)?.label ?? key,
-    }));
-  }, [excuse, refineDetails]);
+    const fallbackOptions = getExcuseOptions(excuse);
+    const travelType = (searchParams.get('travelType') || '').toLowerCase();
+    const byExcuse = refineDetailOptions?.[travelType]?.[excuse];
+    return refineDetails.map((key) => {
+      const localized = byExcuse?.find((o) => o.key === key)?.label;
+      const fallback = fallbackOptions.find((o) => o.key === key)?.label ?? key;
+      return { key, label: localized ?? fallback };
+    });
+  }, [excuse, refineDetails, refineDetailOptions, searchParams]);
 
   const transportLabel = useMemo(() => {
     if (!transport) return undefined;
@@ -450,7 +466,7 @@ export default function JourneySummary({
         </div>
       </div>
 
-      {/* Excusa */}
+      {/* Excuse section – labels from summary.excuseSection */}
       <div className="border-b border-gray-200 pb-4">
         <p className={cn('w-full', sectionTitleClass)}>
           {summary.excuseSection}
@@ -481,7 +497,7 @@ export default function JourneySummary({
         </div>
       </div>
 
-      {/* Afinar detalles */}
+      {/* Refine details section – labels from summary.detailsSection */}
       <div className="border-b border-gray-200 pb-4">
         <p className={cn('w-full', sectionTitleClass)}>
           {summary.detailsSection}
@@ -530,7 +546,7 @@ export default function JourneySummary({
         </div>
       </div>
 
-      {/* Origen */}
+      {/* Origin section – labels from summary.originSection */}
       <div className="border-b border-gray-200 pb-4">
         <p className={cn('w-full', sectionTitleClass)}>
           {summary.originSection}

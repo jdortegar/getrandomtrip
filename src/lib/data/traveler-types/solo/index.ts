@@ -6,6 +6,7 @@ import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 import type { Locale } from '@/lib/i18n/config';
+import { soloEn } from './en';
 
 const soloEs: TravelerTypeData = {
   meta: {
@@ -491,6 +492,6 @@ const soloEs: TravelerTypeData = {
 };
 
 export const solo: Record<Locale, TravelerTypeData> = {
+  en: soloEn,
   es: soloEs,
-  en: soloEs,
 };

@@ -219,6 +219,11 @@ export interface MarketingDictionary {
         clearButton: string;
         climateLabel: string;
         departPrefLabel: string;
+        importantNote1?: string;
+        importantNote2?: string;
+        importantNote3?: string;
+        importantNote4?: string;
+        importantTitle?: string;
         maxTravelTimeLabel: string;
         saveFiltersButton: string;
       };

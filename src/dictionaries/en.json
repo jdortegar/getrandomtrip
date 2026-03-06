@@ -367,6 +367,11 @@
         "clearButton": "Clear",
         "climateLabel": "Preferred climate",
         "departPrefLabel": "Preferred departure times (optional)",
+        "importantNote1": "The price shown is per person.",
+        "importantNote2": "Includes accommodation and activities according to the level chosen.",
+        "importantNote3": "Does not include flights or transfers to the destination.",
+        "importantNote4": "Subject to availability upon confirmation.",
+        "importantTitle": "Important",
         "maxTravelTimeLabel": "Maximum travel time",
         "saveFiltersButton": "Save Filters"
       },

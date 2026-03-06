@@ -314,8 +314,8 @@ export default function JourneyMainContent({
 
   const travelerTypeData = useMemo(() => {
     if (!travelType) return null;
-    return getTravelerType(travelType);
-  }, [travelType]);
+    return getTravelerType(travelType, locale);
+  }, [travelType, locale]);
 
   const selectedExperienceLevel = useMemo(() => {
     if (!travelerTypeData || !experience) return null;
@@ -751,6 +751,7 @@ export default function JourneyMainContent({
                       selectedLevel={experience}
                       showArrows={false}
                       type={travelType as TravelerTypeSlug}
+                      
                     />
                   </div>
                 </JourneyDropdown>
