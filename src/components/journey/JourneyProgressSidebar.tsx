@@ -3,6 +3,7 @@
 import { Check } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { getHasExcuseStep } from '@/lib/helpers/excuse-helper';
 
 interface Substep {
   description: string;
@@ -46,12 +47,13 @@ export default function JourneyProgressSidebar({
     const startDate = searchParams.get('startDate');
     const nights = searchParams.get('nights');
     const transport = searchParams.get('transport');
+    const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience);
 
     switch (tabId) {
       case 'budget':
         return !!(travelType && experience);
       case 'excuse':
-        return !!(travelType && experience && excuse);
+        return !!(travelType && experience && (excuse || !hasExcuseStep));
       case 'details':
         return !!(originCountry && originCity && startDate && nights);
       case 'preferences':
@@ -73,6 +75,7 @@ export default function JourneyProgressSidebar({
     const transportOrder = searchParams.get('transportOrder');
     const transport = searchParams.get('transport');
     const addons = searchParams.get('addons');
+    const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience);
 
     if (tabId === 'budget') {
       if (substepId === 'travel-type') {
@@ -85,10 +88,10 @@ export default function JourneyProgressSidebar({
 
     if (tabId === 'excuse') {
       if (substepId === 'reason') {
-        return !!excuse;
+        return !!excuse || !hasExcuseStep;
       }
       if (substepId === 'refine-details') {
-        return !!refineDetails;
+        return !!refineDetails || !hasExcuseStep;
       }
     }
 

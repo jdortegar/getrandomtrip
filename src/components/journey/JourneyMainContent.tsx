@@ -13,8 +13,9 @@ import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector'
 import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import {
-  getExcusesByType,
+  getExcusesByTypeAndLevel,
   getExcuseOptions,
+  getHasExcuseStep,
 } from '@/lib/helpers/excuse-helper';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { useStore } from '@/store/store';
@@ -27,8 +28,10 @@ interface JourneyMainContentLabels {
   completeBudgetAndExcuse: string;
   completeBudgetFirst: string;
   completeOriginFirst: string;
+  customTripNoExcuseMessage: string;
   excuseLabel: string;
   excusePlaceholder: string;
+  excuseCardCta: string;
   excuseStepDescription: string;
   experienceLabel: string;
   experiencePlaceholder: string;
@@ -197,13 +200,18 @@ export default function JourneyMainContent({
 
   const excuses = useMemo(() => {
     if (!travelType) return [];
-    return getExcusesByType(travelType);
-  }, [travelType]);
+    return getExcusesByTypeAndLevel(travelType, experience);
+  }, [travelType, experience]);
 
   const refineDetailsOptions = useMemo(() => {
     if (!excuse) return [];
     return getExcuseOptions(excuse);
   }, [excuse]);
+
+  const hasExcuseStep = useMemo(
+    () => getHasExcuseStep(travelType ?? '', experience),
+    [travelType, experience],
+  );
 
   const handleTravelTypeSelect = (slug: string) => {
     updateQuery({ travelType: slug });
@@ -398,7 +406,7 @@ export default function JourneyMainContent({
       case 'budget':
         return travelType && experience;
       case 'excuse':
-        return travelType && experience && excuse;
+        return travelType && experience && (excuse || !hasExcuseStep);
       case 'details':
         return originCountry && originCity && startDate && nights;
       case 'preferences':
@@ -411,7 +419,7 @@ export default function JourneyMainContent({
   const isAllStepsComplete = Boolean(
     travelType &&
       experience &&
-      excuse &&
+      (excuse || !hasExcuseStep) &&
       originCountry &&
       originCity &&
       startDate &&
@@ -501,46 +509,54 @@ export default function JourneyMainContent({
       case 'excuse':
         return (
           <div className="min-w-0 w-full">
-            <Accordion
-              collapsible
-              onValueChange={setAccordionValue}
-              type="single"
-              value={accordionValue}
-            >
-              <JourneyDropdown
-                className="mb-4"
-                content={getExcuseLabel()}
-                label={labels.excuseLabel}
-                value="excuse"
+            {travelType && experience && !hasExcuseStep ? (
+              <div className="rounded-xl border border-neutral-200 bg-white p-8 text-center">
+                <p className="text-gray-600">
+                  {labels.refineDetailsStepDescription}
+                </p>
+                <p className="mt-2 text-sm text-gray-500">
+                  {labels.customTripNoExcuseMessage}
+                </p>
+              </div>
+            ) : (
+              <Accordion
+                collapsible
+                onValueChange={setAccordionValue}
+                type="single"
+                value={accordionValue}
               >
-                {travelType && experience ? (
-                  <div className="space-y-4">
-                    <p className="text-gray-600">
-                      {labels.excuseStepDescription}
-                    </p>
-                    <ExcusesCarousel
-                      excuses={excuses}
-                      fullViewportWidth={false}
-                      itemsPerView={3}
-                      localizedExcuses={localizedExcuses}
-                      onSelect={handleExcuseSelect}
-                      selectedExcuse={excuse}
-                      showArrows={false}
-                    />
-                  </div>
-                ) : (
-                  <div className="py-8 text-center">
-                    <p className="text-gray-500">
-                      {labels.completeBudgetFirst}
-                    </p>
-                  </div>
-                )}
-              </JourneyDropdown>
+                <JourneyDropdown
+                  className="mb-4"
+                  content={getExcuseLabel()}
+                  label={labels.excuseLabel}
+                  value="excuse"
+                >
+                  {travelType && experience ? (
+                    <div className="space-y-4">
+                      <p className="text-gray-600">
+                        {labels.excuseStepDescription}
+                      </p>
+                      <ExcusesCarousel
+                        ctaLabel={labels.excuseCardCta}
+                        excuses={excuses}
+                        fullViewportWidth={false}
+                        itemsPerView={3}
+                        localizedExcuses={localizedExcuses}
+                        onSelect={handleExcuseSelect}
+                        selectedExcuse={excuse}
+                        showArrows={false}
+                      />
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center">
+                      <p className="text-gray-500">
+                        {labels.completeBudgetFirst}
+                      </p>
+                    </div>
+                  )}
+                </JourneyDropdown>
 
-              {travelType &&
-                experience &&
-                excuse &&
-                refineDetailsOptions.length > 0 && (
+                {travelType && experience && excuse && (
                   <JourneyDropdown
                     className="mb-4"
                     content={getRefineDetailsLabel()}
@@ -551,25 +567,34 @@ export default function JourneyMainContent({
                       <p className="text-gray-600">
                         {labels.refineDetailsStepDescription}
                       </p>
-                      <RefineDetailsCarousel
-                        fullViewportWidth={false}
-                        itemsPerView={3}
-                        onSelect={handleRefineDetailsSelect}
-                        options={refineDetailsOptions}
-                        selectedOptions={refineDetails}
-                        showArrows={false}
-                        classes={{
-                          wrapper: 'w-full p-2',
-                        }}
-                      />
+                      {refineDetailsOptions.length > 0 ? (
+                        <RefineDetailsCarousel
+                          fullViewportWidth={false}
+                          itemsPerView={3}
+                          onSelect={handleRefineDetailsSelect}
+                          options={refineDetailsOptions}
+                          selectedOptions={refineDetails}
+                          showArrows={false}
+                          
+                        />
+                      ) : (
+                        <p className="py-4 text-center text-gray-500">
+                          {labels.refineDetailsPlaceholder}
+                        </p>
+                      )}
                     </div>
                   </JourneyDropdown>
                 )}
-            </Accordion>
+              </Accordion>
+            )}
           </div>
         );
       case 'details':
-        if (!travelType || !experience || !excuse) {
+        if (
+          !travelType ||
+          !experience ||
+          (hasExcuseStep && !excuse)
+        ) {
           return (
             <div className="py-12 text-center">
               <p className="text-gray-500">

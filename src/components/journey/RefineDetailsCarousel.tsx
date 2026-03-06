@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Carousel } from '@/components/Carousel';
 import { motion } from 'framer-motion';
+import { EmblaCarousel } from '@/components/EmblaCarousel';
 import RefineDetailsCard from '@/components/journey/RefineDetailsCard';
 
 interface RefineDetailsOption {
@@ -41,16 +41,6 @@ export function RefineDetailsCarousel({
     onSelect?.(option.key);
   };
 
-  // Calculate basis percentage for items per view
-  const getItemClassName = () => {
-    if (itemsPerView) {
-      const gapPx = 16;
-      const totalGaps = gapPx * (itemsPerView - 1);
-      return `basis-[calc((100%-${totalGaps}px)/${itemsPerView})] h-[332px] flex-shrink-0`;
-    }
-    return 'w-[280px] h-[332px] flex-shrink-0';
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -59,13 +49,15 @@ export function RefineDetailsCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <Carousel
-        classes={{ ...classes }}
-        fullViewportWidth={fullViewportWidth}
-        itemClassName={getItemClassName()}
+      <EmblaCarousel
+        align={options.length < itemsPerView ? 'center' : 'start'}
+        className={classes?.wrapper}
+        gap={16}
         showArrows={showArrows}
         showDots={showDots}
-        slidesToScroll={itemsPerView || 1}
+        slidesPerView={itemsPerView}
+        slidesToScroll={1}
+        viewportClassName={classes?.viewport}
       >
         {options.map((option) => {
           const isSelected = selectedOptions.includes(option.key);
@@ -82,7 +74,7 @@ export function RefineDetailsCarousel({
             />
           );
         })}
-      </Carousel>
+      </EmblaCarousel>
     </motion.div>
   );
 }

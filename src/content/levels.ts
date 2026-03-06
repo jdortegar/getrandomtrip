@@ -42,6 +42,41 @@ export interface LevelContent {
 // Constants
 // ============================================================================
 
+/** Level IDs used in journey (experience param) and in ALL_LEVELS keys. */
+export const LEVEL_IDS = [
+  'essenza',
+  'explora',
+  'exploraPlus',
+  'bivouac',
+  'atelier',
+] as const;
+
+export type LevelId = (typeof LEVEL_IDS)[number];
+
+/**
+ * Levels that show the "excuse" + "refine details" step in the journey.
+ * Atelier is custom/a medida — no excuse selection; advisor designs the trip.
+ */
+export const LEVEL_IDS_WITH_EXCUSE_STEP: LevelId[] = [
+  'essenza',
+  'explora',
+  'exploraPlus',
+  'bivouac',
+];
+
+/**
+ * Traveler types that have the excuse step. Honeymoon only has Atelier (no excuse step).
+ */
+export const TRAVELER_TYPES_WITH_EXCUSES = [
+  'couple',
+  'solo',
+  'family',
+  'group',
+  'paws',
+] as const;
+
+export type TravelerTypeWithExcuses = (typeof TRAVELER_TYPES_WITH_EXCUSES)[number];
+
 export const BASE_PRICES = {
   essenza: 350,
   explora: 500,
@@ -1534,4 +1569,29 @@ export function getLevel(
   if (!typeLevels) return null;
 
   return typeLevels[levelId as keyof typeof typeLevels] || null;
+}
+
+/**
+ * Whether the given traveler type and level show the excuse + refine-details step.
+ * Uses levels.ts as source of truth: only essenza, explora, exploraPlus, bivouac
+ * show excuses; atelier does not. Honeymoon has no excuse step (only Atelier product).
+ */
+export function getHasExcuseStep(
+  travelerType: string,
+  levelId: string | null | undefined,
+): boolean {
+  if (!levelId) return false;
+  const typeHasExcuses = TRAVELER_TYPES_WITH_EXCUSES.includes(
+    travelerType as TravelerTypeWithExcuses,
+  );
+  if (!typeHasExcuses) return false;
+  const normalized =
+    levelId === 'modo-explora'
+      ? 'explora'
+      : levelId === 'explora-plus' || levelId === 'exploraPlus'
+        ? 'exploraPlus'
+        : levelId === 'atelier-getaway'
+          ? 'atelier'
+          : levelId;
+  return LEVEL_IDS_WITH_EXCUSE_STEP.includes(normalized as LevelId);
 }

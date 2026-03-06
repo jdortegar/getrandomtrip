@@ -4,9 +4,11 @@ import {
   getExcuseByKey as getCentralizedExcuseByKey,
   type ExcuseData 
 } from '@/lib/data/shared/excuses';
+import { getHasExcuseStep } from '@/content/levels';
 
 // Re-export the centralized types and data
 export type { ExcuseData } from '@/lib/data/shared/excuses';
+export { getHasExcuseStep } from '@/content/levels';
 
 // All available excuse keys from centralized data
 export const EXCUSE_KEYS = allExcuses.map(excuse => excuse.key);
@@ -93,5 +95,17 @@ export function getExcuseOption(excuseKey: string, optionKey: string): {
  * Get excuses by traveler type
  */
 export function getExcusesByType(travelerType: string): ExcuseData[] {
+  return getExcusesByTravelerType(travelerType);
+}
+
+/**
+ * Get excuses by traveler type and level. Returns [] when this level does not
+ * show the excuse step (e.g. atelier, or honeymoon). Uses levels.ts as source of truth.
+ */
+export function getExcusesByTypeAndLevel(
+  travelerType: string,
+  levelId: string | null | undefined,
+): ExcuseData[] {
+  if (!getHasExcuseStep(travelerType, levelId)) return [];
   return getExcusesByTravelerType(travelerType);
 }

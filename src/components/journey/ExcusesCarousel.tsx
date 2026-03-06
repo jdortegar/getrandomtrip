@@ -12,6 +12,7 @@ interface ExcusesCarouselProps {
     viewport?: string;
     wrapper?: string;
   };
+  ctaLabel?: string;
   excuses: ExcuseData[];
   fullViewportWidth?: boolean;
   itemsPerView?: number;
@@ -25,6 +26,7 @@ interface ExcusesCarouselProps {
 
 export function ExcusesCarousel({
   classes,
+  ctaLabel,
   excuses,
   fullViewportWidth = false,
   itemsPerView = 3,
@@ -68,6 +70,7 @@ export function ExcusesCarousel({
             <ExcuseCard
               key={excuse.key}
               className="h-full w-full"
+              ctaLabel={ctaLabel}
               description={getDescription(excuse)}
               imageUrl={excuse.img}
               onClick={onSelect ? () => handleCardClick(excuse) : undefined}

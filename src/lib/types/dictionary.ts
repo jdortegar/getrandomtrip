@@ -131,8 +131,10 @@ export interface MarketingDictionary {
       completeBudgetAndExcuse: string;
       completeBudgetFirst: string;
       completeOriginFirst: string;
+      customTripNoExcuseMessage: string;
       excuseLabel: string;
       excusePlaceholder: string;
+      excuseCardCta: string;
       excuseStepDescription: string;
       experienceLabel: string;
       experiencePlaceholder: string;

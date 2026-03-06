@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface ExcuseCardProps {
   className?: string;
+  ctaLabel?: string;
   description: string;
   imageUrl: string;
   onClick?: () => void;
@@ -15,6 +16,7 @@ interface ExcuseCardProps {
 
 export default function ExcuseCard({
   className,
+  ctaLabel = 'Elegir y continuar',
   description,
   imageUrl,
   onClick,
@@ -62,7 +64,7 @@ export default function ExcuseCard({
             }}
             type="button"
           >
-            Elegir y continuar
+            {ctaLabel}
           </button>
         </div>
       </button>
