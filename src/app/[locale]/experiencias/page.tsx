@@ -10,7 +10,6 @@ import { getDictionary } from '@/lib/i18n/dictionaries';
 import { initialTravellerTypes } from '@/lib/data/travelerTypes';
 import { TRAVELER_TYPES } from '@/lib/data/traveler-types';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
-import type { HeroContent } from '@/components/Hero';
 import type { TypePlannerContent } from '@/types/planner';
 import type { TravelerType } from '@/lib/data/travelerTypes';
 
@@ -52,23 +51,6 @@ export default function ExperienciasPage({
   const exp = dict.experiencias;
   const home = dict.home;
 
-  const heroContent: HeroContent = {
-    branding: {
-      repeatText: home.heroBrandingRepeatText,
-      text: home.heroBrandingText,
-    },
-    fallbackImage: '/images/bg-playa-mexico.jpg',
-    primaryCta: {
-      ariaLabel: exp.heroCtaAriaLabel,
-      href: '#type-planner',
-      text: exp.heroCtaText,
-    },
-    scrollText: home.heroScrollText,
-    subtitle: exp.heroSubtitle,
-    title: exp.heroTitle,
-    videoSrc: '/videos/hero-video-1.mp4',
-  };
-
   const dictTypesByKey = Object.fromEntries(
     home.explorationTravelerTypes.map((t) => [t.key, t]),
   );
@@ -94,8 +76,7 @@ export default function ExperienciasPage({
   return (
     <main className="relative" style={{ scrollBehavior: 'smooth' }}>
       <Hero
-        content={heroContent}
-        id="experiencias-hero"
+        content={exp.hero}
         scrollIndicator
       />
 

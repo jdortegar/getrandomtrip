@@ -19,8 +19,6 @@ const TAB_IDS = [
   { id: 'benefits', contentKey: 'benefits' as const },
 ] as const;
 
-const DEFAULT_CTA_SCROLL_TARGET = '#exploration-section';
-
 interface HomeInfoProps {
   /** Localized benefits steps (title, description, imageSrc, imageAlt). */
   benefitsSteps?: ThreeColumnsItem[];
@@ -39,7 +37,7 @@ interface HomeInfoProps {
 
 export default function HomeInfo({
   benefitsSteps,
-  ctaScrollTarget = DEFAULT_CTA_SCROLL_TARGET,
+  ctaScrollTarget = '#exploration-section',
   ctaText = 'GETRANDOMTRIP!',
   eyebrow = 'Tres pasos, cero stress',
   howItWorksSteps,

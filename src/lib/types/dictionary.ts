@@ -71,13 +71,15 @@ export interface MarketingDictionary {
     blogTitle: string;
     blogViewAllSubtitle: string;
     blogViewAllTitle: string;
-    heroBrandingRepeatText: string;
-    heroBrandingText: string;
-    heroPrimaryCtaAriaLabel: string;
-    heroPrimaryCtaText: string;
-    heroScrollText: string;
-    heroSubtitle: string;
-    heroTitle: string;
+    hero: {
+      branding: { repeatText?: string; text: string };
+      fallbackImage: string;
+      primaryCta: { ariaLabel: string; href: string; text: string };
+      scrollText: string;
+      subtitle: string;
+      title: string;
+      videoSrc: string;
+    };
     homeInfoCtaText: string;
     homeInfoEyebrow: string;
     homeInfoSectionAriaLabel: string;
@@ -94,10 +96,15 @@ export interface MarketingDictionary {
     testimonialsViewFullReview: string;
   };
   experiencias: {
-    heroCtaAriaLabel: string;
-    heroCtaText: string;
-    heroSubtitle: string;
-    heroTitle: string;
+    hero: {
+      branding: { repeatText?: string; text: string };
+      fallbackImage: string;
+      primaryCta: { ariaLabel: string; href: string; text: string };
+      scrollText: string;
+      subtitle: string;
+      title: string;
+      videoSrc: string;
+    };
     travelTypeEyebrow: string;
     travelTypeSubtitle: string;
     travelTypeTitle: string;

@@ -64,6 +64,19 @@
       { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
     ],
     "explorationTitle": "Puntos de Partida",
+    "hero": {
+      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "primaryCta": {
+        "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
+        "href": "#exploration-section",
+        "text": "GETRANDOMTRIP!"
+      },
+      "scrollText": "SCROLL",
+      "subtitle": "Viví lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
+      "title": "SERENDIPIA DISEÑADA",
+      "videoSrc": "/videos/hero-video-1.mp4"
+    },
     "explorationTravelerTypes": [
       {
         "key": "couple",
@@ -92,13 +105,6 @@
         "description": "Aventuras con tu mascota."
       }
     ],
-    "heroBrandingRepeatText": "Repeat",
-    "heroBrandingText": "WONDER • WANDER",
-    "heroPrimaryCtaAriaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
-    "heroPrimaryCtaText": "GETRANDOMTRIP!",
-    "heroScrollText": "SCROLL",
-    "heroSubtitle": "Viví lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
-    "heroTitle": "SERENDIPIA DISEÑADA",
     "homeInfoCtaText": "GETRANDOMTRIP!",
     "homeInfoEyebrow": "Tres pasos, cero stress",
     "homeInfoSectionAriaLabel": "Información sobre Random Trip",
@@ -148,10 +154,19 @@
     ]
   },
   "experiencias": {
-    "heroCtaAriaLabel": "Ir a la sección de planes por viajero",
-    "heroCtaText": "GET RANDOMTRIP",
-    "heroSubtitle": "Elegí el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
-    "heroTitle": "EXPERIENCIAS",
+    "hero": {
+      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "primaryCta": {
+        "ariaLabel": "Ir a la sección de planes por viajero",
+        "href": "#type-planner",
+        "text": "GET RANDOMTRIP"
+      },
+      "scrollText": "SCROLL",
+      "subtitle": "Elegí el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
+      "title": "EXPERIENCIAS",
+      "videoSrc": "/videos/hero-video-1.mp4"
+    },
     "travelTypeEyebrow": "Punto de partida",
     "travelTypeSubtitle": "Elegí con quién vas a vivir esta experiencia.",
     "travelTypeTitle": "Por tipo de viajero"

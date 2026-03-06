@@ -1,144 +1,40 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import BrandingAnimation from '@/components/BrandingAnimation';
+import VideoBackground from '@/components/media/VideoBackground';
+import { formatTitleWithCopyright } from '@/lib/helpers/stringHelpers';
 
 export interface HeroContent {
-  title: string;
+  branding?: { repeatText?: string; text: string };
+  fallbackImage?: string;
+  primaryCta?: { ariaLabel: string; href: string; text: string };
+  scrollText?: string;
   subtitle: string;
   tagline?: string;
-  scrollText?: string;
+  title: string;
   videoSrc: string;
-  fallbackImage?: string;
-  branding?: {
-    text: string;
-    repeatText?: string;
-  };
-  tags?: {
-    label: string;
-    value: string;
-  }[];
-  primaryCta?: {
-    text: string;
-    href: string;
-    ariaLabel: string;
-  };
-  secondaryCta?: {
-    text: string;
-    href: string;
-    ariaLabel: string;
-  };
+  secondaryCta?: { ariaLabel: string; href: string; text: string };
+  tags?: unknown;
 }
 
 interface HeroProps {
   content: HeroContent;
-  id?: string;
   className?: string;
-  titleClassName?: string;
+  id?: string;
   scrollIndicator?: boolean;
-}
-
-// Helper to replace copyright symbol with <sup>(c)</sup>
-function formatTitleWithCopyright(title: string): string {
-  return title.replace(/©/g, '<sup>©</sup>');
-}
-
-function HeroVideoBackground({ content }: { content: HeroContent }) {
-  const [isVideoReady, setIsVideoReady] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Preload video for better performance
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleCanPlay = () => {
-      console.log('Video can play - setting ready');
-      setIsVideoReady(true);
-    };
-
-    const handleLoadedData = () => {
-      console.log('Video loaded data - setting ready');
-      setIsVideoReady(true);
-    };
-
-    const handleError = (e: Event) => {
-      console.log('Video error:', e);
-      setHasError(true);
-    };
-
-    // Add multiple event listeners for better compatibility
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.addEventListener('error', handleError);
-
-    // Fallback: set ready after 2 seconds if no events fire
-    const fallbackTimer = setTimeout(() => {
-      if (!isVideoReady && !hasError) {
-        console.log('Video fallback - setting ready after timeout');
-        setIsVideoReady(true);
-      }
-    }, 2000);
-
-    return () => {
-      video.removeEventListener('canplay', handleCanPlay);
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('error', handleError);
-      clearTimeout(fallbackTimer);
-    };
-  }, [isVideoReady, hasError]);
-
-  return (
-    <div className="absolute inset-0 w-full h-full">
-      {/* Fallback Image - Always visible as background */}
-      <div
-        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-        // style={{ backgroundImage: `url(${content.fallbackImage})` }}
-      />
-
-      {/* Video Overlay - Only when ready */}
-      {!hasError && content.videoSrc && (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            isVideoReady ? 'opacity-100' : 'opacity-0'
-          }`}
-          poster={content.fallbackImage ?? undefined}
-          onLoadStart={() => console.log('Video load started')}
-          onLoadedMetadata={() => console.log('Video metadata loaded')}
-          onCanPlay={() => console.log('Video can play event')}
-          onLoadedData={() => console.log('Video loaded data event')}
-          onError={(e) => console.log('Video error event:', e)}
-        >
-          <source
-            src={content.videoSrc.replace('.mp4', '.webm')}
-            type="video/webm"
-          />
-          <source src={content.videoSrc} type="video/mp4" />
-        </video>
-      )}
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
-    </div>
-  );
+  titleClassName?: string;
 }
 
 // Main Hero Component
 const Hero: React.FC<HeroProps> = ({
   content,
-  id,
   className,
+  id,
   scrollIndicator = false,
   titleClassName,
 }) => {
@@ -155,7 +51,10 @@ const Hero: React.FC<HeroProps> = ({
         aria-hidden
         className="absolute top-0 left-0 h-px w-px"
       />
-      <HeroVideoBackground content={content} />
+      <VideoBackground
+        // fallbackImage={content.fallbackImage}
+        videoSrc={content.videoSrc}
+      />
 
       {/* Main Content - Left Aligned */}
       <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
@@ -165,7 +64,10 @@ const Hero: React.FC<HeroProps> = ({
 
         <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
           <motion.h2
-            className="mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[140px] z-10 leading-[80px] md:leading-[140px] [&_sup]:text-[0.6em] [&_sup]:leading-none"
+            className={cn(
+              'mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[130px] z-10 leading-none [&_sup]:text-[0.6em] [&_sup]:leading-none',
+              titleClassName,
+            )}
             dangerouslySetInnerHTML={{
               __html: formatTitleWithCopyright(content.title),
             }}
@@ -241,7 +143,7 @@ const Hero: React.FC<HeroProps> = ({
             className="scroll-indicator pointer-events-none select-none z-10 text-white"
             aria-hidden="true"
           >
-            SCROLL
+            {content.scrollText || 'SCROLL'}
           </div>
         </div>
       )}

@@ -64,6 +64,19 @@
       { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
     ],
     "explorationTitle": "Starting Points",
+    "hero": {
+      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "primaryCta": {
+        "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
+        "href": "#exploration-section",
+        "text": "GETRANDOMTRIP!"
+      },
+      "scrollText": "SCROLL",
+      "subtitle": "Live the unexpected without improvising. We design your trip <br/>and <strong>reveal the destination 48 hours before.</strong>",
+      "title": "DESIGNED SERENDIPITY",
+      "videoSrc": "/videos/hero-video-1.mp4"
+    },
     "explorationTravelerTypes": [
       {
         "key": "couple",
@@ -92,13 +105,6 @@
         "description": "Adventures with your pet."
       }
     ],
-    "heroBrandingRepeatText": "Repeat",
-    "heroBrandingText": "WONDER • WANDER",
-    "heroPrimaryCtaAriaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
-    "heroPrimaryCtaText": "GETRANDOMTRIP!",
-    "heroScrollText": "SCROLL",
-    "heroSubtitle": "Live the unexpected without improvising. We design your trip <br/>and <strong>reveal the destination 48 hours before.</strong>",
-    "heroTitle": "DESIGNED SERENDIPITY",
     "homeInfoCtaText": "GETRANDOMTRIP!",
     "homeInfoEyebrow": "Three steps, zero stress",
     "homeInfoSectionAriaLabel": "Information about Random Trip",
@@ -148,10 +154,19 @@
     ]
   },
   "experiencias": {
-    "heroCtaAriaLabel": "Go to plans by traveler type section",
-    "heroCtaText": "GET RANDOMTRIP",
-    "heroSubtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
-    "heroTitle": "EXPERIENCES",
+    "hero": {
+      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "primaryCta": {
+        "ariaLabel": "Go to plans by traveler type section",
+        "href": "#type-planner",
+        "text": "GET RANDOMTRIP"
+      },
+      "scrollText": "SCROLL",
+      "subtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
+      "title": "EXPERIENCES",
+      "videoSrc": "/videos/hero-video-1.mp4"
+    },
     "travelTypeEyebrow": "Starting point",
     "travelTypeSubtitle": "Choose who you're traveling with for this experience.",
     "travelTypeTitle": "By traveler type"

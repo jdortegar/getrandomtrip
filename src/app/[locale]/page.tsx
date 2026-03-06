@@ -10,7 +10,6 @@ import {
   BENEFITS_IMAGE_SRCS,
   HOW_IT_WORKS_IMAGE_SRCS,
 } from '@/lib/data/how-it-works';
-import { HERO_STATIC } from '@/lib/data/home-hero';
 import { HOME_TESTIMONIALS } from '@/lib/data/home-testimonials';
 import { getAllTrippers } from '@/lib/db/tripper-queries';
 import { getDictionary } from '@/lib/i18n/dictionaries';
@@ -35,27 +34,10 @@ export default async function HomePage({
     imageSrc: BENEFITS_IMAGE_SRCS[i] ?? '',
   }));
 
-  const heroContent = {
-    branding: {
-      repeatText: home.heroBrandingRepeatText,
-      text: home.heroBrandingText,
-    },
-    fallbackImage: HERO_STATIC.fallbackImage,
-    primaryCta: {
-      ariaLabel: home.heroPrimaryCtaAriaLabel,
-      href: HERO_STATIC.primaryCtaHref,
-      text: home.heroPrimaryCtaText,
-    },
-    scrollText: home.heroScrollText,
-    subtitle: home.heroSubtitle,
-    title: home.heroTitle,
-    videoSrc: HERO_STATIC.videoSrc,
-  };
-
   return (
     <HomeWrapper dict={dict}>
       <main style={{ scrollBehavior: 'smooth' }}>
-        <Hero content={heroContent} scrollIndicator />
+        <Hero content={home.hero} scrollIndicator />
         <HomeInfo
           benefitsSteps={benefitsSteps}
           ctaText={home.homeInfoCtaText}
