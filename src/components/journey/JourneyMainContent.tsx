@@ -52,6 +52,11 @@ interface JourneyMainContentProps {
   className?: string;
   /** Localized excuse titles/descriptions (journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
+  /** Localized label/desc for refine-detail options, keyed by travelType then excuse key (journey.refineDetailOptions). */
+  localizedRefineOptions?: Record<
+    string,
+    Record<string, Array<{ key: string; label: string; desc: string }>>
+  >;
   /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). */
   localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
   /** Labels for dropdowns and step copy (journey.mainContent). */
@@ -65,6 +70,7 @@ export default function JourneyMainContent({
   activeTab,
   className,
   localizedExcuses,
+  localizedRefineOptions,
   localizedTravelerTypes,
   mainContentLabels,
   onOpenSection,
@@ -205,8 +211,17 @@ export default function JourneyMainContent({
 
   const refineDetailsOptions = useMemo(() => {
     if (!excuse) return [];
-    return getExcuseOptions(excuse);
-  }, [excuse]);
+    const options = getExcuseOptions(excuse);
+    const byType = localizedRefineOptions?.[travelType ?? ''];
+    const localized = byType?.[excuse];
+    if (!localized?.length) return options;
+    return options.map((opt) => {
+      const over = localized.find((o) => o.key === opt.key);
+      return over
+        ? { ...opt, label: over.label, desc: over.desc }
+        : opt;
+    });
+  }, [excuse, travelType, localizedRefineOptions]);
 
   const hasExcuseStep = useMemo(
     () => getHasExcuseStep(travelType ?? '', experience),
@@ -368,6 +383,10 @@ export default function JourneyMainContent({
       '{count}',
       String(refineDetails.length),
     );
+  };
+
+  const handleClearRefineDetails = () => {
+    updateQuery({ refineDetails: undefined });
   };
 
   const handleClearAll = () => {
@@ -568,15 +587,37 @@ export default function JourneyMainContent({
                         {labels.refineDetailsStepDescription}
                       </p>
                       {refineDetailsOptions.length > 0 ? (
-                        <RefineDetailsCarousel
-                          fullViewportWidth={false}
-                          itemsPerView={3}
-                          onSelect={handleRefineDetailsSelect}
-                          options={refineDetailsOptions}
-                          selectedOptions={refineDetails}
-                          showArrows={false}
-                          
-                        />
+                        <>
+                          <RefineDetailsCarousel
+                            fullViewportWidth={false}
+                            itemsPerView={3}
+                            onSelect={handleRefineDetailsSelect}
+                            options={refineDetailsOptions}
+                            selectedOptions={refineDetails}
+                            showArrows={false}
+                          />
+                          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                            <button
+                              className="text-gray-500 text-sm font-medium underline hover:no-underline disabled:opacity-50"
+                              onClick={handleClearRefineDetails}
+                              type="button"
+                            >
+                              {labels.clearAll}
+                            </button>
+                            <Button
+                              className="text-sm font-normal normal-case"
+                              onClick={() => {
+                                if (onTabChange) onTabChange('details');
+                                setAccordionValue('origin');
+                              }}
+                              size="md"
+                              type="button"
+                              variant="default"
+                            >
+                              {labels.next}
+                            </Button>
+                          </div>
+                        </>
                       ) : (
                         <p className="py-4 text-center text-gray-500">
                           {labels.refineDetailsPlaceholder}

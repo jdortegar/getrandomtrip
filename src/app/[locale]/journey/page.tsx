@@ -11,6 +11,7 @@ import JourneySummary from '@/components/journey/JourneySummary';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
+import { getHasExcuseStep } from '@/lib/helpers/excuse-helper';
 
 function getAccordionForStep(tabId: string, substepId?: string): string {
   switch (tabId) {
@@ -64,7 +65,11 @@ function getInitialStepFromParams(params: URLSearchParams): {
 
   if (!travelType) return { tabId: 'budget', sectionId: 'travel-type' };
   if (!experience) return { tabId: 'budget', sectionId: 'experience' };
-  if (!excuse) return { tabId: 'excuse', sectionId: 'excuse' };
+  const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience ?? '');
+  if (hasExcuseStep && !excuse) return { tabId: 'excuse', sectionId: 'excuse' };
+  // Stay on excuse step (refine-details) until user clicks Next; card click must not advance
+  if (hasExcuseStep && excuse)
+    return { tabId: 'excuse', sectionId: 'refine-details' };
   if (!originCountry || !originCity)
     return { tabId: 'details', sectionId: 'origin' };
   if (!startDate || !nights) return { tabId: 'details', sectionId: 'dates' };
@@ -146,6 +151,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             <JourneyMainContent
               activeTab={activeTab}
               localizedExcuses={journey.excuses}
+              localizedRefineOptions={journey.refineDetailOptions}
               localizedTravelerTypes={dict.home.explorationTravelerTypes}
               mainContentLabels={journey.mainContent}
               onOpenSection={setOpenSectionId}

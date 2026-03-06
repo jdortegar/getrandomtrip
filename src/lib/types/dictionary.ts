@@ -154,6 +154,11 @@ export interface MarketingDictionary {
       title: string;
       description: string;
     }>;
+    /** Localized label/desc for each excuse's refine-detail options. Keyed by travelType then excuse key. */
+    refineDetailOptions?: Record<
+      string,
+      Record<string, Array<{ key: string; label: string; desc: string }>>
+    >;
     summary: {
       add: string;
       addonRemoveAria: string;

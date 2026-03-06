@@ -284,6 +284,103 @@
       { "key": "honeymoon-luxury", "title": "Luna de Miel de Lujo", "description": "El comienzo perfecto de su vida juntos con experiencias únicas." },
       { "key": "paws-adventure", "title": "Aventura con Mascotas", "description": "Incluir a tu mejor amigo peludo en la aventura." }
     ],
+    "refineDetailOptions": {
+      "solo": {
+        "solo-adventure": [
+          {"key": "hiking-trekking", "label": "Senderismo & Trekking", "desc": "Caminar hacia lugares que solo se alcanzan a pie."},
+          {"key": "water-sports", "label": "Deportes Acuáticos", "desc": "Sumergirse en aventuras que te mantengan a flote."},
+          {"key": "extreme-sports", "label": "Deportes Extremos", "desc": "Adrenalina pura que te haga sentir vivo."}
+        ],
+        "cultural-immersion": [
+          {"key": "local-traditions", "label": "Tradiciones Locales", "desc": "Participar en ceremonias y festividades auténticas."},
+          {"key": "culinary-tours", "label": "Tours Culinarios", "desc": "Saborear la gastronomía local con chefs y familias."},
+          {"key": "art-galleries", "label": "Arte & Galerías", "desc": "Explorar el arte local y las expresiones culturales."}
+        ],
+        "wellness-retreat": [
+          {"key": "spa-treatments", "label": "Tratamientos de Spa", "desc": "Relajación y rejuvenecimiento en un ambiente de lujo."},
+          {"key": "meditation-yoga", "label": "Meditación & Yoga", "desc": "Encuentra tu centro a través de la práctica consciente."},
+          {"key": "nature-immersion", "label": "Inmersión en la Naturaleza", "desc": "Conecta con el entorno natural para encontrar paz interior."}
+        ]
+      },
+      "couple": {
+        "escapada-romantica": [
+          {"key": "cultura-local-paseos", "label": "Cultura Local & Paseos Tranquilos", "desc": "Caminar de la mano por lugares que cuentan historias que aún no conocen."},
+          {"key": "wellness-spa", "label": "Wellness & Spa", "desc": "Detox. Retox. Repeat."},
+          {"key": "gastronomia-vinos", "label": "Experiencias Gastronómicas & Vinos", "desc": "El amor también se prueba en la mesa: sabores, copas y risas en plural."},
+          {"key": "atardeceres-momentos", "label": "Atardeceres & Momentos Íntimos", "desc": "Lo simple que se vuelve eterno: mirarse en silencio frente a un horizonte compartido."}
+        ],
+        "duo-aventura": [
+          {"key": "trekking-naturaleza", "label": "Trekking & Naturaleza", "desc": "Subir juntos, descubrir juntos, conquistar juntos."},
+          {"key": "aventura-acuatica", "label": "Aventura Acuática", "desc": "Ríos, lagos o mares: dejarse llevar por la corriente y la adrenalina compartida."},
+          {"key": "exploracion-fauna", "label": "Exploración de Fauna", "desc": "La emoción de observar la vida salvaje como testigos privilegiados."},
+          {"key": "desierto-dunas", "label": "Desierto & Dunas", "desc": "La vastedad dorada donde cada paso es un acto de complicidad."}
+        ],
+        "foodie-lovers": [
+          {"key": "talleres-cocina", "label": "Talleres & Experiencias de Cocina", "desc": "Cocinar juntos: un caos divertido que se transforma en complicidad."},
+          {"key": "street-food-mercados", "label": "Street Food & Mercados", "desc": "Descubrir el alma de un lugar en un bocado callejero."},
+          {"key": "fine-dining-gourmet", "label": "Fine Dining & Experiencias Gourmet", "desc": "Una mesa donde cada plato se vuelve parte de la celebración."},
+          {"key": "rutas-vino-bodegas", "label": "Rutas de Vino & Bodegas", "desc": "Brindar en paisajes que saben a historia y terroir."}
+        ],
+        "cultura-tradicion": [
+          {"key": "museos-patrimonio", "label": "Museos & Patrimonio", "desc": "El arte y la historia como excusa para caminar más lento."},
+          {"key": "pueblos-caminatas", "label": "Pueblos & Caminatas", "desc": "Calles pequeñas, historias grandes: el encanto de lo cotidiano."},
+          {"key": "artesania-diseno-local", "label": "Artesanía & Diseño Local", "desc": "Objetos que cuentan historias hechas a mano, para llevarlas con ustedes."},
+          {"key": "festivales-locales", "label": "Festivales Locales", "desc": "La magia de compartir costumbres que se viven con alegría colectiva."}
+        ],
+        "wellness-retreat": [
+          {"key": "spa-termas", "label": "Spa & Termas", "desc": "Agua, calma y el lujo de no tener que hacer nada más."},
+          {"key": "yoga-mindfulness", "label": "Yoga & Mindfulness", "desc": "Respirar al unísono y reconectar con la esencia compartida."},
+          {"key": "naturaleza-silenciosa", "label": "Naturaleza Silenciosa", "desc": "El poder de escuchar el bosque en silencio, juntos."},
+          {"key": "detox-retox", "label": "Detox. Retox. Repeat", "desc": "Cuidarse como ritual compartido: lo que entra nutre cuerpo y vínculo."}
+        ],
+        "celebraciones": [
+          {"key": "escapada-aniversario", "label": "Escapada de Aniversario", "desc": "Un viaje que celebra el tiempo compartido, con nuevos recuerdos por sumar."},
+          {"key": "milestones-logros", "label": "Milestones & Logros", "desc": "Porque los grandes pasos de la vida merecen más que un brindis: merecen un viaje."},
+          {"key": "luces-ciudad", "label": "Luces de Ciudad", "desc": "Rooftops, neones y la vibra de una noche que se recuerda por siempre."},
+          {"key": "veladas-musica", "label": "Veladas con Música", "desc": "Un soundtrack en vivo para ponerle ritmo al festejo y a la complicidad."}
+        ],
+        "playa-dunas": [
+          {"key": "relax-arena", "label": "Relax & Arena", "desc": "El mar como telón de fondo y el tiempo suspendido entre olas."},
+          {"key": "deportes-acuaticos", "label": "Deportes Acuáticos", "desc": "Compartir la emoción del movimiento y el agua salada en la piel."},
+          {"key": "paseos-escenicos", "label": "Paseos Escénicos", "desc": "Caminar al borde del mar, donde cada paso se acompaña con brisa y luz."},
+          {"key": "vida-nocturna-musica", "label": "Vida Nocturna & Música", "desc": "El sonido del mar mezclado con música y luces: fiesta sin relojes."}
+        ],
+        "escapada-urbana": [
+          {"key": "arte-arquitectura", "label": "Arte & Arquitectura", "desc": "Descubrir cómo la ciudad respira a través de sus formas y colores."},
+          {"key": "gastronomia-cocteleria", "label": "Gastronomía & Coctelería", "desc": "Bares escondidos y mesas vibrantes: el pulso de la ciudad en cada copa."},
+          {"key": "cultura-shows", "label": "Cultura & shows", "desc": "Salir a perderse en la ciudad que nunca duerme."},
+          {"key": "compras-diseno", "label": "Compras & Diseño", "desc": "Buscar tesoros modernos en cada esquina creativa."}
+        ]
+      },
+      "family": {
+        "family-adventure": [
+          {"key": "theme-parks", "label": "Parques Temáticos", "desc": "Diversión garantizada para todas las edades."},
+          {"key": "nature-exploration", "label": "Exploración Natural", "desc": "Descubrir la naturaleza juntos como familia."},
+          {"key": "cultural-learning", "label": "Aprendizaje Cultural", "desc": "Enseñar a los niños sobre diferentes culturas."}
+        ]
+      },
+      "group": {
+        "group-adventure": [
+          {"key": "team-building", "label": "Actividades de Equipo", "desc": "Fortalecer lazos a través de desafíos compartidos."},
+          {"key": "nightlife", "label": "Vida Nocturna", "desc": "Disfrutar de la noche con tus mejores amigos."},
+          {"key": "sports-activities", "label": "Actividades Deportivas", "desc": "Competir y divertirse en actividades deportivas."}
+        ]
+      },
+      "honeymoon": {
+        "honeymoon-luxury": [
+          {"key": "romantic-dinners", "label": "Cenas Románticas", "desc": "Momentos íntimos con la mejor gastronomía."},
+          {"key": "luxury-spa", "label": "Spa de Lujo", "desc": "Relajación y bienestar en el más alto nivel."},
+          {"key": "private-tours", "label": "Tours Privados", "desc": "Experiencias exclusivas solo para ustedes dos."}
+        ]
+      },
+      "paws": {
+        "paws-adventure": [
+          {"key": "pet-friendly-parks", "label": "Parques Pet-Friendly", "desc": "Espacios donde tu mascota puede correr libremente."},
+          {"key": "beach-activities", "label": "Actividades en la Playa", "desc": "Disfrutar del sol y la arena con tu compañero peludo."},
+          {"key": "hiking-trails", "label": "Senderos para Caminar", "desc": "Explorar la naturaleza juntos en senderos pet-friendly."}
+        ]
+      }
+    },
     "summary": {
       "add": "Agregar",
       "addonRemoveAria": "Quitar extra",
