@@ -1,25 +1,29 @@
-'use client';
-
 import React from 'react';
-import Section from '@/components/layout/Section';
 import TopTrippersGridComponent from '@/components/tripper/TopTrippersGrid';
 import HeaderHero from '@/components/journey/HeaderHero';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale } from '@/lib/i18n/config';
 
-export default function TrippersPage() {
+export default async function TrippersPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
+  const locale = hasLocale(params.locale) ? params.locale : 'es';
+  const dict = await getDictionary(locale);
+  const hero = dict.trippers.hero;
+
   return (
     <main className="min-h-screen bg-white">
       <HeaderHero
         className="!min-h-[50vh]"
-        description="Explora perfiles de viajeros expertos que curan experiencias auténticas y memorables."
-        subtitle="NUESTROS TRIPPERS"
-        title="Nuestros Trippers"
-        videoSrc="/videos/trippers-hero.mp4"
+        description={hero.description}
+        subtitle={hero.subtitle}
+        title={hero.title}
+        videoSrc={hero.videoSrc}
       />
 
-      {/* Main Content */}
-      <Section className="py-20" fullWidth={false} id="trippers-grid">
-        <TopTrippersGridComponent />
-      </Section>
+      <TopTrippersGridComponent />
     </main>
   );
 }

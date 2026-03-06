@@ -64,17 +64,20 @@
         {
           "title": "stress-free and flexible",
           "description": "You say how much you want to spend and when; with options and filters to tailor the surprise to you. We take care of the rest.",
-          "imageAlt": "Road through green forest"
+          "imageAlt": "Road through green forest",
+          "imageSrc": "/images/benefits-1.png"
         },
         {
           "title": "All taken care of",
           "description": "Flights and accommodation aligned to your budget and travel style.",
-          "imageAlt": "Airplane interior at night"
+          "imageAlt": "Airplane interior at night",
+          "imageSrc": "/images/benefits-2.png"
         },
         {
           "title": "authentic discovery",
           "description": "Experience the thrill of the unexpected with real curation, not random.",
-          "imageAlt": "Airplane window view"
+          "imageAlt": "Airplane window view",
+          "imageSrc": "/images/benefits-3.png"
         }
       ],
       "ctaScrollTarget": "#exploration-section",
@@ -84,17 +87,20 @@
         {
           "title": "PLAN",
           "description": "Choose dates, origin city, duration and budget. Add filters and mood if you like.",
-          "imageAlt": "Road through green forest"
+          "imageAlt": "Road through green forest",
+          "imageSrc": "/images/how-it-works-1.png"
         },
         {
           "title": "GET THE SURPRISE",
           "description": "Confirm your trip. We reveal the destination 48 hours before and send you the guide for that mood.",
-          "imageAlt": "Airplane interior at night"
+          "imageAlt": "Airplane interior at night",
+          "imageSrc": "/images/how-it-works-2.png"
         },
         {
           "title": "TRAVEL STRESS-FREE",
           "description": "Pack your bags. Flights and accommodation ready; human support when you need it.",
-          "imageAlt": "Airplane window view"
+          "imageAlt": "Airplane window view",
+          "imageSrc": "/images/how-it-works-3.png"
         }
       ],
       "sectionAriaLabel": "Information about Random Trip",
@@ -162,6 +168,14 @@
     "travelTypeEyebrow": "Starting point",
     "travelTypeSubtitle": "Choose who you're traveling with for this experience.",
     "travelTypeTitle": "By traveler type"
+  },
+  "trippers": {
+    "hero": {
+      "description": "Explore profiles of expert travelers who curate authentic and memorable experiences.",
+      "subtitle": "OUR TRIPPERS",
+      "title": "Our Trippers",
+      "videoSrc": "/videos/trippers-hero.mp4"
+    }
   },
   "packagesByType": {
     "blogEyebrow": "Traveler stories",

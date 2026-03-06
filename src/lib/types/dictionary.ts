@@ -60,11 +60,11 @@ export interface MarketingDictionary {
       videoSrc: string;
     };
     homeInfo: {
-      benefitsSteps: Array<{ description: string; imageAlt: string; title: string }>;
+      benefitsSteps: Array<{ description: string; imageAlt: string; imageSrc: string; title: string }>;
       ctaScrollTarget: string;
       ctaText: string;
       eyebrow: string;
-      howItWorksSteps: Array<{ description: string; imageAlt: string; title: string }>;
+      howItWorksSteps: Array<{ description: string; imageAlt: string; imageSrc: string; title: string }>;
       sectionAriaLabel: string;
       tabBenefitsLabel: string;
       tabHowLabel: string;
@@ -117,6 +117,14 @@ export interface MarketingDictionary {
     travelTypeEyebrow: string;
     travelTypeSubtitle: string;
     travelTypeTitle: string;
+  };
+  trippers: {
+    hero: {
+      description: string;
+      subtitle: string;
+      title: string;
+      videoSrc: string;
+    };
   };
   packagesByType: {
     blogEyebrow: string;

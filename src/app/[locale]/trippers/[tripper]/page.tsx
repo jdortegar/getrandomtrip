@@ -27,6 +27,8 @@ import {
   TRIPPER_TRAVELER_TYPES_ANCHOR_ID,
   TripperTravelerTypesSection,
 } from '@/components/tripper/TripperTravelerTypesSection';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale } from '@/lib/i18n/config';
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from '@/components/tripper/TripperIntroVideoGate';
@@ -85,12 +87,19 @@ export async function generateMetadata({
 export default async function Page({
   params,
 }: {
-  params: { tripper: string };
+  params: { locale?: string; tripper: string };
 }) {
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === 'undefined') {
     redirect('/trippers');
   }
+
+  const locale = hasLocale(params.locale) ? params.locale : 'es';
+  const dict = await getDictionary(locale);
+  const homeInfoContent = {
+    ...dict.home.homeInfo,
+    ctaScrollTarget: `#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`,
+  };
 
   // Fetch from database
   const dbTripper = await getTripperBySlug(params.tripper);
@@ -163,7 +172,7 @@ export default async function Page({
       {featuredTrips.length > 0 && (
         <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
       )}
-      <HomeInfo ctaScrollTarget={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`} />
+      <HomeInfo content={homeInfoContent} />
       <TripperTravelerTypesSection
         availableTypes={availableTypesFromPackages}
         tripperName={dbTripper.name}

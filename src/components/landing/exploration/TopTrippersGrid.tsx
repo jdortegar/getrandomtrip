@@ -41,10 +41,7 @@ export function TopTrippersGrid({
           <TripperCard
             key={tripper.id}
             name={tripper.name}
-            href={
-              tripper.tripperSlug ||
-              tripper.name.toLowerCase().replace(/\s+/g, '-')
-            }
+            href={tripper.tripperSlug ?? ''}
             className="h-full w-full"
             instagramUrl={tripper.instagramUrl ?? undefined}
             imageUrl={tripper.avatarUrl ?? '/images/fallback.jpg'}

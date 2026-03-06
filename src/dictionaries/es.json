@@ -64,17 +64,20 @@
         {
           "title": "sin stress y flexible",
           "description": "Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.",
-          "imageAlt": "Camino entre bosque verde"
+          "imageAlt": "Camino entre bosque verde",
+          "imageSrc": "/images/benefits-1.png"
         },
         {
           "title": "Todo resuelto",
           "description": "Pasajes y alojamientos alineados a tu presupuesto y estilo de viaje.",
-          "imageAlt": "Interior de avión de noche"
+          "imageAlt": "Interior de avión de noche",
+          "imageSrc": "/images/benefits-2.png"
         },
         {
           "title": "descubrimiento auténtico",
           "description": "Viví la emoción de lo inesperado con curaduría real, no al azar.",
-          "imageAlt": "Vista desde ventanilla del avión"
+          "imageAlt": "Vista desde ventanilla del avión",
+          "imageSrc": "/images/benefits-3.png"
         }
       ],
       "ctaScrollTarget": "#exploration-section",
@@ -84,17 +87,20 @@
         {
           "title": "PLANIFICÁ",
           "description": "Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.",
-          "imageAlt": "Camino entre bosque verde"
+          "imageAlt": "Camino entre bosque verde",
+          "imageSrc": "/images/how-it-works-1.png"
         },
         {
           "title": "RECIBÍ LA SORPRESA",
           "description": "Confirmá tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
-          "imageAlt": "Interior de avión de noche"
+          "imageAlt": "Interior de avión de noche",
+          "imageSrc": "/images/how-it-works-2.png"
         },
         {
           "title": "VIAJÁ SIN STRESS",
           "description": "Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
-          "imageAlt": "Vista desde ventanilla del avión"
+          "imageAlt": "Vista desde ventanilla del avión",
+          "imageSrc": "/images/how-it-works-3.png"
         }
       ],
       "sectionAriaLabel": "Información sobre Random Trip",
@@ -162,6 +168,14 @@
     "travelTypeEyebrow": "Punto de partida",
     "travelTypeSubtitle": "Elegí con quién vas a vivir esta experiencia.",
     "travelTypeTitle": "Por tipo de viajero"
+  },
+  "trippers": {
+    "hero": {
+      "description": "Explora perfiles de viajeros expertos que curan experiencias auténticas y memorables.",
+      "subtitle": "NUESTROS TRIPPERS",
+      "title": "Nuestros Trippers",
+      "videoSrc": "/videos/trippers-hero.mp4"
+    }
   },
   "packagesByType": {
     "blogEyebrow": "Historias de viajeros",
