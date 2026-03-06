@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Carousel } from '@/components/Carousel';
 import { motion } from 'framer-motion';
+import { EmblaCarousel } from '@/components/EmblaCarousel';
 import ExcuseCard from '@/components/journey/ExcuseCard';
 import type { ExcuseData } from '@/lib/data/shared/excuses';
 
@@ -15,6 +15,8 @@ interface ExcusesCarouselProps {
   excuses: ExcuseData[];
   fullViewportWidth?: boolean;
   itemsPerView?: number;
+  /** Localized excuse titles/descriptions by key (e.g. journey.excuses). */
+  localizedExcuses?: Array<{ key: string; title: string; description: string }>;
   onSelect?: (excuseKey: string) => void;
   selectedExcuse?: string;
   showArrows?: boolean;
@@ -26,6 +28,7 @@ export function ExcusesCarousel({
   excuses,
   fullViewportWidth = false,
   itemsPerView = 3,
+  localizedExcuses,
   onSelect,
   selectedExcuse,
   showArrows = false,
@@ -35,15 +38,10 @@ export function ExcusesCarousel({
     onSelect?.(excuse.key);
   };
 
-  // Calculate basis percentage for items per view
-  const getItemClassName = () => {
-    if (itemsPerView) {
-      const gapPx = 16;
-      const totalGaps = gapPx * (itemsPerView - 1);
-      return `basis-[calc((100%-${totalGaps}px)/${itemsPerView})] h-[332px] flex-shrink-0`;
-    }
-    return 'w-[280px] h-[332px] flex-shrink-0';
-  };
+  const getTitle = (excuse: ExcuseData) =>
+    localizedExcuses?.find((e) => e.key === excuse.key)?.title ?? excuse.title;
+  const getDescription = (excuse: ExcuseData) =>
+    localizedExcuses?.find((e) => e.key === excuse.key)?.description ?? excuse.description;
 
   return (
     <motion.div
@@ -53,13 +51,15 @@ export function ExcusesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <Carousel
-        classes={{ ...classes }}
-        fullViewportWidth={fullViewportWidth}
-        itemClassName={getItemClassName()}
+      <EmblaCarousel
+        align={excuses.length < itemsPerView ? 'center' : 'start'}
+        className={classes?.wrapper}
+        gap={16}
         showArrows={showArrows}
         showDots={showDots}
-        slidesToScroll={itemsPerView || 1}
+        slidesPerView={itemsPerView}
+        slidesToScroll={1}
+        viewportClassName={classes?.viewport}
       >
         {excuses.map((excuse) => {
           const isSelected = selectedExcuse === excuse.key;
@@ -68,15 +68,15 @@ export function ExcusesCarousel({
             <ExcuseCard
               key={excuse.key}
               className="h-full w-full"
-              description={excuse.description}
+              description={getDescription(excuse)}
               imageUrl={excuse.img}
               onClick={onSelect ? () => handleCardClick(excuse) : undefined}
               selected={isSelected}
-              title={excuse.title}
+              title={getTitle(excuse)}
             />
           );
         })}
-      </Carousel>
+      </EmblaCarousel>
     </motion.div>
   );
 }

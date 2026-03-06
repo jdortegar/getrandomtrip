@@ -47,6 +47,8 @@ interface JourneyMainContentLabels {
 interface JourneyMainContentProps {
   activeTab: string;
   className?: string;
+  /** Localized excuse titles/descriptions (journey.excuses). */
+  localizedExcuses?: Array<{ key: string; title: string; description: string }>;
   /** Localized traveler type labels from dictionary (home.explorationTravelerTypes). */
   localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
   /** Labels for dropdowns and step copy (journey.mainContent). */
@@ -59,6 +61,7 @@ interface JourneyMainContentProps {
 export default function JourneyMainContent({
   activeTab,
   className,
+  localizedExcuses,
   localizedTravelerTypes,
   mainContentLabels,
   onOpenSection,
@@ -519,12 +522,10 @@ export default function JourneyMainContent({
                       excuses={excuses}
                       fullViewportWidth={false}
                       itemsPerView={3}
+                      localizedExcuses={localizedExcuses}
                       onSelect={handleExcuseSelect}
                       selectedExcuse={excuse}
                       showArrows={false}
-                      classes={{
-                        wrapper: 'w-full px-2',
-                      }}
                     />
                   </div>
                 ) : (

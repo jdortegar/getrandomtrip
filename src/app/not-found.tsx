@@ -7,6 +7,9 @@ import {
   Plane,
   Users,
 } from 'lucide-react';
+import HeaderHero from '@/components/journey/HeaderHero';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { getLocaleFromCookies } from '@/lib/i18n/server';
 
 export const metadata = {
   description:
@@ -14,24 +17,34 @@ export const metadata = {
   title: 'Página No Encontrada - RandomTrip',
 };
 
-export default function NotFoundPage() {
-  return (
-    <div className="relative font-sans min-h-screen bg-gray-50 text-gray-900 antialiased">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary/10 opacity-30 mix-blend-multiply filter blur-xl animate-pulse" />
-        <div
-          className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/5 opacity-30 mix-blend-multiply filter blur-xl animate-pulse"
-          style={{ animationDelay: '2s' }}
-        />
-        <div
-          className="absolute left-1/2 top-40 h-80 w-80 rounded-full bg-primary/8 opacity-30 mix-blend-multiply filter blur-xl animate-pulse"
-          style={{ animationDelay: '4s' }}
-        />
-      </div>
+export default async function NotFoundPage() {
+  const locale = await getLocaleFromCookies();
+  const dict = await getDictionary(locale);
+  const hero = dict.journey.hero;
 
-      <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
-        <div className="mx-auto w-full max-w-4xl">
+  return (
+    <div className="relative flex min-h-screen flex-col font-sans text-gray-900 antialiased bg-gray-50">
+      <HeaderHero
+        description={hero.description}
+        subtitle={hero.subtitle}
+        title={hero.title}
+      />
+
+      {/* Background pattern + 404 content */}
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
+        <div className="absolute inset-0">
+          <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary/10 opacity-30 mix-blend-multiply filter blur-xl animate-pulse" />
+          <div
+            className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/5 opacity-30 mix-blend-multiply filter blur-xl animate-pulse"
+            style={{ animationDelay: '2s' }}
+          />
+          <div
+            className="absolute left-1/2 top-40 h-80 w-80 rounded-full bg-primary/8 opacity-30 mix-blend-multiply filter blur-xl animate-pulse"
+            style={{ animationDelay: '4s' }}
+          />
+        </div>
+
+        <div className="relative mx-auto w-full max-w-4xl">
             {/* Main Content Card */}
             <div className="bg-white rounded-3xl shadow-2xl border border-neutral-200 p-8 md:p-12 text-center">
               {/* 404 Number with Animation */}
@@ -168,7 +181,7 @@ export default function NotFoundPage() {
                   Contáctanos
                 </Link>
               </p>
-          </div>
+            </div>
         </div>
       </div>
     </div>

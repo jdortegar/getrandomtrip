@@ -147,6 +147,11 @@ export interface MarketingDictionary {
       travelTypePlaceholder: string;
       viewSummary: string;
     };
+    excuses: Array<{
+      key: string;
+      title: string;
+      description: string;
+    }>;
     summary: {
       add: string;
       addonRemoveAria: string;

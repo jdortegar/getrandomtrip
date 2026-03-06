@@ -264,6 +264,17 @@
       "travelTypePlaceholder": "Elegí tu experiencia",
       "viewSummary": "Ver resumen"
     },
+    "excuses": [
+      { "key": "solo-adventure", "title": "Aventura en Solitario", "description": "Descubrir el mundo a tu ritmo, sin compromisos ni horarios." },
+      { "key": "cultural-immersion", "title": "Inmersión Cultural", "description": "Sumergirse en tradiciones, sabores y costumbres locales." },
+      { "key": "wellness-retreat", "title": "Retiro de Bienestar", "description": "Reconectar contigo mismo en un ambiente de paz y tranquilidad." },
+      { "key": "romantic-getaway", "title": "Escapada Romántica", "description": "Un viaje corto, suficiente para apagar el mundo y encenderse mutuamente." },
+      { "key": "adventure-couple", "title": "Aventura en Pareja", "description": "Descubrir juntos lugares que los desafíen y los unan más." },
+      { "key": "family-adventure", "title": "Aventura Familiar", "description": "Crear recuerdos inolvidables para toda la familia." },
+      { "key": "group-adventure", "title": "Aventura Grupal", "description": "Compartir experiencias únicas con tus amigos más cercanos." },
+      { "key": "honeymoon-luxury", "title": "Luna de Miel de Lujo", "description": "El comienzo perfecto de su vida juntos con experiencias únicas." },
+      { "key": "paws-adventure", "title": "Aventura con Mascotas", "description": "Incluir a tu mejor amigo peludo en la aventura." }
+    ],
     "summary": {
       "add": "Agregar",
       "addonRemoveAria": "Quitar extra",

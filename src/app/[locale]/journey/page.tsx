@@ -145,6 +145,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           <div className="min-w-0">
             <JourneyMainContent
               activeTab={activeTab}
+              localizedExcuses={journey.excuses}
               localizedTravelerTypes={dict.home.explorationTravelerTypes}
               mainContentLabels={journey.mainContent}
               onOpenSection={setOpenSectionId}
