@@ -37,8 +37,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Otros (solo si los habilitas en el código)
-# NEXT_PUBLIC_OPENAI_API_KEY=...
-# GEMINI_API_KEY=...
+# (ninguno requerido para el MVP)
 ```
 
 > Si una variable falta, la mayor parte del MVP sigue funcionando.

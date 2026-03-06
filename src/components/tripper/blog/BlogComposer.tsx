@@ -175,10 +175,9 @@ export default function BlogComposer({ post: initialPost, mode }: BlogComposerPr
     setPost({ ...post, blocks: newBlocks });
   };
 
-  // AI assist function
+  // Assist: local suggestions only
   const handleAiAssist = async () => {
     setAiSuggestions({ titles: ["Sugerencia 1", "Sugerencia 2"], rewrites: ["Reescritura 1", "Reescritura 2"] });
-    // In a real app, call /api/ai/blog-assist
   };
 
   return (
