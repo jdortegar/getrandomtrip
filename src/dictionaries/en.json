@@ -106,6 +106,7 @@
       }
     ],
     "homeInfoCtaText": "GETRANDOMTRIP!",
+    "homeInfoCtaScrollTarget": "#exploration-section",
     "homeInfoEyebrow": "Three steps, zero stress",
     "homeInfoSectionAriaLabel": "Information about Random Trip",
     "homeInfoTabBenefits": "Key benefits",

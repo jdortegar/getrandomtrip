@@ -40,6 +40,7 @@ export default async function HomePage({
         <Hero content={home.hero} scrollIndicator />
         <HomeInfo
           benefitsSteps={benefitsSteps}
+          ctaScrollTarget={home.homeInfoCtaScrollTarget}
           ctaText={home.homeInfoCtaText}
           eyebrow={home.homeInfoEyebrow}
           howItWorksSteps={howItWorksSteps}

@@ -8,7 +8,14 @@ import { trackButtonClick } from '@/lib/helpers/tracking/gtm';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*="size-"])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer uppercase text-center font-barlow text-lg font-semibold leading-[24px] tracking-[1.5px]',
+  [
+    'cursor-pointer flex items-center justify-center outline-none shrink-0 text-center transition-all whitespace-nowrap',
+    'font-barlow font-semibold leading-[24px] text-lg tracking-[1.5px] uppercase',
+    'disabled:pointer-events-none disabled:opacity-50',
+    'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+    'aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
+    '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
+  ].join(' '),
   {
     variants: {
       variant: {
@@ -25,9 +32,9 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         pill: 'bg-yellow-400 text-gray-900 hover:bg-yellow-500 rounded-full',
         white:
-          'border border-white bg-white text-black hover:bg-white/90 hover:text-black',
+          'border border-white bg-white hover:bg-white/90 hover:text-black',
         feature:
-          'bg-yellow-400 text-gray-800 hover:bg-yellow-500 font-normal tracking-normal text-base normal-case',
+          'bg-yellow-400 text-gray-800 hover:bg-yellow-500',
       },
       size: {
         default:

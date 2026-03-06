@@ -81,6 +81,7 @@ export interface MarketingDictionary {
       videoSrc: string;
     };
     homeInfoCtaText: string;
+    homeInfoCtaScrollTarget: string;
     homeInfoEyebrow: string;
     homeInfoSectionAriaLabel: string;
     homeInfoTabBenefits: string;
