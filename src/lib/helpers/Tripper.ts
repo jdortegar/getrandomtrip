@@ -1,10 +1,11 @@
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
+import { DEFAULT_LOCALE } from '@/lib/i18n/config';
 import { couple } from '@/lib/data/traveler-types/couple';
-import { solo } from '@/lib/data/traveler-types/solo';
 import { family } from '@/lib/data/traveler-types/family';
 import { group } from '@/lib/data/traveler-types/group';
 import { honeymoon } from '@/lib/data/traveler-types/honeymoon';
 import { paws } from '@/lib/data/traveler-types/paws';
+import { solo } from '@/lib/data/traveler-types/solo';
 import type { Tripper } from '@/content/trippers';
 
 /**
@@ -12,14 +13,14 @@ import type { Tripper } from '@/content/trippers';
  * Combines testimonials from all traveler types plus the tripper's own testimonials
  */
 export function getAllTestimonialsForTripper(tripper: Tripper): Testimonial[] {
-  // Get all testimonials from different traveler types
+  const locale = DEFAULT_LOCALE;
   const allTestimonials = [
-    ...group.testimonials.items,
-    ...solo.testimonials.items,
-    ...family.testimonials.items,
-    ...couple.testimonials.items,
-    ...honeymoon.testimonials.items,
-    ...paws.testimonials.items,
+    ...group[locale].testimonials.items,
+    ...solo[locale].testimonials.items,
+    ...family[locale].testimonials.items,
+    ...couple[locale].testimonials.items,
+    ...honeymoon[locale].testimonials.items,
+    ...paws[locale].testimonials.items,
   ];
 
   // Add tripper's own testimonials (transform to match Testimonial interface)

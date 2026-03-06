@@ -360,13 +360,13 @@ function TripDetailsContent() {
                 <div className="flex flex-wrap gap-2">
                   {filterChips.map((chip, index) => (
                     <Chip
-                      key={index}
+                      color="primary"
                       item={{
-                        key: chip.category,
+                        key: chip.category ?? String(index),
                         label: chip.category,
                         value: chip.value,
                       }}
-                      color="primary"
+                      key={index}
                       size="md"
                     />
                   ))}

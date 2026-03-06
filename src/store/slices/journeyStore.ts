@@ -78,13 +78,13 @@ export const FILTER_OPTION_KEYS = {
 /** Filter options with keys only; labels come from dictionary (journey.preferencesStep.filterOptions). */
 export const FILTER_OPTIONS: Record<
   keyof typeof FILTER_OPTION_KEYS,
-  { label?: string; options: Array<{ key: string; label?: string }> }
+  { label?: string; options: FilterOption[] }
 > = {
-  transport: { options: [...FILTER_OPTION_KEYS.transport.options.map((o) => ({ ...o, label: o.key }))] },
-  climate: { options: [...FILTER_OPTION_KEYS.climate.options.map((o) => ({ ...o, label: o.key }))] },
-  maxTravelTime: { options: [...FILTER_OPTION_KEYS.maxTravelTime.options.map((o) => ({ ...o, label: o.key }))] },
-  departPref: { options: [...FILTER_OPTION_KEYS.departPref.options.map((o) => ({ ...o, label: o.key }))] },
-  arrivePref: { options: [...FILTER_OPTION_KEYS.arrivePref.options.map((o) => ({ ...o, label: o.key }))] },
+  transport: { options: [...FILTER_OPTION_KEYS.transport.options.map((o) => ({ key: o.key, label: o.key }))] },
+  climate: { options: [...FILTER_OPTION_KEYS.climate.options.map((o) => ({ key: o.key, label: o.key }))] },
+  maxTravelTime: { options: [...FILTER_OPTION_KEYS.maxTravelTime.options.map((o) => ({ key: o.key, label: o.key }))] },
+  departPref: { options: [...FILTER_OPTION_KEYS.departPref.options.map((o) => ({ key: o.key, label: o.key }))] },
+  arrivePref: { options: [...FILTER_OPTION_KEYS.arrivePref.options.map((o) => ({ key: o.key, label: o.key }))] },
 };
 
 export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
