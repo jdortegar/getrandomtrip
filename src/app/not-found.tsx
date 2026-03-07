@@ -7,29 +7,26 @@ import {
   Plane,
   Users,
 } from 'lucide-react';
-import HeaderHero from '@/components/journey/HeaderHero';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { getLocaleFromCookies } from '@/lib/i18n/server';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
 
-export const metadata = {
-  description:
-    'La página que buscas no existe. Descubre increíbles destinos con RandomTrip.',
-  title: 'Página No Encontrada - RandomTrip',
-};
+export async function generateMetadata() {
+  const locale = await getLocaleFromCookies();
+  const dict = await getDictionary(locale);
+  return {
+    description: dict.notFound.metaDescription,
+    title: dict.notFound.metaTitle,
+  };
+}
 
 export default async function NotFoundPage() {
   const locale = await getLocaleFromCookies();
   const dict = await getDictionary(locale);
-  const hero = dict.journey.hero;
+  const nf = dict.notFound;
 
   return (
     <div className="relative flex min-h-screen flex-col font-sans text-gray-900 antialiased bg-gray-50">
-      <HeaderHero
-        description={hero.description}
-        subtitle={hero.subtitle}
-        title={hero.title}
-      />
-
       {/* Background pattern + 404 content */}
       <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
         <div className="absolute inset-0">
@@ -89,69 +86,67 @@ export default async function NotFoundPage() {
 
               {/* Title */}
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                ¡Ups! Te has perdido
+                {nf.title}
               </h2>
 
               {/* Subtitle */}
               <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
-                La página que buscas no existe o ha sido movida. Pero no te
-                preocupes, tenemos muchos destinos increíbles esperándote. ¿Por
-                qué no exploras nuestras aventuras?
+                {nf.subtitle}
               </p>
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <Link
-                  href="/"
                   className="group relative px-8 py-4 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  href={pathForLocale(locale, '/')}
                 >
                   <Home className="w-5 h-5" />
-                  <span className="relative z-10">Ir al Inicio</span>
+                  <span className="relative z-10">{nf.goHome}</span>
                   <div className="absolute inset-0 bg-primary rounded-xl blur opacity-0 group-hover:opacity-75 transition-opacity duration-300"></div>
                 </Link>
 
                 <Link
-                  href="/packages"
                   className="group px-8 py-4 border-2 border-primary/20 text-primary rounded-xl font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  href={pathForLocale(locale, '/packages')}
                 >
                   <Plane className="w-5 h-5" />
-                  Ver Paquetes
+                  {nf.viewPackages}
                 </Link>
               </div>
 
               {/* Quick Links */}
               <div className="border-t border-neutral-200 pt-8">
                 <p className="text-sm text-gray-600 mb-4">
-                  O explora estas secciones populares:
+                  {nf.exploreSections}
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link
-                    href="/packages/by-type/solo"
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                    href={pathForLocale(locale, '/packages/by-type/solo')}
                   >
                     <MapPin className="w-4 h-4" />
-                    Viajes Solo
+                    {nf.linkSolo}
                   </Link>
                   <Link
-                    href="/packages/by-type/couple"
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                    href={pathForLocale(locale, '/packages/by-type/couple')}
                   >
                     <Heart className="w-4 h-4" />
-                    En Pareja
+                    {nf.linkCouple}
                   </Link>
                   <Link
-                    href="/packages/by-type/family"
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                    href={pathForLocale(locale, '/packages/by-type/family')}
                   >
                     <Users className="w-4 h-4" />
-                    En Familia
+                    {nf.linkFamily}
                   </Link>
                   <Link
-                    href="/trippers"
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
+                    href={pathForLocale(locale, '/trippers')}
                   >
                     <Users className="w-4 h-4" />
-                    Nuestros Trippers
+                    {nf.linkTrippers}
                   </Link>
                 </div>
               </div>
@@ -161,9 +156,7 @@ export default async function NotFoundPage() {
                 <p className="text-sm text-gray-700 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
                   <span>
-                    <strong>Tip:</strong> ¿Sabías que nuestros trippers han
-                    visitado más de 50 países? ¡Descubre sus experiencias
-                    únicas!
+                    <strong>{nf.tipLabel}</strong> {nf.tipText}
                   </span>
                 </p>
               </div>
@@ -173,12 +166,12 @@ export default async function NotFoundPage() {
             <div className="text-center mt-8">
               <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
                 <HelpCircle className="w-4 h-4" />
-                ¿Necesitas ayuda?{' '}
+                {nf.needHelp}{' '}
                 <Link
-                  href="/contact"
                   className="text-primary hover:text-primary/80 underline"
+                  href={pathForLocale(locale, '/contact')}
                 >
-                  Contáctanos
+                  {nf.contactUs}
                 </Link>
               </p>
             </div>

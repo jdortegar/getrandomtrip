@@ -1,71 +1,18 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import TripperCard from '@/components/TripperCard';
-import TripperSearchModal from '@/components/tripper/TripperSearchModal';
+import TripperSearchModal, {
+  type TripperSearchItem,
+} from '@/components/tripper/TripperSearchModal';
 import Section from '@/components/layout/Section';
 
-// ---------------------------------------------------------------------------
-// Cache + suspend-style fetcher for React 18 Suspense (throw promise until ready)
-// ---------------------------------------------------------------------------
-
-const trippersCache: {
-  error: Error | null;
-  promise: Promise<any[]> | null;
-  result: any[] | null;
-} = { error: null, promise: null, result: null };
-
-function fetchTrippers(): any[] {
-  if (trippersCache.result !== null) return trippersCache.result;
-  if (trippersCache.error !== null) throw trippersCache.error;
-  if (!trippersCache.promise) {
-    trippersCache.promise = fetch('/api/trippers')
-      .then((res) => res.json())
-      .then((data: any[]) => {
-        trippersCache.result = data;
-        return data;
-      })
-      .catch((err: Error) => {
-        trippersCache.error = err;
-        throw err;
-      });
-  }
-  throw trippersCache.promise;
+interface TopTrippersGridProps {
+  trippers: TripperSearchItem[];
 }
 
-// ---------------------------------------------------------------------------
-// Skeleton fallback (shown by Suspense while data loads)
-// ---------------------------------------------------------------------------
-
-function TopTrippersGridSkeleton() {
-  return (
-    <Section className="py-20" fullWidth={false} id="trippers-grid">
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:grid-cols-5">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div
-            key={index}
-            className="group overflow-hidden rounded-md bg-white shadow-xl"
-          >
-            <div className="relative h-64 w-full animate-pulse bg-gray-200">
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
-                <div className="mx-auto mb-2 h-6 rounded bg-gray-300" />
-                <div className="mx-auto h-3 w-16 rounded bg-gray-300" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Content that suspends until trippers are loaded
-// ---------------------------------------------------------------------------
-
-function TopTrippersGridContent() {
-  const trippers = fetchTrippers();
+export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
@@ -73,7 +20,7 @@ function TopTrippersGridContent() {
       <div className="grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:grid-cols-5">
         {trippers.map((tripper) => (
           <motion.div
-            key={tripper.name}
+            key={tripper.id}
             initial={{ opacity: 0, y: 30 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
             viewport={{ once: true }}
@@ -91,7 +38,6 @@ function TopTrippersGridContent() {
           </motion.div>
         ))}
 
-        {/* CTA: open tripper search modal */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -104,7 +50,7 @@ function TopTrippersGridContent() {
             type="button"
           >
             <div className="text-center">
-              <h3 className="mb-2 font-caveat text-2xl font-bold text-white">
+              <h3 className="mb-2 font-nothing-you-could-do text-2xl font-bold text-white">
                 Busca tu Tripper
               </h3>
               <p className="mb-4 text-sm text-white/80">
@@ -137,17 +83,5 @@ function TopTrippersGridContent() {
         trippers={trippers}
       />
     </Section>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Public component: wraps content in Suspense with skeleton fallback
-// ---------------------------------------------------------------------------
-
-export default function TopTrippersGrid() {
-  return (
-    <Suspense fallback={<TopTrippersGridSkeleton />}>
-      <TopTrippersGridContent />
-    </Suspense>
   );
 }

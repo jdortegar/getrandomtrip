@@ -1,20 +1,24 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { useCallback, useEffect, useRef, useState, Suspense } from 'react';
 import Image from 'next/image';
-import Section from '@/components/layout/Section';
+import Link from 'next/link';
+import { useParams, useSearchParams } from 'next/navigation';
+import { Book } from 'lucide-react';
 import {
   BlogFilterHeader,
   type BlogFilterState,
 } from '@/components/blog/BlogFilterHeader';
-import type { TripperFilterOption } from '@/lib/constants/blog-filters';
 import HeaderHero from '@/components/journey/HeaderHero';
-import GlassCard from '@/components/ui/GlassCard';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import Section from '@/components/layout/Section';
+import GlassCard from '@/components/ui/GlassCard';
+import type { TripperFilterOption } from '@/lib/constants/blog-filters';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale, type Locale } from '@/lib/i18n/config';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
 import { cn } from '@/lib/utils';
-import { Book } from 'lucide-react';
 
 /** Single source of truth for blog page hero (SOLID: single responsibility, no duplication). */
 const BLOG_HERO_CONFIG = {
@@ -58,10 +62,15 @@ interface BlogResponse {
 }
 
 function BlogListContent() {
+  const params = useParams();
   const searchParams = useSearchParams();
+  const rawLocale = params?.locale;
+  const localeStr = typeof rawLocale === 'string' ? rawLocale : rawLocale?.[0];
+  const locale: Locale = hasLocale(localeStr) ? (localeStr as Locale) : 'es';
   const tripperId = searchParams.get('tripperId');
   const tripperName = searchParams.get('tripper');
 
+  const [dict, setDict] = useState<Dictionary | null>(null);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -76,6 +85,10 @@ function BlogListContent() {
     travelTypeKey: '',
   });
   const [trippers, setTrippers] = useState<TripperFilterOption[]>([]);
+
+  useEffect(() => {
+    getDictionary(locale).then(setDict);
+  }, [locale]);
 
   useEffect(() => {
     setFilter((prev) => ({
@@ -193,20 +206,30 @@ function BlogListContent() {
     };
   }, [hasMore, loadingMore, loading, page, fetchBlogs]);
 
+  if (!dict) {
+    return <LoadingSpinner />;
+  }
+
+  const heroTitle = tripperName
+    ? dict.blogPage.heroTitleByTripper.replace('{name}', tripperName)
+    : dict.blogPage.heroTitleDefault;
+  const backToProfileText = tripperName
+    ? dict.blogPage.backToProfile.replace('{name}', tripperName)
+    : '';
+
   return (
     <>
       <HeaderHero
         {...BLOG_HERO_CONFIG}
-        description={
-          'Descubre historias, guías y experiencias de nuestros trippers'
-        }
-        title={tripperName ? `Blog de ${tripperName}` : "TRIPPER'S INSPIRATION"}
+        description={dict.blogPage.heroDescription}
+        title={heroTitle}
       />
 
       <Section>
         <div className="rt-container">
           <BlogFilterHeader
             className="mb-8"
+            labels={dict.blogPage.filters}
             onChange={setFilter}
             trippers={trippers}
             value={filter}
@@ -218,10 +241,10 @@ function BlogListContent() {
               {tripperName && (
                 <div className="mb-6">
                   <Link
-                    href={`/trippers/${tripperId}`}
                     className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm"
+                    href={pathForLocale(locale, `/trippers/${tripperId}`)}
                   >
-                    ← Volver al perfil de {tripperName}
+                    {backToProfileText}
                   </Link>
                 </div>
               )}
@@ -231,11 +254,10 @@ function BlogListContent() {
                   <div className="p-12 text-center">
                     <Book className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
                     <p className="text-neutral-500 text-lg mb-2">
-                      Aún no hay posts publicados
+                      {dict.blogPage.emptyTitle}
                     </p>
                     <p className="text-neutral-400 text-sm">
-                      Los trippers están trabajando en contenido increíble.
-                      ¡Vuelve pronto!
+                      {dict.blogPage.emptySubtitle}
                     </p>
                   </div>
                 </GlassCard>
@@ -254,7 +276,7 @@ function BlogListContent() {
                       return (
                         <Link
                           key={post.id}
-                          href={`/blog/${post.slug}`}
+                          href={pathForLocale(locale, `/blog/${post.slug}`)}
                           className={cn('group block', colSpan)}
                         >
                           <GlassCard className="relative h-full overflow-hidden rounded-xl transition-shadow hover:shadow-lg">
@@ -332,7 +354,7 @@ function BlogListContent() {
 
                   {!hasMore && blogs.length > 0 && (
                     <div className="text-center py-8 text-neutral-500">
-                      <p>Has visto todos los posts disponibles</p>
+                      <p>{dict.blogPage.seenAll}</p>
                     </div>
                   )}
                 </>

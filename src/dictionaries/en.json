@@ -151,13 +151,13 @@
       "viewFullReviewLabel": "View full review"
     }
   },
-  "experiencias": {
+  "experiences": {
     "hero": {
       "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
       "fallbackImage": "/images/bg-playa-mexico.jpg",
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
-        "href": "#type-planner",
+        "href": "#travel-type-selector",
         "text": "GET RANDOMTRIP"
       },
       "scrollText": "SCROLL",
@@ -176,6 +176,24 @@
       "title": "Our Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
     }
+  },
+  "blogPage": {
+    "backToProfile": "← Back to {name}'s profile",
+    "emptySubtitle": "Our trippers are working on amazing content. Come back soon!",
+    "emptyTitle": "No posts published yet",
+    "filters": {
+      "allOption": "All",
+      "excuseLabel": "Excuse / Category",
+      "excuseSubtitle": "Choose an excuse",
+      "travelTypeLabel": "Travel type",
+      "travelTypeSubtitle": "Choose how you want to travel",
+      "tripperLabel": "By Tripper",
+      "tripperSubtitle": "Choose a tripper"
+    },
+    "heroDescription": "Discover stories, guides and experiences from our trippers",
+    "heroTitleByTripper": "Blog by {name}",
+    "heroTitleDefault": "TRIPPER'S INSPIRATION",
+    "seenAll": "You've seen all available posts"
   },
   "packagesByType": {
     "blogEyebrow": "Traveler stories",
@@ -609,6 +627,102 @@
     "ariaTwitter": "Twitter",
     "tagline": "Where the routine ends, the adventure begins.",
     "copyright": "All rights reserved."
+  },
+  "aboutUs": {
+    "cta": {
+      "buttonAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
+      "buttonText": "GETRANDOMTRIP!",
+      "subtitle": "Start with a feelings brief. It takes 3 minutes.",
+      "title": "Ready to let go of control and gain freedom?"
+    },
+    "curators": {
+      "items": [
+        { "bio": "Designs itineraries that connect with the local: workshops, shared tables and authentic rituals.", "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Ana García", "role": "Cultural Immersion" },
+        { "bio": "Finds the sweet spot between adrenaline and safety. Trekking, open skies and controlled micro-challenges.", "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Carlos Mendoza", "role": "Adventure & Outdoors" },
+        { "bio": "Curates spaces with design, calm and mindfulness. Silence, spa, low music, impeccable service.", "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Sofía Rossi", "role": "Luxury & Wellness" }
+      ],
+      "sectionTitle": "Meet the curators"
+    },
+    "faq": {
+      "items": [
+        { "q": "What exactly am I buying if the destination is a surprise?", "a": "You're buying an emotional outcome: relief from choice and guided discovery. Destination and logistics stay in our hands (with your limits clear)." },
+        { "q": "How do you handle safety?", "a": "Risk assessment per destination, verified partners, coverage and 24/7 communication protocols." },
+        { "q": "Can I decline activities?", "a": "Yes. The brief defines no-go's. At destination, we keep flexibility without breaking the trip narrative." },
+        { "q": "What if I don't like the surprise?", "a": "We iterate. We take your feedback and adjust for the next one. Our NPS and repeat rate guide improvement." }
+      ],
+      "sectionTitle": "Frequently asked questions"
+    },
+    "founder": {
+      "imageAlt": "Randomtrip founder",
+      "p1": "We were born to fight the analysis paralysis that holds back great trips. We turn the what if…? into let's go! with a system that protects your time and energy.",
+      "p2": "This isn't just an agency: it's a manifesto against routine and for well-designed wonder.",
+      "sectionTitle": "Founder story"
+    },
+    "hero": {
+      "ctaPhilosophy": "Our philosophy",
+      "ctaPrimary": "GETRANDOMTRIP!",
+      "ctaPrimaryAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
+      "description": "Luxury isn't choosing among 500 options. It's not having to choose. We design safe serendipity so you live what matters.",
+      "eyebrow": "About us",
+      "subtitle": "Architecture of trust",
+      "title": "Architecture of trust"
+    },
+    "meta": {
+      "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
+      "openGraphDescription": "Learn about the philosophy, founder story and curating team behind Randomtrip.",
+      "openGraphTitle": "About us | Randomtrip — Architecture of trust",
+      "title": "About us | Randomtrip — Architecture of trust"
+    },
+    "philosophy": {
+      "imageAlt": "Serendipity moments on a trip",
+      "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
+      "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
+      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "sectionTitle": "Our philosophy"
+    },
+    "steps": {
+      "items": [
+        { "key": "01", "title": "Feelings brief", "description": "How you want to feel. Soft/hard boundaries. Red and green signals." },
+        { "key": "02", "title": "Invisible design", "description": "We handle the logistics. You just receive signals and moments." },
+        { "key": "03", "title": "Safe serendipity", "description": "Curated surprises with backup and plan B. Freedom with a net." }
+      ],
+      "sectionTitle": "How we design your trip",
+      "stepLabel": "Step"
+    },
+    "trust": {
+      "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
+      "items": [
+        { "value": "NPS 65+*", "label": "Public goal and ongoing tracking." },
+        { "value": "55%+", "label": "Upsell adoption (wellness, experiences)." },
+        { "value": "20%+", "label": "Target repeat rate." }
+      ],
+      "sectionTitle": "Trust in numbers"
+    },
+    "valueProps": {
+      "items": [
+        { "title": "Expert curation", "copy": "Guides with impeccable taste and our own methodology. Less scroll, more living." },
+        { "title": "Safety and transparency", "copy": "Protocols, audited partners and clear communication before, during and after." },
+        { "title": "Tripper community", "copy": "Real stories, referrals and shared learnings that elevate every trip." }
+      ],
+      "sectionTitle": "Why trust Randomtrip"
+    }
+  },
+  "notFound": {
+    "contactUs": "Contact us",
+    "exploreSections": "Or explore these popular sections:",
+    "goHome": "Go to Home",
+    "linkCouple": "Couple",
+    "linkFamily": "Family",
+    "linkSolo": "Solo trips",
+    "linkTrippers": "Our Trippers",
+    "metaDescription": "The page you're looking for doesn't exist. Discover amazing destinations with RandomTrip.",
+    "metaTitle": "Page Not Found - RandomTrip",
+    "needHelp": "Need help?",
+    "subtitle": "The page you're looking for doesn't exist or has been moved. But don't worry, we have many amazing destinations waiting for you. Why not explore our adventures?",
+    "tipLabel": "Tip:",
+    "tipText": "Did you know our trippers have visited over 50 countries? Discover their unique experiences!",
+    "title": "Oops! You're lost",
+    "viewPackages": "View Packages"
   },
   "waitlist": {
     "headline": "Get early access to RandomTrip's launch",

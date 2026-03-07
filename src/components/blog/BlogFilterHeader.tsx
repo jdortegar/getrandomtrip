@@ -7,6 +7,7 @@ import {
   type ExcuseFilterOption,
   type TripperFilterOption,
 } from '@/lib/constants/blog-filters';
+import type { MarketingDictionary } from '@/lib/types/dictionary';
 import { cn } from '@/lib/utils';
 
 export interface BlogFilterState {
@@ -15,8 +16,11 @@ export interface BlogFilterState {
   travelTypeKey: string;
 }
 
+export type BlogFilterLabels = MarketingDictionary['blogPage']['filters'];
+
 interface BlogFilterHeaderProps {
   className?: string;
+  labels: BlogFilterLabels;
   onChange: (next: BlogFilterState) => void;
   trippers: TripperFilterOption[];
   value: BlogFilterState;
@@ -63,6 +67,7 @@ function getTripperById(
 
 export function BlogFilterHeader({
   className,
+  labels,
   onChange,
   trippers,
   value,
@@ -76,13 +81,13 @@ export function BlogFilterHeader({
 
   const travelTypeTitle =
     value.travelTypeKey === ''
-      ? 'Tipo de viaje'
+      ? labels.travelTypeLabel
       : (BLOG_TRAVEL_TYPE_OPTIONS.find((o) => o.key === value.travelTypeKey)
-          ?.label ?? 'Tipo de viaje');
+          ?.label ?? labels.travelTypeLabel);
 
-  const excuseTitle = selectedExcuse?.label ?? 'Excusa / Categoría';
+  const excuseTitle = selectedExcuse?.label ?? labels.excuseLabel;
 
-  const tripperTitle = selectedTripper?.name ?? 'By Tripper';
+  const tripperTitle = selectedTripper?.name ?? labels.tripperLabel;
 
   const handleTravelTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange({ ...value, travelTypeKey: e.target.value });
@@ -106,9 +111,8 @@ export function BlogFilterHeader({
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
-        {/* Tipo de viaje */}
         <FilterDropdownCard
-          subtitle="Elegí cómo querés viajar"
+          subtitle={labels.travelTypeSubtitle}
           title={travelTypeTitle}
         >
           <select
@@ -116,7 +120,7 @@ export function BlogFilterHeader({
             onChange={handleTravelTypeChange}
             value={value.travelTypeKey}
           >
-            <option value="">Todos</option>
+            <option value="">{labels.allOption}</option>
             {BLOG_TRAVEL_TYPE_OPTIONS.map((opt) => (
               <option key={opt.key} value={opt.key}>
                 {opt.label}
@@ -125,7 +129,7 @@ export function BlogFilterHeader({
           </select>
         </FilterDropdownCard>
 
-        <FilterDropdownCard subtitle="Elegí una excusa" title={excuseTitle}>
+        <FilterDropdownCard subtitle={labels.excuseSubtitle} title={excuseTitle}>
           <select
             className="absolute inset-0 cursor-pointer opacity-0"
             onChange={(e) => {
@@ -134,7 +138,7 @@ export function BlogFilterHeader({
             }}
             value={value.excuseKey ?? ''}
           >
-            <option value="">Excusa / Categoría</option>
+            <option value="">{labels.excuseLabel}</option>
             {BLOG_EXCUSE_OPTIONS.slice(0, 8).map((opt) => (
               <option key={opt.key} value={opt.key}>
                 {opt.label}
@@ -143,14 +147,13 @@ export function BlogFilterHeader({
           </select>
         </FilterDropdownCard>
       </div>
-      {/* By Tripper dropdown (single selection) */}
-      <FilterDropdownCard subtitle="Elegí un tripper" title={tripperTitle}>
+      <FilterDropdownCard subtitle={labels.tripperSubtitle} title={tripperTitle}>
         <select
           className="absolute inset-0 cursor-pointer opacity-0"
           onChange={handleTripperChange}
           value={value.tripperId ?? ''}
         >
-          <option value="">By Tripper</option>
+          <option value="">{labels.tripperLabel}</option>
           {trippers.map((opt) => (
             <option key={opt.id} value={opt.id}>
               {opt.name}

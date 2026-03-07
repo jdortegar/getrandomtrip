@@ -104,7 +104,7 @@ export interface MarketingDictionary {
       viewFullReviewLabel: string;
     };
   };
-  experiencias: {
+  experiences: {
     hero: {
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
@@ -125,6 +125,24 @@ export interface MarketingDictionary {
       title: string;
       videoSrc: string;
     };
+  };
+  blogPage: {
+    backToProfile: string;
+    emptySubtitle: string;
+    emptyTitle: string;
+    filters: {
+      allOption: string;
+      excuseLabel: string;
+      excuseSubtitle: string;
+      travelTypeLabel: string;
+      travelTypeSubtitle: string;
+      tripperLabel: string;
+      tripperSubtitle: string;
+    };
+    heroDescription: string;
+    heroTitleByTripper: string;
+    heroTitleDefault: string;
+    seenAll: string;
   };
   packagesByType: {
     blogEyebrow: string;
@@ -334,6 +352,81 @@ export interface MarketingDictionary {
     tagline: string;
     termsOfService: string;
     travelersTitle: string;
+  };
+  aboutUs: {
+    cta: {
+      buttonAriaLabel: string;
+      buttonText: string;
+      subtitle: string;
+      title: string;
+    };
+    curators: {
+      items: Array<{ bio: string; img: string; name: string; role: string }>;
+      sectionTitle: string;
+    };
+    faq: {
+      items: Array<{ a: string; q: string }>;
+      sectionTitle: string;
+    };
+    founder: {
+      imageAlt: string;
+      p1: string;
+      p2: string;
+      sectionTitle: string;
+    };
+    hero: {
+      ctaPhilosophy: string;
+      ctaPrimary: string;
+      ctaPrimaryAriaLabel: string;
+      description: string;
+      eyebrow: string;
+      subtitle: string;
+      title: string;
+    };
+    meta: {
+      description: string;
+      openGraphDescription: string;
+      openGraphTitle: string;
+      title: string;
+    };
+    philosophy: {
+      imageAlt: string;
+      p1: string;
+      p2: string;
+      pills: [string, string, string];
+      sectionTitle: string;
+    };
+    steps: {
+      items: Array<{ description: string; key: string; title: string }>;
+      sectionTitle: string;
+      stepLabel: string;
+    };
+    trust: {
+      footnote: string;
+      items: Array<{ label: string; value: string }>;
+      sectionTitle: string;
+    };
+    valueProps: {
+      items: Array<{ copy: string; title: string }>;
+      sectionTitle: string;
+    };
+  };
+  notFound: {
+    contactUs: string;
+    exploreSections: string;
+    goHome: string;
+    linkCouple: string;
+    linkFamily: string;
+    linkSolo: string;
+    linkTrippers: string;
+    metaDescription: string;
+    metaTitle: string;
+    needHelp: string;
+    subtitle: string;
+    tipLabel: string;
+    tipText: string;
+    title: string;
+    viewPackages: string;
   };
   waitlist: {
     adminLoginLabel: string;

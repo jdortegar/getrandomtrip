@@ -22,16 +22,6 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
   return (
     <>
       <Navbar />
-
-      <HeaderHero
-        className="!min-h-[40vh]"
-        description="Ha ocurrido un error inesperado"
-        fallbackImage="/images/bg-playa-mexico.jpg"
-        subtitle="ERROR"
-        title="¡Ups! Algo salió mal"
-        videoSrc="/videos/hero-video.mp4"
-      />
-
       <Section>
         <div className="max-w-3xl mx-auto">
           {/* Error Card */}

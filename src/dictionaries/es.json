@@ -151,13 +151,13 @@
       "viewFullReviewLabel": "Ver opinión completa"
     }
   },
-  "experiencias": {
+  "experiences": {
     "hero": {
       "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
       "fallbackImage": "/images/bg-playa-mexico.jpg",
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
-        "href": "#type-planner",
+        "href": "#travel-type-selector",
         "text": "GET RANDOMTRIP"
       },
       "scrollText": "SCROLL",
@@ -176,6 +176,24 @@
       "title": "Nuestros Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
     }
+  },
+  "blogPage": {
+    "backToProfile": "← Volver al perfil de {name}",
+    "emptySubtitle": "Los trippers están trabajando en contenido increíble. ¡Vuelve pronto!",
+    "emptyTitle": "Aún no hay posts publicados",
+    "filters": {
+      "allOption": "Todos",
+      "excuseLabel": "Excusa / Categoría",
+      "excuseSubtitle": "Elegí una excusa",
+      "travelTypeLabel": "Tipo de viaje",
+      "travelTypeSubtitle": "Elegí cómo querés viajar",
+      "tripperLabel": "Por Tripper",
+      "tripperSubtitle": "Elegí un tripper"
+    },
+    "heroDescription": "Descubre historias, guías y experiencias de nuestros trippers",
+    "heroTitleByTripper": "Blog de {name}",
+    "heroTitleDefault": "TRIPPER'S INSPIRATION",
+    "seenAll": "Has visto todos los posts disponibles"
   },
   "packagesByType": {
     "blogEyebrow": "Historias de viajeros",
@@ -609,6 +627,102 @@
     "ariaTwitter": "Twitter",
     "tagline": "Donde termina la rutina, comienza la aventura.",
     "copyright": "Todos los derechos reservados."
+  },
+  "aboutUs": {
+    "cta": {
+      "buttonAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
+      "buttonText": "GETRANDOMTRIP!",
+      "subtitle": "Empezá con un brief de sentimientos. Tarda 3 minutos.",
+      "title": "¿Listo para soltar el control y ganar libertad?"
+    },
+    "curators": {
+      "items": [
+        { "bio": "Diseña itinerarios que conectan con lo local: talleres, mesas compartidas y rituales auténticos.", "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Ana García", "role": "Inmersión Cultural" },
+        { "bio": "Busca el punto justo entre adrenalina y seguridad. Trekking, cielos abiertos y micro-retos controlados.", "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Carlos Mendoza", "role": "Aventura & Aire Libre" },
+        { "bio": "Cura spaces con diseño, calma y atención plena. Silencio, spa, música baja, servicio impecable.", "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Sofía Rossi", "role": "Lujo & Bienestar" }
+      ],
+      "sectionTitle": "Conocé a los curadores"
+    },
+    "faq": {
+      "items": [
+        { "q": "¿Qué compro exactamente si el destino es sorpresa?", "a": "Comprás un resultado emocional: alivio de la elección y descubrimiento guiado. El destino y la logística quedan en nuestras manos (con tus límites claros)." },
+        { "q": "¿Cómo trabajan la seguridad?", "a": "Evaluación de riesgos por destino, partners verificados, cobertura y protocolos de comunicación 24/7." },
+        { "q": "¿Puedo rechazar actividades?", "a": "Sí. El brief define no-go's. En destino, mantenemos flexibilidad sin romper la narrativa del viaje." },
+        { "q": "¿Qué pasa si no me gusta la sorpresa?", "a": "Iteramos. Tomamos tu feedback y ajustamos para el siguiente. Nuestro NPS y tasa de recompra guían la mejora." }
+      ],
+      "sectionTitle": "Preguntas frecuentes"
+    },
+    "founder": {
+      "imageAlt": "Fundador de Randomtrip",
+      "p1": "Nacimos para combatir la parálisis por análisis que frena los grandes viajes. Convertimos el ¿y si…? en ¡vamos! con un sistema que protege tu tiempo y tu energía.",
+      "p2": "Esto no es solo una agencia: es un manifiesto contra la rutina y a favor del asombro bien diseñado.",
+      "sectionTitle": "Historia del fundador"
+    },
+    "hero": {
+      "ctaPhilosophy": "Nuestra filosofía",
+      "ctaPrimary": "GETRANDOMTRIP!",
+      "ctaPrimaryAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
+      "description": "El lujo no es elegir entre 500 opciones. Es no tener que elegir. Diseñamos serendipia segura para que vivas lo que importa.",
+      "eyebrow": "Nosotros",
+      "subtitle": "Arquitectura de la confianza",
+      "title": "Arquitectura de la confianza"
+    },
+    "meta": {
+      "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
+      "openGraphDescription": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip.",
+      "openGraphTitle": "Nosotros | Randomtrip — Arquitectura de la confianza",
+      "title": "Nosotros | Randomtrip — Arquitectura de la confianza"
+    },
+    "philosophy": {
+      "imageAlt": "Momentos de serendipia en viaje",
+      "p1": "No vendemos un destino; vendemos un resultado emocional. Nuestra misión es liberar tu mente de la parálisis por análisis y guiarte hacia estados como asombro, calma o conexión.",
+      "p2": "Lo llamamos Serendipia Diseñada: entornos seguros y meticulosamente planificados que se sienten espontáneos y transformadores. Renunciás al control logístico para ganar libertad verdadera.",
+      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
+      "sectionTitle": "Nuestra filosofía"
+    },
+    "steps": {
+      "items": [
+        { "key": "01", "title": "Brief de sentimientos", "description": "Cómo te querés sentir. Límites blandos/duros. Señales rojas y verdes." },
+        { "key": "02", "title": "Diseño invisible", "description": "Nosotros cargamos la logística. Vos solo recibís señales y momentos." },
+        { "key": "03", "title": "Serendipia segura", "description": "Sorpresas curadas con respaldo y plan B. Libertad con red." }
+      ],
+      "sectionTitle": "Cómo diseñamos tu viaje",
+      "stepLabel": "Paso"
+    },
+    "trust": {
+      "footnote": "* Objetivos del plan de marca. Actualizaremos métricas vivas en el dashboard.",
+      "items": [
+        { "value": "NPS 65+*", "label": "Meta pública y seguimiento continuo." },
+        { "value": "55%+", "label": "Adopción de upsells (bienestar, experiencias)." },
+        { "value": "20%+", "label": "Tasa de recompra objetivo." }
+      ],
+      "sectionTitle": "Confianza en números"
+    },
+    "valueProps": {
+      "items": [
+        { "title": "Curaduría experta", "copy": "Guías con gusto impecable y metodología propia. Menos scroll, más vivir." },
+        { "title": "Seguridad y transparencia", "copy": "Protocolos, partners auditados y comunicación clara antes, durante y después." },
+        { "title": "Comunidad Tripper", "copy": "Historias reales, referidos y aprendizajes compartidos que elevan cada viaje." }
+      ],
+      "sectionTitle": "Por qué confiar en Randomtrip"
+    }
+  },
+  "notFound": {
+    "contactUs": "Contáctanos",
+    "exploreSections": "O explora estas secciones populares:",
+    "goHome": "Ir al Inicio",
+    "linkCouple": "En Pareja",
+    "linkFamily": "En Familia",
+    "linkSolo": "Viajes Solo",
+    "linkTrippers": "Nuestros Trippers",
+    "metaDescription": "La página que buscas no existe. Descubre increíbles destinos con RandomTrip.",
+    "metaTitle": "Página No Encontrada - RandomTrip",
+    "needHelp": "¿Necesitas ayuda?",
+    "subtitle": "La página que buscas no existe o ha sido movida. Pero no te preocupes, tenemos muchos destinos increíbles esperándote. ¿Por qué no exploras nuestras aventuras?",
+    "tipLabel": "Tip:",
+    "tipText": "¿Sabías que nuestros trippers han visitado más de 50 países? ¡Descubre sus experiencias únicas!",
+    "title": "¡Ups! Te has perdido",
+    "viewPackages": "Ver Paquetes"
   },
   "waitlist": {
     "headline": "Accedé antes que nadie al lanzamiento de RandomTrip",

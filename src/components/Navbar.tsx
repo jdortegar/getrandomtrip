@@ -22,15 +22,22 @@ import type { Dictionary } from '@/lib/i18n/dictionaries';
 // Types
 export type NavbarVariant = 'overlay' | 'auto' | 'solid';
 
-const PRIMARY_LINK_KEYS = [
+type NavKeys = keyof NonNullable<Dictionary['nav']>;
+
+interface LinkKey {
+  ariaKey: NavKeys;
+  href: string;
+  labelKey: NavKeys;
+}
+
+const PRIMARY_LINK_KEYS: LinkKey[] = [
   { href: '/trippers', labelKey: 'labelTrippers', ariaKey: 'ariaLabelTrippers' },
   { href: '/blog', labelKey: 'labelInspiration', ariaKey: 'ariaLabelInspiration' },
-  { href: '/experiencias', labelKey: 'labelExperiences', ariaKey: 'ariaLabelExperiences' },
-  { href: '/nosotros', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
-] as const;
-const EXTRA_LINK_KEYS = [
-  // { href: '/tripbuddy', labelKey: 'labelTripbuddy', ariaKey: 'ariaLabelTripbuddy' },
-] as const;
+  { href: '/experiences', labelKey: 'labelExperiences', ariaKey: 'ariaLabelExperiences' },
+  { href: '/about-us', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
+];
+
+const EXTRA_LINK_KEYS: LinkKey[] = [];
 
 export interface NavbarProps {
   dict?: Dictionary;
@@ -94,11 +101,11 @@ export default function Navbar({
             {PRIMARY_LINK_KEYS.map((link) => (
               <Link
                 key={link.href}
-                aria-label={nav?.[link.ariaKey] ?? link.href}
+                aria-label={nav?.[link.ariaKey] }
                 className="hover:underline underline-offset-4 uppercase text-base font-barlow "
                 href={pathForLocale(currentLocale, link.href)}
               >
-                {nav?.[link.labelKey] ?? link.href}
+                {nav?.[link.labelKey]}
               </Link>
             ))}
           </div>
@@ -122,7 +129,7 @@ export default function Navbar({
                     className="absolute right-0 mt-3 w-60 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
                     role="menu"
                   >
-                    {EXTRA_LINK_KEYS.map((link) => (
+                    {EXTRA_LINK_KEYS && EXTRA_LINK_KEYS.map((link) => (
                       <Link
                         key={link.href}
                         aria-label={nav?.[link.ariaKey] ?? link.href}
