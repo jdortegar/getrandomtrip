@@ -9,27 +9,43 @@ import type { TestimonialData, TestimonialsContent } from './types';
 export type { TestimonialData, TestimonialsContent } from './types';
 
 interface TestimonialsProps {
-  content: TestimonialsContent;
+  content?: TestimonialsContent;
+  eyebrow?: string;
   testimonials: TestimonialData[];
+  testId?: string;
+  subtitle?: string;
+  title?: string;
+  viewFullReviewLabel?: string;
 }
 
 export default function Testimonials({
   content,
+  eyebrow,
   testimonials,
+  testId = 'testimonials',
+  subtitle,
+  title,
+  viewFullReviewLabel,
 }: TestimonialsProps) {
   const {
-    eyebrow = '',
-    subtitle = '',
-    title = '',
-    viewFullReviewLabel = '',
-  } = content;
+    eyebrow: resolvedEyebrow,
+    subtitle: resolvedSubtitle,
+    title: resolvedTitle,
+    viewFullReviewLabel: resolvedViewFullReviewLabel,
+  } = {
+    eyebrow: eyebrow ?? '',
+    subtitle: subtitle ?? '',
+    title: title ?? '',
+    viewFullReviewLabel: viewFullReviewLabel ?? 'View full review',
+    ...content,
+  };
 
   return (
     <Section
       className="min-h-[60vh]"
-      eyebrow={eyebrow}
-      subtitle={subtitle}
-      title={title}
+      eyebrow={resolvedEyebrow}
+      subtitle={resolvedSubtitle}
+      title={resolvedTitle}
     >
       <div className="container mx-auto mt-12 px-4 md:px-20">
         <EmblaCarousel
@@ -45,7 +61,7 @@ export default function Testimonials({
               index={index}
               key={`${testimonial.author}-${index}`}
               testimonial={testimonial}
-              viewFullReviewLabel={viewFullReviewLabel}
+              viewFullReviewLabel={resolvedViewFullReviewLabel}
             />
           ))}
         </EmblaCarousel>

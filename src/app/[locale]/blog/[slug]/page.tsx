@@ -434,10 +434,7 @@ function BlogDetailContent() {
 
       <Testimonials
         testimonials={getAllTestimonialsForTripper({
-          avatar: blog.author.avatarUrl ?? '',
           location: blog.author.location ?? '',
-          name: blog.author.name,
-          slug: blog.author.slug,
           testimonials: [],
         })}
         title={`Lo que dicen sobre ${blog.author.name}`}

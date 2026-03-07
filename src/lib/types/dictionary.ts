@@ -393,7 +393,7 @@ export interface MarketingDictionary {
       imageAlt: string;
       p1: string;
       p2: string;
-      pills: [string, string, string];
+      pills: string[];
       sectionTitle: string;
     };
     steps: {
