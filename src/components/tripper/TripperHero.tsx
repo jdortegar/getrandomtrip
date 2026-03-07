@@ -1,16 +1,15 @@
 'use client';
 
-import type { Tripper } from '@/content/trippers';
 import type { TripperProfile } from '@/types/tripper';
 import CountryFlag from '@/components/common/CountryFlag';
 import SafeImage from '@/components/common/SafeImage';
 import { Button } from '@/components/ui/Button';
 import { useMemo } from 'react';
 import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from '@/components/tripper/TripperTravelerTypesSection';
+import Link from 'next/link';
 
 interface TripperHeroProps {
-  t: Tripper;
-  dbTripper?: TripperProfile | null;
+  tripper: TripperProfile;
 }
 
 function truncateTagline(bio: string | null | undefined, maxLength: number) {
@@ -31,24 +30,16 @@ function getCountryFromLocation(
   return parts.length > 0 ? parts[parts.length - 1]! : location;
 }
 
-export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
-  const firstName = useMemo(
-    () => t.name?.split(' ')[0] ?? t.name ?? '',
-    [t.name],
-  );
+export default function TripperHero({ tripper }: TripperHeroProps) {
+  const firstName = tripper.name?.split(' ')[0] ?? tripper.name ?? ''
+  const tripperName = tripper.name;
+  const tripperAvatar = tripper.avatarUrl ?? '/images/fallback-profile.jpg';
+  const tripperHeroImage = tripper.heroImage ?? tripper.avatarUrl ?? '/images/fallback-profile.jpg';
+  const tripperBio = tripper.bio;
+  const tripperLocation = tripper.location;
 
-  const tripperName = dbTripper?.name || t.name;
-  const tripperAvatar = dbTripper?.avatarUrl || t.avatar;
-  const tripperHeroImage =
-    dbTripper?.heroImage || t.heroImage || dbTripper?.avatarUrl;
-  const tripperBio = dbTripper?.bio || t.bio;
-  const tripperLocation = dbTripper?.location || t.location;
-
-  const tagline = useMemo(() => truncateTagline(tripperBio, 50), [tripperBio]);
-  const countryForFlag = useMemo(
-    () => getCountryFromLocation(tripperLocation),
-    [tripperLocation],
-  );
+  const tagline = truncateTagline(tripperBio, 50)
+  const countryForFlag = getCountryFromLocation(tripperLocation)
 
   const bannerAlt = useMemo(
     () => [tripperName, tripperBio].filter(Boolean).join('. ') || 'Tripper banner',
@@ -98,7 +89,7 @@ export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
             {/* Location, name, tagline, CTA — Hero.tsx text styles */}
             <div className="flex flex-col items-center text-center md:items-start md:text-left">
               {tripperLocation && (
-                <div className="flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-amber-400 md:text-base leading-none">
+                <div className="flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-amber-400 md:text-base leading-none mb-2">
                   {countryForFlag && (
                     <CountryFlag
                       className="inline-block shrink-0 align-baseline"
@@ -118,13 +109,10 @@ export default function TripperHero({ t, dbTripper }: TripperHeroProps) {
                   {tripperBio}
                 </p>
               )}
-              <Button asChild className="mt-2" size="lg" variant="white">
-                <a
-                  aria-label={`Planear un Randomtrip con ${firstName}`}
-                  href={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`}
-                >
+              <Button asChild className="mt-2" size="lg" variant="feature">
+                <Link href={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`} scroll>
                   RANDOMTRIP-ME!
-                </a>
+                </Link>
               </Button>
             </div>
           </div>

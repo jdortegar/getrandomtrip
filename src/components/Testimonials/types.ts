@@ -8,8 +8,8 @@ export interface TestimonialData {
 }
 
 export interface TestimonialsContent {
-  eyebrow: string;
-  subtitle: string;
-  title: string;
-  viewFullReviewLabel: string;
+  eyebrow?: string;
+  subtitle?: string;
+  title?: string;
+  viewFullReviewLabel?: string;
 }

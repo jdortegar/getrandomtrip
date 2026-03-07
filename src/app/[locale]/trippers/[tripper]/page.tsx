@@ -102,67 +102,41 @@ export default async function Page({
   };
 
   // Fetch from database
-  const dbTripper = await getTripperBySlug(params.tripper);
+  const tripperData = await getTripperBySlug(params.tripper);
   const featuredTrips = await getTripperFeaturedTrips(params.tripper, 3);
 
   // Must have database tripper data
-  if (!dbTripper) return notFound();
+  if (!tripperData) return notFound();
 
   const tripperPackagesByType = await getTripperPackagesByTypeAndLevel(
-    dbTripper.id,
+    tripperData.id,
   );
   // availableTypesFromPackages = distinct types from this tripper's packages (from getTripperBySlug)
-  const availableTypesFromPackages = dbTripper.availableTypes ?? [];
+  const availableTypesFromPackages = tripperData.availableTypes ?? [];
 
   // Fetch published blog posts for this tripper
-  const publishedBlogs = await getTripperPublishedBlogs(dbTripper.id, 6);
-
-  // Create tripper object from database data; use mock posts when none published
+  const publishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
   const posts: BlogPost[] =
     publishedBlogs.length > 0 ? publishedBlogs : MOCK_BLOG_POSTS;
 
-  const t = {
-    name: dbTripper.name,
-    slug: dbTripper.tripperSlug || params.tripper,
-    avatar: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
-    heroImage: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
-    interests: dbTripper.interests || [],
-    posts,
-    bio: dbTripper.bio || '',
-    location: dbTripper.location || '',
-    agency: 'Randomtrip', // Default agency name
-    visitedPlaces: [], // TODO: Add visitedPlaces field to database schema if needed
-  };
-
   return (
     <main className="bg-white text-slate-900">
-      {/* 🔔 Modal de intro. 
-          Se muestra si el usuario entra directo (referrer externo) y no marcó "no volver a mostrar".
-          - Se puede forzar con ?forcevideo=1
-          - Se puede bloquear con ?novideo=1 (lo maneja el propio componente)
-      */}
-      {/* <TripperIntroVideoGate
-        youtubeId="1d4OiltwQYs"
-        storageKey={storageKey}
-        forceShow={!!forceVideo}
-      /> */}
-      {/* Hero */}
-      <TripperHero t={t} dbTripper={dbTripper} />
+      <TripperHero tripper={tripperData} />
 
-      {/* Planner: with DB data */}
-      {dbTripper && dbTripper.tripperSlug && (
+
+      {tripperData && tripperData.tripperSlug && (
         <TripperPlanner
           tripperData={{
-            id: dbTripper.id,
-            name: dbTripper.name,
-            slug: dbTripper.tripperSlug,
-            commission: dbTripper.commission || 0,
-            availableTypes: dbTripper.availableTypes as string[],
-            destinations: dbTripper.destinations?.length
-              ? dbTripper.destinations
+            id: tripperData.id,
+            name: tripperData.name,
+            slug: tripperData.tripperSlug,
+            commission: tripperData.commission || 0,
+            availableTypes: tripperData.availableTypes as string[],
+            destinations: tripperData.destinations?.length
+              ? tripperData.destinations
               : undefined,
-            interests: dbTripper.interests?.length
-              ? dbTripper.interests
+            interests: tripperData.interests?.length
+              ? tripperData.interests
               : undefined,
           }}
           tripperPackagesByType={tripperPackagesByType}
@@ -170,51 +144,35 @@ export default async function Page({
       )}
       {/* Featured Trips Gallery */}
       {featuredTrips.length > 0 && (
-        <TripperInspirationGallery trips={featuredTrips} tripperName={t.name} />
+        <TripperInspirationGallery trips={featuredTrips} tripperName={tripperData.name} />
       )}
       <HomeInfo content={homeInfoContent} />
       <TripperTravelerTypesSection
         availableTypes={availableTypesFromPackages}
-        tripperName={dbTripper.name}
-        tripperSlug={dbTripper.tripperSlug}
+        tripperName={tripperData.name}
+        tripperSlug={tripperData.tripperSlug}
+        hideOverflow={false}
       />
 
       {/* Blog / inspiración */}
-      {t.posts && t.posts.length > 0 && (
+      {posts.length > 0 && (
         <Blog
           id="tripper-blog"
-          posts={t.posts}
+          posts={posts}
           subtitle="Notas, guías y momentos que inspiran de este tripper."
-          title={`Inspiración de ${t.name}`}
+          title={`Inspiración de ${tripperData.name}`}
           viewAll={{
-            href: `/blog?tripperId=${dbTripper.id}&tripper=${t.name}`,
+            href: `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`,
             subtitle: 'Explora más contenido',
             title: 'Ver Todo',
           }}
         />
       )}
-      {/* Mapa (CSR) */}
-      {/* <TripperVisitedMap places={t.visitedPlaces || []} /> */}
-      {/* Opiniones */}
       <Testimonials
-        testimonials={getAllTestimonialsForTripper(t)}
-        title={`Lo que dicen sobre ${t.name}`}
+        testimonials={getAllTestimonialsForTripper(tripperData)}
+        content={{ title: `Lo que dicen sobre ${tripperData.name}` }}
       />
-      {/* JSON-LD SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Person',
-            name: t.name,
-            jobTitle: 'Travel Advisor',
-            image: t.heroImage,
-            worksFor: t.agency,
-            homeLocation: t.location || undefined,
-          }),
-        }}
-      />
+      
     </main>
   );
 }

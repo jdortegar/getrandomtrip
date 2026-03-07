@@ -6,13 +6,20 @@ import { group } from '@/lib/data/traveler-types/group';
 import { honeymoon } from '@/lib/data/traveler-types/honeymoon';
 import { paws } from '@/lib/data/traveler-types/paws';
 import { solo } from '@/lib/data/traveler-types/solo';
-import type { Tripper } from '@/content/trippers';
+
+/** Shape used for testimonial resolution: DB tripper or content tripper. */
+export interface TripperTestimonialInput {
+  location?: string | null;
+  testimonials?: Array<{ author: string; quote: string }>;
+}
 
 /**
- * Get all testimonials for a specific tripper
- * Combines testimonials from all traveler types plus the tripper's own testimonials
+ * Get all testimonials for a specific tripper.
+ * Combines testimonials from all traveler types plus the tripper's own testimonials.
  */
-export function getAllTestimonialsForTripper(tripper: Tripper): Testimonial[] {
+export function getAllTestimonialsForTripper(
+  tripper: TripperTestimonialInput,
+): Testimonial[] {
   const locale = DEFAULT_LOCALE;
   const allTestimonials = [
     ...group[locale].testimonials.items,

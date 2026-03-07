@@ -113,7 +113,7 @@ export function TravelerTypesCarousel({
   }
 
   const gapPx = 16;
-  const fewerSlidesThanView = typesToShow.length < itemsPerView;
+  const fewerSlidesThanView = typesToShow.length <= itemsPerView;
 
   return (
     <motion.div
@@ -132,8 +132,8 @@ export function TravelerTypesCarousel({
         contentClassName={classes?.wrapper}
         gap={gapPx}
         peek={peek}
-        showArrows={showArrows}
-        showDots={showDots}
+        showArrows={showArrows && !fewerSlidesThanView}
+        showDots={showDots && !fewerSlidesThanView}
         slidesPerView={itemsPerView}
         slidesToScroll={itemsPerView}
         viewportClassName={classes?.viewport}
