@@ -246,7 +246,7 @@ export default function Footer({ dict, locale }: FooterProps) {
         <div className="border-t border-white/10">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-              <p className="font-caveat text-center text-lg text-gray-400">
+              <p className="font-nothing-you-could-do text-center text-lg text-gray-400">
                 {f.tagline}
               </p>
               <p className="text-sm text-gray-400">

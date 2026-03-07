@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import Section from '@/components/layout/Section';
 import { cn } from '@/lib/utils';
 
 interface TripperMottoBannerProps {
@@ -28,12 +29,13 @@ export default function TripperMottoBanner({
     : authorName.toUpperCase();
 
   return (
-    <section
-      className={cn(
-        'relative flex min-h-[320px] flex-col items-center justify-center overflow-hidden px-6 py-16 text-center md:min-h-[380px] md:px-12 md:py-20',
-        className,
-      )}
-    >
+    <Section fullWidth>
+      <section
+        className={cn(
+          'relative flex min-h-[320px] flex-col items-center justify-center overflow-hidden px-6 py-16 text-center md:min-h-[380px] md:px-12 md:py-20',
+          className,
+        )}
+      >
       <div className="absolute inset-0">
         <Image
           alt=""
@@ -77,5 +79,6 @@ export default function TripperMottoBanner({
         </footer>
       </div>
     </section>
+    </Section>
   );
 }

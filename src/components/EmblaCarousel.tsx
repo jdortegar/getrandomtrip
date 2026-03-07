@@ -184,7 +184,7 @@ export function EmblaCarousel({
         data-slot="embla-viewport"
       >
         <div
-          className={cn('flex h-full touch-pan-y', contentClassName)}
+          className={cn('flex h-full touch-pan-y ', contentClassName, React.Children.count(children) <= slidesPerView  ? 'justify-center' : 'justify-start')}
           data-slot="embla-container"
           style={{
             gap: gapPx,
