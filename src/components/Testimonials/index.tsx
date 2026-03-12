@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { EmblaCarousel } from '@/components/EmblaCarousel';
+import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import Section from '@/components/layout/Section';
 import { TestimonialCard } from './TestimonialCard';
 import type { TestimonialData, TestimonialsContent } from './types';
+import { EmblaOptionsType } from 'embla-carousel';
 
 export type { TestimonialData, TestimonialsContent } from './types';
 
@@ -48,14 +49,7 @@ export default function Testimonials({
       title={resolvedTitle}
     >
       <div className="container mx-auto mt-12 px-4 md:px-20">
-        <EmblaCarousel
-          align={testimonials.length < 3 ? 'center' : 'start'}
-          gap={24}
-          showArrows
-          showDots
-          slidesPerView={3}
-          slidesToScroll={1}
-        >
+        <EmblaCarousel sliderPerView={3}>
           {testimonials.slice(0, 9).map((testimonial, index) => (
             <TestimonialCard
               index={index}

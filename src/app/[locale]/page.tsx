@@ -30,10 +30,10 @@ export default async function HomePage({
           content={home.exploration}
           trippers={trippers as any}
         />
-        <Blog
+        {/* <Blog
           content={home.blog}
           posts={BLOG_CONSTANTS.posts}
-        />
+        /> */}
         <Testimonials
           content={home.testimonials}
           testimonials={HOME_TESTIMONIALS.items}

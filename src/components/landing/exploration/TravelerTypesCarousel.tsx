@@ -7,7 +7,7 @@ import {
   initialTravellerTypes,
   type TravelerType,
 } from '@/lib/data/travelerTypes';
-import { EmblaCarousel } from '@/components/EmblaCarousel';
+import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import { motion } from 'framer-motion';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
@@ -29,7 +29,11 @@ interface TravelerTypesCarouselProps {
   fullViewportWidth?: boolean;
   itemsPerView?: number;
   /** Localized traveler type labels from dictionary (home.exploration.travelerTypes). Merged with base data to produce card content. */
-  localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
+  localizedTravelerTypes?: Array<{
+    description: string;
+    key: string;
+    title: string;
+  }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   /** Pixels of the next slide to show (peek). */
   peek?: number;
@@ -95,9 +99,7 @@ export function TravelerTypesCarousel({
       );
     }
     if (!allowedSet) return baseTypes;
-    return baseTypes.filter((t) =>
-      allowedSet.has(t.travelType.toLowerCase()),
-    );
+    return baseTypes.filter((t) => allowedSet.has(t.travelType.toLowerCase()));
   }, [isTripperContext, allowedSet, baseTypes]);
 
   function getSlug(t: TravelerType): TravelerTypeSlug {
@@ -123,22 +125,7 @@ export function TravelerTypesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel
-        align={fewerSlidesThanView ? 'center' : 'start'}
-        ariaLabelNext={ariaLabelNext}
-        ariaLabelPrev={ariaLabelPrev}
-        ariaLabelSlide={ariaLabelSlide}
-        className={classes?.section}
-        contentClassName={classes?.wrapper}
-        gap={gapPx}
-        peek={peek}
-        showArrows={showArrows && !fewerSlidesThanView}
-        showDots={showDots && !fewerSlidesThanView}
-        slidesPerView={itemsPerView}
-        slidesToScroll={itemsPerView}
-        viewportClassName={classes?.viewport}
-        hideOverflow={hideOverflow}
-      >
+      <EmblaCarousel sliderPerView={3}>
         {typesToShow.map((t) => (
           <div key={t.travelType} className="aspect-[280/332] w-full min-h-0">
             <TravelerTypeCard

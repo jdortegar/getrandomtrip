@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { EmblaCarousel } from '@/components/EmblaCarousel';
+import { EmblaCarousel } from '@/components/EmblaCarousel/EmblaCarousel';
 import RefineDetailsCard from '@/components/journey/RefineDetailsCard';
 
 interface RefineDetailsOption {

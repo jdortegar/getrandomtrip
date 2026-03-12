@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Section from '@/components/layout/Section';
-import { EmblaCarousel } from '@/components/EmblaCarousel';
+import { EmblaCarousel } from '@/components/EmblaCarousel/EmblaCarousel';
 import LevelCard from '@/components/by-type/shared/LevelCard';
 import { cn } from '@/lib/utils';
 import type { TypePlannerContent } from '@/types/planner';
@@ -56,7 +56,6 @@ export default function TypePlanner({
       <EmblaCarousel
         align={content.levels.length < itemsPerView ? 'center' : 'start'}
         className={classes?.wrapper}
-        
         gap={gap}
         showArrows={showArrows}
         showDots={showDots}
@@ -74,15 +73,15 @@ export default function TypePlanner({
 
           return (
             <div className="h-full @container p-2">
-            <LevelCard
-              featured={isFeatured}
-              key={level.id}
-              level={level}
-              onSelect={handleLevelSelect}
-              selected={selectedLevel === level.id}
-              travelerType={type}
-              variant={variant}
-            />
+              <LevelCard
+                featured={isFeatured}
+                key={level.id}
+                level={level}
+                onSelect={handleLevelSelect}
+                selected={selectedLevel === level.id}
+                travelerType={type}
+                variant={variant}
+              />
             </div>
           );
         })}

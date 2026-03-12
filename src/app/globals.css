@@ -107,6 +107,10 @@ html {
 
   /* Simplified cyan color for direct use */
   --color-cyan: #4f96b6;
+
+  /* Light blue (carousel buttons, links) */
+  --color-light-blue: #4f96b6;
+  --color-light-blue-600: #3d7a94;
 }
 /* Scroll Indicator Styles*/
 .scroll-indicator {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { EmblaCarousel } from '@/components/EmblaCarousel';
+import { EmblaCarousel } from '@/components/EmblaCarousel/EmblaCarousel';
 import ExcuseCard from '@/components/journey/ExcuseCard';
 import type { ExcuseData } from '@/lib/data/shared/excuses';
 
@@ -43,7 +43,8 @@ export function ExcusesCarousel({
   const getTitle = (excuse: ExcuseData) =>
     localizedExcuses?.find((e) => e.key === excuse.key)?.title ?? excuse.title;
   const getDescription = (excuse: ExcuseData) =>
-    localizedExcuses?.find((e) => e.key === excuse.key)?.description ?? excuse.description;
+    localizedExcuses?.find((e) => e.key === excuse.key)?.description ??
+    excuse.description;
 
   return (
     <motion.div
