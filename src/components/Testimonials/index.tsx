@@ -49,7 +49,7 @@ export default function Testimonials({
       title={resolvedTitle}
     >
       <div className="container mx-auto mt-12 px-4 md:px-20">
-        <EmblaCarousel sliderPerView={3}>
+        <EmblaCarousel slidesPerView={3}>
           {testimonials.slice(0, 9).map((testimonial, index) => (
             <TestimonialCard
               index={index}

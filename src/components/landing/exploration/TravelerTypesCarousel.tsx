@@ -125,7 +125,7 @@ export function TravelerTypesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel sliderPerView={3}>
+      <EmblaCarousel slidesPerView={3}>
         {typesToShow.map((t) => (
           <div key={t.travelType} className="aspect-[280/332] w-full min-h-0">
             <TravelerTypeCard

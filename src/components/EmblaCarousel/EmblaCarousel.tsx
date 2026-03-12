@@ -22,8 +22,8 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
 };
 
 /** Builds slide class: mobile 1 per view (full-width), md 2 + peek, lg = sliderPerView full slides (no peek). */
-export function getEmblaSlideClassName(sliderPerView: number = 3): string {
-  const n = sliderPerView;
+export function getEmblaSlideClassName(slidesPerView: number = 3): string {
+  const n = slidesPerView;
   return [
     'min-w-0 pl-4 md:pl-6 lg:pl-8',
     'flex-[0_0_90%]', // mobile: 1 slide
@@ -65,10 +65,10 @@ const EmblaCarousel = ({
         <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} />
         <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} />
       </div>
-      <div className="relative overflow-hidden p-1" ref={emblaRef}>
+      <div className="relative w-full overflow-hidden p-1" ref={emblaRef}>
         <div
           className={cn(
-            'flex touch-[pan-y_pinch-zoom]',
+            'flex min-w-0 w-full touch-[pan-y_pinch-zoom]',
             '-ml-4 md:-ml-6 lg:-ml-8',
           )}
         >
