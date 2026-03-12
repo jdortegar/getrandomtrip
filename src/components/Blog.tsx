@@ -13,6 +13,7 @@ import BlogCard from '@/components/BlogCard';
 import Section from '@/components/layout/Section';
 import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import { motion } from 'framer-motion';
+import EmblaCarousel from './EmblaCarousel/EmblaCarousel';
 
 export interface BlogContent {
   carouselSlideAriaLabel: string;
@@ -91,27 +92,12 @@ export default function Blog({
       // className="overflow-visible pl-4 md:pl-[8%]"
       id={id}
       variant="default"
-      fullWidth
+      // fullWidth
     >
-      <CarouselRoot
-        className="relative p-0 m-0"
-        edgeBleed={false}
-        opts={{
-          align: 'start',
-          slidesToScroll: 1,
-        }}
-      >
-        <div className="container mx-auto px-4 md:px-20">
-          <div className="flex justify-end mb-6">
-            <div className="flex flex-shrink-0 gap-2 items-center">
-              <CarouselPrevious inHeader />
-              <CarouselNext inHeader />
-            </div>
-          </div>
-        </div>
-        <div className="relative flex flex-col gap-12 md:flex-row md:items-stretch md:gap-8 overflow-visible pl-4 md:pl-[8%]">
+      <div className="container mx-auto mt-12 px-4 md:px-20">
+        <div className="relative flex flex-col gap-12 lg:flex-row md:items-stretch md:gap-8 ">
           {/* Left Column - Full-height white panel so carousel never bleeds through */}
-          <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 md:ml-[-8vw] md:w-1/3 md:min-w-[calc(33.333%+8vw)] md:items-start md:justify-center md:pl-[8vw] md:pr-8 md:text-left">
+          <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left">
             {resolvedEyebrow && (
               <motion.div
                 className="text-base font-bold uppercase tracking-[6px] text-[#4F96B6] md:text-lg md:tracking-[9px]"
@@ -143,36 +129,18 @@ export default function Blog({
             >
               {resolvedSubtitle}
             </motion.p>
-            {/* Gradient on right edge of white panel, over carousel: white → transparent (left side of carousel) */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute bottom-0 right-0 top-0 z-[6] w-12 translate-x-full bg-gradient-to-r from-white to-transparent md:w-20"
-            />
           </aside>
 
           {/* Right Column - Carousel */}
-          <div className="relative z-0 flex-1 md:min-w-2/3 mt-8 pl-6 pr-8 md:pl-8 md:pr-12">
-            {/* Arrows above cards, aligned to carousel content (top position like in design) */}
-
-            {/* Carousel Content */}
-            <CarouselContent className="pb-8 md:pb-10 ">
+          <div className="relative z-0 flex-1 lg:min-w-2/3">
+            <EmblaCarousel sliderPerView={2}>
               {posts.map((post, index) => (
-                <CarouselItem key={post.title || index} className="!basis-auto">
-                  <BlogCard post={post} />
-                </CarouselItem>
+                <BlogCard key={post.title || index} post={post} />
               ))}
-            </CarouselContent>
-
-            {/* Custom Dots - Centered in full container width */}
-          </div>
-          <div className="absolute bottom-0 left-0 w-full">
-            <BlogCarouselDots
-              posts={posts}
-              slideAriaLabelPattern={carouselSlideAriaLabel}
-            />
+            </EmblaCarousel>
           </div>
         </div>
-      </CarouselRoot>
+      </div>
     </Section>
   );
 }

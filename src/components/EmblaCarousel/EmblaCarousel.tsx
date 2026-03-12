@@ -9,11 +9,11 @@ import {
 import { DotButton, useDotButton } from './EmblaCarouselDotButton';
 import { cn } from '@/lib/utils';
 
-type PropType = {
+type EmblaCarouselProps = {
   children: React.ReactNode;
   options?: EmblaOptionsType;
   /** Number of slides visible at once (plus peek of next). Default 3. */
-  sliderPerView?: number;
+  slidesPerView?: number;
 };
 
 const EMBLA_OPTIONS: EmblaOptionsType = {
@@ -28,17 +28,20 @@ export function getEmblaSlideClassName(sliderPerView: number = 3): string {
     'min-w-0 pl-4 md:pl-6 lg:pl-8',
     'flex-[0_0_90%]', // mobile: 1 slide
     'md:flex-[0_0_calc((100%-1.5rem)/2.2)]', // md: 2 + peek
-    // lg: use literal class so Tailwind JIT generates it (dynamic template can be missed)
+    // lg: use literal classes so Tailwind JIT generates them (dynamic template can be missed)
     ...(n === 3
       ? ['lg:flex-[0_0_calc((100%-4rem)/3)]']
-      : [`lg:flex-[0_0_calc((100%-${(n - 1) * 2}rem)/${n})]`]),
+      : n === 4
+        ? ['lg:flex-[0_0_calc((100%-6rem)/4)]']
+        : [`lg:flex-[0_0_calc((100%-${(n - 1) * 2}rem)/${n})]`]),
   ].join(' ');
 }
 
-/** Slide class for default 3 per view + peek. Use on direct children or let EmblaCarousel wrap for you. */
-export const emblaSlideClassName = getEmblaSlideClassName(3);
-
-const EmblaCarousel = ({ children, options, sliderPerView = 3 }: PropType) => {
+const EmblaCarousel = ({
+  children,
+  options,
+  slidesPerView = 3,
+}: EmblaCarouselProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     ...EMBLA_OPTIONS,
     ...options,
@@ -54,7 +57,7 @@ const EmblaCarousel = ({ children, options, sliderPerView = 3 }: PropType) => {
     prevBtnDisabled,
   } = usePrevNextButtons(emblaApi);
 
-  const slideClassName = getEmblaSlideClassName(sliderPerView);
+  const slideClassName = getEmblaSlideClassName(slidesPerView);
 
   return (
     <div className="mx-auto w-full">
@@ -62,7 +65,7 @@ const EmblaCarousel = ({ children, options, sliderPerView = 3 }: PropType) => {
         <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} />
         <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} />
       </div>
-      <div className="relative overflow-hidden" ref={emblaRef}>
+      <div className="relative overflow-hidden p-1" ref={emblaRef}>
         <div
           className={cn(
             'flex touch-[pan-y_pinch-zoom]',

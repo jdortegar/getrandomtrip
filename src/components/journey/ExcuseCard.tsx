@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { Button } from '../ui/Button';
 
 interface ExcuseCardProps {
   className?: string;
@@ -48,15 +49,15 @@ export default function ExcuseCard({
 
         {/* Card Content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center text-white">
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <h3 className="font-barlow-condensed text-3xl @[300px]:text-4xl font-extrabold uppercase leading-tight mb-4">
+          <div className="flex-1 flex flex-col items-center justify-center mb-4">
+            <h3 className="font-barlow-condensed text-2xl font-extrabold uppercase leading-tight mb-4">
               {title}
             </h3>
             <p className="font-barlow text-base @[300px]:text-lg text-white/90 max-w-xs">
               {description}
             </p>
           </div>
-          <button
+          {/* <button
             className="px-6 py-3 border-2 border-white rounded-lg font-semibold text-white hover:bg-white/10 transition-colors mt-auto"
             onClick={(e) => {
               e.stopPropagation();
@@ -65,7 +66,10 @@ export default function ExcuseCard({
             type="button"
           >
             {ctaLabel}
-          </button>
+          </button> */}
+          <Button variant="outline" onClick={onClick}>
+            {ctaLabel}
+          </Button>
         </div>
       </button>
     </div>

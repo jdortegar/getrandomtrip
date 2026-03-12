@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Section from '@/components/layout/Section';
-import { EmblaCarousel } from '@/components/EmblaCarousel/EmblaCarousel';
+import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import LevelCard from '@/components/by-type/shared/LevelCard';
 import { cn } from '@/lib/utils';
 import type { TypePlannerContent } from '@/types/planner';
@@ -53,18 +53,7 @@ export default function TypePlanner({
 
   const contentElement = (
     <div className="relative flex w-full flex-col">
-      <EmblaCarousel
-        align={content.levels.length < itemsPerView ? 'center' : 'start'}
-        className={classes?.wrapper}
-        gap={gap}
-        showArrows={showArrows}
-        showDots={showDots}
-        slideClassName="h-full"
-        slidesPerView={itemsPerView}
-        slidesToScroll={1}
-        viewportClassName="h-full"
-        hideOverflow={hideOverflow}
-      >
+      <EmblaCarousel slidesPerView={itemsPerView}>
         {content.levels.map((level, index) => {
           // Alternate between light and dark variants
           const variant = index % 2 === 0 ? 'light' : 'dark';
@@ -72,7 +61,7 @@ export default function TypePlanner({
           const isFeatured = index === 2;
 
           return (
-            <div className="h-full @container p-2">
+            <div className="h-full @container p-3">
               <LevelCard
                 featured={isFeatured}
                 key={level.id}
@@ -110,7 +99,9 @@ export default function TypePlanner({
       title={content.title}
       id="type-planner"
     >
-      {contentElement}
+      <div className="container mx-auto mt-12 flex justify-center overflow-x-visible px-4 md:px-20">
+        {contentElement}
+      </div>
     </Section>
   );
 }

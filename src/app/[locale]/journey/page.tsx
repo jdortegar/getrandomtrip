@@ -148,12 +148,9 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         }}
       />
 
-      <div
-        className="container mx-auto px-4 py-8"
-        ref={contentRef}
-      >
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr_320px]">
-          <div className="lg:sticky lg:top-8 lg:self-start">
+      <div className="container mx-auto px-4 py-8" ref={contentRef}>
+        <div className="flex flex-col lg:flex-row w-full gap-8">
+          <div className="lg:sticky lg:top-8 lg:self-start hidden lg:block">
             <JourneyProgressSidebar
               activeTab={activeTab}
               onStepClick={handleStepClick}
@@ -161,7 +158,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             />
           </div>
 
-          <div className="min-w-0">
+          <div className="lg:sticky lg:top-8 lg:self-start min-w-0 flex-1">
             <JourneyMainContent
               activeTab={activeTab}
               addonLabels={journey.addons}

@@ -73,7 +73,11 @@ interface JourneyMainContentProps {
     Record<string, Array<{ key: string; label: string; desc: string }>>
   >;
   /** Localized traveler type labels from dictionary (home.exploration.travelerTypes). */
-  localizedTravelerTypes?: Array<{ description: string; key: string; title: string }>;
+  localizedTravelerTypes?: Array<{
+    description: string;
+    key: string;
+    title: string;
+  }>;
   /** Labels for dropdowns and step copy (journey.mainContent). */
   mainContentLabels: JourneyMainContentLabels;
   /** Labels for details step (journey.detailsStep). */
@@ -243,9 +247,7 @@ export default function JourneyMainContent({
         originCountry: draftOriginCountry || undefined,
         startDate: draftStartDate ?? undefined,
         transport:
-          draftTransportOrder.length === 4
-            ? draftTransportOrder[0]
-            : undefined,
+          draftTransportOrder.length === 4 ? draftTransportOrder[0] : undefined,
         transportOrder:
           draftTransportOrder.length === 4
             ? draftTransportOrder.join(',')
@@ -253,7 +255,15 @@ export default function JourneyMainContent({
       });
     }
     prevActiveTabRef.current = activeTab;
-  }, [activeTab, draftOriginCity, draftOriginCountry, draftNights, draftStartDate, draftTransportOrder, updateQuery]);
+  }, [
+    activeTab,
+    draftOriginCity,
+    draftOriginCountry,
+    draftNights,
+    draftStartDate,
+    draftTransportOrder,
+    updateQuery,
+  ]);
 
   const effectiveOriginCountry =
     activeTab === 'details' ? draftOriginCountry : originCountry;
@@ -298,9 +308,13 @@ export default function JourneyMainContent({
   }, [activeTab, arrivePref, climate, departPref, maxTravelTime]);
 
   const effectiveDepartPref =
-    activeTab === 'preferences' ? draftDepartPref : (departPref ?? 'indistinto');
+    activeTab === 'preferences'
+      ? draftDepartPref
+      : (departPref ?? 'indistinto');
   const effectiveArrivePref =
-    activeTab === 'preferences' ? draftArrivePref : (arrivePref ?? 'indistinto');
+    activeTab === 'preferences'
+      ? draftArrivePref
+      : (arrivePref ?? 'indistinto');
   const effectiveClimate =
     activeTab === 'preferences' ? draftClimate : (climate ?? 'indistinto');
   const effectiveMaxTravelTime =
@@ -337,9 +351,7 @@ export default function JourneyMainContent({
     if (!localized?.length) return options;
     return options.map((opt) => {
       const over = localized.find((o) => o.key === opt.key);
-      return over
-        ? { ...opt, label: over.label, desc: over.desc }
-        : opt;
+      return over ? { ...opt, label: over.label, desc: over.desc } : opt;
     });
   }, [excuse, travelType, localizedRefineOptions]);
 
@@ -727,7 +739,6 @@ export default function JourneyMainContent({
                   onSelect={handleTravelTypeSelect}
                   selectedTravelType={travelType as TravelerTypeSlug}
                   showArrows={false}
-    
                 />
               </JourneyDropdown>
 
@@ -751,7 +762,6 @@ export default function JourneyMainContent({
                       selectedLevel={experience}
                       showArrows={false}
                       type={travelType as TravelerTypeSlug}
-                      
                     />
                   </div>
                 </JourneyDropdown>
@@ -792,13 +802,10 @@ export default function JourneyMainContent({
                       <ExcusesCarousel
                         ctaLabel={labels.excuseCardCta}
                         excuses={excuses}
-                        fullViewportWidth={false}
                         itemsPerView={3}
                         localizedExcuses={localizedExcuses}
                         onSelect={handleExcuseSelect}
                         selectedExcuse={excuse}
-                        showArrows={false}
-                        showDots
                       />
                     </div>
                   ) : (
@@ -867,16 +874,10 @@ export default function JourneyMainContent({
           </div>
         );
       case 'details':
-        if (
-          !travelType ||
-          !experience ||
-          (hasExcuseStep && !excuse)
-        ) {
+        if (!travelType || !experience || (hasExcuseStep && !excuse)) {
           return (
             <div className="py-12 text-center">
-              <p className="text-gray-500">
-                {labels.completeBudgetAndExcuse}
-              </p>
+              <p className="text-gray-500">{labels.completeBudgetAndExcuse}</p>
             </div>
           );
         }
@@ -905,9 +906,7 @@ export default function JourneyMainContent({
         if (!originCountry || !originCity || !startDate) {
           return (
             <div className="py-12 text-center">
-              <p className="text-gray-500">
-                {labels.completeOriginFirst}
-              </p>
+              <p className="text-gray-500">{labels.completeOriginFirst}</p>
             </div>
           );
         }
@@ -958,13 +957,12 @@ export default function JourneyMainContent({
 
   return (
     <div className={cn('flex-1 min-h-0 flex flex-col', className)}>
-      <div className="flex-1" id="journey-actions">{renderContent()}</div>
+      <div className="flex-1" id="journey-actions">
+        {renderContent()}
+      </div>
 
       {/* Action Buttons */}
-      <div
-        className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-gray-200"
-        
-      >
+      <div className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-gray-200">
         <button
           className="text-gray-900 underline hover:no-underline text-sm font-medium"
           onClick={handleClearAll}
@@ -987,7 +985,7 @@ export default function JourneyMainContent({
         {isAllStepsComplete && !canContinue && (
           <Button
             asChild
-            className="text-sm font-normal normal-case" 
+            className="text-sm font-normal normal-case"
             size="md"
             variant="default"
           >

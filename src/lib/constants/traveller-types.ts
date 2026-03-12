@@ -14,13 +14,13 @@ export const TRAVELLER_TYPE_OPTIONS: TravellerTypeOption[] = [
     key: 'solo',
     title: 'Solo',
     subtitle: 'Descubre el mundo a tu ritmo',
-    img: '/images/journey-types/solo-traveler.jpg',
+    img: '/images/journey-types/solo-traveler.png',
   },
   {
     key: 'couple',
     title: 'En Pareja',
     subtitle: 'Creen recuerdos juntos',
-    img: '/images/journey-types/couple-hetero.jpg',
+    img: '/images/journey-types/couple-hetero.png',
   },
   {
     key: 'family',

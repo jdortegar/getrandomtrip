@@ -13,7 +13,7 @@ export const initialTravellerTypes: TravelerType[] = [
     description: 'Escapadas románticas.',
     travelType: 'Couple',
     query: 'heterosexual couple romantic travel',
-    imageUrl: '/images/journey-types/couple-hetero.jpg',
+    imageUrl: '/images/journey-types/couple-hetero.png',
     enabled: true,
   },
   {
@@ -21,7 +21,7 @@ export const initialTravellerTypes: TravelerType[] = [
     description: 'Un viaje único.',
     travelType: 'Solo',
     query: 'solo travel adventure landscape',
-    imageUrl: '/images/journey-types/solo-traveler.jpg',
+    imageUrl: '/images/journey-types/solo-traveler.png',
     enabled: true,
   },
   {

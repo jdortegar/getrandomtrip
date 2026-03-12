@@ -23,7 +23,7 @@ const soloEs: TravelerTypeData = {
       tagline: 'Aventura personal. Sin compromisos.',
       scrollText: 'SCROLL',
       videoSrc: '/videos/hero-solo-video.mp4',
-      fallbackImage: '/images/journey-types/solo-traveler.jpg',
+      fallbackImage: '/images/fallbacks/hero-solo-video.png',
       secondaryCta: {
         text: 'RANDOMTRIP-ME!',
         href: '#type-planner',

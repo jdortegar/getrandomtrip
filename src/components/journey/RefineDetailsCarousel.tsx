@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { EmblaCarousel } from '@/components/EmblaCarousel/EmblaCarousel';
+import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import RefineDetailsCard from '@/components/journey/RefineDetailsCard';
 
 interface RefineDetailsOption {
@@ -49,16 +49,7 @@ export function RefineDetailsCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel
-        align={options.length < itemsPerView ? 'center' : 'start'}
-        className={classes?.wrapper}
-        gap={16}
-        showArrows={showArrows}
-        showDots={showDots}
-        slidesPerView={itemsPerView}
-        slidesToScroll={1}
-        viewportClassName={classes?.viewport}
-      >
+      <EmblaCarousel slidesPerView={itemsPerView}>
         {options.map((option) => {
           const isSelected = selectedOptions.includes(option.key);
 

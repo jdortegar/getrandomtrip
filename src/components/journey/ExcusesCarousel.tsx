@@ -2,39 +2,27 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { EmblaCarousel } from '@/components/EmblaCarousel/EmblaCarousel';
+import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import ExcuseCard from '@/components/journey/ExcuseCard';
 import type { ExcuseData } from '@/lib/data/shared/excuses';
 
 interface ExcusesCarouselProps {
-  classes?: {
-    section?: string;
-    viewport?: string;
-    wrapper?: string;
-  };
   ctaLabel?: string;
   excuses: ExcuseData[];
-  fullViewportWidth?: boolean;
   itemsPerView?: number;
   /** Localized excuse titles/descriptions by key (e.g. journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
   onSelect?: (excuseKey: string) => void;
   selectedExcuse?: string;
-  showArrows?: boolean;
-  showDots?: boolean;
 }
 
 export function ExcusesCarousel({
-  classes,
   ctaLabel,
   excuses,
-  fullViewportWidth = false,
   itemsPerView = 3,
   localizedExcuses,
   onSelect,
   selectedExcuse,
-  showArrows = false,
-  showDots = true,
 }: ExcusesCarouselProps) {
   const handleCardClick = (excuse: ExcuseData) => {
     onSelect?.(excuse.key);
@@ -54,16 +42,7 @@ export function ExcusesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel
-        align={excuses.length < itemsPerView ? 'center' : 'start'}
-        className={classes?.wrapper}
-        gap={16}
-        showArrows={showArrows}
-        showDots={showDots}
-        slidesPerView={itemsPerView}
-        slidesToScroll={1}
-        viewportClassName={classes?.viewport}
-      >
+      <EmblaCarousel slidesPerView={itemsPerView}>
         {excuses.map((excuse) => {
           const isSelected = selectedExcuse === excuse.key;
 

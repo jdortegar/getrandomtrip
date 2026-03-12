@@ -19,7 +19,7 @@ export const soloEn: TravelerTypeData = {
       tagline: 'Personal adventure. No commitments.',
       scrollText: 'SCROLL',
       videoSrc: '/videos/hero-solo-video.mp4',
-      fallbackImage: '/images/journey-types/solo-traveler.jpg',
+      fallbackImage: '/images/fallbacks/hero-solo-video.png',
       primaryCta: {
         ariaLabel: 'Go to blog section',
         href: '#blog',
@@ -36,9 +36,9 @@ export const soloEn: TravelerTypeData = {
       paragraphs: [
         'When you travel alone, you answer to no one: not a partner who wants to stop at every viewpoint, nor a friend who plans itineraries in color.',
         'There will be no "things to do" lists, no five-star TripAdvisor reviews with pixelated photos. There will be a path opening in front of you, as if you were inventing it with every step. And, in the background, someone—us—making sure everything works even when it feels improvised.',
-        'Maybe you\'ll wake up looking at a lake you didn\'t know existed. Or end up talking to strangers who, after a while, won\'t feel like strangers. Traveling alone is that rare luxury: finding yourself in the silence and discovering it\'s not so scary.',
+        "Maybe you'll wake up looking at a lake you didn't know existed. Or end up talking to strangers who, after a while, won't feel like strangers. Traveling alone is that rare luxury: finding yourself in the silence and discovering it's not so scary.",
         'What begins is a story without witnesses: a coffee going cold while you write in a notebook, a walk that forces you to think differently, a photo you have no one to show but keep anyway.',
-        'The only certainty is that you\'ll come back different. Not better or worse: different. And wanting to do it again, like that book you reread knowing you\'ll understand it better the second time.',
+        "The only certainty is that you'll come back different. Not better or worse: different. And wanting to do it again, like that book you reread knowing you'll understand it better the second time.",
       ],
       eyebrow: 'Solo, but never alone',
     },
@@ -86,8 +86,14 @@ export const soloEn: TravelerTypeData = {
         priceLabel: 'Up to',
         priceFootnote: 'per person',
         features: [
-          { title: 'Duration', description: 'Max 3 nights (+More flexibility)' },
-          { title: 'Destinations', description: 'Domestic+ (Farther & regional)' },
+          {
+            title: 'Duration',
+            description: 'Max 3 nights (+More flexibility)',
+          },
+          {
+            title: 'Destinations',
+            description: 'Domestic+ (Farther & regional)',
+          },
           { title: 'Transport', description: 'Basic flights (Carry-on only)' },
           {
             title: 'Accommodation',
@@ -95,7 +101,8 @@ export const soloEn: TravelerTypeData = {
           },
           {
             title: 'Benefits',
-            description: 'Randomtrip guide designed to discover at your own pace.',
+            description:
+              'Randomtrip guide designed to discover at your own pace.',
           },
         ],
         closingLine:
@@ -188,7 +195,10 @@ export const soloEn: TravelerTypeData = {
             title: 'Duration',
             description: '100% flexible (No limit on days)',
           },
-          { title: 'Destinations', description: 'Global (The world within reach)' },
+          {
+            title: 'Destinations',
+            description: 'Global (The world within reach)',
+          },
           {
             title: 'Transport',
             description: 'Flex / Premium / Private (Made to measure)',
@@ -213,7 +223,7 @@ export const soloEn: TravelerTypeData = {
   blog: {
     title: 'Our favorite destinations for solo travel',
     subtitle:
-      'The solo path doesn\'t mean being alone. These stories and destinations show that getting lost is another way of finding yourself.',
+      "The solo path doesn't mean being alone. These stories and destinations show that getting lost is another way of finding yourself.",
     posts: [
       {
         href: '/blog/solo',
@@ -269,7 +279,7 @@ export const soloEn: TravelerTypeData = {
       },
       {
         quote:
-          'The surprise was a gift. I found places and people I didn\'t expect.',
+          "The surprise was a gift. I found places and people I didn't expect.",
         author: 'Camila R.',
         country: 'Uruguay',
       },
@@ -293,7 +303,7 @@ export const soloEn: TravelerTypeData = {
       },
       {
         quote:
-          'I discovered that traveling alone doesn\'t mean feeling alone. Great experience.',
+          "I discovered that traveling alone doesn't mean feeling alone. Great experience.",
         author: 'Paula F.',
         country: 'Peru',
       },

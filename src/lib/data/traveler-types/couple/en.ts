@@ -20,9 +20,8 @@ export const coupleEn: TravelerTypeData = {
         'Your trip should be as unique as you are. Discover secret destinations together.',
       tagline: 'Surprise for the two of you. No spoilers.',
       scrollText: 'SCROLL',
-      videoSrc:
-        'https://ocqketmaavn5dczt.public.blob.vercel-storage.com/videos/couple-hero-video.mp4',
-      fallbackImage: '/images/journey-types/couple-traveler.jpg',
+      videoSrc: '/videos/couple-hero-video.mp4',
+      fallbackImage: '/images/fallbacks/couple-hero-video.png',
       primaryCta: {
         ariaLabel: 'Go to blog section',
         href: '#blog',
@@ -37,10 +36,10 @@ export const coupleEn: TravelerTypeData = {
     story: {
       title: 'Classified love',
       paragraphs: [
-        'No one will know where you\'ll be. Not even you… yet. And trust me: that\'s a good thing. Because if something kills the magic of a trip, it\'s that Excel spreadsheet of schedules put together by the cousin who "knows how to organize."',
-        'There will be no Excel here, no agency brochures with people smiling falsely. Someone—not you—will take care of everything so it feels improvised. You, meanwhile, won\'t know if the next morning you\'ll wake up to the sea or to roosters… and that, lovebirds, is art.',
-        'No map marks it. No blog recommends it. Just the two of you, walking through places that will feel made up so no one else can see them. A locked itinerary, like grandma\'s recipes that she swears she\'ll take to the grave… and then ends up sharing at a wedding.',
-        'Your names will be on the reservation. The destination won\'t. And that\'s when the story begins: breakfast here, a kiss there, a sunset you didn\'t ask for but you\'ll take as a memory. The only certainty is that you\'ll come back with stories that are impossible to explain without gestures and without exaggerating… and wanting to do it again, like when a song we love ends and you hit "repeat."',
+        "No one will know where you'll be. Not even you… yet. And trust me: that's a good thing. Because if something kills the magic of a trip, it's that Excel spreadsheet of schedules put together by the cousin who \"knows how to organize.\"",
+        "There will be no Excel here, no agency brochures with people smiling falsely. Someone—not you—will take care of everything so it feels improvised. You, meanwhile, won't know if the next morning you'll wake up to the sea or to roosters… and that, lovebirds, is art.",
+        "No map marks it. No blog recommends it. Just the two of you, walking through places that will feel made up so no one else can see them. A locked itinerary, like grandma's recipes that she swears she'll take to the grave… and then ends up sharing at a wedding.",
+        "Your names will be on the reservation. The destination won't. And that's when the story begins: breakfast here, a kiss there, a sunset you didn't ask for but you'll take as a memory. The only certainty is that you'll come back with stories that are impossible to explain without gestures and without exaggerating… and wanting to do it again, like when a song we love ends and you hit \"repeat.\"",
       ],
       eyebrow: 'Two on the move',
     } as ParagraphContent,
@@ -200,7 +199,10 @@ export const coupleEn: TravelerTypeData = {
             title: 'Duration',
             description: '100% flexible (No limit on days)',
           },
-          { title: 'Destinations', description: 'Global (The world within reach)' },
+          {
+            title: 'Destinations',
+            description: 'Global (The world within reach)',
+          },
           {
             title: 'Transport',
             description: 'Flex / Premium / Private (Made to measure)',
@@ -276,7 +278,7 @@ export const coupleEn: TravelerTypeData = {
         author: 'María & Carlos',
         country: 'Argentina',
         quote:
-          'It was the most incredible experience of our lives. We didn\'t know where we were going until 48 hours before, and it was perfect.',
+          "It was the most incredible experience of our lives. We didn't know where we were going until 48 hours before, and it was perfect.",
       },
       {
         author: 'Ana & Diego',
@@ -288,7 +290,7 @@ export const coupleEn: TravelerTypeData = {
         author: 'Sofia & Miguel',
         country: 'Spain',
         quote:
-          'The surprise was total. Every day was a new adventure. We\'ll definitely do it again.',
+          "The surprise was total. Every day was a new adventure. We'll definitely do it again.",
       },
       {
         author: 'Laura & Pablo',
@@ -306,7 +308,7 @@ export const coupleEn: TravelerTypeData = {
         author: 'Isabel & Fernando',
         country: 'Spain',
         quote:
-          'Randomtrip exceeded all our expectations. A trip we\'ll remember forever.',
+          "Randomtrip exceeded all our expectations. A trip we'll remember forever.",
       },
     ] as Testimonial[],
   },

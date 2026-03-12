@@ -47,7 +47,9 @@ function getFilterLabel(
   key: string,
   filterOptions?: JourneySummaryProps['filterOptions'],
 ): string {
-  const fo = filterOptions as Record<string, { options: Array<{ key: string; label: string }> }> | undefined;
+  const fo = filterOptions as
+    | Record<string, { options: Array<{ key: string; label: string }> }>
+    | undefined;
   const fromDict = fo?.[group]?.options?.find((o) => o.key === key)?.label;
   if (fromDict) return fromDict;
   const opt = FILTER_OPTIONS[group]?.options?.find((o) => o.key === key);
@@ -68,11 +70,23 @@ interface JourneySummaryProps {
   className?: string;
   /** Localized filter option labels (e.g. journey.preferencesStep.filterOptions). */
   filterOptions?: {
-    arrivePref: { label: string; options: Array<{ key: string; label: string }> };
+    arrivePref: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
     climate: { label: string; options: Array<{ key: string; label: string }> };
-    departPref: { label: string; options: Array<{ key: string; label: string }> };
-    maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
-    transport: { label: string; options: Array<{ key: string; label: string }> };
+    departPref: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
+    maxTravelTime: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
+    transport: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
   };
   onDetailRemove?: (detail: string) => void;
   onEdit?: (section: string) => void;
@@ -192,7 +206,7 @@ export default function JourneySummary({
     () =>
       excuse
         ? (localizedExcuses?.find((e) => e.key === excuse)?.title ??
-            getExcuseTitle(excuse))
+          getExcuseTitle(excuse))
         : undefined,
     [excuse, localizedExcuses],
   );
@@ -368,7 +382,7 @@ export default function JourneySummary({
   return (
     <aside
       className={cn(
-        'flex w-full flex-shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:w-80 lg:sticky lg:top-8 lg:self-start',
+        'flex w-full flex-shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80',
         className,
       )}
     >

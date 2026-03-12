@@ -22,9 +22,8 @@ export const coupleEs: TravelerTypeData = {
         'El viaje debe ser tan único como ustedes. Descubran destinos secretos juntos.',
       tagline: 'Sorpresa para ustedes. Sin spoilers.',
       scrollText: 'SCROLL',
-      videoSrc:
-        'https://ocqketmaavn5dczt.public.blob.vercel-storage.com/videos/couple-hero-video.mp4',
-      fallbackImage: '/images/journey-types/couple-traveler.jpg',
+      videoSrc: '/videos/couple-hero-video.mp4',
+      fallbackImage: '/images/fallbacks/couple-hero-video.png',
       primaryCta: {
         ariaLabel: 'Ir a la sección de blog',
         href: '#blog',

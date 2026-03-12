@@ -13,7 +13,7 @@ export default function BlogCard({ post }: BlogCardProps) {
   const href = post.href ?? '/blog';
 
   return (
-    <div className="group relative block aspect-[3/4] w-full max-w-[380px] overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
       <Link
         aria-label={`Read ${post.title}`}
         className="absolute inset-0 z-0"
