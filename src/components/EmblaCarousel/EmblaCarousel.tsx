@@ -21,19 +21,19 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
   containScroll: false,
 };
 
-/** Builds slide class: mobile 1 per view (full-width), md 2 + peek, lg = sliderPerView full slides (no peek). */
+/** Builds slide class: 1 per view (mobile), 2 + peek (@md), slidesPerView full (@lg). Breakpoints are container-based so they work inside any wrapper. */
 export function getEmblaSlideClassName(slidesPerView: number = 3): string {
   const n = slidesPerView;
   return [
-    'min-w-0 pl-4 md:pl-6 lg:pl-8',
-    'flex-[0_0_90%]', // mobile: 1 slide
-    'md:flex-[0_0_calc((100%-1.5rem)/2.2)]', // md: 2 + peek
-    // lg: use literal classes so Tailwind JIT generates them (dynamic template can be missed)
+    'min-w-0 pl-4 @md:pl-6 @lg:pl-8',
+    'flex-[0_0_90%]', // base: 1 slide
+    '@md:flex-[0_0_calc((100%-1.5rem)/2.2)]', // container ≥768px: 2 + peek
+    // @lg: literal classes so Tailwind JIT generates them
     ...(n === 3
-      ? ['lg:flex-[0_0_calc((100%-4rem)/3)]']
+      ? ['@lg:flex-[0_0_calc((100%-4rem)/3)]']
       : n === 4
-        ? ['lg:flex-[0_0_calc((100%-6rem)/4)]']
-        : [`lg:flex-[0_0_calc((100%-${(n - 1) * 2}rem)/${n})]`]),
+        ? ['@lg:flex-[0_0_calc((100%-6rem)/4)]']
+        : [`@lg:flex-[0_0_calc((100%-${(n - 1) * 2}rem)/${n})]`]),
   ].join(' ');
 }
 
@@ -60,7 +60,7 @@ const EmblaCarousel = ({
   const slideClassName = getEmblaSlideClassName(slidesPerView);
 
   return (
-    <div className="mx-auto w-full">
+    <div className="@container mx-auto w-full">
       <div className="flex self-end items-center justify-end gap-2.5 mb-6">
         <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} />
         <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} />
@@ -69,7 +69,7 @@ const EmblaCarousel = ({
         <div
           className={cn(
             'flex min-w-0 w-full touch-[pan-y_pinch-zoom]',
-            '-ml-4 md:-ml-6 lg:-ml-8',
+            '-ml-4 @md:-ml-6 @lg:-ml-8',
           )}
         >
           {React.Children.map(children, (child, index) => (
