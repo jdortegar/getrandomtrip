@@ -30,6 +30,7 @@ import { getTravelerType } from '@/lib/data/traveler-types';
 import { Button } from '@/components/ui/Button';
 import { usePayment } from '@/hooks/usePayment';
 import { getDictionary } from '@/lib/i18n/dictionaries';
+import { toast } from 'react-toastify';
 import { hasLocale } from '@/lib/i18n/config';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
 import { cn } from '@/lib/utils';
@@ -238,14 +239,6 @@ function SummaryPageContent() {
     }
   }, [session, isAuthed, status]);
 
-  if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   const pax = effectiveLogistics.pax || 1;
   const {
     basePerPax,
@@ -402,8 +395,66 @@ function SummaryPageContent() {
   const backToJourneyHref = `/${locale}/journey${journeyQueryString ? `?${journeyQueryString}` : ''}`;
 
   const payNow = async () => {
-    await initiatePayment(undefined);
+    const type = travelType || 'couple';
+    const level = normalizeLevelForCatalog(experience) || experience || 'explora-plus';
+    const originCountry = logistics.country?.trim() ?? '';
+    const originCity = logistics.city?.trim() ?? '';
+
+    if (!originCountry || !originCity) {
+      toast.error('Completá ciudad y país de origen para continuar.');
+      return;
+    }
+
+    const startDate = logistics.startDate ? logistics.startDate.toISOString() : null;
+    const endDate = logistics.endDate ? logistics.endDate.toISOString() : null;
+
+    const tripPayload = {
+      from: 'journey',
+      type,
+      level,
+      originCountry,
+      originCity,
+      startDate,
+      endDate,
+      nights: effectiveLogistics.nights ?? nightsNum ?? 1,
+      pax,
+      transport: transport ?? 'avion',
+      climate: climate ?? 'indistinto',
+      maxTravelTime: maxTravelTime ?? 'sin-limite',
+      departPref: departPref ?? 'indistinto',
+      arrivePref: arrivePref ?? 'indistinto',
+      avoidDestinations: avoidDestinations ?? [],
+      addons: addons.selected ?? [],
+      status: 'DRAFT',
+    };
+
+    try {
+      const res = await fetch('/api/trip-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tripPayload),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error ?? 'No se pudo guardar el viaje. Intentá de nuevo.');
+        return;
+      }
+
+      await initiatePayment(data.tripRequest.id);
+    } catch (err) {
+      console.error('Error saving trip:', err);
+      toast.error('Error de conexión. Intentá de nuevo.');
+    }
   };
+
+  if (status === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const journey = dict?.journey;
   const summary = journey?.summary;
