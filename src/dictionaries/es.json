@@ -124,12 +124,32 @@
       ],
       "title": "Puntos de Partida",
       "travelerTypes": [
-        { "key": "couple", "title": "En Pareja", "description": "Escapadas románticas." },
+        {
+          "key": "couple",
+          "title": "En Pareja",
+          "description": "Escapadas románticas."
+        },
         { "key": "solo", "title": "Solo", "description": "Un viaje único." },
-        { "key": "family", "title": "En Familia", "description": "Recuerdos juntos." },
-        { "key": "group", "title": "En Grupo", "description": "Experiencias compartidas." },
-        { "key": "honeymoon", "title": "Honeymoon", "description": "El comienzo perfecto." },
-        { "key": "paws", "title": "PAWS", "description": "Aventuras con tu mascota." }
+        {
+          "key": "family",
+          "title": "En Familia",
+          "description": "Recuerdos juntos."
+        },
+        {
+          "key": "group",
+          "title": "En Grupo",
+          "description": "Experiencias compartidas."
+        },
+        {
+          "key": "honeymoon",
+          "title": "Honeymoon",
+          "description": "El comienzo perfecto."
+        },
+        {
+          "key": "paws",
+          "title": "PAWS",
+          "description": "Aventuras con tu mascota."
+        }
       ],
       "trippersHref": "/trippers"
     },
@@ -302,7 +322,7 @@
       "refineDetailsPlaceholder": "Afinar detalles",
       "refineDetailsOneSelected": "1 detalle seleccionado",
       "refineDetailsCountSelected": "{count} detalles seleccionados",
-      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía.",
+      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía. Elegí una o más aventuras.",
       "travelTypeLabel": "Tipo de Viaje",
       "travelTypePlaceholder": "Elegí tu experiencia",
       "viewSummary": "Ver resumen"
@@ -321,7 +341,20 @@
         "daysLabel": "días",
         "nightsLabel": "noches"
       },
-      "monthNames": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+      "monthNames": [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre"
+      ],
       "originLabel": "Origen",
       "originPlaceholder": "Elegí país y ciudad de salida",
       "transportLabel": "Transporte: Orden de preferencia",
@@ -425,138 +458,509 @@
       "addonsSaveButton": "Guardar Add-ons"
     },
     "addons": {
-      "cancel-ins": { "category": "Seguridad", "title": "Seguro de Cancelación", "shortDescription": "Protegé tu inversión", "longDescription": "Cubre cancelaciones por causas contempladas. Se calcula como el 15% del subtotal." },
-      "travel-ins-basic": { "category": "Seguridad", "title": "Seguro de Viaje", "shortDescription": "Asistencia médica y más", "longDescription": "Cobertura internacional. Opciones según nivel." },
-      "seat-select": { "category": "Vuelo y Equipaje", "title": "Selección de asiento", "shortDescription": "Elegí tu lugar", "longDescription": "Ventana, pasillo o preferente." },
-      "carry-on": { "category": "Vuelo y Equipaje", "title": "Carry-on extra", "shortDescription": "Equipaje de mano adicional", "longDescription": "Una pieza adicional." },
-      "checked-bag": { "category": "Vuelo y Equipaje", "title": "Equipaje en bodega", "shortDescription": "1 maleta despachada", "longDescription": "Hasta 23kg." },
-      "esim-5": { "category": "Conectividad", "title": "e-SIM 5GB/15d", "shortDescription": "Datos en destino", "longDescription": "Instalación inmediata, 5GB por 15 días." },
-      "esim-10": { "category": "Conectividad", "title": "e-SIM 10GB/30d", "shortDescription": "Más datos", "longDescription": "10GB por 30 días." },
-      "pickup-origin": { "category": "Movilidad", "title": "Transfer en Origen", "shortDescription": "Pick-up/Drop-off", "longDescription": "Traslado privado en origen." },
-      "pickup-destination": { "category": "Movilidad", "title": "Transfer en Destino", "shortDescription": "Aeropuerto ↔ hotel", "longDescription": "Traslado privado en destino." },
-      "car-rental": { "category": "Movilidad", "title": "Alquiler de Auto (por día)", "shortDescription": "Con seguro básico", "longDescription": "Precio por día. Ajustá cantidad de días." },
-      "scooter": { "category": "Movilidad", "title": "Alquiler de Moto/Scooter (día)", "shortDescription": "Movilidad urbana", "longDescription": "Precio por día." },
-      "bike": { "category": "Movilidad", "title": "Alquiler de Bicicleta (día)", "shortDescription": "Explorá a tu ritmo", "longDescription": "Precio por día." },
-      "hotel-upgrade": { "category": "Alojamiento", "title": "Upgrade de Alojamiento", "shortDescription": "Subí de categoría", "longDescription": "Mejor vista o categoría superior." },
-      "early-late": { "category": "Alojamiento", "title": "Early Check-in / Late Check-out", "shortDescription": "Flexibilidad", "longDescription": "Garantizá horarios cómodos." },
-      "food-exp": { "category": "Experiencias", "title": "Experiencia Gastronómica", "shortDescription": "Cena/Clase/Tour", "longDescription": "Opciones foodie en destino." },
-      "tour-exp": { "category": "Experiencias", "title": "Experiencia Turística", "shortDescription": "Tour/Entrada", "longDescription": "Histórico, naturaleza o acuático." },
-      "vip-lounge": { "category": "Otros", "title": "Acceso Salas VIP", "shortDescription": "Confort en aeropuerto", "longDescription": "Pase por persona." },
-      "fast-track": { "category": "Otros", "title": "Fast Track Seguridad", "shortDescription": "Vía rápida", "longDescription": "Control prioritario." },
-      "carbon": { "category": "Otros", "title": "Compensación CO₂", "shortDescription": "Viaje responsable", "longDescription": "Aporte a proyectos ambientales." }
+      "cancel-ins": {
+        "category": "Seguridad",
+        "title": "Seguro de Cancelación",
+        "shortDescription": "Protegé tu inversión",
+        "longDescription": "Cubre cancelaciones por causas contempladas. Se calcula como el 15% del subtotal."
+      },
+      "travel-ins-basic": {
+        "category": "Seguridad",
+        "title": "Seguro de Viaje",
+        "shortDescription": "Asistencia médica y más",
+        "longDescription": "Cobertura internacional. Opciones según nivel."
+      },
+      "seat-select": {
+        "category": "Vuelo y Equipaje",
+        "title": "Selección de asiento",
+        "shortDescription": "Elegí tu lugar",
+        "longDescription": "Ventana, pasillo o preferente."
+      },
+      "carry-on": {
+        "category": "Vuelo y Equipaje",
+        "title": "Carry-on extra",
+        "shortDescription": "Equipaje de mano adicional",
+        "longDescription": "Una pieza adicional."
+      },
+      "checked-bag": {
+        "category": "Vuelo y Equipaje",
+        "title": "Equipaje en bodega",
+        "shortDescription": "1 maleta despachada",
+        "longDescription": "Hasta 23kg."
+      },
+      "esim-5": {
+        "category": "Conectividad",
+        "title": "e-SIM 5GB/15d",
+        "shortDescription": "Datos en destino",
+        "longDescription": "Instalación inmediata, 5GB por 15 días."
+      },
+      "esim-10": {
+        "category": "Conectividad",
+        "title": "e-SIM 10GB/30d",
+        "shortDescription": "Más datos",
+        "longDescription": "10GB por 30 días."
+      },
+      "pickup-origin": {
+        "category": "Movilidad",
+        "title": "Transfer en Origen",
+        "shortDescription": "Pick-up/Drop-off",
+        "longDescription": "Traslado privado en origen."
+      },
+      "pickup-destination": {
+        "category": "Movilidad",
+        "title": "Transfer en Destino",
+        "shortDescription": "Aeropuerto ↔ hotel",
+        "longDescription": "Traslado privado en destino."
+      },
+      "car-rental": {
+        "category": "Movilidad",
+        "title": "Alquiler de Auto (por día)",
+        "shortDescription": "Con seguro básico",
+        "longDescription": "Precio por día. Ajustá cantidad de días."
+      },
+      "scooter": {
+        "category": "Movilidad",
+        "title": "Alquiler de Moto/Scooter (día)",
+        "shortDescription": "Movilidad urbana",
+        "longDescription": "Precio por día."
+      },
+      "bike": {
+        "category": "Movilidad",
+        "title": "Alquiler de Bicicleta (día)",
+        "shortDescription": "Explorá a tu ritmo",
+        "longDescription": "Precio por día."
+      },
+      "hotel-upgrade": {
+        "category": "Alojamiento",
+        "title": "Upgrade de Alojamiento",
+        "shortDescription": "Subí de categoría",
+        "longDescription": "Mejor vista o categoría superior."
+      },
+      "early-late": {
+        "category": "Alojamiento",
+        "title": "Early Check-in / Late Check-out",
+        "shortDescription": "Flexibilidad",
+        "longDescription": "Garantizá horarios cómodos."
+      },
+      "food-exp": {
+        "category": "Experiencias",
+        "title": "Experiencia Gastronómica",
+        "shortDescription": "Cena/Clase/Tour",
+        "longDescription": "Opciones foodie en destino."
+      },
+      "tour-exp": {
+        "category": "Experiencias",
+        "title": "Experiencia Turística",
+        "shortDescription": "Tour/Entrada",
+        "longDescription": "Histórico, naturaleza o acuático."
+      },
+      "vip-lounge": {
+        "category": "Otros",
+        "title": "Acceso Salas VIP",
+        "shortDescription": "Confort en aeropuerto",
+        "longDescription": "Pase por persona."
+      },
+      "fast-track": {
+        "category": "Otros",
+        "title": "Fast Track Seguridad",
+        "shortDescription": "Vía rápida",
+        "longDescription": "Control prioritario."
+      },
+      "carbon": {
+        "category": "Otros",
+        "title": "Compensación CO₂",
+        "shortDescription": "Viaje responsable",
+        "longDescription": "Aporte a proyectos ambientales."
+      }
     },
     "excuses": [
-      { "key": "solo-adventure", "title": "Aventura en Solitario", "description": "Descubrir el mundo a tu ritmo, sin compromisos ni horarios." },
-      { "key": "cultural-immersion", "title": "Inmersión Cultural", "description": "Sumergirse en tradiciones, sabores y costumbres locales." },
-      { "key": "wellness-retreat", "title": "Retiro de Bienestar", "description": "Reconectar contigo mismo en un ambiente de paz y tranquilidad." },
-      { "key": "romantic-getaway", "title": "Escapada Romántica", "description": "Un viaje corto, suficiente para apagar el mundo y encenderse mutuamente." },
-      { "key": "adventure-couple", "title": "Aventura en Pareja", "description": "Descubrir juntos lugares que los desafíen y los unan más." },
-      { "key": "escapada-romantica", "title": "Escapada Romántica", "description": "Un viaje corto, suficiente para apagar el mundo y encenderse mutuamente." },
-      { "key": "duo-aventura", "title": "Dúo de Aventura", "description": "Porque nada une más que perderse juntos en la naturaleza y conquistar lo inesperado." },
-      { "key": "foodie-lovers", "title": "Foodie Lovers", "description": "Para quienes creen que el amor también entra por el paladar." },
-      { "key": "cultura-tradicion", "title": "Cultura & Tradición", "description": "El encanto de descubrir juntos pueblos, historias y costumbres locales." },
-      { "key": "celebraciones", "title": "Celebraciones", "description": "Un aniversario, un logro, o simplemente la excusa perfecta para brindar juntos." },
-      { "key": "playa-dunas", "title": "Playa & Dunas", "description": "Sol, arena y la excusa eterna para caminar de la mano al atardecer." },
-      { "key": "escapada-urbana", "title": "Escapada Urbana", "description": "Porque la ciudad también puede ser el mejor escenario para perderse en pareja." },
-      { "key": "family-adventure", "title": "Aventura Familiar", "description": "Crear recuerdos inolvidables para toda la familia." },
-      { "key": "group-adventure", "title": "Aventura Grupal", "description": "Compartir experiencias únicas con tus amigos más cercanos." },
-      { "key": "honeymoon-luxury", "title": "Luna de Miel de Lujo", "description": "El comienzo perfecto de su vida juntos con experiencias únicas." },
-      { "key": "paws-adventure", "title": "Aventura con Mascotas", "description": "Incluir a tu mejor amigo peludo en la aventura." }
+      {
+        "key": "solo-adventure",
+        "title": "Aventura en Solitario",
+        "description": "Descubrir el mundo a tu ritmo, sin compromisos ni horarios."
+      },
+      {
+        "key": "cultural-immersion",
+        "title": "Inmersión Cultural",
+        "description": "Sumergirse en tradiciones, sabores y costumbres locales."
+      },
+      {
+        "key": "wellness-retreat",
+        "title": "Retiro de Bienestar",
+        "description": "Reconectar contigo mismo en un ambiente de paz y tranquilidad."
+      },
+      {
+        "key": "romantic-getaway",
+        "title": "Escapada Romántica",
+        "description": "Un viaje corto, suficiente para apagar el mundo y encenderse mutuamente."
+      },
+      {
+        "key": "adventure-couple",
+        "title": "Aventura en Pareja",
+        "description": "Descubrir juntos lugares que los desafíen y los unan más."
+      },
+      {
+        "key": "escapada-romantica",
+        "title": "Escapada Romántica",
+        "description": "Un viaje corto, suficiente para apagar el mundo y encenderse mutuamente."
+      },
+      {
+        "key": "duo-aventura",
+        "title": "Dúo de Aventura",
+        "description": "Porque nada une más que perderse juntos en la naturaleza y conquistar lo inesperado."
+      },
+      {
+        "key": "foodie-lovers",
+        "title": "Foodie Lovers",
+        "description": "Para quienes creen que el amor también entra por el paladar."
+      },
+      {
+        "key": "cultura-tradicion",
+        "title": "Cultura & Tradición",
+        "description": "El encanto de descubrir juntos pueblos, historias y costumbres locales."
+      },
+      {
+        "key": "celebraciones",
+        "title": "Celebraciones",
+        "description": "Un aniversario, un logro, o simplemente la excusa perfecta para brindar juntos."
+      },
+      {
+        "key": "playa-dunas",
+        "title": "Playa & Dunas",
+        "description": "Sol, arena y la excusa eterna para caminar de la mano al atardecer."
+      },
+      {
+        "key": "escapada-urbana",
+        "title": "Escapada Urbana",
+        "description": "Porque la ciudad también puede ser el mejor escenario para perderse en pareja."
+      },
+      {
+        "key": "family-adventure",
+        "title": "Aventura Familiar",
+        "description": "Crear recuerdos inolvidables para toda la familia."
+      },
+      {
+        "key": "group-adventure",
+        "title": "Aventura Grupal",
+        "description": "Compartir experiencias únicas con tus amigos más cercanos."
+      },
+      {
+        "key": "honeymoon-luxury",
+        "title": "Luna de Miel de Lujo",
+        "description": "El comienzo perfecto de su vida juntos con experiencias únicas."
+      },
+      {
+        "key": "paws-adventure",
+        "title": "Aventura con Mascotas",
+        "description": "Incluir a tu mejor amigo peludo en la aventura."
+      }
     ],
     "refineDetailOptions": {
       "solo": {
         "solo-adventure": [
-          {"key": "hiking-trekking", "label": "Senderismo & Trekking", "desc": "Caminar hacia lugares que solo se alcanzan a pie."},
-          {"key": "water-sports", "label": "Deportes Acuáticos", "desc": "Sumergirse en aventuras que te mantengan a flote."},
-          {"key": "extreme-sports", "label": "Deportes Extremos", "desc": "Adrenalina pura que te haga sentir vivo."}
+          {
+            "key": "hiking-trekking",
+            "label": "Senderismo & Trekking",
+            "desc": "Caminar hacia lugares que solo se alcanzan a pie."
+          },
+          {
+            "key": "water-sports",
+            "label": "Deportes Acuáticos",
+            "desc": "Sumergirse en aventuras que te mantengan a flote."
+          },
+          {
+            "key": "extreme-sports",
+            "label": "Deportes Extremos",
+            "desc": "Adrenalina pura que te haga sentir vivo."
+          }
         ],
         "cultural-immersion": [
-          {"key": "local-traditions", "label": "Tradiciones Locales", "desc": "Participar en ceremonias y festividades auténticas."},
-          {"key": "culinary-tours", "label": "Tours Culinarios", "desc": "Saborear la gastronomía local con chefs y familias."},
-          {"key": "art-galleries", "label": "Arte & Galerías", "desc": "Explorar el arte local y las expresiones culturales."}
+          {
+            "key": "local-traditions",
+            "label": "Tradiciones Locales",
+            "desc": "Participar en ceremonias y festividades auténticas."
+          },
+          {
+            "key": "culinary-tours",
+            "label": "Tours Culinarios",
+            "desc": "Saborear la gastronomía local con chefs y familias."
+          },
+          {
+            "key": "art-galleries",
+            "label": "Arte & Galerías",
+            "desc": "Explorar el arte local y las expresiones culturales."
+          }
         ],
         "wellness-retreat": [
-          {"key": "spa-treatments", "label": "Tratamientos de Spa", "desc": "Relajación y rejuvenecimiento en un ambiente de lujo."},
-          {"key": "meditation-yoga", "label": "Meditación & Yoga", "desc": "Encuentra tu centro a través de la práctica consciente."},
-          {"key": "nature-immersion", "label": "Inmersión en la Naturaleza", "desc": "Conecta con el entorno natural para encontrar paz interior."}
+          {
+            "key": "spa-treatments",
+            "label": "Tratamientos de Spa",
+            "desc": "Relajación y rejuvenecimiento en un ambiente de lujo."
+          },
+          {
+            "key": "meditation-yoga",
+            "label": "Meditación & Yoga",
+            "desc": "Encuentra tu centro a través de la práctica consciente."
+          },
+          {
+            "key": "nature-immersion",
+            "label": "Inmersión en la Naturaleza",
+            "desc": "Conecta con el entorno natural para encontrar paz interior."
+          }
         ]
       },
       "couple": {
         "escapada-romantica": [
-          {"key": "cultura-local-paseos", "label": "Cultura Local & Paseos Tranquilos", "desc": "Caminar de la mano por lugares que cuentan historias que aún no conocen."},
-          {"key": "wellness-spa", "label": "Wellness & Spa", "desc": "Detox. Retox. Repeat."},
-          {"key": "gastronomia-vinos", "label": "Experiencias Gastronómicas & Vinos", "desc": "El amor también se prueba en la mesa: sabores, copas y risas en plural."},
-          {"key": "atardeceres-momentos", "label": "Atardeceres & Momentos Íntimos", "desc": "Lo simple que se vuelve eterno: mirarse en silencio frente a un horizonte compartido."}
+          {
+            "key": "cultura-local-paseos",
+            "label": "Cultura Local & Paseos Tranquilos",
+            "desc": "Caminar de la mano por lugares que cuentan historias que aún no conocen."
+          },
+          {
+            "key": "wellness-spa",
+            "label": "Wellness & Spa",
+            "desc": "Detox. Retox. Repeat."
+          },
+          {
+            "key": "gastronomia-vinos",
+            "label": "Experiencias Gastronómicas & Vinos",
+            "desc": "El amor también se prueba en la mesa: sabores, copas y risas en plural."
+          },
+          {
+            "key": "atardeceres-momentos",
+            "label": "Atardeceres & Momentos Íntimos",
+            "desc": "Lo simple que se vuelve eterno: mirarse en silencio frente a un horizonte compartido."
+          }
         ],
         "duo-aventura": [
-          {"key": "trekking-naturaleza", "label": "Trekking & Naturaleza", "desc": "Subir juntos, descubrir juntos, conquistar juntos."},
-          {"key": "aventura-acuatica", "label": "Aventura Acuática", "desc": "Ríos, lagos o mares: dejarse llevar por la corriente y la adrenalina compartida."},
-          {"key": "exploracion-fauna", "label": "Exploración de Fauna", "desc": "La emoción de observar la vida salvaje como testigos privilegiados."},
-          {"key": "desierto-dunas", "label": "Desierto & Dunas", "desc": "La vastedad dorada donde cada paso es un acto de complicidad."}
+          {
+            "key": "trekking-naturaleza",
+            "label": "Trekking & Naturaleza",
+            "desc": "Subir juntos, descubrir juntos, conquistar juntos."
+          },
+          {
+            "key": "aventura-acuatica",
+            "label": "Aventura Acuática",
+            "desc": "Ríos, lagos o mares: dejarse llevar por la corriente y la adrenalina compartida."
+          },
+          {
+            "key": "exploracion-fauna",
+            "label": "Exploración de Fauna",
+            "desc": "La emoción de observar la vida salvaje como testigos privilegiados."
+          },
+          {
+            "key": "desierto-dunas",
+            "label": "Desierto & Dunas",
+            "desc": "La vastedad dorada donde cada paso es un acto de complicidad."
+          }
         ],
         "foodie-lovers": [
-          {"key": "talleres-cocina", "label": "Talleres & Experiencias de Cocina", "desc": "Cocinar juntos: un caos divertido que se transforma en complicidad."},
-          {"key": "street-food-mercados", "label": "Street Food & Mercados", "desc": "Descubrir el alma de un lugar en un bocado callejero."},
-          {"key": "fine-dining-gourmet", "label": "Fine Dining & Experiencias Gourmet", "desc": "Una mesa donde cada plato se vuelve parte de la celebración."},
-          {"key": "rutas-vino-bodegas", "label": "Rutas de Vino & Bodegas", "desc": "Brindar en paisajes que saben a historia y terroir."}
+          {
+            "key": "talleres-cocina",
+            "label": "Talleres & Experiencias de Cocina",
+            "desc": "Cocinar juntos: un caos divertido que se transforma en complicidad."
+          },
+          {
+            "key": "street-food-mercados",
+            "label": "Street Food & Mercados",
+            "desc": "Descubrir el alma de un lugar en un bocado callejero."
+          },
+          {
+            "key": "fine-dining-gourmet",
+            "label": "Fine Dining & Experiencias Gourmet",
+            "desc": "Una mesa donde cada plato se vuelve parte de la celebración."
+          },
+          {
+            "key": "rutas-vino-bodegas",
+            "label": "Rutas de Vino & Bodegas",
+            "desc": "Brindar en paisajes que saben a historia y terroir."
+          }
         ],
         "cultura-tradicion": [
-          {"key": "museos-patrimonio", "label": "Museos & Patrimonio", "desc": "El arte y la historia como excusa para caminar más lento."},
-          {"key": "pueblos-caminatas", "label": "Pueblos & Caminatas", "desc": "Calles pequeñas, historias grandes: el encanto de lo cotidiano."},
-          {"key": "artesania-diseno-local", "label": "Artesanía & Diseño Local", "desc": "Objetos que cuentan historias hechas a mano, para llevarlas con ustedes."},
-          {"key": "festivales-locales", "label": "Festivales Locales", "desc": "La magia de compartir costumbres que se viven con alegría colectiva."}
+          {
+            "key": "museos-patrimonio",
+            "label": "Museos & Patrimonio",
+            "desc": "El arte y la historia como excusa para caminar más lento."
+          },
+          {
+            "key": "pueblos-caminatas",
+            "label": "Pueblos & Caminatas",
+            "desc": "Calles pequeñas, historias grandes: el encanto de lo cotidiano."
+          },
+          {
+            "key": "artesania-diseno-local",
+            "label": "Artesanía & Diseño Local",
+            "desc": "Objetos que cuentan historias hechas a mano, para llevarlas con ustedes."
+          },
+          {
+            "key": "festivales-locales",
+            "label": "Festivales Locales",
+            "desc": "La magia de compartir costumbres que se viven con alegría colectiva."
+          }
         ],
         "wellness-retreat": [
-          {"key": "spa-termas", "label": "Spa & Termas", "desc": "Agua, calma y el lujo de no tener que hacer nada más."},
-          {"key": "yoga-mindfulness", "label": "Yoga & Mindfulness", "desc": "Respirar al unísono y reconectar con la esencia compartida."},
-          {"key": "naturaleza-silenciosa", "label": "Naturaleza Silenciosa", "desc": "El poder de escuchar el bosque en silencio, juntos."},
-          {"key": "detox-retox", "label": "Detox. Retox. Repeat", "desc": "Cuidarse como ritual compartido: lo que entra nutre cuerpo y vínculo."}
+          {
+            "key": "spa-termas",
+            "label": "Spa & Termas",
+            "desc": "Agua, calma y el lujo de no tener que hacer nada más."
+          },
+          {
+            "key": "yoga-mindfulness",
+            "label": "Yoga & Mindfulness",
+            "desc": "Respirar al unísono y reconectar con la esencia compartida."
+          },
+          {
+            "key": "naturaleza-silenciosa",
+            "label": "Naturaleza Silenciosa",
+            "desc": "El poder de escuchar el bosque en silencio, juntos."
+          },
+          {
+            "key": "detox-retox",
+            "label": "Detox. Retox. Repeat",
+            "desc": "Cuidarse como ritual compartido: lo que entra nutre cuerpo y vínculo."
+          }
         ],
         "celebraciones": [
-          {"key": "escapada-aniversario", "label": "Escapada de Aniversario", "desc": "Un viaje que celebra el tiempo compartido, con nuevos recuerdos por sumar."},
-          {"key": "milestones-logros", "label": "Milestones & Logros", "desc": "Porque los grandes pasos de la vida merecen más que un brindis: merecen un viaje."},
-          {"key": "luces-ciudad", "label": "Luces de Ciudad", "desc": "Rooftops, neones y la vibra de una noche que se recuerda por siempre."},
-          {"key": "veladas-musica", "label": "Veladas con Música", "desc": "Un soundtrack en vivo para ponerle ritmo al festejo y a la complicidad."}
+          {
+            "key": "escapada-aniversario",
+            "label": "Escapada de Aniversario",
+            "desc": "Un viaje que celebra el tiempo compartido, con nuevos recuerdos por sumar."
+          },
+          {
+            "key": "milestones-logros",
+            "label": "Milestones & Logros",
+            "desc": "Porque los grandes pasos de la vida merecen más que un brindis: merecen un viaje."
+          },
+          {
+            "key": "luces-ciudad",
+            "label": "Luces de Ciudad",
+            "desc": "Rooftops, neones y la vibra de una noche que se recuerda por siempre."
+          },
+          {
+            "key": "veladas-musica",
+            "label": "Veladas con Música",
+            "desc": "Un soundtrack en vivo para ponerle ritmo al festejo y a la complicidad."
+          }
         ],
         "playa-dunas": [
-          {"key": "relax-arena", "label": "Relax & Arena", "desc": "El mar como telón de fondo y el tiempo suspendido entre olas."},
-          {"key": "deportes-acuaticos", "label": "Deportes Acuáticos", "desc": "Compartir la emoción del movimiento y el agua salada en la piel."},
-          {"key": "paseos-escenicos", "label": "Paseos Escénicos", "desc": "Caminar al borde del mar, donde cada paso se acompaña con brisa y luz."},
-          {"key": "vida-nocturna-musica", "label": "Vida Nocturna & Música", "desc": "El sonido del mar mezclado con música y luces: fiesta sin relojes."}
+          {
+            "key": "relax-arena",
+            "label": "Relax & Arena",
+            "desc": "El mar como telón de fondo y el tiempo suspendido entre olas."
+          },
+          {
+            "key": "deportes-acuaticos",
+            "label": "Deportes Acuáticos",
+            "desc": "Compartir la emoción del movimiento y el agua salada en la piel."
+          },
+          {
+            "key": "paseos-escenicos",
+            "label": "Paseos Escénicos",
+            "desc": "Caminar al borde del mar, donde cada paso se acompaña con brisa y luz."
+          },
+          {
+            "key": "vida-nocturna-musica",
+            "label": "Vida Nocturna & Música",
+            "desc": "El sonido del mar mezclado con música y luces: fiesta sin relojes."
+          }
         ],
         "escapada-urbana": [
-          {"key": "arte-arquitectura", "label": "Arte & Arquitectura", "desc": "Descubrir cómo la ciudad respira a través de sus formas y colores."},
-          {"key": "gastronomia-cocteleria", "label": "Gastronomía & Coctelería", "desc": "Bares escondidos y mesas vibrantes: el pulso de la ciudad en cada copa."},
-          {"key": "cultura-shows", "label": "Cultura & shows", "desc": "Salir a perderse en la ciudad que nunca duerme."},
-          {"key": "compras-diseno", "label": "Compras & Diseño", "desc": "Buscar tesoros modernos en cada esquina creativa."}
+          {
+            "key": "arte-arquitectura",
+            "label": "Arte & Arquitectura",
+            "desc": "Descubrir cómo la ciudad respira a través de sus formas y colores."
+          },
+          {
+            "key": "gastronomia-cocteleria",
+            "label": "Gastronomía & Coctelería",
+            "desc": "Bares escondidos y mesas vibrantes: el pulso de la ciudad en cada copa."
+          },
+          {
+            "key": "cultura-shows",
+            "label": "Cultura & shows",
+            "desc": "Salir a perderse en la ciudad que nunca duerme."
+          },
+          {
+            "key": "compras-diseno",
+            "label": "Compras & Diseño",
+            "desc": "Buscar tesoros modernos en cada esquina creativa."
+          }
         ]
       },
       "family": {
         "family-adventure": [
-          {"key": "theme-parks", "label": "Parques Temáticos", "desc": "Diversión garantizada para todas las edades."},
-          {"key": "nature-exploration", "label": "Exploración Natural", "desc": "Descubrir la naturaleza juntos como familia."},
-          {"key": "cultural-learning", "label": "Aprendizaje Cultural", "desc": "Enseñar a los niños sobre diferentes culturas."}
+          {
+            "key": "theme-parks",
+            "label": "Parques Temáticos",
+            "desc": "Diversión garantizada para todas las edades."
+          },
+          {
+            "key": "nature-exploration",
+            "label": "Exploración Natural",
+            "desc": "Descubrir la naturaleza juntos como familia."
+          },
+          {
+            "key": "cultural-learning",
+            "label": "Aprendizaje Cultural",
+            "desc": "Enseñar a los niños sobre diferentes culturas."
+          }
         ]
       },
       "group": {
         "group-adventure": [
-          {"key": "team-building", "label": "Actividades de Equipo", "desc": "Fortalecer lazos a través de desafíos compartidos."},
-          {"key": "nightlife", "label": "Vida Nocturna", "desc": "Disfrutar de la noche con tus mejores amigos."},
-          {"key": "sports-activities", "label": "Actividades Deportivas", "desc": "Competir y divertirse en actividades deportivas."}
+          {
+            "key": "team-building",
+            "label": "Actividades de Equipo",
+            "desc": "Fortalecer lazos a través de desafíos compartidos."
+          },
+          {
+            "key": "nightlife",
+            "label": "Vida Nocturna",
+            "desc": "Disfrutar de la noche con tus mejores amigos."
+          },
+          {
+            "key": "sports-activities",
+            "label": "Actividades Deportivas",
+            "desc": "Competir y divertirse en actividades deportivas."
+          }
         ]
       },
       "honeymoon": {
         "honeymoon-luxury": [
-          {"key": "romantic-dinners", "label": "Cenas Románticas", "desc": "Momentos íntimos con la mejor gastronomía."},
-          {"key": "luxury-spa", "label": "Spa de Lujo", "desc": "Relajación y bienestar en el más alto nivel."},
-          {"key": "private-tours", "label": "Tours Privados", "desc": "Experiencias exclusivas solo para ustedes dos."}
+          {
+            "key": "romantic-dinners",
+            "label": "Cenas Románticas",
+            "desc": "Momentos íntimos con la mejor gastronomía."
+          },
+          {
+            "key": "luxury-spa",
+            "label": "Spa de Lujo",
+            "desc": "Relajación y bienestar en el más alto nivel."
+          },
+          {
+            "key": "private-tours",
+            "label": "Tours Privados",
+            "desc": "Experiencias exclusivas solo para ustedes dos."
+          }
         ]
       },
       "paws": {
         "paws-adventure": [
-          {"key": "pet-friendly-parks", "label": "Parques Pet-Friendly", "desc": "Espacios donde tu mascota puede correr libremente."},
-          {"key": "beach-activities", "label": "Actividades en la Playa", "desc": "Disfrutar del sol y la arena con tu compañero peludo."},
-          {"key": "hiking-trails", "label": "Senderos para Caminar", "desc": "Explorar la naturaleza juntos en senderos pet-friendly."}
+          {
+            "key": "pet-friendly-parks",
+            "label": "Parques Pet-Friendly",
+            "desc": "Espacios donde tu mascota puede correr libremente."
+          },
+          {
+            "key": "beach-activities",
+            "label": "Actividades en la Playa",
+            "desc": "Disfrutar del sol y la arena con tu compañero peludo."
+          },
+          {
+            "key": "hiking-trails",
+            "label": "Senderos para Caminar",
+            "desc": "Explorar la naturaleza juntos en senderos pet-friendly."
+          }
         ]
       }
     },
@@ -578,6 +982,7 @@
       "filterLabelArrive": "Llegada",
       "filterLabelClimate": "Clima",
       "filterLabelDepart": "Salida",
+      "filterLabelAvoid": "Evitar",
       "filterLabelTime": "Tiempo",
       "filterRemoveAria": "Quitar filtro",
       "filtersSection": "Filtros",
@@ -587,7 +992,20 @@
       "importantNote3": "2-3 filtros: USD 18 c/u.",
       "importantNote4": "4+ filtros: USD 25 c/u.",
       "importantTitle": "IMPORTANTE",
-      "monthsShort": ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
+      "monthsShort": [
+        "ene",
+        "feb",
+        "mar",
+        "abr",
+        "may",
+        "jun",
+        "jul",
+        "ago",
+        "sep",
+        "oct",
+        "nov",
+        "dic"
+      ],
       "noAddons": "Sin Extras",
       "noDetails": "Sin detalles",
       "noFilters": "Sin Filtros",
@@ -637,18 +1055,45 @@
     },
     "curators": {
       "items": [
-        { "bio": "Diseña itinerarios que conectan con lo local: talleres, mesas compartidas y rituales auténticos.", "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Ana García", "role": "Inmersión Cultural" },
-        { "bio": "Busca el punto justo entre adrenalina y seguridad. Trekking, cielos abiertos y micro-retos controlados.", "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Carlos Mendoza", "role": "Aventura & Aire Libre" },
-        { "bio": "Cura spaces con diseño, calma y atención plena. Silencio, spa, música baja, servicio impecable.", "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", "name": "Sofía Rossi", "role": "Lujo & Bienestar" }
+        {
+          "bio": "Diseña itinerarios que conectan con lo local: talleres, mesas compartidas y rituales auténticos.",
+          "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+          "name": "Ana García",
+          "role": "Inmersión Cultural"
+        },
+        {
+          "bio": "Busca el punto justo entre adrenalina y seguridad. Trekking, cielos abiertos y micro-retos controlados.",
+          "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+          "name": "Carlos Mendoza",
+          "role": "Aventura & Aire Libre"
+        },
+        {
+          "bio": "Cura spaces con diseño, calma y atención plena. Silencio, spa, música baja, servicio impecable.",
+          "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+          "name": "Sofía Rossi",
+          "role": "Lujo & Bienestar"
+        }
       ],
       "sectionTitle": "Conocé a los curadores"
     },
     "faq": {
       "items": [
-        { "q": "¿Qué compro exactamente si el destino es sorpresa?", "a": "Comprás un resultado emocional: alivio de la elección y descubrimiento guiado. El destino y la logística quedan en nuestras manos (con tus límites claros)." },
-        { "q": "¿Cómo trabajan la seguridad?", "a": "Evaluación de riesgos por destino, partners verificados, cobertura y protocolos de comunicación 24/7." },
-        { "q": "¿Puedo rechazar actividades?", "a": "Sí. El brief define no-go's. En destino, mantenemos flexibilidad sin romper la narrativa del viaje." },
-        { "q": "¿Qué pasa si no me gusta la sorpresa?", "a": "Iteramos. Tomamos tu feedback y ajustamos para el siguiente. Nuestro NPS y tasa de recompra guían la mejora." }
+        {
+          "q": "¿Qué compro exactamente si el destino es sorpresa?",
+          "a": "Comprás un resultado emocional: alivio de la elección y descubrimiento guiado. El destino y la logística quedan en nuestras manos (con tus límites claros)."
+        },
+        {
+          "q": "¿Cómo trabajan la seguridad?",
+          "a": "Evaluación de riesgos por destino, partners verificados, cobertura y protocolos de comunicación 24/7."
+        },
+        {
+          "q": "¿Puedo rechazar actividades?",
+          "a": "Sí. El brief define no-go's. En destino, mantenemos flexibilidad sin romper la narrativa del viaje."
+        },
+        {
+          "q": "¿Qué pasa si no me gusta la sorpresa?",
+          "a": "Iteramos. Tomamos tu feedback y ajustamos para el siguiente. Nuestro NPS y tasa de recompra guían la mejora."
+        }
       ],
       "sectionTitle": "Preguntas frecuentes"
     },
@@ -682,9 +1127,21 @@
     },
     "steps": {
       "items": [
-        { "key": "01", "title": "Brief de sentimientos", "description": "Cómo te querés sentir. Límites blandos/duros. Señales rojas y verdes." },
-        { "key": "02", "title": "Diseño invisible", "description": "Nosotros cargamos la logística. Vos solo recibís señales y momentos." },
-        { "key": "03", "title": "Serendipia segura", "description": "Sorpresas curadas con respaldo y plan B. Libertad con red." }
+        {
+          "key": "01",
+          "title": "Brief de sentimientos",
+          "description": "Cómo te querés sentir. Límites blandos/duros. Señales rojas y verdes."
+        },
+        {
+          "key": "02",
+          "title": "Diseño invisible",
+          "description": "Nosotros cargamos la logística. Vos solo recibís señales y momentos."
+        },
+        {
+          "key": "03",
+          "title": "Serendipia segura",
+          "description": "Sorpresas curadas con respaldo y plan B. Libertad con red."
+        }
       ],
       "sectionTitle": "Cómo diseñamos tu viaje",
       "stepLabel": "Paso"
@@ -692,17 +1149,32 @@
     "trust": {
       "footnote": "* Objetivos del plan de marca. Actualizaremos métricas vivas en el dashboard.",
       "items": [
-        { "value": "NPS 65+*", "label": "Meta pública y seguimiento continuo." },
-        { "value": "55%+", "label": "Adopción de upsells (bienestar, experiencias)." },
+        {
+          "value": "NPS 65+*",
+          "label": "Meta pública y seguimiento continuo."
+        },
+        {
+          "value": "55%+",
+          "label": "Adopción de upsells (bienestar, experiencias)."
+        },
         { "value": "20%+", "label": "Tasa de recompra objetivo." }
       ],
       "sectionTitle": "Confianza en números"
     },
     "valueProps": {
       "items": [
-        { "title": "Curaduría experta", "copy": "Guías con gusto impecable y metodología propia. Menos scroll, más vivir." },
-        { "title": "Seguridad y transparencia", "copy": "Protocolos, partners auditados y comunicación clara antes, durante y después." },
-        { "title": "Comunidad Tripper", "copy": "Historias reales, referidos y aprendizajes compartidos que elevan cada viaje." }
+        {
+          "title": "Curaduría experta",
+          "copy": "Guías con gusto impecable y metodología propia. Menos scroll, más vivir."
+        },
+        {
+          "title": "Seguridad y transparencia",
+          "copy": "Protocolos, partners auditados y comunicación clara antes, durante y después."
+        },
+        {
+          "title": "Comunidad Tripper",
+          "copy": "Historias reales, referidos y aprendizajes compartidos que elevan cada viaje."
+        }
       ],
       "sectionTitle": "Por qué confiar en Randomtrip"
     }

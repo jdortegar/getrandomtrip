@@ -32,7 +32,9 @@ export async function generateMetadata({
 }: {
   params: { locale?: string; type: string };
 }): Promise<Metadata> {
-  const locale = hasLocale(params?.locale) ? (params.locale as Locale) : ('es' as Locale);
+  const locale = hasLocale(params?.locale)
+    ? (params.locale as Locale)
+    : ('es' as Locale);
   const typeData = getTravelerType(params.type, locale);
 
   if (!typeData) {
@@ -52,7 +54,9 @@ export default async function TravelerTypePage({
 }: {
   params: { locale?: string; type: string };
 }) {
-  const locale = hasLocale(params.locale) ? (params.locale as Locale) : ('es' as Locale);
+  const locale = hasLocale(params.locale)
+    ? (params.locale as Locale)
+    : ('es' as Locale);
   const typeData = getTravelerType(params.type, locale);
 
   if (!typeData) {
@@ -63,7 +67,10 @@ export default async function TravelerTypePage({
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
   const blogHref = pathForLocale(locale, '/blog');
   const viewAll = typeData.blog.viewAll
-    ? { ...typeData.blog.viewAll, href: pathForLocale(locale, typeData.blog.viewAll.href) }
+    ? {
+        ...typeData.blog.viewAll,
+        href: pathForLocale(locale, typeData.blog.viewAll.href),
+      }
     : undefined;
 
   return (
@@ -81,8 +88,7 @@ export default async function TravelerTypePage({
         content={typeData.planner}
         hideOverflow={false}
         type={typeData.meta.slug as TravelerTypeSlug}
-        itemsPerView={4}
-
+        itemsPerView={3}
       />
       <Blog
         eyebrow={blogEyebrow}

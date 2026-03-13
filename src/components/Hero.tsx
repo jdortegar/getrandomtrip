@@ -52,7 +52,7 @@ const Hero: React.FC<HeroProps> = ({
         className="absolute top-0 left-0 h-px w-px"
       />
       <VideoBackground
-        // fallbackImage={content.fallbackImage}
+        fallbackImage={content.fallbackImage}
         videoSrc={content.videoSrc}
       />
 

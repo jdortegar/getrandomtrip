@@ -281,7 +281,7 @@ export default function JourneySummary({
       list.push({
         id: `avoid-${city}`,
         kind: 'avoid',
-        label: city,
+        label: `${summary.filterLabelAvoid}: ${city}`,
         value: city,
       });
     });
@@ -293,6 +293,7 @@ export default function JourneySummary({
     departPref,
     maxTravelTime,
     summary.filterLabelArrive,
+    summary.filterLabelAvoid,
     summary.filterLabelClimate,
     summary.filterLabelDepart,
     summary.filterLabelTime,

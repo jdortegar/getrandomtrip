@@ -831,13 +831,10 @@ export default function JourneyMainContent({
                       {refineDetailsOptions.length > 0 ? (
                         <>
                           <RefineDetailsCarousel
-                            fullViewportWidth={false}
                             itemsPerView={3}
                             onSelect={handleRefineDetailsSelect}
                             options={refineDetailsOptions}
                             selectedOptions={refineDetails}
-                            showArrows={false}
-                            showDots
                           />
                           <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
                             <button

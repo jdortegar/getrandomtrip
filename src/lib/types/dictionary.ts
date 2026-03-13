@@ -301,6 +301,7 @@ export interface MarketingDictionary {
       excuseSection: string;
       favoriteAmongTravelers: string;
       filterLabelArrive: string;
+      filterLabelAvoid: string;
       filterLabelClimate: string;
       filterLabelDepart: string;
       filterLabelTime: string;

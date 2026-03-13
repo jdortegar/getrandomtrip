@@ -13,29 +13,17 @@ interface RefineDetailsOption {
 }
 
 interface RefineDetailsCarouselProps {
-  classes?: {
-    section?: string;
-    viewport?: string;
-    wrapper?: string;
-  };
-  fullViewportWidth?: boolean;
   itemsPerView?: number;
   onSelect?: (optionKey: string) => void;
   options: RefineDetailsOption[];
   selectedOptions?: string[];
-  showArrows?: boolean;
-  showDots?: boolean;
 }
 
 export function RefineDetailsCarousel({
-  classes,
-  fullViewportWidth = false,
   itemsPerView = 3,
   onSelect,
   options,
   selectedOptions = [],
-  showArrows = false,
-  showDots = false,
 }: RefineDetailsCarouselProps) {
   const handleCardClick = (option: RefineDetailsOption) => {
     onSelect?.(option.key);

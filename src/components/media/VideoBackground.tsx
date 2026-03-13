@@ -17,7 +17,6 @@ export default function VideoBackground({
   className,
 }: VideoBackgroundProps) {
   if (!videoSrc) return null;
-
   return (
     <div
       className={cn('absolute inset-0 w-full h-full', className)}
@@ -40,10 +39,7 @@ export default function VideoBackground({
         preload="auto"
         src={videoSrc}
       >
-        <source
-          src={videoSrc.replace('.mp4', '.webm')}
-          type="video/webm"
-        />
+        <source src={videoSrc.replace('.mp4', '.webm')} type="video/webm" />
         <source src={videoSrc} type="video/mp4" />
       </video>
 
