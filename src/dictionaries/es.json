@@ -1019,6 +1019,42 @@
     },
     "userNamePlaceholder": "Nombre usuario"
   },
+  "confirmation": {
+    "hero": {
+      "title": "¡Gracias por tu compra!",
+      "description": "Tu viaje sorpresa está confirmado. Revisá los detalles más abajo.",
+      "subtitle": "CONFIRMACIÓN <span style=\"color: #F2C53D\">DE PAGO</span>"
+    },
+    "page": {
+      "title": "¡Gracias por tu compra!",
+      "body": "Tu aventura sorpresa GetRandomTrip está confirmada.",
+      "messageApproved": "Pago aprobado. Tu viaje sorpresa está confirmado.",
+      "messagePending": "Estado del pago: {status}. Revisá tu correo o la app de Mercado Pago.",
+      "messageGeneric": "Gracias por tu compra. Si acabás de pagar, tu viaje está en proceso de confirmación.",
+      "errorTitle": "Error al cargar el pedido",
+      "metaDescription": "Tu compra en GetRandomTrip está confirmada.",
+      "retry": "Reintentar",
+      "ctaReveal": "Descubrir mi destino",
+      "ctaBackToJourney": "Volver al viaje",
+      "ctaHome": "Ir al inicio"
+    }
+  },
+  "paymentFailure": {
+    "title": "Pago rechazado",
+    "body": "El pago no pudo completarse. Podés intentar de nuevo o elegir otro medio de pago.",
+    "metaDescription": "El pago fue rechazado. Intentá de nuevo en GetRandomTrip.",
+    "subtitle": "PAGO <span style=\"color: #F2C53D\">RECHAZADO</span>",
+    "ctaBackToJourney": "Volver al viaje",
+    "ctaHome": "Ir al inicio"
+  },
+  "paymentPending": {
+    "title": "Pago pendiente",
+    "body": "Tu pago está en proceso. Revisá tu correo o la app de Mercado Pago para ver el estado.",
+    "metaDescription": "Tu pago está pendiente. GetRandomTrip.",
+    "subtitle": "PAGO <span style=\"color: #F2C53D\">PENDIENTE</span>",
+    "ctaBackToJourney": "Volver al viaje",
+    "ctaHome": "Ir al inicio"
+  },
   "footer": {
     "quickLinksTitle": "Enlaces Rápidos",
     "about": "Nosotros",

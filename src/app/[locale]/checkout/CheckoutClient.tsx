@@ -138,11 +138,11 @@ export default function CheckoutClient({ locale = 'es' }: CheckoutClientProps) {
         // Clear form data after successful purchase
         clearForm();
         toast.success('Payment successful! Redirecting...');
-        // Redirect to Mercado Pago init_point if available, otherwise to post-purchase
+        // Redirect to Mercado Pago init_point if available, otherwise to confirmation
         if (data.initPoint) {
           window.location.href = data.initPoint;
         } else {
-          router.push(`/${locale}/post-purchase`);
+          router.push(`/${locale}/confirmation`);
         }
       } else {
         setPaymentStatus('failed');

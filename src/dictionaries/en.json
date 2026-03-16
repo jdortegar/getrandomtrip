@@ -1019,6 +1019,42 @@
     },
     "userNamePlaceholder": "User name"
   },
+  "confirmation": {
+    "hero": {
+      "title": "Thank you for your purchase!",
+      "description": "Your surprise trip is confirmed. Check the details below.",
+      "subtitle": "PAYMENT <span style=\"color: #F2C53D\">CONFIRMATION</span>"
+    },
+    "page": {
+      "title": "Thank you for your purchase!",
+      "body": "Your GetRandomTrip surprise adventure is confirmed.",
+      "messageApproved": "Payment approved. Your surprise trip is confirmed.",
+      "messagePending": "Payment status: {status}. Check your email or the Mercado Pago app.",
+      "messageGeneric": "Thank you for your purchase. If you just paid, your trip is being confirmed.",
+      "errorTitle": "Error loading order",
+      "metaDescription": "Your GetRandomTrip purchase is confirmed.",
+      "retry": "Retry",
+      "ctaReveal": "Reveal my destination",
+      "ctaBackToJourney": "Back to journey",
+      "ctaHome": "Go to home"
+    }
+  },
+  "paymentFailure": {
+    "title": "Payment rejected",
+    "body": "The payment could not be completed. You can try again or choose another payment method.",
+    "metaDescription": "Payment was rejected. Try again on GetRandomTrip.",
+    "subtitle": "PAYMENT <span style=\"color: #F2C53D\">REJECTED</span>",
+    "ctaBackToJourney": "Back to journey",
+    "ctaHome": "Go to home"
+  },
+  "paymentPending": {
+    "title": "Payment pending",
+    "body": "Your payment is being processed. Check your email or the Mercado Pago app for status.",
+    "metaDescription": "Your payment is pending. GetRandomTrip.",
+    "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
+    "ctaBackToJourney": "Back to journey",
+    "ctaHome": "Go to home"
+  },
   "footer": {
     "quickLinksTitle": "Quick Links",
     "about": "About us",

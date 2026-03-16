@@ -327,6 +327,42 @@ export interface MarketingDictionary {
     };
     userNamePlaceholder: string;
   };
+  confirmation: {
+    hero: {
+      description: string;
+      subtitle: string;
+      title: string;
+    };
+    page: {
+      body: string;
+      ctaBackToJourney: string;
+      ctaHome: string;
+      ctaReveal: string;
+      errorTitle: string;
+      messageApproved: string;
+      messageGeneric: string;
+      messagePending: string;
+      metaDescription: string;
+      retry: string;
+      title: string;
+    };
+  };
+  paymentFailure: {
+    body: string;
+    ctaBackToJourney: string;
+    ctaHome: string;
+    metaDescription: string;
+    subtitle: string;
+    title: string;
+  };
+  paymentPending: {
+    body: string;
+    ctaBackToJourney: string;
+    ctaHome: string;
+    metaDescription: string;
+    subtitle: string;
+    title: string;
+  };
   footer: {
     ariaFacebook: string;
     ariaInstagram: string;

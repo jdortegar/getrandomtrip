@@ -82,11 +82,24 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || 'Cliente';
     const lastName = nameParts.slice(1).join(' ') || 'GetRandomTrip';
 
-    const baseUrl =
+    let baseUrl =
       process.env.NEXTAUTH_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
       'http://localhost:3010';
+    baseUrl = baseUrl.replace(/\/$/, '');
+    if (baseUrl && !/^https?:\/\//i.test(baseUrl)) {
+      baseUrl = `https://${baseUrl}`;
+    }
     const localeSegment = pathLocale ? `/${pathLocale}` : '';
+    const successUrl = `${baseUrl}${localeSegment}/confirmation`;
+    const failureUrl = `${baseUrl}${localeSegment}/failure`;
+    const pendingUrl = `${baseUrl}${localeSegment}/pending`;
+
+    // Mercado Pago only accepts auto_return when success URL is a named domain (not localhost).
+    // On localhost we omit it so the preference is accepted; user can still use "Return to site".
+    const isLocalhost =
+      !baseUrl ||
+      /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(baseUrl);
 
     const preferenceData = {
       items: [
@@ -106,11 +119,11 @@ export async function POST(request: NextRequest) {
         email: userEmail || 'cliente@example.com',
       },
       back_urls: {
-        success: `${baseUrl}${localeSegment}/post-purchase`,
-        failure: `${baseUrl}${localeSegment}/checkout`,
-        pending: `${baseUrl}${localeSegment}/checkout`,
+        failure: failureUrl,
+        pending: pendingUrl,
+        success: successUrl,
       },
-      auto_return: 'approved' as const,
+      ...(isLocalhost ? {} : { auto_return: 'approved' as const }),
       notification_url: `${baseUrl}/api/mercadopago/webhook`,
       external_reference: tripId || `trip-${Date.now()}`,
       statement_descriptor: 'GETRANDOMTRIP',

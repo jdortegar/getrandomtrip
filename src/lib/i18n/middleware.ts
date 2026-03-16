@@ -67,7 +67,11 @@ export function handleI18n(request: NextRequest): NextResponse | null {
   }
 
   // No locale in path: detect and either rewrite (default) or redirect (other)
-  const locale = getLocaleFromRequest(request);
+  // Payment return paths (/confirmation, /failure, /pending) always use default locale when accessed without prefix,
+  // so Mercado Pago redirects to /confirmation (after we strip /es) don't get sent to /en by cookie.
+  const paymentReturnPaths = ['/confirmation', '/failure', '/pending'];
+  const isPaymentReturn = pathname ? paymentReturnPaths.includes(pathname) : false;
+  const locale = isPaymentReturn ? DEFAULT_LOCALE : getLocaleFromRequest(request);
 
   if (locale === DEFAULT_LOCALE) {
     // Rewrite to /es/... so [locale] segment is "es"
