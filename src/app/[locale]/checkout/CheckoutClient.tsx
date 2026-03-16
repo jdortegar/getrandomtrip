@@ -1,36 +1,44 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import PrimaryButton from '@/components/PrimaryButton';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
+import PrimaryButton from '@/components/PrimaryButton';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import { useClearFormAfterPurchase } from '@/hooks/useClearFormAfterPurchase';
 
 interface TripSummary {
   experienceLevel: string;
   basicConfig: {
-    originCity: string;
-    travelDate: string;
-    nights: number;
-    travelers: number;
     accommodationType: string;
+    originCity: string;
+    nights: number;
     transportationType: string;
+    travelDate: string;
+    travelers: number;
   };
-  premiumFilters: string[];
   addOns: string[];
+  addOnsCost: number;
   basePrice: number;
   premiumFilterCost: number;
-  addOnsCost: number;
+  premiumFilters: string[];
   totalPrice: number;
 }
 
-export default function CheckoutClient() {
+interface CheckoutClientProps {
+  locale?: string;
+}
+
+export default function CheckoutClient({ locale = 'es' }: CheckoutClientProps) {
   const [tripSummary, setTripSummary] = useState<TripSummary | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'failed'>('idle');
+  const [paymentStatus, setPaymentStatus] = useState<
+    'idle' | 'processing' | 'success' | 'failed'
+  >('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { data: session } = useSession();
   const { clearForm } = useClearFormAfterPurchase();
 
   useEffect(() => {
@@ -116,9 +124,10 @@ export default function CheckoutClient() {
         },
         body: JSON.stringify({
           amount: tripSummary.totalPrice,
-          currency: 'USD', // Assuming USD as default currency
-          payerEmail: 'test@example.com', // Placeholder: Replace with actual user email
+          currency: 'USD',
           description: `Randomtrip for ${tripSummary.basicConfig.originCity}`,
+          payerEmail:
+            session?.user?.email ?? 'test@example.com',
         }),
       });
 
@@ -133,7 +142,7 @@ export default function CheckoutClient() {
         if (data.initPoint) {
           window.location.href = data.initPoint;
         } else {
-          router.push('/post-purchase');
+          router.push(`/${locale}/post-purchase`);
         }
       } else {
         setPaymentStatus('failed');

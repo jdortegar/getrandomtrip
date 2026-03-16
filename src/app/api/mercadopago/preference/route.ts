@@ -20,7 +20,17 @@ const preference = new Preference(client);
 
 export async function POST(request: NextRequest) {
   try {
-    const { total, tripId, userEmail, userName, userId } = await request.json();
+    const {
+      total,
+      tripId,
+      userEmail,
+      userName,
+      userId,
+      locale,
+    } = await request.json();
+
+    const pathLocale =
+      typeof locale === 'string' && locale.length > 0 ? locale : 'es';
 
     console.log('MercadoPago preference request:', {
       total,
@@ -28,6 +38,7 @@ export async function POST(request: NextRequest) {
       userEmail,
       userName,
       userId,
+      pathLocale,
     });
 
     console.log('External reference will be set to:', tripId);
@@ -69,7 +80,11 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || 'Cliente';
     const lastName = nameParts.slice(1).join(' ') || 'GetRandomTrip';
 
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3010';
+    const baseUrl =
+      process.env.NEXTAUTH_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      'http://localhost:3010';
+    const localeSegment = pathLocale ? `/${pathLocale}` : '';
 
     const preferenceData = {
       items: [
@@ -89,9 +104,9 @@ export async function POST(request: NextRequest) {
         email: userEmail || 'cliente@example.com',
       },
       back_urls: {
-        success: `${baseUrl}/post-purchase`,
-        failure: `${baseUrl}/checkout`,
-        pending: `${baseUrl}/checkout`,
+        success: `${baseUrl}${localeSegment}/post-purchase`,
+        failure: `${baseUrl}${localeSegment}/checkout`,
+        pending: `${baseUrl}${localeSegment}/checkout`,
       },
       auto_return: 'approved' as const,
       notification_url: `${baseUrl}/api/mercadopago/webhook`,

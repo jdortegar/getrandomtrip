@@ -26,13 +26,21 @@ interface PaymentTotals {
   totalTrip: number;
 }
 
+interface UsePaymentOptions {
+  locale?: string;
+}
+
 /**
  * Custom hook for payment calculations and MercadoPago integration
  * Follows Single Responsibility Principle - handles only payment logic
  */
-export function usePayment(paymentData: PaymentData) {
+export function usePayment(
+  paymentData: PaymentData,
+  options?: UsePaymentOptions,
+) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { data: session } = useSession();
+  const locale = options?.locale ?? 'es';
 
   const { basePriceUsd, logistics, filters, addons, avoidCount = 0 } = paymentData;
   const pax = logistics.pax || 1;
@@ -113,6 +121,7 @@ export function usePayment(paymentData: PaymentData) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          locale,
           total: totals.totalTrip,
           tripId: tripId || `trip-${Date.now()}`,
           userEmail: session?.user?.email || 'cliente@example.com',

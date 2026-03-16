@@ -1,23 +1,35 @@
+import Link from 'next/link';
 import CheckoutClient from './CheckoutClient';
 import ProgressBar from '@/components/ProgressBar';
 
 export const metadata = {
-  title: 'Review & Pay',
   description: 'Review your trip details and proceed to payment.',
+  title: 'Review & Pay',
 };
 
-export default function CheckoutPage() {
+interface CheckoutPageProps {
+  params: { locale: string };
+}
+
+export default function CheckoutPage({ params }: CheckoutPageProps) {
+  const locale = params.locale ?? 'es';
+  const localeSegment = locale ? `/${locale}` : '';
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="w-full p-4 bg-white shadow-md flex justify-between items-center">
-        {/* Back button placeholder */}
-        <button className="text-[#0A2240] font-semibold">&larr; Back</button>
-        <div className="flex-grow mx-4">
-          <ProgressBar currentStep={6} totalSteps={6} /> {/* Assuming 6 steps total for now */}
+    <div className="flex min-h-screen flex-col">
+      <header className="flex w-full items-center justify-between bg-white p-4 shadow-md">
+        <Link
+          className="font-semibold text-[#0A2240] hover:underline"
+          href={`${localeSegment}/journey`}
+        >
+          ← Back
+        </Link>
+        <div className="mx-4 flex-grow">
+          <ProgressBar currentStep={6} totalSteps={6} />
         </div>
       </header>
       <main className="flex-grow">
-        <CheckoutClient />
+        <CheckoutClient locale={locale} />
       </main>
     </div>
   );

@@ -10,9 +10,7 @@
     "lint": "next lint",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint:fix": "next lint --fix",
-    "cypress": "cypress open",
     "test": "echo \"No unit tests configured yet.\" && exit 0",
-    "test:e2e": "npm run build && start-server-and-test \"npm run start\" http://localhost:3010 \"cypress run --e2e --browser chrome\"",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:generate": "prisma generate",
@@ -46,7 +44,6 @@
     "cmdk": "^1.1.1",
     "country-flag-icons": "^1.6.12",
     "country-to-iso": "^1.6.1",
-    "cypress": "^14.5.3",
     "date-fns": "^4.1.0",
     "discord.js": "^14.23.2",
     "dotenv": "^17.2.3",
@@ -55,7 +52,7 @@
     "framer-motion": "^12.23.12",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.528.0",
-    "mercadopago": "^2.9.0",
+    "mercadopago": "^2.12.0",
     "negotiator": "^1.0.0",
     "next": "^14.2.30",
     "next-auth": "^4.24.11",
@@ -74,7 +71,6 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@cypress/webpack-preprocessor": "^6.0.4",
     "@eslint/eslintrc": "2.1.4",
     "@prisma/client": "^7.4.1",
     "@types/bcryptjs": "^2.4.6",
@@ -92,13 +88,11 @@
     "postcss": "^8.5.6",
     "prettier": "^3.3.3",
     "prisma": "^7.4.1",
-    "start-server-and-test": "^2.0.0",
     "tailwindcss": "^4.1.13",
     "ts-loader": "9.5.2",
     "tsx": "^4.19.2",
     "typescript": "5.8.3",
     "vitest": "^3.2.4",
-    "wait-on": "^7.0.1",
     "webpack": "^5.100.2"
   },
   "prisma": {

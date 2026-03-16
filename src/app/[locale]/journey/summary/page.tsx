@@ -223,13 +223,16 @@ function SummaryPageContent() {
     [logistics, paxOverride],
   );
 
-  const { isProcessing, calculateTotals, initiatePayment } = usePayment({
-    addons,
-    avoidCount: avoidDestinations.length,
-    basePriceUsd,
-    filters,
-    logistics: effectiveLogistics,
-  });
+  const { isProcessing, calculateTotals, initiatePayment } = usePayment(
+    {
+      addons,
+      avoidCount: avoidDestinations.length,
+      basePriceUsd,
+      filters,
+      logistics: effectiveLogistics,
+    },
+    { locale: resolvedLocale },
+  );
 
   useEffect(() => {
     if (status === 'loading') return;
