@@ -23,11 +23,10 @@ export default function RevealDestinationClient() {
   const [loading, setLoading] = useState(true);
 
   // Placeholder for tripDate - in a real app, this would come from the booking details
-  // For demonstration, let's set it to 5 minutes from now for testing the countdown
   const [tripDate, setTripDate] = useState<Date | null>(null);
 
   const fetchDestination = useCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     if (!bookingId) {
       setError('Booking ID not found.');
       setLoading(false);
@@ -50,7 +49,7 @@ export default function RevealDestinationClient() {
       if (response.ok && data.success) {
         setDestination({
           name: data.destination.name,
-          image: data.destination.image || '/images/placeholder.jpg', 
+          image: data.destination.image || '/images/placeholder.jpg',
           description: data.destination.description,
           itinerary: data.destination.itinerary,
         });
@@ -69,17 +68,10 @@ export default function RevealDestinationClient() {
   }, [bookingId]);
 
   useEffect(() => {
-    // In a real application, you would fetch the booking details here to get the actual tripDate
-    // For now, we'll simulate fetching it or assume it's passed via props/context
     const fetchBookingDetails = async () => {
-      // const response = await fetch(`/api/booking/${bookingId}`);
-      // const data = await response.json();
-      // setTripDate(new Date(data.tripDate));
-
-      // For testing, set a mock trip date (e.g., 5 minutes from now)
-      const mockTripDate = new Date(Date.now() + (5 * 60 * 1000)); 
+      const mockTripDate = new Date(Date.now() + (5 * 60 * 1000));
       setTripDate(mockTripDate);
-      setLoading(false); // Stop initial loading once tripDate is set
+      setLoading(false);
     };
 
     if (bookingId) {
@@ -95,7 +87,7 @@ export default function RevealDestinationClient() {
 
     const calculateTimeRemaining = () => {
       const now = new Date().getTime();
-      const revealTime = tripDate.getTime() - (48 * 60 * 60 * 1000); // 48 hours before tripDate
+      const revealTime = tripDate.getTime() - (48 * 60 * 60 * 1000);
       const remaining = revealTime - now;
       setTimeRemaining(remaining > 0 ? remaining : 0);
 
@@ -106,7 +98,7 @@ export default function RevealDestinationClient() {
     };
 
     const timer = setInterval(calculateTimeRemaining, 1000);
-    calculateTimeRemaining(); // Initial calculation
+    calculateTimeRemaining();
 
     return () => {
       clearInterval(timer);
@@ -161,11 +153,9 @@ export default function RevealDestinationClient() {
             <h2 data-testid="reveal-destination" className="text-3xl font-semibold mb-6 text-[#D97E4A]">{destination.name}</h2>
 
             <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden shadow-lg">
-              {/* Placeholder for Google Maps API */}
               <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 text-lg">
                 Map Integration Placeholder
               </div>
-              {/* <Image src={destination.image} alt={destination.name} layout="fill" objectFit="cover" /> */}
             </div>
 
             <div className="bg-white p-8 rounded-lg shadow-md mb-8 text-left">

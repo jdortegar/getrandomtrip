@@ -6,7 +6,7 @@ import { premiumPackages } from '@/lib/premiumPackages';
 import AppleCard from '@/components/AppleCard';
 
 export default function CheckoutPage() {
-  const { travelType, packageId } = useParams() as { travelType: string; packageId: string };
+  const { packageId, tripper } = useParams() as { packageId: string; tripper: string };
   const router = useRouter();
 
   const pkg = useMemo(() => premiumPackages.find(p => p.id === packageId), [packageId]);
@@ -16,15 +16,14 @@ export default function CheckoutPage() {
   const [travelers] = useState(2);
 
   useEffect(() => {
-    if (!pkg) router.push(`/packages/${travelType}`);
-  }, [pkg, router, travelType]);
+    if (!pkg) router.push(`/packages/${tripper}`);
+  }, [pkg, router, tripper]);
 
   if (!pkg) return null;
 
   const handlePayment = (method: string) => {
     alert(`Simulating payment with ${method} for ${totalPrice} USD`);
-    // In a real application, this would involve actual payment processing
-    router.push(`/packages/${travelType}/${packageId}/post-purchase`);
+    router.push(`/packages/${tripper}/${packageId}/post-purchase`);
   };
 
   return (

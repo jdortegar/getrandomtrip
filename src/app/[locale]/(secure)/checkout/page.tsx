@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import CheckoutClient from './CheckoutClient';
 import ProgressBar from '@/components/ProgressBar';
+import CheckoutClient from './CheckoutClient';
 
 export const metadata = {
   description: 'Review your trip details and proceed to payment.',

@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
+import HeaderHero from '@/components/journey/HeaderHero';
 import { Button } from '@/components/ui/Button';
 import Chip from '@/components/badge';
 import {
@@ -136,14 +136,12 @@ function TripDetailsContent() {
   if (!trip) {
     return (
       <>
-        <Hero
-          content={{
-            title: 'Viaje no encontrado',
-            subtitle: 'No pudimos encontrar este viaje',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
-          }}
+        <HeaderHero
           className="!h-[40vh]"
+          description="No pudimos encontrar este viaje"
+          fallbackImage="/images/bg-playa-mexico.jpg"
+          title="Viaje no encontrado"
+          videoSrc="/videos/hero-video.mp4"
         />
         <Section>
           <div className="max-w-2xl mx-auto text-center">
@@ -227,17 +225,16 @@ function TripDetailsContent() {
 
   return (
     <>
-      <Hero
-        content={{
-          title:
-            showDestination && trip.actualDestination
-              ? trip.actualDestination
-              : '🔒 Destino Sorpresa',
-          subtitle: `Viaje ${trip.type} • ${trip.level}`,
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-        }}
+      <HeaderHero
         className="!h-[50vh]"
+        description={`Viaje ${trip.type} • ${trip.level}`}
+        fallbackImage="/images/bg-playa-mexico.jpg"
+        title={
+          showDestination && trip.actualDestination
+            ? trip.actualDestination
+            : 'Destino Sorpresa'
+        }
+        videoSrc="/videos/hero-video.mp4"
       />
 
       <Section>
@@ -436,7 +433,7 @@ function TripDetailsContent() {
                       />
                     ))}
                     <span className="font-semibold text-neutral-900">
-                      {trip.customerRating.toFixed(1)}
+                      {(trip.customerRating ?? 0).toFixed(1)}
                     </span>
                   </div>
                   {trip.customerFeedback && (
@@ -459,19 +456,19 @@ function TripDetailsContent() {
                       Precio Base
                     </span>
                     <span className="font-semibold text-neutral-900">
-                      ${trip.basePriceUsd.toFixed(2)}
+                      ${(trip.basePriceUsd ?? 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pb-3 border-b border-gray-200">
                     <span className="text-sm text-neutral-600">Filtros</span>
                     <span className="font-semibold text-neutral-900">
-                      ${trip.filtersCostUsd.toFixed(2)}
+                      ${(trip.filtersCostUsd ?? 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pb-3 border-b border-gray-200">
                     <span className="text-sm text-neutral-600">Add-ons</span>
                     <span className="font-semibold text-neutral-900">
-                      ${trip.addonsCostUsd.toFixed(2)}
+                      ${(trip.addonsCostUsd ?? 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
@@ -479,13 +476,13 @@ function TripDetailsContent() {
                       Total Viaje
                     </span>
                     <span className="text-xl font-bold text-blue-600">
-                      ${trip.totalTripUsd.toFixed(2)}
+                      ${(trip.totalTripUsd ?? 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm text-neutral-600">
                     <span>Por persona</span>
                     <span className="font-medium">
-                      ${trip.totalPerPaxUsd.toFixed(2)}
+                      ${(trip.totalPerPaxUsd ?? 0).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -531,7 +528,7 @@ function TripDetailsContent() {
                       <div className="flex justify-between">
                         <span className="text-neutral-600">Monto</span>
                         <span className="font-semibold text-neutral-900">
-                          ${trip.payment.amount.toFixed(2)}
+                          ${(trip.payment?.amount ?? 0).toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between">

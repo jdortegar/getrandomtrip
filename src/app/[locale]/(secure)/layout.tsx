@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import SecureRouteWrapper from '@/components/auth/SecureRouteWrapper';
 
 export const metadata: Metadata = {
-  title: 'Dashboard - RandomTrip',
   description: 'Tu panel personal de viajes',
+  title: 'Dashboard - RandomTrip',
 };
 
 export default function SecureLayout({
@@ -10,5 +11,5 @@ export default function SecureLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <SecureRouteWrapper>{children}</SecureRouteWrapper>;
 }

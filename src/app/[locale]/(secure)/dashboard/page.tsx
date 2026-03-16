@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import SecureRoute from '@/components/auth/SecureRoute';
 import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
+import HeaderHero from '@/components/journey/HeaderHero';
 import { Button } from '@/components/ui/Button';
 import {
   Calendar,
@@ -48,7 +48,12 @@ interface Payment {
   amount: number;
   status: string;
   createdAt: string;
-  trip: {
+  trip?: {
+    type: string;
+    level: string;
+    startDate: string;
+  };
+  tripRequest?: {
     type: string;
     level: string;
     startDate: string;
@@ -192,6 +197,7 @@ function DashboardContent() {
     .slice(0, 3);
 
   const recentPayments = payments.slice(0, 5);
+  const tripFromPayment = (p: Payment) => p.tripRequest ?? p.trip;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -244,14 +250,12 @@ function DashboardContent() {
 
   return (
     <>
-      <Hero
-        content={{
-          title: `¡Hola, ${currentUser?.name || 'Viajero'}!`,
-          subtitle: 'Gestiona tus viajes y descubre nuevas aventuras',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
-        }}
+      <HeaderHero
         className="!h-[40vh]"
+        description="Gestiona tus viajes y descubre nuevas aventuras"
+        fallbackImage="/images/bg-playa-mexico.jpg"
+        title={`¡Hola, ${currentUser?.name || 'Viajero'}!`}
+        videoSrc="/videos/hero-video.mp4"
       />
 
       <Section>
@@ -297,7 +301,7 @@ function DashboardContent() {
                         Gasto Total
                       </p>
                       <p className="text-3xl font-bold text-neutral-900">
-                        ${stats.totalSpent.toFixed(0)}
+                        ${(stats.totalSpent ?? 0).toFixed(0)}
                       </p>
                     </div>
                     <DollarSign className="h-10 w-10 text-purple-600" />
@@ -312,7 +316,7 @@ function DashboardContent() {
                       </p>
                       <p className="text-3xl font-bold text-neutral-900">
                         {stats.averageRating > 0
-                          ? stats.averageRating.toFixed(1)
+                          ? (stats.averageRating ?? 0).toFixed(1)
                           : '—'}
                       </p>
                     </div>
@@ -402,7 +406,7 @@ function DashboardContent() {
                                 {trip.type} • {trip.level}
                               </span>
                               <span className="font-semibold text-neutral-900">
-                                ${trip.totalTripUsd.toFixed(0)}
+                                ${(trip.totalTripUsd ?? 0).toFixed(0)}
                               </span>
                             </div>
                           </div>
@@ -460,7 +464,7 @@ function DashboardContent() {
                           Total Gastado
                         </span>
                         <span className="font-bold text-neutral-900">
-                          ${stats.totalSpent.toFixed(2)}
+                          ${(stats.totalSpent ?? 0).toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
@@ -530,7 +534,9 @@ function DashboardContent() {
                           </tr>
                         </thead>
                         <tbody>
-                          {recentPayments.map((payment) => (
+                          {recentPayments.map((payment) => {
+                            const trip = tripFromPayment(payment);
+                            return (
                             <tr
                               key={payment.id}
                               className="border-b border-gray-100 hover:bg-gray-50"
@@ -543,17 +549,21 @@ function DashboardContent() {
                               <td className="py-4 px-4">
                                 <div className="text-sm">
                                   <div className="font-medium text-neutral-900">
-                                    {payment.trip.type} • {payment.trip.level}
+                                    {trip
+                                      ? `${trip.type} • ${trip.level}`
+                                      : '—'}
                                   </div>
+                                  {trip && (
                                   <div className="text-xs text-neutral-500">
                                     {new Date(
-                                      payment.trip.startDate,
+                                      trip.startDate,
                                     ).toLocaleDateString()}
                                   </div>
+                                  )}
                                 </div>
                               </td>
                               <td className="py-4 px-4 text-sm font-semibold text-neutral-900">
-                                ${payment.amount.toFixed(2)}
+                                ${(payment.amount ?? 0).toFixed(2)}
                               </td>
                               <td className="py-4 px-4">
                                 <span
@@ -567,7 +577,8 @@ function DashboardContent() {
                                 </span>
                               </td>
                             </tr>
-                          ))}
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
@@ -629,7 +640,7 @@ function DashboardContent() {
 
                           <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                             <span className="text-sm font-medium text-neutral-900">
-                              ${trip.totalTripUsd.toFixed(0)}
+                              ${(trip.totalTripUsd ?? 0).toFixed(0)}
                             </span>
                             <Button variant="ghost" size="sm" asChild>
                               <Link href={`/trips/${trip.id}`}>

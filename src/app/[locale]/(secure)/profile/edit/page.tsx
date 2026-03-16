@@ -1,23 +1,23 @@
 'use client';
 
+import AuthModal from '@/components/auth/AuthModal';
+import GlassCard from '@/components/ui/GlassCard';
 import PageContainer from '@/components/user/PageContainer';
 import SectionCard from '@/components/user/SectionCard';
-import GlassCard from '@/components/ui/GlassCard';
 import { useUserStore } from '@/store/slices/userStore';
+import type { BudgetLevel, TravelerType } from '@/store/slices/userStore';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Link from 'next/link'; // Added import
-import type { TravelerType, BudgetLevel } from '@/store/slices/userStore';
-import AuthModal from '@/components/auth/AuthModal';
 
 export default function EditProfilePage() {
   const {
+    closeAuth,
     isAuthed,
-    user,
     openAuth,
     updateAccount,
     upsertPrefs,
+    user,
     authModalOpen,
-    closeAuth,
   } = useUserStore();
 
   const [name, setName] = useState(user?.name ?? '');
@@ -74,17 +74,17 @@ export default function EditProfilePage() {
             </label>
             <input
               className="rt-input"
-              value={name}
               onChange={(e) => setName(e.target.value)}
+              value={name}
             />
             <label className="block mt-3 text-sm font-medium text-neutral-700">
               Email
             </label>
             <input
               className="rt-input"
+              onChange={(e) => setEmail(e.target.value)}
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
             />
             <div className="mt-4">
               <button
@@ -104,12 +104,12 @@ export default function EditProfilePage() {
             </label>
             <select
               className="rt-input"
-              value={travelerType ?? ''}
               onChange={(e) =>
                 setTravelerType(
                   (e.target.value || undefined) as TravelerType | undefined,
                 )
               }
+              value={travelerType ?? ''}
             >
               <option value="">Selecciona…</option>
               <option value="solo">Solo</option>
@@ -124,12 +124,12 @@ export default function EditProfilePage() {
             </label>
             <select
               className="rt-input"
-              value={budget ?? ''}
               onChange={(e) =>
                 setBudget(
                   (e.target.value || undefined) as BudgetLevel | undefined,
                 )
               }
+              value={budget ?? ''}
             >
               <option value="">Selecciona…</option>
               <option value="low">Low</option>
@@ -142,17 +142,17 @@ export default function EditProfilePage() {
                 Perfil público
               </label>
               <input
-                type="checkbox"
                 checked={publicProfile}
-                onChange={(e) => setPublicProfile(e.target.checked)}
                 className="h-4 w-4"
+                onChange={(e) => setPublicProfile(e.target.checked)}
+                type="checkbox"
               />
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               <button onClick={onSavePrefs} className="rt-btn rt-btn--primary">
                 Guardar preferencias
               </button>
-              <Link href="/profile" className="rt-btn rt-btn--ghost">
+              <Link className="rt-btn rt-btn--ghost" href="/profile">
                 Ver vista pública
               </Link>
             </div>
@@ -161,9 +161,9 @@ export default function EditProfilePage() {
       </div>
 
       <AuthModal
-        isOpen={authModalOpen}
-        onClose={closeAuth}
         defaultMode="login"
+        onClose={closeAuth}
+        isOpen={authModalOpen}
       />
     </PageContainer>
   );

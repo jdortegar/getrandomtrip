@@ -7,19 +7,19 @@ import AppleCard from '@/components/AppleCard';
 import Link from 'next/link';
 
 const RevealDestinationPage = () => {
-  const { travelType, packageId } = useParams();
+  const { packageId, tripper } = useParams();
   const router = useRouter();
 
   const pkg = premiumPackages.find((p) => p.id === packageId);
 
   useEffect(() => {
     if (!pkg) {
-      router.push(`/packages/${travelType}`);
+      router.push(`/packages/${tripper}`);
     }
-  }, [pkg, router, travelType]);
+  }, [pkg, router, tripper]);
 
   if (!pkg) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   return (
