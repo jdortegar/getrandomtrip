@@ -4,14 +4,12 @@ import { createPayment } from '@/lib/db/payment';
 import { prisma } from '@/lib/prisma';
 
 // Use test credentials when not in production
-// const isProduction = process.env.NODE_ENV === 'production';
-// const accessToken = isProduction
-//   ? process.env.MERCADOPAGO_LIVE_ACCESS_TOKEN!
-//   : process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
+const isProduction = process.env.NODE_ENV === 'production';
+const accessToken = isProduction
+  ? process.env.MERCADOPAGO_LIVE_ACCESS_TOKEN!
+  : process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
 
-const accessToken = process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
-
-
+  
 
 const client = new MercadoPagoConfig({
   accessToken,
@@ -109,8 +107,8 @@ export async function POST(request: NextRequest) {
       },
       back_urls: {
         success: `${baseUrl}${localeSegment}/post-purchase`,
-        failure: `${baseUrl}${localeSegment}/summary`,
-        pending: `${baseUrl}${localeSegment}/summary`,
+        failure: `${baseUrl}${localeSegment}/checkout`,
+        pending: `${baseUrl}${localeSegment}/checkout`,
       },
       auto_return: 'approved' as const,
       notification_url: `${baseUrl}/api/mercadopago/webhook`,

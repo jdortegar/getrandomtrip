@@ -17,12 +17,10 @@ export async function POST(request: NextRequest) {
 
           try {
             // Get payment details from MercadoPago
-            // const isProduction = process.env.NODE_ENV === 'production';
-            // const accessToken = isProduction
-              //  process.env.MERCADOPAGO_LIVE_ACCESS_TOKEN!
-            //   : process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
-
-            const accessToken = process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
+            const isProduction = process.env.NODE_ENV === 'production';
+            const accessToken = isProduction
+              ? process.env.MERCADOPAGO_LIVE_ACCESS_TOKEN!
+              : process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
 
             const client = new MercadoPagoConfig({ accessToken });
             const payment = new Payment(client);
