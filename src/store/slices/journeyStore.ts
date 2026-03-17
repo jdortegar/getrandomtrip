@@ -1,97 +1,43 @@
 // frontend/src/store/journeyStore.ts
 import { create, StateCreator } from 'zustand';
+import {
+  FILTER_OPTION_KEYS,
+  FILTER_OPTIONS,
+  type FilterOption,
+} from '@/lib/constants/journey-filters';
+import type {
+  AddonSelection,
+  AddonsState,
+  AddonUnit,
+  LevelSlug,
+} from '@/types/core';
 
-export type LevelSlug =
-  | 'essenza'
-  | 'modo-explora'
-  | 'explora-plus'
-  | 'bivouac'
-  | 'atelier-getaway';
+export type { LevelSlug };
 
 export type Logistics = {
-  country: string;
   city: string;
-  startDate?: Date; // ISO
-  endDate?: Date; // ISO
-  nights: number; // default 1
-  pax: number; // default 2
+  country: string;
+  endDate?: Date;
+  nights: number;
+  pax: number;
+  startDate?: Date;
 };
 
-export type FilterOption = {
-  key: string;
-  label: string;
-};
+export type { FilterOption };
 
 export type Filters = {
-  transport: FilterOption['key'];
-  climate: FilterOption['key'];
-  maxTravelTime: FilterOption['key'];
-  departPref: FilterOption['key'];
+  accommodationType: FilterOption['key'];
   arrivePref: FilterOption['key'];
+  climate: FilterOption['key'];
+  departPref: FilterOption['key'];
+  maxTravelTime: FilterOption['key'];
+  transport: FilterOption['key'];
   avoidDestinations: string[];
 };
 
-// Available filter option keys only (labels come from dictionary)
-export const FILTER_OPTION_KEYS = {
-  transport: {
-    options: [
-      { key: 'avion' },
-      { key: 'bus' },
-      { key: 'tren' },
-      { key: 'barco' },
-    ],
-  },
-  climate: {
-    options: [
-      { key: 'indistinto' },
-      { key: 'calido' },
-      { key: 'frio' },
-      { key: 'templado' },
-    ],
-  },
-  maxTravelTime: {
-    options: [
-      { key: 'sin-limite' },
-      { key: '3h' },
-      { key: '5h' },
-      { key: '8h' },
-    ],
-  },
-  departPref: {
-    options: [
-      { key: 'indistinto' },
-      { key: 'manana' },
-      { key: 'tarde' },
-      { key: 'noche' },
-    ],
-  },
-  arrivePref: {
-    options: [
-      { key: 'indistinto' },
-      { key: 'manana' },
-      { key: 'tarde' },
-      { key: 'noche' },
-    ],
-  },
-} as const;
+export { FILTER_OPTION_KEYS, FILTER_OPTIONS };
 
-/** Filter options with keys only; labels come from dictionary (journey.preferencesStep.filterOptions). */
-export const FILTER_OPTIONS: Record<
-  keyof typeof FILTER_OPTION_KEYS,
-  { label?: string; options: FilterOption[] }
-> = {
-  transport: { options: [...FILTER_OPTION_KEYS.transport.options.map((o) => ({ key: o.key, label: o.key }))] },
-  climate: { options: [...FILTER_OPTION_KEYS.climate.options.map((o) => ({ key: o.key, label: o.key }))] },
-  maxTravelTime: { options: [...FILTER_OPTION_KEYS.maxTravelTime.options.map((o) => ({ key: o.key, label: o.key }))] },
-  departPref: { options: [...FILTER_OPTION_KEYS.departPref.options.map((o) => ({ key: o.key, label: o.key }))] },
-  arrivePref: { options: [...FILTER_OPTION_KEYS.arrivePref.options.map((o) => ({ key: o.key, label: o.key }))] },
-};
-
-export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
-export type AddonSelection = { id: string; qty: number };
-export type AddonsState = {
-  selected: AddonSelection[]; // sólo los elegidos
-};
+export type { AddonUnit, AddonSelection, AddonsState };
 
 export type JourneyState = {
   from: string;
@@ -136,11 +82,12 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
     endDate: undefined,
   },
   filters: {
-    transport: 'avion',
-    climate: 'indistinto',
-    maxTravelTime: 'sin-limite',
-    departPref: 'indistinto',
+    accommodationType: 'indistinto',
     arrivePref: 'indistinto',
+    climate: 'indistinto',
+    departPref: 'indistinto',
+    maxTravelTime: 'sin-limite',
+    transport: 'avion',
     avoidDestinations: [],
   },
   addons: { selected: [] },
@@ -182,11 +129,12 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
         endDate: undefined,
       },
       filters: {
-        transport: 'avion',
-        climate: 'indistinto',
-        maxTravelTime: 'sin-limite',
-        departPref: 'indistinto',
+        accommodationType: 'indistinto',
         arrivePref: 'indistinto',
+        climate: 'indistinto',
+        departPref: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        transport: 'avion',
         avoidDestinations: [],
       },
       addons: { selected: [] },
@@ -207,11 +155,12 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
         endDate: undefined,
       },
       filters: {
-        transport: 'avion',
-        climate: 'indistinto',
-        maxTravelTime: 'sin-limite',
-        departPref: 'indistinto',
+        accommodationType: 'indistinto',
         arrivePref: 'indistinto',
+        climate: 'indistinto',
+        departPref: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        transport: 'avion',
         avoidDestinations: [],
       },
       addons: { selected: [] },
@@ -225,11 +174,12 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
     const pax = Math.max(1, state.logistics.pax ?? 1);
     set({
       filters: {
-        transport: 'avion',
-        climate: 'indistinto',
-        maxTravelTime: 'sin-limite',
-        departPref: 'indistinto',
+        accommodationType: 'indistinto',
         arrivePref: 'indistinto',
+        climate: 'indistinto',
+        departPref: 'indistinto',
+        maxTravelTime: 'sin-limite',
+        transport: 'avion',
         avoidDestinations: [],
       },
       filtersCostUsd: 0,

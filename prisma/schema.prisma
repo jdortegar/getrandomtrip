@@ -78,6 +78,7 @@ model TripRequest {
   pax           Int       @default(1)
 
   // Filters
+  accommodationType String   @default("indistinto")
   transport         String   @default("avion")
   climate           String   @default("indistinto")
   maxTravelTime     String   @default("sin-limite")

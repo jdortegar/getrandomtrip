@@ -78,6 +78,13 @@ export type TransportMode = 'avion' | 'bus' | 'tren' | 'barco';
 export type ClimatePreference = 'indistinto' | 'calido' | 'frio' | 'templado';
 export type TimePreference = 'sin-limite' | '3h' | '5h' | '8h';
 export type DeparturePreference = 'indistinto' | 'manana' | 'tarde' | 'noche';
+export type AccommodationType =
+  | 'indistinto'
+  | 'hotel-style'
+  | 'home-style'
+  | 'nature-escape'
+  | 'hybrid-hub'
+  | 'glamping';
 
 export interface Location {
   name: string;
@@ -96,11 +103,12 @@ export interface JourneyLogistics {
 }
 
 export interface JourneyFilters {
-  transport: TransportMode;
-  climate: ClimatePreference;
-  maxTravelTime: TimePreference;
-  departPref: DeparturePreference;
+  accommodationType: AccommodationType;
   arrivePref: DeparturePreference;
+  climate: ClimatePreference;
+  departPref: DeparturePreference;
+  maxTravelTime: TimePreference;
+  transport: TransportMode;
   avoidDestinations: string[];
 }
 

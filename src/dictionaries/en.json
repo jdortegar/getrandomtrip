@@ -375,6 +375,37 @@
       "addonsLabel": "Extras",
       "addonsPlaceholder": "Choose your add-ons.",
       "filterOptions": {
+        "accommodationType": {
+          "label": "Accommodation type",
+          "options": [
+            { "key": "indistinto", "label": "Any" },
+            {
+              "key": "hotel-style",
+              "label": "Hotel Style",
+              "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after."
+            },
+            {
+              "key": "home-style",
+              "label": "Home Style",
+              "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home."
+            },
+            {
+              "key": "nature-escape",
+              "label": "Nature Escape",
+              "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air."
+            },
+            {
+              "key": "hybrid-hub",
+              "label": "Hybrid Hub",
+              "tooltip": "Social & Work. The middle ground between community, design and co-working spaces. Perfect for digital nomads."
+            },
+            {
+              "key": "glamping",
+              "label": "Glamping",
+              "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel."
+            }
+          ]
+        },
         "arrivePref": {
           "label": "Arrival",
           "options": [
@@ -428,6 +459,24 @@
         "avoidLabel": "Destinations to avoid (optional)",
         "avoidGridLoading": "Loading cities...",
         "avoidGridButton": "Other destinations to avoid",
+        "filterOptions": {
+          "accommodationType": {
+            "label": "Accommodation type",
+            "options": [
+              { "key": "indistinto", "label": "Any" },
+              { "key": "hotel-style", "label": "Hotel Style", "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after." },
+              { "key": "home-style", "label": "Home Style", "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home." },
+              { "key": "nature-escape", "label": "Nature Escape", "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air." },
+              { "key": "hybrid-hub", "label": "Hybrid Hub", "tooltip": "Social & Work. The middle ground between community, design and co-working spaces. Perfect for digital nomads." },
+              { "key": "glamping", "label": "Glamping", "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel." }
+            ]
+          },
+          "arrivePref": { "label": "Arrival", "options": [{ "key": "indistinto", "label": "Any" }, { "key": "manana", "label": "Morning" }, { "key": "tarde", "label": "Afternoon" }, { "key": "noche", "label": "Night" }] },
+          "climate": { "label": "Climate", "options": [{ "key": "indistinto", "label": "Any" }, { "key": "calido", "label": "Warm" }, { "key": "frio", "label": "Cold" }, { "key": "templado", "label": "Mild" }] },
+          "departPref": { "label": "Departure", "options": [{ "key": "indistinto", "label": "Any" }, { "key": "manana", "label": "Morning" }, { "key": "tarde", "label": "Afternoon" }, { "key": "noche", "label": "Night" }] },
+          "maxTravelTime": { "label": "Max travel time", "options": [{ "key": "sin-limite", "label": "No limit" }, { "key": "3h", "label": "Up to 3h" }, { "key": "5h", "label": "Up to 5h" }, { "key": "8h", "label": "Up to 8h" }] },
+          "transport": { "label": "Transport", "options": [{ "key": "avion", "label": "Flight" }, { "key": "bus", "label": "Bus" }, { "key": "tren", "label": "Train" }, { "key": "barco", "label": "Boat/Cruise" }] }
+        },
         "avoidSearchModal": {
           "addButton": "Add",
           "cancelButton": "Cancel",
@@ -439,15 +488,16 @@
         "clearButton": "Clear",
         "climateLabel": "Preferred climate",
         "departPrefLabel": "Preferred departure times (optional)",
-        "importantNote1": "The price shown is per person.",
-        "importantNote2": "Includes accommodation and activities according to the level chosen.",
-        "importantNote3": "Does not include flights or transfers to the destination.",
-        "importantNote4": "Subject to availability upon confirmation.",
-        "importantTitle": "Important",
+        "importantNote1": "Transport is required and does not add cost.",
+        "importantNote2": "Freemium: the first optional filter is free.",
+        "importantNote3": "2-3 filters: USD 18 each.",
+        "importantNote4": "4+ filters: USD 25 each.",
+        "importantTitle": "IMPORTANT",
         "maxTravelTimeLabel": "Maximum travel time",
         "saveFiltersButton": "Save Filters"
       },
       "filtersSummaryArrive": "Arrival",
+      "filtersSummaryAccommodation": "Accommodation",
       "filtersSummaryClimate": "Climate",
       "filtersSummaryDefault": "Transport, schedules, climate, destinations to avoid",
       "filtersSummaryDepart": "Departure",
@@ -979,10 +1029,11 @@
       "experienceSection": "Experience",
       "excuseSection": "Excuse",
       "favoriteAmongTravelers": "Favorite among travelers ★",
+      "filterLabelAccommodation": "Accommodation",
       "filterLabelArrive": "Arrival",
+      "filterLabelAvoid": "Avoid",
       "filterLabelClimate": "Weather",
       "filterLabelDepart": "Departure",
-      "filterLabelAvoid": "Avoid",
       "filterLabelTime": "Time",
       "filterRemoveAria": "Remove filter",
       "filtersSection": "Filters",

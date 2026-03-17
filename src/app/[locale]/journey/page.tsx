@@ -176,7 +176,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
 
           <JourneySummary
             addonLabels={journey.addons}
-            filterOptions={journey.preferencesStep?.filterOptions}
+            filterOptions={journey.preferencesStep.filterOptions}
             localizedExcuses={journey.excuses}
             onEdit={handleSummaryEdit}
             refineDetailOptions={journey.refineDetailOptions}

@@ -7,24 +7,25 @@ import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
 import { JourneyFiltersForm } from '@/components/journey/JourneyFiltersForm';
 import type { JourneyFiltersFormLabels } from '@/components/journey/JourneyFiltersForm';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
-import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 
 export interface JourneyPreferencesStepLabels {
-  addonsClearButton?: string;
-  addonsEmptyMessage?: string;
-  addonsHint?: string;
+  addonsClearButton: string;
+  addonsEmptyMessage: string;
+  addonsHint: string;
   addonsLabel: string;
   addonsPlaceholder: string;
-  addonsSaveButton?: string;
+  addonsSaveButton: string;
   filtersForm: JourneyFiltersFormLabels;
   filtersLabel: string;
-  filterOptions?: {
+  filterOptions: {
+    accommodationType: { label: string; options: Array<{ key: string; label: string; tooltip?: string }> };
     arrivePref: { label: string; options: Array<{ key: string; label: string }> };
     climate: { label: string; options: Array<{ key: string; label: string }> };
     departPref: { label: string; options: Array<{ key: string; label: string }> };
     maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
     transport: { label: string; options: Array<{ key: string; label: string }> };
   };
+  filtersSummaryAccommodation: string;
   filtersSummaryArrive: string;
   filtersSummaryClimate: string;
   filtersSummaryDefault: string;
@@ -33,6 +34,7 @@ export interface JourneyPreferencesStepLabels {
 }
 
 interface JourneyPreferencesStepProps {
+  accommodationType: string | undefined;
   addons: string | undefined;
   addonLabels?: Record<
     string,
@@ -47,8 +49,9 @@ interface JourneyPreferencesStepProps {
   climate: string | undefined;
   departPref: string | undefined;
   experience?: string;
-  labels?: JourneyPreferencesStepLabels;
+  labels: JourneyPreferencesStepLabels;
   maxTravelTime: string | undefined;
+  onAccommodationTypeChange: (value: string) => void;
   onAddonsChange: (value: string | undefined) => void;
   onArrivePrefChange: (value: string) => void;
   onClearFilters: () => void;
@@ -66,6 +69,7 @@ interface JourneyPreferencesStepProps {
 }
 
 export function JourneyPreferencesStep({
+  accommodationType,
   addons,
   addonLabels,
   arrivePref,
@@ -74,6 +78,7 @@ export function JourneyPreferencesStep({
   experience,
   labels: labelsProp,
   maxTravelTime,
+  onAccommodationTypeChange,
   onAddonsChange,
   onArrivePrefChange,
   onClearFilters,
@@ -90,44 +95,11 @@ export function JourneyPreferencesStep({
 }: JourneyPreferencesStepProps) {
   const labels = useMemo(
     () => ({
-      addonsClearButton: labelsProp?.addonsClearButton ?? 'Borrar',
-      addonsEmptyMessage:
-        labelsProp?.addonsEmptyMessage ??
-        'Completá tipo de viaje y experiencia para ver add-ons disponibles.',
-      addonsHint:
-        labelsProp?.addonsHint ??
-        'Opcional. Sumá seguros, asientos o equipaje según tu nivel.',
-      addonsLabel: labelsProp?.addonsLabel ?? 'Extras',
-      addonsPlaceholder: labelsProp?.addonsPlaceholder ?? 'Elegí tus add-ons.',
-      addonsSaveButton: labelsProp?.addonsSaveButton ?? 'Guardar Add-ons',
+      ...labelsProp,
       filtersForm: {
-        arrivePrefLabel: labelsProp?.filtersForm?.arrivePrefLabel ?? 'Horarios preferidos de llegada',
-        avoidGridButton: labelsProp?.filtersForm?.avoidGridButton ?? 'Otros destinos a evitar',
-        avoidGridLoading: labelsProp?.filtersForm?.avoidGridLoading ?? 'Cargando ciudades...',
-        avoidHint: labelsProp?.filtersForm?.avoidHint ?? 'Seleccioná hasta 15',
-        avoidLabel: labelsProp?.filtersForm?.avoidLabel ?? 'Destinos a evitar (opcional)',
-        avoidSearchModal: labelsProp?.filtersForm?.avoidSearchModal,
-        clearButton: labelsProp?.filtersForm?.clearButton ?? 'Borrar',
-        climateLabel: labelsProp?.filtersForm?.climateLabel ?? 'Clima preferencial',
-        departPrefLabel: labelsProp?.filtersForm?.departPrefLabel ?? 'Horarios preferidos de salida (opcional)',
-        filterOptions: labelsProp?.filtersForm?.filterOptions ?? labelsProp?.filterOptions,
-        importantNote1: labelsProp?.filtersForm?.importantNote1,
-        importantNote2: labelsProp?.filtersForm?.importantNote2,
-        importantNote3: labelsProp?.filtersForm?.importantNote3,
-        importantNote4: labelsProp?.filtersForm?.importantNote4,
-        importantTitle: labelsProp?.filtersForm?.importantTitle,
-        maxTravelTimeLabel: labelsProp?.filtersForm?.maxTravelTimeLabel ?? 'Tiempo máximo de viaje',
-        saveFiltersButton: labelsProp?.filtersForm?.saveFiltersButton ?? 'Guardar Filtros',
+        ...labelsProp.filtersForm,
+        filterOptions: labelsProp.filtersForm.filterOptions ?? labelsProp.filterOptions,
       },
-      filtersLabel: labelsProp?.filtersLabel ?? 'Filtros',
-      filtersSummaryArrive: labelsProp?.filtersSummaryArrive ?? 'Llegada',
-      filtersSummaryClimate: labelsProp?.filtersSummaryClimate ?? 'Clima',
-      filtersSummaryDefault:
-        labelsProp?.filtersSummaryDefault ??
-        'Transporte, horarios, clima, destinos a evitar',
-      filtersSummaryDepart: labelsProp?.filtersSummaryDepart ?? 'Salida',
-      filtersSummaryTime: labelsProp?.filtersSummaryTime ?? 'Tiempo',
-      filterOptions: labelsProp?.filterOptions,
     }),
     [labelsProp],
   );
@@ -136,23 +108,36 @@ export function JourneyPreferencesStep({
     const fo = labels.filterOptions;
     const parts: string[] = [];
     if (departPref && departPref !== 'indistinto') {
-      const opt = fo?.departPref?.options.find((o) => o.key === departPref) ?? FILTER_OPTIONS.departPref.options.find((o) => o.key === departPref);
-      if (opt) parts.push(`${labels.filtersSummaryDepart}: ${opt.label ?? departPref}`);
+      const label =
+        fo?.departPref?.options.find((o) => o.key === departPref)?.label ??
+        departPref;
+      parts.push(`${labels.filtersSummaryDepart}: ${label}`);
     }
     if (arrivePref && arrivePref !== 'indistinto') {
-      const opt = fo?.arrivePref?.options.find((o) => o.key === arrivePref) ?? FILTER_OPTIONS.arrivePref.options.find((o) => o.key === arrivePref);
-      if (opt) parts.push(`${labels.filtersSummaryArrive}: ${opt.label ?? arrivePref}`);
+      const label =
+        fo?.arrivePref?.options.find((o) => o.key === arrivePref)?.label ??
+        arrivePref;
+      parts.push(`${labels.filtersSummaryArrive}: ${label}`);
     }
     if (maxTravelTime && maxTravelTime !== 'sin-limite') {
-      const opt = fo?.maxTravelTime?.options.find((o) => o.key === maxTravelTime) ?? FILTER_OPTIONS.maxTravelTime.options.find((o) => o.key === maxTravelTime);
-      if (opt) parts.push(`${labels.filtersSummaryTime}: ${opt.label ?? maxTravelTime}`);
+      const label =
+        fo?.maxTravelTime?.options.find((o) => o.key === maxTravelTime)
+          ?.label ?? maxTravelTime;
+      parts.push(`${labels.filtersSummaryTime}: ${label}`);
     }
     if (climate && climate !== 'indistinto') {
-      const opt = fo?.climate?.options.find((o) => o.key === climate) ?? FILTER_OPTIONS.climate.options.find((o) => o.key === climate);
-      if (opt) parts.push(`${labels.filtersSummaryClimate}: ${opt.label ?? climate}`);
+      const label =
+        fo?.climate?.options.find((o) => o.key === climate)?.label ?? climate;
+      parts.push(`${labels.filtersSummaryClimate}: ${label}`);
+    }
+    if (accommodationType && accommodationType !== 'indistinto') {
+      const label =
+        fo?.accommodationType?.options.find((o) => o.key === accommodationType)
+          ?.label ?? accommodationType;
+      parts.push(`${labels.filtersSummaryAccommodation}: ${label}`);
     }
     return parts.length > 0 ? parts.join(', ') : labels.filtersSummaryDefault;
-  }, [arrivePref, climate, departPref, labels, maxTravelTime, transport]);
+  }, [accommodationType, arrivePref, climate, departPref, labels, maxTravelTime, transport]);
 
   const addonsSummary = useMemo(() => {
     if (!addons) return labels.addonsPlaceholder;
@@ -187,12 +172,14 @@ export function JourneyPreferencesStep({
         >
           <div className="space-y-10">
             <JourneyFiltersForm
+              accommodationType={accommodationType}
               arrivePref={arrivePref}
               climate={climate}
               departPref={departPref}
               experience={experience}
               labels={labels.filtersForm}
               maxTravelTime={maxTravelTime}
+              onAccommodationTypeChange={onAccommodationTypeChange}
               onArrivePrefChange={onArrivePrefChange}
               onClear={onClearFilters}
               onClimateChange={onClimateChange}

@@ -66,9 +66,7 @@ function getFilterLabel(
   filterOptions?: Record<string, { options: Array<{ key: string; label: string }> }>,
 ): string {
   const fromDict = filterOptions?.[group]?.options?.find((o) => o.key === key)?.label;
-  if (fromDict) return fromDict;
-  const opt = FILTER_OPTIONS[group]?.options?.find((o) => o.key === key);
-  return opt?.label ?? key;
+  return fromDict ?? key;
 }
 
 function formatDatesSummary(
@@ -135,6 +133,7 @@ function logisticsFromParams(
 }
 
 function filtersFromParams(searchParams: URLSearchParams): Filters {
+  const accommodationType = searchParams.get('accommodationType') ?? 'indistinto';
   const transport = searchParams.get('transport') ?? 'avion';
   const climate = searchParams.get('climate') ?? 'indistinto';
   const maxTravelTime = searchParams.get('maxTravelTime') ?? 'sin-limite';
@@ -146,6 +145,7 @@ function filtersFromParams(searchParams: URLSearchParams): Filters {
     : [];
 
   return {
+    accommodationType,
     arrivePref,
     avoidDestinations,
     climate,
@@ -182,6 +182,7 @@ interface TripFromApi {
   maxTravelTime: string;
   departPref: string;
   arrivePref: string;
+  accommodationType?: string;
   avoidDestinations: string[];
   addons: Array<{ id: string; qty: number }> | null;
 }
@@ -199,6 +200,7 @@ function logisticsFromTrip(trip: TripFromApi, paxOverride: number | null): Logis
 
 function filtersFromTrip(trip: TripFromApi): Filters {
   return {
+    accommodationType: trip.accommodationType ?? 'indistinto',
     arrivePref: trip.arrivePref,
     avoidDestinations: trip.avoidDestinations ?? [],
     climate: trip.climate,
@@ -313,6 +315,7 @@ function CheckoutContent() {
       avoidCount: avoidDestinations.length,
       basePriceUsd,
       filters: filters ?? {
+        accommodationType: 'indistinto',
         arrivePref: 'indistinto',
         avoidDestinations: [],
         climate: 'indistinto',
@@ -500,6 +503,7 @@ function CheckoutContent() {
             nights: trip.nights,
             pax,
             transport: trip.transport,
+            accommodationType: trip.accommodationType ?? 'indistinto',
             climate: trip.climate,
             maxTravelTime: trip.maxTravelTime,
             departPref: trip.departPref,

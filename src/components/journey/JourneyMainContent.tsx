@@ -85,7 +85,7 @@ interface JourneyMainContentProps {
   /** Labels for details step (journey.detailsStep). */
   detailsStepLabels?: JourneyDetailsStepLabels;
   /** Labels for preferences step (journey.preferencesStep). */
-  preferencesStepLabels?: JourneyPreferencesStepLabels;
+  preferencesStepLabels: JourneyPreferencesStepLabels;
   onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
   openSectionId?: string;
@@ -161,6 +161,7 @@ export default function JourneyMainContent({
       nights: nightsNum,
       pax,
       transport: searchParams.get('transport') ?? 'avion',
+      accommodationType: searchParams.get('accommodationType') ?? 'indistinto',
       climate: searchParams.get('climate') ?? 'indistinto',
       maxTravelTime: searchParams.get('maxTravelTime') ?? 'sin-limite',
       departPref: searchParams.get('departPref') ?? 'indistinto',
@@ -374,11 +375,17 @@ export default function JourneyMainContent({
     return searchParams.get('climate') || undefined;
   }, [searchParams]);
 
+  const accommodationType = useMemo(() => {
+    return searchParams.get('accommodationType') || undefined;
+  }, [searchParams]);
+
   const [draftDepartPref, setDraftDepartPref] = useState<string>('indistinto');
   const [draftArrivePref, setDraftArrivePref] = useState<string>('indistinto');
   const [draftClimate, setDraftClimate] = useState<string>('indistinto');
   const [draftMaxTravelTime, setDraftMaxTravelTime] =
     useState<string>('sin-limite');
+  const [draftAccommodationType, setDraftAccommodationType] =
+    useState<string>('indistinto');
 
   // Sync URL -> draft when entering preferences step (so form shows current URL values)
   useEffect(() => {
@@ -387,8 +394,16 @@ export default function JourneyMainContent({
       setDraftArrivePref(arrivePref ?? 'indistinto');
       setDraftClimate(climate ?? 'indistinto');
       setDraftMaxTravelTime(maxTravelTime ?? 'sin-limite');
+      setDraftAccommodationType(accommodationType ?? 'indistinto');
     }
-  }, [activeTab, arrivePref, climate, departPref, maxTravelTime]);
+  }, [
+    activeTab,
+    accommodationType,
+    arrivePref,
+    climate,
+    departPref,
+    maxTravelTime,
+  ]);
 
   const effectiveDepartPref =
     activeTab === 'preferences'
@@ -404,6 +419,10 @@ export default function JourneyMainContent({
     activeTab === 'preferences'
       ? draftMaxTravelTime
       : (maxTravelTime ?? 'sin-limite');
+  const effectiveAccommodationType =
+    activeTab === 'preferences'
+      ? draftAccommodationType
+      : (accommodationType ?? 'indistinto');
 
   const addons = useMemo(() => {
     return searchParams.get('addons') || undefined;
@@ -445,6 +464,7 @@ export default function JourneyMainContent({
 
   const paramsToResetAfterTravelType = useMemo(
     () => ({
+      accommodationType: undefined,
       addons: undefined as string | undefined,
       arrivePref: undefined,
       climate: undefined,
@@ -466,6 +486,7 @@ export default function JourneyMainContent({
 
   const paramsToResetAfterExperience = useMemo(
     () => ({
+      accommodationType: undefined,
       addons: undefined as string | undefined,
       arrivePref: undefined,
       avoidDestinations: undefined as string | undefined,
@@ -634,8 +655,14 @@ export default function JourneyMainContent({
     else updateQuery({ climate: value });
   };
 
+  const handleAccommodationTypeChange = (value: string) => {
+    if (activeTab === 'preferences') setDraftAccommodationType(value);
+    else updateQuery({ accommodationType: value });
+  };
+
   const handleSaveFilters = () => {
     updateQuery({
+      accommodationType: draftAccommodationType,
       arrivePref: draftArrivePref,
       climate: draftClimate,
       departPref: draftDepartPref,
@@ -646,11 +673,13 @@ export default function JourneyMainContent({
   };
 
   const handleClearFilters = () => {
+    setDraftAccommodationType('indistinto');
     setDraftArrivePref('indistinto');
     setDraftClimate('indistinto');
     setDraftDepartPref('indistinto');
     setDraftMaxTravelTime('sin-limite');
     updateQuery({
+      accommodationType: 'indistinto',
       arrivePref: 'indistinto',
       avoidDestinations: undefined,
       climate: 'indistinto',
@@ -660,6 +689,7 @@ export default function JourneyMainContent({
     setPartial({
       filters: {
         ...filters,
+        accommodationType: 'indistinto',
         arrivePref: 'indistinto',
         climate: 'indistinto',
         departPref: 'indistinto',
@@ -712,6 +742,7 @@ export default function JourneyMainContent({
 
   const handleClearAll = () => {
     updateQuery({
+      accommodationType: undefined,
       addons: undefined,
       arrivePref: undefined,
       avoidDestinations: undefined,
@@ -784,6 +815,7 @@ export default function JourneyMainContent({
   };
 
   const hasSelections =
+    (accommodationType && accommodationType !== 'indistinto') ||
     addons ||
     arrivePref ||
     climate ||
@@ -993,6 +1025,7 @@ export default function JourneyMainContent({
 
         return (
           <JourneyPreferencesStep
+            accommodationType={effectiveAccommodationType}
             addons={addons}
             addonLabels={addonLabels}
             arrivePref={effectiveArrivePref}
@@ -1001,6 +1034,7 @@ export default function JourneyMainContent({
             experience={experience}
             labels={preferencesStepLabels}
             maxTravelTime={effectiveMaxTravelTime}
+            onAccommodationTypeChange={handleAccommodationTypeChange}
             onAddonsChange={handleAddonsChange}
             onAfterAddonsSave={scrollToActions}
             onArrivePrefChange={handleArrivePrefChange}

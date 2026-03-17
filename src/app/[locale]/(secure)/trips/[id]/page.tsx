@@ -26,9 +26,11 @@ import {
   Clock,
   X as XIcon,
 } from 'lucide-react';
-import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import type { MarketingDictionary } from '@/lib/types/dictionary';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import type { JourneyFilterKey } from '@/lib/constants/journey-filters';
 
 interface TripDetails {
   id: string;
@@ -47,6 +49,7 @@ interface TripDetails {
 
   // Filters
   transport: string;
+  accommodationType?: string;
   climate: string;
   maxTravelTime: string;
   departPref: string;
@@ -93,8 +96,14 @@ function TripDetailsContent() {
   const [trip, setTrip] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDestination, setShowDestination] = useState(false);
+  const [dict, setDict] = useState<MarketingDictionary | null>(null);
 
   const tripId = params.id as string;
+  const locale = (params.locale as string) ?? 'es';
+
+  useEffect(() => {
+    getDictionary(locale).then(setDict);
+  }, [locale]);
 
   useEffect(() => {
     async function fetchTripDetails() {
@@ -190,18 +199,24 @@ function TripDetailsContent() {
     return labels[status] || status;
   };
 
+  const filterOptions = dict?.journey?.preferencesStep?.filterOptions;
   const filterChips = [
-    { key: 'transport', value: trip.transport },
-    { key: 'climate', value: trip.climate },
-    { key: 'maxTravelTime', value: trip.maxTravelTime },
-    { key: 'departPref', value: trip.departPref },
-    { key: 'arrivePref', value: trip.arrivePref },
+    { key: 'transport' as JourneyFilterKey, value: trip.transport },
+    ...(trip.accommodationType && trip.accommodationType !== 'indistinto'
+      ? [{ key: 'accommodationType' as JourneyFilterKey, value: trip.accommodationType }]
+      : []),
+    { key: 'climate' as JourneyFilterKey, value: trip.climate },
+    { key: 'maxTravelTime' as JourneyFilterKey, value: trip.maxTravelTime },
+    { key: 'departPref' as JourneyFilterKey, value: trip.departPref },
+    { key: 'arrivePref' as JourneyFilterKey, value: trip.arrivePref },
   ].map((f) => {
-    const option = FILTER_OPTIONS[f.key as keyof typeof FILTER_OPTIONS];
-    const selected = option.options.find((opt: any) => opt.key === f.value);
+    const optionDef = filterOptions?.[f.key];
+    const categoryLabel = optionDef?.label ?? f.key;
+    const selectedOption = optionDef?.options?.find((o) => o.key === f.value);
+    const valueLabel = selectedOption?.label ?? f.value;
     return {
-      category: option.label,
-      value: selected?.label || f.value,
+      category: categoryLabel,
+      value: valueLabel,
     };
   });
 

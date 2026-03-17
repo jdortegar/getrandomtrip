@@ -4,14 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown, LogOut } from 'lucide-react';
 import { signOut as nextAuthSignOut } from 'next-auth/react';
+import type { User } from '@/types/core';
 import { useMenuState } from '@/hooks/useMenuState';
 
-// Types
-export interface User {
-  name?: string;
-  avatar?: string;
-  role?: string;
-}
+/** Minimal user shape for navbar (all optional). */
+type NavbarUser = Partial<Pick<User, 'name' | 'avatar' | 'role'>>;
 
 // Profile Menu Items
 const PROFILE_MENU_ITEMS = [
@@ -32,7 +29,7 @@ const DASHBOARD_MENU_ITEM = {
 };
 
 interface NavbarProfileProps {
-  user: User;
+  user: NavbarUser;
   session: any;
   onSignOut: () => void;
 }

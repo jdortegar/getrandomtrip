@@ -49,6 +49,7 @@ export interface CreateTripData {
   nights: number;
   pax: number;
   transport?: string;
+  accommodationType?: string;
   climate?: string;
   maxTravelTime?: string;
   departPref?: string;

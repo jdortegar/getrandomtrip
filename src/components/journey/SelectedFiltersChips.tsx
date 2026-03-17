@@ -36,15 +36,14 @@ export default function SelectedFiltersChips() {
     const value = filters[key as keyof Filters];
     const filterConfig = FILTER_OPTIONS[key as keyof typeof FILTER_OPTIONS];
     if (!filterConfig) return;
-    const valueLabel =
-      filterConfig?.options?.find((opt: any) => opt.key === value)?.label ||
-      value;
+    const found = filterConfig.options.find((opt) => opt.key === value);
+    const valueLabel = found ? found.key : value;
 
     if (value !== 'indistinto' && value !== 'sin-limite') {
       items.push({
         key,
         value: valueLabel,
-        label: filterConfig?.label ?? key,
+        label: key,
         locked: key === 'transport',
         onRemove: () =>
           setPartial({ filters: { ...filters, [key]: 'indistinto' } }),

@@ -83,6 +83,7 @@ export async function createTrip(userId: string, data: CreateTripData) {
       nights: data.nights,
       pax: data.pax,
       transport: data.transport || 'avion',
+      accommodationType: data.accommodationType || 'indistinto',
       climate: data.climate || 'indistinto',
       maxTravelTime: data.maxTravelTime || 'sin-limite',
       departPref: data.departPref || 'indistinto',

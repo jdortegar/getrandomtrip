@@ -7,6 +7,7 @@ import type { Filters } from '@/store/slices/journeyStore';
  */
 export function countOptionalFilters(f: Filters, avoidCount = 0): number {
   let n = 0;
+  if (f.accommodationType !== 'indistinto') n++;
   if (f.climate !== 'indistinto') n++;
   if (f.maxTravelTime !== 'sin-limite') n++;
   if (f.departPref !== 'indistinto') n++;

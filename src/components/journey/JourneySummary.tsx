@@ -51,9 +51,7 @@ function getFilterLabel(
     | Record<string, { options: Array<{ key: string; label: string }> }>
     | undefined;
   const fromDict = fo?.[group]?.options?.find((o) => o.key === key)?.label;
-  if (fromDict) return fromDict;
-  const opt = FILTER_OPTIONS[group]?.options?.find((o) => o.key === key);
-  return opt?.label ?? key;
+  return fromDict ?? key;
 }
 
 interface JourneySummaryProps {
@@ -70,6 +68,10 @@ interface JourneySummaryProps {
   className?: string;
   /** Localized filter option labels (e.g. journey.preferencesStep.filterOptions). */
   filterOptions?: {
+    accommodationType: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
     arrivePref: {
       label: string;
       options: Array<{ key: string; label: string }>;
@@ -146,6 +148,7 @@ export default function JourneySummary({
     return Number.isFinite(n) && n > 0 ? n : 1;
   }, [nightsParam]);
   const transport = searchParams.get('transport') || undefined;
+  const accommodationType = searchParams.get('accommodationType') || undefined;
   const departPref = searchParams.get('departPref') || undefined;
   const arrivePref = searchParams.get('arrivePref') || undefined;
   const maxTravelTime = searchParams.get('maxTravelTime') || undefined;
@@ -236,6 +239,7 @@ export default function JourneySummary({
     : null;
 
   type FilterKind =
+    | 'accommodationType'
     | 'arrivePref'
     | 'avoid'
     | 'climate'
@@ -249,6 +253,13 @@ export default function JourneySummary({
       label: string;
       value?: string;
     }[] = [];
+    if (accommodationType && accommodationType !== 'indistinto') {
+      list.push({
+        id: `accommodationType-${accommodationType}`,
+        kind: 'accommodationType',
+        label: `${summary.filterLabelAccommodation}: ${getFilterLabel('accommodationType', accommodationType, filterOptions)}`,
+      });
+    }
     if (departPref && departPref !== 'indistinto') {
       list.push({
         id: `depart-${departPref}`,
@@ -287,11 +298,14 @@ export default function JourneySummary({
     });
     return list;
   }, [
+    accommodationType,
     arrivePref,
     avoidDestinations,
     climate,
     departPref,
+    filterOptions,
     maxTravelTime,
+    summary.filterLabelAccommodation,
     summary.filterLabelArrive,
     summary.filterLabelAvoid,
     summary.filterLabelClimate,
@@ -310,6 +324,7 @@ export default function JourneySummary({
         });
       } else {
         const patch: Record<string, string | undefined> = {};
+        if (kind === 'accommodationType') patch.accommodationType = undefined;
         if (kind === 'departPref') patch.departPref = undefined;
         if (kind === 'arrivePref') patch.arrivePref = undefined;
         if (kind === 'maxTravelTime') patch.maxTravelTime = undefined;

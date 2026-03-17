@@ -7,6 +7,12 @@ import { useSearchParams } from 'next/navigation';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FILTER_OPTIONS, FilterOption } from '@/store/slices/journeyStore';
+
+function toFilterOptions(
+  opts: Array<{ key: string }>,
+): FilterOption[] {
+  return opts.map((o) => ({ key: o.key, label: o.key }));
+}
 import AvoidGrid from './avoid/AvoidGrid';
 
 const Seg = ({
@@ -58,7 +64,7 @@ export default function PreferencesTab() {
               Transporte preferido (obligatorio)
             </h3>
             <Seg
-              options={FILTER_OPTIONS.transport.options}
+              options={toFilterOptions(FILTER_OPTIONS.transport.options)}
               value={filters.transport}
               onChange={(v) => setAndSync({ transport: v })}
               className="justify-center"
@@ -75,7 +81,7 @@ export default function PreferencesTab() {
           <div className="flex flex-col gap-1 text-left ">
             <div className="text-sm mb-1">Salida</div>
             <Seg
-              options={FILTER_OPTIONS.departPref.options}
+              options={toFilterOptions(FILTER_OPTIONS.departPref.options)}
               value={filters.departPref}
               onChange={(v) => setAndSync({ departPref: v })}
             />
@@ -83,7 +89,7 @@ export default function PreferencesTab() {
           <div className="flex flex-col gap-1 text-left ">
             <div className="text-sm mb-1">Llegada</div>
             <Seg
-              options={FILTER_OPTIONS.arrivePref.options}
+              options={toFilterOptions(FILTER_OPTIONS.arrivePref.options)}
               value={filters.arrivePref}
               onChange={(v) => setAndSync({ arrivePref: v })}
             />
@@ -97,7 +103,7 @@ export default function PreferencesTab() {
           <div className="flex flex-col gap-1 space-y-6">
             <h3 className="font-medium text-left">Tiempo máximo de viaje</h3>
             <Seg
-              options={FILTER_OPTIONS.maxTravelTime.options}
+              options={toFilterOptions(FILTER_OPTIONS.maxTravelTime.options)}
               value={filters.maxTravelTime}
               onChange={(v) => setAndSync({ maxTravelTime: v })}
             />
@@ -105,7 +111,7 @@ export default function PreferencesTab() {
           <div className="flex flex-col gap-1 space-y-6">
             <h3 className="font-medium text-left">Clima preferencial</h3>
             <Seg
-              options={FILTER_OPTIONS.climate.options}
+              options={toFilterOptions(FILTER_OPTIONS.climate.options)}
               value={filters.climate}
               onChange={(v) => setAndSync({ climate: v })}
             />

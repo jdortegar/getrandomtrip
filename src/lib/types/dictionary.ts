@@ -230,14 +230,18 @@ export interface MarketingDictionary {
         optionLabels: Record<string, string>;
       };
     };
-    preferencesStep?: {
-      addonsClearButton?: string;
-      addonsEmptyMessage?: string;
-      addonsHint?: string;
+    preferencesStep: {
+      addonsClearButton: string;
+      addonsEmptyMessage: string;
+      addonsHint: string;
       addonsLabel: string;
       addonsPlaceholder: string;
-      addonsSaveButton?: string;
-      filterOptions?: {
+      addonsSaveButton: string;
+      filterOptions: {
+        accommodationType: {
+          label: string;
+          options: Array<{ key: string; label: string; tooltip?: string }>;
+        };
         arrivePref: { label: string; options: Array<{ key: string; label: string }> };
         climate: { label: string; options: Array<{ key: string; label: string }> };
         departPref: { label: string; options: Array<{ key: string; label: string }> };
@@ -262,14 +266,26 @@ export interface MarketingDictionary {
         clearButton: string;
         climateLabel: string;
         departPrefLabel: string;
-        importantNote1?: string;
-        importantNote2?: string;
-        importantNote3?: string;
-        importantNote4?: string;
-        importantTitle?: string;
+        filterOptions: {
+          accommodationType: {
+            label: string;
+            options: Array<{ key: string; label: string; tooltip?: string }>;
+          };
+          arrivePref: { label: string; options: Array<{ key: string; label: string }> };
+          climate: { label: string; options: Array<{ key: string; label: string }> };
+          departPref: { label: string; options: Array<{ key: string; label: string }> };
+          maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
+          transport: { label: string; options: Array<{ key: string; label: string }> };
+        };
+        importantNote1: string;
+        importantNote2: string;
+        importantNote3: string;
+        importantNote4: string;
+        importantTitle: string;
         maxTravelTimeLabel: string;
         saveFiltersButton: string;
       };
+      filtersSummaryAccommodation: string;
       filtersSummaryArrive: string;
       filtersSummaryClimate: string;
       filtersSummaryDefault: string;
@@ -301,6 +317,7 @@ export interface MarketingDictionary {
       experienceSection: string;
       excuseSection: string;
       favoriteAmongTravelers: string;
+      filterLabelAccommodation: string;
       filterLabelArrive: string;
       filterLabelAvoid: string;
       filterLabelClimate: string;
