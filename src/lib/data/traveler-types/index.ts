@@ -18,6 +18,79 @@ import { hasLocale } from '@/lib/i18n/config';
 
 export type TravelerTypeSlug = 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws';
 
+/** All traveler type slugs in display order (used for options list and maps). */
+export const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
+  'solo',
+  'couple',
+  'family',
+  'group',
+  'honeymoon',
+  'paws',
+];
+
+/** Card display data (subtitle, img) per slug for journey/tripper type selection. */
+const CARD_BY_SLUG: Record<
+  TravelerTypeSlug,
+  { img: string; subtitle: string }
+> = {
+  couple: {
+    img: '/images/journey-types/couple-hetero.png',
+    subtitle: 'Creen recuerdos juntos',
+  },
+  family: {
+    img: '/images/journey-types/family-vacation.jpg',
+    subtitle: 'Aventuras para todos',
+  },
+  group: {
+    img: '/images/journey-types/friends-group.jpg',
+    subtitle: 'Experiencias compartidas',
+  },
+  honeymoon: {
+    img: '/images/journey-types/honeymoon-same-sex.jpg',
+    subtitle: 'El comienzo perfecto',
+  },
+  paws: {
+    img: '/images/journey-types/paws-card.jpg',
+    subtitle: 'Con tu mascota de viaje',
+  },
+  solo: {
+    img: '/images/journey-types/solo-traveler.png',
+    subtitle: 'Descubre el mundo a tu ritmo',
+  },
+};
+
+export interface TravelerTypeOption {
+  img: string;
+  key: string;
+  subtitle: string;
+  title: string;
+}
+
+/**
+ * Options for traveler type selection (step 1 / tripper planner).
+ * Uses labels from each type's meta for the given locale.
+ */
+export function getTravelerTypeOptions(locale?: string): TravelerTypeOption[] {
+  return TRAVELER_TYPE_SLUGS.map((slug) => {
+    const data = getTravelerType(slug, locale);
+    const card = CARD_BY_SLUG[slug];
+    return {
+      key: slug,
+      title: data?.meta.label ?? slug,
+      subtitle: card.subtitle,
+      img: card.img,
+    };
+  });
+}
+
+/**
+ * Label for a traveler type key (slug or alias). Uses type's meta.label for the given locale.
+ */
+export function getTypeLabel(type: string, locale?: string): string {
+  const data = getTravelerType(type, locale);
+  return data?.meta.label ?? type;
+}
+
 const BY_LOCALE: Record<TravelerTypeSlug, Record<Locale, TravelerTypeData>> = {
   couple,
   solo,

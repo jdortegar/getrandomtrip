@@ -1,24 +1,28 @@
 'use client';
 
 import Image from 'next/image';
-import { TRAVELLER_TYPE_OPTIONS } from '@/lib/constants/traveller-types';
+import { getTravelerTypeOptions, type TravelerTypeOption } from '@/lib/data/traveler-types';
 import { Button } from '@/components/ui/Button';
 
 interface TravelerTypeStepProps {
-  options: typeof TRAVELLER_TYPE_OPTIONS;
-  onContinue: () => void;
-  tripperName: string;
-  handlePlanData: (travellerType: string) => void;
+  locale?: string;
   onBack: () => void;
+  onContinue: () => void;
+  options?: TravelerTypeOption[];
+  handlePlanData: (travellerType: string) => void;
+  tripperName: string;
 }
 
 export default function TravelerTypeStep({
-  options,
   handlePlanData,
-  onContinue,
-  tripperName,
+  locale,
   onBack,
+  onContinue,
+  options: optionsProp,
+  tripperName,
 }: TravelerTypeStepProps) {
+  const options = optionsProp ?? getTravelerTypeOptions(locale);
+
   return (
     <section className="rt-container px-4 md:px-8 py-10 relative">
       <div className="space-y-8">

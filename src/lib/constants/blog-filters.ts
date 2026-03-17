@@ -1,11 +1,12 @@
 // Blog filter options for TravelType and Excuse. Trippers come from DB via /api/trippers.
 // Aligns with journey/tripper domain: Package has type + excuseKey; User is tripper.
+// Travel type labels from lib/data/traveler-types.
 
-import { TYPE_LABELS } from '@/lib/constants/traveller-types';
+import { getTravelerTypeOptions } from '@/lib/data/traveler-types';
 import { allExcuses, type ExcuseData } from '@/lib/data/shared/excuses';
 
 // -----------------------------------------------------------------------------
-// Travel type (Tipo de viaje) – keys from traveller-types
+// Travel type (Tipo de viaje) – keys and labels from traveler-types
 // -----------------------------------------------------------------------------
 
 export interface TravelTypeOption {
@@ -13,9 +14,8 @@ export interface TravelTypeOption {
   label: string;
 }
 
-export const BLOG_TRAVEL_TYPE_OPTIONS: TravelTypeOption[] = Object.entries(
-  TYPE_LABELS,
-).map(([key, label]) => ({ key, label }));
+export const BLOG_TRAVEL_TYPE_OPTIONS: TravelTypeOption[] =
+  getTravelerTypeOptions().map((opt) => ({ key: opt.key, label: opt.title }));
 
 // -----------------------------------------------------------------------------
 // Excuse – key + label for filter pill/dropdown (from shared excuses)

@@ -7,11 +7,10 @@ import Section from '@/components/layout/Section';
 import { Button } from '@/components/ui/Button';
 import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from '@/components/tripper/TripperTravelerTypesSection';
 import {
-  TRAVELLER_TYPE_OPTIONS,
-  TRAVELLER_TYPE_MAP,
-  TYPE_LABELS,
-} from '@/lib/constants/traveller-types';
-import { getTravelerType } from '@/lib/data/traveler-types';
+  getTravelerType,
+  getTravelerTypeOptions,
+  getTypeLabel,
+} from '@/lib/data/traveler-types';
 
 type Props = {
   tripperData: {
@@ -76,20 +75,18 @@ export default function TripperPlanner({
     ) {
       return tripperData.interests;
     }
-    return availableTypes.map((t) => TYPE_LABELS[t] || t).filter(Boolean);
+    return availableTypes.map((t) => getTypeLabel(t) || t).filter(Boolean);
   }, [tripperData.interests, availableTypes]);
 
-  // Filter by tripper's available types
+  const allOptions = getTravelerTypeOptions();
   const travellerOptions =
     availableTypes.length > 0
-      ? TRAVELLER_TYPE_OPTIONS.filter((opt) => availableTypes.includes(opt.key))
-      : TRAVELLER_TYPE_OPTIONS;
+      ? allOptions.filter((opt) => availableTypes.includes(opt.key))
+      : allOptions;
 
-  // Get traveler type data for selected type
   const travellerTypeData = useMemo(() => {
     if (!travellerType) return null;
-    const mappedType = TRAVELLER_TYPE_MAP[travellerType] || travellerType;
-    return getTravelerType(mappedType);
+    return getTravelerType(travellerType);
   }, [travellerType]);
 
   const scrollToTravelerTypes = () => {
