@@ -325,7 +325,7 @@
       "refineDetailsStepDescription": "When the unknown becomes your best companion. Choose one or more adventures.",
       "travelTypeLabel": "Travel type",
       "travelTypePlaceholder": "Choose your experience",
-      "viewSummary": "View summary"
+      "viewCheckout": "Checkout"
     },
     "detailsStep": {
       "cityLabel": "Departure city",

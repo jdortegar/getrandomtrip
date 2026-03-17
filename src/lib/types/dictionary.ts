@@ -201,7 +201,8 @@ export interface MarketingDictionary {
       refineDetailsStepDescription: string;
       travelTypeLabel: string;
       travelTypePlaceholder: string;
-      viewSummary: string;
+      viewCheckout: string;
+      viewSummary?: string;
     };
     detailsStep?: {
       cityLabel: string;

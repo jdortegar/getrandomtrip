@@ -1,37 +1,21 @@
-import Link from 'next/link';
-import Footer from '@/components/layout/Footer';
-import HeaderHero from '@/components/journey/HeaderHero';
-import Navbar from '@/components/Navbar';
-import { Button } from '@/components/ui/Button';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale, type Locale } from '@/lib/i18n/config';
+'use client';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}) {
-  const locale = hasLocale(params.locale) ? (params.locale as Locale) : 'es';
-  const dict = await getDictionary(locale);
-  const { paymentPending } = dict;
-  return {
-    description: paymentPending.metaDescription,
-    title: paymentPending.title,
-  };
+import Link from 'next/link';
+import HeaderHero from '@/components/journey/HeaderHero';
+import { Button } from '@/components/ui/Button';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
+
+interface CheckoutResultFailureProps {
+  locale: string;
+  labels: Dictionary['paymentFailure'];
 }
 
-export default async function PendingPage({
-  params,
-}: {
-  params: { locale: string };
-}) {
-  const locale = hasLocale(params.locale) ? (params.locale as Locale) : 'es';
-  const dict = await getDictionary(locale);
-  const labels = dict.paymentPending;
-
+export default function CheckoutResultFailure({
+  locale,
+  labels,
+}: CheckoutResultFailureProps) {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar dict={dict} locale={locale} />
       <HeaderHero
         description={labels.body}
         subtitle={labels.subtitle}
@@ -54,7 +38,6 @@ export default async function PendingPage({
           </div>
         </section>
       </main>
-      <Footer dict={dict} locale={locale} />
     </div>
   );
 }

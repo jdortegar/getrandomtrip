@@ -142,7 +142,7 @@ export default function CheckoutClient({ locale = 'es' }: CheckoutClientProps) {
         if (data.initPoint) {
           window.location.href = data.initPoint;
         } else {
-          router.push(`/${locale}/confirmation`);
+          router.push(`/${locale}/checkout`);
         }
       } else {
         setPaymentStatus('failed');

@@ -41,7 +41,7 @@ export default function FiltersTab() {
   };
 
   const handleContinue = () => {
-    // journey/add-ons page was removed; continue flow from journey/summary or package flow
+    // journey/add-ons page was removed; continue flow from checkout or package flow
     console.log("Continuing to add-ons...");
   };
 

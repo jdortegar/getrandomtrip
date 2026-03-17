@@ -91,9 +91,9 @@ export async function POST(request: NextRequest) {
       baseUrl = `https://${baseUrl}`;
     }
     const localeSegment = pathLocale ? `/${pathLocale}` : '';
-    const successUrl = `${baseUrl}${localeSegment}/confirmation`;
-    const failureUrl = `${baseUrl}${localeSegment}/failure`;
-    const pendingUrl = `${baseUrl}${localeSegment}/pending`;
+    const successUrl = `${baseUrl}${localeSegment}/checkout?result=success`;
+    const failureUrl = `${baseUrl}${localeSegment}/checkout?result=failure`;
+    const pendingUrl = `${baseUrl}${localeSegment}/checkout?result=pending`;
 
     // Mercado Pago only accepts auto_return when success URL is a named domain (not localhost).
     // On localhost we omit it so the preference is accepted; user can still use "Return to site".

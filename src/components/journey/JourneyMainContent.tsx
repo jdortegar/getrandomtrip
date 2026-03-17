@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 import { Accordion } from '@/components/ui/accordion';
 import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
 import { TravelerTypesCarousel } from '@/components/landing/exploration/TravelerTypesCarousel';
@@ -21,10 +22,10 @@ import {
 } from '@/lib/helpers/excuse-helper';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { useStore } from '@/store/store';
+import { useUserStore } from '@/store/slices/userStore';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
-import Link from 'next/link';
 
 interface JourneyMainContentLabels {
   clearAll: string;
@@ -49,7 +50,8 @@ interface JourneyMainContentLabels {
   refineDetailsStepDescription: string;
   travelTypeLabel: string;
   travelTypePlaceholder: string;
-  viewSummary: string;
+  viewCheckout: string;
+  viewSummary?: string;
 }
 
 interface JourneyMainContentProps {
@@ -105,13 +107,94 @@ export default function JourneyMainContent({
 }: JourneyMainContentProps) {
   const labels = mainContentLabels;
   const params = useParams();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const locale = (params?.locale as string) ?? 'es';
-  const summaryHref = useMemo(
-    () => `/${locale}/journey/summary?${searchParams.toString()}`,
-    [locale, searchParams],
-  );
+  const [isSavingAndRedirecting, setIsSavingAndRedirecting] = useState(false);
   const updateQuery = useQuerySync();
+
+  const handleGoToCheckout = useCallback(async () => {
+    const travelType = searchParams.get('travelType') || 'couple';
+    const experience = searchParams.get('experience');
+    const normalizeLevel = (raw: string | null | undefined) => {
+      if (!raw) return 'explora-plus';
+      const n = raw.toLowerCase().replace(/\s+/g, '-').replace('explora+', 'explora-plus');
+      if (n === 'exploraplus') return 'explora-plus';
+      if (n === 'modoexplora' || n === 'explora') return 'modo-explora';
+      return n || 'explora-plus';
+    };
+    const level = normalizeLevel(experience) || experience || 'explora-plus';
+    const originCountry = searchParams.get('originCountry')?.trim() ?? '';
+    const originCity = searchParams.get('originCity')?.trim() ?? '';
+    if (!originCountry || !originCity) {
+      toast.error('Completá ciudad y país de origen para continuar.');
+      return;
+    }
+    const startDateRaw = searchParams.get('startDate');
+    const nightsNum = Math.max(1, parseInt(searchParams.get('nights') ?? '1', 10) || 1);
+    let startDate: string | null = null;
+    let endDate: string | null = null;
+    if (startDateRaw) {
+      const start = new Date(startDateRaw);
+      startDate = start.toISOString();
+      const end = new Date(start);
+      end.setDate(end.getDate() + nightsNum);
+      endDate = end.toISOString();
+    }
+    const pax = Math.max(1, Math.min(20, parseInt(searchParams.get('pax') ?? '2', 10) || 2));
+    const avoidRaw = searchParams.get('avoidDestinations');
+    const avoidDestinations = avoidRaw
+      ? avoidRaw.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+    const addonsRaw = searchParams.get('addons');
+    const addonsSelected = addonsRaw
+      ? addonsRaw.split(',').map((s) => s.trim()).filter(Boolean).map((id) => ({ id, qty: 1 }))
+      : [];
+    const tripPayload = {
+      from: 'journey',
+      type: travelType,
+      level,
+      originCountry,
+      originCity,
+      startDate,
+      endDate,
+      nights: nightsNum,
+      pax,
+      transport: searchParams.get('transport') ?? 'avion',
+      climate: searchParams.get('climate') ?? 'indistinto',
+      maxTravelTime: searchParams.get('maxTravelTime') ?? 'sin-limite',
+      departPref: searchParams.get('departPref') ?? 'indistinto',
+      arrivePref: searchParams.get('arrivePref') ?? 'indistinto',
+      avoidDestinations,
+      addons: addonsSelected,
+      status: 'DRAFT',
+    };
+    setIsSavingAndRedirecting(true);
+    try {
+      const res = await fetch('/api/trip-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tripPayload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 401) {
+          const { openAuth } = useUserStore.getState();
+          openAuth('signin');
+          toast.info('Iniciá sesión para continuar al checkout.');
+        } else {
+          toast.error(data.error ?? 'No se pudo guardar el viaje. Intentá de nuevo.');
+        }
+        return;
+      }
+      router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
+    } catch (err) {
+      console.error('Error saving trip:', err);
+      toast.error('Error de conexión. Intentá de nuevo.');
+    } finally {
+      setIsSavingAndRedirecting(false);
+    }
+  }, [locale, router, searchParams]);
   const { filters, setPartial } = useStore();
   const [internalAccordion, setInternalAccordion] = useState<string>('');
   const isControlled =
@@ -981,12 +1064,13 @@ export default function JourneyMainContent({
 
         {isAllStepsComplete && !canContinue && (
           <Button
-            asChild
             className="text-sm font-normal normal-case"
+            disabled={isSavingAndRedirecting}
+            onClick={handleGoToCheckout}
             size="md"
             variant="default"
           >
-            <Link href={summaryHref}>{labels.viewSummary}</Link>
+            {isSavingAndRedirecting ? 'Guardando...' : labels.viewCheckout}
           </Button>
         )}
       </div>

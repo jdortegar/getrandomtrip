@@ -38,11 +38,11 @@ export default function SecureRoute({
   useEffect(() => {
     if (status === 'loading') return;
 
-    // Check authentication
+    // When not authenticated: open auth modal on the same page (no redirect)
     if (!session && !isAuthed) {
-      // Open auth modal using the user store
       const { openAuth } = useUserStore.getState();
       openAuth('signin');
+      setIsChecking(false);
       return;
     }
 
@@ -63,20 +63,17 @@ export default function SecureRoute({
     return <LoadingSpinner />;
   }
 
+  // Not authenticated: show same page + auth modal (no full-page fallback)
   if (!session && !isAuthed) {
     return (
-      fallback || (
-        <>
-          <BgCarousel scrim={0.75} />
-          <main className="container mx-auto max-w-5xl px-4 pt-24 md:pt-28 pb-16">
-            <GlassCard>
-              <div className="p-6 text-center text-neutral-700">
-                Redirigiendo al login...
-              </div>
-            </GlassCard>
-          </main>
-        </>
-      )
+      <>
+        {children}
+        <AuthModal
+          defaultMode="login"
+          isOpen={authModalOpen}
+          onClose={closeAuth}
+        />
+      </>
     );
   }
 

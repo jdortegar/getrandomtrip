@@ -1,5 +1,5 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { useStore } from '@/store/store';
 
@@ -16,8 +16,10 @@ export default function StepperNav({
   isStepComplete,
   onStepChange,
 }: StepperNavProps) {
+  const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = (params?.locale as string) ?? 'es';
   const { type, level, basePriceUsd } = useStore();
 
   const goPrev = () => {
@@ -41,7 +43,7 @@ export default function StepperNav({
         if (basePriceUsd > 0) {
           params.set('pbp', basePriceUsd.toString());
         }
-        router.push(`/journey/summary?${params.toString()}`);
+        router.push(`/${locale}/checkout?${params.toString()}`);
       } else {
         onStepChange(currentStep + 1);
       }

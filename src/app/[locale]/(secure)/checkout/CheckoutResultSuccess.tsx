@@ -2,17 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Confetti from '@/components/feedback/Confetti';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import HeaderHero from '@/components/journey/HeaderHero';
 import { cn } from '@/lib/utils';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
 
-/**
- * Query params Mercado Pago appends when redirecting to back_urls.success (confirmation).
- * @see https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/checkout-customization/user-interface/redirection
- */
 export interface MercadoPagoSuccessParams {
   collection_id?: string;
   collection_status?: string;
@@ -28,38 +25,36 @@ interface BookingConfirmation {
   success: boolean;
 }
 
-interface ConfirmationClientProps {
+interface CheckoutResultSuccessProps {
+  locale: string;
+  hero: Dictionary['confirmation']['hero'];
   labels: Dictionary['confirmation']['page'];
 }
 
 function getSuccessParamsFromSearchParams(
-  searchParams: ReturnType<typeof useSearchParams>,
+  searchParams: URLSearchParams,
 ): MercadoPagoSuccessParams | null {
-  const collectionId = searchParams.get('collection_id');
-  const collectionStatus = searchParams.get('collection_status');
-  const externalRef = searchParams.get('external_reference');
-  const merchantOrderId = searchParams.get('merchant_order_id');
   const paymentId = searchParams.get('payment_id');
-  const preferenceId = searchParams.get('preference_id');
-  const status = searchParams.get('status');
-
+  const collectionId = searchParams.get('collection_id');
+  const externalRef = searchParams.get('external_reference');
   if (!paymentId && !collectionId && !externalRef) return null;
-
   return {
     collection_id: collectionId ?? undefined,
-    collection_status: collectionStatus ?? undefined,
+    collection_status: searchParams.get('collection_status') ?? undefined,
     external_reference: externalRef ?? undefined,
-    merchant_order_id: merchantOrderId ?? undefined,
+    merchant_order_id: searchParams.get('merchant_order_id') ?? undefined,
     payment_id: paymentId ?? collectionId ?? undefined,
-    preference_id: preferenceId ?? undefined,
-    status: status ?? collectionStatus ?? undefined,
+    preference_id: searchParams.get('preference_id') ?? undefined,
+    status: searchParams.get('status') ?? searchParams.get('collection_status') ?? undefined,
   };
 }
 
-export default function ConfirmationClient({ labels }: ConfirmationClientProps) {
-  const params = useParams();
+export default function CheckoutResultSuccess({
+  locale,
+  hero,
+  labels,
+}: CheckoutResultSuccessProps) {
   const searchParams = useSearchParams();
-  const locale = (params?.locale as string) || 'es';
   const [bookingConfirmation, setBookingConfirmation] = useState<BookingConfirmation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,21 +122,14 @@ export default function ConfirmationClient({ labels }: ConfirmationClientProps) 
 
   if (error) {
     return (
-      <section
-        className={cn(
-          'relative flex min-h-[calc(100vh-64px)] w-full flex-col items-center justify-center py-8',
-        )}
-      >
-        <div className={cn('container mx-auto flex flex-col items-center px-4 md:px-20')}>
-          <div
-            className={cn(
-              'max-w-3xl w-full space-y-4 rounded-lg bg-white px-6 pt-10 pb-10 shadow-lg sm:px-8 sm:py-14 sm:space-y-6',
-              'flex flex-col items-center text-center',
-            )}
-          >
-            <h1 className="w-full text-center font-barlow-condensed text-4xl font-extrabold leading-tight text-red-600 md:text-5xl">
-              {labels.errorTitle}
-            </h1>
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <HeaderHero
+          description={hero.description}
+          subtitle={hero.subtitle}
+          title={labels.errorTitle}
+        />
+        <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
+          <div className="max-w-3xl w-full space-y-4 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14 flex flex-col items-center text-center">
             <p className="max-w-[80%] font-barlow text-base leading-relaxed text-gray-700 md:text-lg">
               {error}
             </p>
@@ -154,24 +142,28 @@ export default function ConfirmationClient({ labels }: ConfirmationClientProps) 
               {labels.retry}
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     );
   }
 
   return (
     <>
-      <section
-        className={cn(
-          'relative flex min-h-[calc(100vh-64px)] w-full flex-col items-center justify-center py-8',
-          showSuccess && 'bg-orange-50/80',
-        )}
-      >
-        <div className={cn('container mx-auto flex flex-col items-center px-4 md:px-20')}>
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <HeaderHero
+          description={hero.description}
+          subtitle={hero.subtitle}
+          title={hero.title}
+        />
+        <section
+          className={cn(
+            'container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20',
+            showSuccess && 'bg-orange-50/80',
+          )}
+        >
           <div
             className={cn(
-              'max-w-3xl w-full space-y-4 rounded-lg bg-white px-6 pt-10 pb-10 shadow-lg sm:px-8 sm:py-14 sm:space-y-6',
-              'flex flex-col items-center text-center',
+              'max-w-3xl w-full space-y-4 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14 flex flex-col items-center text-center',
               showSuccess && '-mt-12 sm:-mt-14',
             )}
             data-testid="confirmation-root"
@@ -202,8 +194,8 @@ export default function ConfirmationClient({ labels }: ConfirmationClientProps) 
               </Link>
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
       {showSuccess && <Confetti delay={200} duration={350} speed={3} />}
     </>
   );
