@@ -6,6 +6,7 @@ import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 import type { Locale } from '@/lib/i18n/config';
+import { honeymoonEn } from './en';
 
 const honeymoonEs: TravelerTypeData = {
   meta: {
@@ -437,6 +438,6 @@ const honeymoonEs: TravelerTypeData = {
 };
 
 export const honeymoon: Record<Locale, TravelerTypeData> = {
+  en: honeymoonEn,
   es: honeymoonEs,
-  en: honeymoonEs,
 };

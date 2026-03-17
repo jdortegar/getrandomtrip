@@ -6,6 +6,7 @@ import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 import type { Locale } from '@/lib/i18n/config';
+import { pawsEn } from './en';
 
 const pawsEs: TravelerTypeData = {
   meta: {
@@ -417,6 +418,6 @@ const pawsEs: TravelerTypeData = {
 };
 
 export const paws: Record<Locale, TravelerTypeData> = {
+  en: pawsEn,
   es: pawsEs,
-  en: pawsEs,
 };

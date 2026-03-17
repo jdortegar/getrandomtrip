@@ -6,6 +6,7 @@ import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 import type { Locale } from '@/lib/i18n/config';
+import { familyEn } from './en';
 
 const familyEs: TravelerTypeData = {
   meta: {
@@ -417,6 +418,6 @@ const familyEs: TravelerTypeData = {
 };
 
 export const family: Record<Locale, TravelerTypeData> = {
+  en: familyEn,
   es: familyEs,
-  en: familyEs,
 };

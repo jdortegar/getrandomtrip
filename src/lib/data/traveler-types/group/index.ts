@@ -6,6 +6,7 @@ import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
 import type { Testimonial } from '@/lib/data/shared/testimonial-types';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 import type { Locale } from '@/lib/i18n/config';
+import { groupEn } from './en';
 
 const groupEs: TravelerTypeData = {
   meta: {
@@ -415,6 +416,6 @@ const groupEs: TravelerTypeData = {
 };
 
 export const group: Record<Locale, TravelerTypeData> = {
+  en: groupEn,
   es: groupEs,
-  en: groupEs,
 };
