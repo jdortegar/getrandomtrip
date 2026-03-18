@@ -51,9 +51,9 @@ Decisiones ya acordadas:
 
 **Entregable:** Precios por tipo/nivel que coincidan con los docs; una sola fuente usada en checkout y resumen.
 
-**Estado (parcial):** Fuente única de precios en `lib/data/traveler-types/index.ts`: `PRICE_BY_TYPE_AND_LEVEL`, `getBasePricePerPerson()`, `getPricePerPerson(type, levelId, pax)` (PAWS +20% single/triple). Helper `lib/helpers/pricing.ts` re-exporta y expone catálogo virtual. Eliminados: `data/pricing-catalog.json`, `content/levels.ts`, `content/experienceLevels.ts`, `content/experienceTiers.ts`. Checkout e init journey usan la nueva fuente. Pendiente: 2.2 documentar regla +20% en código; 2.3 migrar `lib/data/shared/levels.ts` y `lib/data/packages.ts` a leer precio desde traveler-types o deprecar.
+**Estado:** ✅ Completada. Fuente única en `lib/data/traveler-types/index.ts`: `PRICE_BY_TYPE_AND_LEVEL`, `getBasePricePerPerson()`, `getPricePerPerson(type, levelId, pax)` con regla PAWS +20% single/triple documentada en código (`PAWS_PAX_MULTIPLIER` y JSDoc). Helpers en `lib/utils/`: `traveler-card.ts` (cards/imágenes), `pricing.ts` (reexporta precios), `levels.ts` (niveles desde traveler-types), `excuses.ts` (reexporta excusas). `lib/helpers/pricing.ts` re-exporta y expone catálogo virtual. Eliminados: `data/pricing-catalog.json`, `content/levels.ts`, `content/experienceLevels.ts`, `content/experienceTiers.ts`, `lib/data/shared/levels.ts`, `lib/data/packages.ts`, `lib/data/travelerTypes.ts`, `BudgetSlider`. Consumidores migrados a `lib/utils/*` y a traveler-types.
 
-**¿Aprobamos Fase 2 antes de seguir?** [ ]
+**¿Aprobamos Fase 2 antes de seguir?** [x]
 
 ---
 

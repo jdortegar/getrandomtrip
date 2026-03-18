@@ -5,7 +5,7 @@ import NightsCalendar from './NightsCalendar';
 import StepperNav from './StepperNav';
 import CountrySelector from './CountrySelector';
 import CitySelector from './CitySelector';
-import { Level } from '@/lib/data/shared/levels';
+import type { Level } from '@/lib/utils/experiencesData';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { useStore } from '@/store/store';
 

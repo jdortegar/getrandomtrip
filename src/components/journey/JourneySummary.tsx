@@ -8,7 +8,9 @@ import Img from '@/components/common/Img';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
 import { formatUSD } from '@/lib/format';
-import { initialTravellerTypes } from '@/lib/data/travelerTypes';
+import { useParams } from 'next/navigation';
+import { getBasePricePerPerson } from '@/lib/data/traveler-types';
+import { getCardForType } from '@/lib/utils/experiencesData';
 import { getExcuseTitle, getExcuseOptions } from '@/lib/helpers/excuse-helper';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
@@ -183,19 +185,22 @@ export default function JourneySummary({
     return travelerTypeData.planner.levels.find((l) => l.id === experience);
   }, [experience, travelerTypeData]);
 
+  const params = useParams();
+  const locale = (params?.locale as string) ?? 'es';
   const selectedTravelTypeInfo = useMemo(() => {
     if (!travelType) return null;
-    const travelerType = initialTravellerTypes.find(
-      (t) => t.travelType.toLowerCase() === travelType.toLowerCase(),
-    );
+    const card = getCardForType(travelType, locale);
+    const price = selectedLevel
+      ? getBasePricePerPerson(travelType, selectedLevel.id)
+      : 0;
     return {
-      image: travelerType?.imageUrl,
-      label: TRAVELER_TYPE_LABELS[travelType] || travelType,
-      price: selectedLevel ? formatUSD(selectedLevel.price) : undefined,
+      image: card?.img,
+      label: TRAVELER_TYPE_LABELS[travelType] || card?.title || travelType,
+      price: selectedLevel ? formatUSD(price) : undefined,
       rating: 7.0,
       reviews: 10,
     };
-  }, [travelType, selectedLevel]);
+  }, [travelType, selectedLevel, locale]);
 
   const selectedExperienceInfo = useMemo(() => {
     if (!selectedLevel) return null;

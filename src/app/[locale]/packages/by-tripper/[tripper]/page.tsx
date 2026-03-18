@@ -12,11 +12,11 @@ import { ArrowLeft, MapPin, Star, Users, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getExcuseTitle, getExcuseImage } from '@/lib/helpers/excuse-helper';
-import { getLevelById } from '@/lib/data/shared/levels';
+import { getLevelById } from '@/lib/utils/experiencesData';
 
 // Helper function to get duration and activity ranges based on level
 function getLevelInfo(level: string) {
-  const levelData = getLevelById(level as any);
+  const levelData = getLevelById(undefined, level);
   if (!levelData) {
     return { duration: '2-3 días', activities: '1-2 actividades' };
   }

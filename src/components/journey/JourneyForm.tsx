@@ -4,18 +4,22 @@ import LogisticsTab from './LogisticsTab';
 import PreferencesTab from './PreferencesTab';
 import StepperNav from './StepperNav';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Level, LEVELS } from '@/lib/data/shared/levels';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
 import AddonsGallery from './addons/AddonsGallery';
+import { getLevelsForType, type Level } from '@/lib/utils/experiencesData';
 
 export function JourneyForm() {
   const { activeTab, setPartial } = useStore();
   const searchParams = useSearchParams();
-
-  // Get level from searchParams or use default
+  const params = useParams();
+  const type = useStore((s) => s.type) || 'couple';
+  const locale = (params?.locale as string) ?? 'es';
+  const levels = getLevelsForType(type, locale);
+  const fallbackLevels = levels.length > 0 ? levels : getLevelsForType('couple', locale);
   const levelParam = searchParams.get('level');
-  const level: Level = LEVELS.find((l) => l.id === levelParam) || LEVELS[0];
+  const level: Level =
+    fallbackLevels.find((l) => l.id === levelParam) ?? fallbackLevels[0]!;
 
   // Check if coming from TypePlanner (has type and level params)
   const isFromTypePlanner = Boolean(

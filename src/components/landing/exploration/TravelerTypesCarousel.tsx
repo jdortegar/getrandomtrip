@@ -1,142 +1,106 @@
 'use client';
 
 import React from 'react';
+import { useParams } from 'next/navigation';
 import TravelerTypeCard from '@/components/TravelerTypeCard';
 import { slugify } from '@/lib/slugify';
 import {
-  initialTravellerTypes,
-  type TravelerType,
-} from '@/lib/data/travelerTypes';
+  cardDataToCardItem,
+  filterCarouselCards,
+  getCarouselCardOptions,
+  type TravelerTypeCardData,
+} from '@/lib/utils/experiencesData';
 import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import { motion } from 'framer-motion';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 
 interface TravelerTypesCarouselProps {
-  /** When set, only these traveler type slugs are shown (e.g. tripper’s available types). */
+  /** When set, only these traveler type slugs are shown. In tripper context, only these are shown; otherwise all are shown unless this filters them. */
   availableTypes?: string[];
-  /** Localized aria-label for carousel next button. */
+  /** Unused – kept for API compatibility. */
   ariaLabelNext?: string;
-  /** Localized aria-label for carousel previous button. */
+  /** Unused – kept for API compatibility. */
   ariaLabelPrev?: string;
-  /** Localized aria-label for dot "Go to slide N". Use {n} for slide number (1-based). */
+  /** Unused – kept for API compatibility. */
   ariaLabelSlide?: string;
-  classes?: {
-    section?: string;
-    viewport?: string;
-    wrapper?: string;
-  };
-  /** When true, carousel can break out of container to full viewport width. */
+  /** Unused – kept for API compatibility. */
   fullViewportWidth?: boolean;
+  /** Unused – kept for API compatibility. */
+  hideOverflow?: boolean;
+  /** Unused – kept for API compatibility. */
   itemsPerView?: number;
-  /** Localized traveler type labels from dictionary (home.exploration.travelerTypes). Merged with base data to produce card content. */
+  /** Localized labels from dictionary (home.exploration.travelerTypes). Merged with base data. */
   localizedTravelerTypes?: Array<{
     description: string;
     key: string;
     title: string;
   }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
-  /** Pixels of the next slide to show (peek). */
-  peek?: number;
   selectedTravelType?: TravelerTypeSlug;
+  /** Unused – kept for API compatibility. */
   showArrows?: boolean;
+  /** Unused – kept for API compatibility. */
   showDots?: boolean;
-  /** When true, ONLY show types in availableTypes; never show all. Use on tripper pages. */
+  /** When true, only show types in availableTypes; hide carousel if none. Use on tripper pages. */
   tripperMode?: boolean;
-  /** When set, card links go to this tripper’s packages page. */
+  /** When set, card links go to this tripper's packages page (tripper context). */
   tripperSlug?: string;
-  /** Localized traveler types (title + description). When not set, uses initialTravellerTypes (or merged with localizedTravelerTypes when provided). */
-  travelerTypes?: TravelerType[];
-  /** When true (default), viewport clips overflow (overflow-hidden). When false, next slide can peek (overflow-visible). */
-  hideOverflow?: boolean;
+  
 }
 
 export function TravelerTypesCarousel({
   availableTypes,
-  ariaLabelNext,
-  ariaLabelPrev,
-  ariaLabelSlide,
-  classes,
-  fullViewportWidth: _fullViewportWidth,
-  itemsPerView = 3,
   localizedTravelerTypes,
   onSelect,
-  peek = 0,
   selectedTravelType,
-  showArrows = true,
-  showDots = true,
-  travelerTypes,
+  
   tripperMode = false,
   tripperSlug,
-  hideOverflow = true,
 }: TravelerTypesCarouselProps) {
-  const baseTypes = React.useMemo(() => {
-    if (travelerTypes?.length) return travelerTypes;
-    if (localizedTravelerTypes?.length) {
-      const byKey = Object.fromEntries(
-        localizedTravelerTypes.map((t) => [t.key.toLowerCase(), t]),
-      );
-      return initialTravellerTypes.map((type) => {
-        const loc = byKey[type.travelType.toLowerCase()];
-        return loc
-          ? { ...type, description: loc.description, title: loc.title }
-          : type;
-      });
-    }
-    return initialTravellerTypes;
-  }, [travelerTypes, localizedTravelerTypes]);
+  const params = useParams();
+  const locale = (params?.locale as string) ?? 'es';
 
-  const isTripperContext = tripperMode || Boolean(tripperSlug);
-  const allowedSet = React.useMemo(() => {
-    if (!availableTypes?.length) return null;
-    return new Set(availableTypes.map((t) => String(t).toLowerCase().trim()));
-  }, [availableTypes]);
+  const cards = getCarouselCardOptions(locale, {
+    localizedTravelerTypes,
+  });
 
-  const typesToShow = React.useMemo(() => {
-    if (isTripperContext) {
-      if (!allowedSet?.size) return [];
-      return baseTypes.filter((t) =>
-        allowedSet.has(t.travelType.toLowerCase()),
-      );
-    }
-    if (!allowedSet) return baseTypes;
-    return baseTypes.filter((t) => allowedSet.has(t.travelType.toLowerCase()));
-  }, [isTripperContext, allowedSet, baseTypes]);
+  const tripperContext = tripperMode || Boolean(tripperSlug);
+  const typesToShow = filterCarouselCards(cards, {
+    availableTypes,
+    tripperContext,
+  });
 
-  function getSlug(t: TravelerType): TravelerTypeSlug {
-    return t.travelType.toLowerCase() as TravelerTypeSlug;
-  }
-
-  function getHref(t: TravelerType): string {
-    return `/packages/by-type/${slugify(t.travelType)}`;
-  }
-
-  if (isTripperContext && !typesToShow.length) {
+  if (tripperContext && typesToShow.length === 0) {
     return null;
   }
 
-  const gapPx = 16;
-  const fewerSlidesThanView = typesToShow.length <= itemsPerView;
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
       className="w-full"
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      whileInView={{ opacity: 1, y: 0 }}
     >
       <EmblaCarousel slidesPerView={3}>
-        {typesToShow.map((t) => (
-          <div key={t.travelType} className="aspect-[280/332] w-full min-h-0">
-            <TravelerTypeCard
-              fill
-              href={getHref(t)}
-              item={t}
-              onClick={onSelect ? () => onSelect(getSlug(t)) : undefined}
-              selected={selectedTravelType === getSlug(t)}
-            />
-          </div>
-        ))}
+        {typesToShow.map((t) => {
+          const slug = t.key.toLowerCase() as TravelerTypeSlug;
+          const href = `/packages/by-type/${slugify(t.key)}`;
+          return (
+            <div
+              key={t.key}
+              className="aspect-[280/332] w-full min-h-0"
+            >
+              <TravelerTypeCard
+                fill
+                href={href}
+                item={cardDataToCardItem(t)}
+                onClick={onSelect ? () => onSelect(slug) : undefined}
+                selected={selectedTravelType === slug}
+              />
+            </div>
+          );
+        })}
       </EmblaCarousel>
     </motion.div>
   );

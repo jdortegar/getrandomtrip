@@ -102,11 +102,11 @@ const CARD_BY_SLUG: Record<
   { img: string; subtitle: string }
 > = {
   couple: {
-    img: '/images/journey-types/couple-hetero.png',
+    img: '/images/journey-types/couple-traveler.png',
     subtitle: 'Creen recuerdos juntos',
   },
   family: {
-    img: '/images/journey-types/family-vacation.jpg',
+    img: '/images/journey-types/family-traveler.jpg',
     subtitle: 'Aventuras para todos',
   },
   group: {

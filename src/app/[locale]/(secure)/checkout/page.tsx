@@ -22,7 +22,7 @@ import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import type { Logistics, Filters } from '@/store/slices/journeyStore';
 import { getBasePricePerPerson, getPricePerPerson } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
-import { initialTravellerTypes } from '@/lib/data/travelerTypes';
+import { getCardForType } from '@/lib/utils/experiencesData';
 import { formatUSD } from '@/lib/format';
 import { getExcuseOptions, getExcuseTitle } from '@/lib/helpers/excuse-helper';
 import { getTravelerType } from '@/lib/data/traveler-types';
@@ -372,17 +372,15 @@ function CheckoutContent() {
   const pricePerPerson = getPricePerPerson(travelType ?? '', experience ?? undefined, pax);
   const selectedTravelTypeInfo = useMemo(() => {
     if (!travelType) return null;
-    const travelerType = initialTravellerTypes.find(
-      (t) => t.travelType.toLowerCase() === travelType.toLowerCase(),
-    );
+    const card = getCardForType(travelType, resolvedLocale);
     return {
-      image: travelerType?.imageUrl,
-      label: TRAVELER_TYPE_LABELS[travelType] || travelType,
+      image: card?.img,
+      label: TRAVELER_TYPE_LABELS[travelType] || card?.title || travelType,
       price: selectedLevel ? formatUSD(pricePerPerson) : undefined,
       rating: 7.0,
       reviews: 10,
     };
-  }, [travelType, selectedLevel, pricePerPerson]);
+  }, [travelType, selectedLevel, pricePerPerson, resolvedLocale]);
   const selectedExperienceInfo = useMemo(() => {
     if (!selectedLevel) return null;
     const sum = dict?.journey?.summary;

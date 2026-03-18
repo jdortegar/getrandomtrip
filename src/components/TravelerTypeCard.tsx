@@ -4,13 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
 
-import { type TravelerType } from '@/lib/data/travelerTypes';
+import type { TravelerTypeLegacy } from '@/lib/utils/experiencesData';
 import { cn } from '@/lib/utils';
 
 interface TravelerTypeCardProps {
   className?: string;
   /** When set, provides title, description, imageUrl, and disabled. */
-  item?: TravelerType;
+  item?: TravelerTypeLegacy;
   description?: string;
   disabled?: boolean;
   /** When true, card fills its container (no fixed width/height). */

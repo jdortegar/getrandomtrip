@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Section from '@/components/layout/Section';
 import { TabSelector } from '@/components/ui/TabSelector';
-import type { TravelerType } from '@/lib/data/travelerTypes';
+import type { TravelerTypeCardData } from '@/lib/utils/experiencesData';
 import { TopTrippersGrid } from './TopTrippersGrid';
 import { TravelerTypesCarousel } from './TravelerTypesCarousel';
 
@@ -44,7 +44,7 @@ interface ExplorationSectionProps {
     name: string;
     tripperSlug: string | null;
   }>;
-  travelerTypes?: TravelerType[];
+  travelerTypes?: TravelerTypeCardData[];
 }
 
 function ComingSoon({ message }: { message: string }) {
@@ -60,7 +60,6 @@ function ComingSoon({ message }: { message: string }) {
 export function ExplorationSection({
   content,
   trippers = [],
-  travelerTypes,
 }: ExplorationSectionProps) {
   const {
     buttonTrippers: trippersButtonText,
@@ -85,7 +84,6 @@ export function ExplorationSection({
             ariaLabelSlide={carousel.ariaLabelSlide}
             hideOverflow={false}
             localizedTravelerTypes={localizedTravelerTypes}
-            travelerTypes={travelerTypes}
           />
         );
       case 'topTrippers':
