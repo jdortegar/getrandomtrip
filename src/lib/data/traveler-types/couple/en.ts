@@ -20,8 +20,8 @@ export const coupleEn: TravelerTypeData = {
         'Your trip should be as unique as you are. Discover secret destinations together.',
       tagline: 'Surprise for the two of you. No spoilers.',
       scrollText: 'SCROLL',
-      videoSrc: '/videos/couple-hero-video.mp4',
-      fallbackImage: '/images/fallbacks/couple-hero-video.png',
+      videoSrc: '/videos/hero-couple-video.mp4',
+      fallbackImage: '/images/fallbacks/hero-couple-video.png',
       primaryCta: {
         ariaLabel: 'Go to blog section',
         href: '#blog',

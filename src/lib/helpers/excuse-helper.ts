@@ -4,11 +4,18 @@ import {
   getExcuseByKey as getCentralizedExcuseByKey,
   type ExcuseData 
 } from '@/lib/data/shared/excuses';
-import { getHasExcuseStep } from '@/content/levels';
+import { hasExcuseStep } from '@/lib/constants/product-config';
 
 // Re-export the centralized types and data
 export type { ExcuseData } from '@/lib/data/shared/excuses';
-export { getHasExcuseStep } from '@/content/levels';
+
+/** Whether the given traveler type and level show the excuse + refine-details step. */
+export function getHasExcuseStep(
+  travelerType: string,
+  levelId: string | null | undefined,
+): boolean {
+  return hasExcuseStep(travelerType, levelId);
+}
 
 // All available excuse keys from centralized data
 export const EXCUSE_KEYS = allExcuses.map(excuse => excuse.key);
@@ -106,6 +113,6 @@ export function getExcusesByTypeAndLevel(
   travelerType: string,
   levelId: string | null | undefined,
 ): ExcuseData[] {
-  if (!getHasExcuseStep(travelerType, levelId)) return [];
+  if (!hasExcuseStep(travelerType, levelId)) return [];
   return getExcusesByTravelerType(travelerType);
 }

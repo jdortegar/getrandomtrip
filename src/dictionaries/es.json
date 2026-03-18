@@ -48,7 +48,7 @@
   "home": {
     "hero": {
       "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
-      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
         "href": "#exploration-section",

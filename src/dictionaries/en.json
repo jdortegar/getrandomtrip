@@ -48,7 +48,7 @@
   "home": {
     "hero": {
       "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
-      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
         "href": "#exploration-section",

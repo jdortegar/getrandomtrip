@@ -31,7 +31,12 @@ Decisiones ya acordadas:
 
 **Entregable:** Config central que diga por `type` qué niveles tienen excusa y filtros disponibles (incl. alojamiento). Constantes de filtros en `lib/constants/`; store solo usa estado y acciones. Sin cambiar aún precios ni excusas.
 
-**¿Aprobamos Fase 1 antes de seguir?** [ ]
+**Estado:** ✅ Completada. Verificación:
+- **1.1** `product-config.ts`: `PRODUCT_TYPES`, `EXCUSE_RULE_BY_TYPE` (BOND/KIN/CREW = explora-plus-and-bivouac; SOLUM/PAWS = all-levels; NUPTIA = none), `hasExcuseStep()`.
+- **1.2** `lib/constants/journey-filters.ts`: `FILTER_OPTION_KEYS`/`FILTER_OPTIONS` con accommodationType (indistinto, hotel-style, home-style, nature-escape, hybrid-hub, glamping). Store importa de ahí; tipo `Filters` y estado inicial incluyen `accommodationType`.
+- **1.3** Filtros de pago/Power Pack documentados en comentarios en `product-config.ts` y `journey-filters.ts`.
+
+**¿Aprobamos Fase 1 antes de seguir?** [x]
 
 ---
 
@@ -45,6 +50,8 @@ Decisiones ya acordadas:
 | 2.3 | Eliminar o deprecar precios duplicados en `content/levels.ts` / `experienceLevels.ts`; que todo lea de la fuente única. | `content/levels.ts`, `content/experienceLevels.ts` |
 
 **Entregable:** Precios por tipo/nivel que coincidan con los docs; una sola fuente usada en checkout y resumen.
+
+**Estado (parcial):** Fuente única de precios en `lib/data/traveler-types/index.ts`: `PRICE_BY_TYPE_AND_LEVEL`, `getBasePricePerPerson()`, `getPricePerPerson(type, levelId, pax)` (PAWS +20% single/triple). Helper `lib/helpers/pricing.ts` re-exporta y expone catálogo virtual. Eliminados: `data/pricing-catalog.json`, `content/levels.ts`, `content/experienceLevels.ts`, `content/experienceTiers.ts`. Checkout e init journey usan la nueva fuente. Pendiente: 2.2 documentar regla +20% en código; 2.3 migrar `lib/data/shared/levels.ts` y `lib/data/packages.ts` a leer precio desde traveler-types o deprecar.
 
 **¿Aprobamos Fase 2 antes de seguir?** [ ]
 

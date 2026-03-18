@@ -20,6 +20,7 @@ import {
   getExcuseOptions,
   getHasExcuseStep,
 } from '@/lib/helpers/excuse-helper';
+import { buildTripRequestPayloadFromSearchParams } from '@/lib/helpers/journey';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { useStore } from '@/store/store';
 import { useUserStore } from '@/store/slices/userStore';
@@ -114,62 +115,12 @@ export default function JourneyMainContent({
   const updateQuery = useQuerySync();
 
   const handleGoToCheckout = useCallback(async () => {
-    const travelType = searchParams.get('travelType') || 'couple';
-    const experience = searchParams.get('experience');
-    const normalizeLevel = (raw: string | null | undefined) => {
-      if (!raw) return 'explora-plus';
-      const n = raw.toLowerCase().replace(/\s+/g, '-').replace('explora+', 'explora-plus');
-      if (n === 'exploraplus') return 'explora-plus';
-      if (n === 'modoexplora' || n === 'explora') return 'modo-explora';
-      return n || 'explora-plus';
-    };
-    const level = normalizeLevel(experience) || experience || 'explora-plus';
-    const originCountry = searchParams.get('originCountry')?.trim() ?? '';
-    const originCity = searchParams.get('originCity')?.trim() ?? '';
+    const tripPayload = buildTripRequestPayloadFromSearchParams(searchParams);
+    const { originCountry, originCity } = tripPayload;
     if (!originCountry || !originCity) {
       toast.error('Completá ciudad y país de origen para continuar.');
       return;
     }
-    const startDateRaw = searchParams.get('startDate');
-    const nightsNum = Math.max(1, parseInt(searchParams.get('nights') ?? '1', 10) || 1);
-    let startDate: string | null = null;
-    let endDate: string | null = null;
-    if (startDateRaw) {
-      const start = new Date(startDateRaw);
-      startDate = start.toISOString();
-      const end = new Date(start);
-      end.setDate(end.getDate() + nightsNum);
-      endDate = end.toISOString();
-    }
-    const pax = Math.max(1, Math.min(20, parseInt(searchParams.get('pax') ?? '2', 10) || 2));
-    const avoidRaw = searchParams.get('avoidDestinations');
-    const avoidDestinations = avoidRaw
-      ? avoidRaw.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
-    const addonsRaw = searchParams.get('addons');
-    const addonsSelected = addonsRaw
-      ? addonsRaw.split(',').map((s) => s.trim()).filter(Boolean).map((id) => ({ id, qty: 1 }))
-      : [];
-    const tripPayload = {
-      from: 'journey',
-      type: travelType,
-      level,
-      originCountry,
-      originCity,
-      startDate,
-      endDate,
-      nights: nightsNum,
-      pax,
-      transport: searchParams.get('transport') ?? 'avion',
-      accommodationType: searchParams.get('accommodationType') ?? 'indistinto',
-      climate: searchParams.get('climate') ?? 'indistinto',
-      maxTravelTime: searchParams.get('maxTravelTime') ?? 'sin-limite',
-      departPref: searchParams.get('departPref') ?? 'indistinto',
-      arrivePref: searchParams.get('arrivePref') ?? 'indistinto',
-      avoidDestinations,
-      addons: addonsSelected,
-      status: 'DRAFT',
-    };
     setIsSavingAndRedirecting(true);
     try {
       const res = await fetch('/api/trip-requests', {

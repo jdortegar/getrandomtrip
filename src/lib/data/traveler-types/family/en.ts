@@ -20,8 +20,8 @@ export const familyEn: TravelerTypeData = {
         'Family travel is about moving, discovering each other, and creating stories that will be told a thousand times at the dinner table.',
       tagline: 'Getaways designed for the whole family',
       scrollText: 'SCROLL',
-      videoSrc: '/videos/family-hero-video.mp4',
-      fallbackImage: '/images/journey-types/family-traveler.jpg',
+      videoSrc: '/videos/hero-family-video.mp4',
+      fallbackImage: '/images/fallbacks/hero-family-video.png',
       primaryCta: {
         ariaLabel: 'Go to blog section',
         href: '#blog',

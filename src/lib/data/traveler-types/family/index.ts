@@ -22,8 +22,8 @@ const familyEs: TravelerTypeData = {
         'Viajar en familia es moverse, es descubrirse, es crear anécdotas que después se contarán mil veces en la sobremesa.',
       tagline: 'Escapadas diseñadas para toda la familia',
       scrollText: 'SCROLL',
-      videoSrc: '/videos/family-hero-video.mp4',
-      fallbackImage: '/images/journey-types/family-traveler.jpg',
+      videoSrc: '/videos/hero-family-video.mp4',
+      fallbackImage: '/images/fallbacks/hero-family-video.png',
       primaryCta: {
         ariaLabel: 'Ir a la sección de blog',
         href: '#blog',

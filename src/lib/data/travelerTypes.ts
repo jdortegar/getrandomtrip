@@ -13,7 +13,7 @@ export const initialTravellerTypes: TravelerType[] = [
     description: 'Escapadas románticas.',
     travelType: 'Couple',
     query: 'heterosexual couple romantic travel',
-    imageUrl: '/images/journey-types/couple-hetero.png',
+    imageUrl: '/images/journey-types/couple-traveler.png',
     enabled: true,
   },
   {
@@ -29,7 +29,7 @@ export const initialTravellerTypes: TravelerType[] = [
     description: 'Recuerdos juntos.',
     travelType: 'Family',
     query: 'family vacation happy kids outdoor',
-    imageUrl: '/images/journey-types/family-vacation.jpg',
+    imageUrl: '/images/journey-types/family-traveler.jpg',
     enabled: true,
   },
   {

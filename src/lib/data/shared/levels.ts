@@ -1,5 +1,13 @@
+/**
+ * @deprecated Use level metadata and prices from `@/lib/data/traveler-types` instead.
+ * Get level list via getTravelerType(type, locale).planner.levels; price via getBasePricePerPerson(type, levelId).
+ * This file is kept for backward compatibility only and may be removed in a future release.
+ */
 import type { LevelSlug } from '@/store/slices/journeyStore';
 
+/**
+ * @deprecated Prefer traveler-types planner.levels; price from getBasePricePerPerson(type, levelId).
+ */
 export interface Level {
   id: LevelSlug;
   name: string;
@@ -14,6 +22,7 @@ export interface Level {
   icon: string;
 }
 
+/** @deprecated Prefer getTravelerType(type, locale).planner.levels; price from getBasePricePerPerson. */
 export const LEVELS: Level[] = [
   {
     id: 'essenza',
@@ -112,31 +121,36 @@ export const LEVELS: Level[] = [
   },
 ];
 
-// Helper functions for backward compatibility
+/** @deprecated Use level metadata from traveler-types planner.levels or lib/levels.ts MAX_NIGHTS. */
 export const getMaxNights = (level: string) => {
   const levelData = LEVELS.find((l) => l.id === level);
   return levelData?.maxNights || 2;
 };
 
+/** @deprecated Use level name from getTravelerType(type, locale).planner.levels. */
 export const getLevelName = (level: LevelSlug) => {
   const levelData = LEVELS.find((l) => l.id === level);
   return levelData?.name || 'Unknown';
 };
 
+/** @deprecated Use level metadata from traveler-types planner.levels. */
 export const getLevelDescription = (level: LevelSlug) => {
   const levelData = LEVELS.find((l) => l.id === level);
   return levelData?.description || '';
 };
 
+/** @deprecated Use level metadata from traveler-types or a shared level config. */
 export const getLevelColor = (level: LevelSlug) => {
   const levelData = LEVELS.find((l) => l.id === level);
   return levelData?.color || 'bg-gray-500';
 };
 
+/** @deprecated Use getTravelerType(type, locale).planner.levels and find by id. */
 export const getLevelById = (id: LevelSlug): Level | undefined => {
   return LEVELS.find((level) => level.id === id);
 };
 
+/** @deprecated Filter planner.levels by budget or use a dedicated helper from traveler-types. */
 export const getLevelsByBudget = (budget: number): Level[] => {
   return LEVELS.filter(
     (level) => budget >= level.minBudget && budget <= level.maxBudget,

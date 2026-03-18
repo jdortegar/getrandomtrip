@@ -20,7 +20,7 @@ import { useUserStore } from '@/store/slices/userStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import type { Logistics, Filters } from '@/store/slices/journeyStore';
-import pricingCatalog from '@/data/pricing-catalog.json' assert { type: 'json' };
+import { getBasePricePerPerson, getPricePerPerson } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
 import { initialTravellerTypes } from '@/lib/data/travelerTypes';
 import { formatUSD } from '@/lib/format';
@@ -94,13 +94,8 @@ function getBasePriceFromCatalog(
   travelType: string | null,
   experience: string | null,
 ): number {
-  const type = (travelType || 'couple') as TravelerType;
-  const level = normalizeLevelForCatalog(experience);
-  if (!level) return 0;
-  const byTraveller = (pricingCatalog as { byTraveller?: Record<string, Record<string, { base?: number }>> }).byTraveller;
-  const tierPrices = byTraveller?.[type];
-  const base = tierPrices?.[level]?.base;
-  return typeof base === 'number' ? base : 0;
+  const type = travelType || 'couple';
+  return getBasePricePerPerson(type, experience);
 }
 
 function logisticsFromParams(
@@ -374,6 +369,7 @@ function CheckoutContent() {
         : null)
     );
   }, [experience, travelerTypeData]);
+  const pricePerPerson = getPricePerPerson(travelType ?? '', experience ?? undefined, pax);
   const selectedTravelTypeInfo = useMemo(() => {
     if (!travelType) return null;
     const travelerType = initialTravellerTypes.find(
@@ -382,21 +378,21 @@ function CheckoutContent() {
     return {
       image: travelerType?.imageUrl,
       label: TRAVELER_TYPE_LABELS[travelType] || travelType,
-      price: selectedLevel ? formatUSD(selectedLevel.price) : undefined,
+      price: selectedLevel ? formatUSD(pricePerPerson) : undefined,
       rating: 7.0,
       reviews: 10,
     };
-  }, [travelType, selectedLevel]);
+  }, [travelType, selectedLevel, pricePerPerson]);
   const selectedExperienceInfo = useMemo(() => {
     if (!selectedLevel) return null;
     const sum = dict?.journey?.summary;
     return {
       label: selectedLevel.name,
       price: sum
-        ? `${formatUSD(selectedLevel.price)} ${sum.experiencePerPerson}`
-        : `${formatUSD(selectedLevel.price)} por persona`,
+        ? `${formatUSD(pricePerPerson)} ${sum.experiencePerPerson}`
+        : `${formatUSD(pricePerPerson)} por persona`,
     };
-  }, [selectedLevel, dict?.journey?.summary]);
+  }, [selectedLevel, dict?.journey?.summary, pricePerPerson]);
   const excuseTitleRes = useMemo(
     () => (excuse ? getExcuseTitle(excuse) : undefined),
     [excuse],

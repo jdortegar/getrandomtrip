@@ -18,6 +18,74 @@ import { hasLocale } from '@/lib/i18n/config';
 
 export type TravelerTypeSlug = 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws';
 
+/** Level ids used for pricing (align with planner level ids: explora = Modo Explora, atelier = Atelier Getaway). */
+export type PriceLevelId =
+  | 'essenza'
+  | 'explora'
+  | 'explora-plus'
+  | 'bivouac'
+  | 'atelier';
+
+/**
+ * Single source of truth for base price per person (USD) by traveler type and level.
+ * Plan: BOND/KIN/CREW 350,550,850,1200,1200 | SOLUM 450,650,1100,1550,1550 | PAWS 490,700,1190,1680,1680 | NUPTIA only atelier 1800.
+ */
+export const PRICE_BY_TYPE_AND_LEVEL: Record<
+  TravelerTypeSlug,
+  Record<PriceLevelId, number>
+> = {
+  couple: { essenza: 350, explora: 550, 'explora-plus': 850, bivouac: 1200, atelier: 1200 },
+  family: { essenza: 350, explora: 550, 'explora-plus': 850, bivouac: 1200, atelier: 1200 },
+  group: { essenza: 350, explora: 550, 'explora-plus': 850, bivouac: 1200, atelier: 1200 },
+  solo: { essenza: 450, explora: 650, 'explora-plus': 1100, bivouac: 1550, atelier: 1550 },
+  paws: { essenza: 490, explora: 700, 'explora-plus': 1190, bivouac: 1680, atelier: 1680 },
+  honeymoon: { essenza: 0, explora: 0, 'explora-plus': 0, bivouac: 0, atelier: 1800 },
+};
+
+/** Normalize level id from URL/planner (modo-explora -> explora, atelier-getaway -> atelier). */
+export function normalizePriceLevelId(levelId: string | null | undefined): PriceLevelId | null {
+  if (!levelId) return null;
+  const n = levelId.toLowerCase().replace(/\s+/g, '-').replace('explora+', 'explora-plus');
+  if (n === 'exploraplus') return 'explora-plus';
+  if (n === 'modoexplora' || n === 'modo-explora' || n === 'explora') return 'explora';
+  if (n === 'atelier-getaway' || n === 'atelier') return 'atelier';
+  if (n === 'essenza' || n === 'explora-plus' || n === 'bivouac') return n as PriceLevelId;
+  return null;
+}
+
+/**
+ * Base price per person (USD) for the given type and level. Returns 0 if type/level not in catalog.
+ */
+export function getBasePricePerPerson(
+  type: TravelerTypeSlug | string,
+  levelId: string | null | undefined,
+): number {
+  const slug = type as TravelerTypeSlug;
+  if (!TRAVELER_TYPE_SLUGS.includes(slug)) return 0;
+  const level = normalizePriceLevelId(levelId);
+  if (!level) return 0;
+  return PRICE_BY_TYPE_AND_LEVEL[slug][level] ?? 0;
+}
+
+/** PAWS +20% single (pax 1) or triple (pax 3+). Other types and pax 2 use base. */
+const PAWS_PAX_MULTIPLIER = 1.2;
+
+/**
+ * Price per person (USD) for checkout/totals. Applies PAWS +20% for single/triple when pax !== 2.
+ */
+export function getPricePerPerson(
+  type: TravelerTypeSlug | string,
+  levelId: string | null | undefined,
+  pax?: number,
+): number {
+  const base = getBasePricePerPerson(type, levelId);
+  if (base === 0) return 0;
+  if (type !== 'paws') return base;
+  const p = pax ?? 2;
+  if (p === 2) return base;
+  return Math.round(base * PAWS_PAX_MULTIPLIER);
+}
+
 /** All traveler type slugs in display order (used for options list and maps). */
 export const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
   'solo',

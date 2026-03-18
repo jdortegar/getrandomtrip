@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useRef } from 'react';
 import { useStore } from '@/store/store';
-import pricingCatalog from '@/data/pricing-catalog.json' assert { type: 'json' };
+import { getBasePricePerPerson } from '@/lib/data/traveler-types';
 
 type TierType =
   | 'essenza'
@@ -49,10 +49,10 @@ function getPaxCount(type: TravelerType): number {
   return paxMap[type] || 1;
 }
 
-// Extract price from pricing catalog
-function extractPrice(catalog: any, path: string[]): number | undefined {
-  const value = path.reduce((acc, key) => acc?.[key], catalog);
-  return typeof value === 'number' ? value : undefined;
+// Get price from single source of truth (traveler-types)
+function getPriceFromCatalog(type: TravelerType, level: TierType | undefined): number {
+  if (!level) return 0;
+  return getBasePricePerPerson(type, level);
 }
 
 // Build journey state update payload
@@ -179,31 +179,30 @@ export function useInitJourney(searchParams: Record<string, string>) {
         searchParams.type && searchParams.level,
       );
 
-      // Priority 1: Explicit priceKey
+      // Priority 1: Explicit priceKey (e.g. "byTraveller.couple.explora-plus" -> type couple, level explora-plus)
       if (priceKey) {
-        const [root, ...rest] = priceKey.split('.');
-        const catalog =
-          root === 'trippers' && tripperId
-            ? (pricingCatalog.trippers as any)?.[tripperId]
-            : (pricingCatalog as any)?.[root];
-
-        const price = extractPrice(catalog, rest);
-        if (price) {
-          setPartial(
-            buildStateUpdate(params, price, logistics, isFromTypePlanner),
-          );
-          isUpdating.current = false;
-          return;
+        const parts = priceKey.split('.');
+        if (parts[0] === 'byTraveller' && parts[1] && parts[2]) {
+          const price = getBasePricePerPerson(parts[1], parts[2]);
+          if (price > 0) {
+            setPartial(
+              buildStateUpdate(
+                { ...params, type: parts[1] as TravelerType, level: parts[2] as TierType },
+                price,
+                logistics,
+                isFromTypePlanner,
+              ),
+            );
+            isUpdating.current = false;
+            return;
+          }
         }
       }
 
-      // Priority 2: Tripper-specific pricing
+      // Priority 2: Tripper-specific: fallback to standard type/level (single source of truth has no tripper-specific prices yet)
       if (tripperId && level) {
-        const price = extractPrice(
-          (pricingCatalog.trippers as any)?.[tripperId],
-          [level, 'base'],
-        );
-        if (price) {
+        const price = getPriceFromCatalog(type, level);
+        if (price > 0) {
           setPartial(
             buildStateUpdate(params, price, logistics, isFromTypePlanner),
           );
@@ -212,14 +211,10 @@ export function useInitJourney(searchParams: Record<string, string>) {
         }
       }
 
-      // Priority 3: Standard traveler type pricing
+      // Priority 3: Standard traveler type + level
       if (level) {
-        const price = extractPrice(pricingCatalog.byTraveller, [
-          type,
-          level,
-          'base',
-        ]);
-        if (price) {
+        const price = getPriceFromCatalog(type, level);
+        if (price > 0) {
           setPartial(
             buildStateUpdate(params, price, logistics, isFromTypePlanner),
           );
