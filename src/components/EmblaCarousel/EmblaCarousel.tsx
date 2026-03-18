@@ -19,6 +19,7 @@ type EmblaCarouselProps = {
 const EMBLA_OPTIONS: EmblaOptionsType = {
   align: 'start',
   containScroll: false,
+
 };
 
 const EmblaCarousel = ({
@@ -27,8 +28,10 @@ const EmblaCarousel = ({
   slidesPerView = 3,
   slideClassName,
 }: EmblaCarouselProps) => {
+  const slides = React.Children.toArray(children) || [];
   const [emblaRef, emblaApi] = useEmblaCarousel({
     ...EMBLA_OPTIONS,
+    align: slides.length < slidesPerView ? 'center' : 'start',
     ...options,
   });
 
@@ -42,20 +45,26 @@ const EmblaCarousel = ({
     prevBtnDisabled,
   } = usePrevNextButtons(emblaApi);
 
+  
+
+  console.log(slides.length, slidesPerView);
+
   return (
     <div className="@container mx-auto w-full">
+      {slides.length > 1 && (
       <div className="flex self-end items-center justify-end gap-2.5 mb-6">
         <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} />
         <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} />
-      </div>
+      </div>)}
       <div className="relative w-full overflow-hidden p-1" ref={emblaRef}>
         <div
           className={cn(
-            'flex min-w-0 w-full touch-[pan-y_pinch-zoom]',
+            'flex min-w-0 w-full touch-[pan-y_pinch-zoom] ',
             '-ml-4 @[640px]:-ml-6 @[1280px]:-ml-8',
           )}
+
         >
-          {React.Children.map(children, (child, index) => (
+          {slides.map((child, index) => (
             <div
               className={cn(
                 'min-w-0 pl-4 @[640px]:pl-6 @[1280px]:pl-8',
@@ -76,6 +85,7 @@ const EmblaCarousel = ({
         <div className="absolute right-0 top-0 h-full w-10 bg-linear-to-r from-transparent to-white" />
       </div>
 
+{slides.length > 1 && (
       <div className="mt-7 flex items-center justify-center">
         <div className="mt-4 flex justify-center gap-2">
           {scrollSnaps.map((_, i) => (
@@ -92,7 +102,7 @@ const EmblaCarousel = ({
             />
           ))}
         </div>
-      </div>
+      </div>)}
     </div>
   );
 };

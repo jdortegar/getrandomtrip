@@ -11,6 +11,7 @@ import {
   getAllTravelerTypePaths,
   type TravelerTypeSlug,
 } from '@/lib/data/traveler-types';
+import { getPlannerLevelsForType } from '@/lib/utils/experiencesData';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale, type Locale } from '@/lib/i18n/config';
 import { pathForLocale } from '@/lib/i18n/pathForLocale';
@@ -85,7 +86,10 @@ export default async function TravelerTypePage({
         id={`${typeData.meta.slug}-story`}
       />
       <TypePlanner
-        content={typeData.planner}
+        content={{
+          ...typeData.planner,
+          levels: getPlannerLevelsForType(typeData.meta.slug, locale),
+        }}
         hideOverflow={false}
         type={typeData.meta.slug as TravelerTypeSlug}
         itemsPerView={3}

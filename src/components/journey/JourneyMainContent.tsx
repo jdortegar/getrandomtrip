@@ -16,6 +16,10 @@ import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesS
 import type { JourneyPreferencesStepLabels } from '@/components/journey/JourneyPreferencesStep';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import {
+  getLevelById,
+  getPlannerLevelsForType,
+} from '@/lib/utils/experiencesData';
+import {
   getExcusesByTypeAndLevel,
   getExcuseOptions,
   getHasExcuseStep,
@@ -385,11 +389,9 @@ export default function JourneyMainContent({
   }, [travelType, locale]);
 
   const selectedExperienceLevel = useMemo(() => {
-    if (!travelerTypeData || !experience) return null;
-    return (
-      travelerTypeData.planner.levels.find((l) => l.id === experience) || null
-    );
-  }, [experience, travelerTypeData]);
+    if (!travelType || !experience) return null;
+    return getLevelById(travelType, experience, locale) ?? null;
+  }, [experience, locale, travelType]);
 
   const excuses = useMemo(() => {
     if (!travelType) return [];
@@ -660,11 +662,9 @@ export default function JourneyMainContent({
   };
 
   const getExperienceLabel = () => {
-    if (!experience || !travelerTypeData) return labels.experiencePlaceholder;
-    const level = travelerTypeData.planner.levels.find(
-      (l) => l.id === experience,
-    );
-    return level?.name || experience;
+    if (!experience || !travelType) return labels.experiencePlaceholder;
+    const level = getLevelById(travelType, experience, locale);
+    return level?.name ?? experience;
   };
 
   const getExcuseLabel = () => {
@@ -820,11 +820,17 @@ export default function JourneyMainContent({
                     </p>
                     <TypePlanner
                       compact
-                      gap={12}
-                      content={travelerTypeData.planner}
+                      content={{
+                        ...travelerTypeData.planner,
+                        levels: getPlannerLevelsForType(
+                          travelType ?? 'couple',
+                          locale,
+                        ),
+                      }}
                       fullViewportWidth={false}
-                      onSelect={handleExperienceSelect}
+                      gap={12}
                       itemsPerView={2}
+                      onSelect={handleExperienceSelect}
                       selectedLevel={experience}
                       showArrows={false}
                       type={travelType as TravelerTypeSlug}

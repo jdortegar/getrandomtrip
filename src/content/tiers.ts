@@ -1,3 +1,6 @@
+/**
+ * @deprecated Use getTiersForDisplay(type, locale) from @/lib/utils/experiencesData (single source: lib/data/experience-levels).
+ */
 export type TierKey = 'essenza' | 'explora' | 'explora-plus' | 'exploraPlus' | 'bivouac' | 'atelier' | 'atelier-getaway' | 'modo-explora';
 
 export interface Tier {

@@ -69,23 +69,29 @@ Decisiones ya acordadas:
 
 **Entregable:** En paso 1 se puede elegir PAWS y todos los textos/labels son consistentes.
 
+**Estado:** Casi completada. La fuente única ya está agrupada en `lib/data/traveler-types/index.ts`: `TRAVELER_TYPE_SLUGS` (incluye `paws`), `getTravelerTypeOptions()`, `CARD_BY_SLUG`, `getTravelerType()`, precios por tipo/nivel y helpers. Los 6 tipos (solo, couple, family, group, honeymoon, paws) están centralizados ahí; el paso 1 y los consumidores usan esta fuente.
+
 **¿Aprobamos Fase 3 antes de seguir?** [ ]
 
 ---
 
-## Fase 4: Unificación de niveles (contenido y beneficios)
+## Fase 4: Unificación de niveles (contenido y beneficios) — **SIGUIENTE**
 **Objetivo:** Una sola fuente para niveles: duración, destino, transporte, alojamiento, beneficio, copy por tipo.
+
+**Contexto:** La fuente única de tipos y precios ya vive en `lib/data/traveler-types/index.ts` (Fase 3 casi cerrada). Esta fase añade el contenido de niveles (features, beneficios, copy) en un módulo unificado que se integra con esa fuente.
 
 | # | Tarea | Archivos |
 |---|--------|----------|
-| 4.1 | Definir estructura unificada de nivel (campos de los docs: budget, duración, perfil destino, estilo viaje, alojamiento, beneficio). | Nuevo módulo ej. `lib/data/levels.ts` o `lib/data/product-levels.ts` |
+| 4.1 | Definir estructura unificada de nivel (campos de los docs: budget, duración, perfil destino, estilo viaje, alojamiento, beneficio). | Nuevo módulo ej. `lib/data/levels.ts` o `lib/data/experience-levels.ts` (o extender `traveler-types`) |
 | 4.2 | Poblar por tipo (couple, solo, family, group, paws, honeymoon) y nivel (essenza, modo-explora, explora-plus, bivouac, atelier) con textos de los docs. | Mismo módulo |
 | 4.3 | NUPTIA: solo atelier con copy “Honeymoon Edition” y 1800 USD. | Mismo módulo, tipo honeymoon |
 | 4.4 | Migrar usos desde `content/levels.ts` y `content/experienceLevels.ts` al nuevo módulo; deprecar o eliminar duplicados. | `content/levels.ts`, `experienceLevels.ts`, componentes que usen `getLevel`, `ALL_LEVELS`, etc. |
 
 **Entregable:** Todo el contenido de niveles (features, beneficios, precios mostrados) sale de una sola fuente y refleja los docs.
 
-**¿Aprobamos Fase 4 antes de seguir?** [ ]
+**Estado:** ✅ Completada. Módulo único en `lib/data/experience-levels.ts`: estructura unificada (duration, destination, transport, accommodation, benefit, copy) por tipo y nivel; NUPTIA solo atelier con copy "Honeymoon Edition" y 1800 USD. `lib/utils/levels.ts` usa experience-levels + precios de traveler-types; `getLevelsForType`, `getLevelById`, `getPlannerLevelsForType`, `getTiersForDisplay`. Consumidores migrados: JourneySummary, JourneyDetailsStep, checkout, JourneyMainContent, packages/by-type, ExperiencesClient; ExperienceLevelGrid y TripperTiers usan `getTiersForDisplay`. `content/tiers.ts` deprecado (reemplazado por experience-levels).
+
+**¿Aprobamos Fase 4 antes de seguir?** [x]
 
 ---
 
@@ -174,12 +180,12 @@ Decisiones ya acordadas:
 
 ## Resumen de fases
 
-| Fase | Nombre corto | Aprobado |
-|------|----------------|----------|
-| 1 | Estructura de datos y filtro alojamiento | [ ] |
-| 2 | Precios | [ ] |
-| 3 | PAWS en paso 1 y labels | [ ] |
-| 4 | Unificación niveles | [ ] |
+| Fase | Nombre corto | Estado |
+|------|----------------|--------|
+| 1 | Estructura de datos y filtro alojamiento | ✅ Completada |
+| 2 | Precios | ✅ Completada |
+| 3 | PAWS en paso 1 y labels | Casi completada (tipos centralizados en `traveler-types/index.ts`) |
+| 4 | Unificación niveles | ✅ Completada |
 | 5 | Excusas por tipo en carpeta | [ ] |
 | 6 | Filtro tipo alojamiento en UI | [ ] |
 | 7 | Paso KIN “Quién viaja” | [ ] |

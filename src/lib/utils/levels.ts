@@ -1,14 +1,21 @@
 /**
- * Level helpers – single source: lib/data/traveler-types (planner.levels + PRICE_BY_TYPE_AND_LEVEL).
- * Level metadata and canonical price per type/level.
+ * Level helpers – single source: lib/data/experience-levels (content) +
+ * lib/data/traveler-types (price). Level metadata and canonical price per type/level.
  */
 
 import type { LevelSlug } from '@/types/core';
-import { getTravelerType, getBasePricePerPerson } from '@/lib/data/traveler-types';
+import type { Level as PlannerLevel } from '@/types/planner';
+import { getBasePricePerPerson } from '@/lib/data/traveler-types';
+import {
+  getLevelContent,
+  getLevelIdsForType,
+  type ExperienceLevelId,
+} from '@/lib/data/experience-levels';
+import { getExcusesByType } from '@/lib/helpers/excuse-helper';
 
-/** Map planner level id to URL/store LevelSlug. */
-function toLevelSlug(plannerId: string): LevelSlug {
-  const n = plannerId.toLowerCase().replace('exploraplus', 'explora-plus');
+/** Map experience level id to URL/store LevelSlug. */
+function toLevelSlug(levelId: string): LevelSlug {
+  const n = levelId.toLowerCase().replace('exploraplus', 'explora-plus');
   if (n === 'explora') return 'modo-explora';
   if (n === 'explora-plus') return 'explora-plus';
   if (n === 'atelier') return 'atelier-getaway';
@@ -65,33 +72,33 @@ const ICON_BY_SLUG: Record<LevelSlug, string> = {
 };
 
 /**
- * Levels for a traveler type with canonical price from source of truth.
+ * Levels for a traveler type from experience-levels (content) + traveler-types (price).
  */
-export function getLevelsForType(
-  type: string,
-  locale?: string,
-): Level[] {
-  const data = getTravelerType(type, locale);
-  if (!data?.planner?.levels?.length) return [];
-  return data.planner.levels.map((lev) => {
-    const slug = toLevelSlug(lev.id);
-    const price = getBasePricePerPerson(type, lev.id);
+export function getLevelsForType(type: string, locale?: string): Level[] {
+  const levelIds = getLevelIdsForType(type);
+  const levels: Level[] = [];
+  for (const levelId of levelIds) {
+    const content = getLevelContent(levelId as ExperienceLevelId, type, locale);
+    if (!content) continue;
+    const slug = toLevelSlug(content.id);
+    const price = getBasePricePerPerson(type, content.id);
     const isLast = slug === 'atelier-getaway';
-    const features = lev.features?.map((f) => f.description ?? f.title) ?? [];
-    return {
+    const features = content.features.map((f) => f.description ?? f.title);
+    levels.push({
       id: slug,
-      name: lev.name,
-      description: lev.subtitle ?? lev.name,
+      name: content.name,
+      description: content.subtitle ?? content.name,
       color: COLOR_BY_SLUG[slug] ?? 'bg-gray-500',
-      maxNights: MAX_NIGHTS_BY_SLUG[slug] ?? lev.maxNights ?? 2,
+      maxNights: MAX_NIGHTS_BY_SLUG[slug] ?? content.maxNights ?? 2,
       price,
       priceLabel: isLast ? `Desde ${price} USD` : `${price} USD`,
       minBudget: 0,
       maxBudget: 9999,
       features,
       icon: ICON_BY_SLUG[slug] ?? '✨',
-    };
-  });
+    });
+  }
+  return levels;
 }
 
 /**
@@ -114,6 +121,87 @@ export function getLevelById(
           ? 'atelier-getaway'
           : (normalized as LevelSlug);
   return levels.find((l) => l.id === slug);
+}
+
+/**
+ * Levels in planner shape (for TypePlanner / LevelCard). Uses experience-levels + price + excuses.
+ */
+export function getPlannerLevelsForType(
+  type: string,
+  locale?: string,
+): PlannerLevel[] {
+  const levelIds = getLevelIdsForType(type);
+  const excuses = getExcusesByType(type);
+  const plannerLevels: PlannerLevel[] = [];
+  for (const levelId of levelIds) {
+    const content = getLevelContent(levelId as ExperienceLevelId, type, locale);
+    if (!content) continue;
+    const slug = toLevelSlug(content.id);
+    const price = getBasePricePerPerson(type, content.id);
+    const isLast = slug === 'atelier-getaway';
+    plannerLevels.push({
+      id: slug,
+      name: content.name,
+      subtitle: content.subtitle,
+      maxNights: content.maxNights,
+      price,
+      priceLabel: isLast ? 'Desde' : 'Hasta',
+      priceFootnote: 'por persona',
+      features: content.features,
+      closingLine: content.closingLine,
+      ctaLabel: content.ctaLabel,
+      excuses: excuses as PlannerLevel['excuses'],
+    });
+  }
+  return plannerLevels;
+}
+
+/** Tier-like shape for grids (ExperienceLevelGrid, TripperTiers). */
+export interface TierForDisplay {
+  bullets: string[];
+  cta: string;
+  key: string;
+  price?: string;
+  tagline?: string;
+  testid?: string;
+  title: string;
+}
+
+/**
+ * Tiers for display in grid/cards (from experience-levels + price). Use for ExperienceLevelGrid, TripperTiers.
+ */
+export function getTiersForDisplay(
+  type: string,
+  locale?: string,
+): TierForDisplay[] {
+  const levels = getLevelsForType(type, locale);
+  const tierIds = getLevelIdsForType(type);
+  const result: TierForDisplay[] = [];
+  for (let i = 0; i < levels.length; i++) {
+    const level = levels[i]!;
+    const content = getLevelContent(
+      tierIds[i] as ExperienceLevelId,
+      type,
+      locale,
+    );
+    const bullets = [
+      ...level.features,
+      ...(content?.closingLine ? [`📝 ${content.closingLine}`] : []),
+    ];
+    const isLast = level.id === 'atelier-getaway';
+    result.push({
+      key: level.id,
+      title: level.name,
+      tagline: level.description,
+      price: isLast
+        ? `Desde ${level.price} USD · por persona`
+        : `Hasta ${level.price} USD · por persona`,
+      bullets,
+      cta: content?.ctaLabel ?? `Elige ${level.name} →`,
+      testid: level.id ? `cta-tier-${level.id.replace(/-/g, '')}` : undefined,
+    });
+  }
+  return result;
 }
 
 /**

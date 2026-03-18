@@ -11,7 +11,7 @@ import TransportSelector, {
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
 import type { TransportSelectorLabels } from '@/components/journey/TransportSelector';
-import { getTravelerType } from '@/lib/data/traveler-types';
+import { getLevelById } from '@/lib/utils/experiencesData';
 import { getCountryByCode } from '@/lib/data/shared/countries';
 import { reverseGeocodeGoogle } from '@/lib/geocode';
 
@@ -117,10 +117,7 @@ export function JourneyDetailsStep({
 
   const maxNights = useMemo(() => {
     if (!travelType || !experience) return DEFAULT_MAX_NIGHTS;
-    const travelerTypeData = getTravelerType(travelType);
-    const level = travelerTypeData?.planner?.levels?.find(
-      (l) => l.id === experience,
-    );
+    const level = getLevelById(travelType, experience);
     return level?.maxNights ?? DEFAULT_MAX_NIGHTS;
   }, [experience, travelType]);
 

@@ -5,12 +5,11 @@ import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import Img from '@/components/common/Img';
-import { getTravelerType } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
 import { formatUSD } from '@/lib/format';
 import { useParams } from 'next/navigation';
 import { getBasePricePerPerson } from '@/lib/data/traveler-types';
-import { getCardForType } from '@/lib/utils/experiencesData';
+import { getCardForType, getLevelById } from '@/lib/utils/experiencesData';
 import { getExcuseTitle, getExcuseOptions } from '@/lib/helpers/excuse-helper';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
@@ -175,18 +174,13 @@ export default function JourneySummary({
     [addonsRaw],
   );
 
-  const travelerTypeData = useMemo(() => {
-    if (!travelType) return null;
-    return getTravelerType(travelType);
-  }, [travelType]);
-
-  const selectedLevel = useMemo(() => {
-    if (!experience || !travelerTypeData) return null;
-    return travelerTypeData.planner.levels.find((l) => l.id === experience);
-  }, [experience, travelerTypeData]);
-
   const params = useParams();
   const locale = (params?.locale as string) ?? 'es';
+  const selectedLevel = useMemo(() => {
+    if (!experience || !travelType) return null;
+    return getLevelById(travelType, experience, locale) ?? null;
+  }, [experience, travelType, locale]);
+
   const selectedTravelTypeInfo = useMemo(() => {
     if (!travelType) return null;
     const card = getCardForType(travelType, locale);

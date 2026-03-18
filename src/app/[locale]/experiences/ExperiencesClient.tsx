@@ -6,6 +6,7 @@ import Section from '@/components/layout/Section';
 import { TravelerTypesCarousel } from '@/components/landing/exploration/TravelerTypesCarousel';
 import { getTravelerType } from '@/lib/data/traveler-types';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+import { getPlannerLevelsForType } from '@/lib/utils/experiencesData';
 import type { MarketingDictionary } from '@/lib/types/dictionary';
 
 export interface ExperiencesClientProps {
@@ -32,7 +33,7 @@ export default function ExperiencesClient({
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const typeData =getTravelerType(selectedTypeTraveler, locale)
+  const typeData = getTravelerType(selectedTypeTraveler, locale);
   const planner = typeData?.planner;
 
   return (
@@ -54,11 +55,14 @@ export default function ExperiencesClient({
         </div>
       </Section>
       <TypePlanner
-          content={planner!}
-          fullViewportWidth
-          type={selectedTypeTraveler}
-          hideOverflow={false}
-        />      
+        content={{
+          ...planner!,
+          levels: getPlannerLevelsForType(selectedTypeTraveler, locale),
+        }}
+        fullViewportWidth
+        hideOverflow={false}
+        type={selectedTypeTraveler}
+      />      
     </>
   );
 }

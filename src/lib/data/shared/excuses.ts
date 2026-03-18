@@ -1,6 +1,6 @@
 // Centralized excuse data - single source of truth
 // Excuses and refine-details are only shown for specific levels (essenza, explora, exploraPlus, bivouac).
-// Atelier and honeymoon do not show the excuse step. See @/content/levels.ts getHasExcuseStep.
+// Atelier and honeymoon do not show the excuse step. See hasExcuseStep in @/lib/constants/product-config.
 export interface ExcuseData {
   key: string;
   title: string;

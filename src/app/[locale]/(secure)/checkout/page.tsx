@@ -22,10 +22,9 @@ import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import type { Logistics, Filters } from '@/store/slices/journeyStore';
 import { getBasePricePerPerson, getPricePerPerson } from '@/lib/data/traveler-types';
 import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
-import { getCardForType } from '@/lib/utils/experiencesData';
+import { getCardForType, getLevelById } from '@/lib/utils/experiencesData';
 import { formatUSD } from '@/lib/format';
 import { getExcuseOptions, getExcuseTitle } from '@/lib/helpers/excuse-helper';
-import { getTravelerType } from '@/lib/data/traveler-types';
 import { Button } from '@/components/ui/Button';
 import { usePayment } from '@/hooks/usePayment';
 import { getDictionary } from '@/lib/i18n/dictionaries';
@@ -355,20 +354,16 @@ function CheckoutContent() {
   const maxTravelTime = trip?.maxTravelTime ?? undefined;
   const climate = trip?.climate ?? undefined;
 
-  const travelerTypeData = useMemo(
-    () => (travelType ? getTravelerType(travelType, resolvedLocale) : null),
-    [travelType, resolvedLocale],
-  );
   const selectedLevel = useMemo(() => {
-    if (!experience || !travelerTypeData) return null;
+    if (!experience || !travelType) return null;
     const normalized = normalizeLevelForCatalog(experience);
     return (
-      travelerTypeData.planner.levels.find((l) => l.id === experience) ??
+      getLevelById(travelType, experience, resolvedLocale) ??
       (normalized
-        ? travelerTypeData.planner.levels.find((l) => l.id === normalized)
+        ? getLevelById(travelType, normalized, resolvedLocale)
         : null)
     );
-  }, [experience, travelerTypeData]);
+  }, [experience, travelType, resolvedLocale]);
   const pricePerPerson = getPricePerPerson(travelType ?? '', experience ?? undefined, pax);
   const selectedTravelTypeInfo = useMemo(() => {
     if (!travelType) return null;
