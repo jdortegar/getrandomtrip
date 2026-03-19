@@ -10,7 +10,11 @@ import { formatUSD } from '@/lib/format';
 import { useParams } from 'next/navigation';
 import { getBasePricePerPerson } from '@/lib/data/traveler-types';
 import { getCardForType, getLevelById } from '@/lib/utils/experiencesData';
-import { getExcuseTitle, getExcuseOptions } from '@/lib/helpers/excuse-helper';
+import {
+  getExcuseOptions,
+  getExcuseTitle,
+  getHasExcuseStep,
+} from '@/lib/helpers/excuse-helper';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import {
@@ -135,6 +139,10 @@ export default function JourneySummary({
   const travelType = searchParams.get('travelType') || undefined;
   const experience = searchParams.get('experience') || undefined;
   const excuse = searchParams.get('excuse') || undefined;
+  const hasExcuseStep = useMemo(
+    () => getHasExcuseStep(travelType ?? '', experience),
+    [experience, travelType],
+  );
   const refineDetailsRaw = searchParams.get('refineDetails');
   const refineDetails = useMemo(
     () => (refineDetailsRaw ? refineDetailsRaw.split(',').filter(Boolean) : []),
@@ -204,16 +212,17 @@ export default function JourneySummary({
     };
   }, [selectedLevel, summary.experiencePerPerson]);
 
-  const excuseTitle = useMemo(
-    () =>
-      excuse
-        ? (localizedExcuses?.find((e) => e.key === excuse)?.title ??
-          getExcuseTitle(excuse))
-        : undefined,
-    [excuse, localizedExcuses],
-  );
+  const excuseTitle = useMemo(() => {
+    if (!hasExcuseStep) return undefined;
+    if (!excuse) return undefined;
+    return (
+      localizedExcuses?.find((e) => e.key === excuse)?.title ??
+      getExcuseTitle(excuse)
+    );
+  }, [excuse, hasExcuseStep, localizedExcuses]);
 
   const refineDetailEntries = useMemo(() => {
+    if (!hasExcuseStep) return [];
     if (!excuse || refineDetails.length === 0) return [];
     const fallbackOptions = getExcuseOptions(excuse);
     const travelType = (searchParams.get('travelType') || '').toLowerCase();
@@ -223,7 +232,7 @@ export default function JourneySummary({
       const fallback = fallbackOptions.find((o) => o.key === key)?.label ?? key;
       return { key, label: localized ?? fallback };
     });
-  }, [excuse, refineDetails, refineDetailOptions, searchParams]);
+  }, [excuse, hasExcuseStep, refineDetails, refineDetailOptions, searchParams]);
 
   const transportLabel = useMemo(() => {
     if (!transport) return undefined;
@@ -234,7 +243,7 @@ export default function JourneySummary({
   }, [transport]);
 
   const TransportIcon = transport
-    ? (TRANSPORT_ICONS[transport] ?? TRANSPORT_ICONS.avion)
+    ? (TRANSPORT_ICONS[transport] ?? TRANSPORT_ICONS.plane)
     : null;
 
   type FilterKind =
@@ -252,35 +261,35 @@ export default function JourneySummary({
       label: string;
       value?: string;
     }[] = [];
-    if (accommodationType && accommodationType !== 'indistinto') {
+    if (accommodationType && accommodationType !== 'any') {
       list.push({
         id: `accommodationType-${accommodationType}`,
         kind: 'accommodationType',
         label: `${summary.filterLabelAccommodation}: ${getFilterLabel('accommodationType', accommodationType, filterOptions)}`,
       });
     }
-    if (departPref && departPref !== 'indistinto') {
+    if (departPref && departPref !== 'any') {
       list.push({
         id: `depart-${departPref}`,
         kind: 'departPref',
         label: `${summary.filterLabelDepart}: ${getFilterLabel('departPref', departPref, filterOptions)}`,
       });
     }
-    if (arrivePref && arrivePref !== 'indistinto') {
+    if (arrivePref && arrivePref !== 'any') {
       list.push({
         id: `arrive-${arrivePref}`,
         kind: 'arrivePref',
         label: `${summary.filterLabelArrive}: ${getFilterLabel('arrivePref', arrivePref, filterOptions)}`,
       });
     }
-    if (maxTravelTime && maxTravelTime !== 'sin-limite') {
+    if (maxTravelTime && maxTravelTime !== 'no-limit') {
       list.push({
         id: `time-${maxTravelTime}`,
         kind: 'maxTravelTime',
         label: `${summary.filterLabelTime}: ${getFilterLabel('maxTravelTime', maxTravelTime, filterOptions)}`,
       });
     }
-    if (climate && climate !== 'indistinto') {
+    if (climate && climate !== 'any') {
       list.push({
         id: `climate-${climate}`,
         kind: 'climate',
@@ -496,84 +505,88 @@ export default function JourneySummary({
       </div>
 
       {/* Excuse section – labels from summary.excuseSection */}
-      <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
-          {summary.excuseSection}
-        </p>
-        <div className="mt-2 flex items-center justify-between">
-          {excuseTitle ? (
-            <>
-              <p className={detailClass}>{excuseTitle}</p>
-              <button
-                className={actionButtonClass}
-                onClick={() => onEdit?.('excuse')}
-                type="button"
-              >
-                {summary.change}
-              </button>
-            </>
-          ) : (
-            <div className="flex w-full justify-end">
-              <button
-                className={actionButtonClass}
-                onClick={() => onEdit?.('excuse')}
-                type="button"
-              >
-                {summary.add}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Refine details section – labels from summary.detailsSection */}
-      <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
-          {summary.detailsSection}
-        </p>
-        <div className="mt-2 flex items-start justify-between gap-3">
-          {refineDetailEntries.length > 0 ? (
-            <>
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                {refineDetailEntries.map(({ key, label }) => (
-                  <div
-                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
-                    key={key}
+      {hasExcuseStep && (
+        <>
+          <div className="border-b border-gray-200 pb-4">
+            <p className={cn('w-full', sectionTitleClass)}>
+              {summary.excuseSection}
+            </p>
+            <div className="mt-2 flex items-center justify-between">
+              {excuseTitle ? (
+                <>
+                  <p className={detailClass}>{excuseTitle}</p>
+                  <button
+                    className={actionButtonClass}
+                    onClick={() => onEdit?.('excuse')}
+                    type="button"
                   >
-                    <span>{label}</span>
-                    <button
-                      aria-label={summary.detailRemoveAria}
-                      className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
-                      onClick={() => handleRemoveDetail(key)}
-                      type="button"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                className={actionButtonClass}
-                onClick={() => onEdit?.('refine-details')}
-                type="button"
-              >
-                {summary.edit}
-              </button>
-            </>
-          ) : (
-            <div className="flex w-full items-center justify-between gap-3">
-              <p className={detailClass}>{summary.noDetails}</p>
-              <button
-                className={actionButtonClass}
-                onClick={() => onEdit?.('refine-details')}
-                type="button"
-              >
-                {summary.add}
-              </button>
+                    {summary.change}
+                  </button>
+                </>
+              ) : (
+                <div className="flex w-full justify-end">
+                  <button
+                    className={actionButtonClass}
+                    onClick={() => onEdit?.('excuse')}
+                    type="button"
+                  >
+                    {summary.add}
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+
+          {/* Refine details section – labels from summary.detailsSection */}
+          <div className="border-b border-gray-200 pb-4">
+            <p className={cn('w-full', sectionTitleClass)}>
+              {summary.detailsSection}
+            </p>
+            <div className="mt-2 flex items-start justify-between gap-3">
+              {refineDetailEntries.length > 0 ? (
+                <>
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    {refineDetailEntries.map(({ key, label }) => (
+                      <div
+                        className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                        key={key}
+                      >
+                        <span>{label}</span>
+                        <button
+                          aria-label={summary.detailRemoveAria}
+                          className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                          onClick={() => handleRemoveDetail(key)}
+                          type="button"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    className={actionButtonClass}
+                    onClick={() => onEdit?.('refine-details')}
+                    type="button"
+                  >
+                    {summary.edit}
+                  </button>
+                </>
+              ) : (
+                <div className="flex w-full items-center justify-between gap-3">
+                  <p className={detailClass}>{summary.noDetails}</p>
+                  <button
+                    className={actionButtonClass}
+                    onClick={() => onEdit?.('refine-details')}
+                    type="button"
+                  >
+                    {summary.add}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Origin section – labels from summary.originSection */}
       <div className="border-b border-gray-200 pb-4">

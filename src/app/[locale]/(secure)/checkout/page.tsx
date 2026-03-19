@@ -15,6 +15,11 @@ import {
   TRANSPORT_ICONS,
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
+import {
+  normalizeJourneyFilterValue,
+  normalizeMaxTravelTimeKey,
+  normalizeTransportId,
+} from '@/lib/helpers/transport';
 
 import { useUserStore } from '@/store/slices/userStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
@@ -127,12 +132,16 @@ function logisticsFromParams(
 }
 
 function filtersFromParams(searchParams: URLSearchParams): Filters {
-  const accommodationType = searchParams.get('accommodationType') ?? 'indistinto';
-  const transport = searchParams.get('transport') ?? 'avion';
-  const climate = searchParams.get('climate') ?? 'indistinto';
-  const maxTravelTime = searchParams.get('maxTravelTime') ?? 'sin-limite';
-  const departPref = searchParams.get('departPref') ?? 'indistinto';
-  const arrivePref = searchParams.get('arrivePref') ?? 'indistinto';
+  const accommodationType =
+    normalizeJourneyFilterValue(searchParams.get('accommodationType')) ?? 'any';
+  const transport = normalizeTransportId(searchParams.get('transport')) ?? 'plane';
+  const climate = normalizeJourneyFilterValue(searchParams.get('climate')) ?? 'any';
+  const maxTravelTime =
+    normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) ?? 'no-limit';
+  const departPref =
+    normalizeJourneyFilterValue(searchParams.get('departPref')) ?? 'any';
+  const arrivePref =
+    normalizeJourneyFilterValue(searchParams.get('arrivePref')) ?? 'any';
   const avoidRaw = searchParams.get('avoidDestinations');
   const avoidDestinations = avoidRaw
     ? avoidRaw.split(',').map((s) => s.trim()).filter(Boolean)
@@ -194,7 +203,7 @@ function logisticsFromTrip(trip: TripFromApi, paxOverride: number | null): Logis
 
 function filtersFromTrip(trip: TripFromApi): Filters {
   return {
-    accommodationType: trip.accommodationType ?? 'indistinto',
+    accommodationType: trip.accommodationType ?? 'any',
     arrivePref: trip.arrivePref,
     avoidDestinations: trip.avoidDestinations ?? [],
     climate: trip.climate,
@@ -309,13 +318,13 @@ function CheckoutContent() {
       avoidCount: avoidDestinations.length,
       basePriceUsd,
       filters: filters ?? {
-        accommodationType: 'indistinto',
-        arrivePref: 'indistinto',
+        accommodationType: 'any',
+        arrivePref: 'any',
         avoidDestinations: [],
-        climate: 'indistinto',
-        departPref: 'indistinto',
-        maxTravelTime: 'sin-limite',
-        transport: 'avion',
+        climate: 'any',
+        departPref: 'any',
+        maxTravelTime: 'no-limit',
+        transport: 'plane',
       },
       logistics: effectiveLogistics ?? {
         city: '',
@@ -408,7 +417,7 @@ function CheckoutContent() {
     );
   }, [transport, dict?.journey?.summary, dict?.journey?.preferencesStep?.filterOptions]);
   const TransportIcon = transport
-    ? (TRANSPORT_ICONS[transport] ?? TRANSPORT_ICONS.avion)
+    ? (TRANSPORT_ICONS[transport] ?? TRANSPORT_ICONS.plane)
     : null;
 
   type FilterKind =
@@ -421,28 +430,28 @@ function CheckoutContent() {
   const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
   const activeFilters = useMemo(() => {
     const list: { id: string; kind: FilterKind; label: string; value?: string }[] = [];
-    if (departPref && departPref !== 'indistinto') {
+    if (departPref && departPref !== 'any') {
       list.push({
         id: `depart-${departPref}`,
         kind: 'departPref',
         label: `${sumLabels?.filterLabelDepart ?? 'Salida'}: ${getFilterLabel('departPref', departPref, filterOpts)}`,
       });
     }
-    if (arrivePref && arrivePref !== 'indistinto') {
+    if (arrivePref && arrivePref !== 'any') {
       list.push({
         id: `arrive-${arrivePref}`,
         kind: 'arrivePref',
         label: `${sumLabels?.filterLabelArrive ?? 'Llegada'}: ${getFilterLabel('arrivePref', arrivePref, filterOpts)}`,
       });
     }
-    if (maxTravelTime && maxTravelTime !== 'sin-limite') {
+    if (maxTravelTime && maxTravelTime !== 'no-limit') {
       list.push({
         id: `time-${maxTravelTime}`,
         kind: 'maxTravelTime',
         label: `${sumLabels?.filterLabelTime ?? 'Tiempo máx.'}: ${getFilterLabel('maxTravelTime', maxTravelTime, filterOpts)}`,
       });
     }
-    if (climate && climate !== 'indistinto') {
+    if (climate && climate !== 'any') {
       list.push({
         id: `climate-${climate}`,
         kind: 'climate',
@@ -492,7 +501,7 @@ function CheckoutContent() {
             nights: trip.nights,
             pax,
             transport: trip.transport,
-            accommodationType: trip.accommodationType ?? 'indistinto',
+            accommodationType: trip.accommodationType ?? 'any',
             climate: trip.climate,
             maxTravelTime: trip.maxTravelTime,
             departPref: trip.departPref,

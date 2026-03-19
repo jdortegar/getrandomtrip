@@ -5,28 +5,28 @@ import { useStore } from '@/store/store';
 
 const LABELS = {
   transport: {
-    avion: 'Avión',
     bus: 'Bus',
-    tren: 'Tren',
-    barco: 'Barco/Crucero',
+    plane: 'Avión',
+    ship: 'Barco/Crucero',
+    train: 'Tren',
   } as const,
   climate: {
-    indistinto: 'Indistinto',
-    calido: 'Cálido',
-    frio: 'Frío',
-    templado: 'Templado',
+    any: 'Indistinto',
+    cold: 'Frío',
+    mild: 'Templado',
+    warm: 'Cálido',
   } as const,
   maxTravelTime: {
-    'sin-limite': 'Sin límite',
+    'no-limit': 'Sin límite',
     '3h': 'Hasta 3h',
     '5h': 'Hasta 5h',
     '8h': 'Hasta 8h',
   } as const,
   daypart: {
-    indistinto: 'Indistinto',
-    manana: 'Mañana',
-    tarde: 'Tarde',
-    noche: 'Noche',
+    afternoon: 'Tarde',
+    any: 'Indistinto',
+    morning: 'Mañana',
+    night: 'Noche',
   } as const,
 };
 
@@ -80,7 +80,7 @@ export default function TopFiltersSummary() {
   });
 
   // Clima
-  if (filters.climate !== 'indistinto') {
+  if (filters.climate !== 'any') {
     items.push({
       key: 'climate',
       node: (
@@ -95,7 +95,7 @@ export default function TopFiltersSummary() {
   }
 
   // Máx tiempo viaje
-  if (filters.maxTravelTime !== 'sin-limite') {
+  if (filters.maxTravelTime !== 'no-limit') {
     items.push({
       key: 'max',
       node: (
@@ -111,7 +111,7 @@ export default function TopFiltersSummary() {
   }
 
   // Horarios
-  if (filters.departPref !== 'indistinto') {
+  if (filters.departPref !== 'any') {
     items.push({
       key: 'depart',
       node: (
@@ -124,7 +124,7 @@ export default function TopFiltersSummary() {
       onClick: goPrefs,
     });
   }
-  if (filters.arrivePref !== 'indistinto') {
+  if (filters.arrivePref !== 'any') {
     items.push({
       key: 'arrive',
       node: (

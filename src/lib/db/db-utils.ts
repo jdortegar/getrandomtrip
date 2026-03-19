@@ -1,4 +1,9 @@
 import { prisma } from '@/lib/prisma';
+import {
+  normalizeJourneyFilterValue,
+  normalizeMaxTravelTimeKey,
+  normalizeTransportId,
+} from '@/lib/helpers/transport';
 import type {
   CreateTripData,
   UpdateUserPrefsData,
@@ -82,12 +87,12 @@ export async function createTrip(userId: string, data: CreateTripData) {
       endDate: data.endDate,
       nights: data.nights,
       pax: data.pax,
-      transport: data.transport || 'avion',
-      accommodationType: data.accommodationType || 'indistinto',
-      climate: data.climate || 'indistinto',
-      maxTravelTime: data.maxTravelTime || 'sin-limite',
-      departPref: data.departPref || 'indistinto',
-      arrivePref: data.arrivePref || 'indistinto',
+      transport: normalizeTransportId(data.transport) || 'plane',
+      accommodationType: normalizeJourneyFilterValue(data.accommodationType) || 'any',
+      climate: normalizeJourneyFilterValue(data.climate) || 'any',
+      maxTravelTime: normalizeMaxTravelTimeKey(data.maxTravelTime) || 'no-limit',
+      departPref: normalizeJourneyFilterValue(data.departPref) || 'any',
+      arrivePref: normalizeJourneyFilterValue(data.arrivePref) || 'any',
       avoidDestinations: data.avoidDestinations || [],
       addons: data.addons || [],
       // basePriceUsd: data.basePriceUsd, // Pricing fields removed from TripRequest

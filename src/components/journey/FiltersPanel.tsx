@@ -38,7 +38,7 @@ export default function FiltersPanel() {
           Transporte preferencia (obligatorio, sin cargo)
         </label>
         <div className="flex space-x-2 mt-1">
-          {(['avion', 'bus', 'tren', 'barco'] as const).map((transport) => (
+          {(['bus', 'plane', 'ship', 'train'] as const).map((transport) => (
             <button
               key={transport}
               onClick={() => handleFilterChange('transport', transport)}
@@ -55,7 +55,7 @@ export default function FiltersPanel() {
           Clima preferencial
         </label>
         <div className="flex space-x-2 mt-1">
-          {(['indistinto', 'calido', 'frio', 'templado'] as const).map(
+          {(['any', 'cold', 'mild', 'warm'] as const).map(
             (climate) => (
               <button
                 key={climate}
@@ -74,7 +74,7 @@ export default function FiltersPanel() {
           Tiempo máximo de viaje
         </label>
         <div className="flex space-x-2 mt-1">
-          {(['sin-limite', '3h', '5h', '8h'] as const).map((time) => (
+          {(['no-limit', '3h', '5h', '8h'] as const).map((time) => (
             <button
               key={time}
               onClick={() => handleFilterChange('maxTravelTime', time)}

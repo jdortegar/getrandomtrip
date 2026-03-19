@@ -17,6 +17,7 @@ interface TypePlannerProps {
   /** When true, planner can break out of container to full viewport width. */
   fullViewportWidth?: boolean;
   hideOverflow?: boolean;
+  minimizeAllFeatures?: boolean;
   onSelect?: (levelId: string) => void;
   selectedLevel?: string;
   showArrows?: boolean;
@@ -32,6 +33,7 @@ export default function TypePlanner({
   content,
   fullViewportWidth: _fullViewportWidth,
   hideOverflow = true,
+  minimizeAllFeatures = false,
   onSelect,
   selectedLevel: externalSelectedLevel,
   showArrows = true,
@@ -66,6 +68,7 @@ export default function TypePlanner({
                 featured={isFeatured}
                 key={level.id}
                 level={level}
+                minimizeAllFeatures={minimizeAllFeatures}
                 onSelect={handleLevelSelect}
                 selected={selectedLevel === level.id}
                 travelerType={type}

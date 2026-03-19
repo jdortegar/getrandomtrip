@@ -202,7 +202,7 @@ function TripDetailsContent() {
   const filterOptions = dict?.journey?.preferencesStep?.filterOptions;
   const filterChips = [
     { key: 'transport' as JourneyFilterKey, value: trip.transport },
-    ...(trip.accommodationType && trip.accommodationType !== 'indistinto'
+    ...(trip.accommodationType && trip.accommodationType !== 'any'
       ? [{ key: 'accommodationType' as JourneyFilterKey, value: trip.accommodationType }]
       : []),
     { key: 'climate' as JourneyFilterKey, value: trip.climate },

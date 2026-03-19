@@ -364,10 +364,10 @@
         "hintOrder": "No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el destino podríamos usar otra opción de la lista.",
         "hintTransfers": "Tren y Barco podrían requerir traslados extra.",
         "optionLabels": {
-          "avion": "Avión",
-          "barco": "Barco",
           "bus": "Bus",
-          "tren": "Tren"
+          "plane": "Avión",
+          "ship": "Barco",
+          "train": "Tren"
         }
       }
     },
@@ -378,7 +378,7 @@
         "accommodationType": {
           "label": "Tipo de alojamiento",
           "options": [
-            { "key": "indistinto", "label": "Indistinto" },
+            { "key": "any", "label": "Indistinto" },
             {
               "key": "hotel-style",
               "label": "Hotel Style",
@@ -409,34 +409,34 @@
         "arrivePref": {
           "label": "Llegada",
           "options": [
-            { "key": "indistinto", "label": "Indistinto" },
-            { "key": "manana", "label": "Mañana" },
-            { "key": "tarde", "label": "Tarde" },
-            { "key": "noche", "label": "Noche" }
+            { "key": "any", "label": "Indistinto" },
+            { "key": "afternoon", "label": "Tarde" },
+            { "key": "morning", "label": "Mañana" },
+            { "key": "night", "label": "Noche" }
           ]
         },
         "climate": {
           "label": "Clima",
           "options": [
-            { "key": "indistinto", "label": "Indistinto" },
-            { "key": "calido", "label": "Cálido" },
-            { "key": "frio", "label": "Frío" },
-            { "key": "templado", "label": "Templado" }
+            { "key": "any", "label": "Indistinto" },
+            { "key": "cold", "label": "Frío" },
+            { "key": "mild", "label": "Templado" },
+            { "key": "warm", "label": "Cálido" }
           ]
         },
         "departPref": {
           "label": "Salida",
           "options": [
-            { "key": "indistinto", "label": "Indistinto" },
-            { "key": "manana", "label": "Mañana" },
-            { "key": "tarde", "label": "Tarde" },
-            { "key": "noche", "label": "Noche" }
+            { "key": "any", "label": "Indistinto" },
+            { "key": "afternoon", "label": "Tarde" },
+            { "key": "morning", "label": "Mañana" },
+            { "key": "night", "label": "Noche" }
           ]
         },
         "maxTravelTime": {
           "label": "Tiempo máximo de viaje",
           "options": [
-            { "key": "sin-limite", "label": "Sin límite" },
+            { "key": "no-limit", "label": "Sin límite" },
             { "key": "3h", "label": "Hasta 3h" },
             { "key": "5h", "label": "Hasta 5h" },
             { "key": "8h", "label": "Hasta 8h" }
@@ -445,10 +445,10 @@
         "transport": {
           "label": "Transporte",
           "options": [
-            { "key": "avion", "label": "Avión" },
             { "key": "bus", "label": "Bus" },
-            { "key": "tren", "label": "Tren" },
-            { "key": "barco", "label": "Barco/Crucero" }
+            { "key": "plane", "label": "Avión" },
+            { "key": "ship", "label": "Barco/Crucero" },
+            { "key": "train", "label": "Tren" }
           ]
         }
       },
@@ -463,7 +463,7 @@
           "accommodationType": {
             "label": "Tipo de alojamiento",
             "options": [
-              { "key": "indistinto", "label": "Indistinto" },
+              { "key": "any", "label": "Indistinto" },
               { "key": "hotel-style", "label": "Hotel Style", "tooltip": "Clásico & Confort. Comodidad, limpieza y servicios asegurados las 24 hrs. Ideal si buscas que te cuiden." },
               { "key": "home-style", "label": "Home Style", "tooltip": "Vivir como local. Apartamentos o casas privadas para tener tu propio ritmo, cocinar y sentirte en casa." },
               { "key": "nature-escape", "label": "Nature Escape", "tooltip": "Desconexión total. Cabañas o lodges inmersos en la naturaleza, lejos del ruido y cerca del aire puro." },
@@ -471,11 +471,11 @@
               { "key": "glamping", "label": "Glamping", "tooltip": "Aventura Chic. La magia de acampar bajo las estrellas, pero con el confort y estilo de un hotel premium." }
             ]
           },
-          "arrivePref": { "label": "Llegada", "options": [{ "key": "indistinto", "label": "Indistinto" }, { "key": "manana", "label": "Mañana" }, { "key": "tarde", "label": "Tarde" }, { "key": "noche", "label": "Noche" }] },
-          "climate": { "label": "Clima", "options": [{ "key": "indistinto", "label": "Indistinto" }, { "key": "calido", "label": "Cálido" }, { "key": "frio", "label": "Frío" }, { "key": "templado", "label": "Templado" }] },
-          "departPref": { "label": "Salida", "options": [{ "key": "indistinto", "label": "Indistinto" }, { "key": "manana", "label": "Mañana" }, { "key": "tarde", "label": "Tarde" }, { "key": "noche", "label": "Noche" }] },
-          "maxTravelTime": { "label": "Tiempo máximo de viaje", "options": [{ "key": "sin-limite", "label": "Sin límite" }, { "key": "3h", "label": "Hasta 3h" }, { "key": "5h", "label": "Hasta 5h" }, { "key": "8h", "label": "Hasta 8h" }] },
-          "transport": { "label": "Transporte", "options": [{ "key": "avion", "label": "Avión" }, { "key": "bus", "label": "Bus" }, { "key": "tren", "label": "Tren" }, { "key": "barco", "label": "Barco/Crucero" }] }
+          "arrivePref": { "label": "Llegada", "options": [{ "key": "any", "label": "Indistinto" }, { "key": "afternoon", "label": "Tarde" }, { "key": "morning", "label": "Mañana" }, { "key": "night", "label": "Noche" }] },
+          "climate": { "label": "Clima", "options": [{ "key": "any", "label": "Indistinto" }, { "key": "cold", "label": "Frío" }, { "key": "mild", "label": "Templado" }, { "key": "warm", "label": "Cálido" }] },
+          "departPref": { "label": "Salida", "options": [{ "key": "any", "label": "Indistinto" }, { "key": "afternoon", "label": "Tarde" }, { "key": "morning", "label": "Mañana" }, { "key": "night", "label": "Noche" }] },
+          "maxTravelTime": { "label": "Tiempo máximo de viaje", "options": [{ "key": "no-limit", "label": "Sin límite" }, { "key": "3h", "label": "Hasta 3h" }, { "key": "5h", "label": "Hasta 5h" }, { "key": "8h", "label": "Hasta 8h" }] },
+          "transport": { "label": "Transporte", "options": [{ "key": "bus", "label": "Bus" }, { "key": "plane", "label": "Avión" }, { "key": "ship", "label": "Barco/Crucero" }, { "key": "train", "label": "Tren" }] }
         },
         "avoidSearchModal": {
           "addButton": "Agregar",

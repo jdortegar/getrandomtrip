@@ -18,10 +18,10 @@ interface Filter {
 
 const allFilters: Filter[] = [
   // Medio de Transporte Preferido (Obligatorio, 1er filtro gratis)
-  { id: 'transport-avion', title: 'Avión', type: 'transportation', price: 0 },
   { id: 'transport-bus', title: 'Bus', type: 'transportation', price: 0 },
-  { id: 'transport-barco', title: 'Barco', type: 'transportation', price: 0 },
-  { id: 'transport-tren', title: 'Tren', type: 'transportation', price: 0 },
+  { id: 'transport-plane', title: 'Avión', type: 'transportation', price: 0 },
+  { id: 'transport-ship', title: 'Barco', type: 'transportation', price: 0 },
+  { id: 'transport-train', title: 'Tren', type: 'transportation', price: 0 },
 
   // Tipo de experiencia (Sin Preferencia, por default sin costo extra)
   { id: 'experience-no-pref', title: 'Sin Preferencia', type: 'experience', price: 0 },
@@ -32,9 +32,9 @@ const allFilters: Filter[] = [
 
   // Clima preferido (Sin Preferencia, por default sin costo extra)
   { id: 'climate-no-pref', title: 'Sin Preferencia', type: 'climate', price: 0 },
-  { id: 'climate-calido', title: 'Cálido', type: 'climate', price: 0 },
-  { id: 'climate-templado', title: 'Templado', type: 'climate', price: 0 },
-  { id: 'climate-frio', title: 'Frio', type: 'climate', price: 0 },
+  { id: 'climate-warm', title: 'Cálido', type: 'climate', price: 0 },
+  { id: 'climate-mild', title: 'Templado', type: 'climate', price: 0 },
+  { id: 'climate-cold', title: 'Frio', type: 'climate', price: 0 },
 
   // Tiempo Máximo en viaje (Sin Preferencia, por default sin costo extra)
   { id: 'flight-no-pref', title: 'Sin Preferencia', type: 'flightTime', price: 0 },

@@ -364,10 +364,10 @@
         "hintOrder": "It's not a single option: rank 1 to 4 by preference. Depending on the destination we may use another option from the list.",
         "hintTransfers": "Train and Ship may require extra transfers.",
         "optionLabels": {
-          "avion": "Plane",
-          "barco": "Ship",
           "bus": "Bus",
-          "tren": "Train"
+          "plane": "Plane",
+          "ship": "Ship",
+          "train": "Train"
         }
       }
     },
@@ -378,7 +378,7 @@
         "accommodationType": {
           "label": "Accommodation type",
           "options": [
-            { "key": "indistinto", "label": "Any" },
+            { "key": "any", "label": "Any" },
             {
               "key": "hotel-style",
               "label": "Hotel Style",
@@ -409,34 +409,34 @@
         "arrivePref": {
           "label": "Arrival",
           "options": [
-            { "key": "indistinto", "label": "Any" },
-            { "key": "manana", "label": "Morning" },
-            { "key": "tarde", "label": "Afternoon" },
-            { "key": "noche", "label": "Night" }
+            { "key": "any", "label": "Any" },
+            { "key": "afternoon", "label": "Afternoon" },
+            { "key": "morning", "label": "Morning" },
+            { "key": "night", "label": "Night" }
           ]
         },
         "climate": {
           "label": "Climate",
           "options": [
-            { "key": "indistinto", "label": "Any" },
-            { "key": "calido", "label": "Warm" },
-            { "key": "frio", "label": "Cold" },
-            { "key": "templado", "label": "Mild" }
+            { "key": "any", "label": "Any" },
+            { "key": "cold", "label": "Cold" },
+            { "key": "mild", "label": "Mild" },
+            { "key": "warm", "label": "Warm" }
           ]
         },
         "departPref": {
           "label": "Departure",
           "options": [
-            { "key": "indistinto", "label": "Any" },
-            { "key": "manana", "label": "Morning" },
-            { "key": "tarde", "label": "Afternoon" },
-            { "key": "noche", "label": "Night" }
+            { "key": "any", "label": "Any" },
+            { "key": "afternoon", "label": "Afternoon" },
+            { "key": "morning", "label": "Morning" },
+            { "key": "night", "label": "Night" }
           ]
         },
         "maxTravelTime": {
           "label": "Max travel time",
           "options": [
-            { "key": "sin-limite", "label": "No limit" },
+            { "key": "no-limit", "label": "No limit" },
             { "key": "3h", "label": "Up to 3h" },
             { "key": "5h", "label": "Up to 5h" },
             { "key": "8h", "label": "Up to 8h" }
@@ -445,10 +445,10 @@
         "transport": {
           "label": "Transport",
           "options": [
-            { "key": "avion", "label": "Flight" },
             { "key": "bus", "label": "Bus" },
-            { "key": "tren", "label": "Train" },
-            { "key": "barco", "label": "Boat/Cruise" }
+            { "key": "plane", "label": "Flight" },
+            { "key": "ship", "label": "Boat/Cruise" },
+            { "key": "train", "label": "Train" }
           ]
         }
       },
@@ -463,7 +463,7 @@
           "accommodationType": {
             "label": "Accommodation type",
             "options": [
-              { "key": "indistinto", "label": "Any" },
+              { "key": "any", "label": "Any" },
               { "key": "hotel-style", "label": "Hotel Style", "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after." },
               { "key": "home-style", "label": "Home Style", "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home." },
               { "key": "nature-escape", "label": "Nature Escape", "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air." },
@@ -471,11 +471,11 @@
               { "key": "glamping", "label": "Glamping", "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel." }
             ]
           },
-          "arrivePref": { "label": "Arrival", "options": [{ "key": "indistinto", "label": "Any" }, { "key": "manana", "label": "Morning" }, { "key": "tarde", "label": "Afternoon" }, { "key": "noche", "label": "Night" }] },
-          "climate": { "label": "Climate", "options": [{ "key": "indistinto", "label": "Any" }, { "key": "calido", "label": "Warm" }, { "key": "frio", "label": "Cold" }, { "key": "templado", "label": "Mild" }] },
-          "departPref": { "label": "Departure", "options": [{ "key": "indistinto", "label": "Any" }, { "key": "manana", "label": "Morning" }, { "key": "tarde", "label": "Afternoon" }, { "key": "noche", "label": "Night" }] },
-          "maxTravelTime": { "label": "Max travel time", "options": [{ "key": "sin-limite", "label": "No limit" }, { "key": "3h", "label": "Up to 3h" }, { "key": "5h", "label": "Up to 5h" }, { "key": "8h", "label": "Up to 8h" }] },
-          "transport": { "label": "Transport", "options": [{ "key": "avion", "label": "Flight" }, { "key": "bus", "label": "Bus" }, { "key": "tren", "label": "Train" }, { "key": "barco", "label": "Boat/Cruise" }] }
+          "arrivePref": { "label": "Arrival", "options": [{ "key": "any", "label": "Any" }, { "key": "afternoon", "label": "Afternoon" }, { "key": "morning", "label": "Morning" }, { "key": "night", "label": "Night" }] },
+          "climate": { "label": "Climate", "options": [{ "key": "any", "label": "Any" }, { "key": "cold", "label": "Cold" }, { "key": "mild", "label": "Mild" }, { "key": "warm", "label": "Warm" }] },
+          "departPref": { "label": "Departure", "options": [{ "key": "any", "label": "Any" }, { "key": "afternoon", "label": "Afternoon" }, { "key": "morning", "label": "Morning" }, { "key": "night", "label": "Night" }] },
+          "maxTravelTime": { "label": "Max travel time", "options": [{ "key": "no-limit", "label": "No limit" }, { "key": "3h", "label": "Up to 3h" }, { "key": "5h", "label": "Up to 5h" }, { "key": "8h", "label": "Up to 8h" }] },
+          "transport": { "label": "Transport", "options": [{ "key": "bus", "label": "Bus" }, { "key": "plane", "label": "Flight" }, { "key": "ship", "label": "Boat/Cruise" }, { "key": "train", "label": "Train" }] }
         },
         "avoidSearchModal": {
           "addButton": "Add",

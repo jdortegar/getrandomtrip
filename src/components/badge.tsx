@@ -83,7 +83,7 @@ export default function Chip({
   const base = getColorClasses(color, item.locked || false);
   const sizeClasses = getSizeClasses(size);
 
-  if (item.key === 'indistinto' || item.key === 'sin-limite') return null;
+  if (item.key === 'any' || item.key === 'no-limit') return null;
   const displayText =
     item.label && item.label.trim() !== ''
       ? `${item.label}: ${item.value}`

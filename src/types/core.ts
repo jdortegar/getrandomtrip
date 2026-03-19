@@ -74,12 +74,12 @@ export type LevelSlug =
   | 'explora-plus'
   | 'bivouac'
   | 'atelier-getaway';
-export type TransportMode = 'avion' | 'bus' | 'tren' | 'barco';
-export type ClimatePreference = 'indistinto' | 'calido' | 'frio' | 'templado';
-export type TimePreference = 'sin-limite' | '3h' | '5h' | '8h';
-export type DeparturePreference = 'indistinto' | 'manana' | 'tarde' | 'noche';
+export type TransportMode = 'bus' | 'plane' | 'ship' | 'train';
+export type ClimatePreference = 'any' | 'cold' | 'mild' | 'warm';
+export type TimePreference = 'no-limit' | '3h' | '5h' | '8h';
+export type DeparturePreference = 'any' | 'afternoon' | 'morning' | 'night';
 export type AccommodationType =
-  | 'indistinto'
+  | 'any'
   | 'hotel-style'
   | 'home-style'
   | 'nature-escape'

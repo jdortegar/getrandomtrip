@@ -69,10 +69,10 @@ function FilterSeg({ onChange, options, value }: FilterSegProps) {
 }
 
 const CLIMATE_ICONS: Record<string, typeof Sun> = {
-  calido: Sun,
-  frio: Snowflake,
-  indistinto: Thermometer,
-  templado: Cloud,
+  any: Thermometer,
+  cold: Snowflake,
+  mild: Cloud,
+  warm: Sun,
 };
 
 export interface JourneyFiltersFormLabels {

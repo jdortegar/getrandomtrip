@@ -107,30 +107,30 @@ export function JourneyPreferencesStep({
   const filtersSummary = useMemo(() => {
     const fo = labels.filterOptions;
     const parts: string[] = [];
-    if (departPref && departPref !== 'indistinto') {
+    if (departPref && departPref !== 'any') {
       const label =
         fo?.departPref?.options.find((o) => o.key === departPref)?.label ??
         departPref;
       parts.push(`${labels.filtersSummaryDepart}: ${label}`);
     }
-    if (arrivePref && arrivePref !== 'indistinto') {
+    if (arrivePref && arrivePref !== 'any') {
       const label =
         fo?.arrivePref?.options.find((o) => o.key === arrivePref)?.label ??
         arrivePref;
       parts.push(`${labels.filtersSummaryArrive}: ${label}`);
     }
-    if (maxTravelTime && maxTravelTime !== 'sin-limite') {
+    if (maxTravelTime && maxTravelTime !== 'no-limit') {
       const label =
         fo?.maxTravelTime?.options.find((o) => o.key === maxTravelTime)
           ?.label ?? maxTravelTime;
       parts.push(`${labels.filtersSummaryTime}: ${label}`);
     }
-    if (climate && climate !== 'indistinto') {
+    if (climate && climate !== 'any') {
       const label =
         fo?.climate?.options.find((o) => o.key === climate)?.label ?? climate;
       parts.push(`${labels.filtersSummaryClimate}: ${label}`);
     }
-    if (accommodationType && accommodationType !== 'indistinto') {
+    if (accommodationType && accommodationType !== 'any') {
       const label =
         fo?.accommodationType?.options.find((o) => o.key === accommodationType)
           ?.label ?? accommodationType;

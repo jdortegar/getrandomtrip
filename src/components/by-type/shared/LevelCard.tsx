@@ -23,6 +23,7 @@ import Link from 'next/link';
 interface LevelCardProps {
   featured?: boolean;
   level: Level;
+  minimizeAllFeatures?: boolean;
   onSelect?: (levelId: string) => void;
   selected?: boolean;
   travelerType?: string;
@@ -45,12 +46,14 @@ const FEATURE_ICONS: Record<
 export default function LevelCard({
   featured = false,
   level,
+  minimizeAllFeatures = false,
   onSelect,
   selected = false,
   travelerType,
   variant = 'light',
 }: LevelCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const shouldMinimize = minimizeAllFeatures;
   const isDark = variant === 'dark';
   const textColor = isDark ? 'text-white' : 'text-gray-900';
   const bgColor = isDark ? 'bg-gray-900' : 'bg-white';
@@ -63,11 +66,19 @@ export default function LevelCard({
   const priceDividerColor = 'bg-yellow-400';
   const secondaryTextColor = isDark ? 'text-white' : 'text-gray-600';
 
-  // Show first 3 features when collapsed, all when expanded
-  const displayFeatures = isExpanded
-    ? level.features
-    : level.features.slice(0, 3);
-  const hasMoreFeatures = level.features.length > 3;
+  // Minimize mode: hide all features until expanded.
+  // Default mode: show first 3 features when collapsed, all when expanded.
+  const displayFeatures = shouldMinimize
+    ? isExpanded
+      ? level.features
+      : []
+    : isExpanded
+      ? level.features
+      : level.features.slice(0, 3);
+
+  const hasMoreFeatures = shouldMinimize
+    ? level.features.length > 0
+    : level.features.length > 3;
 
   const handleClick = () => {
     if (onSelect) {
@@ -82,7 +93,7 @@ export default function LevelCard({
   return (
     <div
       className={cn(
-        'relative flex h-full w-full flex-col justify-center rounded-xl border-2 px-4 py-8 transition-all duration-300 min-h-[540px] @[250px]:min-h-[690px] @[250px]:px-6 @[250px]:py-12',
+        'relative flex h-full w-full flex-col justify-center rounded-xl border-2 px-4 py-8 transition-all duration-300 min-h-[540px] @[350px]:min-h-[690px] @[250px]:px-6 @[250px]:py-12',
         bgColor,
         borderColor,
         featured && 'shadow-lg',

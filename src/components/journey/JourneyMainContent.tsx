@@ -3,21 +3,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { Accordion } from '@/components/ui/accordion';
-import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
-import { TravelerTypesCarousel } from '@/components/landing/exploration/TravelerTypesCarousel';
-import { ExcusesCarousel } from '@/components/journey/ExcusesCarousel';
-import { RefineDetailsCarousel } from '@/components/journey/RefineDetailsCarousel';
-import TypePlanner from '@/components/by-type/TypePlanner';
+import BudgetStep from '@/components/journey/BudgetStep';
+import ExcuseStep from '@/components/journey/ExcuseStep';
 import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
 import type { JourneyDetailsStepLabels } from '@/components/journey/JourneyDetailsStep';
 import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
+import {
+  normalizeMaxTravelTimeKey,
+  normalizeTransportId,
+  normalizeJourneyFilterValue,
+} from '@/lib/helpers/transport';
 import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
 import type { JourneyPreferencesStepLabels } from '@/components/journey/JourneyPreferencesStep';
-import { getTravelerType } from '@/lib/data/traveler-types';
 import {
   getLevelById,
-  getPlannerLevelsForType,
 } from '@/lib/utils/experiencesData';
 import {
   getExcusesByTypeAndLevel,
@@ -241,7 +240,7 @@ export default function JourneyMainContent({
   }, [searchParams]);
 
   const transport = useMemo(() => {
-    return searchParams.get('transport') || undefined;
+    return normalizeTransportId(searchParams.get('transport')) || undefined;
   }, [searchParams]);
 
   const transportOrder = useMemo(() => {
@@ -250,7 +249,8 @@ export default function JourneyMainContent({
     const ids = raw
       .split(',')
       .map((s) => s.trim())
-      .filter(Boolean);
+      .map((id) => normalizeTransportId(id))
+      .filter((id): id is string => Boolean(id));
     return ids.length === 4 ? ids : DEFAULT_TRANSPORT_ORDER;
   }, [searchParams]);
 
@@ -315,41 +315,41 @@ export default function JourneyMainContent({
     activeTab === 'details' ? draftTransportOrder : transportOrder;
 
   const departPref = useMemo(() => {
-    return searchParams.get('departPref') || undefined;
+    return normalizeJourneyFilterValue(searchParams.get('departPref')) || undefined;
   }, [searchParams]);
 
   const arrivePref = useMemo(() => {
-    return searchParams.get('arrivePref') || undefined;
+    return normalizeJourneyFilterValue(searchParams.get('arrivePref')) || undefined;
   }, [searchParams]);
 
   const maxTravelTime = useMemo(() => {
-    return searchParams.get('maxTravelTime') || undefined;
+    return normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) || undefined;
   }, [searchParams]);
 
   const climate = useMemo(() => {
-    return searchParams.get('climate') || undefined;
+    return normalizeJourneyFilterValue(searchParams.get('climate')) || undefined;
   }, [searchParams]);
 
   const accommodationType = useMemo(() => {
-    return searchParams.get('accommodationType') || undefined;
+    return normalizeJourneyFilterValue(searchParams.get('accommodationType')) || undefined;
   }, [searchParams]);
 
-  const [draftDepartPref, setDraftDepartPref] = useState<string>('indistinto');
-  const [draftArrivePref, setDraftArrivePref] = useState<string>('indistinto');
-  const [draftClimate, setDraftClimate] = useState<string>('indistinto');
+  const [draftDepartPref, setDraftDepartPref] = useState<string>('any');
+  const [draftArrivePref, setDraftArrivePref] = useState<string>('any');
+  const [draftClimate, setDraftClimate] = useState<string>('any');
   const [draftMaxTravelTime, setDraftMaxTravelTime] =
-    useState<string>('sin-limite');
+    useState<string>('no-limit');
   const [draftAccommodationType, setDraftAccommodationType] =
-    useState<string>('indistinto');
+    useState<string>('any');
 
   // Sync URL -> draft when entering preferences step (so form shows current URL values)
   useEffect(() => {
     if (activeTab === 'preferences') {
-      setDraftDepartPref(departPref ?? 'indistinto');
-      setDraftArrivePref(arrivePref ?? 'indistinto');
-      setDraftClimate(climate ?? 'indistinto');
-      setDraftMaxTravelTime(maxTravelTime ?? 'sin-limite');
-      setDraftAccommodationType(accommodationType ?? 'indistinto');
+      setDraftDepartPref(departPref ?? 'any');
+      setDraftArrivePref(arrivePref ?? 'any');
+      setDraftClimate(climate ?? 'any');
+      setDraftMaxTravelTime(maxTravelTime ?? 'no-limit');
+      setDraftAccommodationType(accommodationType ?? 'any');
     }
   }, [
     activeTab,
@@ -363,30 +363,25 @@ export default function JourneyMainContent({
   const effectiveDepartPref =
     activeTab === 'preferences'
       ? draftDepartPref
-      : (departPref ?? 'indistinto');
+      : (departPref ?? 'any');
   const effectiveArrivePref =
     activeTab === 'preferences'
       ? draftArrivePref
-      : (arrivePref ?? 'indistinto');
+      : (arrivePref ?? 'any');
   const effectiveClimate =
-    activeTab === 'preferences' ? draftClimate : (climate ?? 'indistinto');
+    activeTab === 'preferences' ? draftClimate : (climate ?? 'any');
   const effectiveMaxTravelTime =
     activeTab === 'preferences'
       ? draftMaxTravelTime
-      : (maxTravelTime ?? 'sin-limite');
+      : (maxTravelTime ?? 'no-limit');
   const effectiveAccommodationType =
     activeTab === 'preferences'
       ? draftAccommodationType
-      : (accommodationType ?? 'indistinto');
+      : (accommodationType ?? 'any');
 
   const addons = useMemo(() => {
     return searchParams.get('addons') || undefined;
   }, [searchParams]);
-
-  const travelerTypeData = useMemo(() => {
-    if (!travelType) return null;
-    return getTravelerType(travelType, locale);
-  }, [travelType, locale]);
 
   const selectedExperienceLevel = useMemo(() => {
     if (!travelType || !experience) return null;
@@ -465,8 +460,13 @@ export default function JourneyMainContent({
 
   const handleExperienceSelect = (levelId: string) => {
     updateQuery({ ...paramsToResetAfterExperience, experience: levelId });
-    if (onTabChange) onTabChange('excuse');
-    setAccordionValue('excuse');
+    const hasExcuseStepForSelection = getHasExcuseStep(
+      travelType ?? '',
+      levelId,
+    );
+    if (onTabChange)
+      onTabChange(hasExcuseStepForSelection ? 'excuse' : 'details');
+    setAccordionValue(hasExcuseStepForSelection ? 'excuse' : 'origin');
   };
 
   const handleExcuseSelect = (excuseKey: string) => {
@@ -626,27 +626,27 @@ export default function JourneyMainContent({
   };
 
   const handleClearFilters = () => {
-    setDraftAccommodationType('indistinto');
-    setDraftArrivePref('indistinto');
-    setDraftClimate('indistinto');
-    setDraftDepartPref('indistinto');
-    setDraftMaxTravelTime('sin-limite');
+    setDraftAccommodationType('any');
+    setDraftArrivePref('any');
+    setDraftClimate('any');
+    setDraftDepartPref('any');
+    setDraftMaxTravelTime('no-limit');
     updateQuery({
-      accommodationType: 'indistinto',
-      arrivePref: 'indistinto',
+      accommodationType: 'any',
+      arrivePref: 'any',
       avoidDestinations: undefined,
-      climate: 'indistinto',
-      departPref: 'indistinto',
-      maxTravelTime: 'sin-limite',
+      climate: 'any',
+      departPref: 'any',
+      maxTravelTime: 'no-limit',
     });
     setPartial({
       filters: {
         ...filters,
-        accommodationType: 'indistinto',
-        arrivePref: 'indistinto',
-        climate: 'indistinto',
-        departPref: 'indistinto',
-        maxTravelTime: 'sin-limite',
+        accommodationType: 'any',
+        arrivePref: 'any',
+        climate: 'any',
+        departPref: 'any',
+        maxTravelTime: 'no-limit',
       },
     });
   };
@@ -719,7 +719,9 @@ export default function JourneyMainContent({
   };
 
   const getNextTab = () => {
-    const tabs = ['budget', 'excuse', 'details', 'preferences'];
+    const tabs = hasExcuseStep
+      ? ['budget', 'excuse', 'details', 'preferences']
+      : ['budget', 'details', 'preferences'];
     const currentIndex = tabs.indexOf(activeTab);
     return currentIndex < tabs.length - 1 ? tabs[currentIndex + 1] : null;
   };
@@ -766,7 +768,7 @@ export default function JourneyMainContent({
   };
 
   const hasSelections =
-    (accommodationType && accommodationType !== 'indistinto') ||
+    (accommodationType && accommodationType !== 'any') ||
     addons ||
     arrivePref ||
     climate ||
@@ -785,162 +787,61 @@ export default function JourneyMainContent({
     switch (activeTab) {
       case 'budget':
         return (
-          <div>
-            <Accordion
-              collapsible
-              onValueChange={setAccordionValue}
-              type="single"
-              value={accordionValue}
-            >
-              <JourneyDropdown
-                className="mb-4 "
-                content={getTravelTypeLabel()}
-                label={labels.travelTypeLabel}
-                value="travel-type"
-              >
-                <TravelerTypesCarousel
-                  fullViewportWidth={false}
-                  itemsPerView={3}
-                  localizedTravelerTypes={localizedTravelerTypes}
-                  onSelect={handleTravelTypeSelect}
-                  selectedTravelType={travelType as TravelerTypeSlug}
-                  showArrows={false}
-                />
-              </JourneyDropdown>
-
-              {travelType && travelerTypeData && (
-                <JourneyDropdown
-                  content={getExperienceLabel()}
-                  label={labels.experienceLabel}
-                  value="experience"
-                >
-                  <div className="space-y-4">
-                    <p className="text-gray-600">
-                      {labels.experienceStepDescription}
-                    </p>
-                    <TypePlanner
-                      compact
-                      content={{
-                        ...travelerTypeData.planner,
-                        levels: getPlannerLevelsForType(
-                          travelType ?? 'couple',
-                          locale,
-                        ),
-                      }}
-                      fullViewportWidth={false}
-                      gap={12}
-                      itemsPerView={2}
-                      onSelect={handleExperienceSelect}
-                      selectedLevel={experience}
-                      showArrows={false}
-                      type={travelType as TravelerTypeSlug}
-                    />
-                  </div>
-                </JourneyDropdown>
-              )}
-            </Accordion>
-          </div>
+          <BudgetStep
+            accordionValue={accordionValue}
+            experienceContent={getExperienceLabel()}
+            fullViewportWidth={false}
+            handleExperienceSelect={handleExperienceSelect}
+            handleTravelTypeSelect={handleTravelTypeSelect}
+            labels={{
+              experienceLabel: labels.experienceLabel,
+              experienceStepDescription: labels.experienceStepDescription,
+              travelTypeLabel: labels.travelTypeLabel,
+            }}
+            locale={locale}
+            localizedTravelerTypes={localizedTravelerTypes}
+            minimizeAllFeatures
+            onAccordionValueChange={setAccordionValue}
+            selectedExperienceLevel={experience}
+            selectedTravelType={travelType as TravelerTypeSlug}
+            travelerType={travelType as TravelerTypeSlug}
+            travelTypeContent={getTravelTypeLabel()}
+          />
         );
       case 'excuse':
+        if (!hasExcuseStep) return null;
         return (
-          <div className="min-w-0 w-full">
-            {travelType && experience && !hasExcuseStep ? (
-              <div className="rounded-xl border border-neutral-200 bg-white p-8 text-center">
-                <p className="text-gray-600">
-                  {labels.refineDetailsStepDescription}
-                </p>
-                <p className="mt-2 text-sm text-gray-500">
-                  {labels.customTripNoExcuseMessage}
-                </p>
-              </div>
-            ) : (
-              <Accordion
-                collapsible
-                onValueChange={setAccordionValue}
-                type="single"
-                value={accordionValue}
-              >
-                <JourneyDropdown
-                  className="mb-4"
-                  content={getExcuseLabel()}
-                  label={labels.excuseLabel}
-                  value="excuse"
-                >
-                  {travelType && experience ? (
-                    <div className="space-y-4">
-                      <p className="text-gray-600">
-                        {labels.excuseStepDescription}
-                      </p>
-                      <ExcusesCarousel
-                        ctaLabel={labels.excuseCardCta}
-                        excuses={excuses}
-                        itemsPerView={3}
-                        localizedExcuses={localizedExcuses}
-                        onSelect={handleExcuseSelect}
-                        selectedExcuse={excuse}
-                      />
-                    </div>
-                  ) : (
-                    <div className="py-8 text-center">
-                      <p className="text-gray-500">
-                        {labels.completeBudgetFirst}
-                      </p>
-                    </div>
-                  )}
-                </JourneyDropdown>
-
-                {travelType && experience && excuse && (
-                  <JourneyDropdown
-                    className="mb-4"
-                    content={getRefineDetailsLabel()}
-                    label={labels.refineDetailsLabel}
-                    value="refine-details"
-                  >
-                    <div className="space-y-4">
-                      <p className="text-gray-600">
-                        {labels.refineDetailsStepDescription}
-                      </p>
-                      {refineDetailsOptions.length > 0 ? (
-                        <>
-                          <RefineDetailsCarousel
-                            itemsPerView={3}
-                            onSelect={handleRefineDetailsSelect}
-                            options={refineDetailsOptions}
-                            selectedOptions={refineDetails}
-                          />
-                          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-                            <button
-                              className="text-gray-500 text-sm font-medium underline hover:no-underline disabled:opacity-50"
-                              onClick={handleClearRefineDetails}
-                              type="button"
-                            >
-                              {labels.clearAll}
-                            </button>
-                            <Button
-                              className="text-sm font-normal normal-case"
-                              onClick={() => {
-                                if (onTabChange) onTabChange('details');
-                                setAccordionValue('origin');
-                              }}
-                              size="md"
-                              type="button"
-                              variant="default"
-                            >
-                              {labels.next}
-                            </Button>
-                          </div>
-                        </>
-                      ) : (
-                        <p className="py-4 text-center text-gray-500">
-                          {labels.refineDetailsPlaceholder}
-                        </p>
-                      )}
-                    </div>
-                  </JourneyDropdown>
-                )}
-              </Accordion>
-            )}
-          </div>
+          <ExcuseStep
+            accordionValue={accordionValue}
+            onAccordionValueChange={setAccordionValue}
+            onTabChange={onTabChange}
+            travelType={travelType as TravelerTypeSlug | undefined}
+            experience={experience}
+            excuse={excuse}
+            hasExcuseStep={hasExcuseStep}
+            excuses={excuses}
+            localizedExcuses={localizedExcuses}
+            onSelectExcuse={handleExcuseSelect}
+            refineDetailsOptions={refineDetailsOptions}
+            refineDetails={refineDetails}
+            onSelectRefineDetails={handleRefineDetailsSelect}
+            onClearRefineDetails={handleClearRefineDetails}
+            getExcuseLabel={getExcuseLabel()}
+            getRefineDetailsLabel={getRefineDetailsLabel()}
+            labels={{
+              completeBudgetFirst: labels.completeBudgetFirst,
+              customTripNoExcuseMessage: labels.customTripNoExcuseMessage,
+              excuseCardCta: labels.excuseCardCta,
+              excuseLabel: labels.excuseLabel,
+              excuseStepDescription: labels.excuseStepDescription,
+              next: labels.next,
+              refineDetailsLabel: labels.refineDetailsLabel,
+              refineDetailsPlaceholder: labels.refineDetailsPlaceholder,
+              refineDetailsStepDescription:
+                labels.refineDetailsStepDescription,
+              clearAll: labels.clearAll,
+            }}
+          />
         );
       case 'details':
         if (!travelType || !experience || (hasExcuseStep && !excuse)) {

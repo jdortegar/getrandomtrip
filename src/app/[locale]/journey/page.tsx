@@ -130,6 +130,12 @@ function JourneyPageContent({ locale }: { locale?: string }) {
 
   const journey = dict.journey;
   const contentTabs = journey.contentTabs;
+  const travelType = searchParams.get('travelType');
+  const experience = searchParams.get('experience');
+  const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience ?? '');
+  const contentTabsForUI = hasExcuseStep
+    ? contentTabs
+    : contentTabs.filter((tab) => tab.id !== 'excuse');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -142,7 +148,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
       <JourneyContentNavigation
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        tabs={contentTabs.map((tab) => ({ id: tab.id, label: tab.label }))}
+        tabs={contentTabsForUI.map((tab) => ({ id: tab.id, label: tab.label }))}
         user={{
           name: journey.userNamePlaceholder,
         }}
@@ -154,7 +160,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             <JourneyProgressSidebar
               activeTab={activeTab}
               onStepClick={handleStepClick}
-              tabs={contentTabs}
+              tabs={contentTabsForUI}
             />
           </div>
 
@@ -177,9 +183,9 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           <JourneySummary
             addonLabels={journey.addons}
             filterOptions={journey.preferencesStep.filterOptions}
-            localizedExcuses={journey.excuses}
+            localizedExcuses={hasExcuseStep ? journey.excuses : undefined}
             onEdit={handleSummaryEdit}
-            refineDetailOptions={journey.refineDetailOptions}
+            refineDetailOptions={hasExcuseStep ? journey.refineDetailOptions : undefined}
             summary={journey.summary}
           />
         </div>

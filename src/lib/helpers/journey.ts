@@ -1,4 +1,9 @@
 import type { Filters } from '@/store/slices/journeyStore';
+import {
+  normalizeJourneyFilterValue,
+  normalizeMaxTravelTimeKey,
+  normalizeTransportId,
+} from '@/lib/helpers/transport';
 
 /** Payload shape for POST /api/trip-requests when creating from journey URL params. */
 export interface TripRequestPayloadFromJourney {
@@ -96,12 +101,19 @@ export function buildTripRequestPayloadFromSearchParams(
     endDate,
     nights: nightsNum,
     pax,
-    transport: searchParams.get('transport') ?? 'avion',
-    accommodationType: searchParams.get('accommodationType') ?? 'indistinto',
-    climate: searchParams.get('climate') ?? 'indistinto',
-    maxTravelTime: searchParams.get('maxTravelTime') ?? 'sin-limite',
-    departPref: searchParams.get('departPref') ?? 'indistinto',
-    arrivePref: searchParams.get('arrivePref') ?? 'indistinto',
+    transport:
+      normalizeTransportId(searchParams.get('transport')) ?? 'plane',
+    accommodationType:
+      normalizeJourneyFilterValue(searchParams.get('accommodationType')) ??
+      'any',
+    climate:
+      normalizeJourneyFilterValue(searchParams.get('climate')) ?? 'any',
+    maxTravelTime:
+      normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) ?? 'no-limit',
+    departPref:
+      normalizeJourneyFilterValue(searchParams.get('departPref')) ?? 'any',
+    arrivePref:
+      normalizeJourneyFilterValue(searchParams.get('arrivePref')) ?? 'any',
     avoidDestinations,
     addons: addonsSelected,
     status: 'DRAFT',
@@ -115,11 +127,11 @@ export function buildTripRequestPayloadFromSearchParams(
  */
 export function countOptionalFilters(f: Filters, avoidCount = 0): number {
   let n = 0;
-  if (f.accommodationType !== 'indistinto') n++;
-  if (f.climate !== 'indistinto') n++;
-  if (f.maxTravelTime !== 'sin-limite') n++;
-  if (f.departPref !== 'indistinto') n++;
-  if (f.arrivePref !== 'indistinto') n++;
+  if (f.accommodationType !== 'any') n++;
+  if (f.climate !== 'any') n++;
+  if (f.maxTravelTime !== 'no-limit') n++;
+  if (f.departPref !== 'any') n++;
+  if (f.arrivePref !== 'any') n++;
   n += avoidCount;
   return n;
 }

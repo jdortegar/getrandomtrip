@@ -3,33 +3,34 @@
 import { Bus, Plane, Ship, Train } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { normalizeTransportId } from '@/lib/helpers/transport';
 
 export const TRANSPORT_ICONS: Record<string, typeof Plane> = {
-  avion: Plane,
-  barco: Ship,
+  plane: Plane,
+  ship: Ship,
   bus: Bus,
-  tren: Train,
+  train: Train,
 };
 
 export const TRANSPORT_OPTIONS = [
-  { id: 'avion', label: 'Avión' },
-  { id: 'barco', label: 'Barco' },
   { id: 'bus', label: 'Bus' },
-  { id: 'tren', label: 'Tren' },
+  { id: 'plane', label: 'Plane' },
+  { id: 'ship', label: 'Ship' },
+  { id: 'train', label: 'Train' },
 ] as const;
 
 export const DEFAULT_TRANSPORT_ORDER: string[] = [
-  'avion',
-  'tren',
+  'plane',
+  'train',
   'bus',
-  'barco',
+  'ship',
 ];
 
 const DEFAULT_OPTION_LABELS: Record<string, string> = {
-  avion: 'Avión',
-  barco: 'Barco',
   bus: 'Bus',
-  tren: 'Tren',
+  plane: 'Plane',
+  ship: 'Ship',
+  train: 'Train',
 };
 
 export interface TransportSelectorLabels {

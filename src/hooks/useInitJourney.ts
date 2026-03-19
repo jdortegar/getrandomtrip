@@ -106,11 +106,11 @@ function buildStateUpdate(
     // Clear form data when coming from TypePlanner
     ...(clearFormData && {
       filters: {
-        transport: 'avion',
-        climate: 'indistinto',
-        maxTravelTime: 'sin-limite',
-        departPref: 'indistinto',
-        arrivePref: 'indistinto',
+        transport: 'plane',
+        climate: 'any',
+        maxTravelTime: 'no-limit',
+        departPref: 'any',
+        arrivePref: 'any',
       },
       addons: { selected: [] },
       filtersCostUsd: 0,

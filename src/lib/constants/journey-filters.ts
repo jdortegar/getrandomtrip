@@ -30,7 +30,7 @@ export interface FilterOption {
 export const FILTER_OPTION_KEYS = {
   accommodationType: {
     options: [
-      { key: 'indistinto' },
+      { key: 'any' },
       { key: 'hotel-style' },
       { key: 'home-style' },
       { key: 'nature-escape' },
@@ -40,31 +40,31 @@ export const FILTER_OPTION_KEYS = {
   },
   arrivePref: {
     options: [
-      { key: 'indistinto' },
-      { key: 'manana' },
-      { key: 'tarde' },
-      { key: 'noche' },
+      { key: 'any' },
+      { key: 'afternoon' },
+      { key: 'morning' },
+      { key: 'night' },
     ],
   },
   climate: {
     options: [
-      { key: 'indistinto' },
-      { key: 'calido' },
-      { key: 'frio' },
-      { key: 'templado' },
+      { key: 'any' },
+      { key: 'cold' },
+      { key: 'mild' },
+      { key: 'warm' },
     ],
   },
   departPref: {
     options: [
-      { key: 'indistinto' },
-      { key: 'manana' },
-      { key: 'tarde' },
-      { key: 'noche' },
+      { key: 'any' },
+      { key: 'afternoon' },
+      { key: 'morning' },
+      { key: 'night' },
     ],
   },
   maxTravelTime: {
     options: [
-      { key: 'sin-limite' },
+      { key: 'no-limit' },
       { key: '3h' },
       { key: '5h' },
       { key: '8h' },
@@ -72,10 +72,10 @@ export const FILTER_OPTION_KEYS = {
   },
   transport: {
     options: [
-      { key: 'avion' },
       { key: 'bus' },
-      { key: 'tren' },
-      { key: 'barco' },
+      { key: 'plane' },
+      { key: 'ship' },
+      { key: 'train' },
     ],
   },
 } as const;

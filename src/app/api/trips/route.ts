@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import {
+  normalizeJourneyFilterValue,
+  normalizeMaxTravelTimeKey,
+  normalizeTransportId,
+} from '@/lib/helpers/transport';
 
 // GET /api/trips - Get all trips for the authenticated user
 export async function GET(request: NextRequest) {
@@ -125,12 +130,12 @@ export async function POST(request: NextRequest) {
       endDate: endDate ? new Date(endDate) : null,
       nights: nights || 1,
       pax: pax || 1,
-      transport: transport || 'avion',
-      accommodationType: accommodationType || 'indistinto',
-      climate: climate || 'indistinto',
-      maxTravelTime: maxTravelTime || 'sin-limite',
-      departPref: departPref || 'indistinto',
-      arrivePref: arrivePref || 'indistinto',
+      transport: normalizeTransportId(transport) || 'plane',
+      accommodationType: normalizeJourneyFilterValue(accommodationType) || 'any',
+      climate: normalizeJourneyFilterValue(climate) || 'any',
+      maxTravelTime: normalizeMaxTravelTimeKey(maxTravelTime) || 'no-limit',
+      departPref: normalizeJourneyFilterValue(departPref) || 'any',
+      arrivePref: normalizeJourneyFilterValue(arrivePref) || 'any',
       avoidDestinations: avoidDestinations || [],
       addons: addons || [],
       basePriceUsd: basePriceUsd || 0,
