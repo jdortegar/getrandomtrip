@@ -4,11 +4,15 @@
  */
 
 import type { LevelSlug } from '@/types/core';
-import type { Level as PlannerLevel } from '@/types/planner';
+import type {
+  Level as PlannerLevel,
+  TypePlannerContent,
+} from '@/types/planner';
 import { getBasePricePerPerson } from '@/lib/data/traveler-types';
 import {
   getLevelContent,
   getLevelIdsForType,
+  getPlannerHeader,
   type ExperienceLevelId,
 } from '@/lib/data/experience-levels';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
@@ -154,6 +158,24 @@ export function getPlannerLevelsForType(
     });
   }
   return plannerLevels;
+}
+
+/**
+ * Full TypePlanner content from single source of truth (experience-levels + traveler-types).
+ * No merge with type data, no fallbacks.
+ */
+export function getPlannerContentForType(
+  type: string,
+  locale?: string,
+): TypePlannerContent {
+  const header = getPlannerHeader(type, locale);
+  const levels = getPlannerLevelsForType(type, locale);
+  return {
+    eyebrow: header.eyebrow,
+    levels,
+    subtitle: header.subtitle,
+    title: header.title,
+  };
 }
 
 /** Tier-like shape for grids (ExperienceLevelGrid, TripperTiers). */

@@ -53,6 +53,85 @@ export interface ExperienceLevelContent {
   subtitle: string;
 }
 
+/** Planner section header (title, subtitle, optional eyebrow) per type and locale. Single source for TypePlanner content. */
+export interface PlannerHeader {
+  eyebrow?: string;
+  subtitle: string;
+  title: string;
+}
+
+const PLANNER_HEADERS: Record<
+  TravelerTypeSlug,
+  Record<Locale, PlannerHeader>
+> = {
+  couple: {
+    es: {
+      title: 'Diseñen su Randomtrip en pareja',
+      subtitle:
+        'Tres pasos sencillos para vivir una historia que nadie más podrá contar.',
+    },
+    en: {
+      title: 'Design your Randomtrip as a couple',
+      subtitle:
+        'Three simple steps to live a story no one else will be able to tell.',
+    },
+  },
+  solo: {
+    es: {
+      eyebrow: 'Diseña tu Randomtrip en solitario',
+      title: 'tres pasos sencillos',
+      subtitle: 'para una aventura que solo tú podrás contar.',
+    },
+    en: {
+      eyebrow: 'Design your solo Randomtrip',
+      title: 'three simple steps',
+      subtitle: 'for an adventure only you will be able to tell.',
+    },
+  },
+  family: {
+    es: {
+      title: 'Diseñen su Randomtrip en familia',
+      subtitle:
+        '3 pasos cortos, para que comencemos a crear la mejor experiencia.',
+    },
+    en: {
+      title: 'Design your family Randomtrip',
+      subtitle: '3 short steps so we can start creating the best experience.',
+    },
+  },
+  group: {
+    es: {
+      title: 'De amigos a equipos: diseñen su Randomtrip',
+      subtitle: 'Pasos cortos, para crear la mejor experiencia grupal.',
+    },
+    en: {
+      title: 'From friends to teams: design your Randomtrip',
+      subtitle: 'Short steps to create the best group experience.',
+    },
+  },
+  honeymoon: {
+    es: {
+      title: 'Diseñen su Honeymoon Randomtrip',
+      subtitle: 'Tres pasos para comenzar su vida juntos de la mejor manera.',
+    },
+    en: {
+      title: 'Design your Honeymoon Randomtrip',
+      subtitle: 'Three steps to start your life together in the best way.',
+    },
+  },
+  paws: {
+    es: {
+      title: 'Diseñen su PAWS Randomtrip',
+      subtitle:
+        'Tres pasos sencillos para una aventura donde tu mascota es protagonista.',
+    },
+    en: {
+      title: 'Design your PAWS Randomtrip',
+      subtitle: 'Three simple steps for an adventure where your pet is the star.',
+    },
+  },
+};
+
 /** Honeymoon (NUPTIA) only has Atelier. */
 const LEVEL_IDS_BY_TYPE: Record<TravelerTypeSlug, readonly ExperienceLevelId[]> = {
   couple: ['essenza', 'explora', 'explora-plus', 'bivouac', 'atelier'],
@@ -613,6 +692,20 @@ function applyFeatureOverrides(
     const desc = overrides[f.title];
     return desc !== undefined ? { ...f, description: desc } : f;
   });
+}
+
+/**
+ * Planner section header (title, subtitle, eyebrow) for TypePlanner. Single source of truth.
+ */
+export function getPlannerHeader(
+  type: TravelerTypeSlug | string,
+  locale?: string,
+): PlannerHeader {
+  const loc = getLocale(locale);
+  const slug = type as TravelerTypeSlug;
+  if (!(slug in PLANNER_HEADERS))
+    throw new Error(`Unknown traveler type: ${type}`);
+  return PLANNER_HEADERS[slug][loc];
 }
 
 /**

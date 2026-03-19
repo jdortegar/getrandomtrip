@@ -59,10 +59,9 @@ const EmblaCarousel = ({
       <div className="relative w-full overflow-hidden p-1" ref={emblaRef}>
         <div
           className={cn(
-            'flex min-w-0 w-full touch-[pan-y_pinch-zoom] ',
+            'flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start',
             '-ml-4 @[640px]:-ml-6 @[1280px]:-ml-8',
           )}
-
         >
           {slides.map((child, index) => (
             <div

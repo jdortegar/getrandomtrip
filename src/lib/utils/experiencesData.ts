@@ -10,6 +10,7 @@ export {
   getLevelName,
   getLevelsForType,
   getMaxNights,
+  getPlannerContentForType,
   getPlannerLevelsForType,
   getTiersForDisplay,
   type Level,

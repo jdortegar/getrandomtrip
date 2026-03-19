@@ -61,7 +61,7 @@ export default function TypePlanner({
           const isFeatured = index === 2;
 
           return (
-            <div className="h-full @container p-3">
+            <div className="@container p-3">
               <LevelCard
                 featured={isFeatured}
                 key={level.id}
