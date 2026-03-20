@@ -3,6 +3,7 @@
 import { ArrowLeft, Check, User } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
 
 interface Tab {
   id: string;
@@ -39,8 +40,6 @@ export default function JourneyContentNavigation({
     const originCity = searchParams.get('originCity');
     const startDate = searchParams.get('startDate');
     const nights = searchParams.get('nights');
-    const transport = searchParams.get('transport');
-
     switch (tabId) {
       case 'budget':
         return !!(travelType && experience);
@@ -49,7 +48,9 @@ export default function JourneyContentNavigation({
       case 'details':
         return !!(originCountry && originCity && startDate && nights);
       case 'preferences':
-        return !!transport;
+        return isCompleteTransportOrderParam(
+          searchParams.get('transportOrder'),
+        );
       default:
         return false;
     }

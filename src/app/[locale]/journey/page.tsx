@@ -12,6 +12,8 @@ import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
 import { getHasExcuseStep } from '@/lib/helpers/excuse-helper';
+import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
+import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
 
 function getAccordionForStep(tabId: string, substepId?: string): string {
   switch (tabId) {
@@ -24,7 +26,8 @@ function getAccordionForStep(tabId: string, substepId?: string): string {
       if (substepId === 'transport') return 'transport';
       return 'origin';
     case 'preferences':
-      return substepId === 'addons' ? 'addons' : 'filters';
+      if (substepId === 'addons' && JOURNEY_ADDONS_ENABLED) return 'addons';
+      return 'filters';
     default:
       return '';
   }
@@ -61,7 +64,7 @@ function getInitialStepFromParams(params: URLSearchParams): {
   const originCity = params.get('originCity');
   const startDate = params.get('startDate');
   const nights = params.get('nights');
-  const transport = params.get('transport');
+  const transportOrder = params.get('transportOrder');
 
   if (!travelType) return { tabId: 'budget', sectionId: 'travel-type' };
   if (!experience) return { tabId: 'budget', sectionId: 'experience' };
@@ -73,7 +76,8 @@ function getInitialStepFromParams(params: URLSearchParams): {
   if (!originCountry || !originCity)
     return { tabId: 'details', sectionId: 'origin' };
   if (!startDate || !nights) return { tabId: 'details', sectionId: 'dates' };
-  if (!transport) return { tabId: 'details', sectionId: 'transport' };
+  if (!isCompleteTransportOrderParam(transportOrder))
+    return { tabId: 'details', sectionId: 'transport' };
   return { tabId: 'preferences', sectionId: 'filters' };
 }
 
@@ -129,13 +133,12 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   }
 
   const journey = dict.journey;
-  const contentTabs = journey.contentTabs;
   const travelType = searchParams.get('travelType');
   const experience = searchParams.get('experience');
   const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience ?? '');
   const contentTabsForUI = hasExcuseStep
-    ? contentTabs
-    : contentTabs.filter((tab) => tab.id !== 'excuse');
+    ? journey.contentTabs
+    : journey.contentTabs.filter((tab) => tab.id !== 'excuse');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -159,6 +162,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           <div className="lg:sticky lg:top-8 lg:self-start hidden lg:block">
             <JourneyProgressSidebar
               activeTab={activeTab}
+              addonsComingSoonLabel={journey.mainContent.addonsComingSoon}
               onStepClick={handleStepClick}
               tabs={contentTabsForUI}
             />

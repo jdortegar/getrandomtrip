@@ -179,6 +179,7 @@ export interface MarketingDictionary {
       title: string;
     };
     mainContent: {
+      addonsComingSoon: string;
       clearAll: string;
       completeBudgetAndExcuse: string;
       completeBudgetFirst: string;

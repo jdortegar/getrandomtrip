@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import { GlobalAuthModal } from '@/components/providers/GlobalAuthModal';
 import SessionProvider from '@/components/providers/SessionProvider';
 import SetLocaleLang from '@/components/providers/SetLocaleLang';
 import AppTracking from '@/components/tracking/AppTracking';
@@ -39,6 +40,7 @@ export default async function LocaleLayout({
       <GateAwareChrome dict={dict} locale={localeTyped}>
         {children}
       </GateAwareChrome>
+      <GlobalAuthModal dict={dict} />
       <Toaster />
     </SessionProvider>
   );

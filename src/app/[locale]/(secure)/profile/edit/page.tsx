@@ -1,6 +1,5 @@
 'use client';
 
-import AuthModal from '@/components/auth/AuthModal';
 import GlassCard from '@/components/ui/GlassCard';
 import PageContainer from '@/components/user/PageContainer';
 import SectionCard from '@/components/user/SectionCard';
@@ -10,15 +9,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
-  const {
-    closeAuth,
-    isAuthed,
-    openAuth,
-    updateAccount,
-    upsertPrefs,
-    user,
-    authModalOpen,
-  } = useUserStore();
+  const { isAuthed, openAuth, updateAccount, upsertPrefs, user } =
+    useUserStore();
 
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
@@ -159,12 +151,6 @@ export default function EditProfilePage() {
           </div>
         </SectionCard>
       </div>
-
-      <AuthModal
-        defaultMode="login"
-        onClose={closeAuth}
-        isOpen={authModalOpen}
-      />
     </PageContainer>
   );
 }

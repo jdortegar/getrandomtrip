@@ -8,7 +8,6 @@ import { Calendar, Loader2, MapPin } from 'lucide-react';
 
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import ChatFab from '@/components/chrome/ChatFab';
-import AuthModal from '@/components/auth/AuthModal';
 import HeaderHero from '@/components/journey/HeaderHero';
 import Img from '@/components/common/Img';
 import {
@@ -16,9 +15,9 @@ import {
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
 import {
+  getPrimaryTransportIdFromOrderParam,
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
-  normalizeTransportId,
 } from '@/lib/helpers/transport';
 
 import { useUserStore } from '@/store/slices/userStore';
@@ -134,7 +133,9 @@ function logisticsFromParams(
 function filtersFromParams(searchParams: URLSearchParams): Filters {
   const accommodationType =
     normalizeJourneyFilterValue(searchParams.get('accommodationType')) ?? 'any';
-  const transport = normalizeTransportId(searchParams.get('transport')) ?? 'plane';
+  const transport = getPrimaryTransportIdFromOrderParam(
+    searchParams.get('transportOrder'),
+  );
   const climate = normalizeJourneyFilterValue(searchParams.get('climate')) ?? 'any';
   const maxTravelTime =
     normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) ?? 'no-limit';
@@ -232,7 +233,7 @@ function CheckoutContent() {
   const resolvedLocale = hasLocale(locale) ? locale : 'es';
 
   const { data: session, status } = useSession();
-  const { isAuthed, authModalOpen, closeAuth } = useUserStore();
+  const { isAuthed } = useUserStore();
 
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [paxOverride, setPaxOverride] = useState<number | null>(null);
@@ -885,12 +886,6 @@ function CheckoutContent() {
 
         <ChatFab />
       </div>
-
-      <AuthModal
-        defaultMode="login"
-        isOpen={authModalOpen}
-        onClose={closeAuth}
-      />
     </div>
   );
 }

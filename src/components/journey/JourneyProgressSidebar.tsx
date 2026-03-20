@@ -4,6 +4,8 @@ import { Check } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { getHasExcuseStep } from '@/lib/helpers/excuse-helper';
+import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
+import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
 
 interface Substep {
   description: string;
@@ -19,6 +21,8 @@ interface ContentTab {
 
 interface JourneyProgressSidebarProps {
   activeTab: string;
+  /** Shown as a badge when add-ons substep exists but is disabled (journey flag). */
+  addonsComingSoonLabel: string;
   className?: string;
   onStepClick?: (tabId: string, substepId?: string) => void;
   tabs: ContentTab[];
@@ -26,6 +30,7 @@ interface JourneyProgressSidebarProps {
 
 export default function JourneyProgressSidebar({
   activeTab,
+  addonsComingSoonLabel,
   className,
   onStepClick,
   tabs,
@@ -46,7 +51,6 @@ export default function JourneyProgressSidebar({
     const originCity = searchParams.get('originCity');
     const startDate = searchParams.get('startDate');
     const nights = searchParams.get('nights');
-    const transport = searchParams.get('transport');
     const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience);
 
     switch (tabId) {
@@ -57,7 +61,9 @@ export default function JourneyProgressSidebar({
       case 'details':
         return !!(originCountry && originCity && startDate && nights);
       case 'preferences':
-        return !!transport;
+        return isCompleteTransportOrderParam(
+          searchParams.get('transportOrder'),
+        );
       default:
         return false;
     }
@@ -73,7 +79,6 @@ export default function JourneyProgressSidebar({
     const startDate = searchParams.get('startDate');
     const nights = searchParams.get('nights');
     const transportOrder = searchParams.get('transportOrder');
-    const transport = searchParams.get('transport');
     const addons = searchParams.get('addons');
     const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience);
 
@@ -109,9 +114,10 @@ export default function JourneyProgressSidebar({
 
     if (tabId === 'preferences') {
       if (substepId === 'filters') {
-        return !!transport;
+        return isCompleteTransportOrderParam(transportOrder);
       }
       if (substepId === 'addons') {
+        if (!JOURNEY_ADDONS_ENABLED) return true;
         return !!addons;
       }
     }
@@ -209,6 +215,10 @@ export default function JourneyProgressSidebar({
                     {hasSubsteps && isActive && (
                       <div className="space-y-6 ml-0">
                         {tab.substeps.map((substep, substepIndex) => {
+                          const isAddonsComingSoon =
+                            tab.id === 'preferences' &&
+                            substep.id === 'addons' &&
+                            !JOURNEY_ADDONS_ENABLED;
                           const isSubstepActive =
                             isActive && substepIndex === 0;
                           const isSubstepCompleted = isSubstepComplete(
@@ -220,13 +230,21 @@ export default function JourneyProgressSidebar({
 
                           return (
                             <div
-                              className="cursor-pointer flex gap-3 items-start relative"
+                              aria-disabled={isAddonsComingSoon}
+                              className={cn(
+                                'flex gap-3 items-start relative',
+                                isAddonsComingSoon
+                                  ? 'cursor-not-allowed opacity-60'
+                                  : 'cursor-pointer',
+                              )}
                               key={substep.id}
                               onClick={(e) => {
                                 e.stopPropagation();
+                                if (isAddonsComingSoon) return;
                                 onStepClick?.(tab.id, substep.id);
                               }}
                               onKeyDown={(e) => {
+                                if (isAddonsComingSoon) return;
                                 if (e.key === 'Enter' || e.key === ' ') {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -234,15 +252,17 @@ export default function JourneyProgressSidebar({
                                 }
                               }}
                               role="button"
-                              tabIndex={0}
+                              tabIndex={isAddonsComingSoon ? -1 : 0}
                             >
                               {/* Horizontal line connecting to vertical timeline */}
                               <div
                                 className={cn('absolute top-[7px] h-0.5', {
                                   'bg-[#4F96B6]':
-                                    isSubstepActive || isSubstepCompleted,
+                                    !isAddonsComingSoon &&
+                                    (isSubstepActive || isSubstepCompleted),
                                   'bg-gray-300':
-                                    !isSubstepActive && !isSubstepCompleted,
+                                    isAddonsComingSoon ||
+                                    (!isSubstepActive && !isSubstepCompleted),
                                 })}
                                 style={{ width: '40px', left: '-36px' }}
                               />
@@ -251,11 +271,16 @@ export default function JourneyProgressSidebar({
                               <div className="relative z-10 flex-shrink-0 mt-1">
                                 <div
                                   className={cn('w-2 h-2 rounded-full', {
-                                    'bg-[#4F96B6]': isSubstepCompleted,
+                                    'bg-[#4F96B6]':
+                                      isSubstepCompleted && !isAddonsComingSoon,
                                     'bg-white border border-[#4F96B6]':
-                                      isSubstepActive && !isSubstepCompleted,
+                                      isSubstepActive &&
+                                      !isSubstepCompleted &&
+                                      !isAddonsComingSoon,
                                     'bg-white border border-gray-300':
-                                      !isSubstepActive && !isSubstepCompleted,
+                                      isAddonsComingSoon ||
+                                      (!isSubstepActive &&
+                                        !isSubstepCompleted),
                                   })}
                                 />
                               </div>
@@ -264,23 +289,36 @@ export default function JourneyProgressSidebar({
                               <div className="flex-1">
                                 <h3
                                   className={cn(
-                                    'text-sm font-bold uppercase mb-1',
+                                    'mb-1 flex flex-wrap items-center gap-2 text-sm font-bold uppercase',
                                     {
                                       'text-[#4F96B6]':
-                                        isSubstepActive || isSubstepCompleted,
+                                        (isSubstepActive || isSubstepCompleted) &&
+                                        !isAddonsComingSoon,
                                       'text-gray-400':
-                                        !isSubstepActive && !isSubstepCompleted,
+                                        (!isSubstepActive &&
+                                          !isSubstepCompleted) ||
+                                        isAddonsComingSoon,
                                     },
                                   )}
                                 >
                                   {substep.title}
+                                  {isAddonsComingSoon ? (
+                                    <span
+                                      className="inline-flex rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-semibold normal-case tracking-wide text-gray-700"
+                                    >
+                                      {addonsComingSoonLabel}
+                                    </span>
+                                  ) : null}
                                 </h3>
                                 <p
                                   className={cn('text-xs leading-relaxed', {
                                     'text-gray-700':
-                                      isSubstepActive || isSubstepCompleted,
+                                      (isSubstepActive || isSubstepCompleted) &&
+                                      !isAddonsComingSoon,
                                     'text-gray-400':
-                                      !isSubstepActive && !isSubstepCompleted,
+                                      (!isSubstepActive &&
+                                        !isSubstepCompleted) ||
+                                      isAddonsComingSoon,
                                   })}
                                 >
                                   {substep.description}

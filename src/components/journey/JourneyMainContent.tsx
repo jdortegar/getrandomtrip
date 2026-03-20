@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import BudgetStep from '@/components/journey/BudgetStep';
 import ExcuseStep from '@/components/journey/ExcuseStep';
@@ -9,6 +10,7 @@ import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
 import type { JourneyDetailsStepLabels } from '@/components/journey/JourneyDetailsStep';
 import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
 import {
+  isCompleteTransportOrderParam,
   normalizeMaxTravelTimeKey,
   normalizeTransportId,
   normalizeJourneyFilterValue,
@@ -30,6 +32,7 @@ import { useUserStore } from '@/store/slices/userStore';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
 
 interface JourneyMainContentLabels {
   clearAll: string;
@@ -114,6 +117,7 @@ export default function JourneyMainContent({
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = (params?.locale as string) ?? 'es';
+  const { data: session, status: sessionStatus } = useSession();
   const [isSavingAndRedirecting, setIsSavingAndRedirecting] = useState(false);
   const updateQuery = useQuerySync();
 
@@ -122,6 +126,16 @@ export default function JourneyMainContent({
     const { originCountry, originCity } = tripPayload;
     if (!originCountry || !originCity) {
       toast.error('Completá ciudad y país de origen para continuar.');
+      return;
+    }
+    if (sessionStatus === 'loading') {
+      toast.info('Cargando sesión…');
+      return;
+    }
+    if (!session?.user?.email) {
+      const { openAuth } = useUserStore.getState();
+      openAuth('signin');
+      toast.info('Iniciá sesión para continuar al checkout.');
       return;
     }
     setIsSavingAndRedirecting(true);
@@ -149,7 +163,7 @@ export default function JourneyMainContent({
     } finally {
       setIsSavingAndRedirecting(false);
     }
-  }, [locale, router, searchParams]);
+  }, [locale, router, searchParams, session?.user?.email, sessionStatus]);
   const { filters, setPartial } = useStore();
   const [internalAccordion, setInternalAccordion] = useState<string>('');
   const isControlled =
@@ -197,7 +211,7 @@ export default function JourneyMainContent({
       activeTab === 'preferences' &&
       accordionValue !== '' &&
       accordionValue !== 'filters' &&
-      accordionValue !== 'addons'
+      !(JOURNEY_ADDONS_ENABLED && accordionValue === 'addons')
     ) {
       setAccordionValue('filters');
     }
@@ -239,10 +253,6 @@ export default function JourneyMainContent({
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
   }, [searchParams]);
 
-  const transport = useMemo(() => {
-    return normalizeTransportId(searchParams.get('transport')) || undefined;
-  }, [searchParams]);
-
   const transportOrder = useMemo(() => {
     const raw = searchParams.get('transportOrder');
     if (!raw) return DEFAULT_TRANSPORT_ORDER;
@@ -253,6 +263,12 @@ export default function JourneyMainContent({
       .filter((id): id is string => Boolean(id));
     return ids.length === 4 ? ids : DEFAULT_TRANSPORT_ORDER;
   }, [searchParams]);
+
+  const transport = isCompleteTransportOrderParam(
+    searchParams.get('transportOrder'),
+  )
+    ? normalizeTransportId(transportOrder[0])
+    : undefined;
 
   const prevActiveTabRef = useRef(activeTab);
   const [draftOriginCountry, setDraftOriginCountry] = useState('');
@@ -285,8 +301,6 @@ export default function JourneyMainContent({
         originCity: draftOriginCity || undefined,
         originCountry: draftOriginCountry || undefined,
         startDate: draftStartDate ?? undefined,
-        transport:
-          draftTransportOrder.length === 4 ? draftTransportOrder[0] : undefined,
         transportOrder:
           draftTransportOrder.length === 4
             ? draftTransportOrder.join(',')
@@ -425,7 +439,6 @@ export default function JourneyMainContent({
       originCountry: undefined,
       refineDetails: undefined,
       startDate: undefined,
-      transport: undefined,
       transportOrder: undefined,
       avoidDestinations: undefined as string | undefined,
     }),
@@ -447,7 +460,6 @@ export default function JourneyMainContent({
       originCountry: undefined,
       refineDetails: undefined,
       startDate: undefined,
-      transport: undefined,
       transportOrder: undefined,
     }),
     [],
@@ -512,7 +524,6 @@ export default function JourneyMainContent({
         originCity: undefined,
         originCountry: value || undefined,
         startDate: undefined,
-        transport: undefined,
         transportOrder: undefined,
       });
       setPartial({ filters: { ...filters, avoidDestinations: [] } });
@@ -533,7 +544,6 @@ export default function JourneyMainContent({
         nights: undefined,
         originCity: value || undefined,
         startDate: undefined,
-        transport: undefined,
         transportOrder: undefined,
       });
       setPartial({ filters: { ...filters, avoidDestinations: [] } });
@@ -577,15 +587,10 @@ export default function JourneyMainContent({
       setDraftTransportOrder(orderedIds);
     } else {
       updateQuery({
-        transport: orderedIds[0],
         transportOrder:
           orderedIds.length === 4 ? orderedIds.join(',') : undefined,
       });
     }
-  };
-
-  const handleTransportChange = (value: string) => {
-    updateQuery({ transport: value });
   };
 
   const handleDepartPrefChange = (value: string) => {
@@ -621,7 +626,7 @@ export default function JourneyMainContent({
       departPref: draftDepartPref,
       maxTravelTime: draftMaxTravelTime,
     });
-    setAccordionValue('addons');
+    setAccordionValue(JOURNEY_ADDONS_ENABLED ? 'addons' : '');
     scrollToActions();
   };
 
@@ -707,7 +712,6 @@ export default function JourneyMainContent({
       originCountry: undefined,
       refineDetails: undefined,
       startDate: undefined,
-      transport: undefined,
       transportOrder: undefined,
       travelType: undefined,
     });
@@ -769,7 +773,7 @@ export default function JourneyMainContent({
 
   const hasSelections =
     (accommodationType && accommodationType !== 'any') ||
-    addons ||
+    (JOURNEY_ADDONS_ENABLED && addons) ||
     arrivePref ||
     climate ||
     departPref ||

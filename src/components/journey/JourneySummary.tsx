@@ -22,6 +22,8 @@ import {
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
 import { cn } from '@/lib/utils';
+import { getOptionalPrimaryTransportFromOrderParam } from '@/lib/helpers/transport';
+import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
 import type { MarketingDictionary } from '@/lib/types/dictionary';
 
 type JourneySummaryDict = MarketingDictionary['journey']['summary'];
@@ -156,7 +158,9 @@ export default function JourneySummary({
     const n = nightsParam ? Number(nightsParam) : NaN;
     return Number.isFinite(n) && n > 0 ? n : 1;
   }, [nightsParam]);
-  const transport = searchParams.get('transport') || undefined;
+  const transport = getOptionalPrimaryTransportFromOrderParam(
+    searchParams.get('transportOrder'),
+  );
   const accommodationType = searchParams.get('accommodationType') || undefined;
   const departPref = searchParams.get('departPref') || undefined;
   const arrivePref = searchParams.get('arrivePref') || undefined;
@@ -375,13 +379,15 @@ export default function JourneySummary({
   const totalPrice = useMemo(() => {
     let base = selectedLevel?.price ?? 0;
     base += filterCost;
-    selectedAddons.forEach((addon) => {
-      if (addon.priceType === 'currency') {
-        base += addon.price;
-      } else {
-        base += (base * addon.price) / 100;
-      }
-    });
+    if (JOURNEY_ADDONS_ENABLED) {
+      selectedAddons.forEach((addon) => {
+        if (addon.priceType === 'currency') {
+          base += addon.price;
+        } else {
+          base += (base * addon.price) / 100;
+        }
+      });
+    }
     return formatUSD(Math.round(base));
   }, [filterCost, selectedLevel, selectedAddons]);
 
@@ -394,7 +400,7 @@ export default function JourneySummary({
     (startDate && nights) ||
     transportLabel ||
     activeFilters.length > 0 ||
-    selectedAddons.length > 0;
+    (JOURNEY_ADDONS_ENABLED && selectedAddons.length > 0);
 
   const sectionTitleClass = 'text-base font-bold text-gray-900';
   const detailClass = 'text-sm font-normal text-gray-900';
@@ -758,64 +764,65 @@ export default function JourneySummary({
         </div>
       </div>
 
-      {/* Extras (add-ons) */}
-      <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
-          {selectedAddons.length > 0
-            ? summary.addonsSectionCount.replace(
-                '{count}',
-                String(selectedAddons.length),
-              )
-            : summary.addonsSection}
-        </p>
-        <div className="mt-2 flex items-start justify-between gap-3">
-          {selectedAddons.length > 0 ? (
-            <>
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                {selectedAddons.map((addon) => (
-                  <div
-                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
-                    key={addon.id}
-                  >
-                    <span>
-                      {addonLabels?.[addon.id]?.title ?? addon.title}
-                      {addon.priceType === 'currency'
-                        ? ` — USD ${addon.price}`
-                        : ` — ${addon.price}%`}
-                    </span>
-                    <button
-                      aria-label={summary.addonRemoveAria}
-                      className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
-                      onClick={() => handleRemoveAddon(addon.id)}
-                      type="button"
+      {JOURNEY_ADDONS_ENABLED ? (
+        <div className="border-b border-gray-200 pb-4">
+          <p className={cn('w-full', sectionTitleClass)}>
+            {selectedAddons.length > 0
+              ? summary.addonsSectionCount.replace(
+                  '{count}',
+                  String(selectedAddons.length),
+                )
+              : summary.addonsSection}
+          </p>
+          <div className="mt-2 flex items-start justify-between gap-3">
+            {selectedAddons.length > 0 ? (
+              <>
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  {selectedAddons.map((addon) => (
+                    <div
+                      className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                      key={addon.id}
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
+                      <span>
+                        {addonLabels?.[addon.id]?.title ?? addon.title}
+                        {addon.priceType === 'currency'
+                          ? ` — USD ${addon.price}`
+                          : ` — ${addon.price}%`}
+                      </span>
+                      <button
+                        aria-label={summary.addonRemoveAria}
+                        className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                        onClick={() => handleRemoveAddon(addon.id)}
+                        type="button"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className={actionButtonClass}
+                  onClick={() => onEdit?.('addons')}
+                  type="button"
+                >
+                  {summary.change}
+                </button>
+              </>
+            ) : (
+              <div className="flex w-full items-center justify-between gap-3">
+                <p className={detailClass}>{summary.noAddons}</p>
+                <button
+                  className={actionButtonClass}
+                  onClick={() => onEdit?.('addons')}
+                  type="button"
+                >
+                  {summary.add}
+                </button>
               </div>
-              <button
-                className={actionButtonClass}
-                onClick={() => onEdit?.('addons')}
-                type="button"
-              >
-                {summary.change}
-              </button>
-            </>
-          ) : (
-            <div className="flex w-full items-center justify-between gap-3">
-              <p className={detailClass}>{summary.noAddons}</p>
-              <button
-                className={actionButtonClass}
-                onClick={() => onEdit?.('addons')}
-                type="button"
-              >
-                {summary.add}
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {/* Total USD */}
       {hasAnySummary && (

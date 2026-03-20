@@ -34,19 +34,20 @@ export type LevelIdWithExcuse = (typeof LEVEL_IDS_WITH_EXCUSE)[number];
 
 /**
  * Excuse step rule per product:
- * - 'explora-plus-and-bivouac': only Explora+ and Bivouac show excuse (BOND, KIN, CREW).
- * - 'all-levels': all levels except Atelier show excuse (SOLUM, PAWS).
+ * - 'explora-plus-and-bivouac': only Explora+ and Bivouac show excuse + refine details
+ *   (BOND, KIN, CREW, SOLUM, PAWS per product maps).
+ * - 'all-levels': Essenza through Bivouac show excuse (not used currently; Atelier never).
  * - 'none': no excuse step (NUPTIA / honeymoon).
  */
 export type ExcuseRule = 'all-levels' | 'explora-plus-and-bivouac' | 'none';
 
 export const EXCUSE_RULE_BY_TYPE: Record<TravelerTypeSlug, ExcuseRule> = {
-  couple: 'explora-plus-and-bivouac',  // BOND
-  solo: 'all-levels',                    // SOLUM
-  family: 'explora-plus-and-bivouac',   // KIN
-  group: 'explora-plus-and-bivouac',    // CREW
-  honeymoon: 'none',                    // NUPTIA
-  paws: 'all-levels',                   // PAWS
+  couple: 'explora-plus-and-bivouac', // BOND
+  solo: 'explora-plus-and-bivouac', // SOLUM — steps 3–4 only Explora+ & Bivouac
+  family: 'explora-plus-and-bivouac', // KIN
+  group: 'explora-plus-and-bivouac', // CREW
+  honeymoon: 'none', // NUPTIA
+  paws: 'explora-plus-and-bivouac', // PAWS — steps 3–4 only Explora+ & Bivouac
 };
 
 /** Normalize level id for comparison (e.g. explora-plus, modo-explora). */

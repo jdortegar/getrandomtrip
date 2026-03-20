@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/slices/userStore';
 import GlassCard from '@/components/ui/GlassCard';
 import BgCarousel from '@/components/media/BgCarousel';
-import AuthModal from '@/components/auth/AuthModal';
 import LoadingSpinner from '../layout/LoadingSpinner';
 
 interface SecureRouteProps {
@@ -21,7 +20,7 @@ export default function SecureRoute({
   fallback,
 }: SecureRouteProps) {
   const { data: session, status } = useSession();
-  const { isAuthed, user, authModalOpen, closeAuth } = useUserStore();
+  const { isAuthed, user } = useUserStore();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
@@ -65,16 +64,7 @@ export default function SecureRoute({
 
   // Not authenticated: show same page + auth modal (no full-page fallback)
   if (!session && !isAuthed) {
-    return (
-      <>
-        {children}
-        <AuthModal
-          defaultMode="login"
-          isOpen={authModalOpen}
-          onClose={closeAuth}
-        />
-      </>
-    );
+    return <>{children}</>;
   }
 
   // Check role if required (compare normalized roles)
@@ -100,14 +90,5 @@ export default function SecureRoute({
     );
   }
 
-  return (
-    <>
-      {children}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={closeAuth}
-        defaultMode="login"
-      />
-    </>
-  );
+  return <>{children}</>;
 }

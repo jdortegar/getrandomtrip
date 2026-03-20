@@ -3,14 +3,13 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
-import AuthModal from '@/components/auth/AuthModal';
 
 export default function TripperGuard({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthed, user, authModalOpen, closeAuth } = useUserStore();
+  const { isAuthed, user } = useUserStore();
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -59,14 +58,5 @@ export default function TripperGuard({
     return null;
   }
 
-  return (
-    <>
-      {children}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={closeAuth}
-        defaultMode="login"
-      />
-    </>
-  );
+  return <>{children}</>;
 }

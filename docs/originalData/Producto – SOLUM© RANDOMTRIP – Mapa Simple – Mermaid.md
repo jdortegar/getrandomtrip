@@ -60,7 +60,7 @@ Elegir un nivel de experiencia
          • Beneficio: Co-creación del viaje con un Tripper Travel Advisor + soporte 24/7
    │
    ▼
-PASO 3
+PASO 3 (Aplica solo para Explora + y Bivouac)
 La excusa
 Elegir una motivación principal del viaje
    │
@@ -74,7 +74,7 @@ Elegir una motivación principal del viaje
    └── Tribe Encounters
    │
    ▼
-PASO 4
+PASO 4 (Aplica solo para Explora + y Bivouac)
 Afinar detalles
 Elegir 1 o más opciones según la excusa seleccionada
    │

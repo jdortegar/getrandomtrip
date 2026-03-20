@@ -62,7 +62,7 @@ Elegir un nivel de experiencia
          • Beneficio: Co-creación del viaje con Tripper Travel Advisor + soporte 24/7
    │
    ▼
-PASO 3
+PASO 3 (Aplica solo para Explora + y Bivouac)
 La excusa
 Elegir una motivación de viaje
    │
@@ -76,7 +76,7 @@ Elegir una motivación de viaje
    └── Dog Events & Comunidades
    │
    ▼
-PASO 4
+PASO 4 (Aplica solo para Explora + y Bivouac)
 Afinar detalles
 Opciones por excusa (se puede elegir más de una)
    │

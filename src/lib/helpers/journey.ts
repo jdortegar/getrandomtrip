@@ -1,8 +1,8 @@
 import type { Filters } from '@/store/slices/journeyStore';
 import {
+  getPrimaryTransportIdFromOrderParam,
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
-  normalizeTransportId,
 } from '@/lib/helpers/transport';
 
 /** Payload shape for POST /api/trip-requests when creating from journey URL params. */
@@ -101,8 +101,9 @@ export function buildTripRequestPayloadFromSearchParams(
     endDate,
     nights: nightsNum,
     pax,
-    transport:
-      normalizeTransportId(searchParams.get('transport')) ?? 'plane',
+    transport: getPrimaryTransportIdFromOrderParam(
+      searchParams.get('transportOrder'),
+    ),
     accommodationType:
       normalizeJourneyFilterValue(searchParams.get('accommodationType')) ??
       'any',

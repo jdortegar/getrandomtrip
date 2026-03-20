@@ -1,6 +1,6 @@
 // Centralized excuse data - single source of truth
-// Excuses and refine-details are only shown for specific levels (essenza, explora, exploraPlus, bivouac).
-// Atelier and honeymoon do not show the excuse step. See hasExcuseStep in @/lib/constants/product-config.
+// Which levels show excuse + refine-details is defined in @/lib/constants/product-config (hasExcuseStep):
+// e.g. BOND/KIN/CREW/SOLUM/PAWS → Explora+ and Bivouac only; NUPTIA (honeymoon) → none; Atelier never.
 export interface ExcuseData {
   key: string;
   title: string;
