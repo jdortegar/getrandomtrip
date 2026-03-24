@@ -160,8 +160,7 @@ export default function CheckoutResultSuccess({
         <main className="flex-grow">
           <section
             className={cn(
-              'container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20',
-              showSuccess && 'bg-orange-50/80',
+              'container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20'
             )}
           >
             <div
