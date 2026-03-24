@@ -14,12 +14,6 @@ import {
   TRANSPORT_ICONS,
   TRANSPORT_OPTIONS,
 } from '@/components/journey/TransportSelector';
-import {
-  getPrimaryTransportIdFromOrderParam,
-  normalizeJourneyFilterValue,
-  normalizeMaxTravelTimeKey,
-} from '@/lib/helpers/transport';
-
 import { useUserStore } from '@/store/slices/userStore';
 import { ADDONS } from '@/lib/data/shared/addons-catalog';
 import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
@@ -36,21 +30,8 @@ import { toast } from 'react-toastify';
 import { hasLocale } from '@/lib/i18n/config';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
 import { cn } from '@/lib/utils';
-import CheckoutResultFailure from './CheckoutResultFailure';
-import CheckoutResultPending from './CheckoutResultPending';
-import CheckoutResultSuccess from './CheckoutResultSuccess';
 
 const usd = (n: number) => `USD ${n.toFixed(2)}`;
-
-const DEFAULT_PAX = 2;
-
-type TravelerType =
-  | 'couple'
-  | 'solo'
-  | 'family'
-  | 'group'
-  | 'honeymoon'
-  | 'paws';
 
 function normalizeLevelForCatalog(raw?: string | null): string | undefined {
   if (!raw) return undefined;
@@ -101,75 +82,6 @@ function getBasePriceFromCatalog(
   return getBasePricePerPerson(type, experience);
 }
 
-function logisticsFromParams(
-  searchParams: URLSearchParams,
-  storePax?: number,
-): Logistics {
-  const originCountry = searchParams.get('originCountry') ?? '';
-  const originCity = searchParams.get('originCity') ?? '';
-  const startDateRaw = searchParams.get('startDate');
-  const nightsRaw = searchParams.get('nights');
-  const nights = nightsRaw ? Math.max(1, parseInt(nightsRaw, 10) || 1) : 1;
-  const pax = storePax ?? DEFAULT_PAX;
-
-  let startDate: Date | undefined;
-  let endDate: Date | undefined;
-  if (startDateRaw) {
-    startDate = new Date(startDateRaw);
-    endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + nights);
-  }
-
-  return {
-    city: originCity,
-    country: originCountry,
-    endDate,
-    nights,
-    pax,
-    startDate,
-  };
-}
-
-function filtersFromParams(searchParams: URLSearchParams): Filters {
-  const accommodationType =
-    normalizeJourneyFilterValue(searchParams.get('accommodationType')) ?? 'any';
-  const transport = getPrimaryTransportIdFromOrderParam(
-    searchParams.get('transportOrder'),
-  );
-  const climate = normalizeJourneyFilterValue(searchParams.get('climate')) ?? 'any';
-  const maxTravelTime =
-    normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) ?? 'no-limit';
-  const departPref =
-    normalizeJourneyFilterValue(searchParams.get('departPref')) ?? 'any';
-  const arrivePref =
-    normalizeJourneyFilterValue(searchParams.get('arrivePref')) ?? 'any';
-  const avoidRaw = searchParams.get('avoidDestinations');
-  const avoidDestinations = avoidRaw
-    ? avoidRaw.split(',').map((s) => s.trim()).filter(Boolean)
-    : [];
-
-  return {
-    accommodationType,
-    arrivePref,
-    avoidDestinations,
-    climate,
-    departPref,
-    maxTravelTime,
-    transport,
-  };
-}
-
-function addonsFromParams(searchParams: URLSearchParams): {
-  selected: Array<{ id: string; qty: number }>;
-} {
-  const raw = searchParams.get('addons');
-  if (!raw) return { selected: [] };
-  const ids = raw.split(',').map((s) => s.trim()).filter(Boolean);
-  return {
-    selected: ids.map((id) => ({ id, qty: 1 })),
-  };
-}
-
 /** Trip from API (GET /api/trips/[id]). */
 interface TripFromApi {
   id: string;
@@ -214,21 +126,11 @@ function filtersFromTrip(trip: TripFromApi): Filters {
   };
 }
 
-function isMpSuccessReturn(searchParams: URLSearchParams): boolean {
-  return !!(
-    searchParams.get('payment_id') ||
-    searchParams.get('collection_id') ||
-    searchParams.get('external_reference')
-  );
-}
-
 function CheckoutContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const tripId = searchParams.get('tripId');
-  const result = searchParams.get('result');
-  const hasMpSuccessParams = isMpSuccessReturn(searchParams);
   const locale = (params?.locale as string) ?? 'es';
   const resolvedLocale = hasLocale(locale) ? locale : 'es';
 
@@ -246,14 +148,9 @@ function CheckoutContent() {
   }, [resolvedLocale]);
 
   useEffect(() => {
-    const inResultMode = result === 'failure' || result === 'pending' || result === 'success' || hasMpSuccessParams;
-    if (!tripId && !inResultMode) {
+    if (!tripId) {
       setTripLoading(false);
       router.replace(`/${locale}/journey`);
-      return;
-    }
-    if (!tripId || inResultMode) {
-      setTripLoading(false);
       return;
     }
     let cancelled = false;
@@ -525,12 +422,6 @@ function CheckoutContent() {
     }
   };
 
-  const inResultMode =
-    result === 'failure' ||
-    result === 'pending' ||
-    result === 'success' ||
-    hasMpSuccessParams;
-
   if (status === 'loading' || tripLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -539,11 +430,11 @@ function CheckoutContent() {
     );
   }
 
-  if (!tripId && !inResultMode) {
+  if (!tripId) {
     return null;
   }
 
-  if (!inResultMode && (tripError || !trip)) {
+  if (tripError || !trip) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4">
         <p className="text-center text-gray-700">
@@ -570,32 +461,6 @@ function CheckoutContent() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <LoadingSpinner />
       </div>
-    );
-  }
-
-  if (result === 'failure') {
-    return (
-      <CheckoutResultFailure
-        labels={dict.paymentFailure}
-        locale={locale}
-      />
-    );
-  }
-  if (result === 'pending') {
-    return (
-      <CheckoutResultPending
-        labels={dict.paymentPending}
-        locale={locale}
-      />
-    );
-  }
-  if (result === 'success' || hasMpSuccessParams) {
-    return (
-      <CheckoutResultSuccess
-        hero={dict.confirmation.hero}
-        labels={dict.confirmation.page}
-        locale={locale}
-      />
     );
   }
 

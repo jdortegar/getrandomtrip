@@ -1088,7 +1088,8 @@
       "retry": "Retry",
       "ctaReveal": "Reveal my destination",
       "ctaBackToJourney": "Back to journey",
-      "ctaHome": "Go to home"
+      "ctaHome": "Go to home",
+      "ctaMyTrips": "Go to my trips"
     }
   },
   "paymentFailure": {
@@ -1097,7 +1098,21 @@
     "metaDescription": "Payment was rejected. Try again on GetRandomTrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">REJECTED</span>",
     "ctaBackToJourney": "Back to journey",
-    "ctaHome": "Go to home"
+    "ctaHome": "Go to home",
+    "ctaTryAgain": "Try again",
+    "ctaMyTrips": "Go to my trips",
+    "mpDetailsTitle": "Mercado Pago details",
+    "mpExternalReference": "External reference",
+    "mpPreferenceId": "Preference ID",
+    "mpPaymentId": "Payment ID",
+    "mpStatus": "Status",
+    "mpCollectionId": "Collection ID",
+    "mpCollectionStatus": "Collection status",
+    "mpPaymentType": "Payment type",
+    "mpMerchantOrderId": "Merchant order ID",
+    "mpSiteId": "Site",
+    "mpProcessingMode": "Processing mode",
+    "mpMerchantAccountId": "Merchant account ID"
   },
   "paymentPending": {
     "title": "Payment pending",
@@ -1105,7 +1120,8 @@
     "metaDescription": "Your payment is pending. GetRandomTrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
     "ctaBackToJourney": "Back to journey",
-    "ctaHome": "Go to home"
+    "ctaHome": "Go to home",
+    "ctaMyTrips": "Go to my trips"
   },
   "footer": {
     "quickLinksTitle": "Quick Links",

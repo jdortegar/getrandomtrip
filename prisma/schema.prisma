@@ -221,7 +221,7 @@ model Payment {
   chargebackAmount Float     @default(0)
   chargebackAt     DateTime?
 
-  // Provider Response Data
+  // Provider Response Data (MP payment resource + optional `mpCheckoutReturn` / `mpCheckoutReturnAt` from redirect)
   providerResponse Json? // Full provider response
   webhookData      Json? // Webhook payload data
 

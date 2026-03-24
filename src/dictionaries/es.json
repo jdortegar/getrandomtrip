@@ -1088,7 +1088,8 @@
       "retry": "Reintentar",
       "ctaReveal": "Descubrir mi destino",
       "ctaBackToJourney": "Volver al viaje",
-      "ctaHome": "Ir al inicio"
+      "ctaHome": "Ir al inicio",
+      "ctaMyTrips": "Ir a mis viajes"
     }
   },
   "paymentFailure": {
@@ -1097,7 +1098,21 @@
     "metaDescription": "El pago fue rechazado. Intentá de nuevo en GetRandomTrip.",
     "subtitle": "PAGO <span style=\"color: #F2C53D\">RECHAZADO</span>",
     "ctaBackToJourney": "Volver al viaje",
-    "ctaHome": "Ir al inicio"
+    "ctaHome": "Ir al inicio",
+    "ctaTryAgain": "Intentar de nuevo",
+    "ctaMyTrips": "Ir a mis viajes",
+    "mpDetailsTitle": "Detalles (Mercado Pago)",
+    "mpExternalReference": "Referencia externa",
+    "mpPreferenceId": "ID de preferencia",
+    "mpPaymentId": "ID de pago",
+    "mpStatus": "Estado",
+    "mpCollectionId": "ID de colección",
+    "mpCollectionStatus": "Estado de colección",
+    "mpPaymentType": "Tipo de pago",
+    "mpMerchantOrderId": "ID orden comercio",
+    "mpSiteId": "Sitio",
+    "mpProcessingMode": "Modo de procesamiento",
+    "mpMerchantAccountId": "ID cuenta comercio"
   },
   "paymentPending": {
     "title": "Pago pendiente",
@@ -1105,7 +1120,8 @@
     "metaDescription": "Tu pago está pendiente. GetRandomTrip.",
     "subtitle": "PAGO <span style=\"color: #F2C53D\">PENDIENTE</span>",
     "ctaBackToJourney": "Volver al viaje",
-    "ctaHome": "Ir al inicio"
+    "ctaHome": "Ir al inicio",
+    "ctaMyTrips": "Ir a mis viajes"
   },
   "footer": {
     "quickLinksTitle": "Enlaces Rápidos",

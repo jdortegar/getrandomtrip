@@ -67,8 +67,13 @@ export function handleI18n(request: NextRequest): NextResponse | null {
   }
 
   // No locale in path: detect and either rewrite (default) or redirect (other)
-  // Payment return path: Mercado Pago redirects to /checkout?result=...; keep default locale when no prefix.
-  const paymentReturnPaths = ['/checkout'];
+  // Payment return path: Mercado Pago redirects to /checkout?result=... or /checkout/failure|success|pending; keep default locale when no prefix.
+  const paymentReturnPaths = [
+    '/checkout',
+    '/checkout/failure',
+    '/checkout/pending',
+    '/checkout/success',
+  ];
   const isPaymentReturn = pathname ? paymentReturnPaths.includes(pathname) : false;
   const locale = isPaymentReturn ? DEFAULT_LOCALE : getLocaleFromRequest(request);
 

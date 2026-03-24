@@ -45,10 +45,6 @@ const EmblaCarousel = ({
     prevBtnDisabled,
   } = usePrevNextButtons(emblaApi);
 
-  
-
-  console.log(slides.length, slidesPerView);
-
   return (
     <div className="@container mx-auto w-full">
       {slides.length > 1 && (

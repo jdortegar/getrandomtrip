@@ -1,24 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Confetti from '@/components/feedback/Confetti';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import HeaderHero from '@/components/journey/HeaderHero';
+import { parseMercadoPagoCheckoutReturnParams } from '@/lib/helpers/mercadopago-checkout-params';
+import { persistMercadoPagoCheckoutReturnParams } from '@/lib/helpers/persist-mercadopago-checkout-return';
+import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
 import { cn } from '@/lib/utils';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
-
-export interface MercadoPagoSuccessParams {
-  collection_id?: string;
-  collection_status?: string;
-  external_reference?: string;
-  merchant_order_id?: string;
-  payment_id?: string;
-  preference_id?: string;
-  status?: string;
-}
+import type { MercadoPagoCheckoutReturnParams } from '@/lib/types/MercadoPagoCheckoutReturnParams';
 
 interface BookingConfirmation {
   message: string;
@@ -26,53 +21,55 @@ interface BookingConfirmation {
 }
 
 interface CheckoutResultSuccessProps {
-  locale: string;
   hero: Dictionary['confirmation']['hero'];
   labels: Dictionary['confirmation']['page'];
-}
-
-function getSuccessParamsFromSearchParams(
-  searchParams: URLSearchParams,
-): MercadoPagoSuccessParams | null {
-  const paymentId = searchParams.get('payment_id');
-  const collectionId = searchParams.get('collection_id');
-  const externalRef = searchParams.get('external_reference');
-  if (!paymentId && !collectionId && !externalRef) return null;
-  return {
-    collection_id: collectionId ?? undefined,
-    collection_status: searchParams.get('collection_status') ?? undefined,
-    external_reference: externalRef ?? undefined,
-    merchant_order_id: searchParams.get('merchant_order_id') ?? undefined,
-    payment_id: paymentId ?? collectionId ?? undefined,
-    preference_id: searchParams.get('preference_id') ?? undefined,
-    status: searchParams.get('status') ?? searchParams.get('collection_status') ?? undefined,
-  };
+  locale: string;
+  /** From server `searchParams` on `/checkout/success`; falls back to client URL. */
+  mercadoPagoParams?: MercadoPagoCheckoutReturnParams | null;
 }
 
 export default function CheckoutResultSuccess({
-  locale,
   hero,
   labels,
+  locale,
+  mercadoPagoParams: mercadoPagoParamsFromServer,
 }: CheckoutResultSuccessProps) {
   const searchParams = useSearchParams();
   const [bookingConfirmation, setBookingConfirmation] = useState<BookingConfirmation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const mercadoPagoParams = useMemo(() => {
+    if (mercadoPagoParamsFromServer) return mercadoPagoParamsFromServer;
+    return parseMercadoPagoCheckoutReturnParams(searchParams);
+  }, [mercadoPagoParamsFromServer, searchParams]);
+
   useEffect(() => {
-    const mpParams = getSuccessParamsFromSearchParams(searchParams);
+    void persistMercadoPagoCheckoutReturnParams(mercadoPagoParams);
+  }, [mercadoPagoParams]);
+
+  const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
+  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+
+  useEffect(() => {
+    const mpParams = mercadoPagoParams;
 
     const fetchConfirmation = async () => {
       try {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
 
-        if (backendUrl && mpParams) {
+        const hasMpIds =
+          mpParams.paymentId ||
+          mpParams.collectionId ||
+          mpParams.externalReference;
+
+        if (backendUrl && hasMpIds) {
           const response = await fetch(`${backendUrl}/api/confirmation`, {
             body: JSON.stringify({
-              bookingId: mpParams.external_reference,
-              merchantOrderId: mpParams.merchant_order_id,
-              paymentId: mpParams.payment_id ?? mpParams.collection_id,
-              status: mpParams.status ?? 'approved',
+              bookingId: mpParams.externalReference,
+              merchantOrderId: mpParams.merchantOrderId,
+              paymentId: mpParams.paymentId ?? mpParams.collectionId,
+              status: mpParams.status ?? mpParams.collectionStatus ?? 'approved',
             }),
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
@@ -83,15 +80,18 @@ export default function CheckoutResultSuccess({
           } else {
             setError(data.message ?? labels.errorTitle);
           }
-        } else if (mpParams?.status === 'approved' || mpParams?.collection_status === 'approved') {
+        } else if (
+          mpParams.status === 'approved' ||
+          mpParams.collectionStatus === 'approved'
+        ) {
           setBookingConfirmation({
             message: labels.messageApproved,
             success: true,
           });
-        } else if (mpParams) {
-          const status = mpParams.status ?? mpParams.collection_status ?? 'pending';
+        } else if (hasMpIds) {
+          const st = mpParams.status ?? mpParams.collectionStatus ?? 'pending';
           setBookingConfirmation({
-            message: labels.messagePending.replace('{status}', status),
+            message: labels.messagePending.replace('{status}', st),
             success: true,
           });
         } else {
@@ -107,8 +107,8 @@ export default function CheckoutResultSuccess({
       }
     };
 
-    fetchConfirmation();
-  }, [searchParams, labels]);
+    void fetchConfirmation();
+  }, [mercadoPagoParams, labels]);
 
   const showSuccess = Boolean(bookingConfirmation && !error);
 
@@ -122,79 +122,78 @@ export default function CheckoutResultSuccess({
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="flex min-h-screen flex-col bg-gray-50">
         <HeaderHero
           description={hero.description}
           subtitle={hero.subtitle}
           title={labels.errorTitle}
         />
+        <main className="flex-grow">
         <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
-          <div className="max-w-3xl w-full space-y-4 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14 flex flex-col items-center text-center">
-            <p className="max-w-[80%] font-barlow text-base leading-relaxed text-gray-700 md:text-lg">
-              {error}
-            </p>
-            <Button
-              className="mt-4"
-              onClick={() => window.location.reload()}
-              size="lg"
-              variant="default"
-            >
-              {labels.retry}
-            </Button>
-          </div>
-        </section>
+            <div className="flex w-full max-w-3xl flex-col items-center space-y-4 rounded-lg bg-white px-6 py-10 text-center shadow-lg sm:px-8 sm:py-14">
+              <p className="max-w-[80%] font-barlow text-base leading-relaxed text-gray-700 md:text-lg">
+                {error}
+              </p>
+              <Button
+                className="mt-4"
+                onClick={() => window.location.reload()}
+                size="lg"
+                variant="default"
+              >
+                {labels.retry}
+              </Button>
+            </div>
+          </section>
+        </main>
       </div>
     );
   }
 
   return (
     <>
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="flex min-h-screen flex-col bg-gray-50">
         <HeaderHero
           description={hero.description}
           subtitle={hero.subtitle}
           title={hero.title}
         />
-        <section
-          className={cn(
-            'container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20',
-            showSuccess && 'bg-orange-50/80',
-          )}
-        >
-          <div
+        <main className="flex-grow">
+          <section
             className={cn(
-              'max-w-3xl w-full space-y-4 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14 flex flex-col items-center text-center',
-              showSuccess && '-mt-12 sm:-mt-14',
+              'container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20',
+              showSuccess && 'bg-orange-50/80',
             )}
-            data-testid="confirmation-root"
           >
-            <p className="max-w-[80%] text-center font-barlow text-base leading-relaxed text-gray-600 md:text-lg">
-              {labels.body}
-            </p>
-            {bookingConfirmation && (
-              <p className="max-w-[80%] text-center font-barlow text-base font-semibold leading-relaxed text-gray-800 md:text-lg">
-                {bookingConfirmation.message}
+            <div
+              className={cn(
+                'w-full max-w-3xl space-y-6 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14',
+              )}
+              data-testid="confirmation-root"
+            >
+              <p className="text-center font-barlow text-base leading-relaxed text-gray-600 md:text-lg">
+                {labels.body}
               </p>
-            )}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:mt-8">
-              <Button asChild className="w-full sm:w-auto" size="lg">
-                <Link href={`/${locale}/reveal-destination`}>
-                  {labels.ctaReveal}
-                </Link>
-              </Button>
-              <Button asChild className="w-full sm:w-auto" size="lg" variant="secondary">
-                <Link href={`/${locale}/journey`}>
-                  {labels.ctaBackToJourney}
-                </Link>
-              </Button>
+              {bookingConfirmation && (
+                <p className="text-center font-barlow text-base font-semibold leading-relaxed text-gray-800 md:text-lg">
+                  {bookingConfirmation.message}
+                </p>
+              )}
+
+              <div className="flex justify-center pt-2">
+                <Button asChild size="lg" variant="default">
+                  <Link href={myTripsHref}>{labels.ctaMyTrips}</Link>
+                </Button>
+              </div>
+              <div className="flex justify-center pt-2">
+                <Button asChild size="default" variant="link">
+                  <Link className="text-gray-500 hover:text-gray-700" href={`/${locale}`}>
+                    {labels.ctaHome}
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <Button asChild className="mt-2" variant="link" size="default">
-              <Link href={`/${locale}`} className="text-gray-500 hover:text-gray-700">
-                {labels.ctaHome}
-              </Link>
-            </Button>
-          </div>
-        </section>
+          </section>
+        </main>
       </div>
       {showSuccess && <Confetti delay={200} duration={350} speed={3} />}
     </>

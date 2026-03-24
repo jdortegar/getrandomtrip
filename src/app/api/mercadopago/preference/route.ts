@@ -1,6 +1,6 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { NextRequest, NextResponse } from 'next/server';
-import { createPayment } from '@/lib/db/payment';
+import { upsertPaymentForTripCheckout } from '@/lib/db/payment';
 import { prisma } from '@/lib/prisma';
 
 // Use test credentials when not in production
@@ -86,14 +86,12 @@ export async function POST(request: NextRequest) {
       process.env.NEXTAUTH_URL ||
       process.env.NEXT_PUBLIC_SITE_URL ||
       'http://localhost:3010';
-    baseUrl = baseUrl.replace(/\/$/, '');
+   
+      baseUrl = baseUrl.replace(/\/$/, '');
     if (baseUrl && !/^https?:\/\//i.test(baseUrl)) {
       baseUrl = `https://${baseUrl}`;
     }
     const localeSegment = pathLocale ? `/${pathLocale}` : '';
-    const successUrl = `${baseUrl}${localeSegment}/checkout?result=success`;
-    const failureUrl = `${baseUrl}${localeSegment}/checkout?result=failure`;
-    const pendingUrl = `${baseUrl}${localeSegment}/checkout?result=pending`;
 
     // Mercado Pago only accepts auto_return when success URL is a named domain (not localhost).
     // On localhost we omit it so the preference is accepted; user can still use "Return to site".
@@ -110,7 +108,7 @@ export async function POST(request: NextRequest) {
           category_id: 'travel',
           quantity: 1,
           unit_price: Number(total),
-          currency_id: 'ARS',
+          currency_id: 'USD',
         },
       ],
       payer: {
@@ -119,11 +117,11 @@ export async function POST(request: NextRequest) {
         email: userEmail || 'cliente@example.com',
       },
       back_urls: {
-        failure: failureUrl,
-        pending: pendingUrl,
-        success: successUrl,
+        failure: `${baseUrl}${localeSegment}/checkout/failure`,
+        pending: `${baseUrl}${localeSegment}/checkout/pending`,
+        success: `${baseUrl}${localeSegment}/checkout/success`,
       },
-      ...(isLocalhost ? {} : { auto_return: 'approved' as const }),
+      ...(isProduction ? { auto_return: 'approved' as const }:{}),
       notification_url: `${baseUrl}/api/mercadopago/webhook`,
       external_reference: tripId || `trip-${Date.now()}`,
       statement_descriptor: 'GETRANDOMTRIP',
@@ -132,6 +130,8 @@ export async function POST(request: NextRequest) {
         source: 'getrandomtrip',
       },
     };
+
+    console.log('preferenceData:', preferenceData);
 
     const requestOptions = {
       idempotencyKey: `${tripId}-${Date.now()}`,
@@ -171,22 +171,22 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        console.log('Creating payment record for trip:', tripId);
+        console.log('Upserting payment record for trip:', tripId);
 
-        await createPayment({
+        await upsertPaymentForTripCheckout({
           userId,
           tripRequestId: tripId,
           provider: 'mercadopago',
           providerPreferenceId: response.id,
           amount: total,
-          currency: 'ARS',
+          currency: 'USD',
           mpExternalReference: tripId,
           mpDescription: preferenceData.items[0].description,
           mpStatementDescriptor: 'GETRANDOMTRIP',
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         });
 
-        console.log('Payment record created successfully');
+        console.log('Payment record saved successfully');
       } catch (paymentError) {
         console.error('Error creating payment record:', paymentError);
         // Continue with preference even if payment record fails

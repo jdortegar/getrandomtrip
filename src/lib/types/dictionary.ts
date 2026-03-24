@@ -356,6 +356,7 @@ export interface MarketingDictionary {
       body: string;
       ctaBackToJourney: string;
       ctaHome: string;
+      ctaMyTrips: string;
       ctaReveal: string;
       errorTitle: string;
       messageApproved: string;
@@ -370,7 +371,21 @@ export interface MarketingDictionary {
     body: string;
     ctaBackToJourney: string;
     ctaHome: string;
+    ctaMyTrips: string;
+    ctaTryAgain: string;
     metaDescription: string;
+    mpCollectionId: string;
+    mpCollectionStatus: string;
+    mpDetailsTitle: string;
+    mpExternalReference: string;
+    mpMerchantAccountId: string;
+    mpMerchantOrderId: string;
+    mpPaymentId: string;
+    mpPaymentType: string;
+    mpPreferenceId: string;
+    mpProcessingMode: string;
+    mpSiteId: string;
+    mpStatus: string;
     subtitle: string;
     title: string;
   };
@@ -378,6 +393,7 @@ export interface MarketingDictionary {
     body: string;
     ctaBackToJourney: string;
     ctaHome: string;
+    ctaMyTrips: string;
     metaDescription: string;
     subtitle: string;
     title: string;

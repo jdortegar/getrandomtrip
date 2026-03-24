@@ -2,54 +2,86 @@ import { NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { updatePaymentFromWebhook } from '@/lib/db/payment';
 
+function getMercadoPagoAccessToken(): string {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return isProduction
+    ? process.env.MERCADOPAGO_LIVE_ACCESS_TOKEN!
+    : process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
+}
+
+function normalizeNotificationPaymentId(
+  raw: string | number | undefined | null,
+): string | null {
+  if (raw === undefined || raw === null) return null;
+  const s = String(raw).trim();
+  return s.length > 0 ? s : null;
+}
+
+/**
+ * Mercado Pago webhooks: `type` + `data.id` (see MP notifications docs).
+ * We fetch the full payment resource and reconcile DB (incl. `mpCheckoutReturn` merge).
+ */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { type, data } = body;
+    const body = (await request.json()) as {
+      action?: string;
+      data?: { id?: string | number };
+      type?: string;
+    };
 
-    console.log('MercadoPago webhook received:', { type, data });
+    const { action, data, type } = body;
 
-    // Handle different payment events
-    switch (type) {
-      case 'payment':
-        if (data?.id) {
-          console.log('Payment event received:', data.id);
+    console.log('MercadoPago webhook received:', { action, data, type });
 
-          try {
-            // Get payment details from MercadoPago
-            const isProduction = process.env.NODE_ENV === 'production';
-            const accessToken = isProduction
-              ? process.env.MERCADOPAGO_LIVE_ACCESS_TOKEN!
-              : process.env.MERCADOPAGO_TEST_ACCESS_TOKEN!;
+    if (type === 'payment') {
+      const paymentId = normalizeNotificationPaymentId(data?.id);
+      if (!paymentId) {
+        console.warn('MercadoPago webhook: payment notification without data.id');
+        return NextResponse.json({ received: true });
+      }
 
-            const client = new MercadoPagoConfig({ accessToken });
-            const payment = new Payment(client);
+      const accessToken = getMercadoPagoAccessToken();
+      if (!accessToken) {
+        console.error('MercadoPago webhook: access token not configured');
+        return NextResponse.json(
+          { error: 'Payment configuration missing' },
+          { status: 500 },
+        );
+      }
 
-            const paymentDetails = await payment.get({ id: data.id });
+      const client = new MercadoPagoConfig({
+        accessToken,
+        options: { timeout: 5000 },
+      });
+      const paymentApi = new Payment(client);
 
-            // Update payment in database
-            await updatePaymentFromWebhook(data.id, paymentDetails);
+      try {
+        const paymentDetails = await paymentApi.get({ id: paymentId });
+        await updatePaymentFromWebhook(paymentDetails, body);
+        console.log('MercadoPago webhook: payment updated', { id: paymentId });
+      } catch (error) {
+        console.error('MercadoPago webhook: payment update failed', {
+          error,
+          paymentId,
+        });
+        // Still 200 so MP does not retry indefinitely; monitor logs / alerts.
+      }
 
-            console.log('Payment updated successfully:', data.id);
-          } catch (error) {
-            console.error('Error updating payment:', error);
-          }
-        }
-        break;
-
-      case 'merchant_order':
-        if (data?.id) {
-          console.log('Merchant order event received:', data.id);
-        }
-        break;
-
-      default:
-        console.log('Unknown webhook type:', type);
+      return NextResponse.json({ received: true });
     }
 
+    if (type === 'merchant_order') {
+      const orderId = normalizeNotificationPaymentId(data?.id);
+      console.log('MercadoPago webhook: merchant_order (not persisted yet)', {
+        orderId,
+      });
+      return NextResponse.json({ received: true });
+    }
+
+    console.log('MercadoPago webhook: unhandled type', type);
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('Webhook processing error:', error);
+    console.error('MercadoPago webhook: processing error', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 },
