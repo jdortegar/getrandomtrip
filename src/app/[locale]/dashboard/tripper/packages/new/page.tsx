@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-import GlassCard from '@/components/ui/GlassCard';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
-import { ArrowLeft, Save, Plus, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import Hero from "@/components/Hero";
+import GlassCard from "@/components/ui/GlassCard";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Save, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 
 const PACKAGE_TYPES = [
-  { value: 'couple', label: 'Pareja' },
-  { value: 'family', label: 'Familia' },
-  { value: 'group', label: 'Grupo' },
-  { value: 'solo', label: 'Solo' },
-  { value: 'honeymoon', label: 'Luna de Miel' },
-  { value: 'paws', label: 'Con Mascotas' },
+  { value: "couple", label: "Pareja" },
+  { value: "family", label: "Familia" },
+  { value: "group", label: "Grupo" },
+  { value: "solo", label: "Solo" },
+  { value: "honeymoon", label: "Luna de Miel" },
+  { value: "paws", label: "Con Mascotas" },
 ] as const;
 
 const PACKAGE_LEVELS = [
-  { value: 'essenza', label: 'Essenza' },
-  { value: 'modo-explora', label: 'Modo Explora' },
-  { value: 'explora-plus', label: 'Explora Plus' },
-  { value: 'bivouac', label: 'Bivouac' },
-  { value: 'atelier-getaway', label: 'Atelier Getaway' },
+  { value: "essenza", label: "Essenza" },
+  { value: "modo-explora", label: "Modo Explora" },
+  { value: "explora-plus", label: "Explora Plus" },
+  { value: "bivouac", label: "Bivouac" },
+  { value: "atelier-getaway", label: "Atelier Getaway" },
 ] as const;
 
 interface PackageFormData {
@@ -74,19 +74,19 @@ function PackageForm() {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
-  const [tagInput, setTagInput] = useState('');
-  const [highlightInput, setHighlightInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
+  const [highlightInput, setHighlightInput] = useState("");
 
   const [formData, setFormData] = useState<PackageFormData>({
-    type: 'couple',
-    level: 'essenza',
-    title: '',
-    destinationCountry: '',
-    destinationCity: '',
-    teaser: '',
-    description: '',
-    heroImage: '',
-    excuseKey: '',
+    type: "couple",
+    level: "essenza",
+    title: "",
+    destinationCountry: "",
+    destinationCity: "",
+    teaser: "",
+    description: "",
+    heroImage: "",
+    excuseKey: "",
     minNights: 1,
     maxNights: 7,
     minPax: 1,
@@ -94,7 +94,7 @@ function PackageForm() {
     tags: [],
     highlights: [],
     basePriceUsd: 0,
-    displayPrice: '',
+    displayPrice: "",
     hotels: null,
     activities: null,
     itinerary: null,
@@ -110,7 +110,7 @@ function PackageForm() {
         ...formData,
         tags: [...formData.tags, tagInput.trim()],
       });
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -130,7 +130,7 @@ function PackageForm() {
         ...formData,
         highlights: [...formData.highlights, highlightInput.trim()],
       });
-      setHighlightInput('');
+      setHighlightInput("");
     }
   };
 
@@ -146,10 +146,10 @@ function PackageForm() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/packages', {
-        method: 'POST',
+      const response = await fetch("/api/packages", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -157,14 +157,14 @@ function PackageForm() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success('Paquete creado exitosamente');
-        router.push('/dashboard/tripper/packages');
+        toast.success("Paquete creado exitosamente");
+        router.push("/dashboard/tripper/packages");
       } else {
-        toast.error(data.error || 'Error al crear el paquete');
+        toast.error(data.error || "Error al crear el paquete");
       }
     } catch (error) {
-      console.error('Error creating package:', error);
-      toast.error('Error al crear el paquete');
+      console.error("Error creating package:", error);
+      toast.error("Error al crear el paquete");
     } finally {
       setLoading(false);
     }
@@ -174,10 +174,10 @@ function PackageForm() {
     <>
       <Hero
         content={{
-          title: 'Crear Nuevo Paquete',
-          subtitle: 'Completa la información para crear tu oferta de viaje',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
+          title: "Crear Nuevo Paquete",
+          subtitle: "Completa la información para crear tu oferta de viaje",
+          videoSrc: "/videos/hero-video-1.mp4",
+          fallbackImage: "/images/bg-playa-mexico.jpg",
         }}
         className="!h-[40vh]"
       />
@@ -492,7 +492,7 @@ function PackageForm() {
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           addTag();
                         }
@@ -535,7 +535,7 @@ function PackageForm() {
                       value={highlightInput}
                       onChange={(e) => setHighlightInput(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           addHighlight();
                         }
@@ -646,7 +646,7 @@ function PackageForm() {
                 </Button>
                 <Button type="submit" disabled={loading}>
                   <Save className="w-4 h-4 mr-2" />
-                  {loading ? 'Creando...' : 'Crear Paquete'}
+                  {loading ? "Creando..." : "Crear Paquete"}
                 </Button>
               </div>
             </div>

@@ -1,19 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { parseMercadoPagoCheckoutReturnParams } from '@/lib/helpers/mercadopago-checkout-params';
-import { persistMercadoPagoCheckoutReturnParams } from '@/lib/helpers/persist-mercadopago-checkout-return';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
-import type { MercadoPagoCheckoutReturnParams } from '@/lib/types/MercadoPagoCheckoutReturnParams';
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { parseMercadoPagoCheckoutReturnParams } from "@/lib/helpers/mercadopago-checkout-params";
+import { persistMercadoPagoCheckoutReturnParams } from "@/lib/helpers/persist-mercadopago-checkout-return";
+import { confirmMercadoPagoPaymentFromReturnParams } from "@/lib/helpers/confirm-mercadopago-payment-from-return";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import type { MercadoPagoCheckoutReturnParams } from "@/lib/types/MercadoPagoCheckoutReturnParams";
 
 interface CheckoutResultPendingProps {
-  labels: Dictionary['paymentPending'];
+  labels: Dictionary["paymentPending"];
   locale: string;
   /** From server `searchParams` on `/checkout/pending`; falls back to client URL. */
   mercadoPagoParams?: MercadoPagoCheckoutReturnParams | null;
@@ -33,17 +34,20 @@ export default function CheckoutResultPending({
 
   useEffect(() => {
     void persistMercadoPagoCheckoutReturnParams(mercadoPagoParams);
+    void confirmMercadoPagoPaymentFromReturnParams(mercadoPagoParams);
   }, [mercadoPagoParams]);
 
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <HeaderHero
         description={labels.body}
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={labels.subtitle}
         title={labels.title}
+        videoSrc="/videos/hero-video-1.mp4"
       />
       <main className="flex-grow">
         <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">

@@ -1,40 +1,40 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-import GlassCard from '@/components/ui/GlassCard';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
-import { ArrowLeft, Save, Plus, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import Hero from "@/components/Hero";
+import GlassCard from "@/components/ui/GlassCard";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Save, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 
 const PACKAGE_TYPES = [
-  { value: 'couple', label: 'Pareja' },
-  { value: 'family', label: 'Familia' },
-  { value: 'group', label: 'Grupo' },
-  { value: 'solo', label: 'Solo' },
-  { value: 'honeymoon', label: 'Luna de Miel' },
-  { value: 'paws', label: 'Con Mascotas' },
+  { value: "couple", label: "Pareja" },
+  { value: "family", label: "Familia" },
+  { value: "group", label: "Grupo" },
+  { value: "solo", label: "Solo" },
+  { value: "honeymoon", label: "Luna de Miel" },
+  { value: "paws", label: "Con Mascotas" },
 ] as const;
 
 const PACKAGE_LEVELS = [
-  { value: 'essenza', label: 'Essenza' },
-  { value: 'modo-explora', label: 'Modo Explora' },
-  { value: 'explora-plus', label: 'Explora Plus' },
-  { value: 'bivouac', label: 'Bivouac' },
-  { value: 'atelier-getaway', label: 'Atelier Getaway' },
+  { value: "essenza", label: "Essenza" },
+  { value: "modo-explora", label: "Modo Explora" },
+  { value: "explora-plus", label: "Explora Plus" },
+  { value: "bivouac", label: "Bivouac" },
+  { value: "atelier-getaway", label: "Atelier Getaway" },
 ] as const;
 
 const PACKAGE_STATUSES = [
-  { value: 'DRAFT', label: 'Borrador' },
-  { value: 'ACTIVE', label: 'Activo' },
-  { value: 'INACTIVE', label: 'Inactivo' },
-  { value: 'ARCHIVED', label: 'Archivado' },
+  { value: "DRAFT", label: "Borrador" },
+  { value: "ACTIVE", label: "Activo" },
+  { value: "INACTIVE", label: "Inactivo" },
+  { value: "ARCHIVED", label: "Archivado" },
 ] as const;
 
 interface PackageFormData {
@@ -86,21 +86,21 @@ function PackageEditContent() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [tagInput, setTagInput] = useState('');
-  const [highlightInput, setHighlightInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
+  const [highlightInput, setHighlightInput] = useState("");
 
-  const packageId = params?.id?.toString() ?? '';
+  const packageId = params?.id?.toString() ?? "";
 
   const [formData, setFormData] = useState<PackageFormData>({
-    type: 'couple',
-    level: 'essenza',
-    title: '',
-    destinationCountry: '',
-    destinationCity: '',
-    teaser: '',
-    description: '',
-    heroImage: '',
-    excuseKey: '',
+    type: "couple",
+    level: "essenza",
+    title: "",
+    destinationCountry: "",
+    destinationCity: "",
+    teaser: "",
+    description: "",
+    heroImage: "",
+    excuseKey: "",
     minNights: 1,
     maxNights: 7,
     minPax: 1,
@@ -108,7 +108,7 @@ function PackageEditContent() {
     tags: [],
     highlights: [],
     basePriceUsd: 0,
-    displayPrice: '',
+    displayPrice: "",
     hotels: null,
     activities: null,
     itinerary: null,
@@ -116,7 +116,7 @@ function PackageEditContent() {
     exclusions: null,
     isActive: true,
     isFeatured: false,
-    status: 'DRAFT',
+    status: "DRAFT",
   });
 
   // Load package data
@@ -132,15 +132,15 @@ function PackageEditContent() {
         if (response.ok && data.package) {
           const pkg = data.package;
           setFormData({
-            type: pkg.type || 'couple',
-            level: pkg.level || 'essenza',
-            title: pkg.title || '',
-            destinationCountry: pkg.destinationCountry || '',
-            destinationCity: pkg.destinationCity || '',
-            teaser: pkg.teaser || '',
-            description: pkg.description || '',
-            heroImage: pkg.heroImage || '',
-            excuseKey: pkg.excuseKey || '',
+            type: pkg.type || "couple",
+            level: pkg.level || "essenza",
+            title: pkg.title || "",
+            destinationCountry: pkg.destinationCountry || "",
+            destinationCity: pkg.destinationCity || "",
+            teaser: pkg.teaser || "",
+            description: pkg.description || "",
+            heroImage: pkg.heroImage || "",
+            excuseKey: pkg.excuseKey || "",
             minNights: pkg.minNights || 1,
             maxNights: pkg.maxNights || 7,
             minPax: pkg.minPax || 1,
@@ -148,7 +148,7 @@ function PackageEditContent() {
             tags: pkg.tags || [],
             highlights: pkg.highlights || [],
             basePriceUsd: pkg.basePriceUsd || 0,
-            displayPrice: pkg.displayPrice || '',
+            displayPrice: pkg.displayPrice || "",
             hotels: pkg.hotels || null,
             activities: pkg.activities || null,
             itinerary: pkg.itinerary || null,
@@ -156,14 +156,14 @@ function PackageEditContent() {
             exclusions: pkg.exclusions || null,
             isActive: pkg.isActive ?? true,
             isFeatured: pkg.isFeatured ?? false,
-            status: pkg.status || 'DRAFT',
+            status: pkg.status || "DRAFT",
           });
         } else {
-          toast.error(data.error || 'Error al cargar el paquete');
+          toast.error(data.error || "Error al cargar el paquete");
         }
       } catch (error) {
-        console.error('Error fetching package:', error);
-        toast.error('Error al cargar el paquete');
+        console.error("Error fetching package:", error);
+        toast.error("Error al cargar el paquete");
       } finally {
         setLoading(false);
       }
@@ -178,7 +178,7 @@ function PackageEditContent() {
         ...formData,
         tags: [...formData.tags, tagInput.trim()],
       });
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -198,7 +198,7 @@ function PackageEditContent() {
         ...formData,
         highlights: [...formData.highlights, highlightInput.trim()],
       });
-      setHighlightInput('');
+      setHighlightInput("");
     }
   };
 
@@ -215,9 +215,9 @@ function PackageEditContent() {
 
     try {
       const response = await fetch(`/api/tripper/packages/${packageId}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -225,21 +225,21 @@ function PackageEditContent() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success('Paquete actualizado exitosamente');
-        router.push('/dashboard/tripper/packages');
+        toast.success("Paquete actualizado exitosamente");
+        router.push("/dashboard/tripper/packages");
       } else {
-        toast.error(data.error || 'Error al actualizar el paquete');
+        toast.error(data.error || "Error al actualizar el paquete");
       }
     } catch (error) {
-      console.error('Error updating package:', error);
-      toast.error('Error al actualizar el paquete');
+      console.error("Error updating package:", error);
+      toast.error("Error al actualizar el paquete");
     } finally {
       setSaving(false);
     }
   };
 
   const handleCancel = () => {
-    router.push('/dashboard/tripper/packages');
+    router.push("/dashboard/tripper/packages");
   };
 
   if (loading) {
@@ -247,10 +247,10 @@ function PackageEditContent() {
       <>
         <Hero
           content={{
-            title: 'Cargando Paquete',
-            subtitle: 'Obteniendo información del paquete...',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
+            title: "Cargando Paquete",
+            subtitle: "Obteniendo información del paquete...",
+            videoSrc: "/videos/hero-video-1.mp4",
+            fallbackImage: "/images/bg-playa-mexico.jpg",
           }}
           className="!h-[40vh]"
         />
@@ -267,10 +267,10 @@ function PackageEditContent() {
     <>
       <Hero
         content={{
-          title: formData.title || 'Editar Paquete',
-          subtitle: 'Modifica la información de tu paquete de viaje',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: formData.heroImage || '/images/bg-playa-mexico.jpg',
+          title: formData.title || "Editar Paquete",
+          subtitle: "Modifica la información de tu paquete de viaje",
+          videoSrc: "/videos/hero-video-1.mp4",
+          fallbackImage: formData.heroImage || "/images/bg-playa-mexico.jpg",
         }}
         className="!h-[40vh]"
       />
@@ -607,7 +607,7 @@ function PackageEditContent() {
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           addTag();
                         }
@@ -650,7 +650,7 @@ function PackageEditContent() {
                       value={highlightInput}
                       onChange={(e) => setHighlightInput(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           addHighlight();
                         }
@@ -762,7 +762,7 @@ function PackageEditContent() {
                 </Button>
                 <Button type="submit" disabled={saving}>
                   <Save className="w-4 h-4 mr-2" />
-                  {saving ? 'Guardando...' : 'Guardar Cambios'}
+                  {saving ? "Guardando..." : "Guardar Cambios"}
                 </Button>
               </div>
             </div>

@@ -1,13 +1,13 @@
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
-import { Button } from '@/components/ui/Button';
-import HeaderHero from '@/components/journey/HeaderHero';
-import Section from '@/components/layout/Section';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+import { Button } from "@/components/ui/Button";
+import HeaderHero from "@/components/journey/HeaderHero";
+import Section from "@/components/layout/Section";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 type LocaleParams = { params: { locale?: string | string[] } };
 
@@ -15,15 +15,15 @@ export async function generateMetadata({
   params,
 }: LocaleParams): Promise<Metadata> {
   const raw = params?.locale;
-  const locale = typeof raw === 'string' ? raw : raw?.[0];
-  const dict = await getDictionary(hasLocale(locale) ? locale : 'es');
+  const locale = typeof raw === "string" ? raw : raw?.[0];
+  const dict = await getDictionary(hasLocale(locale) ? locale : "es");
   const meta = dict.aboutUs.meta;
   return {
     description: meta.description,
     openGraph: {
       description: meta.openGraphDescription,
       title: meta.openGraphTitle,
-      type: 'website',
+      type: "website",
     },
     title: meta.title,
   };
@@ -38,27 +38,27 @@ function Pill({ children }: { children: React.ReactNode }) {
 }
 
 const PHILOSOPHY_IMAGE =
-  'https://images.pexels.com/photos/21014/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=1&w=1200';
+  "https://images.pexels.com/photos/21014/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=1&w=1200";
 const FOUNDER_IMAGE =
-  'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=600';
+  "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=600";
 
 export default async function AboutUsPage({ params }: LocaleParams) {
   const raw = params?.locale;
-  const localeStr = typeof raw === 'string' ? raw : raw?.[0];
-  const locale = hasLocale(localeStr) ? localeStr : 'es';
+  const localeStr = typeof raw === "string" ? raw : raw?.[0];
+  const locale = hasLocale(localeStr) ? localeStr : "es";
   const dict = await getDictionary(locale);
   const au = dict.aboutUs;
-  const journeyHref = `${pathForLocale(locale as 'es' | 'en', '/')}?tab=By%20Traveller#start-your-journey-anchor`;
+  const journeyHref = `${pathForLocale(locale as "es" | "en", "/")}?tab=By%20Traveller#start-your-journey-anchor`;
 
   return (
     <div className="bg-white font-barlow text-neutral-900">
       <HeaderHero
         className="!min-h-[40vh]"
         description={au.hero.description}
-        fallbackImage="/images/bg-playa-mexico.jpg"
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={au.hero.eyebrow}
         title={au.hero.title}
-        videoSrc=""
+        videoSrc="/videos/hero-video-1.mp4"
       />
 
       <div className="rt-container flex flex-wrap justify-center gap-3 pb-8">
@@ -207,9 +207,7 @@ export default async function AboutUsPage({ params }: LocaleParams) {
                     +
                   </span>
                 </summary>
-                <div className="px-5 pb-6 text-neutral-700 md:px-6">
-                  {f.a}
-                </div>
+                <div className="px-5 pb-6 text-neutral-700 md:px-6">{f.a}</div>
               </details>
             ))}
           </div>
@@ -240,18 +238,18 @@ export default async function AboutUsPage({ params }: LocaleParams) {
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            brand: { '@type': 'Brand', name: 'Randomtrip' },
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            brand: { "@type": "Brand", name: "Randomtrip" },
             description:
-              'Serendipia diseñada: viajes sorpresa curados con seguridad y gusto impecable.',
-            name: 'Randomtrip',
+              "Serendipia diseñada: viajes sorpresa curados con seguridad y gusto impecable.",
+            name: "Randomtrip",
             sameAs: [
-              'https://www.instagram.com/',
-              'https://www.tiktok.com/',
-              'https://www.linkedin.com/',
+              "https://www.instagram.com/",
+              "https://www.tiktok.com/",
+              "https://www.linkedin.com/",
             ],
-            url: 'https://getrandomtrip.com',
+            url: "https://getrandomtrip.com",
           }),
         }}
         type="application/ld+json"

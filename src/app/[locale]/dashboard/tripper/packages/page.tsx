@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-import GlassCard from '@/components/ui/GlassCard';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { Plus } from 'lucide-react';
+import { useState, useMemo, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import Hero from "@/components/Hero";
+import GlassCard from "@/components/ui/GlassCard";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Plus } from "lucide-react";
 
 interface Package {
   id: string;
@@ -28,8 +28,8 @@ function TripperPackagesPage() {
   const { data: session } = useSession();
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState<string | 'all'>('all');
-  const [selectedLevel, setSelectedLevel] = useState<string | 'all'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string | "all">("all");
+  const [selectedLevel, setSelectedLevel] = useState<string | "all">("all");
 
   useEffect(() => {
     async function fetchPackages() {
@@ -37,16 +37,16 @@ function TripperPackagesPage() {
 
       try {
         setLoading(true);
-        const response = await fetch('/api/tripper/packages');
+        const response = await fetch("/api/tripper/packages");
         const data = await response.json();
 
         if (response.ok && data.packages) {
           setPackages(data.packages);
         } else {
-          console.error('Error fetching packages:', data.error);
+          console.error("Error fetching packages:", data.error);
         }
       } catch (error) {
-        console.error('Error fetching packages:', error);
+        console.error("Error fetching packages:", error);
       } finally {
         setLoading(false);
       }
@@ -69,17 +69,17 @@ function TripperPackagesPage() {
   const filteredRoutes = useMemo(() => {
     return packages.filter((pkg) => {
       const statusMatch =
-        selectedStatus === 'all' || pkg.status === selectedStatus;
-      const levelMatch = selectedLevel === 'all' || pkg.level === selectedLevel;
+        selectedStatus === "all" || pkg.status === selectedStatus;
+      const levelMatch = selectedLevel === "all" || pkg.level === selectedLevel;
       return statusMatch && levelMatch;
     });
   }, [packages, selectedStatus, selectedLevel]);
 
   const getStatusLabel = (status: string) => {
     return status
-      .split('_')
+      .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(" ");
   };
 
   if (loading) {
@@ -87,10 +87,10 @@ function TripperPackagesPage() {
       <>
         <Hero
           content={{
-            title: 'Mis Paquetes',
-            subtitle: 'Cargando tus paquetes...',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
+            title: "Mis Paquetes",
+            subtitle: "Cargando tus paquetes...",
+            videoSrc: "/videos/hero-video-1.mp4",
+            fallbackImage: "/images/bg-playa-mexico.jpg",
           }}
           className="!h-[40vh]"
         />
@@ -107,10 +107,10 @@ function TripperPackagesPage() {
     <>
       <Hero
         content={{
-          title: 'Mis Paquetes',
-          subtitle: 'Gestiona tus ofertas de viaje',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
+          title: "Mis Paquetes",
+          subtitle: "Gestiona tus ofertas de viaje",
+          videoSrc: "/videos/hero-video-1.mp4",
+          fallbackImage: "/images/bg-playa-mexico.jpg",
         }}
         className="!h-[40vh]"
       />
@@ -118,7 +118,9 @@ function TripperPackagesPage() {
       <Section>
         <div className="rt-container">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-neutral-800">Mis Paquetes</h1>
+            <h1 className="text-3xl font-bold text-neutral-800">
+              Mis Paquetes
+            </h1>
             <Link
               href="/dashboard/tripper/packages/new"
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
@@ -162,8 +164,8 @@ function TripperPackagesPage() {
                 <div className="text-center py-12">
                   <p className="text-neutral-500 mb-4">
                     {packages.length === 0
-                      ? 'No tienes paquetes aún. Crea tu primer paquete para comenzar.'
-                      : 'No hay paquetes que coincidan con los filtros.'}
+                      ? "No tienes paquetes aún. Crea tu primer paquete para comenzar."
+                      : "No hay paquetes que coincidan con los filtros."}
                   </p>
                   {packages.length === 0 && (
                     <Link
@@ -215,10 +217,12 @@ function TripperPackagesPage() {
                             </Link>
                           </td>
                           <td className="px-4 py-3 text-neutral-800">
-                            {pkg.type.charAt(0).toUpperCase() + pkg.type.slice(1)}
+                            {pkg.type.charAt(0).toUpperCase() +
+                              pkg.type.slice(1)}
                           </td>
                           <td className="px-4 py-3 text-neutral-800">
-                            {pkg.level.charAt(0).toUpperCase() + pkg.level.slice(1)}
+                            {pkg.level.charAt(0).toUpperCase() +
+                              pkg.level.slice(1)}
                           </td>
                           <td className="px-4 py-3 text-neutral-800">
                             <span className="px-2 py-1 text-xs rounded-full bg-neutral-100 text-neutral-700">
@@ -226,10 +230,12 @@ function TripperPackagesPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-neutral-800">
-                            ${pkg.price.toLocaleString('es-AR')}
+                            ${pkg.price.toLocaleString("es-AR")}
                           </td>
                           <td className="px-4 py-3 text-neutral-800 text-sm">
-                            {new Date(pkg.updatedAt).toLocaleDateString('es-ES')}
+                            {new Date(pkg.updatedAt).toLocaleDateString(
+                              "es-ES",
+                            )}
                           </td>
                         </tr>
                       ))}

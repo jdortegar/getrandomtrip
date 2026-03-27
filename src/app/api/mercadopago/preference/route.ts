@@ -131,8 +131,6 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    console.log('preferenceData:', preferenceData);
-
     const requestOptions = {
       idempotencyKey: `${tripId}-${Date.now()}`,
     };

@@ -109,7 +109,10 @@ export function usePayment(
    * Initiate MercadoPago payment
    * Single responsibility - handles only payment initiation
    */
-  const initiatePayment = async (tripId?: string): Promise<void> => {
+  const initiatePayment = async (
+    tripId?: string,
+    payer?: { email?: string; name?: string },
+  ): Promise<void> => {
     setIsProcessing(true);
 
     try {
@@ -124,8 +127,9 @@ export function usePayment(
           locale,
           total: totals.totalTrip,
           tripId: tripId || `trip-${Date.now()}`,
-          userEmail: session?.user?.email || 'cliente@example.com',
-          userName: session?.user?.name || 'Cliente',
+          userEmail:
+            payer?.email ?? session?.user?.email ?? 'cliente@example.com',
+          userName: payer?.name ?? session?.user?.name ?? 'Cliente',
           userId: session?.user?.id || null,
         }),
       });

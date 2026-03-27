@@ -1,3 +1,5 @@
+import { paxDetailsFromTotalPax } from '@/lib/helpers/pax-details';
+import type { PaxDetails } from '@/lib/types/PaxDetails';
 import type { Filters } from '@/store/slices/journeyStore';
 import {
   getPrimaryTransportIdFromOrderParam,
@@ -21,6 +23,7 @@ export interface TripRequestPayloadFromJourney {
   originCity: string;
   originCountry: string;
   pax: number;
+  paxDetails: PaxDetails;
   startDate: string | null;
   status: 'DRAFT';
   transport: string;
@@ -54,7 +57,8 @@ export function buildTripRequestPayloadFromSearchParams(
 ): TripRequestPayloadFromJourney {
   const experience = searchParams.get('experience');
   const level = normalizeExperienceLevel(experience);
-  const travelType = searchParams.get('travelType') || 'couple';
+  const travelTypeRaw = searchParams.get('travelType') || 'couple';
+  const travelType = travelTypeRaw.trim().toLowerCase();
   const originCountry = searchParams.get('originCountry')?.trim() ?? '';
   const originCity = searchParams.get('originCity')?.trim() ?? '';
   const startDateRaw = searchParams.get('startDate');
@@ -91,6 +95,8 @@ export function buildTripRequestPayloadFromSearchParams(
         .map((id) => ({ id, qty: 1 }))
     : [];
 
+  const paxDetails = paxDetailsFromTotalPax(pax);
+
   return {
     from: options?.from ?? 'journey',
     type: travelType,
@@ -101,6 +107,7 @@ export function buildTripRequestPayloadFromSearchParams(
     endDate,
     nights: nightsNum,
     pax,
+    paxDetails,
     transport: getPrimaryTransportIdFromOrderParam(
       searchParams.get('transportOrder'),
     ),

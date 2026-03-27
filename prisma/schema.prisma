@@ -48,6 +48,10 @@ model User {
   interests    String[] @default([])
   dislikes     String[] @default([])
 
+  /** Contact / checkout: phone and structured address (street, city, state, zipCode, country). */
+  phone   String?
+  address Json?
+
   // Relations
   tripRequests  TripRequest[] @relation("CustomerTripRequests")
   ownedPackages Package[]     @relation("OwnedPackages")
@@ -76,6 +80,8 @@ model TripRequest {
   endDate       DateTime?
   nights        Int       @default(1)
   pax           Int       @default(1)
+  /** Family/group: { adults, minors, rooms }; headcount stays in `pax`. */
+  paxDetails    Json?
 
   // Filters
   accommodationType String   @default("indistinto")

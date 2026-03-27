@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-import GlassCard from '@/components/ui/GlassCard';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { Plus, Edit, Eye, Book } from 'lucide-react';
-import Image from 'next/image';
-import type { BlogPost } from '@/types/blog';
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import Hero from "@/components/Hero";
+import GlassCard from "@/components/ui/GlassCard";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Plus, Edit, Eye, Book } from "lucide-react";
+import Image from "next/image";
+import type { BlogPost } from "@/types/blog";
 
 function BlogListContent() {
   const { data: session } = useSession();
@@ -23,16 +23,16 @@ function BlogListContent() {
 
       try {
         setLoading(true);
-        const response = await fetch('/api/tripper/blogs');
+        const response = await fetch("/api/tripper/blogs");
         const data = await response.json();
 
         if (response.ok && data.blogs) {
           setBlogs(data.blogs);
         } else {
-          console.error('Error fetching blogs:', data.error);
+          console.error("Error fetching blogs:", data.error);
         }
       } catch (error) {
-        console.error('Error fetching blogs:', error);
+        console.error("Error fetching blogs:", error);
       } finally {
         setLoading(false);
       }
@@ -46,10 +46,10 @@ function BlogListContent() {
       <>
         <Hero
           content={{
-            title: 'Mis Posts',
-            subtitle: 'Cargando tus posts...',
-            videoSrc: '/videos/hero-video.mp4',
-            fallbackImage: '/images/bg-playa-mexico.jpg',
+            title: "Mis Posts",
+            subtitle: "Cargando tus posts...",
+            videoSrc: "/videos/hero-video-1.mp4",
+            fallbackImage: "/images/bg-playa-mexico.jpg",
           }}
           className="!h-[40vh]"
         />
@@ -66,10 +66,10 @@ function BlogListContent() {
     <>
       <Hero
         content={{
-          title: 'Mis Posts',
-          subtitle: 'Gestiona tu blog y comparte tus experiencias',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
+          title: "Mis Posts",
+          subtitle: "Gestiona tu blog y comparte tus experiencias",
+          videoSrc: "/videos/hero-video-1.mp4",
+          fallbackImage: "/images/bg-playa-mexico.jpg",
         }}
         className="!h-[40vh]"
       />
@@ -133,14 +133,14 @@ function BlogListContent() {
                           {post.status && (
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                post.status === 'published'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-yellow-100 text-yellow-800'
+                                post.status === "published"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
                               }`}
                             >
-                              {post.status === 'published'
-                                ? 'Publicado'
-                                : 'Borrador'}
+                              {post.status === "published"
+                                ? "Publicado"
+                                : "Borrador"}
                             </span>
                           )}
                           {post.tags?.slice(0, 3).map((tag) => (
@@ -156,15 +156,15 @@ function BlogListContent() {
                           {post.publishedAt && (
                             <span>
                               {new Date(post.publishedAt).toLocaleDateString(
-                                'es-ES',
+                                "es-ES",
                               )}
                             </span>
                           )}
                           {post.updatedAt && (
                             <span>
-                              Actualizado:{' '}
+                              Actualizado:{" "}
                               {new Date(post.updatedAt).toLocaleDateString(
-                                'es-ES',
+                                "es-ES",
                               )}
                             </span>
                           )}
@@ -177,7 +177,7 @@ function BlogListContent() {
                             <Edit className="w-4 h-4" />
                             Editar
                           </Link>
-                          {post.status === 'published' && (
+                          {post.status === "published" && (
                             <Link
                               href={`/blog/${post.slug ?? post.id}`}
                               target="_blank"
@@ -210,4 +210,3 @@ function BlogListPage() {
 }
 
 export default BlogListPage;
-
