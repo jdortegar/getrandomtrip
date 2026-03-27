@@ -1,32 +1,32 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-import BlogComposer from '@/components/tripper/blog/BlogComposer';
-import type { BlogPost } from '@/types/blog';
+import { useRouter } from "next/navigation";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import Hero from "@/components/Hero";
+import BlogComposer from "@/components/tripper/blog/BlogComposer";
+import type { BlogPost } from "@/types/blog";
 
 function CreateBlogContent() {
   const router = useRouter();
 
   // Initial empty post for creation
   const initialPost: Partial<BlogPost> = {
-    id: 'new',
-    title: '',
-    subtitle: '',
+    id: "new",
+    title: "",
+    subtitle: "",
     blocks: [],
-    status: 'draft',
+    status: "draft",
   };
 
   return (
     <>
       <Hero
         content={{
-          title: 'Crear Nuevo Post',
-          subtitle: 'Comparte tus experiencias y consejos de viaje',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
+          title: "Crear Nuevo Post",
+          subtitle: "Comparte tus experiencias y consejos de viaje",
+          videoSrc: "/videos/hero-video-1.mp4",
+          fallbackImage: "/images/bg-playa-mexico.jpg",
         }}
         className="!h-[40vh]"
       />

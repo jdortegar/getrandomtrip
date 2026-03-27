@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { Calendar, Eye, MapPin, Plane, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import type { Trip } from '@/lib/utils/trips';
-import type { DashboardCopy } from './types';
+import Link from "next/link";
+import { Calendar, Eye, MapPin, Plane, Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import type { Trip } from "@/lib/utils/trips";
+import type { DashboardCopy } from "./types";
 
 interface UpcomingTripsPanelProps {
   copy: DashboardCopy;
@@ -24,7 +24,7 @@ export function UpcomingTripsPanel({
           <h2 className="text-xl font-semibold text-neutral-900">
             {copy.upcomingTrips.title}
           </h2>
-          <Button asChild size="sm" variant="outline">
+          <Button asChild size="md" variant="outline">
             <Link href="/journey">
               <Plus className="w-4 h-4 mr-2" />
               {copy.upcomingTrips.newTrip}
@@ -41,9 +41,9 @@ export function UpcomingTripsPanel({
             <p className="text-neutral-500 mb-4">
               {copy.upcomingTrips.emptyMessage}
             </p>
-            <Button asChild>
+            <Button asChild size="md">
               <Link href="/journey">
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4" />
                 {copy.upcomingTrips.emptyCta}
               </Link>
             </Button>
@@ -59,7 +59,8 @@ export function UpcomingTripsPanel({
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="font-semibold text-neutral-900">
-                        {trip.actualDestination || copy.allTrips.emptyDestination}
+                        {trip.actualDestination ||
+                          copy.allTrips.emptyDestination}
                       </h3>
                       <span
                         className={`px-2 py-0.5 text-xs rounded-full border ${getStatusColor(trip.status)}`}
@@ -79,7 +80,9 @@ export function UpcomingTripsPanel({
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        <span>{new Date(trip.startDate).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(trip.startDate).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </div>

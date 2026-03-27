@@ -1,32 +1,32 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState, Suspense } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
-import { Book } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState, Suspense } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams, useSearchParams } from "next/navigation";
+import { Book } from "lucide-react";
 import {
   BlogFilterHeader,
   type BlogFilterState,
-} from '@/components/blog/BlogFilterHeader';
-import HeaderHero from '@/components/journey/HeaderHero';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import Section from '@/components/layout/Section';
-import GlassCard from '@/components/ui/GlassCard';
-import type { TripperFilterOption } from '@/lib/constants/blog-filters';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import { cn } from '@/lib/utils';
+} from "@/components/blog/BlogFilterHeader";
+import HeaderHero from "@/components/journey/HeaderHero";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import Section from "@/components/layout/Section";
+import GlassCard from "@/components/ui/GlassCard";
+import type { TripperFilterOption } from "@/lib/constants/blog-filters";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { cn } from "@/lib/utils";
 
 /** Single source of truth for blog page hero (SOLID: single responsibility, no duplication). */
 const BLOG_HERO_CONFIG = {
-  className: '!min-h-[40vh]',
-  eyebrowColor: '#F2C53D',
-  fallbackImage: '/images/hero-image-1.jpeg',
-  subtitle: 'BLOG',
-  videoSrc: '/videos/hero-video.mp4',
+  className: "!min-h-[40vh]",
+  eyebrowColor: "#F2C53D",
+  fallbackImage: "/images/hero-image-1.jpeg",
+  subtitle: "BLOG",
+  videoSrc: "/videos/hero-video-1.mp4",
 } as const;
 
 interface BlogPost {
@@ -65,10 +65,10 @@ function BlogListContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const rawLocale = params?.locale;
-  const localeStr = typeof rawLocale === 'string' ? rawLocale : rawLocale?.[0];
-  const locale: Locale = hasLocale(localeStr) ? (localeStr as Locale) : 'es';
-  const tripperId = searchParams.get('tripperId');
-  const tripperName = searchParams.get('tripper');
+  const localeStr = typeof rawLocale === "string" ? rawLocale : rawLocale?.[0];
+  const locale: Locale = hasLocale(localeStr) ? (localeStr as Locale) : "es";
+  const tripperId = searchParams.get("tripperId");
+  const tripperName = searchParams.get("tripper");
 
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -82,7 +82,7 @@ function BlogListContent() {
   const [filter, setFilter] = useState<BlogFilterState>({
     excuseKey: null,
     tripperId: tripperId ?? null,
-    travelTypeKey: '',
+    travelTypeKey: "",
   });
   const [trippers, setTrippers] = useState<TripperFilterOption[]>([]);
 
@@ -100,7 +100,7 @@ function BlogListContent() {
   useEffect(() => {
     async function loadTrippers() {
       try {
-        const res = await fetch('/api/trippers');
+        const res = await fetch("/api/trippers");
         if (!res.ok) return;
         const data = await res.json();
         const list: TripperFilterOption[] = (
@@ -136,19 +136,19 @@ function BlogListContent() {
         }
 
         const params = new URLSearchParams({
-          limit: '12',
+          limit: "12",
           page: pageNum.toString(),
         });
 
         if (filter.tripperId) {
-          params.append('tripperId', filter.tripperId);
+          params.append("tripperId", filter.tripperId);
         }
 
         if (filter.travelTypeKey) {
-          params.append('travelType', filter.travelTypeKey);
+          params.append("travelType", filter.travelTypeKey);
         }
         if (filter.excuseKey) {
-          params.append('excuseKey', filter.excuseKey);
+          params.append("excuseKey", filter.excuseKey);
         }
 
         const response = await fetch(`/api/blogs?${params.toString()}`);
@@ -163,10 +163,10 @@ function BlogListContent() {
           setHasMore(data.pagination.hasMore);
           setTotal(data.pagination.total);
         } else {
-          console.error('Error fetching blogs:', data);
+          console.error("Error fetching blogs:", data);
         }
       } catch (error) {
-        console.error('Error fetching blogs:', error);
+        console.error("Error fetching blogs:", error);
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -211,11 +211,11 @@ function BlogListContent() {
   }
 
   const heroTitle = tripperName
-    ? dict.blogPage.heroTitleByTripper.replace('{name}', tripperName)
+    ? dict.blogPage.heroTitleByTripper.replace("{name}", tripperName)
     : dict.blogPage.heroTitleDefault;
   const backToProfileText = tripperName
-    ? dict.blogPage.backToProfile.replace('{name}', tripperName)
-    : '';
+    ? dict.blogPage.backToProfile.replace("{name}", tripperName)
+    : "";
 
   return (
     <>
@@ -268,16 +268,16 @@ function BlogListContent() {
                       const pattern = index % 6;
                       const colSpan =
                         pattern === 0 || pattern === 1
-                          ? 'md:col-span-3'
+                          ? "md:col-span-3"
                           : pattern === 2
-                            ? 'md:col-span-6'
-                            : 'md:col-span-2';
+                            ? "md:col-span-6"
+                            : "md:col-span-2";
                       const isLarge = pattern === 2;
                       return (
                         <Link
                           key={post.id}
                           href={pathForLocale(locale, `/blog/${post.slug}`)}
-                          className={cn('group block', colSpan)}
+                          className={cn("group block", colSpan)}
                         >
                           <GlassCard className="relative h-full overflow-hidden rounded-xl transition-shadow hover:shadow-lg">
                             <div className="relative h-[304.83px] w-full overflow-hidden">
@@ -289,8 +289,8 @@ function BlogListContent() {
                                     fill
                                     sizes={
                                       isLarge
-                                        ? '(min-width: 768px) 100vw, 100vw'
-                                        : '(min-width: 768px) 50vw, 100vw'
+                                        ? "(min-width: 768px) 100vw, 100vw"
+                                        : "(min-width: 768px) 50vw, 100vw"
                                     }
                                     src={post.coverUrl}
                                   />
@@ -304,19 +304,19 @@ function BlogListContent() {
                               )}
                               <div
                                 className={cn(
-                                  'absolute bottom-10 left-0 flex w-full flex-col items-center justify-center p-4',
+                                  "absolute bottom-10 left-0 flex w-full flex-col items-center justify-center p-4",
                                   post.coverUrl
-                                    ? 'text-white'
-                                    : 'text-neutral-900',
+                                    ? "text-white"
+                                    : "text-neutral-900",
                                 )}
                               >
                                 <div className="flex flex-col gap-6 text-left">
                                   <h3
                                     className={cn(
-                                      'font-barlow-condensed text-lg font-extrabold uppercase tracking-wide transition-colors sm:text-xl md:text-4xl',
+                                      "font-barlow-condensed text-lg font-extrabold uppercase tracking-wide transition-colors sm:text-xl md:text-4xl",
                                       post.coverUrl
-                                        ? 'text-white group-hover:text-blue-200'
-                                        : 'text-neutral-900 group-hover:text-blue-600',
+                                        ? "text-white group-hover:text-blue-200"
+                                        : "text-neutral-900 group-hover:text-blue-600",
                                     )}
                                   >
                                     {post.title}
@@ -324,10 +324,10 @@ function BlogListContent() {
                                   {post.subtitle && (
                                     <p
                                       className={cn(
-                                        'mt-2 line-clamp-2 text-base font-normal',
+                                        "mt-2 line-clamp-2 text-base font-normal",
                                         post.coverUrl
-                                          ? 'text-white/95'
-                                          : 'text-neutral-600',
+                                          ? "text-white/95"
+                                          : "text-neutral-600",
                                       )}
                                     >
                                       {post.subtitle}

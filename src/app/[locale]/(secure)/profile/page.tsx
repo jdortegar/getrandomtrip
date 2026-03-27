@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useUserStore } from '@/store/slices/userStore';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import Hero from '@/components/Hero';
-import { Button } from '@/components/ui/Button';
+import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useUserStore } from "@/store/slices/userStore";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import Hero from "@/components/Hero";
+import { Button } from "@/components/ui/Button";
 import {
   User,
   Mail,
@@ -20,24 +20,24 @@ import {
   Settings,
   X,
   Briefcase,
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
-type TabType = 'personal' | 'preferences' | 'security';
+type TabType = "personal" | "preferences" | "security";
 
 function ProfileContent() {
   const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabType>('personal');
+  const [activeTab, setActiveTab] = useState<TabType>("personal");
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-    travelerType: '',
+    name: "",
+    email: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    travelerType: "",
     interests: [] as string[],
     dislikes: [] as string[],
   });
@@ -52,18 +52,18 @@ function ProfileContent() {
   useEffect(() => {
     async function fetchStats() {
       if (!currentUser?.id) {
-        console.log('No user ID available');
+        console.log("No user ID available");
         return;
       }
 
       try {
-        console.log('Fetching trips for user:', currentUser.id);
+        console.log("Fetching trips for user:", currentUser.id);
         const tripsRes = await fetch(`/api/trips?userId=${currentUser.id}`);
         const tripsData = await tripsRes.json();
-        console.log('Trips response:', tripsData);
+        console.log("Trips response:", tripsData);
 
         if (tripsData.error) {
-          console.error('API Error:', tripsData.error, tripsData.details);
+          console.error("API Error:", tripsData.error, tripsData.details);
           return;
         }
 
@@ -78,7 +78,7 @@ function ProfileContent() {
               ) / ratingsTrips.length
             : 0;
 
-        console.log('Stats calculated:', {
+        console.log("Stats calculated:", {
           totalTrips: trips.length,
           avgRating,
         });
@@ -87,7 +87,7 @@ function ProfileContent() {
           averageRating: avgRating,
         });
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error("Error fetching stats:", error);
       }
     }
 
@@ -99,18 +99,18 @@ function ProfileContent() {
     // Pre-fill form with current data
     // User data comes from NextAuth session or Zustand store
     const travelerType =
-      (user as any)?.travelerType || (currentUser as any)?.travelerType || '';
+      (user as any)?.travelerType || (currentUser as any)?.travelerType || "";
     const interests =
       (user as any)?.interests || (currentUser as any)?.interests || [];
     const dislikes =
       (user as any)?.dislikes || (currentUser as any)?.dislikes || [];
 
     setFormData({
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
+      name: currentUser?.name || "",
+      email: currentUser?.email || "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
       travelerType,
       interests: Array.isArray(interests) ? interests : [],
       dislikes: Array.isArray(dislikes) ? dislikes : [],
@@ -119,14 +119,14 @@ function ProfileContent() {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setActiveTab('personal');
+    setActiveTab("personal");
     setFormData({
-      name: '',
-      email: '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-      travelerType: '',
+      name: "",
+      email: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+      travelerType: "",
       interests: [],
       dislikes: [],
     });
@@ -134,9 +134,9 @@ function ProfileContent() {
 
   const handleSavePersonal = async () => {
     try {
-      const response = await fetch('/api/user/update', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/user/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -156,26 +156,26 @@ function ProfileContent() {
           },
         });
 
-        toast.success('Información actualizada correctamente');
+        toast.success("Información actualizada correctamente");
         closeModal();
       } else {
-        toast.error('Error al actualizar información');
+        toast.error("Error al actualizar información");
       }
     } catch (error) {
-      console.error('Error updating personal info:', error);
-      toast.error('Error al actualizar información');
+      console.error("Error updating personal info:", error);
+      toast.error("Error al actualizar información");
     }
   };
 
   const handleSavePreferences = async () => {
     try {
-      const response = await fetch('/api/user/preferences', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/user/preferences", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           travelerType: formData.travelerType,
-          interests: formData.interests.filter((i) => i.trim() !== ''),
-          dislikes: formData.dislikes.filter((d) => d.trim() !== ''),
+          interests: formData.interests.filter((i) => i.trim() !== ""),
+          dislikes: formData.dislikes.filter((d) => d.trim() !== ""),
         }),
       });
 
@@ -193,32 +193,32 @@ function ProfileContent() {
           },
         });
 
-        toast.success('Preferencias actualizadas correctamente');
+        toast.success("Preferencias actualizadas correctamente");
         closeModal();
       } else {
-        toast.error('Error al actualizar preferencias');
+        toast.error("Error al actualizar preferencias");
       }
     } catch (error) {
-      console.error('Error updating preferences:', error);
-      toast.error('Error al actualizar preferencias');
+      console.error("Error updating preferences:", error);
+      toast.error("Error al actualizar preferencias");
     }
   };
 
   const handleChangePassword = async () => {
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('Las contraseñas no coinciden');
+      toast.error("Las contraseñas no coinciden");
       return;
     }
 
     if (formData.newPassword.length < 6) {
-      toast.error('La contraseña debe tener al menos 6 caracteres');
+      toast.error("La contraseña debe tener al menos 6 caracteres");
       return;
     }
 
     try {
-      const response = await fetch('/api/user/password', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/user/password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           currentPassword: formData.currentPassword,
           newPassword: formData.newPassword,
@@ -226,15 +226,15 @@ function ProfileContent() {
       });
 
       if (response.ok) {
-        toast.success('Contraseña actualizada correctamente');
+        toast.success("Contraseña actualizada correctamente");
         closeModal();
       } else {
         const data = await response.json();
-        toast.error(data.error || 'Error al cambiar contraseña');
+        toast.error(data.error || "Error al cambiar contraseña");
       }
     } catch (error) {
-      console.error('Error changing password:', error);
-      toast.error('Error al cambiar contraseña');
+      console.error("Error changing password:", error);
+      toast.error("Error al cambiar contraseña");
     }
   };
 
@@ -242,10 +242,10 @@ function ProfileContent() {
     <>
       <Hero
         content={{
-          title: 'Mi Perfil',
-          subtitle: 'Gestiona tu cuenta y preferencias',
-          videoSrc: '/videos/hero-video.mp4',
-          fallbackImage: '/images/bg-playa-mexico.jpg',
+          title: "Mi Perfil",
+          subtitle: "Gestiona tu cuenta y preferencias",
+          videoSrc: "/videos/hero-video-1.mp4",
+          fallbackImage: "/images/bg-playa-mexico.jpg",
         }}
         className="!h-[40vh]"
       />
@@ -257,24 +257,24 @@ function ProfileContent() {
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="relative">
                 <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                  {currentUser?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  {currentUser?.name?.charAt(0)?.toUpperCase() || "U"}
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-4 border-white"></div>
               </div>
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-                  {currentUser?.name || 'Usuario'}
+                  {currentUser?.name || "Usuario"}
                 </h1>
                 <p className="text-neutral-600 mb-3">
-                  {currentUser?.email || 'usuario@email.com'}
+                  {currentUser?.email || "usuario@email.com"}
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                   <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
                     Viajero Activo
                   </span>
                   <span className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200">
-                    {currentUser?.role || 'client'}
+                    {currentUser?.role || "client"}
                   </span>
                 </div>
               </div>
@@ -284,7 +284,7 @@ function ProfileContent() {
                   <Edit className="w-4 h-4 mr-2" />
                   Editar Perfil
                 </Button>
-                {(currentUser as any)?.role === 'TRIPPER' && (
+                {(currentUser as any)?.role === "TRIPPER" && (
                   <Button asChild>
                     <a href="/trippers/profile">
                       <Briefcase className="w-4 h-4 mr-2" />
@@ -310,7 +310,7 @@ function ProfileContent() {
                     <div className="flex-1">
                       <p className="text-sm text-neutral-600 mb-1">Nombre</p>
                       <p className="font-medium text-neutral-900">
-                        {currentUser?.name || 'No especificado'}
+                        {currentUser?.name || "No especificado"}
                       </p>
                     </div>
                   </div>
@@ -320,7 +320,7 @@ function ProfileContent() {
                     <div className="flex-1">
                       <p className="text-sm text-neutral-600 mb-1">Email</p>
                       <p className="font-medium text-neutral-900">
-                        {currentUser?.email || 'No especificado'}
+                        {currentUser?.email || "No especificado"}
                       </p>
                     </div>
                   </div>
@@ -332,9 +332,9 @@ function ProfileContent() {
                         Miembro desde
                       </p>
                       <p className="font-medium text-neutral-900">
-                        {new Date().toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'long',
+                        {new Date().toLocaleDateString("es-ES", {
+                          year: "numeric",
+                          month: "long",
                         })}
                       </p>
                     </div>
@@ -450,7 +450,7 @@ function ProfileContent() {
                     <span className="font-bold text-neutral-900">
                       {stats.averageRating > 0
                         ? stats.averageRating.toFixed(1)
-                        : '—'}
+                        : "—"}
                     </span>
                   </div>
                 </div>
@@ -481,33 +481,33 @@ function ProfileContent() {
               <div className="border-b">
                 <div className="flex">
                   <button
-                    onClick={() => setActiveTab('personal')}
+                    onClick={() => setActiveTab("personal")}
                     className={`flex-1 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'personal'
-                        ? 'border-blue-600 text-blue-600'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                      activeTab === "personal"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
                     <User className="w-4 h-4 inline mr-2" />
                     Personal
                   </button>
                   <button
-                    onClick={() => setActiveTab('preferences')}
+                    onClick={() => setActiveTab("preferences")}
                     className={`flex-1 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'preferences'
-                        ? 'border-blue-600 text-blue-600'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                      activeTab === "preferences"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
                     <Settings className="w-4 h-4 inline mr-2" />
                     Preferencias
                   </button>
                   <button
-                    onClick={() => setActiveTab('security')}
+                    onClick={() => setActiveTab("security")}
                     className={`flex-1 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                      activeTab === 'security'
-                        ? 'border-blue-600 text-blue-600'
-                        : 'border-transparent text-neutral-600 hover:text-neutral-900'
+                      activeTab === "security"
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
                     <Lock className="w-4 h-4 inline mr-2" />
@@ -518,7 +518,7 @@ function ProfileContent() {
 
               {/* Tab Content */}
               <div className="p-6">
-                {activeTab === 'personal' && (
+                {activeTab === "personal" && (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -550,7 +550,7 @@ function ProfileContent() {
                   </div>
                 )}
 
-                {activeTab === 'preferences' && (
+                {activeTab === "preferences" && (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -582,14 +582,14 @@ function ProfileContent() {
                       </label>
                       <Input
                         type="text"
-                        value={formData.interests.filter((i) => i).join(', ')}
+                        value={formData.interests.filter((i) => i).join(", ")}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
                             interests: e.target.value
-                              .split(',')
+                              .split(",")
                               .map((i) => i.trim())
-                              .filter((i) => i !== ''),
+                              .filter((i) => i !== ""),
                           })
                         }
                         placeholder="aventura, cultura, comida"
@@ -602,14 +602,14 @@ function ProfileContent() {
                       </label>
                       <Input
                         type="text"
-                        value={formData.dislikes.filter((d) => d).join(', ')}
+                        value={formData.dislikes.filter((d) => d).join(", ")}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
                             dislikes: e.target.value
-                              .split(',')
+                              .split(",")
                               .map((i) => i.trim())
-                              .filter((i) => i !== ''),
+                              .filter((i) => i !== ""),
                           })
                         }
                         placeholder="multitudes, frío"
@@ -618,7 +618,7 @@ function ProfileContent() {
                   </div>
                 )}
 
-                {activeTab === 'security' && (
+                {activeTab === "security" && (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -685,10 +685,10 @@ function ProfileContent() {
                 </Button>
                 <Button
                   onClick={() => {
-                    if (activeTab === 'personal') handleSavePersonal();
-                    else if (activeTab === 'preferences')
+                    if (activeTab === "personal") handleSavePersonal();
+                    else if (activeTab === "preferences")
                       handleSavePreferences();
-                    else if (activeTab === 'security') handleChangePassword();
+                    else if (activeTab === "security") handleChangePassword();
                   }}
                   className="flex-1"
                 >

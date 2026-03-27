@@ -1,55 +1,55 @@
-'use client';
+"use client";
 
-import { Suspense, useEffect, useRef, useState } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { useSearchParams } from 'next/navigation';
-import JourneyContentNavigation from '@/components/journey/JourneyContentNavigation';
-import HeaderHero from '@/components/journey/HeaderHero';
-import JourneyMainContent from '@/components/journey/JourneyMainContent';
-import JourneyProgressSidebar from '@/components/journey/JourneyProgressSidebar';
-import JourneySummary from '@/components/journey/JourneySummary';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale } from '@/lib/i18n/config';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
-import { getHasExcuseStep } from '@/lib/helpers/excuse-helper';
-import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
+import { Suspense, useEffect, useRef, useState } from "react";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { useSearchParams } from "next/navigation";
+import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
+import HeaderHero from "@/components/journey/HeaderHero";
+import JourneyMainContent from "@/components/journey/JourneyMainContent";
+import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
+import JourneySummary from "@/components/journey/JourneySummary";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
+import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 
 function getAccordionForStep(tabId: string, substepId?: string): string {
   switch (tabId) {
-    case 'budget':
-      return substepId === 'experience' ? 'experience' : 'travel-type';
-    case 'excuse':
-      return substepId === 'refine-details' ? 'refine-details' : 'excuse';
-    case 'details':
-      if (substepId === 'dates') return 'dates';
-      if (substepId === 'transport') return 'transport';
-      return 'origin';
-    case 'preferences':
-      if (substepId === 'addons' && JOURNEY_ADDONS_ENABLED) return 'addons';
-      return 'filters';
+    case "budget":
+      return substepId === "experience" ? "experience" : "travel-type";
+    case "excuse":
+      return substepId === "refine-details" ? "refine-details" : "excuse";
+    case "details":
+      if (substepId === "dates") return "dates";
+      if (substepId === "transport") return "transport";
+      return "origin";
+    case "preferences":
+      if (substepId === "addons" && JOURNEY_ADDONS_ENABLED) return "addons";
+      return "filters";
     default:
-      return '';
+      return "";
   }
 }
 
 function getTabForSection(sectionId: string): string {
   switch (sectionId) {
-    case 'travel-type':
-    case 'experience':
-      return 'budget';
-    case 'excuse':
-    case 'refine-details':
-      return 'excuse';
-    case 'origin':
-    case 'dates':
-    case 'transport':
-      return 'details';
-    case 'filters':
-    case 'addons':
-      return 'preferences';
+    case "travel-type":
+    case "experience":
+      return "budget";
+    case "excuse":
+    case "refine-details":
+      return "excuse";
+    case "origin":
+    case "dates":
+    case "transport":
+      return "details";
+    case "filters":
+    case "addons":
+      return "preferences";
     default:
-      return 'budget';
+      return "budget";
   }
 }
 
@@ -57,38 +57,38 @@ function getInitialStepFromParams(params: URLSearchParams): {
   sectionId: string;
   tabId: string;
 } {
-  const travelType = params.get('travelType');
-  const experience = params.get('experience');
-  const excuse = params.get('excuse');
-  const originCountry = params.get('originCountry');
-  const originCity = params.get('originCity');
-  const startDate = params.get('startDate');
-  const nights = params.get('nights');
-  const transportOrder = params.get('transportOrder');
+  const travelType = params.get("travelType");
+  const experience = params.get("experience");
+  const excuse = params.get("excuse");
+  const originCountry = params.get("originCountry");
+  const originCity = params.get("originCity");
+  const startDate = params.get("startDate");
+  const nights = params.get("nights");
+  const transportOrder = params.get("transportOrder");
 
-  if (!travelType) return { tabId: 'budget', sectionId: 'travel-type' };
-  if (!experience) return { tabId: 'budget', sectionId: 'experience' };
-  const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience ?? '');
-  if (hasExcuseStep && !excuse) return { tabId: 'excuse', sectionId: 'excuse' };
+  if (!travelType) return { tabId: "budget", sectionId: "travel-type" };
+  if (!experience) return { tabId: "budget", sectionId: "experience" };
+  const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");
+  if (hasExcuseStep && !excuse) return { tabId: "excuse", sectionId: "excuse" };
   // Stay on excuse step (refine-details) until user clicks Next; card click must not advance
   if (hasExcuseStep && excuse)
-    return { tabId: 'excuse', sectionId: 'refine-details' };
+    return { tabId: "excuse", sectionId: "refine-details" };
   if (!originCountry || !originCity)
-    return { tabId: 'details', sectionId: 'origin' };
-  if (!startDate || !nights) return { tabId: 'details', sectionId: 'dates' };
+    return { tabId: "details", sectionId: "origin" };
+  if (!startDate || !nights) return { tabId: "details", sectionId: "dates" };
   if (!isCompleteTransportOrderParam(transportOrder))
-    return { tabId: 'details', sectionId: 'transport' };
-  return { tabId: 'preferences', sectionId: 'filters' };
+    return { tabId: "details", sectionId: "transport" };
+  return { tabId: "preferences", sectionId: "filters" };
 }
 
 function JourneyPageContent({ locale }: { locale?: string }) {
   const searchParams = useSearchParams();
   const [dict, setDict] = useState<Dictionary | null>(null);
-  const [activeTab, setActiveTab] = useState('budget');
-  const [openSectionId, setOpenSectionId] = useState('travel-type');
+  const [activeTab, setActiveTab] = useState("budget");
+  const [openSectionId, setOpenSectionId] = useState("travel-type");
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const resolvedLocale = hasLocale(locale) ? locale : 'es';
+  const resolvedLocale = hasLocale(locale) ? locale : "es";
 
   useEffect(() => {
     getDictionary(resolvedLocale).then(setDict);
@@ -101,13 +101,13 @@ function JourneyPageContent({ locale }: { locale?: string }) {
     // Only re-sync when step-determining params change (not on every keystroke in origin/dates/transport)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stepKey: only travelType, experience, excuse drive step
   }, [
-    searchParams.get('travelType'),
-    searchParams.get('experience'),
-    searchParams.get('excuse'),
+    searchParams.get("travelType"),
+    searchParams.get("experience"),
+    searchParams.get("excuse"),
   ]);
 
   useEffect(() => {
-    contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [activeTab]);
 
   const handleTabChange = (tabId: string) => {
@@ -133,12 +133,12 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   }
 
   const journey = dict.journey;
-  const travelType = searchParams.get('travelType');
-  const experience = searchParams.get('experience');
-  const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience ?? '');
+  const travelType = searchParams.get("travelType");
+  const experience = searchParams.get("experience");
+  const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");
   const contentTabsForUI = hasExcuseStep
     ? journey.contentTabs
-    : journey.contentTabs.filter((tab) => tab.id !== 'excuse');
+    : journey.contentTabs.filter((tab) => tab.id !== "excuse");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -147,7 +147,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={journey.hero.subtitle}
         title={journey.hero.title}
-        videoSrc="/videos/hero-video.mp4"
+        videoSrc="/videos/hero-video-1.mp4"
       />
 
       <JourneyContentNavigation
@@ -191,7 +191,9 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             filterOptions={journey.preferencesStep.filterOptions}
             localizedExcuses={hasExcuseStep ? journey.excuses : undefined}
             onEdit={handleSummaryEdit}
-            refineDetailOptions={hasExcuseStep ? journey.refineDetailOptions : undefined}
+            refineDetailOptions={
+              hasExcuseStep ? journey.refineDetailOptions : undefined
+            }
             summary={journey.summary}
           />
         </div>

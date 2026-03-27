@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import SecureRoute from '@/components/auth/SecureRoute';
-import Section from '@/components/layout/Section';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import Chip from '@/components/badge';
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import SecureRoute from "@/components/auth/SecureRoute";
+import Section from "@/components/layout/Section";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import Chip from "@/components/badge";
 import {
   ArrowLeft,
   Calendar,
@@ -25,12 +25,12 @@ import {
   CheckCircle,
   Clock,
   X as XIcon,
-} from 'lucide-react';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
-import { ADDONS } from '@/lib/data/shared/addons-catalog';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import type { JourneyFilterKey } from '@/lib/constants/journey-filters';
+} from "lucide-react";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
+import { ADDONS } from "@/lib/data/shared/addons-catalog";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import type { JourneyFilterKey } from "@/lib/constants/journey-filters";
 
 interface TripDetails {
   id: string;
@@ -99,7 +99,7 @@ function TripDetailsContent() {
   const [dict, setDict] = useState<MarketingDictionary | null>(null);
 
   const tripId = params.id as string;
-  const locale = (params.locale as string) ?? 'es';
+  const locale = (params.locale as string) ?? "es";
 
   useEffect(() => {
     getDictionary(locale).then(setDict);
@@ -115,7 +115,7 @@ function TripDetailsContent() {
         const data = await response.json();
 
         if (data.error) {
-          console.error('Error fetching trip:', data.error);
+          console.error("Error fetching trip:", data.error);
           return;
         }
 
@@ -123,13 +123,13 @@ function TripDetailsContent() {
 
         // Auto-show destination if revealed or completed
         if (
-          data.trip.status === 'REVEALED' ||
-          data.trip.status === 'COMPLETED'
+          data.trip.status === "REVEALED" ||
+          data.trip.status === "COMPLETED"
         ) {
           setShowDestination(true);
         }
       } catch (error) {
-        console.error('Error fetching trip details:', error);
+        console.error("Error fetching trip details:", error);
       } finally {
         setLoading(false);
       }
@@ -150,7 +150,7 @@ function TripDetailsContent() {
           description="No pudimos encontrar este viaje"
           fallbackImage="/images/hero-image-1.jpeg"
           title="Viaje no encontrado"
-          videoSrc="/videos/hero-video.mp4"
+          videoSrc="/videos/hero-video-1.mp4"
         />
         <Section>
           <div className="max-w-2xl mx-auto text-center">
@@ -173,42 +173,47 @@ function TripDetailsContent() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'CONFIRMED':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'REVEALED':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800 border-red-200';
+      case "COMPLETED":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "CONFIRMED":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "REVEALED":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "CANCELLED":
+        return "bg-red-100 text-red-800 border-red-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      DRAFT: 'Borrador',
-      SAVED: 'Guardado',
-      PENDING_PAYMENT: 'Pendiente de Pago',
-      CONFIRMED: 'Confirmado',
-      REVEALED: 'Revelado',
-      COMPLETED: 'Completado',
-      CANCELLED: 'Cancelado',
+      DRAFT: "Borrador",
+      SAVED: "Guardado",
+      PENDING_PAYMENT: "Pendiente de Pago",
+      CONFIRMED: "Confirmado",
+      REVEALED: "Revelado",
+      COMPLETED: "Completado",
+      CANCELLED: "Cancelado",
     };
     return labels[status] || status;
   };
 
   const filterOptions = dict?.journey?.preferencesStep?.filterOptions;
   const filterChips = [
-    { key: 'transport' as JourneyFilterKey, value: trip.transport },
-    ...(trip.accommodationType && trip.accommodationType !== 'any'
-      ? [{ key: 'accommodationType' as JourneyFilterKey, value: trip.accommodationType }]
+    { key: "transport" as JourneyFilterKey, value: trip.transport },
+    ...(trip.accommodationType && trip.accommodationType !== "any"
+      ? [
+          {
+            key: "accommodationType" as JourneyFilterKey,
+            value: trip.accommodationType,
+          },
+        ]
       : []),
-    { key: 'climate' as JourneyFilterKey, value: trip.climate },
-    { key: 'maxTravelTime' as JourneyFilterKey, value: trip.maxTravelTime },
-    { key: 'departPref' as JourneyFilterKey, value: trip.departPref },
-    { key: 'arrivePref' as JourneyFilterKey, value: trip.arrivePref },
+    { key: "climate" as JourneyFilterKey, value: trip.climate },
+    { key: "maxTravelTime" as JourneyFilterKey, value: trip.maxTravelTime },
+    { key: "departPref" as JourneyFilterKey, value: trip.departPref },
+    { key: "arrivePref" as JourneyFilterKey, value: trip.arrivePref },
   ].map((f) => {
     const optionDef = filterOptions?.[f.key];
     const categoryLabel = optionDef?.label ?? f.key;
@@ -236,7 +241,7 @@ function TripDetailsContent() {
     .filter(Boolean);
 
   const canRevealDestination =
-    trip.status === 'REVEALED' || trip.status === 'COMPLETED';
+    trip.status === "REVEALED" || trip.status === "COMPLETED";
 
   return (
     <>
@@ -247,9 +252,9 @@ function TripDetailsContent() {
         title={
           showDestination && trip.actualDestination
             ? trip.actualDestination
-            : 'Destino Sorpresa'
+            : "Destino Sorpresa"
         }
-        videoSrc="/videos/hero-video.mp4"
+        videoSrc="/videos/hero-video-1.mp4"
       />
 
       <Section>
@@ -287,13 +292,13 @@ function TripDetailsContent() {
                       <div>
                         <h3 className="font-semibold text-purple-900 mb-1">
                           {showDestination
-                            ? '🎉 Destino Revelado'
-                            : '🔒 Destino Oculto'}
+                            ? "🎉 Destino Revelado"
+                            : "🔒 Destino Oculto"}
                         </h3>
                         <p className="text-sm text-purple-700">
                           {showDestination
                             ? trip.actualDestination
-                            : 'Haz clic para revelar tu destino'}
+                            : "Haz clic para revelar tu destino"}
                         </p>
                       </div>
                       <Button
@@ -347,7 +352,7 @@ function TripDetailsContent() {
                       <span className="text-xs text-neutral-600">Fechas</span>
                     </div>
                     <p className="font-medium text-neutral-900 text-sm">
-                      {new Date(trip.startDate).toLocaleDateString()} →{' '}
+                      {new Date(trip.startDate).toLocaleDateString()} →{" "}
                       {new Date(trip.endDate).toLocaleDateString()}
                     </p>
                   </div>
@@ -395,7 +400,7 @@ function TripDetailsContent() {
                           key={index}
                           item={{
                             key: dest,
-                            label: 'Ciudad',
+                            label: "Ciudad",
                             value: dest,
                           }}
                           color="secondary"
@@ -442,8 +447,8 @@ function TripDetailsContent() {
                         key={i}
                         className={`h-5 w-5 ${
                           i < (trip.customerRating || 0)
-                            ? 'text-yellow-500 fill-current'
-                            : 'text-gray-300'
+                            ? "text-yellow-500 fill-current"
+                            : "text-gray-300"
                         }`}
                       />
                     ))}
@@ -511,31 +516,31 @@ function TripDetailsContent() {
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      {trip.payment.status === 'APPROVED' ||
-                      trip.payment.status === 'COMPLETED' ? (
+                      {trip.payment.status === "APPROVED" ||
+                      trip.payment.status === "COMPLETED" ? (
                         <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : trip.payment.status === 'PENDING' ? (
+                      ) : trip.payment.status === "PENDING" ? (
                         <Clock className="h-5 w-5 text-yellow-600" />
                       ) : (
                         <XIcon className="h-5 w-5 text-red-600" />
                       )}
                       <span
                         className={`font-medium ${
-                          trip.payment.status === 'APPROVED' ||
-                          trip.payment.status === 'COMPLETED'
-                            ? 'text-green-600'
-                            : trip.payment.status === 'PENDING'
-                              ? 'text-yellow-600'
-                              : 'text-red-600'
+                          trip.payment.status === "APPROVED" ||
+                          trip.payment.status === "COMPLETED"
+                            ? "text-green-600"
+                            : trip.payment.status === "PENDING"
+                              ? "text-yellow-600"
+                              : "text-red-600"
                         }`}
                       >
-                        {trip.payment.status === 'APPROVED'
-                          ? 'Pago Aprobado'
-                          : trip.payment.status === 'COMPLETED'
-                            ? 'Pago Completado'
-                            : trip.payment.status === 'PENDING'
-                              ? 'Pago Pendiente'
-                              : 'Pago Fallido'}
+                        {trip.payment.status === "APPROVED"
+                          ? "Pago Aprobado"
+                          : trip.payment.status === "COMPLETED"
+                            ? "Pago Completado"
+                            : trip.payment.status === "PENDING"
+                              ? "Pago Pendiente"
+                              : "Pago Fallido"}
                       </span>
                     </div>
 
@@ -654,15 +659,15 @@ function TripDetailsContent() {
                   Acciones
                 </h3>
                 <div className="space-y-3">
-                  {trip.status === 'COMPLETED' && !trip.customerRating && (
+                  {trip.status === "COMPLETED" && !trip.customerRating && (
                     <Button className="w-full justify-start">
                       <Star className="w-4 h-4 mr-2" />
                       Dejar Reseña
                     </Button>
                   )}
 
-                  {(trip.status === 'CONFIRMED' ||
-                    trip.status === 'REVEALED') && (
+                  {(trip.status === "CONFIRMED" ||
+                    trip.status === "REVEALED") && (
                     <Button
                       variant="secondary"
                       className="w-full justify-start"
@@ -700,10 +705,10 @@ function TripDetailsContent() {
                   <li>
                     • Nivel: <strong>{trip.level}</strong>
                   </li>
-                  {trip.status === 'CONFIRMED' && (
+                  {trip.status === "CONFIRMED" && (
                     <li>• El destino será revelado 48 horas antes del viaje</li>
                   )}
-                  {trip.status === 'REVEALED' && (
+                  {trip.status === "REVEALED" && (
                     <li>• ¡Tu destino ha sido revelado!</li>
                   )}
                 </ul>

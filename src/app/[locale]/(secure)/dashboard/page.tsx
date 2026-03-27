@@ -197,7 +197,7 @@ function DashboardContent() {
         description={copy.header.description}
         fallbackImage="/images/hero-image-1.jpeg"
         title={`${copy.header.helloPrefix}, ${currentUser?.name || copy.header.helloFallbackName}!`}
-        videoSrc="/videos/hero-video.mp4"
+        videoSrc="/videos/hero-video-1.mp4"
       />
 
       <Section>

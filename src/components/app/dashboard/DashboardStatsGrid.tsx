@@ -1,5 +1,6 @@
-import { Calendar, DollarSign, Plane, Star } from 'lucide-react';
-import type { DashboardCopy, DashboardStats } from './types';
+import { Calendar, DollarSign, Plane, Star } from "lucide-react";
+import type { DashboardCopy, DashboardStats } from "./types";
+import type { LucideIcon } from "lucide-react";
 
 interface DashboardStatsGridProps {
   copy: DashboardCopy;
@@ -7,55 +8,66 @@ interface DashboardStatsGridProps {
 }
 
 export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
+  const statCards: Array<{
+    icon: LucideIcon;
+    iconClassName: string;
+    key: string;
+    label: string;
+    value: string | number;
+  }> = [
+    {
+      icon: Plane,
+      iconClassName: "text-sky-400",
+      key: "total-trips",
+      label: copy.stats.totalTrips,
+      value: stats.totalTrips,
+    },
+    {
+      icon: Calendar,
+      iconClassName: "text-sky-400",
+      key: "upcoming-trips",
+      label: copy.stats.upcomingTrips,
+      value: stats.upcomingTrips,
+    },
+    {
+      icon: DollarSign,
+      iconClassName: "text-sky-400",
+      key: "total-spent",
+      label: copy.stats.totalSpent,
+      value: `$${(stats.totalSpent ?? 0).toFixed(0)}`,
+    },
+    {
+      icon: Star,
+      iconClassName: "text-sky-400",
+      key: "average-rating",
+      label: copy.stats.averageRating,
+      value: stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : "—",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-neutral-600 mb-1">{copy.stats.totalTrips}</p>
-            <p className="text-3xl font-bold text-neutral-900">
-              {stats.totalTrips}
-            </p>
+    <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {statCards.map((card) => {
+        const Icon = card.icon;
+        return (
+          <div
+            className="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100"
+            key={card.key}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="mb-1 font-normal text-gray-600 text-xl">
+                  {card.label}
+                </p>
+                <p className="font-barlow-condensed font-bold text-4xl text-gray-900">
+                  {card.value}
+                </p>
+              </div>
+              <Icon className={`h-10 w-10 ${card.iconClassName}`} />
+            </div>
           </div>
-          <Plane className="h-10 w-10 text-blue-600" />
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-neutral-600 mb-1">{copy.stats.upcomingTrips}</p>
-            <p className="text-3xl font-bold text-neutral-900">
-              {stats.upcomingTrips}
-            </p>
-          </div>
-          <Calendar className="h-10 w-10 text-green-600" />
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-neutral-600 mb-1">{copy.stats.totalSpent}</p>
-            <p className="text-3xl font-bold text-neutral-900">
-              ${(stats.totalSpent ?? 0).toFixed(0)}
-            </p>
-          </div>
-          <DollarSign className="h-10 w-10 text-purple-600" />
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-neutral-600 mb-1">{copy.stats.averageRating}</p>
-            <p className="text-3xl font-bold text-neutral-900">
-              {stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : '—'}
-            </p>
-          </div>
-          <Star className="h-10 w-10 text-yellow-500" />
-        </div>
-      </div>
+        );
+      })}
     </div>
   );
 }

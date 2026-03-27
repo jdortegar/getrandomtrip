@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { AlertCircle, Calendar, CreditCard, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import type { Trip } from '@/lib/utils/trips';
-import type { DashboardCopy } from './types';
+import Link from "next/link";
+import { AlertCircle, Calendar, CreditCard, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import type { Trip } from "@/lib/utils/trips";
+import type { DashboardCopy } from "./types";
 
 interface UnpaidTripsAlertProps {
   copy: DashboardCopy;
@@ -10,7 +10,11 @@ interface UnpaidTripsAlertProps {
   trips: Trip[];
 }
 
-export function UnpaidTripsAlert({ copy, locale, trips }: UnpaidTripsAlertProps) {
+export function UnpaidTripsAlert({
+  copy,
+  locale,
+  trips,
+}: UnpaidTripsAlertProps) {
   if (trips.length === 0) return null;
 
   return (
@@ -60,7 +64,7 @@ export function UnpaidTripsAlert({ copy, locale, trips }: UnpaidTripsAlertProps)
               <span className="font-semibold text-neutral-900">
                 ${(trip.totalTripUsd ?? 0).toFixed(0)}
               </span>
-              <Button asChild size="sm">
+              <Button asChild size="md">
                 <Link href={`/${locale}/checkout?tripId=${trip.id}`}>
                   <CreditCard className="mr-2 h-4 w-4" />
                   {copy.unpaidTrips.action}

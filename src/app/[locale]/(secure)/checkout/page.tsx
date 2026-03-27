@@ -837,7 +837,7 @@ function CheckoutContent() {
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle=""
         title={heroTitle}
-        videoSrc="/videos/hero-video.mp4"
+        videoSrc="/videos/hero-video-1.mp4"
       />
 
       <div className="container mx-auto px-4 py-12 md:px-20">

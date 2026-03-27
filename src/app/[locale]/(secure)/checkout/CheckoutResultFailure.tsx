@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useEffect } from 'react';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
-import { persistMercadoPagoCheckoutReturnParams } from '@/lib/helpers/persist-mercadopago-checkout-return';
-import { confirmMercadoPagoPaymentFromReturnParams } from '@/lib/helpers/confirm-mercadopago-payment-from-return';
-import type { MercadoPagoCheckoutReturnParams } from '@/lib/types/MercadoPagoCheckoutReturnParams';
+import Link from "next/link";
+import { useEffect } from "react";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { persistMercadoPagoCheckoutReturnParams } from "@/lib/helpers/persist-mercadopago-checkout-return";
+import { confirmMercadoPagoPaymentFromReturnParams } from "@/lib/helpers/confirm-mercadopago-payment-from-return";
+import type { MercadoPagoCheckoutReturnParams } from "@/lib/types/MercadoPagoCheckoutReturnParams";
 
 interface CheckoutResultFailureProps {
-  labels: Dictionary['paymentFailure'];
+  labels: Dictionary["paymentFailure"];
   locale: string;
   mercadoPagoParams?: MercadoPagoCheckoutReturnParams | null;
 }
@@ -25,7 +25,7 @@ export default function CheckoutResultFailure({
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
 
   /** Client / traveler dashboard — `/dashboard` (never `/dashboard/tripper`). */
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   const retryTripId = mercadoPagoParams?.externalReference?.trim() || null;
   const tryAgainHref = retryTripId
@@ -33,7 +33,7 @@ export default function CheckoutResultFailure({
         safeLocale,
         `/checkout?tripId=${encodeURIComponent(retryTripId)}`,
       )
-    : pathForLocale(safeLocale, '/journey');
+    : pathForLocale(safeLocale, "/journey");
 
   useEffect(() => {
     if (!mercadoPagoParams) return;
@@ -48,7 +48,7 @@ export default function CheckoutResultFailure({
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={labels.subtitle}
         title={labels.title}
-        videoSrc="/videos/hero-video.mp4"
+        videoSrc="/videos/hero-video-1.mp4"
       />
       <main className="flex-grow">
         <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
