@@ -49,11 +49,13 @@ interface Payment {
   status: string;
   createdAt: string;
   trip?: {
+    id?: string;
     type: string;
     level: string;
     startDate: string;
   };
   tripRequest?: {
+    id?: string;
     type: string;
     level: string;
     startDate: string;
@@ -404,6 +406,9 @@ function DashboardContent() {
                           <p className="font-semibold text-neutral-900">
                             {trip.type} · {trip.level}
                           </p>
+                          <p className="mt-0.5 text-xs text-neutral-500">
+                            ID: {trip.id}
+                          </p>
                           <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-neutral-600">
                             <span className="flex items-center gap-1">
                               <MapPin className="h-4 w-4 flex-shrink-0" />
@@ -489,6 +494,9 @@ function DashboardContent() {
                                     {getStatusLabel(trip.status)}
                                   </span>
                                 </div>
+                                <p className="mb-2 text-xs text-neutral-500">
+                                  ID: {trip.id}
+                                </p>
                                 <div className="flex items-center gap-4 text-sm text-neutral-600">
                                   <div className="flex items-center gap-1">
                                     <MapPin className="h-4 w-4" />
@@ -666,6 +674,11 @@ function DashboardContent() {
                                       : '—'}
                                   </div>
                                   {trip && (
+                                    <div className="text-xs text-neutral-500">
+                                      ID: {trip.id ?? '—'}
+                                    </div>
+                                  )}
+                                  {trip && (
                                   <div className="text-xs text-neutral-500">
                                     {new Date(
                                       trip.startDate,
@@ -723,6 +736,9 @@ function DashboardContent() {
                                 {trip.actualDestination ||
                                   '🔒 Destino Sorpresa'}
                               </h3>
+                              <p className="mb-1 text-xs text-neutral-500">
+                                ID: {trip.id}
+                              </p>
                               <div className="flex items-center gap-2 text-sm text-neutral-600">
                                 <MapPin className="h-3.5 w-3.5" />
                                 <span>
