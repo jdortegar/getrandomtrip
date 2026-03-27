@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import HeaderHero from '@/components/journey/HeaderHero';
 import { parseMercadoPagoCheckoutReturnParams } from '@/lib/helpers/mercadopago-checkout-params';
 import { persistMercadoPagoCheckoutReturnParams } from '@/lib/helpers/persist-mercadopago-checkout-return';
+import { confirmMercadoPagoPaymentFromReturnParams } from '@/lib/helpers/confirm-mercadopago-payment-from-return';
 import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
 import { pathForLocale } from '@/lib/i18n/pathForLocale';
 import { cn } from '@/lib/utils';
@@ -46,6 +47,7 @@ export default function CheckoutResultSuccess({
 
   useEffect(() => {
     void persistMercadoPagoCheckoutReturnParams(mercadoPagoParams);
+    void confirmMercadoPagoPaymentFromReturnParams(mercadoPagoParams);
   }, [mercadoPagoParams]);
 
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;

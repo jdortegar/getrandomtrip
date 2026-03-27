@@ -8,6 +8,7 @@ import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
 import { pathForLocale } from '@/lib/i18n/pathForLocale';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
 import { persistMercadoPagoCheckoutReturnParams } from '@/lib/helpers/persist-mercadopago-checkout-return';
+import { confirmMercadoPagoPaymentFromReturnParams } from '@/lib/helpers/confirm-mercadopago-payment-from-return';
 import type { MercadoPagoCheckoutReturnParams } from '@/lib/types/MercadoPagoCheckoutReturnParams';
 
 interface CheckoutResultFailureProps {
@@ -37,6 +38,7 @@ export default function CheckoutResultFailure({
   useEffect(() => {
     if (!mercadoPagoParams) return;
     void persistMercadoPagoCheckoutReturnParams(mercadoPagoParams);
+    void confirmMercadoPagoPaymentFromReturnParams(mercadoPagoParams);
   }, [mercadoPagoParams]);
 
   return (
