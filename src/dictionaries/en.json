@@ -43,7 +43,9 @@
     "signUp": "Sign up",
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "forgotPasswordSubject": "Password reset request",
+    "forgotPasswordBody": "Please help me reset my password for this account: {email}"
   },
   "home": {
     "hero": {

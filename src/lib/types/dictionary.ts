@@ -48,6 +48,8 @@ export interface MarketingDictionary {
     noAccount: string;
     haveAccount: string;
     loading: string;
+    forgotPasswordSubject: string;
+    forgotPasswordBody: string;
   };
   home: {
     hero: {

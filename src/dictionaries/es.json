@@ -43,7 +43,9 @@
     "signUp": "Regístrate",
     "noAccount": "¿No tienes cuenta?",
     "haveAccount": "¿Ya tienes cuenta?",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "forgotPasswordSubject": "Solicitud de recuperación de contraseña",
+    "forgotPasswordBody": "Necesito restablecer la contraseña de esta cuenta: {email}"
   },
   "home": {
     "hero": {
