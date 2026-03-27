@@ -68,9 +68,43 @@ interface DashboardStats {
   averageRating: number;
 }
 
+/** Map GET /api/trips (TripRequest + payment) into dashboard row shape. */
+function mapTripFromApi(raw: unknown): Trip {
+  const r = raw as Record<string, unknown>;
+  const pay = r.payment as Record<string, unknown> | null | undefined;
+  const toIso = (v: unknown) => {
+    if (v == null || v === '') return '';
+    const d = new Date(String(v));
+    return Number.isNaN(d.getTime()) ? '' : d.toISOString();
+  };
+  const amount =
+    typeof pay?.amount === 'number'
+      ? pay.amount
+      : Number(pay?.amount ?? 0) || 0;
+  return {
+    id: String(r.id ?? ''),
+    type: String(r.type ?? ''),
+    level: String(r.level ?? ''),
+    city: String(r.originCity ?? r.city ?? ''),
+    country: String(r.originCountry ?? r.country ?? ''),
+    startDate: toIso(r.startDate),
+    endDate: toIso(r.endDate),
+    status: String(r.status ?? ''),
+    actualDestination: (r.actualDestination as string | null | undefined) ?? null,
+    customerRating: (r.customerRating as number | null | undefined) ?? null,
+    totalTripUsd: amount,
+    payment: pay
+      ? {
+          status: String(pay.status ?? ''),
+          amount,
+        }
+      : undefined,
+  };
+}
+
 function DashboardContent() {
   const params = useParams();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const { user } = useUserStore();
   const router = useRouter();
   const locale = (params?.locale as string) ?? 'es';
@@ -109,56 +143,49 @@ function DashboardContent() {
     }
   }, [userRole, router, hasRedirected]);
 
-  // Don't render client dashboard content if user is a tripper
-  if (userRole === 'tripper') {
-    return <LoadingSpinner />;
-  }
-
-  // Show loading if session is still loading and we don't have a user yet
-  if (!currentUser?.id && !user?.id) {
-    return <LoadingSpinner />;
-  }
-
-  // Fetch user trips and payments
+  // Fetch user trips and payments (must run before any conditional return — Rules of Hooks)
   useEffect(() => {
-    async function fetchDashboardData() {
-      if (!currentUser?.id) return;
+    if (sessionStatus === 'loading') return;
+    if (userRole === 'tripper') return;
+    if (!session?.user?.email) return;
 
+    let cancelled = false;
+
+    async function fetchDashboardData() {
       try {
         setLoading(true);
 
-        // Fetch trips
-        const tripsRes = await fetch(`/api/trips?userId=${currentUser.id}`);
+        const tripsRes = await fetch('/api/trips');
         const tripsData = await tripsRes.json();
+
+        if (cancelled) return;
 
         if (tripsData.error) {
           console.error('Error fetching trips:', tripsData.error);
           return;
         }
 
-        setTrips(tripsData.trips || []);
+        const rawTrips = tripsData.trips || [];
+        const mappedTrips: Trip[] = rawTrips.map(mapTripFromApi);
+        setTrips(mappedTrips);
 
-        // Fetch payments
-        const paymentsRes = await fetch(
-          `/api/payments?userId=${currentUser.id}`,
-        );
+        const paymentsRes = await fetch('/api/payments');
         const paymentsData = await paymentsRes.json();
+
+        if (cancelled) return;
 
         if (paymentsData.error) {
           console.error('Error fetching payments:', paymentsData.error);
           return;
         }
 
-        setPayments(paymentsData.payments || []);
-
-        // Calculate stats
-        const allTrips = tripsData.trips || [];
         const allPayments = paymentsData.payments || [];
+        setPayments(allPayments);
 
-        const completed = allTrips.filter(
+        const completed = mappedTrips.filter(
           (t: Trip) => t.status === 'COMPLETED',
         ).length;
-        const upcoming = allTrips.filter(
+        const upcoming = mappedTrips.filter(
           (t: Trip) => t.status === 'CONFIRMED' || t.status === 'REVEALED',
         ).length;
 
@@ -168,7 +195,7 @@ function DashboardContent() {
           )
           .reduce((sum: number, p: Payment) => sum + p.amount, 0);
 
-        const ratingsTrips = allTrips.filter((t: Trip) => t.customerRating);
+        const ratingsTrips = mappedTrips.filter((t: Trip) => t.customerRating);
         const avgRating =
           ratingsTrips.length > 0
             ? ratingsTrips.reduce(
@@ -178,7 +205,7 @@ function DashboardContent() {
             : 0;
 
         setStats({
-          totalTrips: allTrips.length,
+          totalTrips: mappedTrips.length,
           upcomingTrips: upcoming,
           completedTrips: completed,
           totalSpent,
@@ -187,12 +214,18 @@ function DashboardContent() {
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
-    fetchDashboardData();
-  }, [currentUser?.id]);
+    void fetchDashboardData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.email, sessionStatus, userRole]);
 
   const unpaidTrips = useMemo(() => {
     return trips.filter((t) => {
@@ -258,6 +291,17 @@ function DashboardContent() {
         return 'text-gray-600';
     }
   };
+
+  if (userRole === 'tripper') {
+    return <LoadingSpinner />;
+  }
+
+  if (
+    sessionStatus === 'loading' ||
+    (!session?.user?.email && !user?.id)
+  ) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { Suspense, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -45,9 +45,10 @@ import { usePayment } from "@/hooks/usePayment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "react-toastify";
 import { hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
-import { selectTripForCheckout } from "@/lib/helpers/checkout-trip";
+import { pickCheckoutTrip } from "@/lib/helpers/checkout-trip";
 
 const usd = (n: number) => `${Math.round(n)}`;
 
@@ -195,8 +196,10 @@ function filtersFromTrip(trip: TripFromApi): Filters {
 
 function CheckoutContent() {
   const params = useParams();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const tripIdParam = searchParams.get("tripId");
+  const hasTripId = Boolean(tripIdParam?.trim());
   const locale = (params?.locale as string) ?? "es";
   const resolvedLocale = hasLocale(locale) ? locale : "es";
 
@@ -223,6 +226,11 @@ function CheckoutContent() {
   }, [resolvedLocale]);
 
   useEffect(() => {
+    if (hasTripId) return;
+    router.replace(pathForLocale(resolvedLocale, "/dashboard"));
+  }, [hasTripId, resolvedLocale, router]);
+
+  useEffect(() => {
     if (session?.user && status === "authenticated") {
       setFormData((prev) => ({
         ...prev,
@@ -236,6 +244,12 @@ function CheckoutContent() {
   }
 
   useEffect(() => {
+    if (!hasTripId) {
+      setTripLoading(false);
+      setTrip(null);
+      setTripError(null);
+      return;
+    }
     if (status === "loading") return;
     if (!session?.user?.email) {
       setTripLoading(false);
@@ -256,7 +270,11 @@ function CheckoutContent() {
           return;
         }
         const trips = (data.trips ?? []) as TripFromApi[];
-        const picked = selectTripForCheckout(trips, tripIdParam);
+        const preferredId = tripIdParam?.trim();
+        const byPreferredId = preferredId
+          ? trips.find((t) => t.id === preferredId)
+          : undefined;
+        const picked = byPreferredId ?? pickCheckoutTrip(trips);
         if (!picked) {
           setTripError(dict?.journey?.checkout?.errors?.noTripToContinue ?? null);
           setTrip(null);
@@ -274,7 +292,7 @@ function CheckoutContent() {
     return () => {
       cancelled = true;
     };
-  }, [dict, session?.user?.email, status, tripIdParam]);
+  }, [dict, hasTripId, session?.user?.email, status, tripIdParam]);
 
   useEffect(() => {
     if (!trip?.id) return;
@@ -328,12 +346,13 @@ function CheckoutContent() {
   );
 
   useEffect(() => {
+    if (!hasTripId) return;
     if (status === "loading") return;
     if (!session && !isAuthed) {
       const { openAuth } = useUserStore.getState();
       openAuth("signin");
     }
-  }, [session, isAuthed, status]);
+  }, [hasTripId, session, isAuthed, status]);
 
   const pax = checkoutPax;
   const { totalPerPax, totalTrip } = calculateTotals();
@@ -513,6 +532,7 @@ function CheckoutContent() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!hasTripId) return;
     if (!session && !isAuthed) {
       useUserStore.getState().openAuth("signin");
       return;
@@ -568,6 +588,14 @@ function CheckoutContent() {
       console.error("Checkout submit error:", err);
       toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
     }
+  }
+
+  if (!hasTripId) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
 
   if (status === "loading" || tripLoading) {
