@@ -148,7 +148,7 @@ function TripDetailsContent() {
         <HeaderHero
           className="!h-[40vh]"
           description="No pudimos encontrar este viaje"
-          fallbackImage="/images/bg-playa-mexico.jpg"
+          fallbackImage="/images/hero-image-1.jpeg"
           title="Viaje no encontrado"
           videoSrc="/videos/hero-video.mp4"
         />
@@ -243,7 +243,7 @@ function TripDetailsContent() {
       <HeaderHero
         className="!h-[50vh]"
         description={`Viaje ${trip.type} • ${trip.level}`}
-        fallbackImage="/images/bg-playa-mexico.jpg"
+        fallbackImage="/images/hero-image-1.jpeg"
         title={
           showDestination && trip.actualDestination
             ? trip.actualDestination

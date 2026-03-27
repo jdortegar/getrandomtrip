@@ -265,7 +265,9 @@ function CheckoutContent() {
       .then((data) => {
         if (cancelled) return;
         if (data.error) {
-          setTripError(dict?.journey?.checkout?.errors?.loadTripsFailed ?? data.error);
+          setTripError(
+            dict?.journey?.checkout?.errors?.loadTripsFailed ?? data.error,
+          );
           setTrip(null);
           return;
         }
@@ -276,7 +278,9 @@ function CheckoutContent() {
           : undefined;
         const picked = byPreferredId ?? pickCheckoutTrip(trips);
         if (!picked) {
-          setTripError(dict?.journey?.checkout?.errors?.noTripToContinue ?? null);
+          setTripError(
+            dict?.journey?.checkout?.errors?.noTripToContinue ?? null,
+          );
           setTrip(null);
           return;
         }
@@ -403,7 +407,9 @@ function CheckoutContent() {
     const sum = dict?.journey?.summary;
     return {
       label: selectedLevel.name,
-      price: sum ? `${formatUSD(pricePerPerson)} ${sum.experiencePerPerson}` : "",
+      price: sum
+        ? `${formatUSD(pricePerPerson)} ${sum.experiencePerPerson}`
+        : "",
     };
   })();
   const excuseTitleRes = excuse ? getExcuseTitle(excuse) : undefined;
@@ -508,7 +514,9 @@ function CheckoutContent() {
     });
     if (!res.ok) {
       const data = await res.json();
-      toast.error(data.error ?? dict?.journey?.checkout?.errors?.updateTripFailed);
+      toast.error(
+        data.error ?? dict?.journey?.checkout?.errors?.updateTripFailed,
+      );
       throw new Error(data.error ?? "persist failed");
     }
     setPaxDetails(nextDetails);
@@ -568,7 +576,9 @@ function CheckoutContent() {
       };
 
       if (!saveRes.ok) {
-        toast.error(saveJson.error ?? dict?.journey?.checkout?.errors?.saveUserFailed);
+        toast.error(
+          saveJson.error ?? dict?.journey?.checkout?.errors?.saveUserFailed,
+        );
         return;
       }
 
@@ -617,7 +627,9 @@ function CheckoutContent() {
           {tripError ?? dict?.journey?.checkout?.errors?.noTripFound}
         </p>
         <Button asChild variant="secondary">
-          <Link href={backToJourneyHref}>{dict?.journey?.checkout?.volverButton}</Link>
+          <Link href={backToJourneyHref}>
+            {dict?.journey?.checkout?.volverButton}
+          </Link>
         </Button>
       </div>
     );
@@ -822,7 +834,7 @@ function CheckoutContent() {
     <div className="min-h-screen bg-gray-50">
       <HeaderHero
         description={heroDescription}
-        fallbackImage="/images/bg-playa-mexico.jpg"
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle=""
         title={heroTitle}
         videoSrc="/videos/hero-video.mp4"
@@ -1005,7 +1017,9 @@ function CheckoutContent() {
                   type="submit"
                   variant="default"
                 >
-                  {isProcessing ? checkoutCopy.payProcessingButton : checkoutCopy.payButton}
+                  {isProcessing
+                    ? checkoutCopy.payProcessingButton
+                    : checkoutCopy.payButton}
                 </Button>
               </div>
             </form>
@@ -1039,15 +1053,15 @@ function CheckoutContent() {
             </h2>
             <div className="flex gap-4">
               <div className="h-64 w-48 shrink-0 overflow-hidden rounded-2xl">
-              {selectedTravelTypeInfo?.image ? (
-                <Img
-                  alt={selectedTravelTypeInfo?.label}
-                  className="h-full w-full object-cover"
-                  height={128}
-                  src={selectedTravelTypeInfo.image}
-                  width={96}
-                />
-              ) : null}
+                {selectedTravelTypeInfo?.image ? (
+                  <Img
+                    alt={selectedTravelTypeInfo?.label}
+                    className="h-full w-full object-cover"
+                    height={128}
+                    src={selectedTravelTypeInfo.image}
+                    width={96}
+                  />
+                ) : null}
               </div>
 
               <div className="flex flex-col justify-center gap-3">

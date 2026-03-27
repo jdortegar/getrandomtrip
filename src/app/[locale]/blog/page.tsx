@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils';
 const BLOG_HERO_CONFIG = {
   className: '!min-h-[40vh]',
   eyebrowColor: '#F2C53D',
-  fallbackImage: '/images/bg-playa-mexico.jpg',
+  fallbackImage: '/images/hero-image-1.jpeg',
   subtitle: 'BLOG',
   videoSrc: '/videos/hero-video.mp4',
 } as const;

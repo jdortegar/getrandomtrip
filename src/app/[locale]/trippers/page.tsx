@@ -20,9 +20,10 @@ export default async function TrippersPage({
       <HeaderHero
         className="!min-h-[50vh]"
         description={hero.description}
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={hero.subtitle}
         title={hero.title}
-        videoSrc={hero.videoSrc}
+        videoSrc="/videos/hero-video.mp4"
       />
 
       <TopTrippersGridComponent trippers={trippers} />

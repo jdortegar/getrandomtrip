@@ -44,8 +44,10 @@ export default function CheckoutResultPending({
     <div className="flex min-h-screen flex-col bg-gray-50">
       <HeaderHero
         description={labels.body}
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={labels.subtitle}
         title={labels.title}
+        videoSrc="/videos/hero-video.mp4"
       />
       <main className="flex-grow">
         <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">

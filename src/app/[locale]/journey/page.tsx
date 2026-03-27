@@ -144,8 +144,10 @@ function JourneyPageContent({ locale }: { locale?: string }) {
     <div className="min-h-screen bg-gray-50">
       <HeaderHero
         description={journey.hero.description}
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={journey.hero.subtitle}
         title={journey.hero.title}
+        videoSrc="/videos/hero-video.mp4"
       />
 
       <JourneyContentNavigation

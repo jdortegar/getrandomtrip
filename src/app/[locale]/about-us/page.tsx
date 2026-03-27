@@ -55,10 +55,10 @@ export default async function AboutUsPage({ params }: LocaleParams) {
       <HeaderHero
         className="!min-h-[40vh]"
         description={au.hero.description}
-        fallbackImage="/images/bg-playa-mexico.jpg"
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={au.hero.eyebrow}
         title={au.hero.title}
-        videoSrc=""
+        videoSrc="/videos/hero-video.mp4"
       />
 
       <div className="rt-container flex flex-wrap justify-center gap-3 pb-8">
