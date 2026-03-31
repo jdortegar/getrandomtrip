@@ -53,7 +53,6 @@ export interface UserStore {
   authModalStep: 'signin' | 'onboarding' | 'review';
   openAuth: (initialStep?: 'signin' | 'onboarding') => void;
   closeAuth: () => void;
-  signInDemo: (role: UserRole, email?: string) => void;
   signOut: () => void;
   updateAccount?: (name?: string, email?: string) => void; // <-- NUEVO
   upsertPrefs: (partial: Partial<UserPrefs>) => void; // asegúrate de que existe
@@ -75,20 +74,6 @@ export const createUserSlice: StateCreator<UserStore> = (set, get) => ({
   openAuth: (initialStep = 'signin') =>
     set({ authModalOpen: true, authModalStep: initialStep }),
   closeAuth: () => set({ authModalOpen: false }),
-
-  signInDemo: (role: UserRole, email?: string) => {
-    const newUser: User = {
-      id: 'demo-user',
-      name: 'Randomtripper',
-      email: email || 'demo@randomtrip.com',
-      role: role, // Assign the role
-      prefs: {
-        interests: [],
-        dislikes: [],
-      },
-    };
-    set({ isAuthed: true, user: newUser, authModalOpen: false });
-  },
 
   signOut: () => set({ isAuthed: false, user: null, session: null }),
 

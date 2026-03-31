@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { ChevronDown, LogOut } from 'lucide-react';
-import { signOut as nextAuthSignOut } from 'next-auth/react';
-import type { User } from '@/types/core';
-import { useMenuState } from '@/hooks/useMenuState';
+import Link from "next/link";
+import { ChevronDown, LogOut } from "lucide-react";
+import { signOut as nextAuthSignOut } from "next-auth/react";
+import type { User } from "@/types/core";
+import { useMenuState } from "@/hooks/useMenuState";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 /** Minimal user shape for navbar (all optional). */
-type NavbarUser = Partial<Pick<User, 'name' | 'avatar' | 'role'>>;
+type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role">>;
 
 // Profile Menu Items
 const PROFILE_MENU_ITEMS = [
   {
-    href: '/profile',
-    label: 'Editar perfil',
+    href: "/profile",
+    label: "Editar perfil",
   },
 ] as const;
 
 const TRIPPER_MENU_ITEM = {
-  href: '/dashboard/tripper',
-  label: 'Tripper OS',
+  href: "/dashboard/tripper",
+  label: "Tripper OS",
 };
 
 const DASHBOARD_MENU_ITEM = {
-  href: '/dashboard',
-  label: 'Bitácoras de Viajes',
+  href: "/dashboard",
+  label: "Bitácoras de Viajes",
 };
 
 interface NavbarProfileProps {
@@ -41,9 +41,6 @@ export function NavbarProfile({
 }: NavbarProfileProps) {
   const { isOpen, toggle, close, menuRef } = useMenuState();
 
-  const avatarSrc = user?.avatar ?? 'https://placehold.co/64x64';
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'R';
-
   // Normalize role - handle both uppercase (DB) and lowercase (store) formats
   const normalizeRole = (role: string | undefined): string | null => {
     if (!role) return null;
@@ -51,11 +48,11 @@ export function NavbarProfile({
   };
 
   const userRole = normalizeRole((session?.user as any)?.role || user?.role);
-  const isTripper = userRole === 'tripper';
+  const isTripper = userRole === "tripper";
 
   const handleSignOut = () => {
     if (session) {
-      nextAuthSignOut({ callbackUrl: '/' });
+      nextAuthSignOut({ callbackUrl: "/" });
     } else {
       onSignOut();
     }
@@ -71,19 +68,7 @@ export function NavbarProfile({
         onClick={toggle}
         className="p-1 rounded-full hover:bg-white/10 flex items-center justify-center"
       >
-        {user?.avatar ? (
-          <Image
-            src={avatarSrc}
-            alt={user?.name ?? 'avatar'}
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full border border-neutral-200"
-          />
-        ) : (
-          <div className="h-6 w-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-semibold">
-            {userInitial}
-          </div>
-        )}
+        <UserAvatar height={32} width={32} />
         <ChevronDown size={16} className="ml-1" />
       </button>
 

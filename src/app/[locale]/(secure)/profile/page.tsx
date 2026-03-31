@@ -22,6 +22,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { toast } from "sonner";
 import type { UserProfileMe } from "@/lib/types/UserProfileMe";
 import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 type TabType = "personal" | "preferences" | "security";
 
@@ -99,7 +100,6 @@ function ProfileContent() {
   });
 
   const currentUser = session?.user || user;
-
   const loadProfile = useCallback(async () => {
     if (!currentUser?.email) {
       setProfileLoading(false);
@@ -434,7 +434,7 @@ function ProfileContent() {
     <>
       <HeaderHero
         className="!h-[40vh]"
-        fallbackImage="/images/bg-playa-mexico.jpg"
+        fallbackImage="/images/hero-image-1.jpeg"
         subtitle={p.hero.subtitle}
         title={p.hero.title}
         videoSrc="/videos/hero-video-1.mp4"
@@ -450,12 +450,7 @@ function ProfileContent() {
             )}
           >
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                  {currentUser?.name?.charAt(0)?.toUpperCase() || "U"}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-4 border-white"></div>
-              </div>
+              <UserAvatar height={96} showStatus width={96} />
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="mb-2 text-3xl font-bold text-neutral-900">
