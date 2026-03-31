@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 export async function GET(
   request: NextRequest,
@@ -26,7 +27,7 @@ export async function GET(
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'TRIPPER') {
+    if (!user || !hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },
@@ -105,7 +106,7 @@ export async function PATCH(
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'TRIPPER') {
+    if (!user || !hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },
@@ -258,7 +259,7 @@ export async function DELETE(
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'TRIPPER') {
+    if (!user || !hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },

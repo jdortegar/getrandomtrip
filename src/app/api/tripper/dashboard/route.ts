@@ -10,6 +10,7 @@ import {
   getTripperRecentBookings,
 } from '@/lib/db/tripper-queries';
 import { prisma } from '@/lib/prisma';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'TRIPPER') {
+    if (!user || !hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },

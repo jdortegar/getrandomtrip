@@ -28,6 +28,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 type TabType = 'overview' | 'packages' | 'performance' | 'settings';
 
@@ -60,7 +61,7 @@ function TripperProfileContent() {
   const currentUser = session?.user || user;
 
   // Check if user is a tripper
-  if ((currentUser as any)?.role !== 'TRIPPER') {
+  if (!hasRoleAccess((currentUser as any)?.role, 'tripper')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center justify-center text-center gap-6">

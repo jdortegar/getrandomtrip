@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -183,7 +184,7 @@ export async function assertTripper() {
     where: { email: session.user.email! },
   });
 
-  if (!user || user.role !== 'TRIPPER') {
+  if (!user || !hasRoleAccess(user.role, 'tripper')) {
     redirect('/');
   }
 
