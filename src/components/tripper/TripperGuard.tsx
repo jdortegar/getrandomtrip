@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useUserStore } from '@/store/slices/userStore';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 export default function TripperGuard({
   children,
@@ -15,15 +16,7 @@ export default function TripperGuard({
   const pathname = usePathname();
   const [hasChecked, setHasChecked] = useState(false);
 
-  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
-  const normalizeRole = (role: string | undefined): string | null => {
-    if (!role) return null;
-    return role.toLowerCase();
-  };
-
-  const userRole = normalizeRole(
-    (session?.user as any)?.role || user?.role
-  );
+  const userRole = ((session?.user as any)?.role || user?.role) as string | undefined;
 
   useEffect(() => {
     if (!isAuthed) {
@@ -35,9 +28,9 @@ export default function TripperGuard({
     
     // Only redirect if we have a role and it's NOT tripper
     // Don't redirect if role is still loading (null)
-    if (userRole && userRole !== 'tripper') {
+    if (userRole && !hasRoleAccess(userRole, 'tripper')) {
       router.replace('/dashboard');
-    } else if (userRole === 'tripper' || (isAuthed && !userRole && session?.user)) {
+    } else if (hasRoleAccess(userRole, 'tripper') || (isAuthed && !userRole && session?.user)) {
       // User is a tripper or session is loading, allow access
       setHasChecked(true);
     }
@@ -49,12 +42,12 @@ export default function TripperGuard({
   }
 
   // If we have a role and it's not tripper, show nothing (redirecting)
-  if (userRole && userRole !== 'tripper') {
+  if (userRole && !hasRoleAccess(userRole, 'tripper')) {
     return null;
   }
 
   // Only render if user is a tripper
-  if (userRole !== 'tripper') {
+  if (!hasRoleAccess(userRole, 'tripper')) {
     return null;
   }
 

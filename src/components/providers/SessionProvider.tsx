@@ -3,7 +3,8 @@
 import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useUserStore, type UserRole } from '@/store/slices/userStore';
+import { useUserStore } from '@/store/slices/userStore';
+import { mapSessionUserToStoreUser, type SessionUser } from '@/lib/types/SessionUser';
 
 function SessionSync() {
   const { data: session, status } = useSession();
@@ -13,19 +14,17 @@ function SessionSync() {
     if (status === 'loading') return; // Don't update while loading
 
     if (session?.user) {
-      // Convert NextAuth session to our user format
-      const user = {
-        id: session.user.id,
-        name: session.user.name,
-        email: session.user.email,
-        role: session.user.role as UserRole,
-        handle: (session.user as any).handle,
-        avatar: (session.user as any).avatar,
-        prefs: {
-          interests: [],
-          dislikes: [],
-        },
-      };
+      const user = mapSessionUserToStoreUser(session.user as SessionUser);
+
+      if (!user) {
+        setSession({
+          isAuthed: false,
+          user: null,
+          session: null,
+          authModalOpen: false,
+        });
+        return;
+      }
 
       setSession({
         isAuthed: true,

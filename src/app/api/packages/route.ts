@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 // GET /api/packages - Get all packages for a tripper
 export async function GET(request: NextRequest) {
@@ -69,8 +70,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check if user is a tripper
-    if (user.role !== 'TRIPPER') {
+    // Check if user has tripper-level access (admin included)
+    if (!hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Only trippers can create packages' },
         { status: 403 },

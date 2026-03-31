@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -138,6 +139,9 @@ export const authOptions: NextAuthOptions = {
             name: true,
             email: true,
             role: true,
+            address: true,
+            phone: true,
+            createdAt: true,
             travelerType: true,
             interests: true,
             dislikes: true,
@@ -148,10 +152,16 @@ export const authOptions: NextAuthOptions = {
           session.user.id = dbUser.id;
           session.user.name = dbUser.name;
           session.user.email = dbUser.email;
-          (session.user as any).role = dbUser.role;
-          (session.user as any).travelerType = dbUser.travelerType;
-          (session.user as any).interests = dbUser.interests;
-          (session.user as any).dislikes = dbUser.dislikes;
+          session.user.role = dbUser.role;
+          session.user.travelerType = dbUser.travelerType;
+          session.user.interests = dbUser.interests;
+          session.user.dislikes = dbUser.dislikes;
+          session.user.phone = dbUser.phone;
+          session.user.address = dbUser.address as
+            | Record<string, string>
+            | null
+            | undefined;
+          session.user.createdAt = dbUser.createdAt.toISOString();
         }
       }
       return session;
@@ -174,7 +184,7 @@ export async function assertTripper() {
     where: { email: session.user.email! },
   });
 
-  if (!user || user.role !== 'TRIPPER') {
+  if (!user || !hasRoleAccess(user.role, 'tripper')) {
     redirect('/');
   }
 

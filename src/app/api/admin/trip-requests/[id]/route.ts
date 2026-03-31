@@ -1,0 +1,108 @@
+import { TripRequestStatus } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
+import { prisma } from '@/lib/prisma';
+
+function parseStatus(status: unknown): TripRequestStatus | null {
+  if (typeof status !== 'string') return null;
+  const normalized = status.toUpperCase();
+  if (Object.values(TripRequestStatus).includes(normalized as TripRequestStatus)) {
+    return normalized as TripRequestStatus;
+  }
+  return null;
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, role: true },
+    });
+
+    if (!user || !hasRoleAccess(user.role, 'admin')) {
+      return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const nextStatus = parseStatus(body?.status);
+    const actualDestination =
+      typeof body?.actualDestination === 'string' ? body.actualDestination.trim() : undefined;
+
+    if (!nextStatus && actualDestination === undefined) {
+      return NextResponse.json(
+        { error: 'Nothing to update. Provide status or actualDestination.' },
+        { status: 400 },
+      );
+    }
+
+    const data: {
+      actualDestination?: string | null;
+      completedAt?: Date | null;
+      destinationRevealedAt?: Date | null;
+      status?: TripRequestStatus;
+    } = {};
+
+    if (nextStatus) {
+      data.status = nextStatus;
+      if (nextStatus === 'COMPLETED') {
+        data.completedAt = new Date();
+      }
+      if (nextStatus === 'REVEALED') {
+        data.destinationRevealedAt = new Date();
+      }
+    }
+
+    if (actualDestination !== undefined) {
+      data.actualDestination = actualDestination || null;
+      if (actualDestination && !data.destinationRevealedAt) {
+        data.destinationRevealedAt = new Date();
+      }
+    }
+
+    const tripRequest = await prisma.tripRequest.update({
+      where: { id: params.id },
+      data,
+      include: {
+        package: {
+          select: {
+            excuseKey: true,
+            id: true,
+            level: true,
+            title: true,
+            type: true,
+          },
+        },
+        payment: {
+          select: {
+            amount: true,
+            currency: true,
+            status: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ tripRequest });
+  } catch (error) {
+    console.error('Error updating admin trip request:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

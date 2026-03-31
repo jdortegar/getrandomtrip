@@ -1,34 +1,71 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useUserStore } from "@/store/slices/userStore";
 import SecureRoute from "@/components/auth/SecureRoute";
+import Badge from "@/components/badge";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import Section from "@/components/layout/Section";
-import Hero from "@/components/Hero";
+import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
 import {
-  User,
-  Mail,
-  Calendar,
-  MapPin,
-  Heart,
-  Star,
-  Edit,
-  Lock,
-  Settings,
-  X,
-  Briefcase,
-} from "lucide-react";
-import { Input } from "@/components/ui/input";
+  FormField,
+  FormSelectField,
+} from "@/components/ui/FormField";
+import { Briefcase, Edit, Lock, Settings, User, X } from "lucide-react";
+import { hasLocale } from "@/lib/i18n/config";
+import { getDictionary, type Dictionary } from "@/lib/i18n/dictionaries";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { toast } from "sonner";
+import type { UserProfileMe } from "@/lib/types/UserProfileMe";
+import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 type TabType = "personal" | "preferences" | "security";
 
+interface DetailsFormState {
+  city: string;
+  country: string;
+  dislikes: string[];
+  email: string;
+  interests: string[];
+  name: string;
+  phone: string;
+  state: string;
+  street: string;
+  travelerType: string;
+  zipCode: string;
+}
+
+function profileToDetailsForm(p: UserProfileMe): DetailsFormState {
+  const a = p.address;
+  return {
+    city: a?.city ?? "",
+    country: a?.country ?? "",
+    dislikes: [...p.dislikes],
+    email: p.email,
+    interests: [...p.interests],
+    name: p.name,
+    phone: p.phone ?? "",
+    state: a?.state ?? "",
+    street: a?.street ?? "",
+    travelerType: p.travelerType ?? "",
+    zipCode: a?.zipCode ?? "",
+  };
+}
+
 function ProfileContent() {
+  const params = useParams();
+  const localeParam = (params?.locale as string) ?? "es";
+  const resolvedLocale = hasLocale(localeParam) ? localeParam : "es";
+  const dateLocaleTag = resolvedLocale === "en" ? "en-US" : "es-ES";
+
   const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
+  const [dict, setDict] = useState<Dictionary | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("personal");
   const [formData, setFormData] = useState({
@@ -45,8 +82,42 @@ function ProfileContent() {
     totalTrips: 0,
     averageRating: 0,
   });
+  const [profileMe, setProfileMe] = useState<UserProfileMe | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [isDetailsEditing, setIsDetailsEditing] = useState(false);
+  const [detailsForm, setDetailsForm] = useState<DetailsFormState>({
+    city: "",
+    country: "",
+    dislikes: [],
+    email: "",
+    interests: [],
+    name: "",
+    phone: "",
+    state: "",
+    street: "",
+    travelerType: "",
+    zipCode: "",
+  });
 
   const currentUser = session?.user || user;
+  const loadProfile = useCallback(async () => {
+    if (!currentUser?.email) {
+      setProfileLoading(false);
+      return;
+    }
+    setProfileLoading(true);
+    try {
+      const res = await fetch("/api/user/me");
+      const data = await res.json();
+      if (data.user) {
+        setProfileMe(data.user as UserProfileMe);
+      }
+    } catch (e) {
+      console.error("Error loading profile:", e);
+    } finally {
+      setProfileLoading(false);
+    }
+  }, [currentUser?.email]);
 
   // Fetch user stats
   useEffect(() => {
@@ -94,6 +165,19 @@ function ProfileContent() {
     fetchStats();
   }, [currentUser?.id, session]);
 
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  useEffect(() => {
+    getDictionary(resolvedLocale).then(setDict);
+  }, [resolvedLocale]);
+
+  useEffect(() => {
+    if (!profileMe || isDetailsEditing) return;
+    setDetailsForm(profileToDetailsForm(profileMe));
+  }, [profileMe, isDetailsEditing]);
+
   const openModal = () => {
     setIsModalOpen(true);
     // Pre-fill form with current data
@@ -133,6 +217,8 @@ function ProfileContent() {
   };
 
   const handleSavePersonal = async () => {
+    if (!dict) return;
+    const t = dict.profile.toasts;
     try {
       const response = await fetch("/api/user/update", {
         method: "PATCH",
@@ -146,7 +232,6 @@ function ProfileContent() {
       if (response.ok) {
         const data = await response.json();
 
-        // Update NextAuth session
         await updateSession({
           ...session,
           user: {
@@ -156,18 +241,21 @@ function ProfileContent() {
           },
         });
 
-        toast.success("Información actualizada correctamente");
+        toast.success(t.personalUpdated);
+        await loadProfile();
         closeModal();
       } else {
-        toast.error("Error al actualizar información");
+        toast.error(t.personalError);
       }
     } catch (error) {
       console.error("Error updating personal info:", error);
-      toast.error("Error al actualizar información");
+      toast.error(t.personalError);
     }
   };
 
   const handleSavePreferences = async () => {
+    if (!dict) return;
+    const t = dict.profile.toasts;
     try {
       const response = await fetch("/api/user/preferences", {
         method: "PATCH",
@@ -182,7 +270,6 @@ function ProfileContent() {
       if (response.ok) {
         const data = await response.json();
 
-        // Update NextAuth session with new preferences
         await updateSession({
           ...session,
           user: {
@@ -193,25 +280,28 @@ function ProfileContent() {
           },
         });
 
-        toast.success("Preferencias actualizadas correctamente");
+        toast.success(t.preferencesUpdated);
+        await loadProfile();
         closeModal();
       } else {
-        toast.error("Error al actualizar preferencias");
+        toast.error(t.preferencesError);
       }
     } catch (error) {
       console.error("Error updating preferences:", error);
-      toast.error("Error al actualizar preferencias");
+      toast.error(t.preferencesError);
     }
   };
 
   const handleChangePassword = async () => {
+    if (!dict) return;
+    const t = dict.profile.toasts;
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("Las contraseñas no coinciden");
+      toast.error(t.passwordsMismatch);
       return;
     }
 
     if (formData.newPassword.length < 6) {
-      toast.error("La contraseña debe tener al menos 6 caracteres");
+      toast.error(t.passwordMinLength);
       return;
     }
 
@@ -226,69 +316,195 @@ function ProfileContent() {
       });
 
       if (response.ok) {
-        toast.success("Contraseña actualizada correctamente");
+        toast.success(t.passwordUpdated);
         closeModal();
       } else {
         const data = await response.json();
-        toast.error(data.error || "Error al cambiar contraseña");
+        toast.error(
+          typeof data.error === "string" ? data.error : t.passwordError,
+        );
       }
     } catch (error) {
       console.error("Error changing password:", error);
-      toast.error("Error al cambiar contraseña");
+      toast.error(t.passwordError);
     }
   };
 
+  const handleStartDetailsEdit = () => {
+    if (!profileMe) return;
+    setDetailsForm(profileToDetailsForm(profileMe));
+    setIsDetailsEditing(true);
+  };
+
+  const handleCancelDetailsEdit = () => {
+    if (profileMe) setDetailsForm(profileToDetailsForm(profileMe));
+    setIsDetailsEditing(false);
+  };
+
+  const handleSaveDetails = async () => {
+    if (!dict || !profileMe) return;
+    const t = dict.profile.toasts;
+    const trimmedName = detailsForm.name.trim();
+    if (!trimmedName) {
+      toast.error(t.nameRequired);
+      return;
+    }
+    try {
+      const [resUpdate, resPrefs] = await Promise.all([
+        fetch("/api/user/update", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: trimmedName,
+            email: detailsForm.email.trim(),
+            phone: detailsForm.phone.trim() || null,
+            address: {
+              street: detailsForm.street.trim(),
+              city: detailsForm.city.trim(),
+              state: detailsForm.state.trim(),
+              zipCode: detailsForm.zipCode.trim(),
+              country: detailsForm.country.trim(),
+            },
+          }),
+        }),
+        fetch("/api/user/preferences", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            travelerType: detailsForm.travelerType || null,
+            interests: detailsForm.interests.filter((i) => i.trim() !== ""),
+            dislikes: detailsForm.dislikes.filter((d) => d.trim() !== ""),
+          }),
+        }),
+      ]);
+
+      if (!resUpdate.ok || !resPrefs.ok) {
+        toast.error(t.saveError);
+        return;
+      }
+
+      const prefsData = await resPrefs.json();
+      const updateData = await resUpdate.json();
+
+      await updateSession({
+        ...session,
+        user: {
+          ...session?.user,
+          address: updateData.user?.address,
+          dislikes: prefsData.user?.dislikes,
+          email: updateData.user?.email,
+          interests: prefsData.user?.interests,
+          name: updateData.user?.name,
+          phone: updateData.user?.phone,
+          travelerType: prefsData.user?.travelerType,
+        },
+      });
+
+      await loadProfile();
+      setIsDetailsEditing(false);
+      toast.success(t.profileUpdated);
+    } catch (e) {
+      console.error("Error saving profile details:", e);
+      toast.error(t.saveError);
+    }
+  };
+
+  const memberSinceLabel = profileMe
+    ? new Date(profileMe.createdAt).toLocaleDateString(dateLocaleTag, {
+        month: "long",
+        year: "numeric",
+      })
+    : "";
+
+  if (!dict) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  const p = dict.profile;
+  const tt = p.travelerTypes;
+  const profileFieldClassName = cn(
+    !isDetailsEditing && "cursor-not-allowed opacity-80",
+  );
+
   return (
     <>
-      <Hero
-        content={{
-          title: "Mi Perfil",
-          subtitle: "Gestiona tu cuenta y preferencias",
-          videoSrc: "/videos/hero-video-1.mp4",
-          fallbackImage: "/images/bg-playa-mexico.jpg",
-        }}
+      <HeaderHero
         className="!h-[40vh]"
+        fallbackImage="/images/hero-image-1.jpeg"
+        subtitle={p.hero.subtitle}
+        title={p.hero.title}
+        videoSrc="/videos/hero-video-1.mp4"
       />
 
       <Section>
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto flex flex-col gap-6">
           {/* Profile Header Card */}
-          <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-sm mb-6">
+          <div
+            className={cn(
+              "flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md",
+              "ring-1 ring-gray-100",
+            )}
+          >
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                  {currentUser?.name?.charAt(0)?.toUpperCase() || "U"}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-4 border-white"></div>
-              </div>
+              <UserAvatar height={96} showStatus width={96} />
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-                  {currentUser?.name || "Usuario"}
+                <h1 className="mb-2 text-3xl font-bold text-neutral-900">
+                  {currentUser?.name || p.header.userFallback}
                 </h1>
-                <p className="text-neutral-600 mb-3">
-                  {currentUser?.email || "usuario@email.com"}
+                <p className="mb-3 text-neutral-600">
+                  {currentUser?.email || p.header.emailFallback}
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                  <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
-                    Viajero Activo
-                  </span>
-                  <span className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200">
-                    {currentUser?.role || "client"}
-                  </span>
+                <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+                  <Badge
+                    color="primary"
+                    item={{
+                      key: "profile-traveler-active",
+                      value: p.header.badgeActiveTraveler,
+                    }}
+                    size="md"
+                  />
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Button variant="secondary" onClick={openModal}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Editar Perfil
-                </Button>
+              <div aria-label={p.actionsAria} className="flex gap-3">
+                {!isDetailsEditing ? (
+                  <>
+                    <Button
+                      disabled={profileLoading || !profileMe}
+                      onClick={handleStartDetailsEdit}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      <Edit className="mr-2 h-4 w-4" />
+                      {p.buttons.editDetails}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleCancelDetailsEdit}
+                      size="sm"
+                      variant="outline"
+                    >
+                      {p.buttons.cancel}
+                    </Button>
+                    <Button onClick={handleSaveDetails} size="sm">
+                      {p.buttons.saveChanges}
+                    </Button>
+                  </>
+                )}
                 {(currentUser as any)?.role === "TRIPPER" && (
                   <Button asChild>
-                    <a href="/trippers/profile">
-                      <Briefcase className="w-4 h-4 mr-2" />
-                      Perfil de Tripper
+                    <a
+                      href={pathForLocale(resolvedLocale, "/trippers/profile")}
+                    >
+                      <Briefcase className="mr-2 h-4 w-4" />
+                      {p.buttons.tripperProfile}
                     </a>
                   </Button>
                 )}
@@ -296,163 +512,221 @@ function ProfileContent() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Main Content */}
-            <div className="space-y-6">
-              {/* Personal Information */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-                  Información Personal
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-2 text-left">
+              <div
+                className={cn(
+                  "flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md",
+                  "ring-1 ring-gray-100",
+                )}
+              >
+                <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase text-gray-900">
+                  {p.personalSectionTitle}
                 </h2>
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-md">
-                    <User className="h-5 w-5 text-neutral-500 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm text-neutral-600 mb-1">Nombre</p>
-                      <p className="font-medium text-neutral-900">
-                        {currentUser?.name || "No especificado"}
-                      </p>
-                    </div>
+                  <FormField
+                    className={profileFieldClassName}
+                    id="profile-email"
+                    label={p.labels.email}
+                    onChange={(e) =>
+                      setDetailsForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                    readOnly={!isDetailsEditing}
+                    type="email"
+                    value={detailsForm.email}
+                  />
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      className={profileFieldClassName}
+                      id="profile-name"
+                      label={p.labels.name}
+                      onChange={(e) =>
+                        setDetailsForm((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.name}
+                    />
+                    <FormField
+                      className={profileFieldClassName}
+                      id="profile-phone"
+                      label={p.labels.phone}
+                      onChange={(e) =>
+                        setDetailsForm((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="tel"
+                      value={detailsForm.phone}
+                    />
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-md">
-                    <Mail className="h-5 w-5 text-neutral-500 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm text-neutral-600 mb-1">Email</p>
-                      <p className="font-medium text-neutral-900">
-                        {currentUser?.email || "No especificado"}
-                      </p>
-                    </div>
+                  <FormField
+                    className={profileFieldClassName}
+                    id="profile-street"
+                    label={p.labels.street}
+                    onChange={(e) =>
+                      setDetailsForm((prev) => ({
+                        ...prev,
+                        street: e.target.value,
+                      }))
+                    }
+                    readOnly={!isDetailsEditing}
+                    type="text"
+                    value={detailsForm.street}
+                  />
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      className={profileFieldClassName}
+                      id="profile-city"
+                      label={p.labels.city}
+                      onChange={(e) =>
+                        setDetailsForm((prev) => ({
+                          ...prev,
+                          city: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.city}
+                    />
+                    <FormField
+                      className={profileFieldClassName}
+                      id="profile-state"
+                      label={p.labels.state}
+                      onChange={(e) =>
+                        setDetailsForm((prev) => ({
+                          ...prev,
+                          state: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.state}
+                    />
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-md">
-                    <Calendar className="h-5 w-5 text-neutral-500 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm text-neutral-600 mb-1">
-                        Miembro desde
-                      </p>
-                      <p className="font-medium text-neutral-900">
-                        {new Date().toLocaleDateString("es-ES", {
-                          year: "numeric",
-                          month: "long",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Travel Preferences */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-                  Preferencias de Viaje
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-neutral-700 mb-2">
-                      Tipo de viajero
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {(user as any)?.travelerType ||
-                      (currentUser as any)?.travelerType ? (
-                        <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm border border-blue-200">
-                          {(user as any)?.travelerType ||
-                            (currentUser as any)?.travelerType}
-                        </span>
-                      ) : (
-                        <p className="text-sm text-neutral-500">
-                          No especificado
-                        </p>
-                      )}
-                    </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      className={profileFieldClassName}
+                      id="profile-zip"
+                      label={p.labels.zipCode}
+                      onChange={(e) =>
+                        setDetailsForm((prev) => ({
+                          ...prev,
+                          zipCode: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.zipCode}
+                    />
+                    <FormField
+                      className={profileFieldClassName}
+                      id="profile-country"
+                      label={p.labels.country}
+                      onChange={(e) =>
+                        setDetailsForm((prev) => ({
+                          ...prev,
+                          country: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.country}
+                    />
                   </div>
 
-                  <div>
-                    <p className="text-sm font-medium text-neutral-700 mb-2">
-                      Intereses
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {(user as any)?.interests?.length ||
-                      (currentUser as any)?.interests?.length ? (
-                        (
-                          (user as any)?.interests ||
-                          (currentUser as any)?.interests ||
-                          []
-                        ).map((interest: string) => (
-                          <span
-                            key={interest}
-                            className="px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-sm border border-green-200"
-                          >
-                            {interest}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-sm text-neutral-500">
-                          No especificado
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium text-neutral-700 mb-2">
-                      Evitar
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {(user as any)?.dislikes?.length ||
-                      (currentUser as any)?.dislikes?.length ? (
-                        (
-                          (user as any)?.dislikes ||
-                          (currentUser as any)?.dislikes ||
-                          []
-                        ).map((dislike: string) => (
-                          <span
-                            key={dislike}
-                            className="px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm border border-red-200"
-                          >
-                            {dislike}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-sm text-neutral-500">
-                          No especificado
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <FormField
+                    className="cursor-not-allowed opacity-80"
+                    id="profile-member-since"
+                    label={p.labels.memberSince}
+                    readOnly
+                    type="text"
+                    value={memberSinceLabel}
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Stats Card */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-                  Estadísticas
-                </h3>
+            <div className="space-y-6 lg:col-span-1">
+              <div
+                className={cn(
+                  "flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md",
+                  "ring-1 ring-gray-100",
+                )}
+              >
+                <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase text-gray-900">
+                  {p.preferencesSectionTitle}
+                </h2>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-blue-500" />
-                      <span className="text-sm text-neutral-700">Viajes</span>
-                    </div>
-                    <span className="font-bold text-neutral-900">
-                      {stats.totalTrips}
-                    </span>
-                  </div>
+                  <FormSelectField
+                    className={profileFieldClassName}
+                    disabled={!isDetailsEditing}
+                    id="profile-traveler-type"
+                    label={p.labels.travelerType}
+                    onChange={(e) =>
+                      setDetailsForm((prev) => ({
+                        ...prev,
+                        travelerType: e.target.value,
+                      }))
+                    }
+                    value={detailsForm.travelerType}
+                  >
+                    <option value="">{tt.selectPlaceholder}</option>
+                    <option value="solo">{tt.solo}</option>
+                    <option value="couple">{tt.couple}</option>
+                    <option value="family">{tt.family}</option>
+                    <option value="group">{tt.group}</option>
+                    <option value="honeymoon">{tt.honeymoon}</option>
+                    <option value="paws">{tt.paws}</option>
+                  </FormSelectField>
 
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2">
-                      <Star className="h-5 w-5 text-yellow-500" />
-                      <span className="text-sm text-neutral-700">Rating</span>
-                    </div>
-                    <span className="font-bold text-neutral-900">
-                      {stats.averageRating > 0
-                        ? stats.averageRating.toFixed(1)
-                        : "—"}
-                    </span>
-                  </div>
+                  <FormField
+                    className={profileFieldClassName}
+                    id="profile-interests"
+                    label={p.labels.interests}
+                    onChange={(e) =>
+                      setDetailsForm((prev) => ({
+                        ...prev,
+                        interests: e.target.value
+                          .split(",")
+                          .map((i) => i.trim())
+                          .filter((i) => i !== ""),
+                      }))
+                    }
+                    readOnly={!isDetailsEditing}
+                    type="text"
+                    value={detailsForm.interests.filter((i) => i).join(", ")}
+                  />
+
+                  <FormField
+                    className={profileFieldClassName}
+                    id="profile-dislikes"
+                    label={p.labels.dislikes}
+                    onChange={(e) =>
+                      setDetailsForm((prev) => ({
+                        ...prev,
+                        dislikes: e.target.value
+                          .split(",")
+                          .map((i) => i.trim())
+                          .filter((i) => i !== ""),
+                      }))
+                    }
+                    readOnly={!isDetailsEditing}
+                    type="text"
+                    value={detailsForm.dislikes.filter((d) => d).join(", ")}
+                  />
                 </div>
               </div>
             </div>
@@ -466,7 +740,7 @@ function ProfileContent() {
               <div className="sticky top-0 bg-white border-b flex items-center justify-between">
                 <div className="flex-1 p-6">
                   <h3 className="text-xl font-semibold text-neutral-900">
-                    Editar Perfil
+                    {p.modal.title}
                   </h3>
                 </div>
                 <button
@@ -488,8 +762,8 @@ function ProfileContent() {
                         : "border-transparent text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
-                    <User className="w-4 h-4 inline mr-2" />
-                    Personal
+                    <User className="mr-2 inline h-4 w-4" />
+                    {p.modal.tabPersonal}
                   </button>
                   <button
                     onClick={() => setActiveTab("preferences")}
@@ -499,8 +773,8 @@ function ProfileContent() {
                         : "border-transparent text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
-                    <Settings className="w-4 h-4 inline mr-2" />
-                    Preferencias
+                    <Settings className="mr-2 inline h-4 w-4" />
+                    {p.modal.tabPreferences}
                   </button>
                   <button
                     onClick={() => setActiveTab("security")}
@@ -510,8 +784,8 @@ function ProfileContent() {
                         : "border-transparent text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
-                    <Lock className="w-4 h-4 inline mr-2" />
-                    Seguridad
+                    <Lock className="mr-2 inline h-4 w-4" />
+                    {p.modal.tabSecurity}
                   </button>
                 </div>
               </div>
@@ -520,179 +794,156 @@ function ProfileContent() {
               <div className="p-6">
                 {activeTab === "personal" && (
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Nombre
-                      </label>
-                      <Input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) =>
-                          setFormData({ ...formData, name: e.target.value })
-                        }
-                        placeholder="Tu nombre completo"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Email
-                      </label>
-                      <Input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        placeholder="tu@email.com"
-                      />
-                    </div>
+                    <FormField
+                      id="modal-profile-name"
+                      label={p.labels.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder={p.modal.namePlaceholder}
+                      type="text"
+                      value={formData.name}
+                    />
+                    <FormField
+                      id="modal-profile-email"
+                      label={p.labels.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      placeholder={p.modal.emailPlaceholder}
+                      type="email"
+                      value={formData.email}
+                    />
                   </div>
                 )}
 
                 {activeTab === "preferences" && (
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Tipo de Viajero
-                      </label>
-                      <select
-                        value={formData.travelerType}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            travelerType: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Seleccionar...</option>
-                        <option value="solo">Solo</option>
-                        <option value="couple">Pareja</option>
-                        <option value="family">Familia</option>
-                        <option value="group">Grupo</option>
-                        <option value="honeymoon">Luna de Miel</option>
-                        <option value="paws">Con Mascotas</option>
-                      </select>
-                    </div>
+                    <FormSelectField
+                      id="modal-profile-traveler"
+                      label={p.modal.travelerType}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          travelerType: e.target.value,
+                        })
+                      }
+                      value={formData.travelerType}
+                    >
+                      <option value="">{tt.selectPlaceholder}</option>
+                      <option value="solo">{tt.solo}</option>
+                      <option value="couple">{tt.couple}</option>
+                      <option value="family">{tt.family}</option>
+                      <option value="group">{tt.group}</option>
+                      <option value="honeymoon">{tt.honeymoon}</option>
+                      <option value="paws">{tt.paws}</option>
+                    </FormSelectField>
 
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Intereses (separados por coma)
-                      </label>
-                      <Input
-                        type="text"
-                        value={formData.interests.filter((i) => i).join(", ")}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            interests: e.target.value
-                              .split(",")
-                              .map((i) => i.trim())
-                              .filter((i) => i !== ""),
-                          })
-                        }
-                        placeholder="aventura, cultura, comida"
-                      />
-                    </div>
+                    <FormField
+                      id="modal-profile-interests"
+                      label={p.modal.interests}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          interests: e.target.value
+                            .split(",")
+                            .map((i) => i.trim())
+                            .filter((i) => i !== ""),
+                        })
+                      }
+                      placeholder={p.modal.interestsPlaceholder}
+                      type="text"
+                      value={formData.interests.filter((i) => i).join(", ")}
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Evitar (separados por coma)
-                      </label>
-                      <Input
-                        type="text"
-                        value={formData.dislikes.filter((d) => d).join(", ")}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            dislikes: e.target.value
-                              .split(",")
-                              .map((i) => i.trim())
-                              .filter((i) => i !== ""),
-                          })
-                        }
-                        placeholder="multitudes, frío"
-                      />
-                    </div>
+                    <FormField
+                      id="modal-profile-dislikes"
+                      label={p.modal.dislikes}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          dislikes: e.target.value
+                            .split(",")
+                            .map((i) => i.trim())
+                            .filter((i) => i !== ""),
+                        })
+                      }
+                      placeholder={p.modal.dislikesPlaceholder}
+                      type="text"
+                      value={formData.dislikes.filter((d) => d).join(", ")}
+                    />
                   </div>
                 )}
 
                 {activeTab === "security" && (
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Contraseña Actual
-                      </label>
-                      <Input
-                        type="password"
-                        value={formData.currentPassword}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            currentPassword: e.target.value,
-                          })
-                        }
-                        placeholder="••••••••"
-                      />
-                    </div>
+                    <FormField
+                      autoComplete="current-password"
+                      id="modal-profile-current-password"
+                      label={p.modal.currentPassword}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                      placeholder={p.modal.passwordPlaceholder}
+                      type="password"
+                      value={formData.currentPassword}
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Nueva Contraseña
-                      </label>
-                      <Input
-                        type="password"
-                        value={formData.newPassword}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            newPassword: e.target.value,
-                          })
-                        }
-                        placeholder="••••••••"
-                      />
-                    </div>
+                    <FormField
+                      autoComplete="new-password"
+                      id="modal-profile-new-password"
+                      label={p.modal.newPassword}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      placeholder={p.modal.passwordPlaceholder}
+                      type="password"
+                      value={formData.newPassword}
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Confirmar Nueva Contraseña
-                      </label>
-                      <Input
-                        type="password"
-                        value={formData.confirmPassword}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            confirmPassword: e.target.value,
-                          })
-                        }
-                        placeholder="••••••••"
-                      />
-                    </div>
+                    <FormField
+                      autoComplete="new-password"
+                      id="modal-profile-confirm-password"
+                      label={p.modal.confirmPassword}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                      placeholder={p.modal.passwordPlaceholder}
+                      type="password"
+                      value={formData.confirmPassword}
+                    />
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="sticky bottom-0 bg-white border-t p-6 flex gap-3">
+              <div className="sticky bottom-0 flex gap-3 border-t bg-white p-6">
                 <Button
-                  variant="outline"
-                  onClick={closeModal}
                   className="flex-1"
+                  onClick={closeModal}
+                  variant="outline"
                 >
-                  Cancelar
+                  {p.buttons.modalCancel}
                 </Button>
                 <Button
+                  className="flex-1"
                   onClick={() => {
                     if (activeTab === "personal") handleSavePersonal();
                     else if (activeTab === "preferences")
                       handleSavePreferences();
                     else if (activeTab === "security") handleChangePassword();
                   }}
-                  className="flex-1"
                 >
-                  Guardar Cambios
+                  {p.buttons.modalSave}
                 </Button>
               </div>
             </div>

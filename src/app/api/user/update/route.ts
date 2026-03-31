@@ -71,6 +71,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       user: {
+        address: updatedUser.address,
         email: updatedUser.email,
         id: updatedUser.id,
         name: updatedUser.name,

@@ -31,7 +31,7 @@ export function GateAwareChrome({ children, dict, locale }: GateAwareChromeProps
   return (
     <>
       <Navbar dict={dict} locale={locale} />
-      {children}
+      <main className="min-h-screen">{children}</main>
       <Footer dict={dict} locale={locale} />
     </>
   );

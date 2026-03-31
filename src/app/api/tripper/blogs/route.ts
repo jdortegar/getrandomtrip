@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { slugify } from '@/lib/helpers/slugify';
 import { prisma } from '@/lib/prisma';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'TRIPPER') {
+    if (!user || !hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'TRIPPER') {
+    if (!user || !hasRoleAccess(user.role, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },

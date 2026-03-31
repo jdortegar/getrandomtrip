@@ -19,6 +19,14 @@
     "signIn": "Sign in",
     "whatsApp": "WhatsApp"
   },
+  "navbarProfile": {
+    "ariaOpenProfileMenu": "Open profile menu",
+    "dashboard": "Travel Logs",
+    "editProfile": "Edit profile",
+    "signOut": "Sign out",
+    "tripperOs": "Tripper OS",
+    "adminDashboard": "Admin Dashboard"
+  },
   "common": {
     "siteName": "Randomtrip"
   },
@@ -49,7 +57,10 @@
   },
   "home": {
     "hero": {
-      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "branding": {
+        "repeatText": "Repeat",
+        "text": "WONDER • WANDER"
+      },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
@@ -121,8 +132,15 @@
       "eyebrow": "Shape your adventure",
       "subtitle": "Find the perfect starting point for your next trip.",
       "tabs": [
-        { "id": "byTraveller", "label": "By Traveller" },
-        { "id": "topTrippers", "label": "Top Trippers", "href": "/en/trippers" }
+        {
+          "id": "byTraveller",
+          "label": "By Traveller"
+        },
+        {
+          "id": "topTrippers",
+          "label": "Top Trippers",
+          "href": "/en/trippers"
+        }
       ],
       "title": "Starting Points",
       "travelerTypes": [
@@ -131,7 +149,11 @@
           "title": "Couple",
           "description": "Romantic getaways."
         },
-        { "key": "solo", "title": "Solo", "description": "A unique trip." },
+        {
+          "key": "solo",
+          "title": "Solo",
+          "description": "A unique trip."
+        },
         {
           "key": "family",
           "title": "Family",
@@ -175,7 +197,10 @@
   },
   "experiences": {
     "hero": {
-      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "branding": {
+        "repeatText": "Repeat",
+        "text": "WONDER • WANDER"
+      },
       "fallbackImage": "/images/bg-playa-mexico.jpg",
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
@@ -380,7 +405,10 @@
         "accommodationType": {
           "label": "Accommodation type",
           "options": [
-            { "key": "any", "label": "Any" },
+            {
+              "key": "any",
+              "label": "Any"
+            },
             {
               "key": "hotel-style",
               "label": "Hotel Style",
@@ -411,46 +439,106 @@
         "arrivePref": {
           "label": "Arrival",
           "options": [
-            { "key": "any", "label": "Any" },
-            { "key": "afternoon", "label": "Afternoon" },
-            { "key": "morning", "label": "Morning" },
-            { "key": "night", "label": "Night" }
+            {
+              "key": "any",
+              "label": "Any"
+            },
+            {
+              "key": "afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "key": "morning",
+              "label": "Morning"
+            },
+            {
+              "key": "night",
+              "label": "Night"
+            }
           ]
         },
         "climate": {
           "label": "Climate",
           "options": [
-            { "key": "any", "label": "Any" },
-            { "key": "cold", "label": "Cold" },
-            { "key": "mild", "label": "Mild" },
-            { "key": "warm", "label": "Warm" }
+            {
+              "key": "any",
+              "label": "Any"
+            },
+            {
+              "key": "cold",
+              "label": "Cold"
+            },
+            {
+              "key": "mild",
+              "label": "Mild"
+            },
+            {
+              "key": "warm",
+              "label": "Warm"
+            }
           ]
         },
         "departPref": {
           "label": "Departure",
           "options": [
-            { "key": "any", "label": "Any" },
-            { "key": "afternoon", "label": "Afternoon" },
-            { "key": "morning", "label": "Morning" },
-            { "key": "night", "label": "Night" }
+            {
+              "key": "any",
+              "label": "Any"
+            },
+            {
+              "key": "afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "key": "morning",
+              "label": "Morning"
+            },
+            {
+              "key": "night",
+              "label": "Night"
+            }
           ]
         },
         "maxTravelTime": {
           "label": "Max travel time",
           "options": [
-            { "key": "no-limit", "label": "No limit" },
-            { "key": "3h", "label": "Up to 3h" },
-            { "key": "5h", "label": "Up to 5h" },
-            { "key": "8h", "label": "Up to 8h" }
+            {
+              "key": "no-limit",
+              "label": "No limit"
+            },
+            {
+              "key": "3h",
+              "label": "Up to 3h"
+            },
+            {
+              "key": "5h",
+              "label": "Up to 5h"
+            },
+            {
+              "key": "8h",
+              "label": "Up to 8h"
+            }
           ]
         },
         "transport": {
           "label": "Transport",
           "options": [
-            { "key": "bus", "label": "Bus" },
-            { "key": "plane", "label": "Flight" },
-            { "key": "ship", "label": "Boat/Cruise" },
-            { "key": "train", "label": "Train" }
+            {
+              "key": "bus",
+              "label": "Bus"
+            },
+            {
+              "key": "plane",
+              "label": "Flight"
+            },
+            {
+              "key": "ship",
+              "label": "Boat/Cruise"
+            },
+            {
+              "key": "train",
+              "label": "Train"
+            }
           ]
         }
       },
@@ -465,19 +553,142 @@
           "accommodationType": {
             "label": "Accommodation type",
             "options": [
-              { "key": "any", "label": "Any" },
-              { "key": "hotel-style", "label": "Hotel Style", "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after." },
-              { "key": "home-style", "label": "Home Style", "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home." },
-              { "key": "nature-escape", "label": "Nature Escape", "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air." },
-              { "key": "hybrid-hub", "label": "Hybrid Hub", "tooltip": "Social & Work. The middle ground between community, design and co-working spaces. Perfect for digital nomads." },
-              { "key": "glamping", "label": "Glamping", "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel." }
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "hotel-style",
+                "label": "Hotel Style",
+                "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after."
+              },
+              {
+                "key": "home-style",
+                "label": "Home Style",
+                "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home."
+              },
+              {
+                "key": "nature-escape",
+                "label": "Nature Escape",
+                "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air."
+              },
+              {
+                "key": "hybrid-hub",
+                "label": "Hybrid Hub",
+                "tooltip": "Social & Work. The middle ground between community, design and co-working spaces. Perfect for digital nomads."
+              },
+              {
+                "key": "glamping",
+                "label": "Glamping",
+                "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel."
+              }
             ]
           },
-          "arrivePref": { "label": "Arrival", "options": [{ "key": "any", "label": "Any" }, { "key": "afternoon", "label": "Afternoon" }, { "key": "morning", "label": "Morning" }, { "key": "night", "label": "Night" }] },
-          "climate": { "label": "Climate", "options": [{ "key": "any", "label": "Any" }, { "key": "cold", "label": "Cold" }, { "key": "mild", "label": "Mild" }, { "key": "warm", "label": "Warm" }] },
-          "departPref": { "label": "Departure", "options": [{ "key": "any", "label": "Any" }, { "key": "afternoon", "label": "Afternoon" }, { "key": "morning", "label": "Morning" }, { "key": "night", "label": "Night" }] },
-          "maxTravelTime": { "label": "Max travel time", "options": [{ "key": "no-limit", "label": "No limit" }, { "key": "3h", "label": "Up to 3h" }, { "key": "5h", "label": "Up to 5h" }, { "key": "8h", "label": "Up to 8h" }] },
-          "transport": { "label": "Transport", "options": [{ "key": "bus", "label": "Bus" }, { "key": "plane", "label": "Flight" }, { "key": "ship", "label": "Boat/Cruise" }, { "key": "train", "label": "Train" }] }
+          "arrivePref": {
+            "label": "Arrival",
+            "options": [
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "afternoon",
+                "label": "Afternoon"
+              },
+              {
+                "key": "morning",
+                "label": "Morning"
+              },
+              {
+                "key": "night",
+                "label": "Night"
+              }
+            ]
+          },
+          "climate": {
+            "label": "Climate",
+            "options": [
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "cold",
+                "label": "Cold"
+              },
+              {
+                "key": "mild",
+                "label": "Mild"
+              },
+              {
+                "key": "warm",
+                "label": "Warm"
+              }
+            ]
+          },
+          "departPref": {
+            "label": "Departure",
+            "options": [
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "afternoon",
+                "label": "Afternoon"
+              },
+              {
+                "key": "morning",
+                "label": "Morning"
+              },
+              {
+                "key": "night",
+                "label": "Night"
+              }
+            ]
+          },
+          "maxTravelTime": {
+            "label": "Max travel time",
+            "options": [
+              {
+                "key": "no-limit",
+                "label": "No limit"
+              },
+              {
+                "key": "3h",
+                "label": "Up to 3h"
+              },
+              {
+                "key": "5h",
+                "label": "Up to 5h"
+              },
+              {
+                "key": "8h",
+                "label": "Up to 8h"
+              }
+            ]
+          },
+          "transport": {
+            "label": "Transport",
+            "options": [
+              {
+                "key": "bus",
+                "label": "Bus"
+              },
+              {
+                "key": "plane",
+                "label": "Flight"
+              },
+              {
+                "key": "ship",
+                "label": "Boat/Cruise"
+              },
+              {
+                "key": "train",
+                "label": "Train"
+              }
+            ]
+          }
         },
         "avoidSearchModal": {
           "addButton": "Add",
@@ -1211,6 +1422,350 @@
     "tagline": "Where the routine ends, the adventure begins.",
     "copyright": "All rights reserved."
   },
+  "legalCookies": {
+    "meta": {
+      "description": "How GetRandomTrip uses cookies and similar technologies on our website and services.",
+      "openGraphDescription": "Cookie policy for GetRandomTrip.",
+      "openGraphTitle": "Cookie Policy | GetRandomTrip",
+      "title": "Cookie Policy | GetRandomTrip"
+    },
+    "hero": {
+      "description": "Transparency about cookies and your choices.",
+      "eyebrow": "LEGAL",
+      "title": "Cookie Policy"
+    },
+    "sections": [
+      {
+        "title": "What this policy covers",
+        "paragraphs": [
+          "This Cookie Policy explains how GetRandomTrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
+        ]
+      },
+      {
+        "title": "What cookies are",
+        "paragraphs": [
+          "Cookies are small text files stored on your device when you visit a site. They help the site remember your session, preferences, and (where applicable) analytics. Similar technologies include local storage and pixels used for the same purposes."
+        ]
+      },
+      {
+        "title": "Cookies we use",
+        "listIntro": "Depending on how you use GetRandomTrip, we may use:",
+        "listItems": [
+          "Strictly necessary cookies: required for security, authentication, session continuity, load balancing, and fraud prevention (for example keeping you signed in or remembering your locale).",
+          "Functional cookies: remember choices such as language, journey progress where designed into the product, and UI preferences.",
+          "Analytics cookies: help us understand aggregate usage (pages viewed, funnels, errors) so we can improve performance and content. Where required by law, we only enable these with your consent.",
+          "Payment-related cookies or storage: our payment provider (e.g. Mercado Pago) may set their own cookies or tokens when you pay; those are governed by their policies."
+        ]
+      },
+      {
+        "title": "Third parties",
+        "paragraphs": [
+          "We may use subprocessors for hosting, analytics, authentication, email, or payments. They may set their own cookies. We choose providers with appropriate safeguards and describe the main categories in our Privacy Policy."
+        ]
+      },
+      {
+        "title": "How long cookies last",
+        "paragraphs": [
+          "Session cookies expire when you close your browser. Persistent cookies remain for a defined period (for example 30 days or 12 months) depending on their purpose. Authentication tokens follow security best practices and may refresh or expire automatically."
+        ]
+      },
+      {
+        "title": "Managing cookies",
+        "paragraphs": [
+          "You can block or delete cookies through your browser settings. Blocking strictly necessary cookies may break sign-in, checkout, or locale selection. Where we show a cookie banner or preference center, you can adjust non-essential categories in line with applicable law."
+        ]
+      },
+      {
+        "title": "Updates",
+        "paragraphs": [
+          "We may update this Cookie Policy when we change technologies or legal requirements. The date of the latest revision is reflected when we publish changes on this page; continued use after updates means you acknowledge the revised policy where permitted by law."
+        ]
+      }
+    ],
+    "contactBlock": {
+      "title": "Questions",
+      "before": "For privacy-related questions, see our Privacy Policy or reach us via",
+      "linkLabel": "Contact",
+      "after": "."
+    }
+  },
+  "legalPrivacy": {
+    "meta": {
+      "description": "How GetRandomTrip collects, uses, and protects your personal data when you plan and book surprise trips.",
+      "openGraphDescription": "Privacy policy for GetRandomTrip travelers and trippers.",
+      "openGraphTitle": "Privacy Policy | GetRandomTrip",
+      "title": "Privacy Policy | GetRandomTrip"
+    },
+    "hero": {
+      "description": "Your privacy matters when you trust us with your trip.",
+      "eyebrow": "LEGAL",
+      "title": "Privacy Policy"
+    },
+    "sections": [
+      {
+        "title": "Who we are",
+        "paragraphs": [
+          "GetRandomTrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
+        ]
+      },
+      {
+        "title": "Data we collect",
+        "listIntro": "We may collect:",
+        "listItems": [
+          "Account data: name, email, password hash, profile details you choose to provide, and authentication identifiers from providers such as Google when you use social login.",
+          "Trip and journey data: traveler type, preferences, dislikes, budget signals, dates, party size, accessibility notes, and messages you send through the product.",
+          "Transaction data: purchases, payment status, references from Mercado Pago or other processors (we do not store full card numbers on our servers).",
+          "Technical data: IP address, device type, browser, approximate location from IP, logs, and cookies as described in our Cookie Policy.",
+          "Communications: support tickets, emails, and in-app messages."
+        ]
+      },
+      {
+        "title": "How we use data",
+        "listIntro": "We use personal data to:",
+        "listItems": [
+          "Provide the service: run the journey flow, match you with experiences, and enable Trippers to prepare itineraries.",
+          "Process payments and prevent fraud.",
+          "Improve the product: analytics, debugging, and research in aggregate or de-identified form where possible.",
+          "Communicate with you: confirmations, service messages, and (where allowed) marketing with opt-out.",
+          "Comply with law and enforce our Terms."
+        ]
+      },
+      {
+        "title": "Legal bases (where applicable)",
+        "paragraphs": [
+          "Depending on your region, we rely on contractual necessity (providing the service you request), legitimate interests (security, analytics, product improvement balanced against your rights), consent (cookies or marketing where required), and legal obligations."
+        ]
+      },
+      {
+        "title": "Sharing with Trippers and partners",
+        "paragraphs": [
+          "To deliver your trip, we share relevant brief details with the Tripper or operators fulfilling the experience. We use infrastructure, payment, email, and analytics vendors as subprocessors under contracts with confidentiality and security requirements. We do not sell your personal data."
+        ]
+      },
+      {
+        "title": "International transfers",
+        "paragraphs": [
+          "Your data may be processed in countries where we or our providers operate. Where required, we use appropriate safeguards such as standard contractual clauses or equivalent mechanisms."
+        ]
+      },
+      {
+        "title": "Retention",
+        "paragraphs": [
+          "We keep data only as long as needed for the purposes above, including legal, tax, and dispute resolution retention periods. Account data is removed or anonymized when no longer required, subject to applicable law."
+        ]
+      },
+      {
+        "title": "Security",
+        "paragraphs": [
+          "We implement technical and organizational measures designed to protect personal data. No method of transmission over the Internet is 100% secure; we encourage strong passwords and protecting your devices."
+        ]
+      },
+      {
+        "title": "Your rights",
+        "listIntro": "Depending on applicable law, you may have rights to access, rectify, delete, restrict, or port your data, and to object to certain processing. You may also withdraw consent where processing is consent-based. To exercise rights, contact us via the details below.",
+        "listItems": [
+          "You can update parts of your profile in the app where self-service is available.",
+          "You may lodge a complaint with your local data protection authority."
+        ]
+      },
+      {
+        "title": "Children",
+        "paragraphs": [
+          "GetRandomTrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
+        ]
+      },
+      {
+        "title": "Changes",
+        "paragraphs": [
+          "We may update this Privacy Policy from time to time. We will post the revised version on this page and, where appropriate, notify you by email or in-product notice."
+        ]
+      }
+    ],
+    "contactBlock": {
+      "title": "Contact",
+      "before": "Questions about privacy? Reach us through",
+      "linkLabel": "Contact",
+      "after": " and we will respond within a reasonable time."
+    }
+  },
+  "legalRefund": {
+    "meta": {
+      "description": "Refunds, cancellations, and chargebacks for GetRandomTrip purchases and surprise-travel experiences.",
+      "openGraphDescription": "Refund and cancellation policy for GetRandomTrip.",
+      "openGraphTitle": "Refund Policy | GetRandomTrip",
+      "title": "Refund Policy | GetRandomTrip"
+    },
+    "hero": {
+      "description": "How refunds and cancellations work for trips purchased through GetRandomTrip.",
+      "eyebrow": "LEGAL",
+      "title": "Refund Policy"
+    },
+    "sections": [
+      {
+        "title": "Overview",
+        "paragraphs": [
+          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through GetRandomTrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
+        ]
+      },
+      {
+        "title": "Nature of the service",
+        "paragraphs": [
+          "Many GetRandomTrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
+        ]
+      },
+      {
+        "title": "Cancellations by you",
+        "listIntro": "If you need to cancel:",
+        "listItems": [
+          "Request cancellation as early as possible through the contact or support channel indicated in your confirmation or account.",
+          "Whether a full refund, partial refund, or credit applies depends on how far in advance you cancel, the Tripper's policy, and supplier non-refundable costs.",
+          "If no travel has been booked yet and the Tripper cancels without cost to them, we will aim to refund payment method charges minus any explicitly non-refundable fees stated at purchase."
+        ]
+      },
+      {
+        "title": "Changes or cancellations by the Tripper or GetRandomTrip",
+        "paragraphs": [
+          "If a Tripper cannot deliver the experience due to force majeure, supplier failure, or operational reasons, we will offer a rescheduled date, a comparable alternative where feasible, or a refund of amounts paid for the undelivered portion, consistent with applicable law and the terms of sale."
+        ]
+      },
+      {
+        "title": "Failed or reversed payments",
+        "paragraphs": [
+          "If Mercado Pago or your bank declines or reverses a charge, access to the purchased experience may be suspended until payment is successfully completed. Duplicate charges or processor errors should be reported to us and to the payment provider."
+        ]
+      },
+      {
+        "title": "Chargebacks",
+        "paragraphs": [
+          "Please contact us before initiating a chargeback so we can resolve billing issues. Unwarranted chargebacks may result in account restrictions and may not reflect the outcome of a good-faith cancellation discussion."
+        ]
+      },
+      {
+        "title": "Processing time",
+        "paragraphs": [
+          "Approved refunds are processed to the original payment method where possible. Timing depends on Mercado Pago or your bank (often several business days after we issue the refund)."
+        ]
+      },
+      {
+        "title": "Statutory rights",
+        "paragraphs": [
+          "Nothing in this policy limits mandatory consumer rights in your country (including cooling-off rules where they apply to distance contracts). If you believe a statutory right applies, tell us and we will review your case."
+        ]
+      }
+    ],
+    "contactBlock": {
+      "title": "Need help with a refund?",
+      "before": "Open a request through",
+      "linkLabel": "Contact",
+      "after": " with your order reference and we will guide you."
+    }
+  },
+  "legalTerms": {
+    "meta": {
+      "description": "Terms of Service for using GetRandomTrip to discover and book surprise-travel experiences.",
+      "openGraphDescription": "Terms of Service for GetRandomTrip.",
+      "openGraphTitle": "Terms of Service | GetRandomTrip",
+      "title": "Terms of Service | GetRandomTrip"
+    },
+    "hero": {
+      "description": "Rules for using our platform, booking trips, and working with Trippers.",
+      "eyebrow": "LEGAL",
+      "title": "Terms of Service"
+    },
+    "sections": [
+      {
+        "title": "Agreement",
+        "paragraphs": [
+          "By accessing or using GetRandomTrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
+        ]
+      },
+      {
+        "title": "What GetRandomTrip provides",
+        "paragraphs": [
+          "GetRandomTrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; GetRandomTrip facilitates discovery, booking, communication, and payment processing."
+        ]
+      },
+      {
+        "title": "Eligibility and accounts",
+        "listIntro": "You agree that:",
+        "listItems": [
+          "You are legally able to enter a binding contract in your jurisdiction.",
+          "Registration information is accurate and kept up to date.",
+          "You are responsible for safeguarding your password and for activity under your account.",
+          "You will notify us promptly of unauthorized access."
+        ]
+      },
+      {
+        "title": "Bookings, prices, and payments",
+        "listIntro": "When you purchase through GetRandomTrip:",
+        "listItems": [
+          "Prices are displayed in the currency shown at checkout unless stated otherwise.",
+          "Payment is processed by Mercado Pago or another processor we designate; their terms and privacy policy also apply.",
+          "You authorize us and our payment partners to charge your selected payment method for the total shown, including applicable taxes and fees when quoted.",
+          "Trip details, blackout dates, inclusions, and exclusions are described in the offer or confirmation. The surprise destination model means some specifics are revealed according to the product rules."
+        ]
+      },
+      {
+        "title": "Traveler conduct",
+        "listIntro": "You must not:",
+        "listItems": [
+          "Use the Services for unlawful, harassing, or discriminatory purposes.",
+          "Attempt to scrape, hack, reverse engineer, or overload our systems.",
+          "Circumvent payments, fees, or identity checks.",
+          "Misrepresent health, safety, or accessibility needs in a way that endangers you, Trippers, or third parties.",
+          "Resell or commercially exploit listings without authorization."
+        ]
+      },
+      {
+        "title": "Trippers and third parties",
+        "paragraphs": [
+          "Trippers and local operators are independent parties. GetRandomTrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
+        ]
+      },
+      {
+        "title": "Intellectual property",
+        "paragraphs": [
+          "Content on the Services (brand, design, text, graphics, video, software) is owned by GetRandomTrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
+        ]
+      },
+      {
+        "title": "Disclaimers",
+        "paragraphs": [
+          "Travel involves inherent risks. The Services are provided as is and as available to the fullest extent permitted by law. We do not guarantee uninterrupted access or that every trip will match subjective expectations of surprise, though we strive for high quality. Maps, photos, and descriptions are illustrative."
+        ]
+      },
+      {
+        "title": "Limitation of liability",
+        "paragraphs": [
+          "To the maximum extent permitted by applicable law, GetRandomTrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
+        ]
+      },
+      {
+        "title": "Indemnity",
+        "paragraphs": [
+          "You will indemnify and hold harmless GetRandomTrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
+        ]
+      },
+      {
+        "title": "Suspension and termination",
+        "paragraphs": [
+          "We may suspend or terminate access for breach of these Terms, risk, fraud, or legal requirements. You may stop using the Services at any time. Provisions that by nature should survive (liability limits, indemnity, governing law) survive termination."
+        ]
+      },
+      {
+        "title": "Governing law and disputes",
+        "paragraphs": [
+          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to GetRandomTrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
+        ]
+      }
+    ],
+    "contactBlock": {
+      "title": "Contact",
+      "before": "Questions about these Terms? Visit",
+      "linkLabel": "Contact",
+      "after": "."
+    }
+  },
   "aboutUs": {
     "cta": {
       "buttonAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
@@ -1287,7 +1842,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -1314,12 +1873,18 @@
     "trust": {
       "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
       "items": [
-        { "value": "NPS 65+*", "label": "Public goal and ongoing tracking." },
+        {
+          "value": "NPS 65+*",
+          "label": "Public goal and ongoing tracking."
+        },
         {
           "value": "55%+",
           "label": "Upsell adoption (wellness, experiences)."
         },
-        { "value": "20%+", "label": "Target repeat rate." }
+        {
+          "value": "20%+",
+          "label": "Target repeat rate."
+        }
       ],
       "sectionTitle": "Trust in numbers"
     },
@@ -1373,6 +1938,82 @@
       "usernamePlaceholder": "Username",
       "passwordPlaceholder": "Password",
       "submitButton": "Sign in"
+    }
+  },
+  "profile": {
+    "actionsAria": "Profile actions",
+    "hero": {
+      "title": "My profile",
+      "subtitle": "Manage your account and preferences"
+    },
+    "header": {
+      "userFallback": "User",
+      "emailFallback": "user@email.com",
+      "badgeActiveTraveler": "Active traveler"
+    },
+    "buttons": {
+      "editProfile": "Edit profile",
+      "editDetails": "Edit details",
+      "cancel": "Cancel",
+      "saveChanges": "Save changes",
+      "tripperProfile": "Tripper profile",
+      "modalCancel": "Cancel",
+      "modalSave": "Save changes"
+    },
+    "personalSectionTitle": "Personal information",
+    "preferencesSectionTitle": "Travel preferences",
+    "labels": {
+      "email": "Email",
+      "name": "Name",
+      "phone": "Phone",
+      "street": "Street address",
+      "city": "City",
+      "state": "State / province",
+      "zipCode": "Postal code",
+      "country": "Country",
+      "memberSince": "Member since",
+      "travelerType": "Traveler type",
+      "interests": "Interests (comma-separated)",
+      "dislikes": "Avoid (comma-separated)"
+    },
+    "travelerTypes": {
+      "selectPlaceholder": "Select…",
+      "solo": "Solo",
+      "couple": "Couple",
+      "family": "Family",
+      "group": "Group",
+      "honeymoon": "Honeymoon",
+      "paws": "With pets"
+    },
+    "modal": {
+      "title": "Edit profile",
+      "tabPersonal": "Personal",
+      "tabPreferences": "Preferences",
+      "tabSecurity": "Security",
+      "travelerType": "Traveler type",
+      "interests": "Interests (comma-separated)",
+      "dislikes": "Avoid (comma-separated)",
+      "namePlaceholder": "Your full name",
+      "emailPlaceholder": "you@email.com",
+      "interestsPlaceholder": "adventure, culture, food",
+      "dislikesPlaceholder": "crowds, cold",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordPlaceholder": "••••••••"
+    },
+    "toasts": {
+      "personalUpdated": "Your information was updated",
+      "personalError": "Could not update your information",
+      "preferencesUpdated": "Your preferences were updated",
+      "preferencesError": "Could not update preferences",
+      "passwordsMismatch": "Passwords do not match",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordUpdated": "Password updated",
+      "passwordError": "Could not change password",
+      "nameRequired": "Name is required",
+      "saveError": "Could not save your data",
+      "profileUpdated": "Profile updated successfully"
     }
   }
 }

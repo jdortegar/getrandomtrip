@@ -7,6 +7,7 @@ import { useUserStore } from '@/store/slices/userStore';
 import GlassCard from '@/components/ui/GlassCard';
 import BgCarousel from '@/components/media/BgCarousel';
 import LoadingSpinner from '../layout/LoadingSpinner';
+import { hasRoleAccess } from '@/lib/auth/roleAccess';
 
 interface SecureRouteProps {
   children: React.ReactNode;
@@ -24,14 +25,8 @@ export default function SecureRoute({
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
-  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
-  const normalizeRole = (role: string | undefined): string | null => {
-    if (!role) return null;
-    return role.toLowerCase();
-  };
-
-  const userRoleFromStore = normalizeRole(user?.role);
-  const userRoleFromSession = normalizeRole((session?.user as any)?.role);
+  const userRoleFromStore = user?.role;
+  const userRoleFromSession = (session?.user as any)?.role as string | undefined;
   const normalizedRequiredRole = requiredRole ? requiredRole.toLowerCase() : null;
 
   useEffect(() => {
@@ -48,8 +43,8 @@ export default function SecureRoute({
     // Check role if required (compare normalized roles)
     if (
       normalizedRequiredRole &&
-      userRoleFromStore !== normalizedRequiredRole &&
-      userRoleFromSession !== normalizedRequiredRole
+      !hasRoleAccess(userRoleFromStore, normalizedRequiredRole as 'client' | 'tripper' | 'admin') &&
+      !hasRoleAccess(userRoleFromSession, normalizedRequiredRole as 'client' | 'tripper' | 'admin')
     ) {
       router.push('/unauthorized');
       return;
@@ -70,8 +65,8 @@ export default function SecureRoute({
   // Check role if required (compare normalized roles)
   if (
     normalizedRequiredRole &&
-    userRoleFromStore !== normalizedRequiredRole &&
-    userRoleFromSession !== normalizedRequiredRole
+    !hasRoleAccess(userRoleFromStore, normalizedRequiredRole as 'client' | 'tripper' | 'admin') &&
+    !hasRoleAccess(userRoleFromSession, normalizedRequiredRole as 'client' | 'tripper' | 'admin')
   ) {
     return (
       fallback || (
