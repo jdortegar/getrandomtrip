@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
-import { CheckoutFormField } from "@/components/ui/CheckoutFormField";
+import { FormField } from "@/components/ui/FormField";
 import { X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -278,7 +278,7 @@ export default function AuthModal({
             {/* Name field (only for register) */}
             {mode === "register" && (
               <div>
-                <CheckoutFormField
+                <FormField
                   aria-describedby={error ? "error-message" : undefined}
                   autoComplete="name"
                   id="auth-name"
@@ -293,7 +293,7 @@ export default function AuthModal({
             )}
 
             <div>
-              <CheckoutFormField
+              <FormField
                 aria-describedby={error ? "error-message" : undefined}
                 autoComplete="email"
                 id="auth-email"
@@ -307,7 +307,7 @@ export default function AuthModal({
             </div>
 
             <div>
-              <CheckoutFormField
+              <FormField
                 aria-describedby={error ? "error-message" : undefined}
                 autoComplete={
                   mode === "register" ? "new-password" : "current-password"

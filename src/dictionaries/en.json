@@ -24,7 +24,8 @@
     "dashboard": "Travel Logs",
     "editProfile": "Edit profile",
     "signOut": "Sign out",
-    "tripperOs": "Tripper OS"
+    "tripperOs": "Tripper OS",
+    "adminDashboard": "Admin Dashboard"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -56,7 +57,10 @@
   },
   "home": {
     "hero": {
-      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "branding": {
+        "repeatText": "Repeat",
+        "text": "WONDER • WANDER"
+      },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
@@ -128,8 +132,15 @@
       "eyebrow": "Shape your adventure",
       "subtitle": "Find the perfect starting point for your next trip.",
       "tabs": [
-        { "id": "byTraveller", "label": "By Traveller" },
-        { "id": "topTrippers", "label": "Top Trippers", "href": "/en/trippers" }
+        {
+          "id": "byTraveller",
+          "label": "By Traveller"
+        },
+        {
+          "id": "topTrippers",
+          "label": "Top Trippers",
+          "href": "/en/trippers"
+        }
       ],
       "title": "Starting Points",
       "travelerTypes": [
@@ -138,7 +149,11 @@
           "title": "Couple",
           "description": "Romantic getaways."
         },
-        { "key": "solo", "title": "Solo", "description": "A unique trip." },
+        {
+          "key": "solo",
+          "title": "Solo",
+          "description": "A unique trip."
+        },
         {
           "key": "family",
           "title": "Family",
@@ -182,7 +197,10 @@
   },
   "experiences": {
     "hero": {
-      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "branding": {
+        "repeatText": "Repeat",
+        "text": "WONDER • WANDER"
+      },
       "fallbackImage": "/images/bg-playa-mexico.jpg",
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
@@ -387,7 +405,10 @@
         "accommodationType": {
           "label": "Accommodation type",
           "options": [
-            { "key": "any", "label": "Any" },
+            {
+              "key": "any",
+              "label": "Any"
+            },
             {
               "key": "hotel-style",
               "label": "Hotel Style",
@@ -418,46 +439,106 @@
         "arrivePref": {
           "label": "Arrival",
           "options": [
-            { "key": "any", "label": "Any" },
-            { "key": "afternoon", "label": "Afternoon" },
-            { "key": "morning", "label": "Morning" },
-            { "key": "night", "label": "Night" }
+            {
+              "key": "any",
+              "label": "Any"
+            },
+            {
+              "key": "afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "key": "morning",
+              "label": "Morning"
+            },
+            {
+              "key": "night",
+              "label": "Night"
+            }
           ]
         },
         "climate": {
           "label": "Climate",
           "options": [
-            { "key": "any", "label": "Any" },
-            { "key": "cold", "label": "Cold" },
-            { "key": "mild", "label": "Mild" },
-            { "key": "warm", "label": "Warm" }
+            {
+              "key": "any",
+              "label": "Any"
+            },
+            {
+              "key": "cold",
+              "label": "Cold"
+            },
+            {
+              "key": "mild",
+              "label": "Mild"
+            },
+            {
+              "key": "warm",
+              "label": "Warm"
+            }
           ]
         },
         "departPref": {
           "label": "Departure",
           "options": [
-            { "key": "any", "label": "Any" },
-            { "key": "afternoon", "label": "Afternoon" },
-            { "key": "morning", "label": "Morning" },
-            { "key": "night", "label": "Night" }
+            {
+              "key": "any",
+              "label": "Any"
+            },
+            {
+              "key": "afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "key": "morning",
+              "label": "Morning"
+            },
+            {
+              "key": "night",
+              "label": "Night"
+            }
           ]
         },
         "maxTravelTime": {
           "label": "Max travel time",
           "options": [
-            { "key": "no-limit", "label": "No limit" },
-            { "key": "3h", "label": "Up to 3h" },
-            { "key": "5h", "label": "Up to 5h" },
-            { "key": "8h", "label": "Up to 8h" }
+            {
+              "key": "no-limit",
+              "label": "No limit"
+            },
+            {
+              "key": "3h",
+              "label": "Up to 3h"
+            },
+            {
+              "key": "5h",
+              "label": "Up to 5h"
+            },
+            {
+              "key": "8h",
+              "label": "Up to 8h"
+            }
           ]
         },
         "transport": {
           "label": "Transport",
           "options": [
-            { "key": "bus", "label": "Bus" },
-            { "key": "plane", "label": "Flight" },
-            { "key": "ship", "label": "Boat/Cruise" },
-            { "key": "train", "label": "Train" }
+            {
+              "key": "bus",
+              "label": "Bus"
+            },
+            {
+              "key": "plane",
+              "label": "Flight"
+            },
+            {
+              "key": "ship",
+              "label": "Boat/Cruise"
+            },
+            {
+              "key": "train",
+              "label": "Train"
+            }
           ]
         }
       },
@@ -472,19 +553,142 @@
           "accommodationType": {
             "label": "Accommodation type",
             "options": [
-              { "key": "any", "label": "Any" },
-              { "key": "hotel-style", "label": "Hotel Style", "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after." },
-              { "key": "home-style", "label": "Home Style", "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home." },
-              { "key": "nature-escape", "label": "Nature Escape", "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air." },
-              { "key": "hybrid-hub", "label": "Hybrid Hub", "tooltip": "Social & Work. The middle ground between community, design and co-working spaces. Perfect for digital nomads." },
-              { "key": "glamping", "label": "Glamping", "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel." }
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "hotel-style",
+                "label": "Hotel Style",
+                "tooltip": "Classic & Comfort. Comfort, cleanliness and 24-hour services. Ideal if you want to be looked after."
+              },
+              {
+                "key": "home-style",
+                "label": "Home Style",
+                "tooltip": "Live like a local. Apartments or private homes to set your own pace, cook and feel at home."
+              },
+              {
+                "key": "nature-escape",
+                "label": "Nature Escape",
+                "tooltip": "Total disconnection. Cabins or lodges immersed in nature, away from the noise and close to fresh air."
+              },
+              {
+                "key": "hybrid-hub",
+                "label": "Hybrid Hub",
+                "tooltip": "Social & Work. The middle ground between community, design and co-working spaces. Perfect for digital nomads."
+              },
+              {
+                "key": "glamping",
+                "label": "Glamping",
+                "tooltip": "Chic Adventure. The magic of camping under the stars, with the comfort and style of a premium hotel."
+              }
             ]
           },
-          "arrivePref": { "label": "Arrival", "options": [{ "key": "any", "label": "Any" }, { "key": "afternoon", "label": "Afternoon" }, { "key": "morning", "label": "Morning" }, { "key": "night", "label": "Night" }] },
-          "climate": { "label": "Climate", "options": [{ "key": "any", "label": "Any" }, { "key": "cold", "label": "Cold" }, { "key": "mild", "label": "Mild" }, { "key": "warm", "label": "Warm" }] },
-          "departPref": { "label": "Departure", "options": [{ "key": "any", "label": "Any" }, { "key": "afternoon", "label": "Afternoon" }, { "key": "morning", "label": "Morning" }, { "key": "night", "label": "Night" }] },
-          "maxTravelTime": { "label": "Max travel time", "options": [{ "key": "no-limit", "label": "No limit" }, { "key": "3h", "label": "Up to 3h" }, { "key": "5h", "label": "Up to 5h" }, { "key": "8h", "label": "Up to 8h" }] },
-          "transport": { "label": "Transport", "options": [{ "key": "bus", "label": "Bus" }, { "key": "plane", "label": "Flight" }, { "key": "ship", "label": "Boat/Cruise" }, { "key": "train", "label": "Train" }] }
+          "arrivePref": {
+            "label": "Arrival",
+            "options": [
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "afternoon",
+                "label": "Afternoon"
+              },
+              {
+                "key": "morning",
+                "label": "Morning"
+              },
+              {
+                "key": "night",
+                "label": "Night"
+              }
+            ]
+          },
+          "climate": {
+            "label": "Climate",
+            "options": [
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "cold",
+                "label": "Cold"
+              },
+              {
+                "key": "mild",
+                "label": "Mild"
+              },
+              {
+                "key": "warm",
+                "label": "Warm"
+              }
+            ]
+          },
+          "departPref": {
+            "label": "Departure",
+            "options": [
+              {
+                "key": "any",
+                "label": "Any"
+              },
+              {
+                "key": "afternoon",
+                "label": "Afternoon"
+              },
+              {
+                "key": "morning",
+                "label": "Morning"
+              },
+              {
+                "key": "night",
+                "label": "Night"
+              }
+            ]
+          },
+          "maxTravelTime": {
+            "label": "Max travel time",
+            "options": [
+              {
+                "key": "no-limit",
+                "label": "No limit"
+              },
+              {
+                "key": "3h",
+                "label": "Up to 3h"
+              },
+              {
+                "key": "5h",
+                "label": "Up to 5h"
+              },
+              {
+                "key": "8h",
+                "label": "Up to 8h"
+              }
+            ]
+          },
+          "transport": {
+            "label": "Transport",
+            "options": [
+              {
+                "key": "bus",
+                "label": "Bus"
+              },
+              {
+                "key": "plane",
+                "label": "Flight"
+              },
+              {
+                "key": "ship",
+                "label": "Boat/Cruise"
+              },
+              {
+                "key": "train",
+                "label": "Train"
+              }
+            ]
+          }
         },
         "avoidSearchModal": {
           "addButton": "Add",
@@ -1638,7 +1842,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -1665,12 +1873,18 @@
     "trust": {
       "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
       "items": [
-        { "value": "NPS 65+*", "label": "Public goal and ongoing tracking." },
+        {
+          "value": "NPS 65+*",
+          "label": "Public goal and ongoing tracking."
+        },
         {
           "value": "55%+",
           "label": "Upsell adoption (wellness, experiences)."
         },
-        { "value": "20%+", "label": "Target repeat rate." }
+        {
+          "value": "20%+",
+          "label": "Target repeat rate."
+        }
       ],
       "sectionTitle": "Trust in numbers"
     },

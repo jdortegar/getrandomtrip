@@ -52,6 +52,7 @@ export interface MarketingDictionary {
     whatsApp: string;
   };
   navbarProfile: {
+    adminDashboard: string;
     ariaOpenProfileMenu: string;
     dashboard: string;
     editProfile: string;

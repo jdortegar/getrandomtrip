@@ -6,6 +6,7 @@ import { signOut as nextAuthSignOut } from "next-auth/react";
 import type { User } from "@/types/core";
 import { useMenuState } from "@/hooks/useMenuState";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 /** Minimal user shape for navbar (all optional). */
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role">>;
@@ -22,7 +23,12 @@ const DASHBOARD_MENU_ITEM = {
   href: "/dashboard",
 };
 
+const ADMIN_MENU_ITEM = {
+  href: "/dashboard/admin",
+};
+
 export interface NavbarProfileLabels {
+  adminDashboard: string;
   ariaOpenProfileMenu: string;
   dashboard: string;
   editProfile: string;
@@ -44,6 +50,10 @@ export function NavbarProfile({
   user,
 }: NavbarProfileProps) {
   const { isOpen, toggle, close, menuRef } = useMenuState();
+  const role = ((session?.user as { role?: string } | undefined)?.role ?? user?.role) as
+    | string
+    | undefined;
+  const isAdmin = hasRoleAccess(role, "admin");
 
   const handleSignOut = () => {
     if (session) {
@@ -97,6 +107,16 @@ export function NavbarProfile({
           >
             {labels.tripperOs}
           </Link>
+          {isAdmin ? (
+            <Link
+              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+              href={ADMIN_MENU_ITEM.href}
+              onClick={close}
+              role="menuitem"
+            >
+              {labels.adminDashboard}
+            </Link>
+          ) : null}
 
           <div className="my-1 h-px bg-neutral-200" />
 

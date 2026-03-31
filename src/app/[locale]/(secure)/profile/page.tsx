@@ -12,9 +12,9 @@ import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
 import {
-  CheckoutFormField,
-  CheckoutFormSelectField,
-} from "@/components/ui/CheckoutFormField";
+  FormField,
+  FormSelectField,
+} from "@/components/ui/FormField";
 import { Briefcase, Edit, Lock, Settings, User, X } from "lucide-react";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionaries";
@@ -524,7 +524,7 @@ function ProfileContent() {
                   {p.personalSectionTitle}
                 </h2>
                 <div className="space-y-4">
-                  <CheckoutFormField
+                  <FormField
                     className={profileFieldClassName}
                     id="profile-email"
                     label={p.labels.email}
@@ -540,7 +540,7 @@ function ProfileContent() {
                   />
 
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <CheckoutFormField
+                    <FormField
                       className={profileFieldClassName}
                       id="profile-name"
                       label={p.labels.name}
@@ -554,7 +554,7 @@ function ProfileContent() {
                       type="text"
                       value={detailsForm.name}
                     />
-                    <CheckoutFormField
+                    <FormField
                       className={profileFieldClassName}
                       id="profile-phone"
                       label={p.labels.phone}
@@ -570,7 +570,7 @@ function ProfileContent() {
                     />
                   </div>
 
-                  <CheckoutFormField
+                  <FormField
                     className={profileFieldClassName}
                     id="profile-street"
                     label={p.labels.street}
@@ -586,7 +586,7 @@ function ProfileContent() {
                   />
 
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <CheckoutFormField
+                    <FormField
                       className={profileFieldClassName}
                       id="profile-city"
                       label={p.labels.city}
@@ -600,7 +600,7 @@ function ProfileContent() {
                       type="text"
                       value={detailsForm.city}
                     />
-                    <CheckoutFormField
+                    <FormField
                       className={profileFieldClassName}
                       id="profile-state"
                       label={p.labels.state}
@@ -617,7 +617,7 @@ function ProfileContent() {
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <CheckoutFormField
+                    <FormField
                       className={profileFieldClassName}
                       id="profile-zip"
                       label={p.labels.zipCode}
@@ -631,7 +631,7 @@ function ProfileContent() {
                       type="text"
                       value={detailsForm.zipCode}
                     />
-                    <CheckoutFormField
+                    <FormField
                       className={profileFieldClassName}
                       id="profile-country"
                       label={p.labels.country}
@@ -647,7 +647,7 @@ function ProfileContent() {
                     />
                   </div>
 
-                  <CheckoutFormField
+                  <FormField
                     className="cursor-not-allowed opacity-80"
                     id="profile-member-since"
                     label={p.labels.memberSince}
@@ -670,7 +670,7 @@ function ProfileContent() {
                   {p.preferencesSectionTitle}
                 </h2>
                 <div className="space-y-4">
-                  <CheckoutFormSelectField
+                  <FormSelectField
                     className={profileFieldClassName}
                     disabled={!isDetailsEditing}
                     id="profile-traveler-type"
@@ -690,9 +690,9 @@ function ProfileContent() {
                     <option value="group">{tt.group}</option>
                     <option value="honeymoon">{tt.honeymoon}</option>
                     <option value="paws">{tt.paws}</option>
-                  </CheckoutFormSelectField>
+                  </FormSelectField>
 
-                  <CheckoutFormField
+                  <FormField
                     className={profileFieldClassName}
                     id="profile-interests"
                     label={p.labels.interests}
@@ -710,7 +710,7 @@ function ProfileContent() {
                     value={detailsForm.interests.filter((i) => i).join(", ")}
                   />
 
-                  <CheckoutFormField
+                  <FormField
                     className={profileFieldClassName}
                     id="profile-dislikes"
                     label={p.labels.dislikes}
@@ -794,7 +794,7 @@ function ProfileContent() {
               <div className="p-6">
                 {activeTab === "personal" && (
                   <div className="space-y-4">
-                    <CheckoutFormField
+                    <FormField
                       id="modal-profile-name"
                       label={p.labels.name}
                       onChange={(e) =>
@@ -804,7 +804,7 @@ function ProfileContent() {
                       type="text"
                       value={formData.name}
                     />
-                    <CheckoutFormField
+                    <FormField
                       id="modal-profile-email"
                       label={p.labels.email}
                       onChange={(e) =>
@@ -819,7 +819,7 @@ function ProfileContent() {
 
                 {activeTab === "preferences" && (
                   <div className="space-y-4">
-                    <CheckoutFormSelectField
+                    <FormSelectField
                       id="modal-profile-traveler"
                       label={p.modal.travelerType}
                       onChange={(e) =>
@@ -837,9 +837,9 @@ function ProfileContent() {
                       <option value="group">{tt.group}</option>
                       <option value="honeymoon">{tt.honeymoon}</option>
                       <option value="paws">{tt.paws}</option>
-                    </CheckoutFormSelectField>
+                    </FormSelectField>
 
-                    <CheckoutFormField
+                    <FormField
                       id="modal-profile-interests"
                       label={p.modal.interests}
                       onChange={(e) =>
@@ -856,7 +856,7 @@ function ProfileContent() {
                       value={formData.interests.filter((i) => i).join(", ")}
                     />
 
-                    <CheckoutFormField
+                    <FormField
                       id="modal-profile-dislikes"
                       label={p.modal.dislikes}
                       onChange={(e) =>
@@ -877,7 +877,7 @@ function ProfileContent() {
 
                 {activeTab === "security" && (
                   <div className="space-y-4">
-                    <CheckoutFormField
+                    <FormField
                       autoComplete="current-password"
                       id="modal-profile-current-password"
                       label={p.modal.currentPassword}
@@ -892,7 +892,7 @@ function ProfileContent() {
                       value={formData.currentPassword}
                     />
 
-                    <CheckoutFormField
+                    <FormField
                       autoComplete="new-password"
                       id="modal-profile-new-password"
                       label={p.modal.newPassword}
@@ -907,7 +907,7 @@ function ProfileContent() {
                       value={formData.newPassword}
                     />
 
-                    <CheckoutFormField
+                    <FormField
                       autoComplete="new-password"
                       id="modal-profile-confirm-password"
                       label={p.modal.confirmPassword}

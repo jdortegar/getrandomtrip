@@ -24,7 +24,8 @@
     "dashboard": "Bitácoras de Viajes",
     "editProfile": "Editar perfil",
     "signOut": "Cerrar sesión",
-    "tripperOs": "Tripper OS"
+    "tripperOs": "Tripper OS",
+    "adminDashboard": "Panel de Admin"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -56,7 +57,10 @@
   },
   "home": {
     "hero": {
-      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "branding": {
+        "repeatText": "Repeat",
+        "text": "WONDER • WANDER"
+      },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
@@ -128,8 +132,15 @@
       "eyebrow": "Dale forma a tu aventura",
       "subtitle": "Encuentra el punto de partida perfecto para tu próximo viaje.",
       "tabs": [
-        { "id": "byTraveller", "label": "Por Viajero" },
-        { "id": "topTrippers", "label": "Top Trippers", "href": "/trippers" }
+        {
+          "id": "byTraveller",
+          "label": "Por Viajero"
+        },
+        {
+          "id": "topTrippers",
+          "label": "Top Trippers",
+          "href": "/trippers"
+        }
       ],
       "title": "Puntos de Partida",
       "travelerTypes": [
@@ -138,7 +149,11 @@
           "title": "En Pareja",
           "description": "Escapadas románticas."
         },
-        { "key": "solo", "title": "Solo", "description": "Un viaje único." },
+        {
+          "key": "solo",
+          "title": "Solo",
+          "description": "Un viaje único."
+        },
         {
           "key": "family",
           "title": "En Familia",
@@ -182,7 +197,10 @@
   },
   "experiences": {
     "hero": {
-      "branding": { "repeatText": "Repeat", "text": "WONDER • WANDER" },
+      "branding": {
+        "repeatText": "Repeat",
+        "text": "WONDER • WANDER"
+      },
       "fallbackImage": "/images/bg-playa-mexico.jpg",
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
@@ -388,7 +406,10 @@
         "accommodationType": {
           "label": "Tipo de alojamiento",
           "options": [
-            { "key": "any", "label": "Indistinto" },
+            {
+              "key": "any",
+              "label": "Indistinto"
+            },
             {
               "key": "hotel-style",
               "label": "Hotel Style",
@@ -419,46 +440,106 @@
         "arrivePref": {
           "label": "Llegada",
           "options": [
-            { "key": "any", "label": "Indistinto" },
-            { "key": "afternoon", "label": "Tarde" },
-            { "key": "morning", "label": "Mañana" },
-            { "key": "night", "label": "Noche" }
+            {
+              "key": "any",
+              "label": "Indistinto"
+            },
+            {
+              "key": "afternoon",
+              "label": "Tarde"
+            },
+            {
+              "key": "morning",
+              "label": "Mañana"
+            },
+            {
+              "key": "night",
+              "label": "Noche"
+            }
           ]
         },
         "climate": {
           "label": "Clima",
           "options": [
-            { "key": "any", "label": "Indistinto" },
-            { "key": "cold", "label": "Frío" },
-            { "key": "mild", "label": "Templado" },
-            { "key": "warm", "label": "Cálido" }
+            {
+              "key": "any",
+              "label": "Indistinto"
+            },
+            {
+              "key": "cold",
+              "label": "Frío"
+            },
+            {
+              "key": "mild",
+              "label": "Templado"
+            },
+            {
+              "key": "warm",
+              "label": "Cálido"
+            }
           ]
         },
         "departPref": {
           "label": "Salida",
           "options": [
-            { "key": "any", "label": "Indistinto" },
-            { "key": "afternoon", "label": "Tarde" },
-            { "key": "morning", "label": "Mañana" },
-            { "key": "night", "label": "Noche" }
+            {
+              "key": "any",
+              "label": "Indistinto"
+            },
+            {
+              "key": "afternoon",
+              "label": "Tarde"
+            },
+            {
+              "key": "morning",
+              "label": "Mañana"
+            },
+            {
+              "key": "night",
+              "label": "Noche"
+            }
           ]
         },
         "maxTravelTime": {
           "label": "Tiempo máximo de viaje",
           "options": [
-            { "key": "no-limit", "label": "Sin límite" },
-            { "key": "3h", "label": "Hasta 3h" },
-            { "key": "5h", "label": "Hasta 5h" },
-            { "key": "8h", "label": "Hasta 8h" }
+            {
+              "key": "no-limit",
+              "label": "Sin límite"
+            },
+            {
+              "key": "3h",
+              "label": "Hasta 3h"
+            },
+            {
+              "key": "5h",
+              "label": "Hasta 5h"
+            },
+            {
+              "key": "8h",
+              "label": "Hasta 8h"
+            }
           ]
         },
         "transport": {
           "label": "Transporte",
           "options": [
-            { "key": "bus", "label": "Bus" },
-            { "key": "plane", "label": "Avión" },
-            { "key": "ship", "label": "Barco/Crucero" },
-            { "key": "train", "label": "Tren" }
+            {
+              "key": "bus",
+              "label": "Bus"
+            },
+            {
+              "key": "plane",
+              "label": "Avión"
+            },
+            {
+              "key": "ship",
+              "label": "Barco/Crucero"
+            },
+            {
+              "key": "train",
+              "label": "Tren"
+            }
           ]
         }
       },
@@ -473,19 +554,142 @@
           "accommodationType": {
             "label": "Tipo de alojamiento",
             "options": [
-              { "key": "any", "label": "Indistinto" },
-              { "key": "hotel-style", "label": "Hotel Style", "tooltip": "Clásico & Confort. Comodidad, limpieza y servicios asegurados las 24 hrs. Ideal si buscas que te cuiden." },
-              { "key": "home-style", "label": "Home Style", "tooltip": "Vivir como local. Apartamentos o casas privadas para tener tu propio ritmo, cocinar y sentirte en casa." },
-              { "key": "nature-escape", "label": "Nature Escape", "tooltip": "Desconexión total. Cabañas o lodges inmersos en la naturaleza, lejos del ruido y cerca del aire puro." },
-              { "key": "hybrid-hub", "label": "Hybrid Hub", "tooltip": "Social & Work. El punto medio entre comunidad, diseño y espacios de co-working. Perfecto para nómadas digitales." },
-              { "key": "glamping", "label": "Glamping", "tooltip": "Aventura Chic. La magia de acampar bajo las estrellas, pero con el confort y estilo de un hotel premium." }
+              {
+                "key": "any",
+                "label": "Indistinto"
+              },
+              {
+                "key": "hotel-style",
+                "label": "Hotel Style",
+                "tooltip": "Clásico & Confort. Comodidad, limpieza y servicios asegurados las 24 hrs. Ideal si buscas que te cuiden."
+              },
+              {
+                "key": "home-style",
+                "label": "Home Style",
+                "tooltip": "Vivir como local. Apartamentos o casas privadas para tener tu propio ritmo, cocinar y sentirte en casa."
+              },
+              {
+                "key": "nature-escape",
+                "label": "Nature Escape",
+                "tooltip": "Desconexión total. Cabañas o lodges inmersos en la naturaleza, lejos del ruido y cerca del aire puro."
+              },
+              {
+                "key": "hybrid-hub",
+                "label": "Hybrid Hub",
+                "tooltip": "Social & Work. El punto medio entre comunidad, diseño y espacios de co-working. Perfecto para nómadas digitales."
+              },
+              {
+                "key": "glamping",
+                "label": "Glamping",
+                "tooltip": "Aventura Chic. La magia de acampar bajo las estrellas, pero con el confort y estilo de un hotel premium."
+              }
             ]
           },
-          "arrivePref": { "label": "Llegada", "options": [{ "key": "any", "label": "Indistinto" }, { "key": "afternoon", "label": "Tarde" }, { "key": "morning", "label": "Mañana" }, { "key": "night", "label": "Noche" }] },
-          "climate": { "label": "Clima", "options": [{ "key": "any", "label": "Indistinto" }, { "key": "cold", "label": "Frío" }, { "key": "mild", "label": "Templado" }, { "key": "warm", "label": "Cálido" }] },
-          "departPref": { "label": "Salida", "options": [{ "key": "any", "label": "Indistinto" }, { "key": "afternoon", "label": "Tarde" }, { "key": "morning", "label": "Mañana" }, { "key": "night", "label": "Noche" }] },
-          "maxTravelTime": { "label": "Tiempo máximo de viaje", "options": [{ "key": "no-limit", "label": "Sin límite" }, { "key": "3h", "label": "Hasta 3h" }, { "key": "5h", "label": "Hasta 5h" }, { "key": "8h", "label": "Hasta 8h" }] },
-          "transport": { "label": "Transporte", "options": [{ "key": "bus", "label": "Bus" }, { "key": "plane", "label": "Avión" }, { "key": "ship", "label": "Barco/Crucero" }, { "key": "train", "label": "Tren" }] }
+          "arrivePref": {
+            "label": "Llegada",
+            "options": [
+              {
+                "key": "any",
+                "label": "Indistinto"
+              },
+              {
+                "key": "afternoon",
+                "label": "Tarde"
+              },
+              {
+                "key": "morning",
+                "label": "Mañana"
+              },
+              {
+                "key": "night",
+                "label": "Noche"
+              }
+            ]
+          },
+          "climate": {
+            "label": "Clima",
+            "options": [
+              {
+                "key": "any",
+                "label": "Indistinto"
+              },
+              {
+                "key": "cold",
+                "label": "Frío"
+              },
+              {
+                "key": "mild",
+                "label": "Templado"
+              },
+              {
+                "key": "warm",
+                "label": "Cálido"
+              }
+            ]
+          },
+          "departPref": {
+            "label": "Salida",
+            "options": [
+              {
+                "key": "any",
+                "label": "Indistinto"
+              },
+              {
+                "key": "afternoon",
+                "label": "Tarde"
+              },
+              {
+                "key": "morning",
+                "label": "Mañana"
+              },
+              {
+                "key": "night",
+                "label": "Noche"
+              }
+            ]
+          },
+          "maxTravelTime": {
+            "label": "Tiempo máximo de viaje",
+            "options": [
+              {
+                "key": "no-limit",
+                "label": "Sin límite"
+              },
+              {
+                "key": "3h",
+                "label": "Hasta 3h"
+              },
+              {
+                "key": "5h",
+                "label": "Hasta 5h"
+              },
+              {
+                "key": "8h",
+                "label": "Hasta 8h"
+              }
+            ]
+          },
+          "transport": {
+            "label": "Transporte",
+            "options": [
+              {
+                "key": "bus",
+                "label": "Bus"
+              },
+              {
+                "key": "plane",
+                "label": "Avión"
+              },
+              {
+                "key": "ship",
+                "label": "Barco/Crucero"
+              },
+              {
+                "key": "train",
+                "label": "Tren"
+              }
+            ]
+          }
         },
         "avoidSearchModal": {
           "addButton": "Agregar",
@@ -1638,7 +1842,11 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos un destino; vendemos un resultado emocional. Nuestra misión es liberar tu mente de la parálisis por análisis y guiarte hacia estados como asombro, calma o conexión.",
       "p2": "Lo llamamos Serendipia Diseñada: entornos seguros y meticulosamente planificados que se sienten espontáneos y transformadores. Renunciás al control logístico para ganar libertad verdadera.",
-      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
+      "pills": [
+        "Brief emocional",
+        "Diseño invisible",
+        "Sorpresa con red"
+      ],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {
@@ -1673,7 +1881,10 @@
           "value": "55%+",
           "label": "Adopción de upsells (bienestar, experiencias)."
         },
-        { "value": "20%+", "label": "Tasa de recompra objetivo." }
+        {
+          "value": "20%+",
+          "label": "Tasa de recompra objetivo."
+        }
       ],
       "sectionTitle": "Confianza en números"
     },

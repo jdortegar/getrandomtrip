@@ -41,7 +41,7 @@ import {
 } from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import { Button } from "@/components/ui/Button";
-import { CheckoutFormField } from "@/components/ui/CheckoutFormField";
+import { FormField } from "@/components/ui/FormField";
 import { usePayment } from "@/hooks/usePayment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "react-toastify";
@@ -159,7 +159,7 @@ interface CheckoutIconDetailRow {
   valueLayout?: "chips" | "default";
 }
 
-interface CheckoutFormFields {
+interface FormFields {
   city: string;
   country: string;
   name: string;
@@ -209,7 +209,7 @@ function CheckoutContent() {
   const [trip, setTrip] = useState<TripFromApi | null>(null);
   const [tripError, setTripError] = useState<string | null>(null);
   const [tripLoading, setTripLoading] = useState(true);
-  const [formData, setFormData] = useState<CheckoutFormFields>({
+  const [formData, setFormData] = useState<FormFields>({
     city: "",
     country: "",
     name: "",
@@ -237,7 +237,7 @@ function CheckoutContent() {
     }
   }, [session, status]);
 
-  function handleChange(field: keyof CheckoutFormFields, value: string) {
+  function handleChange(field: keyof FormFields, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -852,7 +852,7 @@ function CheckoutContent() {
               </h2>
               <div className="space-y-4">
                 <div className="flex flex-col gap-2">
-                  <CheckoutFormField
+                  <FormField
                     className="disabled:cursor-not-allowed disabled:opacity-80 text-lg"
                     disabled
                     id="email"
@@ -866,7 +866,7 @@ function CheckoutContent() {
                   </p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <CheckoutFormField
+                  <FormField
                     id="name"
                     label={checkoutCopy.contactNameLabel}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -874,7 +874,7 @@ function CheckoutContent() {
                     type="text"
                     value={formData.name}
                   />
-                  <CheckoutFormField
+                  <FormField
                     id="phone"
                     label={checkoutCopy.contactPhoneLabel}
                     onChange={(e) => handleChange("phone", e.target.value)}
@@ -884,7 +884,7 @@ function CheckoutContent() {
                   />
                 </div>
 
-                <CheckoutFormField
+                <FormField
                   id="street"
                   label={checkoutCopy.contactStreetLabel}
                   onChange={(e) => handleChange("street", e.target.value)}
@@ -893,7 +893,7 @@ function CheckoutContent() {
                   value={formData.street}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <CheckoutFormField
+                  <FormField
                     id="city"
                     label={checkoutCopy.contactCityLabel}
                     onChange={(e) => handleChange("city", e.target.value)}
@@ -901,7 +901,7 @@ function CheckoutContent() {
                     type="text"
                     value={formData.city}
                   />
-                  <CheckoutFormField
+                  <FormField
                     id="state"
                     label={checkoutCopy.contactStateLabel}
                     onChange={(e) => handleChange("state", e.target.value)}
@@ -911,7 +911,7 @@ function CheckoutContent() {
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <CheckoutFormField
+                  <FormField
                     id="zipCode"
                     label={checkoutCopy.contactZipCodeLabel}
                     onChange={(e) => handleChange("zipCode", e.target.value)}
@@ -919,7 +919,7 @@ function CheckoutContent() {
                     type="text"
                     value={formData.zipCode}
                   />
-                  <CheckoutFormField
+                  <FormField
                     id="country"
                     label={checkoutCopy.contactCountryLabel}
                     onChange={(e) => handleChange("country", e.target.value)}
