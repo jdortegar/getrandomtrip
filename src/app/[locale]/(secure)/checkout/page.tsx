@@ -41,6 +41,7 @@ import {
 } from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import { Button } from "@/components/ui/Button";
+import { CheckoutFormField } from "@/components/ui/CheckoutFormField";
 import { usePayment } from "@/hooks/usePayment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "react-toastify";
@@ -51,9 +52,6 @@ import { cn } from "@/lib/utils";
 import { pickCheckoutTrip } from "@/lib/helpers/checkout-trip";
 
 const usd = (n: number) => `${Math.round(n)}`;
-
-const checkoutFormFieldClassName =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-lg";
 
 function normalizeLevelForCatalog(raw?: string | null): string | undefined {
   if (!raw) return undefined;
@@ -854,19 +852,11 @@ function CheckoutContent() {
               </h2>
               <div className="space-y-4">
                 <div className="flex flex-col gap-2">
-                  <label
-                    className="block font-normal text-gray-600 text-xl"
-                    htmlFor="email"
-                  >
-                    {checkoutCopy.contactEmailLabel}
-                  </label>
-                  <input
-                    className={cn(
-                      checkoutFormFieldClassName,
-                      "disabled:cursor-not-allowed disabled:opacity-80 text-lg",
-                    )}
+                  <CheckoutFormField
+                    className="disabled:cursor-not-allowed disabled:opacity-80 text-lg"
                     disabled
                     id="email"
+                    label={checkoutCopy.contactEmailLabel}
                     readOnly
                     type="email"
                     value={session?.user?.email || ""}
@@ -876,123 +866,67 @@ function CheckoutContent() {
                   </p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className="block font-normal text-gray-600 text-xl"
-                      htmlFor="name"
-                    >
-                      {checkoutCopy.contactNameLabel}
-                    </label>
-                    <input
-                      className={checkoutFormFieldClassName}
-                      id="name"
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      required
-                      type="text"
-                      value={formData.name}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className="block font-normal text-gray-600 text-xl"
-                      htmlFor="phone"
-                    >
-                      {checkoutCopy.contactPhoneLabel}
-                    </label>
-                    <input
-                      className={checkoutFormFieldClassName}
-                      id="phone"
-                      onChange={(e) => handleChange("phone", e.target.value)}
-                      required
-                      type="tel"
-                      value={formData.phone}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label
-                    className="block font-normal text-gray-600 text-xl"
-                    htmlFor="street"
-                  >
-                    {checkoutCopy.contactStreetLabel}
-                  </label>
-                  <input
-                    className={checkoutFormFieldClassName}
-                    id="street"
-                    onChange={(e) => handleChange("street", e.target.value)}
+                  <CheckoutFormField
+                    id="name"
+                    label={checkoutCopy.contactNameLabel}
+                    onChange={(e) => handleChange("name", e.target.value)}
                     required
                     type="text"
-                    value={formData.street}
+                    value={formData.name}
+                  />
+                  <CheckoutFormField
+                    id="phone"
+                    label={checkoutCopy.contactPhoneLabel}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    required
+                    type="tel"
+                    value={formData.phone}
+                  />
+                </div>
+
+                <CheckoutFormField
+                  id="street"
+                  label={checkoutCopy.contactStreetLabel}
+                  onChange={(e) => handleChange("street", e.target.value)}
+                  required
+                  type="text"
+                  value={formData.street}
+                />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <CheckoutFormField
+                    id="city"
+                    label={checkoutCopy.contactCityLabel}
+                    onChange={(e) => handleChange("city", e.target.value)}
+                    required
+                    type="text"
+                    value={formData.city}
+                  />
+                  <CheckoutFormField
+                    id="state"
+                    label={checkoutCopy.contactStateLabel}
+                    onChange={(e) => handleChange("state", e.target.value)}
+                    required
+                    type="text"
+                    value={formData.state}
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className="block font-normal text-gray-600 text-xl"
-                      htmlFor="city"
-                    >
-                      {checkoutCopy.contactCityLabel}
-                    </label>
-                    <input
-                      className={checkoutFormFieldClassName}
-                      id="city"
-                      onChange={(e) => handleChange("city", e.target.value)}
-                      required
-                      type="text"
-                      value={formData.city}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className="block font-normal text-gray-600 text-xl"
-                      htmlFor="state"
-                    >
-                      {checkoutCopy.contactStateLabel}
-                    </label>
-                    <input
-                      className={checkoutFormFieldClassName}
-                      id="state"
-                      onChange={(e) => handleChange("state", e.target.value)}
-                      required
-                      type="text"
-                      value={formData.state}
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className="block font-normal text-gray-600 text-xl"
-                      htmlFor="zipCode"
-                    >
-                      {checkoutCopy.contactZipCodeLabel}
-                    </label>
-                    <input
-                      className={checkoutFormFieldClassName}
-                      id="zipCode"
-                      onChange={(e) => handleChange("zipCode", e.target.value)}
-                      required
-                      type="text"
-                      value={formData.zipCode}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className="block font-normal text-gray-600 text-xl"
-                      htmlFor="country"
-                    >
-                      {checkoutCopy.contactCountryLabel}
-                    </label>
-                    <input
-                      className={checkoutFormFieldClassName}
-                      id="country"
-                      onChange={(e) => handleChange("country", e.target.value)}
-                      required
-                      type="text"
-                      value={formData.country}
-                    />
-                  </div>
+                  <CheckoutFormField
+                    id="zipCode"
+                    label={checkoutCopy.contactZipCodeLabel}
+                    onChange={(e) => handleChange("zipCode", e.target.value)}
+                    required
+                    type="text"
+                    value={formData.zipCode}
+                  />
+                  <CheckoutFormField
+                    id="country"
+                    label={checkoutCopy.contactCountryLabel}
+                    onChange={(e) => handleChange("country", e.target.value)}
+                    required
+                    type="text"
+                    value={formData.country}
+                  />
                 </div>
               </div>
 

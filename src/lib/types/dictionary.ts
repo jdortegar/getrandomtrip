@@ -2,6 +2,34 @@
 // Dictionary type – keep in sync with dictionaries/en.json and es.json
 // ============================================================================
 
+export interface LegalDocumentSection {
+  listIntro?: string;
+  listItems?: string[];
+  paragraphs?: string[];
+  title: string;
+}
+
+export interface LegalDocumentDict {
+  contactBlock?: {
+    after: string;
+    before: string;
+    linkLabel: string;
+    title: string;
+  };
+  hero: {
+    description: string;
+    eyebrow: string;
+    title: string;
+  };
+  meta: {
+    description: string;
+    openGraphDescription: string;
+    openGraphTitle: string;
+    title: string;
+  };
+  sections: LegalDocumentSection[];
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -487,6 +515,10 @@ export interface MarketingDictionary {
     termsOfService: string;
     travelersTitle: string;
   };
+  legalCookies: LegalDocumentDict;
+  legalPrivacy: LegalDocumentDict;
+  legalRefund: LegalDocumentDict;
+  legalTerms: LegalDocumentDict;
   aboutUs: {
     cta: {
       buttonAriaLabel: string;
@@ -578,5 +610,81 @@ export interface MarketingDictionary {
     subheadline: string;
     submitButton: string;
     successMessage: string;
+  };
+  profile: {
+    actionsAria: string;
+    buttons: {
+      cancel: string;
+      editDetails: string;
+      editProfile: string;
+      modalCancel: string;
+      modalSave: string;
+      saveChanges: string;
+      tripperProfile: string;
+    };
+    header: {
+      badgeActiveTraveler: string;
+      emailFallback: string;
+      userFallback: string;
+    };
+    hero: {
+      subtitle: string;
+      title: string;
+    };
+    labels: {
+      city: string;
+      country: string;
+      dislikes: string;
+      email: string;
+      interests: string;
+      memberSince: string;
+      name: string;
+      phone: string;
+      state: string;
+      street: string;
+      travelerType: string;
+      zipCode: string;
+    };
+    modal: {
+      confirmPassword: string;
+      currentPassword: string;
+      dislikes: string;
+      dislikesPlaceholder: string;
+      emailPlaceholder: string;
+      interests: string;
+      interestsPlaceholder: string;
+      namePlaceholder: string;
+      newPassword: string;
+      passwordPlaceholder: string;
+      tabPersonal: string;
+      tabPreferences: string;
+      tabSecurity: string;
+      title: string;
+      travelerType: string;
+    };
+    personalSectionTitle: string;
+    preferencesSectionTitle: string;
+    toasts: {
+      nameRequired: string;
+      passwordError: string;
+      passwordMinLength: string;
+      passwordUpdated: string;
+      passwordsMismatch: string;
+      personalError: string;
+      personalUpdated: string;
+      preferencesError: string;
+      preferencesUpdated: string;
+      profileUpdated: string;
+      saveError: string;
+    };
+    travelerTypes: {
+      couple: string;
+      family: string;
+      group: string;
+      honeymoon: string;
+      paws: string;
+      selectPlaceholder: string;
+      solo: string;
+    };
   };
 }

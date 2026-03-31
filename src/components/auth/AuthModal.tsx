@@ -14,9 +14,6 @@ interface AuthModalProps {
   isOpen: boolean;
 }
 
-const checkoutFormFieldClassName =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-lg";
-
 export default function AuthModal({
   defaultMode = "login",
   dict,
