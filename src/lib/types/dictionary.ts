@@ -51,6 +51,13 @@ export interface MarketingDictionary {
     signIn: string;
     whatsApp: string;
   };
+  navbarProfile: {
+    ariaOpenProfileMenu: string;
+    dashboard: string;
+    editProfile: string;
+    signOut: string;
+    tripperOs: string;
+  };
   common: {
     siteName: string;
   };

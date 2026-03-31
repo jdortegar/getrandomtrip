@@ -8,7 +8,7 @@ import { useUserStore } from '@/store/slices/userStore';
 import { useScrollDetection } from '@/hooks/useScrollDetection';
 import AuthModal from '@/components/auth/AuthModal';
 import { useAuthModal } from '@/hooks/useAuthModal';
-import { NavbarProfile } from './NavbarProfile';
+import { NavbarProfile, type NavbarProfileLabels } from './NavbarProfile';
 import { useMenuState } from '@/hooks/useMenuState';
 import { NAVBAR_CONSTANTS } from '@/lib/data/constants/navbar';
 import {
@@ -62,6 +62,7 @@ export default function Navbar({
   const languageMenu = useMenuState();
   const currentLocale: Locale = localeProp ?? 'es';
   const nav = dict?.nav;
+  const profileLabels = dict?.navbarProfile as NavbarProfileLabels;
 
   const headerClass =
     'absolute top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out';
@@ -168,9 +169,10 @@ export default function Navbar({
 
             {isAuthed && user && (
               <NavbarProfile
-                user={user}
-                session={session}
+                labels={profileLabels}
                 onSignOut={signOut}
+                session={session}
+                user={user}
               />
             )}
             <div className="relative" ref={languageMenu.menuRef}>

@@ -10,45 +10,40 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 /** Minimal user shape for navbar (all optional). */
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role">>;
 
-// Profile Menu Items
-const PROFILE_MENU_ITEMS = [
-  {
-    href: "/profile",
-    label: "Editar perfil",
-  },
-] as const;
+const PROFILE_MENU_ITEM = {
+  href: "/profile",
+};
 
 const TRIPPER_MENU_ITEM = {
   href: "/dashboard/tripper",
-  label: "Tripper OS",
 };
 
 const DASHBOARD_MENU_ITEM = {
   href: "/dashboard",
-  label: "Bitácoras de Viajes",
 };
 
+export interface NavbarProfileLabels {
+  ariaOpenProfileMenu: string;
+  dashboard: string;
+  editProfile: string;
+  signOut: string;
+  tripperOs: string;
+}
+
 interface NavbarProfileProps {
-  user: NavbarUser;
-  session: any;
+  labels: NavbarProfileLabels;
   onSignOut: () => void;
+  session: any;
+  user: NavbarUser;
 }
 
 export function NavbarProfile({
-  user,
-  session,
+  labels,
   onSignOut,
+  session,
+  user,
 }: NavbarProfileProps) {
   const { isOpen, toggle, close, menuRef } = useMenuState();
-
-  // Normalize role - handle both uppercase (DB) and lowercase (store) formats
-  const normalizeRole = (role: string | undefined): string | null => {
-    if (!role) return null;
-    return role.toLowerCase();
-  };
-
-  const userRole = normalizeRole((session?.user as any)?.role || user?.role);
-  const isTripper = userRole === "tripper";
 
   const handleSignOut = () => {
     if (session) {
@@ -62,11 +57,11 @@ export function NavbarProfile({
   return (
     <div className="relative" ref={menuRef}>
       <button
-        aria-label="Abrir menú de perfil"
+        aria-label={labels.ariaOpenProfileMenu}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        onClick={toggle}
         className="p-1 rounded-full hover:bg-white/10 flex items-center justify-center"
+        onClick={toggle}
       >
         <UserAvatar height={32} width={32} />
         <ChevronDown size={16} className="ml-1" />
@@ -77,47 +72,40 @@ export function NavbarProfile({
           role="menu"
           className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
         >
-          {PROFILE_MENU_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              role="menuitem"
-              href={item.href}
-              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-              onClick={close}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <Link
+            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+            href={PROFILE_MENU_ITEM.href}
+            onClick={close}
+            role="menuitem"
+          >
+            {labels.editProfile}
+          </Link>
 
-          {/* Show dashboard link - role-aware */}
-          {isTripper ? (
-            <Link
-              role="menuitem"
-              href={TRIPPER_MENU_ITEM.href}
-              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-              onClick={close}
-            >
-              {TRIPPER_MENU_ITEM.label}
-            </Link>
-          ) : (
-            <Link
-              role="menuitem"
-              href={DASHBOARD_MENU_ITEM.href}
-              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-              onClick={close}
-            >
-              {DASHBOARD_MENU_ITEM.label}
-            </Link>
-          )}
+          <Link
+            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+            href={DASHBOARD_MENU_ITEM.href}
+            onClick={close}
+            role="menuitem"
+          >
+            {labels.dashboard}
+          </Link>
+          <Link
+            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+            href={TRIPPER_MENU_ITEM.href}
+            onClick={close}
+            role="menuitem"
+          >
+            {labels.tripperOs}
+          </Link>
 
           <div className="my-1 h-px bg-neutral-200" />
 
           <button
-            role="menuitem"
-            onClick={handleSignOut}
             className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50"
+            onClick={handleSignOut}
+            role="menuitem"
           >
-            <LogOut size={16} /> Cerrar sesión
+            <LogOut size={16} /> {labels.signOut}
           </button>
         </div>
       )}

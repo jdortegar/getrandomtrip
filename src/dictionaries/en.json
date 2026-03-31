@@ -19,6 +19,13 @@
     "signIn": "Sign in",
     "whatsApp": "WhatsApp"
   },
+  "navbarProfile": {
+    "ariaOpenProfileMenu": "Open profile menu",
+    "dashboard": "Travel Logs",
+    "editProfile": "Edit profile",
+    "signOut": "Sign out",
+    "tripperOs": "Tripper OS"
+  },
   "common": {
     "siteName": "Randomtrip"
   },

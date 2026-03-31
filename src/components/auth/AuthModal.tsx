@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, X } from "lucide-react";
+import { CheckoutFormField } from "@/components/ui/CheckoutFormField";
+import { X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface AuthModalProps {
@@ -30,7 +30,6 @@ export default function AuthModal({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
 
   // Handle successful authentication - just close modal and let the page handle the next action
@@ -279,13 +278,11 @@ export default function AuthModal({
             {/* Name field (only for register) */}
             {mode === "register" && (
               <div>
-                <label className="mb-2 block text-lg font-barlow font-medium text-gray-900">
-                  {t?.nameLabel}
-                </label>
-                <Input
+                <CheckoutFormField
                   aria-describedby={error ? "error-message" : undefined}
                   autoComplete="name"
-                  className="h-14 rounded-xl border-neutral-200 bg-white px-5 placeholder:text-neutral-300"
+                  id="auth-name"
+                  label={t?.nameLabel}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t?.namePlaceholder}
                   required
@@ -296,13 +293,11 @@ export default function AuthModal({
             )}
 
             <div>
-              <label className="mb-2 block text-lg font-barlow font-medium text-gray-900">
-                {t?.email}
-              </label>
-              <Input
+              <CheckoutFormField
                 aria-describedby={error ? "error-message" : undefined}
                 autoComplete="email"
-                className="h-14 rounded-lg border-neutral-200 bg-white px-5 placeholder:text-neutral-300"
+                id="auth-email"
+                label={t?.email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t?.emailPlaceholder}
                 required
@@ -312,38 +307,20 @@ export default function AuthModal({
             </div>
 
             <div>
-              <label className="mb-2 block text-lg font-barlow- font-medium text-[#2e3f66]">
-                {t?.password}
-              </label>
-              <div className="relative">
-                <Input
-                  aria-describedby={error ? "error-message" : undefined}
-                  autoComplete={
-                    mode === "register" ? "new-password" : "current-password"
-                  }
-                  className="h-14 rounded-xl border-neutral-200 bg-white px-5 pr-12 placeholder:text-neutral-300"
-                  minLength={6}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 characters + special character"
-                  required
-                  type={isPasswordVisible ? "text" : "password"}
-                  value={password}
-                />
-                <button
-                  aria-label={
-                    isPasswordVisible ? "Hide password" : "Show password"
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-700"
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                  type="button"
-                >
-                  {isPasswordVisible ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
+              <CheckoutFormField
+                aria-describedby={error ? "error-message" : undefined}
+                autoComplete={
+                  mode === "register" ? "new-password" : "current-password"
+                }
+                id="auth-password"
+                label={t?.password}
+                minLength={6}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min. 8 characters + special character"
+                required
+                type="password"
+                value={password}
+              />
             </div>
 
             {mode === "login" && (
@@ -351,7 +328,7 @@ export default function AuthModal({
                 <label className="flex cursor-pointer items-center gap-2 text-md font-light text-[#344266]">
                   <input
                     checked={keepMeLoggedIn}
-                    className="h-5 w-5 accent-cyan-600 border-neutral-200"
+                    className="h-4 w-4 accent-cyan-600 border-neutral-200 cursor-pointer border-2 padding-px"
                     onChange={(event) =>
                       setKeepMeLoggedIn(event.target.checked)
                     }

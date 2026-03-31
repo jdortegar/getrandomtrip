@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { ReactNode } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -22,18 +23,46 @@ export const CheckoutFormField = React.forwardRef<
   { className, id, label, type, ...inputProps },
   ref,
 ) {
+  const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+  const isPasswordField = type === 'password';
+  const resolvedType = isPasswordField
+    ? isPasswordVisible
+      ? 'text'
+      : 'password'
+    : type;
+
   return (
     <div className="flex flex-col gap-2">
       <label className={checkoutLabelClass} htmlFor={id}>
         {label}
       </label>
-      <input
-        className={cn(checkoutControlClass, className)}
-        id={id}
-        ref={ref}
-        type={type}
-        {...inputProps}
-      />
+      <div className="relative">
+        <input
+          className={cn(
+            checkoutControlClass,
+            isPasswordField && 'pr-12',
+            className,
+          )}
+          id={id}
+          ref={ref}
+          type={resolvedType}
+          {...inputProps}
+        />
+        {isPasswordField ? (
+          <button
+            aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors hover:text-neutral-700"
+            onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+            type="button"
+          >
+            {isPasswordVisible ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 });
