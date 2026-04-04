@@ -55,12 +55,12 @@ const honeymoonEs: TravelerTypeData = {
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
         price: 350,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Máx 2 noches',
+            description: '2 noches',
           },
           {
             title: 'Destinos',
@@ -98,12 +98,12 @@ const honeymoonEs: TravelerTypeData = {
         name: 'Modo Explora',
         subtitle: 'Aventura sin límites',
         price: 650,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 4 noches',
+            description: '4 noches',
           },
           {
             title: 'Destinos',
@@ -163,12 +163,12 @@ const honeymoonEs: TravelerTypeData = {
         name: 'Explora+',
         subtitle: 'Experiencia premium',
         price: 1200,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 7 noches',
+            description: '7 noches',
           },
           {
             title: 'Destinos',
@@ -229,12 +229,12 @@ const honeymoonEs: TravelerTypeData = {
         name: 'Bivouac',
         subtitle: 'Aventura sin límites',
         price: 1200,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Hasta 5 noches',
+            description: '5 noches',
           },
           {
             title: 'Destinos',

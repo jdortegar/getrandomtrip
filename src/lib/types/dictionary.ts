@@ -523,6 +523,30 @@ export interface MarketingDictionary {
     termsOfService: string;
     travelersTitle: string;
   };
+  emailSignatures: {
+    copiedToast: string;
+    copyButton: string;
+    copyErrorToast: string;
+    copyOption1AriaLabel: string;
+    copyOption2AriaLabel: string;
+    hero: {
+      description: string;
+      eyebrow: string;
+      title: string;
+    };
+    introParagraphs: string[];
+    meta: {
+      description: string;
+      openGraphDescription: string;
+      openGraphTitle: string;
+      title: string;
+    };
+    option1Description: string;
+    option1Title: string;
+    option2Description: string;
+    option2Title: string;
+    previewHeading: string;
+  };
   legalCookies: LegalDocumentDict;
   legalPrivacy: LegalDocumentDict;
   legalRefund: LegalDocumentDict;

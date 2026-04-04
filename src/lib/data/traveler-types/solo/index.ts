@@ -58,10 +58,10 @@ const soloEs: TravelerTypeData = {
         name: 'Essenza',
         subtitle: 'Lo esencial con estilo',
         price: 450,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
-          { title: 'Duración', description: 'Max. 2 noches (Escapada Fugaz)' },
+          { title: 'Duración', description: '2 noches (Escapada Fugaz)' },
           { title: 'Destinos', description: 'Ciudades Nacionales' },
           {
             title: 'Transporte',
@@ -87,12 +87,12 @@ const soloEs: TravelerTypeData = {
         name: 'Modo Explora',
         subtitle: 'Activo y Flexible',
         price: 650,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max 3 Noches (+Mayor flexibilidad)',
+            description: '3 Noches (+Mayor flexibilidad)',
           },
           {
             title: 'Destinos',
@@ -193,12 +193,12 @@ const soloEs: TravelerTypeData = {
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
         price: 1100,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max 4 Noches ( +Puentes & Feriados)',
+            description: '4 Noches (+Puentes & Feriados)',
           },
           {
             title: 'Destinos',
@@ -335,12 +335,12 @@ const soloEs: TravelerTypeData = {
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
         price: 1550,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max 5 Noches (Sin restricciones)',
+            description: '5 Noches (Sin restricciones)',
           },
           {
             title: 'Destinos',

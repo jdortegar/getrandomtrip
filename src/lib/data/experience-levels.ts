@@ -153,7 +153,7 @@ const BASE_CONTENT: Record<
       subtitle: 'La escapada express',
       maxNights: 2,
       features: [
-        { title: 'Duración', description: 'Max. 2 noches (Escapada Fugaz)' },
+        { title: 'Duración', description: '2 noches (Escapada Fugaz)' },
         { title: 'Destinos', description: 'Destinos Nacionales' },
         {
           title: 'Transporte',
@@ -174,7 +174,7 @@ const BASE_CONTENT: Record<
       subtitle: 'The express escape',
       maxNights: 2,
       features: [
-        { title: 'Duration', description: 'Max. 2 nights (Quick escape)' },
+        { title: 'Duration', description: '2 nights (Quick escape)' },
         { title: 'Destinations', description: 'National destinations' },
         {
           title: 'Transport',
@@ -199,7 +199,7 @@ const BASE_CONTENT: Record<
       features: [
         {
           title: 'Duración',
-          description: 'Max 3 Noches (+Mayor flexibilidad)',
+          description: '3 Noches (+Mayor flexibilidad)',
         },
         {
           title: 'Destinos',
@@ -228,7 +228,7 @@ const BASE_CONTENT: Record<
       subtitle: 'Active and flexible trip',
       maxNights: 3,
       features: [
-        { title: 'Duration', description: 'Max 3 nights (+More flexibility)' },
+        { title: 'Duration', description: '3 nights (+More flexibility)' },
         {
           title: 'Destinations',
           description: 'National+ (Further & regional)',
@@ -260,7 +260,7 @@ const BASE_CONTENT: Record<
       features: [
         {
           title: 'Duración',
-          description: 'Max 4 Noches (+Puentes & Feriados)',
+          description: '4 Noches (+Puentes & Feriados)',
         },
         {
           title: 'Destinos',
@@ -291,7 +291,7 @@ const BASE_CONTENT: Record<
       features: [
         {
           title: 'Duration',
-          description: 'Max 4 nights (+Long weekends & holidays)',
+          description: '4 nights (+Long weekends & holidays)',
         },
         {
           title: 'Destinations',
@@ -324,7 +324,7 @@ const BASE_CONTENT: Record<
       features: [
         {
           title: 'Duración',
-          description: 'Max 5 Noches (Sin restricciones)',
+          description: '5 Noches (Sin restricciones)',
         },
         {
           title: 'Destinos',
@@ -355,7 +355,7 @@ const BASE_CONTENT: Record<
       features: [
         {
           title: 'Duration',
-          description: 'Max 5 nights (No restrictions)',
+          description: '5 nights (No restrictions)',
         },
         {
           title: 'Destinations',

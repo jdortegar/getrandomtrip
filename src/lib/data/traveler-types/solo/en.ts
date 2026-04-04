@@ -54,10 +54,10 @@ export const soloEn: TravelerTypeData = {
         name: 'Essenza',
         subtitle: 'The essentials with style',
         price: 450,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
-          { title: 'Duration', description: 'Max. 2 nights (Quick escape)' },
+          { title: 'Duration', description: '2 nights (Quick escape)' },
           { title: 'Destinations', description: 'Domestic cities' },
           {
             title: 'Transport',
@@ -83,12 +83,12 @@ export const soloEn: TravelerTypeData = {
         name: 'Explora Mode',
         subtitle: 'Active and flexible',
         price: 650,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
           {
             title: 'Duration',
-            description: 'Max 3 nights (+More flexibility)',
+            description: '3 nights (+More flexibility)',
           },
           {
             title: 'Destinations',
@@ -116,12 +116,12 @@ export const soloEn: TravelerTypeData = {
         name: 'Explora+',
         subtitle: 'More layers, more moments',
         price: 1100,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
           {
             title: 'Duration',
-            description: 'Max 4 nights (+Long weekends & holidays)',
+            description: '4 nights (+Long weekends & holidays)',
           },
           {
             title: 'Destinations',
@@ -152,12 +152,12 @@ export const soloEn: TravelerTypeData = {
         name: 'Bivouac',
         subtitle: 'Total disconnection',
         price: 1550,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
           {
             title: 'Duration',
-            description: 'Max 5 nights (No restrictions)',
+            description: '5 nights (No restrictions)',
           },
           {
             title: 'Destinations',

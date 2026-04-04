@@ -147,11 +147,13 @@ export default function LevelCard({
           )}
         />
         <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[250px]:text-lg">
+          {level.priceLabel ? (
+            <span className={cn('leading-none whitespace-nowrap', textColor)}>
+              {level.priceLabel}
+            </span>
+          ) : null}
           <span className={cn('leading-none whitespace-nowrap', textColor)}>
-            {level.priceLabel}
-          </span>
-          <span className={cn('leading-none whitespace-nowrap', textColor)}>
-            {` ${level.price} USD`}
+            {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
           </span>
           <span
             className={cn(

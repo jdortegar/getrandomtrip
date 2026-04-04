@@ -55,10 +55,10 @@ export const coupleEn: TravelerTypeData = {
         name: 'Essenza',
         subtitle: 'The express getaway',
         price: 350,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
-          { title: 'Duration', description: 'Max. 2 nights (Quick escape)' },
+          { title: 'Duration', description: '2 nights (Quick escape)' },
           { title: 'Destinations', description: 'Domestic destinations' },
           {
             title: 'Transport',
@@ -84,12 +84,12 @@ export const coupleEn: TravelerTypeData = {
         name: 'Explora Mode',
         subtitle: 'Active and flexible trip',
         price: 550,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
           {
             title: 'Duration',
-            description: 'Max 3 nights (+More flexibility)',
+            description: '3 nights (+More flexibility)',
           },
           {
             title: 'Destinations',
@@ -120,12 +120,12 @@ export const coupleEn: TravelerTypeData = {
         name: 'Explora+',
         subtitle: 'More layers, more moments',
         price: 850,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
           {
             title: 'Duration',
-            description: 'Max 4 nights (+Long weekends & holidays)',
+            description: '4 nights (+Long weekends & holidays)',
           },
           {
             title: 'Destinations',
@@ -156,12 +156,12 @@ export const coupleEn: TravelerTypeData = {
         name: 'Bivouac',
         subtitle: 'Total disconnection',
         price: 1200,
-        priceLabel: 'Up to',
+        priceLabel: '',
         priceFootnote: 'per person',
         features: [
           {
             title: 'Duration',
-            description: 'Max 5 nights (No restrictions)',
+            description: '5 nights (No restrictions)',
           },
           {
             title: 'Destinations',

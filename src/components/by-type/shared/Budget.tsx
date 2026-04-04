@@ -59,7 +59,9 @@ const LevelCard = ({
         {/* Pricing */}
         <div className="text-center h-[60px] items-center flex justify-center">
           <div className="font-bold text-xl text-primary-700">
-            {level.priceLabel}
+            {level.priceLabel
+              ? `${level.priceLabel} ${level.price} USD`
+              : `${level.price} USD`}
           </div>
         </div>
 

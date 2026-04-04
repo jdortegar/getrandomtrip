@@ -21,7 +21,7 @@ export const SOLO_TIERS: Tier[] = [
     title: '🌱 Essenza — Lo esencial con estilo',
     price: '455 USD · por persona',
     bullets: [
-      'Duración: Máx 2 noches',
+      'Duración: 2 noches',
       'Transporte: Low cost (buses o vuelos off-peak). Selección de asiento, carry-on y bodega no incluidos.',
       'Fechas: Menor disponibilidad, con restricciones y bloqueos.',
       'Alojamiento: Midscale (3★ o equivalentes).',
@@ -35,7 +35,7 @@ export const SOLO_TIERS: Tier[] = [
     title: '🌿 Modo Explora — Activo y flexible',
     price: '650 USD · por persona',
     bullets: [
-      'Duración: Hasta 3 noches',
+      'Duración: 3 noches',
       'Transporte: Multimodal, horarios flexibles. Selección de asiento, carry-on y bodega no incluidos.',
       'Fechas: Mayor disponibilidad; algunos bloqueos en feriados/puentes.',
       'Alojamiento: Midscale – Upper Midscale.',
@@ -49,7 +49,7 @@ export const SOLO_TIERS: Tier[] = [
     title: '💫 Explora+ — Más capas, más momentos',
     price: '1105 USD · por persona',
     bullets: [
-      'Duración: Hasta 4 noches',
+      'Duración: 4 noches',
       'Transporte: Multimodal. Carry-on incluido; selección de asiento y bodega no incluidos.',
       'Fechas: Alta disponibilidad, incluso en feriados/puentes.',
       'Alojamiento: Upscale asegurado.',
@@ -63,7 +63,7 @@ export const SOLO_TIERS: Tier[] = [
     title: '🔥 Bivouac — Curaduría artesanal',
     price: '1560 USD · por persona',
     bullets: [
-      'Duración: Hasta 5 noches',
+      'Duración: 5 noches',
       'Transporte: Multimodal. Carry-on incluido; selección de asiento/bodega opcional.',
       'Fechas: Sin bloqueos.',
       'Alojamiento: Upper Upscale (boutique, diseño, stays con alma).',
@@ -95,8 +95,8 @@ export const TRIPPERS_TIERS: Tier[] = [
     cta: 'Elige Essenza →',
     testid: 'cta-tier-essenza',
     bullets: [
-      'Hasta 350 USD · por persona',
-      'Duración: Máx 2 noches',
+      '350 USD · por persona',
+      'Duración: 2 noches',
       'Transporte: Low cost (buses o vuelos off-peak).',
       'Alojamiento: Midscale (3★ o equivalentes).',
       'Extras: Guía esencial del destino con recomendaciones locales.',
@@ -109,8 +109,8 @@ export const TRIPPERS_TIERS: Tier[] = [
     cta: 'Elige Explora →',
     testid: 'cta-tier-explora',
     bullets: [
-      'Hasta 500 USD · por persona',
-      'Duración: Hasta 3 noches',
+      '500 USD · por persona',
+      'Duración: 3 noches',
       'Transporte: Multimodal, horarios flexibles.',
       'Alojamiento: Mid-to-Upscale.',
       'Extras: Guía Randomtrip Decode con pistas para descubrir a tu ritmo.',
@@ -123,8 +123,8 @@ export const TRIPPERS_TIERS: Tier[] = [
     cta: 'Elige Explora+ →',
     testid: 'cta-tier-exploraplus',
     bullets: [
-      'Hasta 850 USD · por persona',
-      'Duración: Hasta 4 noches',
+      '850 USD · por persona',
+      'Duración: 4 noches',
       'Transporte: Multimodal. Carry-on incluido.',
       'Alojamiento: Upscale asegurado.',
       'Extras: Decode personalizado + 1 experiencia especial incluida.',
@@ -137,8 +137,8 @@ export const TRIPPERS_TIERS: Tier[] = [
     cta: 'Elige Bivouac →',
     testid: 'cta-tier-bivouac',
     bullets: [
-      'Hasta 1200 USD · por persona',
-      'Duración: Hasta 5 noches',
+      '1200 USD · por persona',
+      'Duración: 5 noches',
       'Transporte: Multimodal. Carry-on incluido.',
       'Alojamiento: Upper Upscale (boutique, diseño, experiencias locales).',
       'Extras: Concierge Advisor + 1 experiencia premium + perks exclusivos.',
