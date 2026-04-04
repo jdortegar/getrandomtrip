@@ -2015,5 +2015,32 @@
       "saveError": "Error al guardar los datos",
       "profileUpdated": "Perfil actualizado correctamente"
     }
+  },
+  "emailSignatures": {
+    "meta": {
+      "title": "Firmas de correo — Randomtrip",
+      "description": "Previsualiza y copia firmas HTML para tu cliente de correo.",
+      "openGraphTitle": "Firmas de correo — Randomtrip",
+      "openGraphDescription": "Previsualiza y copia firmas HTML para tu cliente de correo."
+    },
+    "hero": {
+      "eyebrow": "Marca",
+      "title": "Firmas de correo",
+      "description": "Elige un diseño, copia el HTML y pégalo en la configuración de firma de tu proveedor. Sustituye el nombre, puesto, correo y teléfono de ejemplo por los tuyos antes de enviar."
+    },
+    "introParagraphs": [
+      "Las tipografías coinciden con el sitio (Barlow Condensed + Barlow) cuando el cliente las admite; muchos usarán Arial o Helvetica.",
+      "El botón Copiar guarda HTML pensado para firmas enriquecidas. Las imágenes usan URLs absolutas de este sitio para que se vean en destino."
+    ],
+    "option1Title": "Opción 1 — Fondo claro con logo vectorial",
+    "option1Description": "Nombre, puesto con regla amarilla, línea de contacto y marca email-sign en SVG.",
+    "option2Title": "Opción 2 — Franja oscura de contacto con logo raster",
+    "option2Description": "Mismo nombre y puesto que la opción 1; contactos y logo sobre tinta de marca (#1b2b36) con texto blanco.",
+    "copyButton": "Copiar HTML",
+    "copyOption1AriaLabel": "Copiar HTML de la firma opción 1 al portapapeles",
+    "copyOption2AriaLabel": "Copiar HTML de la firma opción 2 al portapapeles",
+    "copiedToast": "HTML de la firma copiado",
+    "copyErrorToast": "No se pudo copiar — prueba a seleccionar la vista previa y copiar a mano",
+    "previewHeading": "Vista previa"
   }
 }

@@ -55,12 +55,12 @@ const groupEs: TravelerTypeData = {
         name: 'Essenza',
         subtitle: 'Lo esencial, compartido',
         price: 350,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max. 2 noches (Escapada Fugaz)',
+            description: '2 noches (Escapada Fugaz)',
           },
           {
             title: 'Destinos',
@@ -91,12 +91,12 @@ const groupEs: TravelerTypeData = {
         name: 'Modo Explora',
         subtitle: 'Activo y flexible, en equipo',
         price: 550,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max 3 Noches (+Mayor flexibilidad)',
+            description: '3 Noches (+Mayor flexibilidad)',
           },
           {
             title: 'Destinos',
@@ -150,12 +150,12 @@ const groupEs: TravelerTypeData = {
         name: 'Explora+',
         subtitle: 'Más capas, más momentos',
         price: 850,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max 4 Noches (+Puentes & Feriados)',
+            description: '4 Noches (+Puentes & Feriados)',
           },
           {
             title: 'Destinos',
@@ -210,12 +210,12 @@ const groupEs: TravelerTypeData = {
         name: 'Bivouac',
         subtitle: 'Desconexión Total',
         price: 1200,
-        priceLabel: 'Hasta',
+        priceLabel: '',
         priceFootnote: 'por persona',
         features: [
           {
             title: 'Duración',
-            description: 'Max 5 Noches (Sin restricciones)',
+            description: '5 Noches (Sin restricciones)',
           },
           {
             title: 'Destinos',

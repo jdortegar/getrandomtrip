@@ -149,7 +149,7 @@ export function getPlannerLevelsForType(
       subtitle: content.subtitle,
       maxNights: content.maxNights,
       price,
-      priceLabel: isLast ? 'Desde' : 'Hasta',
+      priceLabel: isLast ? 'Desde' : '',
       priceFootnote: 'por persona',
       features: content.features,
       closingLine: content.closingLine,
@@ -217,7 +217,7 @@ export function getTiersForDisplay(
       tagline: level.description,
       price: isLast
         ? `Desde ${level.price} USD · por persona`
-        : `Hasta ${level.price} USD · por persona`,
+        : `${level.price} USD · por persona`,
       bullets,
       cta: content?.ctaLabel ?? `Elige ${level.name} →`,
       testid: level.id ? `cta-tier-${level.id.replace(/-/g, '')}` : undefined,

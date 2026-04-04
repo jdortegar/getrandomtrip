@@ -2015,5 +2015,32 @@
       "saveError": "Could not save your data",
       "profileUpdated": "Profile updated successfully"
     }
+  },
+  "emailSignatures": {
+    "meta": {
+      "title": "Email signatures — Randomtrip",
+      "description": "Preview and copy HTML signatures for your email client.",
+      "openGraphTitle": "Email signatures — Randomtrip",
+      "openGraphDescription": "Preview and copy HTML signatures for your email client."
+    },
+    "hero": {
+      "eyebrow": "Brand",
+      "title": "Email signatures",
+      "description": "Choose a layout, copy the HTML, and paste it into your provider’s signature settings. Replace the sample name, role, email, and phone with your own before sending mail."
+    },
+    "introParagraphs": [
+      "Fonts match the site (Barlow Condensed + Barlow) where supported; many clients fall back to Arial or Helvetica.",
+      "The copy button saves HTML meant for rich signatures. Pasted images use absolute URLs from this site so they load for recipients."
+    ],
+    "option1Title": "Option 1 — Light layout with vector logo",
+    "option1Description": "Name, role with yellow rule, contact line, and the email-sign SVG mark.",
+    "option2Title": "Option 2 — Dark contact strip with raster logo",
+    "option2Description": "Same name and role as option 1; contacts and logo sit on brand ink (#1b2b36) with white type.",
+    "copyButton": "Copy HTML",
+    "copyOption1AriaLabel": "Copy option 1 signature HTML to clipboard",
+    "copyOption2AriaLabel": "Copy option 2 signature HTML to clipboard",
+    "copiedToast": "Signature HTML copied",
+    "copyErrorToast": "Could not copy — try selecting the preview and copying manually",
+    "previewHeading": "Preview"
   }
 }
