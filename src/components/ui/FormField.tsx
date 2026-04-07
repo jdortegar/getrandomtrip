@@ -5,10 +5,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const formControlClass =
-  'bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-lg';
+  'bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base';
 
 const formLabelClass =
-  'block font-normal text-gray-600 text-xl';
+  'block font-normal text-gray-600 text-base';
 
 export interface FormFieldProps extends Omit<React.ComponentProps<'input'>, 'id'> {
   id: string;

@@ -10,7 +10,7 @@
     "lint": "next lint",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint:fix": "next lint --fix",
-    "test": "echo \"No unit tests configured yet.\" && exit 0",
+    "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:generate": "prisma generate",

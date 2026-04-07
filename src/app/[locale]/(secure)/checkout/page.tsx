@@ -51,7 +51,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 import { pickCheckoutTrip } from "@/lib/helpers/checkout-trip";
 
-const usd = (n: number) => `${Math.round(n)}`;
+const usd = (n: number) => `USD ${Math.round(n)}`;
 
 function normalizeLevelForCatalog(raw?: string | null): string | undefined {
   if (!raw) return undefined;
@@ -651,7 +651,7 @@ function CheckoutContent() {
     "bg-white p-4 rounded-xl shadow-sm",
     "ring-1 ring-gray-100",
   );
-  const checkoutItemTileLabelClass = "font-normal text-gray-500 text-sm";
+  const checkoutItemTileLabelClass = "font-normal text-gray-500 text-base";
   const ratingFormatted =
     selectedTravelTypeInfo?.rating != null
       ? resolvedLocale === "es"
@@ -843,7 +843,7 @@ function CheckoutContent() {
           <div
             className={cn(
               "lg:col-span-1 flex gap-4 bg-white p-5 rounded-2xl shadow-md flex-col",
-              "ring-1 ring-gray-100 sticky top-0",
+              "ring-1 ring-gray-100 lg:sticky lg:top-4",
             )}
           >
             <form className="space-y-8" onSubmit={handleSubmit}>
@@ -853,7 +853,7 @@ function CheckoutContent() {
               <div className="space-y-4">
                 <div className="flex flex-col gap-2">
                   <FormField
-                    className="disabled:cursor-not-allowed disabled:opacity-80 text-lg"
+                    className="disabled:cursor-not-allowed disabled:opacity-80"
                     disabled
                     id="email"
                     label={checkoutCopy.contactEmailLabel}
@@ -861,7 +861,7 @@ function CheckoutContent() {
                     type="email"
                     value={session?.user?.email || ""}
                   />
-                  <p className="mt-1 text-gray-500 text-md">
+                  <p className="mt-1 text-gray-500 text-base">
                     {checkoutCopy.contactEmailHelper}
                   </p>
                 </div>
@@ -945,7 +945,7 @@ function CheckoutContent() {
                   {checkoutCopy.volverButton}
                 </Button>
                 <Button
-                  className="min-w-0 flex-1 text-sm font-normal normal-case"
+                  className="min-w-0 flex-1 "
                   disabled={isProcessing}
                   size="lg"
                   type="submit"
@@ -1070,7 +1070,7 @@ function CheckoutContent() {
                   </p>
                 </div>
                 <p className="text-right font-barlow-condensed font-bold text-gray-900 text-2xl">
-                  {usd(totalPerPax)} USD
+                  {usd(totalPerPax)}
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between">
@@ -1083,7 +1083,7 @@ function CheckoutContent() {
                   </p>
                 </div>
                 <p className="text-right font-barlow-condensed font-bold text-gray-900 text-3xl">
-                  {usd(totalTrip)} USD
+                  {usd(totalTrip)}
                 </p>
               </div>
             </div>
