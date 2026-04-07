@@ -71,7 +71,7 @@ export function CheckoutTravelersSummarySection({
             </p>
             <div className="mt-1 flex items-center gap-2">
               <User aria-hidden className="h-4 w-4 shrink-0 text-gray-600" />
-              <p className="font-medium text-gray-900 text-sm">{summaryLine}</p>
+              <p className="font-medium text-gray-900 text-base">{summaryLine}</p>
             </div>
           </div>
           <ChevronDown aria-hidden className="h-4 w-4 shrink-0 text-gray-400" />
