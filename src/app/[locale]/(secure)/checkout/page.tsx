@@ -35,6 +35,8 @@ import {
 } from "@/lib/helpers/excuse-helper";
 import {
   DEFAULT_PAX_DETAILS,
+  getFixedPaxDetailsForTravelType,
+  isTravelersPartyEditable,
   paxDetailsEquals,
   paxDetailsFromTotalPax,
   parsePaxDetails,
@@ -50,8 +52,20 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 import { pickCheckoutTrip } from "@/lib/helpers/checkout-trip";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
+import { getFiltersCostBreakdown } from "@/lib/pricing";
 
 const usd = (n: number) => `USD ${Math.round(n)}`;
+
+const DEFAULT_CHECKOUT_FILTERS: Filters = {
+  accommodationType: "any",
+  arrivePref: "any",
+  avoidDestinations: [],
+  climate: "any",
+  departPref: "any",
+  maxTravelTime: "no-limit",
+  transport: "plane",
+};
 
 function normalizeLevelForCatalog(raw?: string | null): string | undefined {
   if (!raw) return undefined;
@@ -98,20 +112,6 @@ function formatDatesSummary(
     .replace("{endDay}", String(endDay))
     .replace("{startMonth}", startMonth)
     .replace("{endMonth}", endMonth);
-}
-
-/** Suffix after the last "(" in a filled `checkout.tripTotalCaption`, e.g. "(×2 personas)". */
-function multiplierSuffixFromTripTotalCaption(filled: string): string {
-  const openIdx = filled.lastIndexOf("(");
-  return openIdx >= 0 ? filled.slice(openIdx) : "";
-}
-
-function stripOuterParentheses(value: string): string {
-  const t = value.trim();
-  if (t.length >= 2 && t.startsWith("(") && t.endsWith(")")) {
-    return t.slice(1, -1).trim();
-  }
-  return value;
 }
 
 function getBasePriceFromCatalog(
@@ -162,6 +162,7 @@ interface CheckoutIconDetailRow {
 interface FormFields {
   city: string;
   country: string;
+  idDocument: string;
   name: string;
   phone: string;
   state: string;
@@ -212,6 +213,7 @@ function CheckoutContent() {
   const [formData, setFormData] = useState<FormFields>({
     city: "",
     country: "",
+    idDocument: "",
     name: "",
     phone: "",
     state: "",
@@ -298,6 +300,12 @@ function CheckoutContent() {
 
   useEffect(() => {
     if (!trip?.id) return;
+    const normalizedType = normalizeTripType(trip.type);
+    const fixedParty = getFixedPaxDetailsForTravelType(normalizedType);
+    if (fixedParty) {
+      setPaxDetails(fixedParty);
+      return;
+    }
     const parsed = parsePaxDetails(trip.paxDetails);
     if (parsed) {
       setPaxDetails(parsed);
@@ -312,6 +320,7 @@ function CheckoutContent() {
 
   const logistics = trip ? logisticsFromTrip(trip, checkoutPax) : null;
   const filters = trip ? filtersFromTrip(trip) : null;
+  const filtersResolved = filters ?? DEFAULT_CHECKOUT_FILTERS;
   const addons = {
     selected: Array.isArray(trip?.addons) ? trip!.addons! : [],
   };
@@ -319,7 +328,7 @@ function CheckoutContent() {
     ? getBasePriceFromCatalog(normalizeTripType(trip.type), trip.level) || 0
     : 0;
 
-  const avoidDestinations = filters?.avoidDestinations ?? [];
+  const avoidDestinations = filtersResolved.avoidDestinations ?? [];
 
   const effectiveLogistics = logistics;
 
@@ -328,15 +337,7 @@ function CheckoutContent() {
       addons,
       avoidCount: avoidDestinations.length,
       basePriceUsd,
-      filters: filters ?? {
-        accommodationType: "any",
-        arrivePref: "any",
-        avoidDestinations: [],
-        climate: "any",
-        departPref: "any",
-        maxTravelTime: "no-limit",
-        transport: "plane",
-      },
+      filters: filtersResolved,
       logistics: effectiveLogistics ?? {
         city: "",
         country: "",
@@ -357,7 +358,21 @@ function CheckoutContent() {
   }, [hasTripId, session, isAuthed, status]);
 
   const pax = checkoutPax;
-  const { totalPerPax, totalTrip } = calculateTotals();
+  const filterBreakdown = getFiltersCostBreakdown(
+    filtersResolved,
+    pax,
+    avoidDestinations.length,
+  );
+  const paymentTotals = calculateTotals();
+  const {
+    addonsPerPax,
+    basePerPax,
+    cancelInsurancePerPax,
+    filtersPerPax,
+    totalPerPax,
+    totalTrip,
+  } = paymentTotals;
+  const addonsPerPaxCombined = addonsPerPax + cancelInsurancePerPax;
 
   const travelType =
     trip?.type != null ? normalizeTripType(trip.type) : undefined;
@@ -488,17 +503,24 @@ function CheckoutContent() {
     .map((s) => ADDONS.find((a) => a.id === s.id))
     .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
 
-  const backToJourneyHref = `/${locale}/journey`;
+  const backToJourneyHref = pathForLocale(resolvedLocale, "/journey");
 
   async function persistCheckoutTravelers(nextDetails: PaxDetails) {
     if (!trip?.id) {
       throw new Error("No trip");
     }
-    const nextPax = Math.max(1, nextDetails.adults + nextDetails.minors);
+    const normalizedType = normalizeTripType(trip.type);
+    const fixedParty = getFixedPaxDetailsForTravelType(normalizedType);
+    const effectiveDetails = fixedParty ?? nextDetails;
+    const nextPax = Math.max(
+      1,
+      effectiveDetails.adults + effectiveDetails.minors,
+    );
     const unchanged =
-      nextPax === trip.pax && paxDetailsEquals(nextDetails, trip.paxDetails);
+      nextPax === trip.pax &&
+      paxDetailsEquals(effectiveDetails, trip.paxDetails);
     if (unchanged) {
-      setPaxDetails(nextDetails);
+      setPaxDetails(effectiveDetails);
       return;
     }
     const res = await fetch("/api/trip-requests", {
@@ -507,7 +529,7 @@ function CheckoutContent() {
       body: JSON.stringify({
         id: trip.id,
         pax: nextPax,
-        paxDetails: nextDetails,
+        paxDetails: effectiveDetails,
       }),
     });
     if (!res.ok) {
@@ -517,10 +539,10 @@ function CheckoutContent() {
       );
       throw new Error(data.error ?? "persist failed");
     }
-    setPaxDetails(nextDetails);
+    setPaxDetails(effectiveDetails);
     setTrip((prev) =>
       prev && prev.id === trip.id
-        ? { ...prev, pax: nextPax, paxDetails: nextDetails }
+        ? { ...prev, pax: nextPax, paxDetails: effectiveDetails }
         : prev,
     );
   }
@@ -551,6 +573,11 @@ function CheckoutContent() {
       return;
     }
 
+    if (!formData.idDocument.trim()) {
+      toast.error(dict?.journey?.checkout?.errors?.idDocumentRequired);
+      return;
+    }
+
     try {
       const saveRes = await fetch("/api/user/update", {
         body: JSON.stringify({
@@ -559,6 +586,7 @@ function CheckoutContent() {
           address: {
             city: formData.city.trim(),
             country: formData.country.trim(),
+            idDocument: formData.idDocument.trim(),
             state: formData.state.trim(),
             street: formData.street.trim(),
             zipCode: formData.zipCode.trim(),
@@ -644,6 +672,22 @@ function CheckoutContent() {
   const journey = dict.journey;
   const summary = journey.summary;
   const checkoutCopy = journey.checkout;
+  const filterFeeDescription =
+    filterBreakdown.optional === 0
+      ? checkoutCopy.filterFeeLineNone
+      : filterBreakdown.tripTotal === 0
+        ? interpolateTemplate(checkoutCopy.filterFeeLineFirstFree, {
+            optional: String(filterBreakdown.optional),
+          })
+        : interpolateTemplate(checkoutCopy.filterFeeLine, {
+            billable: String(filterBreakdown.billable),
+            optional: String(filterBreakdown.optional),
+            pax: String(pax),
+            unit: String(filterBreakdown.tierUnit),
+          });
+  const filterFeePaxLine = interpolateTemplate(checkoutCopy.filterFeePaxLine, {
+    pax: String(pax),
+  });
   const heroTitle = summary.title;
   const heroDescription = checkoutCopy.formDescription;
 
@@ -670,26 +714,6 @@ function CheckoutContent() {
           )
         : `${startDateParam} — ${nightsNum}`
       : summary?.emptyValue;
-
-  const tripTotalCaptionFilled = checkoutCopy.tripTotalCaption.replace(
-    "{count}",
-    String(pax),
-  );
-  const tripTotalMultiplierOnly = multiplierSuffixFromTripTotalCaption(
-    tripTotalCaptionFilled,
-  );
-  const tripTotalMultiplierPlain = stripOuterParentheses(
-    tripTotalMultiplierOnly,
-  );
-  const tripTotalTitleLine =
-    tripTotalMultiplierOnly.length > 0
-      ? tripTotalCaptionFilled
-          .slice(
-            0,
-            tripTotalCaptionFilled.length - tripTotalMultiplierOnly.length,
-          )
-          .trimEnd()
-      : tripTotalCaptionFilled;
 
   const showExcuseAndRefineDetailRows =
     travelType != null && getHasExcuseStep(travelType, experience ?? undefined);
@@ -882,6 +906,18 @@ function CheckoutContent() {
                     type="tel"
                     value={formData.phone}
                   />
+                  <div className="sm:col-span-2">
+                    <FormField
+                      id="id-document"
+                      label={checkoutCopy.contactIdDocumentLabel}
+                      onChange={(e) =>
+                        handleChange("idDocument", e.target.value)
+                      }
+                      required
+                      type="text"
+                      value={formData.idDocument}
+                    />
+                  </div>
                 </div>
 
                 <FormField
@@ -938,6 +974,7 @@ function CheckoutContent() {
                 <Button
                   className="min-w-0 flex-1 text-sm font-normal normal-case"
                   disabled={isProcessing}
+                  onClick={() => router.back()}
                   size="lg"
                   type="button"
                   variant="ghost"
@@ -947,7 +984,7 @@ function CheckoutContent() {
                 <Button
                   className="min-w-0 flex-1 "
                   disabled={isProcessing}
-                  size="lg"
+                  size="sm"
                   type="submit"
                   variant="default"
                 >
@@ -1053,36 +1090,67 @@ function CheckoutContent() {
               <CheckoutTravelersSummarySection
                 checkoutCopy={checkoutCopy}
                 onSaveTravelers={persistCheckoutTravelers}
+                partyEditable={isTravelersPartyEditable(travelType)}
                 paxDetails={paxDetails}
                 tileClassName={checkoutItemTileClass}
                 tileLabelClassName={checkoutItemTileLabelClass}
               />
             </div>
 
-            <div className="mt-6 border-gray-200 border-t pt-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-barlow-condensed font-bold text-gray-900 text-2xl">
-                    {summary?.totalUsd}
+            <div className="border-gray-200 border-t mt-6 pt-4">
+              <div className="flex gap-4 items-start justify-between">
+                <p className="font-barlow font-bold text-lg text-gray-900">
+                  {checkoutCopy.summaryHeroPriceCaption}
+                </p>
+                <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
+                  {usd(basePerPax)}
+                </p>
+              </div>
+
+              <div className="mt-4 flex gap-4 items-start justify-between">
+                <div className="min-w-0 flex-1">
+                  <p className="font-barlow font-bold text-base text-gray-900">
+                    {checkoutCopy.filterFeeLabel}
                   </p>
-                  <p className="text-base font-normal text-gray-500">
-                    {summary?.perPerson}
+                  <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
+                    {filterFeeDescription}
                   </p>
                 </div>
-                <p className="text-right font-barlow-condensed font-bold text-gray-900 text-2xl">
+                <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
+                  {usd(filtersPerPax)}
+                </p>
+              </div>
+
+              {addonsPerPaxCombined > 0 ? (
+                <div className="mt-4 flex gap-4 items-start justify-between">
+                  <p className="font-barlow font-bold text-lg text-gray-900">
+                    {checkoutCopy.addonsPerPersonLabel}
+                  </p>
+                  <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
+                    {usd(addonsPerPaxCombined)}
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="border-gray-200 border-t mt-4 flex gap-4 items-start justify-between pt-3">
+                <p className="font-barlow font-bold text-lg text-gray-900">
+                  {checkoutCopy.subtotalPerPersonLabel}
+                </p>
+                <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
                   {usd(totalPerPax)}
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-barlow-condensed font-bold text-gray-900">
-                    {tripTotalTitleLine}
-                  </p>
-                  <p className="text-base font-normal text-gray-500">
-                    {tripTotalMultiplierPlain}
+
+              <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
+                <div className="min-w-0 flex-1">
+                  <p className="font-barlow-condensed font-bold text-3xl text-gray-900 flex gap-1 items-end">
+                    {checkoutCopy.totalLabel}
+                    <span className="mt-1 font-barlow font-normal text-gray-600 text-lg">
+                      {filterFeePaxLine}
+                    </span>
                   </p>
                 </div>
-                <p className="text-right font-barlow-condensed font-bold text-gray-900 text-3xl">
+                <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-gray-900">
                   {usd(totalTrip)}
                 </p>
               </div>

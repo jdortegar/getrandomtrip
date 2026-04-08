@@ -1,5 +1,16 @@
 # CLAUDE.md — GetRandomTrip (frontend)
 
+## Rules
+
+Think before acting. Read existing files before writing code.
+Be concise in output but thorough in reasoning.
+Prefer editing over rewriting whole files.
+Do not re-read files you have already read unless the file may have changed.
+Test your code before declaring done.
+No sycophantic openers or closing fluff.
+Keep solutions simple and direct.
+User instructions always override this file.
+
 ## Project Overview
 
 **GetRandomTrip** is a mystery travel platform built with Next.js 14 (App Router). Clients configure a trip and receive a surprise destination. Trippers (travel experts) create and manage packages. Deployed on Netlify at https://getrandomtrip.netlify.app/.
@@ -8,20 +19,20 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 4 |
-| State | Zustand 5 (`src/store/`) |
-| ORM | Prisma 7 (PostgreSQL) |
-| Auth | NextAuth 4 (Prisma adapter + Google OAuth) |
-| Payments | MercadoPago (primary), Stripe (secondary) |
-| UI Primitives | Radix UI, shadcn/ui (`components.json`) |
-| Forms | react-hook-form |
-| Maps | React Leaflet, Google Maps/Places |
-| Toasts | Sonner, react-toastify |
-| Animation | Framer Motion |
+| Layer         | Technology                                 |
+| ------------- | ------------------------------------------ |
+| Framework     | Next.js 14 (App Router)                    |
+| Language      | TypeScript 5                               |
+| Styling       | Tailwind CSS 4                             |
+| State         | Zustand 5 (`src/store/`)                   |
+| ORM           | Prisma 7 (PostgreSQL)                      |
+| Auth          | NextAuth 4 (Prisma adapter + Google OAuth) |
+| Payments      | MercadoPago (primary), Stripe (secondary)  |
+| UI Primitives | Radix UI, shadcn/ui (`components.json`)    |
+| Forms         | react-hook-form                            |
+| Maps          | React Leaflet, Google Maps/Places          |
+| Toasts        | Sonner, react-toastify                     |
+| Animation     | Framer Motion                              |
 
 ---
 
@@ -53,17 +64,17 @@ npm run db:seed       # Seed database
 
 All user-facing routes live under `src/app/[locale]/` (i18n prefix: `es` or `en`). Key routes:
 
-| Path | Description |
-|---|---|
-| `/` | Landing page |
-| `/login` | Auth modal with role-aware redirect |
-| `/dashboard` | Client dashboard |
-| `/tripper` | Tripper OS (protected by `TripperGuard`) |
-| `/profile` / `/profile/edit` | User profile view / edit |
-| `/u/[handle]` | Public tripper profile |
-| `/journey/*` | Trip booking flow |
-| `/packages/*` | Package discovery |
-| `/blog` | Blog listing / articles |
+| Path                         | Description                              |
+| ---------------------------- | ---------------------------------------- |
+| `/`                          | Landing page                             |
+| `/login`                     | Auth modal with role-aware redirect      |
+| `/dashboard`                 | Client dashboard                         |
+| `/tripper`                   | Tripper OS (protected by `TripperGuard`) |
+| `/profile` / `/profile/edit` | User profile view / edit                 |
+| `/u/[handle]`                | Public tripper profile                   |
+| `/journey/*`                 | Trip booking flow                        |
+| `/experiences/*`            | Experience / package discovery flow     |
+| `/blog`                      | Blog listing / articles                  |
 
 API routes live under `src/app/api/` and are not locale-prefixed.
 
@@ -109,6 +120,7 @@ ui/          user/        ...
 ```
 
 **Important conventions:**
+
 - Use `<Img>` (`src/components/common/Img.tsx` or `SafeImage.tsx`) instead of raw `<img>` tags — ESLint enforces this
 - Use `<Image>` from `next/image` via the wrapper only
 

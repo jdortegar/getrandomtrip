@@ -1,12 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
-import type { DateRange } from 'react-day-picker';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { enUS, es } from 'react-day-picker/locale';
-import Chip from '@/components/Chip';
-import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 function formatDateParam(date: Date) {
   const y = date.getFullYear();
@@ -28,165 +25,156 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-function differenceInDays(a: Date, b: Date): number {
-  const utcA = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-  const utcB = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-  return Math.floor((utcA - utcB) / (24 * 60 * 60 * 1000));
+function calendarDayTime(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+}
+
+function isStrictlyBetween(date: Date, rangeFrom: Date, rangeTo: Date): boolean {
+  const t = calendarDayTime(date);
+  return (
+    t > calendarDayTime(rangeFrom) && t < calendarDayTime(rangeTo)
+  );
+}
+
+function dayPickerLocaleFromDocument() {
+  try {
+    const localeCode =
+      typeof document !== 'undefined'
+        ? document.documentElement.lang?.slice(0, 2) ?? 'es'
+        : 'es';
+    return localeCode === 'en' ? enUS : es;
+  } catch {
+    return es;
+  }
 }
 
 export interface JourneyDatesPickerLabels {
   availableFromHint: string;
   clearAll: string;
   confirmDates: string;
-  daysLabel: string;
-  nightsLabel: string;
+  daysLabel?: string;
+  nightsLabel?: string;
 }
 
 interface JourneyDatesPickerProps {
   labels?: JourneyDatesPickerLabels;
   maxNights: number;
+  /** Ignored for display; duration is always `maxNights`. Parent still receives `maxNights` via callbacks. */
   nights: number;
   onConfirm?: () => void;
   onNightsChange: (nights: number) => void;
   onRangeChange?: (startDate: string | undefined, nights: number) => void;
   onStartDateChange: (startDate: string | undefined) => void;
-  startDate: string | undefined; // yyyy-mm-dd
+  startDate: string | undefined;
 }
 
 export function JourneyDatesPicker({
   labels: labelsProp,
   maxNights,
-  nights,
+  nights: _nights,
   onConfirm,
   onNightsChange,
   onRangeChange,
   onStartDateChange,
   startDate,
 }: JourneyDatesPickerProps) {
-  const labels = useMemo(
-    () => ({
-      availableFromHint:
-        labelsProp?.availableFromHint ??
-        'Fechas disponibles a partir de 7 días.',
-      clearAll: labelsProp?.clearAll ?? 'Borrar todo',
-      confirmDates: labelsProp?.confirmDates ?? 'Confirmar fechas',
-      daysLabel: labelsProp?.daysLabel ?? 'días',
-      nightsLabel: labelsProp?.nightsLabel ?? 'noches',
-    }),
-    [labelsProp],
-  );
+  void _nights;
+  const tripNights = Math.max(1, maxNights);
 
-  const dayPickerLocale = useMemo(() => {
-    try {
-      const localeCode =
-        typeof document !== 'undefined'
-          ? document.documentElement.lang?.slice(0, 2) ?? 'es'
-          : 'es';
-      return localeCode === 'en' ? enUS : es;
-    } catch {
-      return es;
-    }
-  }, []);
+  const labels = {
+    availableFromHint:
+      labelsProp?.availableFromHint ??
+      'Fechas disponibles a partir de 7 días.',
+    clearAll: labelsProp?.clearAll ?? 'Borrar todo',
+    confirmDates: labelsProp?.confirmDates ?? 'Confirmar fechas',
+    daysLabel: labelsProp?.daysLabel ?? 'días',
+    nightsLabel: labelsProp?.nightsLabel ?? 'noches',
+  };
 
-  const selectedRange = useMemo((): DateRange | undefined => {
-    const from = parseDateParam(startDate);
-    if (!from) return undefined;
-    const to = addDays(from, nights);
-    return { from, to };
-  }, [startDate, nights]);
+  const dayPickerLocale = dayPickerLocaleFromDocument();
 
-  const options = useMemo(
-    () => Array.from({ length: Math.max(1, maxNights) }, (_, i) => i + 1),
-    [maxNights],
-  );
+  const from = parseDateParam(startDate);
+  const rangeEnd = from != null ? addDays(from, tripNights) : undefined;
 
-  const handleRangeSelect = (range: DateRange | undefined) => {
-    if (!range?.from) {
-      if (onRangeChange) onRangeChange(undefined, 1);
-      else onStartDateChange(undefined);
-      return;
-    }
-    const newStart = formatDateParam(range.from);
-    const n = range.to
-      ? Math.max(1, Math.min(maxNights, differenceInDays(range.to, range.from)))
-      : 1;
+  const notify = (newStart: string | undefined) => {
     if (onRangeChange) {
-      onRangeChange(newStart, n);
+      onRangeChange(newStart, tripNights);
     } else {
       onStartDateChange(newStart);
-      onNightsChange(n);
+      onNightsChange(tripNights);
     }
   };
 
-  const canContinue = Boolean(startDate && nights >= 1);
-
-  const handleClearAll = () => {
-    if (onRangeChange) onRangeChange(undefined, 1);
-    else {
-      onStartDateChange(undefined);
-      onNightsChange(1);
+  const handleSelect = (date: Date | undefined) => {
+    if (!date) {
+      notify(undefined);
+      return;
     }
-  };
-
-  const handleContinue = () => {
+    notify(formatDateParam(date));
     onConfirm?.();
   };
 
   return (
     <div>
       <div className="flex flex-wrap gap-2">
-        {options.map((n) => (
-          <Chip
-            active={n === nights}
-            key={n}
-            onClick={() => onNightsChange(n)}
-            size="md"
-            variant="outline"
-          >
-            <span className="font-semibold">{n + 1} {labels.daysLabel}</span>
-            <span className="opacity-80">/ {n} {labels.nightsLabel}</span>
-          </Chip>
-        ))}
+        <div
+          aria-label={`${tripNights + 1} ${labels.daysLabel}, ${tripNights} ${labels.nightsLabel}`}
+          className={cn(
+            'inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-1.5 text-sm text-white shadow-sm',
+          )}
+        >
+          <span className="font-semibold">
+            {tripNights + 1} {labels.daysLabel}
+          </span>
+          <span className="opacity-80">
+            / {tripNights} {labels.nightsLabel}
+          </span>
+        </div>
       </div>
 
-      <div className="p-4 border border-gray-300 rounded-lg mt-4 bg-white text-center">
+      <div className="mt-4 rounded-lg border border-gray-300 bg-white p-4 text-center">
         <DayPicker
           classNames={{
             chevron: 'fill-primary',
             day: 'text-gray-500',
-            selected: 'bg-primary border-primary text-white rounded-full',
-            today: 'border-primary',
-            range_start:
+            selected:
               'bg-primary border-primary text-white rounded-full rounded-r-none',
-            range_end:
-              'bg-primary border-primary text-white rounded-full rounded-l-none',
-            range_middle: 'bg-primary border-primary rounded-none text-white',
-          }}
-          disabled={{
-            before: new Date(new Date().setDate(new Date().getDate() + 7)),
+            today: 'border-primary',
           }}
           locale={dayPickerLocale}
-          max={maxNights + 1}
-          min={2}
-          mode="range"
+          mode="single"
+          modifiers={{
+            journey_end: rangeEnd ?? false,
+            journey_middle: (date) =>
+              from != null &&
+              rangeEnd != null &&
+              isStrictlyBetween(date, from, rangeEnd),
+          }}
+          modifiersClassNames={{
+            journey_end:
+              'bg-primary border-primary text-white rounded-full rounded-l-none',
+            journey_middle:
+              'bg-primary border-primary rounded-none text-white',
+          }}
           numberOfMonths={2}
-          onSelect={handleRangeSelect}
-          selected={selectedRange}
+          onSelect={handleSelect}
+          selected={from}
         />
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="mt-2 text-sm text-gray-500">
           {labels.availableFromHint}
         </p>
       </div>
-      <div className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-gray-200">
+      {/*
+      <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
         <button
-          className="text-gray-900 underline hover:no-underline text-sm font-medium"
+          className="text-sm font-medium text-gray-900 underline hover:no-underline"
           onClick={handleClearAll}
           type="button"
         >
           {labels.clearAll}
         </button>
 
-        {canContinue && (
+        {canContinue ? (
           <Button
             className="text-sm font-normal normal-case"
             onClick={handleContinue}
@@ -196,8 +184,9 @@ export function JourneyDatesPicker({
           >
             {labels.confirmDates}
           </Button>
-        )}
+        ) : null}
       </div>
+      */}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import TripperTiers from '@/components/tripper/TripperTiers';
 
 type Props = { type: 'solo' | 'families' | 'couple' | string; palette?: any };
 
-// Construye el shape que usa la página /packages/horacio-teran
+// Construye el shape que usa la página /experiences/by-tripper/[slug]
 function buildTripperPropsFromType(type: string) {
   return { slug: type, tiersSource: 'base' as const };
 }

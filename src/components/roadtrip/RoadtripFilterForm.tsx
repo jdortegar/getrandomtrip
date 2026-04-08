@@ -55,7 +55,7 @@ export default function RoadtripFilterForm() {
       budget: budgetLevel,
     });
 
-    router.push(`/packages/add-ons?${params}`);
+    router.push(`/experiences/add-ons?${params}`);
   };
 
   return (

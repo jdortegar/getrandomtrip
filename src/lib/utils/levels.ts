@@ -8,7 +8,11 @@ import type {
   Level as PlannerLevel,
   TypePlannerContent,
 } from '@/types/planner';
-import { getBasePricePerPerson } from '@/lib/data/traveler-types';
+import {
+  getBasePricePerPerson,
+  getTravelerType,
+  normalizePriceLevelId,
+} from '@/lib/data/traveler-types';
 import {
   getLevelContent,
   getLevelIdsForType,
@@ -127,6 +131,32 @@ export function getLevelById(
   return levels.find((l) => l.id === slug);
 }
 
+function getPlannerPriceCopy(
+  type: string,
+  levelId: ExperienceLevelId,
+  locale: string | undefined,
+  isAtelierTier: boolean,
+): { priceFootnote: string; priceLabel: string } {
+  const traveler = getTravelerType(type, locale);
+  const rows = traveler?.planner?.levels;
+  if (rows?.length) {
+    const match = rows.find(
+      (row) => normalizePriceLevelId(row.id) === levelId,
+    );
+    if (match) {
+      return {
+        priceFootnote: match.priceFootnote,
+        priceLabel: match.priceLabel,
+      };
+    }
+  }
+  const isEn = locale === 'en';
+  return {
+    priceFootnote: isEn ? 'per person' : 'por persona',
+    priceLabel: isAtelierTier ? (isEn ? 'From' : 'Desde') : '',
+  };
+}
+
 /**
  * Levels in planner shape (for TypePlanner / LevelCard). Uses experience-levels + price + excuses.
  */
@@ -143,14 +173,20 @@ export function getPlannerLevelsForType(
     const slug = toLevelSlug(content.id);
     const price = getBasePricePerPerson(type, content.id);
     const isLast = slug === 'atelier-getaway';
+    const priceCopy = getPlannerPriceCopy(
+      type,
+      content.id,
+      locale,
+      isLast,
+    );
     plannerLevels.push({
       id: slug,
       name: content.name,
       subtitle: content.subtitle,
       maxNights: content.maxNights,
       price,
-      priceLabel: isLast ? 'Desde' : '',
-      priceFootnote: 'por persona',
+      priceLabel: priceCopy.priceLabel,
+      priceFootnote: priceCopy.priceFootnote,
       features: content.features,
       closingLine: content.closingLine,
       ctaLabel: content.ctaLabel,

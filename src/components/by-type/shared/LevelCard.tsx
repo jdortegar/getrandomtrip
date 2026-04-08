@@ -157,7 +157,7 @@ export default function LevelCard({
           </span>
           <span
             className={cn(
-              'leading-none whitespace-nowrap text-[0.525rem] @[250px]:text-xs',
+              'whitespace-pre-line text-left leading-tight text-[0.525rem] @[250px]:text-xs',
               textColor,
             )}
           >
@@ -256,7 +256,7 @@ export default function LevelCard({
             href={
               travelerType
                 ? `/journey?travelType=${travelerType}&experience=${level.id}`
-                : `/packages/by-type/${level.id}`
+                : `/experiences/by-type/${level.id}`
             }
             className="uppercase"
           >

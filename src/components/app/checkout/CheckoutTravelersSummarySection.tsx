@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 interface CheckoutTravelersSummarySectionProps {
   checkoutCopy: Dictionary["journey"]["checkout"];
   onSaveTravelers: (next: PaxDetails) => Promise<void>;
+  /** When false, party is fixed by traveler type (solo/couple); tile is not a button and modal is omitted. */
+  partyEditable: boolean;
   paxDetails: PaxDetails;
   tileClassName: string;
   tileLabelClassName: string;
@@ -36,6 +38,7 @@ function buildTravelersModalCopy(checkout: Dictionary["journey"]["checkout"]) {
 export function CheckoutTravelersSummarySection({
   checkoutCopy,
   onSaveTravelers,
+  partyEditable,
   paxDetails,
   tileClassName,
   tileLabelClassName,
@@ -57,38 +60,57 @@ export function CheckoutTravelersSummarySection({
   const summaryLine = formatTravelersPartyBreakdown(checkoutCopy, paxDetails);
   const modalCopy = buildTravelersModalCopy(checkoutCopy);
 
+  const tileInner = (
+    <div className="flex items-center justify-between gap-2">
+      <div>
+        <p className={tileLabelClassName}>{checkoutCopy.travelersTileTitle}</p>
+        <div className="mt-1 flex items-center gap-2">
+          <User aria-hidden className="h-4 w-4 shrink-0 text-gray-600" />
+          <p className="text-base font-medium text-gray-900">{summaryLine}</p>
+        </div>
+      </div>
+      {partyEditable ? (
+        <ChevronDown aria-hidden className="h-4 w-4 shrink-0 text-gray-400" />
+      ) : null}
+    </div>
+  );
+
   return (
     <>
-      <button
-        className={cn(tileClassName, "cursor-pointer sm:col-span-2 text-left")}
-        onClick={() => handleModalOpenChange(true)}
-        type="button"
-      >
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <p className={tileLabelClassName}>
-              {checkoutCopy.travelersTileTitle}
-            </p>
-            <div className="mt-1 flex items-center gap-2">
-              <User aria-hidden className="h-4 w-4 shrink-0 text-gray-600" />
-              <p className="font-medium text-gray-900 text-base">{summaryLine}</p>
-            </div>
-          </div>
-          <ChevronDown aria-hidden className="h-4 w-4 shrink-0 text-gray-400" />
+      {partyEditable ? (
+        <button
+          className={cn(
+            tileClassName,
+            "cursor-pointer text-left sm:col-span-2",
+          )}
+          onClick={() => handleModalOpenChange(true)}
+          type="button"
+        >
+          {tileInner}
+        </button>
+      ) : (
+        <div
+          aria-label={checkoutCopy.travelersTileTitle}
+          className={cn(tileClassName, "sm:col-span-2")}
+          role="group"
+        >
+          {tileInner}
         </div>
-      </button>
-      <CheckoutTravelersModal
-        adults={draft.adults}
-        copy={modalCopy}
-        minors={draft.minors}
-        onAdultsChange={(value) => patchDraft({ adults: value })}
-        onDone={() => onSaveTravelers(draft)}
-        onMinorsChange={(value) => patchDraft({ minors: value })}
-        onOpenChange={handleModalOpenChange}
-        onRoomsChange={(value) => patchDraft({ rooms: value })}
-        open={modalOpen}
-        rooms={draft.rooms}
-      />
+      )}
+      {partyEditable ? (
+        <CheckoutTravelersModal
+          adults={draft.adults}
+          copy={modalCopy}
+          minors={draft.minors}
+          onAdultsChange={(value) => patchDraft({ adults: value })}
+          onDone={() => onSaveTravelers(draft)}
+          onMinorsChange={(value) => patchDraft({ minors: value })}
+          onOpenChange={handleModalOpenChange}
+          onRoomsChange={(value) => patchDraft({ rooms: value })}
+          open={modalOpen}
+          rooms={draft.rooms}
+        />
+      ) : null}
     </>
   );
 }

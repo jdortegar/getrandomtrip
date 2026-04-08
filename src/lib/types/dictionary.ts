@@ -294,7 +294,7 @@ export interface MarketingDictionary {
         avoidGridLoading: string;
         avoidHint: string;
         avoidLabel: string;
-        avoidSearchModal?: {
+        avoidSearchModal: {
           addButton: string;
           cancelButton: string;
           saveDestinationsButton: string;
@@ -390,6 +390,7 @@ export interface MarketingDictionary {
       contactCountryLabel: string;
       contactEmailHelper: string;
       contactEmailLabel: string;
+      contactIdDocumentLabel: string;
       contactNameLabel: string;
       contactPhoneLabel: string;
       contactStateLabel: string;
@@ -398,6 +399,7 @@ export interface MarketingDictionary {
       contactZipCodeLabel: string;
       errors: {
         connectionTryAgain: string;
+        idDocumentRequired: string;
         loadTripFailed: string;
         loadTripsFailed: string;
         noTripFound: string;
@@ -406,6 +408,12 @@ export interface MarketingDictionary {
         saveUserFailed: string;
         updateTripFailed: string;
       };
+      addonsPerPersonLabel: string;
+      filterFeeLabel: string;
+      filterFeeLine: string;
+      filterFeeLineFirstFree: string;
+      filterFeeLineNone: string;
+      filterFeePaxLine: string;
       formDescription: string;
       formTitle: string;
       itemsDescription: string;
@@ -415,8 +423,12 @@ export interface MarketingDictionary {
       payProcessingButton: string;
       paxLabel: string;
       paxSelectAria: string;
+      perPersonSectionTitle: string;
       processingPayment: string;
       summaryHeroPriceCaption: string;
+      subtotalLabel: string;
+      subtotalPerPersonLabel: string;
+      totalLabel: string;
       travelDetailsTitle: string;
       travelersAdultsMany: string;
       travelersAdultsOne: string;
@@ -438,9 +450,19 @@ export interface MarketingDictionary {
       travelersRoomsMany: string;
       travelersRoomsOne: string;
       travelersTileTitle: string;
-      tripTotalCaption: string;
       travelTypeTitleSeparator: string;
       volverButton: string;
+    };
+    userBadge: {
+      guest: string;
+      levelLabel: string;
+      levels: {
+        adventurer: string;
+        beginner: string;
+        explorer: string;
+        nomad: string;
+        randomtripper: string;
+      };
     };
     userNamePlaceholder: string;
   };
@@ -717,6 +739,43 @@ export interface MarketingDictionary {
       paws: string;
       selectPlaceholder: string;
       solo: string;
+    };
+  };
+  adminTripEditModal: {
+    cancel: string;
+    deleteCancel: string;
+    deleteConfirm: string;
+    deleteDeleting: string;
+    deleteError: string;
+    deleteHint: string;
+    deleteTrip: string;
+    description: string;
+    destinationHelp: string;
+    destinationLabel: string;
+    destinationPlaceholder: string;
+    details: {
+      dates: string;
+      nightsPax: string;
+      origin: string;
+      payment: string;
+      transport: string;
+    };
+    saveChanges: string;
+    saving: string;
+    sectionDanger: string;
+    sectionManageTrip: string;
+    sectionSummary: string;
+    sectionTimeline: string;
+    statusLabel: string;
+    title: string;
+    tripStatus: {
+      CANCELLED: string;
+      COMPLETED: string;
+      CONFIRMED: string;
+      DRAFT: string;
+      PENDING_PAYMENT: string;
+      REVEALED: string;
+      SAVED: string;
     };
   };
 }

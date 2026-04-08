@@ -83,7 +83,7 @@ const EventFinder: React.FC = () => {
         <div className="absolute -top-12 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
 
         <div className="flex flex-col items-center justify-center gap-2">
-          <h2 className="font-caveat text-4xl md:text-6xl font-bold mb-3 bg-gradient-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight md:mb-4">
+          <h2 className="font-barlow-condensed text-4xl md:text-6xl font-bold mb-3 bg-gradient-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight md:mb-4">
             Descubre tu próxima experiencia
           </h2>
           <div className="flex items-center gap-2 text-gray-300/90">

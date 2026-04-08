@@ -29,7 +29,7 @@ export function AdminSidebar() {
   const links = [
     { href: base(""), icon: Briefcase, label: "Trip Requests" },
     { href: base("/users"), icon: Users, label: "Users" },
-    { href: base("/packages"), icon: Package, label: "Packages" },
+    { href: base("/experiences"), icon: Package, label: "Experiences" },
     { href: base("/payments"), icon: CreditCard, label: "Payments" },
     { href: base("/reviews"), icon: Star, label: "Reviews" },
     { href: base("/waitlist"), icon: Mail, label: "Waitlist" },

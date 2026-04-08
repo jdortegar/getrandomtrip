@@ -1,11 +1,16 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { useQuerySync } from '@/hooks/useQuerySync';
 import { Button } from '@/components/ui/Button';
 import Badge from '@/components/badge';
 import CitySearchSelector from './CitySearchSelector';
 import type { AvoidCity } from '@/lib/helpers/avoid-cities';
+import {
+  avoidCityLabelsEqual,
+  canonicalAvoidCityLabel,
+} from '@/lib/helpers/avoid-destinations';
 
 export interface AvoidSearchModalLabels {
   addButton: string;
@@ -17,30 +22,25 @@ export interface AvoidSearchModalLabels {
 }
 
 interface AvoidSearchModalProps {
-  labels?: AvoidSearchModalLabels;
+  labels: AvoidSearchModalLabels;
   onClose: () => void;
   open: boolean;
 }
 
-const DEFAULT_LABELS: AvoidSearchModalLabels = {
-  addButton: 'Agregar',
-  cancelButton: 'Cancelar',
-  saveDestinationsButton: 'Guardar destinos',
-  selectedCountTemplate: 'Seleccionados: {count} / {max}',
-  selectedDestinationsHeading: 'Destinos seleccionados',
-  title: 'Agregar destinos a evitar',
-};
-
 export default function AvoidSearchModal({
-  labels: labelsProp,
+  labels,
   onClose,
   open,
 }: AvoidSearchModalProps) {
-  const labels = labelsProp ?? DEFAULT_LABELS;
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState('');
   const [local, setLocal] = useState<string[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const current = useMemo(() => {
     const raw = searchParams.get('avoidDestinations');
@@ -68,33 +68,33 @@ export default function AvoidSearchModal({
     .replace('{count}', String(totalCount))
     .replace('{max}', String(max));
 
-  const add = (cityFullName: string) => {
-    const name = cityFullName.trim();
-    if (!name) return;
+  const add = (rawLabel: string) => {
+    const label = canonicalAvoidCityLabel(rawLabel);
+    if (!label) return;
     const pool = [...current, ...local];
-    const exists = pool.some((n) => n.toLowerCase() === name.toLowerCase());
+    const exists = pool.some((n) => avoidCityLabelsEqual(n, label));
     if (exists) {
       setQuery('');
       return;
     }
     if (pool.length >= max) return;
-    setLocal((prev) => [...prev, name]);
+    setLocal((prev) => [...prev, label]);
     setQuery('');
   };
 
   const handleCitySelect = (city: AvoidCity) => {
-    const cityFullName = `${city.name}, ${city.country}`;
-    add(cityFullName);
+    add(city.name);
   };
 
   const removeLocal = (name: string) => {
     setLocal((prev) =>
-      prev.filter((n) => n.toLowerCase() !== name.toLowerCase()),
+      prev.filter((n) => !avoidCityLabelsEqual(n, name)),
     );
   };
 
   const save = () => {
     const merged = [...current, ...local]
+      .map(canonicalAvoidCityLabel)
       .filter(Boolean)
       .filter(
         (v, i, a) =>
@@ -114,18 +114,22 @@ export default function AvoidSearchModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
+        aria-hidden
         className="absolute inset-0 bg-black/50"
         onClick={onClose}
-        aria-hidden
       />
       <div
-        className="relative w-full max-w-xl rounded-lg border border-gray-200 bg-white p-6 shadow-md"
-        role="dialog"
         aria-labelledby="avoid-modal-title"
         aria-modal="true"
+        className="relative w-full max-w-xl rounded-lg border border-gray-200 bg-white p-6 shadow-md"
+        role="dialog"
       >
         <h2
           className="text-base font-bold text-gray-900"
@@ -138,8 +142,8 @@ export default function AvoidSearchModal({
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
           <CitySearchSelector
             className="min-w-0 flex-1"
-            onKeyDown={onKeyDown}
             onChange={setQuery}
+            onKeyDown={onKeyDown}
             onSelect={handleCitySelect}
             value={query}
           />
@@ -205,6 +209,7 @@ export default function AvoidSearchModal({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

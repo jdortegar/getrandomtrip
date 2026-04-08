@@ -20,8 +20,8 @@ export function AllTripsGrid({
   if (trips.length === 0) return null;
 
   return (
-    <div className="mt-8">
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+    <div>
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-neutral-900">
             {copy.allTrips.title}
@@ -34,7 +34,7 @@ export function AllTripsGrid({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {trips.map((trip) => (
             <div
-              className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
+              className="p-4 border border-gray-200 rounded-lg hover:border-neutral-400 transition-colors"
               key={trip.id}
             >
               <div className="flex items-start justify-between mb-2">
@@ -60,8 +60,9 @@ export function AllTripsGrid({
               </div>
 
               <div className="flex items-center gap-4 text-xs text-neutral-500 mb-3">
-                <span>
-                  {new Date(trip.startDate).toLocaleDateString()} →{' '}
+                <span className="flex items-center gap-1">
+                  {new Date(trip.startDate).toLocaleDateString()}
+                  <ArrowRight className="h-3 w-3" />
                   {new Date(trip.endDate).toLocaleDateString()}
                 </span>
                 {trip.customerRating && (

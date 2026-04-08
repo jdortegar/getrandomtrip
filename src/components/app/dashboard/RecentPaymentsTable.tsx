@@ -2,22 +2,36 @@ import { CreditCard } from 'lucide-react';
 import type { Payment } from '@/lib/utils/trips';
 import type { DashboardCopy } from './types';
 
+function PaymentStatusBadge({ status, label }: { status: string; label: string }) {
+  const styles: Record<string, string> = {
+    APPROVED: 'bg-green-100 text-green-800 border-green-200',
+    COMPLETED: 'bg-green-100 text-green-800 border-green-200',
+    PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    FAILED: 'bg-red-100 text-red-800 border-red-200',
+    REJECTED: 'bg-red-100 text-red-800 border-red-200',
+  };
+  const cls = styles[status] ?? 'bg-gray-100 text-gray-800 border-gray-200';
+  return (
+    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
 interface RecentPaymentsTableProps {
   copy: DashboardCopy;
-  getPaymentStatusColor: (status: string) => string;
   payments: Payment[];
 }
 
 export function RecentPaymentsTable({
   copy,
-  getPaymentStatusColor,
   payments,
 }: RecentPaymentsTableProps) {
   const recentPayments = payments.slice(0, 5);
 
   return (
-    <div className="mt-8">
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+    <div>
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-neutral-900">
             {copy.recentPayments.title}
@@ -83,11 +97,10 @@ export function RecentPaymentsTable({
                         ${(payment.amount ?? 0).toFixed(2)}
                       </td>
                       <td className="py-4 px-4">
-                        <span
-                          className={`text-sm font-medium ${getPaymentStatusColor(payment.status)}`}
-                        >
-                          {copy.paymentStatus[payment.status] ?? payment.status}
-                        </span>
+                        <PaymentStatusBadge
+                          label={copy.paymentStatus[payment.status] ?? payment.status}
+                          status={payment.status}
+                        />
                       </td>
                     </tr>
                   );

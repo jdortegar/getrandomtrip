@@ -48,6 +48,8 @@ interface TravelerTypesCarouselProps {
   
 }
 
+const COMING_SOON_SLUGS: TravelerTypeSlug[] = ['family', 'paws', 'honeymoon'];
+
 export function TravelerTypesCarousel({
   availableTypes,
   localizedTravelerTypes,
@@ -85,19 +87,27 @@ export function TravelerTypesCarousel({
       <EmblaCarousel slidesPerView={3}>
         {typesToShow.map((t) => {
           const slug = t.key.toLowerCase() as TravelerTypeSlug;
-          const href = `/packages/by-type/${slugify(t.key)}`;
+          const href = `/experiences/by-type/${slugify(t.key)}`;
+          const isComingSoon = COMING_SOON_SLUGS.includes(slug);
           return (
             <div
               key={t.key}
-              className="aspect-[280/332] w-full min-h-0"
+              className="aspect-[280/332] w-full min-h-0 relative"
             >
               <TravelerTypeCard
                 fill
-                href={href}
+                href={isComingSoon ? undefined : href}
                 item={cardDataToCardItem(t)}
-                onClick={onSelect ? () => onSelect(slug) : undefined}
+                onClick={isComingSoon ? undefined : (onSelect ? () => onSelect(slug) : undefined)}
                 selected={selectedTravelType === slug}
               />
+              {isComingSoon && (
+                <div className="absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-black/50 cursor-not-allowed">
+                  <span className="font-barlow-condensed text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-lg">
+                    {locale === 'es' ? 'Próximamente' : 'Coming Soon'}
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}

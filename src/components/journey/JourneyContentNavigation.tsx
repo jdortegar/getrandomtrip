@@ -1,9 +1,10 @@
 'use client';
 
-import { ArrowLeft, Check, User } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
+import { JourneyUserBadge, type JourneyUserBadgeLabels } from '@/components/journey/JourneyUserBadge';
 
 interface Tab {
   id: string;
@@ -16,10 +17,7 @@ interface JourneyContentNavigationProps {
   onBack?: () => void;
   onTabChange: (tabId: string) => void;
   tabs: Tab[];
-  user?: {
-    avatar?: string;
-    name?: string;
-  };
+  userBadgeLabels: JourneyUserBadgeLabels;
 }
 
 export default function JourneyContentNavigation({
@@ -28,7 +26,7 @@ export default function JourneyContentNavigation({
   onBack,
   onTabChange,
   tabs,
-  user,
+  userBadgeLabels,
 }: JourneyContentNavigationProps) {
   const searchParams = useSearchParams();
 
@@ -64,35 +62,7 @@ export default function JourneyContentNavigation({
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-center">
           {/* Left Section: User Profile & Back Button */}
           <div className="flex items-center gap-4">
-            {/* User Profile */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                {user?.avatar ? (
-                  <img
-                    alt={user.name || 'User'}
-                    className="w-full h-full rounded-full object-cover"
-                    src={user.avatar}
-                  />
-                ) : (
-                  <User className="w-6 h-6 text-gray-400" />
-                )}
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 uppercase leading-tight">
-                  Nivel de
-                </span>
-                <span className="text-xs text-gray-500 uppercase leading-tight">
-                  Randomtripeo
-                </span>
-                <span className="text-sm font-medium text-gray-900 leading-tight">
-                  {user?.name || 'Nombre usuario'}
-                </span>
-                <span className="text-sm font-medium text-gray-900 leading-tight">
-                  o perfil de Guest
-                </span>
-              </div>
-            </div>
+            <JourneyUserBadge labels={userBadgeLabels} />
 
             {/* Back Button */}
             {onBack && (

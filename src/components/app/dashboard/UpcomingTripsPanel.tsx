@@ -19,17 +19,11 @@ export function UpcomingTripsPanel({
 }: UpcomingTripsPanelProps) {
   return (
     <div className="lg:col-span-2">
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-neutral-900">
             {copy.upcomingTrips.title}
           </h2>
-          <Button asChild size="md" variant="outline">
-            <Link href="/journey">
-              <Plus className="w-4 h-4 mr-2" />
-              {copy.upcomingTrips.newTrip}
-            </Link>
-          </Button>
         </div>
 
         {trips.length === 0 ? (
@@ -52,7 +46,7 @@ export function UpcomingTripsPanel({
           <div className="space-y-4">
             {trips.map((trip) => (
               <div
-                className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
+                className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-neutral-400 transition-colors"
                 key={trip.id}
               >
                 <div className="flex items-start justify-between mb-3">

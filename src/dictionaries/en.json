@@ -1289,6 +1289,7 @@
       "contactCountryLabel": "Country",
       "contactEmailHelper": "This email is associated with your account",
       "contactEmailLabel": "Email",
+      "contactIdDocumentLabel": "ID / Passport number",
       "contactNameLabel": "Full name",
       "contactPhoneLabel": "Phone",
       "contactStateLabel": "State / Province",
@@ -1297,6 +1298,7 @@
       "contactZipCodeLabel": "ZIP / Postal code",
       "errors": {
         "connectionTryAgain": "Connection error. Please try again.",
+        "idDocumentRequired": "Please enter your ID or passport number.",
         "loadTripFailed": "Error loading trip",
         "loadTripsFailed": "Couldn't load your trips",
         "noTripFound": "Trip not found",
@@ -1305,6 +1307,12 @@
         "saveUserFailed": "Couldn't save your details.",
         "updateTripFailed": "Couldn't update the trip."
       },
+      "addonsPerPersonLabel": "Add-ons & insurance (per person)",
+      "filterFeeLabel": "Filter surcharge",
+      "filterFeeLine": "{{billable}} billable × USD {{unit}} each × {{pax}} travelers ({{optional}} options). First filter free.",
+      "filterFeeLineFirstFree": "{{optional}} option(s) selected. First optional filter is free — no surcharge.",
+      "filterFeeLineNone": "No optional preferences selected — no filter surcharge.",
+      "filterFeePaxLine": "×{{pax}} people",
       "formDescription": "Adjust the number of travelers and continue to secure checkout.",
       "formTitle": "Complete your purchase",
       "itemsDescription": "What your trip includes and the options you selected.",
@@ -1314,8 +1322,12 @@
       "payProcessingButton": "Processing...",
       "paxLabel": "Number of travelers",
       "paxSelectAria": "Number of travelers",
+      "perPersonSectionTitle": "Per person",
       "processingPayment": "Processing payment...",
-      "summaryHeroPriceCaption": "Maximum base price per person",
+      "summaryHeroPriceCaption": "Base price per person",
+      "subtotalLabel": "Subtotal",
+      "subtotalPerPersonLabel": "Subtotal per person",
+      "totalLabel": "Total",
       "travelDetailsTitle": "Your trip details",
       "travelersModalAriaDecreaseAdults": "Decrease adults",
       "travelersModalAriaDecreaseMinors": "Decrease children",
@@ -1337,9 +1349,19 @@
       "travelersRoomsMany": "{count} rooms",
       "travelersRoomsOne": "{count} room",
       "travelersTileTitle": "Travelers",
-      "tripTotalCaption": "Trip total (×{count} people)",
       "travelTypeTitleSeparator": "|",
       "volverButton": "Back"
+    },
+    "userBadge": {
+      "guest": "Guest profile",
+      "levelLabel": "Randomtripper Level",
+      "levels": {
+        "adventurer": "Adventurer",
+        "beginner": "Beginner",
+        "explorer": "Explorer",
+        "nomad": "Nomad",
+        "randomtripper": "Randomtripper"
+      }
     },
     "userNamePlaceholder": "User name"
   },
@@ -2014,6 +2036,43 @@
       "nameRequired": "Name is required",
       "saveError": "Could not save your data",
       "profileUpdated": "Profile updated successfully"
+    }
+  },
+  "adminTripEditModal": {
+    "title": "Edit {{userName}}'s trip",
+    "description": "Trip ID: {{tripId}}",
+    "sectionSummary": "Trip summary",
+    "sectionManageTrip": "Destination & status",
+    "destinationLabel": "Revealed destination",
+    "destinationHelp": "Set the real destination for this booking. Saving clears or updates the stored value.",
+    "destinationPlaceholder": "e.g. Lisbon, Portugal",
+    "statusLabel": "Trip status",
+    "sectionTimeline": "Fulfillment milestones",
+    "sectionDanger": "Danger zone",
+    "deleteHint": "Permanently remove this trip request and its linked payment record. This cannot be undone.",
+    "deleteTrip": "Delete trip",
+    "deleteConfirm": "Delete this trip?",
+    "deleteCancel": "Keep trip",
+    "deleteDeleting": "Deleting…",
+    "deleteError": "Could not delete this trip. Try again.",
+    "cancel": "Cancel",
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "details": {
+      "origin": "Origin",
+      "dates": "Dates",
+      "nightsPax": "Nights / travelers",
+      "transport": "Transport",
+      "payment": "Payment"
+    },
+    "tripStatus": {
+      "DRAFT": "Draft",
+      "SAVED": "Saved",
+      "PENDING_PAYMENT": "Pending payment",
+      "CONFIRMED": "Confirmed",
+      "REVEALED": "Revealed",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
     }
   },
   "emailSignatures": {

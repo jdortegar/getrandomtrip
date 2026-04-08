@@ -12,12 +12,12 @@ const CANON_MAP: Record<string, string> = {
 
 function applyCanonRedirect(req: NextRequest): NextResponse | null {
   const pathname = pathWithoutLocale(req.nextUrl.pathname);
-  if (!pathname.startsWith('/packages/by-type/')) return null;
+  if (!pathname.startsWith('/experiences/by-type/')) return null;
 
   const url = req.nextUrl.clone();
   const { search, hash } = url;
   const parts = pathname.split('/').filter(Boolean);
-  // pathname can be /packages/by-type/X or /en/packages/by-type/X - pathWithoutLocale gives /packages/by-type/X
+  // pathname can be /experiences/by-type/X or /en/experiences/by-type/X - pathWithoutLocale gives /experiences/by-type/X
   const typeIndex = parts.indexOf('by-type') + 1;
   const type = parts[typeIndex];
   if (!type) return null;

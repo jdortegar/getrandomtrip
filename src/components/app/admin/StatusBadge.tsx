@@ -6,6 +6,7 @@ import {
 } from '@/lib/admin/trip-status';
 
 interface StatusBadgeProps {
+  className?: string;
   status: string;
   variant?: 'payment' | 'trip';
 }
@@ -16,7 +17,7 @@ const FALLBACK = {
   text: 'text-gray-700',
 };
 
-export function StatusBadge({ status, variant = 'trip' }: StatusBadgeProps) {
+export function StatusBadge({ className, status, variant = 'trip' }: StatusBadgeProps) {
   const map = variant === 'payment'
     ? PAYMENT_STATUS_COLORS
     : (TRIP_STATUS_COLORS as Record<string, StatusColors>);
@@ -28,6 +29,7 @@ export function StatusBadge({ status, variant = 'trip' }: StatusBadgeProps) {
         colors.bg,
         colors.border,
         colors.text,
+        className,
       )}
     >
       {status}

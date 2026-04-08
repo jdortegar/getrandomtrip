@@ -53,9 +53,16 @@ export interface DashboardCopy {
   tripStatus: Record<string, string>;
   unpaidTrips: {
     action: string;
+    bookingRefLabel: string;
+    estimatedTripTotal: string;
+    experienceSection: string;
     message: string;
     paymentPrefix: string;
+    priceEstimateNote: string;
+    summaryHeroPriceCaption: string;
     title: string;
+    travelTypeSection: string;
+    travelTypeTitleSeparator: string;
   };
   upcomingTrips: {
     emptyCta: string;

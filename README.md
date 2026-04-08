@@ -53,7 +53,7 @@ npm start
 - `/dashboard` — panel cliente
 - `/tripper` — Tripper OS (protegido con `TripperGuard`)
 - `/journey/*` — flujo de compra
-- `/packages/*` — descubrimiento por tripper o tipo
+- `/experiences/*` — descubrimiento por tripper o tipo (by-type, flujo por paquete, etc.)
 
 ## Arquitectura / convenciones
 

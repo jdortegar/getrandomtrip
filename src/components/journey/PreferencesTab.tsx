@@ -13,7 +13,7 @@ function toFilterOptions(
 ): FilterOption[] {
   return opts.map((o) => ({ key: o.key, label: o.key }));
 }
-import AvoidGrid from './avoid/AvoidGrid';
+import AvoidGrid, { type AvoidGridLabels } from './avoid/AvoidGrid';
 
 const Seg = ({
   options,
@@ -41,7 +41,11 @@ const Seg = ({
   </div>
 );
 
-export default function PreferencesTab() {
+interface PreferencesTabProps {
+  avoidGridLabels: AvoidGridLabels;
+}
+
+export default function PreferencesTab({ avoidGridLabels }: PreferencesTabProps) {
   const searchParams = useSearchParams();
   const { filters, setPartial, _tripperPackageDestinations } = useStore();
   const originCity = searchParams.get('originCity') ?? '';
@@ -130,6 +134,7 @@ export default function PreferencesTab() {
             </p>
             <AvoidGrid
               experienceLevel={experience}
+              labels={avoidGridLabels}
               originCity={originCity}
               originCountry={originCountry}
               tripperPackageDestinations={_tripperPackageDestinations}

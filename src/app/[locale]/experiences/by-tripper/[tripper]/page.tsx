@@ -87,7 +87,7 @@ export default async function Page({
 }) {
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === 'undefined') {
-    redirect('/packages');
+    redirect('/experiences/by-type/group');
   }
 
   // Fetch from database

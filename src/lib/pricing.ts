@@ -15,6 +15,34 @@ export function computeFiltersCostPerTrip(
   return total;
 }
 
+/** Billable count, tier unit, and totals — matches `computeFiltersCostPerTrip` (checkout breakdown). */
+export function getFiltersCostBreakdown(
+  filters: any,
+  pax: number,
+  avoidCount = 0,
+): {
+  billable: number;
+  optional: number;
+  perPax: number;
+  tierUnit: number;
+  tripTotal: number;
+} {
+  const optional = countOptionalFilters(filters, avoidCount);
+  let tierUnit = 0;
+  if (optional >= 2 && optional <= 3) tierUnit = 18;
+  if (optional >= 4) tierUnit = 25;
+  const billable = Math.max(0, optional - 1);
+  const paxN = pax || 1;
+  const tripTotal = computeFiltersCostPerTrip(filters, paxN, avoidCount);
+  return {
+    billable,
+    optional,
+    perPax: paxN ? tripTotal / paxN : 0,
+    tierUnit,
+    tripTotal,
+  };
+}
+
 type Sel = { id: string; qty: number };
 
 /** retorna costo de add-ons por VIAJE (total, no per pax) */

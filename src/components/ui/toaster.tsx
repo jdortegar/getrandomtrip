@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Toaster as SonnerToaster } from 'sonner';
+import { Toaster as SonnerToaster } from "sonner";
 
 export function Toaster() {
   return (
@@ -10,7 +10,7 @@ export function Toaster() {
       closeButton
       toastOptions={{
         style: {
-          fontFamily: 'var(--font-jost), sans-serif',
+          fontFamily: "var(--font-barlow), sans-serif",
         },
       }}
     />

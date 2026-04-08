@@ -6,6 +6,40 @@ export const DEFAULT_PAX_DETAILS: PaxDetails = {
   rooms: 1,
 };
 
+/** Locked party for solo checkout (1 adult, 1 room). */
+export const FIXED_PAX_SOLO: PaxDetails = {
+  adults: 1,
+  minors: 0,
+  rooms: 1,
+};
+
+/** Locked party for couple / honeymoon (2 adults, 1 room). */
+export const FIXED_PAX_COUPLE_LIKE: PaxDetails = {
+  adults: 2,
+  minors: 0,
+  rooms: 1,
+};
+
+/**
+ * When non-null, checkout party size is fixed for this traveler type
+ * (solo = 1 adult; couple & honeymoon = 2 adults). Family, group, and paws
+ * can adjust counts in the travelers modal.
+ */
+export function getFixedPaxDetailsForTravelType(
+  travelType: string,
+): PaxDetails | null {
+  const t = travelType.trim().toLowerCase();
+  if (t === 'solo') return FIXED_PAX_SOLO;
+  if (t === 'couple' || t === 'honeymoon') return FIXED_PAX_COUPLE_LIKE;
+  return null;
+}
+
+/** True when the user may change adults / minors / rooms on checkout. */
+export function isTravelersPartyEditable(travelType: string | undefined): boolean {
+  if (travelType == null || travelType === '') return true;
+  return getFixedPaxDetailsForTravelType(travelType) == null;
+}
+
 export function parsePaxDetails(value: unknown): PaxDetails | null {
   if (value == null || typeof value !== 'object') return null;
   const o = value as Record<string, unknown>;
