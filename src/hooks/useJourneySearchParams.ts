@@ -28,6 +28,8 @@ export interface JourneySearchParamsValues {
   climate: string | undefined;
   accommodationType: string | undefined;
   addons: string | undefined;
+  /** Draft trip request id for checkout upsert; set when user saves to checkout. */
+  tripRequestId: string | undefined;
 }
 
 export function useJourneySearchParams(
@@ -107,6 +109,10 @@ export function useJourneySearchParams(
     () => searchParams.get('addons') || undefined,
     [searchParams],
   );
+  const tripRequestId = useMemo(() => {
+    const raw = searchParams.get('tripRequestId')?.trim();
+    return raw && raw.length > 0 ? raw : undefined;
+  }, [searchParams]);
 
   return {
     travelType,
@@ -125,5 +131,6 @@ export function useJourneySearchParams(
     climate,
     accommodationType,
     addons,
+    tripRequestId,
   };
 }

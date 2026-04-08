@@ -1,32 +1,57 @@
-'use client';
+"use client";
 
-import { Calendar, MapPin, Sparkle, X } from 'lucide-react';
-import { useCallback, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useQuerySync } from '@/hooks/useQuerySync';
-import Img from '@/components/common/Img';
-import { TRAVELER_TYPE_LABELS } from '@/lib/data/journey-labels';
-import { formatUSD } from '@/lib/format';
-import { useParams } from 'next/navigation';
-import { getBasePricePerPerson } from '@/lib/data/traveler-types';
-import { getCardForType, getLevelById } from '@/lib/utils/experiencesData';
+import { Calendar, MapPin, Sparkle, X } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useQuerySync } from "@/hooks/useQuerySync";
+import Img from "@/components/common/Img";
+import { TRAVELER_TYPE_LABELS } from "@/lib/data/journey-labels";
+import { formatUSD } from "@/lib/format";
+import { useParams } from "next/navigation";
+import { getBasePricePerPerson } from "@/lib/data/traveler-types";
+import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import {
   getExcuseOptions,
   getExcuseTitle,
   getHasExcuseStep,
-} from '@/lib/helpers/excuse-helper';
-import { FILTER_OPTIONS } from '@/store/slices/journeyStore';
-import { ADDONS } from '@/lib/data/shared/addons-catalog';
+} from "@/lib/helpers/excuse-helper";
+import { FILTER_OPTIONS } from "@/store/slices/journeyStore";
+import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import {
   TRANSPORT_ICONS,
   TRANSPORT_OPTIONS,
-} from '@/components/journey/TransportSelector';
-import { cn } from '@/lib/utils';
-import { getOptionalPrimaryTransportFromOrderParam } from '@/lib/helpers/transport';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
+} from "@/components/journey/TransportSelector";
+import { cn } from "@/lib/utils";
+import {
+  getOptionalPrimaryTransportFromOrderParam,
+  normalizeJourneyFilterValue,
+  normalizeMaxTravelTimeKey,
+} from "@/lib/helpers/transport";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
+import { getFiltersCostBreakdown } from "@/lib/pricing";
+import type { Filters } from "@/store/slices/journeyStore";
+import { usePayment } from "@/hooks/usePayment";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 
-type JourneySummaryDict = MarketingDictionary['journey']['summary'];
+type JourneySummaryDict = MarketingDictionary["journey"]["summary"];
+
+export interface JourneyTotalsLabels {
+  addonsPerPersonLabel: string;
+  filterFeeLabel: string;
+  filterFeeLine: string;
+  filterFeeLineFirstFree: string;
+  filterFeeLineNone: string;
+  filterFeePaxLine: string;
+  perPersonSectionTitle: string;
+  subtotalPerPersonLabel: string;
+  summaryHeroPriceCaption: string;
+  totalLabel: string;
+}
+
+function checkoutUsd(n: number): string {
+  return `USD ${Math.round(n)}`;
+}
 
 function formatDatesSummary(
   startDate: string,
@@ -34,25 +59,25 @@ function formatDatesSummary(
   template: string,
   monthsShort: string[],
 ): string {
-  const [y, m, d] = startDate.split('-').map(Number);
+  const [y, m, d] = startDate.split("-").map(Number);
   const start = new Date(y, m - 1, d);
   const end = new Date(start);
   end.setDate(end.getDate() + nights);
   const startDay = start.getDate();
   const endDay = end.getDate();
-  const startMonth = monthsShort[start.getMonth()] ?? '';
-  const endMonth = monthsShort[end.getMonth()] ?? '';
+  const startMonth = monthsShort[start.getMonth()] ?? "";
+  const endMonth = monthsShort[end.getMonth()] ?? "";
   return template
-    .replace('{startDay}', String(startDay))
-    .replace('{endDay}', String(endDay))
-    .replace('{startMonth}', startMonth)
-    .replace('{endMonth}', endMonth);
+    .replace("{startDay}", String(startDay))
+    .replace("{endDay}", String(endDay))
+    .replace("{startMonth}", startMonth)
+    .replace("{endMonth}", endMonth);
 }
 
 function getFilterLabel(
   group: keyof typeof FILTER_OPTIONS,
   key: string,
-  filterOptions?: JourneySummaryProps['filterOptions'],
+  filterOptions?: JourneySummaryProps["filterOptions"],
 ): string {
   const fo = filterOptions as
     | Record<string, { options: Array<{ key: string; label: string }> }>
@@ -107,6 +132,8 @@ interface JourneySummaryProps {
     Record<string, Array<{ key: string; label: string; desc: string }>>
   >;
   summary: JourneySummaryDict;
+  /** Checkout-aligned filter breakdown + subtotal/total labels (journey.checkout). */
+  totalsLabels: JourneyTotalsLabels;
 }
 
 export default function JourneySummary({
@@ -118,16 +145,17 @@ export default function JourneySummary({
   onEdit,
   refineDetailOptions,
   summary,
+  totalsLabels,
 }: JourneySummaryProps) {
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
 
   const handleRemoveDetail = useCallback(
     (keyToRemove: string) => {
-      const raw = searchParams.get('refineDetails');
+      const raw = searchParams.get("refineDetails");
       const current = raw
         ? raw
-            .split(',')
+            .split(",")
             .map((s) => s.trim())
             .filter(Boolean)
         : [];
@@ -138,48 +166,48 @@ export default function JourneySummary({
     [onDetailRemove, searchParams, updateQuery],
   );
 
-  const travelType = searchParams.get('travelType') || undefined;
-  const experience = searchParams.get('experience') || undefined;
-  const excuse = searchParams.get('excuse') || undefined;
+  const travelType = searchParams.get("travelType") || undefined;
+  const experience = searchParams.get("experience") || undefined;
+  const excuse = searchParams.get("excuse") || undefined;
   const hasExcuseStep = useMemo(
-    () => getHasExcuseStep(travelType ?? '', experience),
+    () => getHasExcuseStep(travelType ?? "", experience),
     [experience, travelType],
   );
-  const refineDetailsRaw = searchParams.get('refineDetails');
+  const refineDetailsRaw = searchParams.get("refineDetails");
   const refineDetails = useMemo(
-    () => (refineDetailsRaw ? refineDetailsRaw.split(',').filter(Boolean) : []),
+    () => (refineDetailsRaw ? refineDetailsRaw.split(",").filter(Boolean) : []),
     [refineDetailsRaw],
   );
-  const originCountry = searchParams.get('originCountry') || '';
-  const originCity = searchParams.get('originCity') || '';
-  const startDate = searchParams.get('startDate') || undefined;
-  const nightsParam = searchParams.get('nights');
+  const originCountry = searchParams.get("originCountry") || "";
+  const originCity = searchParams.get("originCity") || "";
+  const startDate = searchParams.get("startDate") || undefined;
+  const nightsParam = searchParams.get("nights");
   const nights = useMemo(() => {
     const n = nightsParam ? Number(nightsParam) : NaN;
     return Number.isFinite(n) && n > 0 ? n : 1;
   }, [nightsParam]);
   const transport = getOptionalPrimaryTransportFromOrderParam(
-    searchParams.get('transportOrder'),
+    searchParams.get("transportOrder"),
   );
-  const accommodationType = searchParams.get('accommodationType') || undefined;
-  const departPref = searchParams.get('departPref') || undefined;
-  const arrivePref = searchParams.get('arrivePref') || undefined;
-  const maxTravelTime = searchParams.get('maxTravelTime') || undefined;
-  const climate = searchParams.get('climate') || undefined;
-  const avoidDestinationsRaw = searchParams.get('avoidDestinations');
+  const accommodationType = searchParams.get("accommodationType") || undefined;
+  const departPref = searchParams.get("departPref") || undefined;
+  const arrivePref = searchParams.get("arrivePref") || undefined;
+  const maxTravelTime = searchParams.get("maxTravelTime") || undefined;
+  const climate = searchParams.get("climate") || undefined;
+  const avoidDestinationsRaw = searchParams.get("avoidDestinations");
   const avoidDestinations = useMemo(
     () =>
       avoidDestinationsRaw
-        ? avoidDestinationsRaw.split(',').filter(Boolean)
+        ? avoidDestinationsRaw.split(",").filter(Boolean)
         : [],
     [avoidDestinationsRaw],
   );
-  const addonsRaw = searchParams.get('addons');
+  const addonsRaw = searchParams.get("addons");
   const addonIds = useMemo(
     () =>
       addonsRaw
         ? addonsRaw
-            .split(',')
+            .split(",")
             .map((s) => s.trim())
             .filter(Boolean)
         : [],
@@ -187,7 +215,7 @@ export default function JourneySummary({
   );
 
   const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const selectedLevel = useMemo(() => {
     if (!experience || !travelType) return null;
     return getLevelById(travelType, experience, locale) ?? null;
@@ -229,7 +257,7 @@ export default function JourneySummary({
     if (!hasExcuseStep) return [];
     if (!excuse || refineDetails.length === 0) return [];
     const fallbackOptions = getExcuseOptions(excuse);
-    const travelType = (searchParams.get('travelType') || '').toLowerCase();
+    const travelType = (searchParams.get("travelType") || "").toLowerCase();
     const byExcuse = refineDetailOptions?.[travelType]?.[excuse];
     return refineDetails.map((key) => {
       const localized = byExcuse?.find((o) => o.key === key)?.label;
@@ -242,7 +270,7 @@ export default function JourneySummary({
     if (!transport) return undefined;
     return (
       TRANSPORT_OPTIONS.find((o) => o.id === transport)?.label ??
-      getFilterLabel('transport', transport, filterOptions)
+      getFilterLabel("transport", transport, filterOptions)
     );
   }, [transport]);
 
@@ -251,12 +279,12 @@ export default function JourneySummary({
     : null;
 
   type FilterKind =
-    | 'accommodationType'
-    | 'arrivePref'
-    | 'avoid'
-    | 'climate'
-    | 'departPref'
-    | 'maxTravelTime';
+    | "accommodationType"
+    | "arrivePref"
+    | "avoid"
+    | "climate"
+    | "departPref"
+    | "maxTravelTime";
 
   const activeFilters = useMemo(() => {
     const list: {
@@ -265,45 +293,45 @@ export default function JourneySummary({
       label: string;
       value?: string;
     }[] = [];
-    if (accommodationType && accommodationType !== 'any') {
+    if (accommodationType && accommodationType !== "any") {
       list.push({
         id: `accommodationType-${accommodationType}`,
-        kind: 'accommodationType',
-        label: `${summary.filterLabelAccommodation}: ${getFilterLabel('accommodationType', accommodationType, filterOptions)}`,
+        kind: "accommodationType",
+        label: `${summary.filterLabelAccommodation}: ${getFilterLabel("accommodationType", accommodationType, filterOptions)}`,
       });
     }
-    if (departPref && departPref !== 'any') {
+    if (departPref && departPref !== "any") {
       list.push({
         id: `depart-${departPref}`,
-        kind: 'departPref',
-        label: `${summary.filterLabelDepart}: ${getFilterLabel('departPref', departPref, filterOptions)}`,
+        kind: "departPref",
+        label: `${summary.filterLabelDepart}: ${getFilterLabel("departPref", departPref, filterOptions)}`,
       });
     }
-    if (arrivePref && arrivePref !== 'any') {
+    if (arrivePref && arrivePref !== "any") {
       list.push({
         id: `arrive-${arrivePref}`,
-        kind: 'arrivePref',
-        label: `${summary.filterLabelArrive}: ${getFilterLabel('arrivePref', arrivePref, filterOptions)}`,
+        kind: "arrivePref",
+        label: `${summary.filterLabelArrive}: ${getFilterLabel("arrivePref", arrivePref, filterOptions)}`,
       });
     }
-    if (maxTravelTime && maxTravelTime !== 'no-limit') {
+    if (maxTravelTime && maxTravelTime !== "no-limit") {
       list.push({
         id: `time-${maxTravelTime}`,
-        kind: 'maxTravelTime',
-        label: `${summary.filterLabelTime}: ${getFilterLabel('maxTravelTime', maxTravelTime, filterOptions)}`,
+        kind: "maxTravelTime",
+        label: `${summary.filterLabelTime}: ${getFilterLabel("maxTravelTime", maxTravelTime, filterOptions)}`,
       });
     }
-    if (climate && climate !== 'any') {
+    if (climate && climate !== "any") {
       list.push({
         id: `climate-${climate}`,
-        kind: 'climate',
-        label: `${summary.filterLabelClimate}: ${getFilterLabel('climate', climate, filterOptions)}`,
+        kind: "climate",
+        label: `${summary.filterLabelClimate}: ${getFilterLabel("climate", climate, filterOptions)}`,
       });
     }
     avoidDestinations.forEach((city) => {
       list.push({
         id: `avoid-${city}`,
-        kind: 'avoid',
+        kind: "avoid",
         label: `${summary.filterLabelAvoid}: ${city}`,
         value: city,
       });
@@ -327,7 +355,7 @@ export default function JourneySummary({
 
   const handleRemoveFilter = useCallback(
     (kind: FilterKind, value?: string) => {
-      if (kind === 'avoid' && value != null) {
+      if (kind === "avoid" && value != null) {
         const next = avoidDestinations.filter(
           (c) => c.toLowerCase() !== value.toLowerCase(),
         );
@@ -336,11 +364,11 @@ export default function JourneySummary({
         });
       } else {
         const patch: Record<string, string | undefined> = {};
-        if (kind === 'accommodationType') patch.accommodationType = undefined;
-        if (kind === 'departPref') patch.departPref = undefined;
-        if (kind === 'arrivePref') patch.arrivePref = undefined;
-        if (kind === 'maxTravelTime') patch.maxTravelTime = undefined;
-        if (kind === 'climate') patch.climate = undefined;
+        if (kind === "accommodationType") patch.accommodationType = undefined;
+        if (kind === "departPref") patch.departPref = undefined;
+        if (kind === "arrivePref") patch.arrivePref = undefined;
+        if (kind === "maxTravelTime") patch.maxTravelTime = undefined;
+        if (kind === "climate") patch.climate = undefined;
         if (Object.keys(patch).length > 0) updateQuery(patch);
       }
     },
@@ -349,10 +377,10 @@ export default function JourneySummary({
 
   const handleRemoveAddon = useCallback(
     (addonId: string) => {
-      const raw = searchParams.get('addons');
+      const raw = searchParams.get("addons");
       const current = raw
         ? raw
-            .split(',')
+            .split(",")
             .map((s) => s.trim())
             .filter(Boolean)
         : [];
@@ -368,28 +396,82 @@ export default function JourneySummary({
       .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
   }, [addonIds]);
 
-  const filterCost = useMemo(() => {
-    const n = activeFilters.length;
-    if (n <= 1) return 0;
-    if (n === 2) return 18;
-    if (n === 3) return 18 + 18;
-    return 18 + 18 + (n - 3) * 25;
-  }, [activeFilters.length]);
+  const pax = useMemo(
+    () =>
+      Math.max(
+        1,
+        Math.min(20, parseInt(searchParams.get("pax") ?? "2", 10) || 2),
+      ),
+    [searchParams],
+  );
 
-  const totalPrice = useMemo(() => {
-    let base = selectedLevel?.price ?? 0;
-    base += filterCost;
-    if (JOURNEY_ADDONS_ENABLED) {
-      selectedAddons.forEach((addon) => {
-        if (addon.priceType === 'currency') {
-          base += addon.price;
-        } else {
-          base += (base * addon.price) / 100;
-        }
-      });
-    }
-    return formatUSD(Math.round(base));
-  }, [filterCost, selectedLevel, selectedAddons]);
+  const filtersForPricing = useMemo((): Filters => {
+    return {
+      accommodationType:
+        normalizeJourneyFilterValue(accommodationType) ?? "any",
+      arrivePref: normalizeJourneyFilterValue(arrivePref) ?? "any",
+      avoidDestinations,
+      climate: normalizeJourneyFilterValue(climate) ?? "any",
+      departPref: normalizeJourneyFilterValue(departPref) ?? "any",
+      maxTravelTime: normalizeMaxTravelTimeKey(maxTravelTime) ?? "no-limit",
+      transport: transport ?? "plane",
+    };
+  }, [
+    accommodationType,
+    arrivePref,
+    avoidDestinations,
+    climate,
+    departPref,
+    maxTravelTime,
+    transport,
+  ]);
+
+  const { calculateTotals } = usePayment(
+    {
+      addons: {
+        selected: JOURNEY_ADDONS_ENABLED
+          ? addonIds.map((id) => ({ id, qty: 1 }))
+          : [],
+      },
+      avoidCount: avoidDestinations.length,
+      basePriceUsd: selectedLevel?.price ?? 0,
+      filters: filtersForPricing,
+      logistics: {
+        city: originCity,
+        country: originCountry,
+        endDate: undefined,
+        nights,
+        pax,
+        startDate: startDate ? new Date(startDate) : undefined,
+      },
+    },
+    { locale },
+  );
+
+  const paymentTotals = calculateTotals();
+  const filterBreakdown = getFiltersCostBreakdown(
+    filtersForPricing,
+    pax,
+    avoidDestinations.length,
+  );
+  const addonsPerPaxCombined =
+    paymentTotals.addonsPerPax + paymentTotals.cancelInsurancePerPax;
+  const filterFeeDescription =
+    filterBreakdown.optional === 0
+      ? totalsLabels.filterFeeLineNone
+      : filterBreakdown.tripTotal === 0
+        ? interpolateTemplate(totalsLabels.filterFeeLineFirstFree, {
+            optional: String(filterBreakdown.optional),
+          })
+        : interpolateTemplate(totalsLabels.filterFeeLine, {
+            billable: String(filterBreakdown.billable),
+            optional: String(filterBreakdown.optional),
+            pax: String(pax),
+            unit: String(filterBreakdown.tierUnit),
+          });
+  const filterFeePaxLine = interpolateTemplate(totalsLabels.filterFeePaxLine, {
+    pax: String(pax),
+  });
 
   const hasAnySummary =
     selectedTravelTypeInfo ||
@@ -402,17 +484,16 @@ export default function JourneySummary({
     activeFilters.length > 0 ||
     (JOURNEY_ADDONS_ENABLED && selectedAddons.length > 0);
 
-  const sectionTitleClass = 'text-base font-bold text-gray-900';
-  const detailClass = 'text-sm font-normal text-gray-900';
-  const captionClass = 'text-xs font-normal text-gray-500';
-  const priceClass = 'text-lg font-bold text-gray-900';
+  const sectionTitleClass = "text-base font-bold text-gray-900";
+  const detailClass = "text-sm font-normal text-gray-900";
+  const captionClass = "text-xs font-normal text-gray-500";
   const actionButtonClass =
-    'flex-shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-gray-900 hover:bg-gray-200';
+    "flex-shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-gray-900 hover:bg-gray-200";
 
   return (
     <aside
       className={cn(
-        'flex w-full flex-shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80',
+        "flex w-full flex-shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80",
         className,
       )}
     >
@@ -434,12 +515,12 @@ export default function JourneySummary({
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <p className={cn('mb-1', sectionTitleClass)}>
+              <p className={cn("mb-1", sectionTitleClass)}>
                 {summary.travelTypeSection} | {selectedTravelTypeInfo.label}
               </p>
               <div className="flex items-center justify-between">
                 {selectedTravelTypeInfo.rating != null && (
-                  <p className={cn('mt-1', captionClass)}>
+                  <p className={cn("mt-1", captionClass)}>
                     {summary.favoriteAmongTravelers}
                     {selectedTravelTypeInfo.rating.toFixed(1)}
                     {selectedTravelTypeInfo.reviews != null &&
@@ -448,7 +529,7 @@ export default function JourneySummary({
                 )}
                 <button
                   className={actionButtonClass}
-                  onClick={() => onEdit?.('travel-type')}
+                  onClick={() => onEdit?.("travel-type")}
                   type="button"
                 >
                   {summary.change}
@@ -458,12 +539,12 @@ export default function JourneySummary({
           </div>
         ) : (
           <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-            <p className={cn('min-w-0 flex-1', sectionTitleClass)}>
+            <p className={cn("min-w-0 flex-1", sectionTitleClass)}>
               {summary.travelTypeSection}
             </p>
             <button
-              className={cn(actionButtonClass, 'flex-shrink-0')}
-              onClick={() => onEdit?.('travel-type')}
+              className={cn(actionButtonClass, "flex-shrink-0")}
+              onClick={() => onEdit?.("travel-type")}
               type="button"
             >
               {summary.add}
@@ -474,7 +555,7 @@ export default function JourneySummary({
 
       {/* Experiencia */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
+        <p className={cn("w-full", sectionTitleClass)}>
           {summary.experienceSection}
         </p>
         <div className="mt-2 flex items-center justify-between">
@@ -490,7 +571,7 @@ export default function JourneySummary({
               </div>
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('experience')}
+                onClick={() => onEdit?.("experience")}
                 type="button"
               >
                 {summary.change}
@@ -500,7 +581,7 @@ export default function JourneySummary({
             <div className="flex w-full justify-end">
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('experience')}
+                onClick={() => onEdit?.("experience")}
                 type="button"
               >
                 {summary.add}
@@ -514,7 +595,7 @@ export default function JourneySummary({
       {hasExcuseStep && (
         <>
           <div className="border-b border-gray-200 pb-4">
-            <p className={cn('w-full', sectionTitleClass)}>
+            <p className={cn("w-full", sectionTitleClass)}>
               {summary.excuseSection}
             </p>
             <div className="mt-2 flex items-center justify-between">
@@ -523,7 +604,7 @@ export default function JourneySummary({
                   <p className={detailClass}>{excuseTitle}</p>
                   <button
                     className={actionButtonClass}
-                    onClick={() => onEdit?.('excuse')}
+                    onClick={() => onEdit?.("excuse")}
                     type="button"
                   >
                     {summary.change}
@@ -533,7 +614,7 @@ export default function JourneySummary({
                 <div className="flex w-full justify-end">
                   <button
                     className={actionButtonClass}
-                    onClick={() => onEdit?.('excuse')}
+                    onClick={() => onEdit?.("excuse")}
                     type="button"
                   >
                     {summary.add}
@@ -545,7 +626,7 @@ export default function JourneySummary({
 
           {/* Refine details section – labels from summary.detailsSection */}
           <div className="border-b border-gray-200 pb-4">
-            <p className={cn('w-full', sectionTitleClass)}>
+            <p className={cn("w-full", sectionTitleClass)}>
               {summary.detailsSection}
             </p>
             <div className="mt-2 flex items-start justify-between gap-3">
@@ -571,7 +652,7 @@ export default function JourneySummary({
                   </div>
                   <button
                     className={actionButtonClass}
-                    onClick={() => onEdit?.('refine-details')}
+                    onClick={() => onEdit?.("refine-details")}
                     type="button"
                   >
                     {summary.edit}
@@ -582,7 +663,7 @@ export default function JourneySummary({
                   <p className={detailClass}>{summary.noDetails}</p>
                   <button
                     className={actionButtonClass}
-                    onClick={() => onEdit?.('refine-details')}
+                    onClick={() => onEdit?.("refine-details")}
                     type="button"
                   >
                     {summary.add}
@@ -596,7 +677,7 @@ export default function JourneySummary({
 
       {/* Origin section – labels from summary.originSection */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
+        <p className={cn("w-full", sectionTitleClass)}>
           {summary.originSection}
         </p>
         <div className="mt-2 flex items-center justify-between gap-3">
@@ -610,7 +691,7 @@ export default function JourneySummary({
               </div>
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('origin')}
+                onClick={() => onEdit?.("origin")}
                 type="button"
               >
                 {summary.change}
@@ -620,7 +701,7 @@ export default function JourneySummary({
             <div className="flex w-full justify-end">
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('origin')}
+                onClick={() => onEdit?.("origin")}
                 type="button"
               >
                 {summary.add}
@@ -632,7 +713,7 @@ export default function JourneySummary({
 
       {/* Fechas */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
+        <p className={cn("w-full", sectionTitleClass)}>
           {summary.datesSection}
         </p>
         <div className="mt-2 flex items-center justify-between gap-3">
@@ -651,7 +732,7 @@ export default function JourneySummary({
               </div>
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('dates')}
+                onClick={() => onEdit?.("dates")}
                 type="button"
               >
                 {summary.change}
@@ -661,7 +742,7 @@ export default function JourneySummary({
             <div className="flex w-full justify-end">
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('dates')}
+                onClick={() => onEdit?.("dates")}
                 type="button"
               >
                 {summary.add}
@@ -673,7 +754,7 @@ export default function JourneySummary({
 
       {/* Transporte * */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
+        <p className={cn("w-full", sectionTitleClass)}>
           {summary.transportSection}
         </p>
         <div className="mt-2 flex items-center justify-between gap-3">
@@ -690,7 +771,7 @@ export default function JourneySummary({
               </div>
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('transport')}
+                onClick={() => onEdit?.("transport")}
                 type="button"
               >
                 {summary.change}
@@ -700,7 +781,7 @@ export default function JourneySummary({
             <div className="flex w-full justify-end">
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('transport')}
+                onClick={() => onEdit?.("transport")}
                 type="button"
               >
                 {summary.add}
@@ -712,10 +793,10 @@ export default function JourneySummary({
 
       {/* Filtros (opcionales) */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={cn('w-full', sectionTitleClass)}>
+        <p className={cn("w-full", sectionTitleClass)}>
           {activeFilters.length > 0
             ? summary.filtersSectionCount.replace(
-                '{count}',
+                "{count}",
                 String(activeFilters.length),
               )
             : summary.filtersSection}
@@ -743,7 +824,7 @@ export default function JourneySummary({
               </div>
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('filters')}
+                onClick={() => onEdit?.("filters")}
                 type="button"
               >
                 {summary.change}
@@ -754,7 +835,7 @@ export default function JourneySummary({
               <p className={detailClass}>{summary.noFilters}</p>
               <button
                 className={actionButtonClass}
-                onClick={() => onEdit?.('filters')}
+                onClick={() => onEdit?.("filters")}
                 type="button"
               >
                 {summary.add}
@@ -766,10 +847,10 @@ export default function JourneySummary({
 
       {JOURNEY_ADDONS_ENABLED ? (
         <div className="border-b border-gray-200 pb-4">
-          <p className={cn('w-full', sectionTitleClass)}>
+          <p className={cn("w-full", sectionTitleClass)}>
             {selectedAddons.length > 0
               ? summary.addonsSectionCount.replace(
-                  '{count}',
+                  "{count}",
                   String(selectedAddons.length),
                 )
               : summary.addonsSection}
@@ -785,7 +866,7 @@ export default function JourneySummary({
                     >
                       <span>
                         {addonLabels?.[addon.id]?.title ?? addon.title}
-                        {addon.priceType === 'currency'
+                        {addon.priceType === "currency"
                           ? ` — USD ${addon.price}`
                           : ` — ${addon.price}%`}
                       </span>
@@ -802,7 +883,7 @@ export default function JourneySummary({
                 </div>
                 <button
                   className={actionButtonClass}
-                  onClick={() => onEdit?.('addons')}
+                  onClick={() => onEdit?.("addons")}
                   type="button"
                 >
                   {summary.change}
@@ -813,7 +894,7 @@ export default function JourneySummary({
                 <p className={detailClass}>{summary.noAddons}</p>
                 <button
                   className={actionButtonClass}
-                  onClick={() => onEdit?.('addons')}
+                  onClick={() => onEdit?.("addons")}
                   type="button"
                 >
                   {summary.add}
@@ -824,18 +905,65 @@ export default function JourneySummary({
         </div>
       ) : null}
 
-      {/* Total USD */}
+      {/* Totals — per-person breakdown, then trip total × travelers */}
       {hasAnySummary && (
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xl font-bold text-gray-900">
-              {summary.totalUsd} <span className="underline">USD</span>
+        <div className="">
+          <div className="flex gap-4 items-start justify-between">
+            <p className="font-barlow font-semibold text-sm text-gray-900">
+              {totalsLabels.summaryHeroPriceCaption}
             </p>
-            <p className={captionClass}>{summary.perPerson}</p>
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+              {checkoutUsd(paymentTotals.basePerPax)}
+            </p>
           </div>
-          <p className="text-right text-xl font-bold text-gray-900">
-            {totalPrice} USD
-          </p>
+
+          <div className="mt-4 flex gap-4 items-start justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="font-barlow font-semibold text-sm text-gray-900">
+                {totalsLabels.filterFeeLabel}
+              </p>
+              <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
+                {filterFeeDescription}
+              </p>
+            </div>
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+              {checkoutUsd(paymentTotals.filtersPerPax)}
+            </p>
+          </div>
+
+          {addonsPerPaxCombined > 0 ? (
+            <div className="mt-4 flex gap-4 items-start justify-between">
+              <p className="font-barlow font-semibold text-sm text-gray-900">
+                {totalsLabels.addonsPerPersonLabel}
+              </p>
+              <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+                {checkoutUsd(addonsPerPaxCombined)}
+              </p>
+            </div>
+          ) : null}
+
+          <div className="border-gray-200 border-t mt-4 flex gap-4 items-center justify-between pt-3">
+            <p className="font-barlow font-bold text-base text-gray-900">
+              {totalsLabels.subtotalPerPersonLabel}
+            </p>
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
+              {checkoutUsd(paymentTotals.totalPerPax)}
+            </p>
+          </div>
+
+          <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
+            <div className="min-w-0 flex-1">
+              <p className="font-barlow-condensed font-bold text-3xl text-gray-900">
+                {totalsLabels.totalLabel}
+              </p>
+              <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
+                {filterFeePaxLine}
+              </p>
+            </div>
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-gray-900">
+              {checkoutUsd(paymentTotals.totalTrip)}
+            </p>
+          </div>
         </div>
       )}
 

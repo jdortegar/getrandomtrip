@@ -3,7 +3,7 @@
 import { Minus, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Modal, DialogTitle } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 
 export interface CheckoutTravelersModalCopy {
@@ -122,56 +122,53 @@ export function CheckoutTravelersModal({
   }
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent
-        className={cn(
-          "z-[1100] gap-0 rounded-2xl border-gray-100 bg-white p-6 shadow-xl sm:max-w-md",
-        )}
-        overlayClassName="z-[1100]"
-        showCloseButton={false}
+    <Modal
+      className={cn("p-6 sm:max-w-md")}
+      onOpenChange={onOpenChange}
+      open={open}
+      showCloseButton={false}
+    >
+      <DialogTitle className="sr-only">{copy.dialogTitle}</DialogTitle>
+
+      <div className="space-y-0">
+        <TravelersQuantityStepper
+          ariaDecrease={copy.ariaDecreaseAdults}
+          ariaIncrease={copy.ariaIncreaseAdults}
+          label={copy.adultsLabel}
+          max={maxAdults}
+          min={1}
+          onValueChange={onAdultsChange}
+          value={adults}
+        />
+        <TravelersQuantityStepper
+          ariaDecrease={copy.ariaDecreaseMinors}
+          ariaIncrease={copy.ariaIncreaseMinors}
+          label={copy.minorsLabel}
+          max={maxMinors}
+          min={0}
+          onValueChange={onMinorsChange}
+          value={minors}
+        />
+        <TravelersQuantityStepper
+          ariaDecrease={copy.ariaDecreaseRooms}
+          ariaIncrease={copy.ariaIncreaseRooms}
+          label={copy.roomsLabel}
+          max={maxRooms}
+          min={1}
+          onValueChange={onRoomsChange}
+          value={rooms}
+        />
+      </div>
+
+      <Button
+        className="mt-6 w-full"
+        onClick={() => void handleDone()}
+        size="lg"
+        type="button"
+        variant="default"
       >
-        <DialogTitle className="sr-only">{copy.dialogTitle}</DialogTitle>
-
-        <div className="space-y-0">
-          <TravelersQuantityStepper
-            ariaDecrease={copy.ariaDecreaseAdults}
-            ariaIncrease={copy.ariaIncreaseAdults}
-            label={copy.adultsLabel}
-            max={maxAdults}
-            min={1}
-            onValueChange={onAdultsChange}
-            value={adults}
-          />
-          <TravelersQuantityStepper
-            ariaDecrease={copy.ariaDecreaseMinors}
-            ariaIncrease={copy.ariaIncreaseMinors}
-            label={copy.minorsLabel}
-            max={maxMinors}
-            min={0}
-            onValueChange={onMinorsChange}
-            value={minors}
-          />
-          <TravelersQuantityStepper
-            ariaDecrease={copy.ariaDecreaseRooms}
-            ariaIncrease={copy.ariaIncreaseRooms}
-            label={copy.roomsLabel}
-            max={maxRooms}
-            min={1}
-            onValueChange={onRoomsChange}
-            value={rooms}
-          />
-        </div>
-
-        <Button
-          className="mt-6 w-full"
-          onClick={() => void handleDone()}
-          type="button"
-          variant="default"
-          size="lg"
-        >
-          {copy.done}
-        </Button>
-      </DialogContent>
-    </Dialog>
+        {copy.done}
+      </Button>
+    </Modal>
   );
 }

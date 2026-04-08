@@ -1290,6 +1290,7 @@
       "contactCountryLabel": "País",
       "contactEmailHelper": "Este es el email asociado a tu cuenta",
       "contactEmailLabel": "Correo electrónico",
+      "contactIdDocumentLabel": "DNI / Pasaporte",
       "contactNameLabel": "Nombre completo",
       "contactPhoneLabel": "Teléfono",
       "contactStateLabel": "Provincia",
@@ -1298,6 +1299,7 @@
       "contactZipCodeLabel": "Código postal",
       "errors": {
         "connectionTryAgain": "Error de conexión. Intentá de nuevo.",
+        "idDocumentRequired": "Ingresá tu DNI o número de pasaporte.",
         "loadTripFailed": "Error al cargar el viaje",
         "loadTripsFailed": "No se pudieron cargar tus viajes",
         "noTripFound": "Viaje no encontrado",
@@ -1306,6 +1308,12 @@
         "saveUserFailed": "No se pudieron guardar tus datos.",
         "updateTripFailed": "No se pudo actualizar el viaje."
       },
+      "addonsPerPersonLabel": "Extras y seguro (por persona)",
+      "filterFeeLabel": "Recargo por filtros",
+      "filterFeeLine": "{{billable}} con costo × USD {{unit}} c/u × {{pax}} viajeros ({{optional}} opciones). El primer filtro es gratis.",
+      "filterFeeLineFirstFree": "{{optional}} opción(es). El primer filtro opcional es gratis — sin recargo.",
+      "filterFeeLineNone": "Sin preferencias opcionales — sin recargo por filtros.",
+      "filterFeePaxLine": "×{{pax}} personas",
       "formDescription": "Ajustá la cantidad de viajeros y continuá al pago seguro.",
       "formTitle": "Confirmá tu compra",
       "itemsDescription": "Detalle de lo que incluye tu viaje y las opciones que elegiste.",
@@ -1315,8 +1323,12 @@
       "payProcessingButton": "Procesando...",
       "paxLabel": "Cantidad de viajeros",
       "paxSelectAria": "Número de viajeros",
+      "perPersonSectionTitle": "Por persona",
       "processingPayment": "Procesando pago...",
       "summaryHeroPriceCaption": "Precio base tope por persona",
+      "subtotalLabel": "Subtotal",
+      "subtotalPerPersonLabel": "Subtotal por persona",
+      "totalLabel": "Total",
       "travelDetailsTitle": "Detalles de tu viaje",
       "travelersModalAriaDecreaseAdults": "Disminuir adultos",
       "travelersModalAriaDecreaseMinors": "Disminuir menores",
@@ -1338,9 +1350,19 @@
       "travelersRoomsMany": "{count} habitaciones",
       "travelersRoomsOne": "{count} habitación",
       "travelersTileTitle": "Viajeros",
-      "tripTotalCaption": "Total del viaje (×{count} personas)",
       "travelTypeTitleSeparator": "|",
       "volverButton": "Volver"
+    },
+    "userBadge": {
+      "guest": "Perfil invitado",
+      "levelLabel": "Nivel Randomtripero",
+      "levels": {
+        "adventurer": "Aventurero",
+        "beginner": "Principiante",
+        "explorer": "Explorador",
+        "nomad": "Nómade",
+        "randomtripper": "Randomtripero"
+      }
     }
   },
   "confirmation": {
@@ -2014,6 +2036,43 @@
       "nameRequired": "El nombre es obligatorio",
       "saveError": "Error al guardar los datos",
       "profileUpdated": "Perfil actualizado correctamente"
+    }
+  },
+  "adminTripEditModal": {
+    "title": "Editar viaje de {{userName}}",
+    "description": "ID del viaje: {{tripId}}",
+    "sectionSummary": "Resumen del viaje",
+    "sectionManageTrip": "Destino y estado",
+    "destinationLabel": "Destino revelado",
+    "destinationHelp": "Define el destino real de esta reserva. Al guardar se actualiza o borra el valor guardado.",
+    "destinationPlaceholder": "ej. Lisboa, Portugal",
+    "statusLabel": "Estado del viaje",
+    "sectionTimeline": "Hitos de cumplimiento",
+    "sectionDanger": "Zona de riesgo",
+    "deleteHint": "Elimina de forma permanente esta solicitud de viaje y el pago vinculado. No se puede deshacer.",
+    "deleteTrip": "Eliminar viaje",
+    "deleteConfirm": "¿Eliminar este viaje?",
+    "deleteCancel": "Conservar viaje",
+    "deleteDeleting": "Eliminando…",
+    "deleteError": "No se pudo eliminar el viaje. Inténtalo de nuevo.",
+    "cancel": "Cancelar",
+    "saveChanges": "Guardar cambios",
+    "saving": "Guardando…",
+    "details": {
+      "origin": "Origen",
+      "dates": "Fechas",
+      "nightsPax": "Noches / viajeros",
+      "transport": "Transporte",
+      "payment": "Pago"
+    },
+    "tripStatus": {
+      "DRAFT": "Borrador",
+      "SAVED": "Guardado",
+      "PENDING_PAYMENT": "Pago pendiente",
+      "CONFIRMED": "Confirmado",
+      "REVEALED": "Revelado",
+      "COMPLETED": "Completado",
+      "CANCELLED": "Cancelado"
     }
   },
   "emailSignatures": {

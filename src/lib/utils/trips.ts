@@ -1,18 +1,29 @@
 export interface Trip {
-  id: string;
-  type: string;
-  level: string;
-  city: string;
-  country: string;
-  startDate: string;
-  endDate: string;
-  status: string;
+  accommodationType?: string;
+  addons?: Array<{ id: string; qty: number }>;
   actualDestination?: string | null;
+  arrivePref?: string;
+  avoidDestinations?: string[];
+  city: string;
+  climate?: string;
+  country: string;
   customerRating?: number | null;
+  departPref?: string;
+  endDate: string;
+  id: string;
+  level: string;
+  maxTravelTime?: string;
+  /** Headcount for pricing (e.g. PAWS multipliers). */
+  nights?: number;
+  pax: number;
+  startDate: string;
+  status: string;
   totalTripUsd: number;
+  transport?: string;
+  type: string;
   payment?: {
-    status: string;
     amount: number;
+    status: string;
   };
 }
 
@@ -59,27 +70,69 @@ function toNumber(value: unknown): number {
   return numberValue;
 }
 
+function addonsFromApiJson(raw: unknown): Array<{ id: string; qty: number }> {
+  if (!Array.isArray(raw)) return [];
+  const out: Array<{ id: string; qty: number }> = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const o = item as Record<string, unknown>;
+    const id = String(o.id ?? '');
+    if (!id) continue;
+    const qty =
+      typeof o.qty === 'number' && Number.isFinite(o.qty)
+        ? o.qty
+        : Number(o.qty) || 1;
+    out.push({ id, qty });
+  }
+  return out;
+}
+
+function stringArrayFromApi(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((x) => String(x)).filter(Boolean);
+}
+
 /** Maps GET /api/trips item into a Trip shape. */
 export function mapTripFromApi(raw: unknown): Trip {
   const trip = raw as Record<string, unknown>;
   const payment = trip.payment as Record<string, unknown> | null | undefined;
-  const amount = toNumber(payment?.amount);
+  const paymentAmount = toNumber(payment?.amount);
+  const paxRaw = toNumber(trip.pax);
+  const pax = paxRaw > 0 ? paxRaw : 1;
+  const rowTotalUsd = toNumber(trip.totalTripUsd);
+  const totalTripUsd =
+    rowTotalUsd > 0 ? rowTotalUsd : paymentAmount > 0 ? paymentAmount : 0;
 
   return {
-    id: String(trip.id ?? ''),
-    type: String(trip.type ?? ''),
-    level: String(trip.level ?? ''),
-    city: String(trip.originCity ?? ''),
-    country: String(trip.originCountry ?? ''),
-    startDate: toIsoDate(trip.startDate),
-    endDate: toIsoDate(trip.endDate),
-    status: String(trip.status ?? ''),
+    accommodationType: trip.accommodationType
+      ? String(trip.accommodationType)
+      : undefined,
+    addons: addonsFromApiJson(trip.addons),
     actualDestination: (trip.actualDestination as string | null | undefined) ?? null,
+    arrivePref: trip.arrivePref ? String(trip.arrivePref) : undefined,
+    avoidDestinations: stringArrayFromApi(trip.avoidDestinations),
+    city: String(trip.originCity ?? ''),
+    climate: trip.climate ? String(trip.climate) : undefined,
+    country: String(trip.originCountry ?? ''),
     customerRating: (trip.customerRating as number | null | undefined) ?? null,
-    totalTripUsd: amount,
+    departPref: trip.departPref ? String(trip.departPref) : undefined,
+    endDate: toIsoDate(trip.endDate),
+    id: String(trip.id ?? ''),
+    level: String(trip.level ?? ''),
+    maxTravelTime: trip.maxTravelTime ? String(trip.maxTravelTime) : undefined,
+    nights: (() => {
+      const n = toNumber(trip.nights);
+      return n > 0 ? n : undefined;
+    })(),
+    pax,
+    startDate: toIsoDate(trip.startDate),
+    status: String(trip.status ?? ''),
+    totalTripUsd,
+    transport: trip.transport ? String(trip.transport) : undefined,
+    type: String(trip.type ?? ''),
     payment: payment
       ? {
-          amount,
+          amount: paymentAmount,
           status: String(payment.status ?? ''),
         }
       : undefined,

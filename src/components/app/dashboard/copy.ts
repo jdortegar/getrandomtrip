@@ -4,7 +4,7 @@ const DASHBOARD_COPY_ES: DashboardCopy = {
   allTrips: {
     emptyDestination: 'Destino Sorpresa',
     from: 'Desde',
-    title: 'Todos Mis Viajes',
+    title: 'Viajes pagados',
     totalLabel: 'viajes',
     viewMore: 'Ver mas',
   },
@@ -25,7 +25,13 @@ const DASHBOARD_COPY_ES: DashboardCopy = {
   },
   paymentStatus: {
     APPROVED: 'Aprobado',
+    CANCELLED: 'Cancelado',
+    COMPLETED: 'Completado',
+    FAILED: 'Fallido',
+    IN_PROCESS: 'En proceso',
     PENDING: 'Pendiente',
+    PROCESSING: 'Procesando',
+    REJECTED: 'Rechazado',
   },
   quickActions: {
     history: 'Historial de Pagos',
@@ -57,9 +63,16 @@ const DASHBOARD_COPY_ES: DashboardCopy = {
   },
   unpaidTrips: {
     action: 'Completar pago',
+    bookingRefLabel: 'Referencia',
+    estimatedTripTotal: 'Total estimado del viaje',
+    experienceSection: 'Experiencia',
     message: 'Completa el pago para confirmar tu reserva. Puedes reintentar desde aca.',
     paymentPrefix: 'Pago',
+    priceEstimateNote: 'Precio referencia según catálogo',
+    summaryHeroPriceCaption: 'Precio base por persona',
     title: 'Viajes pendientes de pago',
+    travelTypeSection: 'Tipo de viaje',
+    travelTypeTitleSeparator: '|',
   },
   upcomingTrips: {
     emptyCta: 'Planificar Viaje',
@@ -75,7 +88,7 @@ const DASHBOARD_COPY_EN: DashboardCopy = {
   allTrips: {
     emptyDestination: 'Surprise Destination',
     from: 'From',
-    title: 'All My Trips',
+    title: 'Paid trips',
     totalLabel: 'trips',
     viewMore: 'View more',
   },
@@ -96,7 +109,13 @@ const DASHBOARD_COPY_EN: DashboardCopy = {
   },
   paymentStatus: {
     APPROVED: 'Approved',
+    CANCELLED: 'Cancelled',
+    COMPLETED: 'Completed',
+    FAILED: 'Failed',
+    IN_PROCESS: 'In process',
     PENDING: 'Pending',
+    PROCESSING: 'Processing',
+    REJECTED: 'Rejected',
   },
   quickActions: {
     history: 'Payment History',
@@ -128,9 +147,16 @@ const DASHBOARD_COPY_EN: DashboardCopy = {
   },
   unpaidTrips: {
     action: 'Complete payment',
+    bookingRefLabel: 'Reference',
+    estimatedTripTotal: 'Estimated trip total',
+    experienceSection: 'Experience',
     message: 'Complete payment to confirm your reservation. You can retry from here.',
     paymentPrefix: 'Payment',
+    priceEstimateNote: 'Reference price from catalog',
+    summaryHeroPriceCaption: 'Base price per person',
     title: 'Trips Pending Payment',
+    travelTypeSection: 'Travel type',
+    travelTypeTitleSeparator: '|',
   },
   upcomingTrips: {
     emptyCta: 'Plan Trip',

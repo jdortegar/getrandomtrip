@@ -106,3 +106,34 @@ export async function PATCH(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, role: true },
+    });
+
+    if (!user || !hasRoleAccess(user.role, 'admin')) {
+      return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
+    }
+
+    await prisma.tripRequest.delete({
+      where: { id: params.id },
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error('Error deleting admin trip request:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

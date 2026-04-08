@@ -101,7 +101,7 @@ function FlipCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
           <div className="absolute inset-x-0 bottom-0 p-4">
-            <h3 className="text-2xl font-semibold font-caveat text-white">
+            <h3 className="text-2xl font-semibold text-white">
               {item.title}
             </h3>
           </div>

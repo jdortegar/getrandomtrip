@@ -15,9 +15,20 @@ function toAddress(val: unknown): UserProfileAddress | null {
   const state = typeof o.state === 'string' ? o.state : '';
   const zipCode = typeof o.zipCode === 'string' ? o.zipCode : '';
   const country = typeof o.country === 'string' ? o.country : '';
-  const hasAny = street || city || state || zipCode || country;
+  const idDocument =
+    typeof o.idDocument === 'string' && o.idDocument.trim()
+      ? o.idDocument.trim()
+      : undefined;
+  const hasAny = street || city || state || zipCode || country || idDocument;
   if (!hasAny) return null;
-  return { city, country, state, street, zipCode };
+  return {
+    city,
+    country,
+    ...(idDocument ? { idDocument } : {}),
+    state,
+    street,
+    zipCode,
+  };
 }
 
 export async function GET() {

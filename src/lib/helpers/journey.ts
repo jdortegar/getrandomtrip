@@ -18,6 +18,8 @@ export interface TripRequestPayloadFromJourney {
   departPref: string;
   endDate: string | null;
   from: 'journey';
+  /** When set (from `tripRequestId` query on /journey), POST updates that draft instead of creating another. */
+  id?: string;
   level: string;
   maxTravelTime: string;
   nights: number;
@@ -98,8 +100,12 @@ export function buildTripRequestPayloadFromSearchParams(
 
   const paxDetails = paxDetailsFromTotalPax(pax);
 
+  const tripRequestIdRaw = searchParams.get('tripRequestId')?.trim();
+  const id = tripRequestIdRaw && tripRequestIdRaw.length > 0 ? tripRequestIdRaw : undefined;
+
   return {
     from: options?.from ?? 'journey',
+    ...(id != null ? { id } : {}),
     type: travelType,
     level,
     originCountry,
@@ -215,6 +221,7 @@ export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<string, string | undefine
   refineDetails: undefined,
   startDate: undefined,
   transportOrder: undefined,
+  tripRequestId: undefined,
 };
 
 export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<string, string | undefined> = {
@@ -232,6 +239,7 @@ export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<string, string | undefined
   refineDetails: undefined,
   startDate: undefined,
   transportOrder: undefined,
+  tripRequestId: undefined,
 };
 
 // ---------------------------------------------------------------------------

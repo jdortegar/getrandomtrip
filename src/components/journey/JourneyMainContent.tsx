@@ -38,7 +38,6 @@ import { useStore } from '@/store/store';
 import { useUserStore } from '@/store/slices/userStore';
 import { cn } from '@/lib/utils';
 import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
 
 interface JourneyMainContentLabels {
   clearAll: string;
@@ -233,6 +232,7 @@ export default function JourneyMainContent({
         }
         return;
       }
+      updateQuery({ tripRequestId: data.tripRequest.id });
       router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
     } catch (err) {
       console.error('Error saving trip:', err);
@@ -240,7 +240,7 @@ export default function JourneyMainContent({
     } finally {
       setIsSavingAndRedirecting(false);
     }
-  }, [locale, router, searchParams, session?.user?.email, sessionStatus]);
+  }, [locale, router, searchParams, session?.user?.email, sessionStatus, updateQuery]);
 
   const handleTravelTypeSelect = (slug: string) => {
     updateQuery({ ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, travelType: slug });
@@ -400,6 +400,7 @@ export default function JourneyMainContent({
       startDate: undefined,
       transportOrder: undefined,
       travelType: undefined,
+      tripRequestId: undefined,
     });
     setAccordionValue('');
     if (onTabChange) onTabChange('budget');

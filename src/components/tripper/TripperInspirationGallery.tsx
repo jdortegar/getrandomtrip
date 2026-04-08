@@ -38,7 +38,7 @@ export default function TripperInspirationGallery({
       <div className="rt-container px-6 md:px-12">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="font-caveat text-4xl font-bold text-white md:text-6xl mb-6">
+          <h2 className="font-barlow-condensed text-4xl font-bold text-white md:text-6xl mb-6">
             Experiencias que {firstName} ha creado
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-white/90 leading-relaxed">
@@ -97,7 +97,7 @@ export default function TripperInspirationGallery({
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-secondary transition-colors font-caveat">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-secondary transition-colors">
                     {trip.title}
                   </h3>
                   <p className="text-white/90 mb-4 leading-relaxed">

@@ -19,6 +19,7 @@ import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { useUserStore } from "@/store/slices";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
 import { useParams, useRouter } from "next/navigation";
 import {
   getPayments,
@@ -145,6 +146,13 @@ function DashboardContent() {
     });
   }, [trips]);
 
+  const paidTrips = useMemo(() => {
+    return trips.filter((t) => {
+      const ps = t.payment?.status;
+      return ps === "APPROVED" || ps === "COMPLETED";
+    });
+  }, [trips]);
+
   const upcomingTrips = trips
     .filter((t) => t.status === "CONFIRMED" || t.status === "REVEALED")
     .slice(0, 3);
@@ -168,20 +176,6 @@ function DashboardContent() {
     return copy.tripStatus[status] ?? status;
   };
 
-  const getPaymentStatusColor = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-      case "COMPLETED":
-        return "text-green-600";
-      case "PENDING":
-        return "text-yellow-600";
-      case "FAILED":
-      case "REJECTED":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
-  };
 
   if (userRole === "tripper") {
     return <LoadingSpinner />;
@@ -203,9 +197,9 @@ function DashboardContent() {
       <Section>
         <div className="rt-container">
           {loading ? (
-            <LoadingSpinner />
+            <DashboardSkeleton />
           ) : (
-            <>
+            <div className="space-y-8">
               <DashboardStatsGrid copy={copy} stats={stats} />
               <UnpaidTripsAlert
                 copy={copy}
@@ -233,16 +227,15 @@ function DashboardContent() {
               </div>
               <RecentPaymentsTable
                 copy={copy}
-                getPaymentStatusColor={getPaymentStatusColor}
                 payments={payments}
               />
               <AllTripsGrid
                 copy={copy}
                 getStatusColor={getStatusColor}
                 getStatusLabel={getStatusLabel}
-                trips={trips}
+                trips={paidTrips}
               />
-            </>
+            </div>
           )}
         </div>
       </Section>

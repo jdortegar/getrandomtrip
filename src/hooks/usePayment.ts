@@ -1,30 +1,10 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { ADDONS } from '@/lib/data/shared/addons-catalog';
-import { computeFiltersCostPerTrip } from '@/lib/pricing';
-import type {
-  Logistics,
-  Filters,
-  AddonSelection,
-} from '@/store/slices/journeyStore';
-
-interface PaymentData {
-  basePriceUsd: number;
-  logistics: Logistics;
-  filters: Filters;
-  addons: { selected: AddonSelection[] };
-  /** Count of avoid destinations (from URL param); not in store */
-  avoidCount?: number;
-}
-
-interface PaymentTotals {
-  basePerPax: number;
-  filtersPerPax: number;
-  addonsPerPax: number;
-  cancelInsurancePerPax: number;
-  totalPerPax: number;
-  totalTrip: number;
-}
+import {
+  calculatePaymentTotals,
+  type PaymentTotalsInput,
+  type PaymentTotalsResult,
+} from '@/lib/helpers/payment-totals';
 
 interface UsePaymentOptions {
   locale?: string;
@@ -35,80 +15,16 @@ interface UsePaymentOptions {
  * Follows Single Responsibility Principle - handles only payment logic
  */
 export function usePayment(
-  paymentData: PaymentData,
+  paymentData: PaymentTotalsInput,
   options?: UsePaymentOptions,
 ) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { data: session } = useSession();
   const locale = options?.locale ?? 'es';
 
-  const { basePriceUsd, logistics, filters, addons, avoidCount = 0 } = paymentData;
-  const pax = logistics.pax || 1;
+  const calculateTotals = (): PaymentTotalsResult =>
+    calculatePaymentTotals(paymentData);
 
-  /**
-   * Calculate payment totals following DRY principle
-   * Centralized pricing logic that can be reused
-   */
-  const calculateTotals = (): PaymentTotals => {
-    const basePerPax = basePriceUsd || 0;
-
-    // Calculate filters cost (total trip cost, not per person)
-    const filtersTripTotal = computeFiltersCostPerTrip(
-      filters,
-      pax,
-      avoidCount,
-    );
-    const filtersPerPax = filtersTripTotal / pax;
-
-    // Calculate addons cost per person (excluding cancellation insurance)
-    let addonsPerPax = 0;
-    const hasCancelInsurance = addons.selected.some(
-      (s) => s.id === 'cancel-ins',
-    );
-
-    addons.selected.forEach((s) => {
-      const a = ADDONS.find((x) => x.id === s.id);
-      if (!a || a.id === 'cancel-ins') return; // Skip cancel-ins for now
-
-      const qty = s.qty || 1;
-      const totalPrice = a.price * qty;
-
-      if (a.type === 'perPax') {
-        // For perPax, show individual price (total / qty)
-        addonsPerPax += totalPrice / qty;
-      } else {
-        // For perTrip, divide by number of passengers
-        addonsPerPax += totalPrice / pax;
-      }
-    });
-
-    // Calculate subtotal before cancellation insurance
-    const subtotalPerPax = basePerPax + filtersPerPax + addonsPerPax;
-
-    // Calculate cancellation insurance as 15% of subtotal
-    const cancelInsurancePerPax = hasCancelInsurance
-      ? subtotalPerPax * 0.15
-      : 0;
-
-    // Calculate totals
-    const totalAddonsPerPax = addonsPerPax + cancelInsurancePerPax;
-    const totalPerPax = basePerPax + filtersPerPax + totalAddonsPerPax;
-    const totalTrip = totalPerPax * pax;
-
-    return {
-      basePerPax,
-      filtersPerPax,
-      addonsPerPax,
-      cancelInsurancePerPax,
-      totalPerPax,
-      totalTrip,
-    };
-  };
-
-  /**
-   * Initiate MercadoPago payment
-   * Single responsibility - handles only payment initiation
-   */
   const initiatePayment = async (
     tripId?: string,
     payer?: { email?: string; name?: string },

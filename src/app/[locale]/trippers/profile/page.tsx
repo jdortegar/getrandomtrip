@@ -187,7 +187,7 @@ function TripperProfileContent() {
       {/* Simple header instead of Hero component */}
       <div className="bg-primary py-16">
         <div className="max-w-6xl mx-auto px-6">
-          <h1 className="text-4xl font-bold text-white mb-4 font-caveat">
+          <h1 className="text-4xl font-bold text-white mb-4">
             Mi Perfil de Tripper
           </h1>
           <p className="text-xl text-white/90">

@@ -154,9 +154,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         tabs={contentTabsForUI.map((tab) => ({ id: tab.id, label: tab.label }))}
-        user={{
-          name: journey.userNamePlaceholder,
-        }}
+        userBadgeLabels={journey.userBadge}
       />
 
       <div className="container mx-auto px-4 py-8" ref={contentRef}>
@@ -195,6 +193,19 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               hasExcuseStep ? journey.refineDetailOptions : undefined
             }
             summary={journey.summary}
+            totalsLabels={{
+              addonsPerPersonLabel: journey.checkout.addonsPerPersonLabel,
+              filterFeeLabel: journey.checkout.filterFeeLabel,
+              filterFeeLine: journey.checkout.filterFeeLine,
+              filterFeeLineFirstFree: journey.checkout.filterFeeLineFirstFree,
+              filterFeeLineNone: journey.checkout.filterFeeLineNone,
+              filterFeePaxLine: journey.checkout.filterFeePaxLine,
+              perPersonSectionTitle: journey.checkout.perPersonSectionTitle,
+              subtotalPerPersonLabel: journey.checkout.subtotalPerPersonLabel,
+              summaryHeroPriceCaption:
+                journey.checkout.summaryHeroPriceCaption,
+              totalLabel: journey.checkout.totalLabel,
+            }}
           />
         </div>
       </div>

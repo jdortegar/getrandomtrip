@@ -8,20 +8,27 @@ const TIMELINE_STATUSES: TripRequestStatus[] = ['CONFIRMED', 'REVEALED', 'COMPLE
 const STATUS_DATE_FIELD: Partial<Record<TripRequestStatus, keyof AdminTripRequest>> = {
   COMPLETED: 'completedAt',
   CONFIRMED: 'updatedAt',
-  REVEALED:  'destinationRevealedAt',
+  REVEALED: 'destinationRevealedAt',
 };
 
 interface TripStatusTimelineProps {
   currentStatus: TripRequestStatus;
+  statusLabel: (status: TripRequestStatus) => string;
+  timelineTitle: string;
   trip: AdminTripRequest;
 }
 
-export function TripStatusTimeline({ currentStatus, trip }: TripStatusTimelineProps) {
+export function TripStatusTimeline({
+  currentStatus,
+  statusLabel,
+  timelineTitle,
+  trip,
+}: TripStatusTimelineProps) {
   const currentIndex = TRIP_STATUS_FLOW.indexOf(currentStatus);
   return (
-    <div className="px-4 py-3">
-      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">
-        Status Timeline
+    <div>
+      <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
+        {timelineTitle}
       </p>
       <div className="flex flex-col gap-2">
         {TIMELINE_STATUSES.map((status) => {
@@ -34,22 +41,22 @@ export function TripStatusTimeline({ currentStatus, trip }: TripStatusTimelinePr
               <div
                 className={cn(
                   'h-2 w-2 shrink-0 rounded-full',
-                  isPast ? 'bg-green-500' : 'bg-gray-200',
+                  isPast ? 'bg-green-500' : 'bg-gray-300',
                 )}
               />
               <span
                 className={cn(
-                  'text-xs font-semibold',
-                  isPast ? 'text-gray-700' : 'text-gray-400',
+                  'text-base font-semibold',
+                  isPast ? 'text-gray-900' : 'text-gray-600',
                 )}
               >
-                {status}
+                {statusLabel(status)}
               </span>
-              {isPast && dateValue && (
-                <span className="ml-auto text-xs text-gray-400">
+              {isPast && dateValue ? (
+                <span className="ml-auto text-base text-gray-600">
                   {formatAdminDate(dateValue)}
                 </span>
-              )}
+              ) : null}
             </div>
           );
         })}

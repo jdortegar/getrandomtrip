@@ -17,28 +17,28 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
   }> = [
     {
       icon: Plane,
-      iconClassName: "text-sky-400",
+      iconClassName: "text-[#4f96b6]",
       key: "total-trips",
       label: copy.stats.totalTrips,
       value: stats.totalTrips,
     },
     {
       icon: Calendar,
-      iconClassName: "text-sky-400",
+      iconClassName: "text-[#4f96b6]",
       key: "upcoming-trips",
       label: copy.stats.upcomingTrips,
       value: stats.upcomingTrips,
     },
     {
       icon: DollarSign,
-      iconClassName: "text-sky-400",
+      iconClassName: "text-[#4f96b6]",
       key: "total-spent",
       label: copy.stats.totalSpent,
       value: `$${(stats.totalSpent ?? 0).toFixed(0)}`,
     },
     {
       icon: Star,
-      iconClassName: "text-sky-400",
+      iconClassName: "text-[#4f96b6]",
       key: "average-rating",
       label: copy.stats.averageRating,
       value: stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : "—",
@@ -56,7 +56,7 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="mb-1 font-normal text-gray-600 text-xl">
+                <p className="mb-1 text-sm font-medium text-neutral-500">
                   {card.label}
                 </p>
                 <p className="font-barlow-condensed font-bold text-4xl text-gray-900">

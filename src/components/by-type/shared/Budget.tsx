@@ -50,7 +50,7 @@ const LevelCard = ({
       <div className="py-12 px-6">
         {/* Plan Name */}
         <div className="text-center h-[80px]">
-          <h3 className="text-3xl font-bold text-gray-900 font-caveat">
+          <h3 className="text-3xl font-bold text-gray-900">
             {level.name}
           </h3>
           <p className="text-gray-600 text-sm">{level.subtitle}</p>

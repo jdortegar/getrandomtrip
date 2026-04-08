@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, MapPin, Plus } from "lucide-react";
+import { MapPin, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { DashboardCopy } from "./types";
 
@@ -21,19 +21,19 @@ export function QuickActions({ copy }: QuickActionsProps) {
       icon: MapPin,
       key: "profile",
       label: copy.quickActions.profile,
-      variant: "secondary" as const,
+      variant: "ghost" as const,
     },
-    {
-      href: "#historial",
-      icon: Clock,
-      key: "history",
-      label: copy.quickActions.history,
-      variant: "secondary" as const,
-    },
+    // {
+    //   href: "#historial",
+    //   icon: Clock,
+    //   key: "history",
+    //   label: copy.quickActions.history,
+    //   variant: "ghost" as const,
+    // },
   ];
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
       <h3 className="text-lg font-semibold text-neutral-900 mb-4">
         {copy.quickActions.title}
       </h3>
