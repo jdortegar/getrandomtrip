@@ -90,7 +90,7 @@ export default function TripperRoutesPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-neutral-800">Mis Paquetes</h1>
         <Link
-          href="/tripper/packages/new"
+          href="/dashboard/tripper/packages/new"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           Nuevo Paquete

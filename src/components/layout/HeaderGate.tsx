@@ -2,15 +2,17 @@
 
 import { usePathname } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { pathWithoutLocale } from '@/lib/i18n/pathForLocale';
 
 export default function HeaderGate() {
   const pathname = usePathname();
+  const pathNoLocale = pathWithoutLocale(pathname);
 
-  if (pathname === '/packages/build/basic-config') {
+  if (pathNoLocale === '/experiences/build/basic-config') {
     return <Navbar variant="solid" />;
   }
 
-  if (pathname.startsWith('/packages/by-type')) {
+  if (pathNoLocale.startsWith('/experiences/by-type')) {
     return null;
   }
 

@@ -81,7 +81,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 <li>
                   <Link
                     className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
-                    href={pathForLocale(locale, '/packages/by-type/solo')}
+                    href={pathForLocale(locale, '/experiences/by-type/solo')}
                   >
                     {f.solo}
                   </Link>
@@ -89,7 +89,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 <li>
                   <Link
                     className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
-                    href={pathForLocale(locale, '/packages/by-type/couple')}
+                    href={pathForLocale(locale, '/experiences/by-type/couple')}
                   >
                     {f.couple}
                   </Link>
@@ -97,7 +97,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 <li>
                   <Link
                     className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
-                    href={pathForLocale(locale, '/packages/by-type/family')}
+                    href={pathForLocale(locale, '/experiences/by-type/family')}
                   >
                     {f.family}
                   </Link>
@@ -105,7 +105,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 <li>
                   <Link
                     className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
-                    href={pathForLocale(locale, '/packages/by-type/group')}
+                    href={pathForLocale(locale, '/experiences/by-type/group')}
                   >
                     {f.group}
                   </Link>
@@ -113,7 +113,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 <li>
                   <Link
                     className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
-                    href={pathForLocale(locale, '/packages/by-type/honeymoon')}
+                    href={pathForLocale(locale, '/experiences/by-type/honeymoon')}
                   >
                     {f.honeymoon}
                   </Link>
@@ -121,7 +121,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 <li>
                   <Link
                     className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
-                    href={pathForLocale(locale, '/packages/by-type/paws')}
+                    href={pathForLocale(locale, '/experiences/by-type/paws')}
                   >
                     {f.paws}
                   </Link>

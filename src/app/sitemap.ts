@@ -5,7 +5,7 @@ import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://getrandomtrip.com';
 
-/** Canonical slugs for packages/by-type routes (one sitemap entry per type). */
+/** Canonical slugs for experiences/by-type routes (one sitemap entry per type). */
 const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
   'couple',
   'solo',
@@ -29,7 +29,6 @@ const STATIC_PATHS: (PathConfig & { path: string })[] = [
   { path: 'experiences', changeFrequency: 'weekly', priority: 0.9 },
   { path: 'filters-premium', changeFrequency: 'monthly', priority: 0.6 },
   { path: 'journey', changeFrequency: 'weekly', priority: 0.9 },
-  { path: 'packages', changeFrequency: 'weekly', priority: 0.9 },
   { path: 'trippers', changeFrequency: 'weekly', priority: 0.7 },
 ];
 
@@ -68,10 +67,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entries.push(toSitemapEntry(config.path, config));
   }
 
-  // Packages by traveler type: /packages/by-type/[type]
+  // Experiences by traveler type: /experiences/by-type/[type]
   for (const slug of TRAVELER_TYPE_SLUGS) {
     entries.push(
-      toSitemapEntry(`packages/by-type/${slug}`, {
+      toSitemapEntry(`experiences/by-type/${slug}`, {
         changeFrequency: 'monthly',
         priority: 0.9,
       })

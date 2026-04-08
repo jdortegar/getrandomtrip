@@ -294,7 +294,7 @@ export interface MarketingDictionary {
         avoidGridLoading: string;
         avoidHint: string;
         avoidLabel: string;
-        avoidSearchModal?: {
+        avoidSearchModal: {
           addButton: string;
           cancelButton: string;
           saveDestinationsButton: string;

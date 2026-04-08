@@ -8,7 +8,6 @@ import {
   Sun,
   Thermometer,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
 import AvoidGrid from '@/components/journey/avoid/AvoidGrid';
 import { cn } from '@/lib/utils';
 
@@ -82,7 +81,7 @@ export interface JourneyFiltersFormLabels {
   avoidGridLoading: string;
   avoidHint: string;
   avoidLabel: string;
-  avoidSearchModal?: {
+  avoidSearchModal: {
     addButton: string;
     cancelButton: string;
     saveDestinationsButton: string;
@@ -124,11 +123,12 @@ export interface JourneyFiltersFormProps {
   maxTravelTime: string | undefined;
   onAccommodationTypeChange: (value: string) => void;
   onArrivePrefChange: (value: string) => void;
-  onClear: () => void;
+  /** Optional; footer is commented out — filters sync via URL (see JourneyMainContent). */
+  onClear?: () => void;
   onClimateChange: (value: string) => void;
   onDepartPrefChange: (value: string) => void;
   onMaxTravelTimeChange: (value: string) => void;
-  onSave: () => void;
+  onSave?: () => void;
   originCity: string;
   originCountry: string;
 }
@@ -143,11 +143,9 @@ export function JourneyFiltersForm({
   maxTravelTime,
   onAccommodationTypeChange,
   onArrivePrefChange,
-  onClear,
   onClimateChange,
   onDepartPrefChange,
   onMaxTravelTimeChange,
-  onSave,
   originCity,
   originCountry,
 }: JourneyFiltersFormProps) {
@@ -282,9 +280,11 @@ export function JourneyFiltersForm({
           }}
           originCity={originCity}
           originCountry={originCountry}
+          showImages={false}
         />
       </div>
 
+      {/*
       <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
         <button
           className="text-sm font-medium text-gray-900 underline hover:no-underline"
@@ -303,6 +303,7 @@ export function JourneyFiltersForm({
           {labelsProp.saveFiltersButton}
         </Button>
       </div>
+      */}
     </div>
   );
 }

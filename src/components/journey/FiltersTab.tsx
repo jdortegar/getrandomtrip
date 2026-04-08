@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/store/store';
 import { countOptionalFilters } from '@/lib/helpers/journey';
 import { useRouter } from 'next/navigation';
-import AvoidGrid from './avoid/AvoidGrid';
+import AvoidGrid, { type AvoidGridLabels } from './avoid/AvoidGrid';
 
 const calculateFilterCost = (filterCount: number): number => {
   if (filterCount <= 1) return 0;
@@ -13,7 +13,11 @@ const calculateFilterCost = (filterCount: number): number => {
   return (1 * 0) + (2 * 18) + (filterCount - 3) * 25;
 };
 
-export default function FiltersTab() {
+interface FiltersTabProps {
+  avoidGridLabels: AvoidGridLabels;
+}
+
+export default function FiltersTab({ avoidGridLabels }: FiltersTabProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { filters, setPartial, basePriceUsd, logistics, _tripperPackageDestinations } = useStore();
@@ -59,6 +63,7 @@ export default function FiltersTab() {
 
       <AvoidGrid
         experienceLevel={experience}
+        labels={avoidGridLabels}
         originCity={originCity}
         originCountry={originCountry}
         tripperPackageDestinations={_tripperPackageDestinations}

@@ -55,12 +55,10 @@ interface JourneyPreferencesStepProps {
   onAccommodationTypeChange: (value: string) => void;
   onAddonsChange: (value: string | undefined) => void;
   onArrivePrefChange: (value: string) => void;
-  onClearFilters: () => void;
   onClimateChange: (value: string) => void;
   onDepartPrefChange: (value: string) => void;
   onMaxTravelTimeChange: (value: string) => void;
   onOpenSection: (id: string) => void;
-  onSaveFilters?: () => void;
   /** Called after addons save (e.g. scroll to actions). */
   onAfterAddonsSave?: () => void;
   openSectionId: string;
@@ -82,12 +80,10 @@ export function JourneyPreferencesStep({
   onAccommodationTypeChange,
   onAddonsChange,
   onArrivePrefChange,
-  onClearFilters,
   onClimateChange,
   onDepartPrefChange,
   onMaxTravelTimeChange,
   onOpenSection,
-  onSaveFilters,
   onAfterAddonsSave,
   openSectionId,
   originCity,
@@ -182,15 +178,9 @@ export function JourneyPreferencesStep({
               maxTravelTime={maxTravelTime}
               onAccommodationTypeChange={onAccommodationTypeChange}
               onArrivePrefChange={onArrivePrefChange}
-              onClear={onClearFilters}
               onClimateChange={onClimateChange}
               onDepartPrefChange={onDepartPrefChange}
               onMaxTravelTimeChange={onMaxTravelTimeChange}
-              onSave={
-                onSaveFilters ??
-                (() =>
-                  onOpenSection(JOURNEY_ADDONS_ENABLED ? 'addons' : ''))
-              }
               originCity={originCity}
               originCountry={originCountry}
             />

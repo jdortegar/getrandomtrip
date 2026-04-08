@@ -91,7 +91,7 @@ export default function PawsHero() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/packages/by-type/paws#paws-planner"
+                href="/experiences/by-type/paws#paws-planner"
                 aria-label="Ir al planner PAWS para empezar su RANDOMTRIP"
                 onClick={(e) => {
                   e.preventDefault();

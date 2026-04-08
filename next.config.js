@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/en/packages',
+        destination: '/en/experiences/by-type/group',
+        permanent: true,
+      },
+      {
+        source: '/en/packages/:path*',
+        destination: '/en/experiences/:path*',
+        permanent: true,
+      },
+      {
+        source: '/packages',
+        destination: '/experiences/by-type/group',
+        permanent: true,
+      },
+      {
+        source: '/packages/:path*',
+        destination: '/experiences/:path*',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     deviceSizes: [320, 420, 768, 1024, 1200, 1600],
     remotePatterns: [

@@ -107,7 +107,7 @@ export default async function NotFoundPage() {
 
                 <Link
                   className="group px-8 py-4 border-2 border-primary/20 text-primary rounded-xl font-semibold hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
-                  href={pathForLocale(locale, '/packages')}
+                  href={pathForLocale(locale, '/experiences')}
                 >
                   <Plane className="w-5 h-5" />
                   {nf.viewPackages}
@@ -122,21 +122,21 @@ export default async function NotFoundPage() {
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
-                    href={pathForLocale(locale, '/packages/by-type/solo')}
+                    href={pathForLocale(locale, '/experiences/by-type/solo')}
                   >
                     <MapPin className="w-4 h-4" />
                     {nf.linkSolo}
                   </Link>
                   <Link
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
-                    href={pathForLocale(locale, '/packages/by-type/couple')}
+                    href={pathForLocale(locale, '/experiences/by-type/couple')}
                   >
                     <Heart className="w-4 h-4" />
                     {nf.linkCouple}
                   </Link>
                   <Link
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2"
-                    href={pathForLocale(locale, '/packages/by-type/family')}
+                    href={pathForLocale(locale, '/experiences/by-type/family')}
                   >
                     <Users className="w-4 h-4" />
                     {nf.linkFamily}

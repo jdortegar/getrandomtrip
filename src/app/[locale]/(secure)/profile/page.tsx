@@ -11,10 +11,7 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
-import {
-  FormField,
-  FormSelectField,
-} from "@/components/ui/FormField";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { Briefcase, Edit, Lock, Settings, User, X } from "lucide-react";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionaries";
@@ -520,7 +517,7 @@ function ProfileContent() {
                   "ring-1 ring-gray-100",
                 )}
               >
-                <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase text-gray-900">
+                <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase text-gray-900 text-left">
                   {p.personalSectionTitle}
                 </h2>
                 <div className="space-y-4">
@@ -666,7 +663,7 @@ function ProfileContent() {
                   "ring-1 ring-gray-100",
                 )}
               >
-                <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase text-gray-900">
+                <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase text-gray-900 text-left">
                   {p.preferencesSectionTitle}
                 </h2>
                 <div className="space-y-4">

@@ -35,6 +35,8 @@ import {
 } from "@/lib/helpers/excuse-helper";
 import {
   DEFAULT_PAX_DETAILS,
+  getFixedPaxDetailsForTravelType,
+  isTravelersPartyEditable,
   paxDetailsEquals,
   paxDetailsFromTotalPax,
   parsePaxDetails,
@@ -298,6 +300,12 @@ function CheckoutContent() {
 
   useEffect(() => {
     if (!trip?.id) return;
+    const normalizedType = normalizeTripType(trip.type);
+    const fixedParty = getFixedPaxDetailsForTravelType(normalizedType);
+    if (fixedParty) {
+      setPaxDetails(fixedParty);
+      return;
+    }
     const parsed = parsePaxDetails(trip.paxDetails);
     if (parsed) {
       setPaxDetails(parsed);
@@ -488,17 +496,24 @@ function CheckoutContent() {
     .map((s) => ADDONS.find((a) => a.id === s.id))
     .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
 
-  const backToJourneyHref = `/${locale}/journey`;
+  const backToJourneyHref = pathForLocale(resolvedLocale, "/journey");
 
   async function persistCheckoutTravelers(nextDetails: PaxDetails) {
     if (!trip?.id) {
       throw new Error("No trip");
     }
-    const nextPax = Math.max(1, nextDetails.adults + nextDetails.minors);
+    const normalizedType = normalizeTripType(trip.type);
+    const fixedParty = getFixedPaxDetailsForTravelType(normalizedType);
+    const effectiveDetails = fixedParty ?? nextDetails;
+    const nextPax = Math.max(
+      1,
+      effectiveDetails.adults + effectiveDetails.minors,
+    );
     const unchanged =
-      nextPax === trip.pax && paxDetailsEquals(nextDetails, trip.paxDetails);
+      nextPax === trip.pax &&
+      paxDetailsEquals(effectiveDetails, trip.paxDetails);
     if (unchanged) {
-      setPaxDetails(nextDetails);
+      setPaxDetails(effectiveDetails);
       return;
     }
     const res = await fetch("/api/trip-requests", {
@@ -507,7 +522,7 @@ function CheckoutContent() {
       body: JSON.stringify({
         id: trip.id,
         pax: nextPax,
-        paxDetails: nextDetails,
+        paxDetails: effectiveDetails,
       }),
     });
     if (!res.ok) {
@@ -517,10 +532,10 @@ function CheckoutContent() {
       );
       throw new Error(data.error ?? "persist failed");
     }
-    setPaxDetails(nextDetails);
+    setPaxDetails(effectiveDetails);
     setTrip((prev) =>
       prev && prev.id === trip.id
-        ? { ...prev, pax: nextPax, paxDetails: nextDetails }
+        ? { ...prev, pax: nextPax, paxDetails: effectiveDetails }
         : prev,
     );
   }
@@ -938,6 +953,7 @@ function CheckoutContent() {
                 <Button
                   className="min-w-0 flex-1 text-sm font-normal normal-case"
                   disabled={isProcessing}
+                  onClick={() => router.back()}
                   size="lg"
                   type="button"
                   variant="ghost"
@@ -947,7 +963,7 @@ function CheckoutContent() {
                 <Button
                   className="min-w-0 flex-1 "
                   disabled={isProcessing}
-                  size="lg"
+                  size="sm"
                   type="submit"
                   variant="default"
                 >
@@ -1053,6 +1069,7 @@ function CheckoutContent() {
               <CheckoutTravelersSummarySection
                 checkoutCopy={checkoutCopy}
                 onSaveTravelers={persistCheckoutTravelers}
+                partyEditable={isTravelersPartyEditable(travelType)}
                 paxDetails={paxDetails}
                 tileClassName={checkoutItemTileClass}
                 tileLabelClassName={checkoutItemTileLabelClass}
