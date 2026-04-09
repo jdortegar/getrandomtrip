@@ -38,7 +38,7 @@ export function AdminSidebar() {
   return (
     <aside className="flex w-48 shrink-0 flex-col border-r border-gray-200 bg-white h-full">
       <div className="border-b border-gray-100 px-4 py-3">
-        <p className="font-barlow-condensed text-xl font-extrabold uppercase  text-gray-900">
+        <p className="text-xl font-semibold text-neutral-900">
           Admin Panel
         </p>
       </div>

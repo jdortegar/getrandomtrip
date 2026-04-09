@@ -21,7 +21,7 @@ export function TripRequestsFilterBar({
 }: TripRequestsFilterBarProps) {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-3">
-      <p className="font-barlow-condensed text-xl font-extrabold uppercase  text-gray-900">
+      <p className="text-xl font-semibold text-neutral-900">
         Trip Requests
       </p>
       <div className="flex gap-1.5">
@@ -29,7 +29,7 @@ export function TripRequestsFilterBar({
           <button
             key={f.value}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+              "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
               activeFilter === f.value
                 ? "border-gray-900 bg-gray-900 text-white"
                 : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300",

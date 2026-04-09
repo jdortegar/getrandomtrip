@@ -15,14 +15,14 @@ export function TripRequestsTable({
   trips,
 }: TripRequestsTableProps) {
   return (
-    <div className="mx-5 my-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
+    <div className="mx-5 my-4 overflow-hidden rounded-xl bg-white shadow-sm border border-gray-200">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-gray-100 bg-gray-50">
+          <tr className="border-b border-gray-200">
             {HEADERS.map((h) => (
               <th
                 key={h}
-                className="px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wide text-gray-400 last:text-right"
+                className="px-4 py-3 text-left text-sm font-medium text-neutral-600 last:text-right"
               >
                 {h}
               </th>

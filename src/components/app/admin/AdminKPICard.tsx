@@ -5,9 +5,9 @@ interface AdminKPICardProps {
 
 export function AdminKPICard({ count, label }: AdminKPICardProps) {
   return (
-    <div className="rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">{label}</p>
-      <p className="mt-1 font-barlow-condensed text-2xl font-extrabold text-gray-900">{count}</p>
+    <div className="rounded-xl bg-white p-5 shadow-sm border border-gray-200">
+      <p className="text-sm font-medium text-neutral-500">{label}</p>
+      <p className="mt-2 text-4xl font-extrabold text-neutral-900">{count}</p>
     </div>
   );
 }

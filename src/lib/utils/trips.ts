@@ -23,6 +23,7 @@ export interface Trip {
   type: string;
   payment?: {
     amount: number;
+    createdAt?: string;
     status: string;
   };
 }
@@ -133,6 +134,7 @@ export function mapTripFromApi(raw: unknown): Trip {
     payment: payment
       ? {
           amount: paymentAmount,
+          createdAt: payment.createdAt ? toIsoDate(payment.createdAt) : undefined,
           status: String(payment.status ?? ''),
         }
       : undefined,

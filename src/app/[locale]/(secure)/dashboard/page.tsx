@@ -10,7 +10,6 @@ import {
   FinancialSummary,
   getDashboardCopy,
   QuickActions,
-  RecentPaymentsTable,
   UnpaidTripsAlert,
   UpcomingTripsPanel,
   type DashboardStats,
@@ -153,6 +152,8 @@ function DashboardContent() {
     });
   }, [trips]);
 
+  console.log(paidTrips);
+
   const upcomingTrips = trips
     .filter((t) => t.status === "CONFIRMED" || t.status === "REVEALED")
     .slice(0, 3);
@@ -176,13 +177,16 @@ function DashboardContent() {
     return copy.tripStatus[status] ?? status;
   };
 
-
   if (userRole === "tripper") {
     return <LoadingSpinner />;
   }
 
-  if (sessionStatus === "loading" || (!session?.user?.email && !user?.id)) {
+  if (sessionStatus === "loading") {
     return <LoadingSpinner />;
+  }
+
+  if (!session?.user?.email && !user?.id) {
+    return null;
   }
 
   return (
@@ -212,6 +216,7 @@ function DashboardContent() {
                   copy={copy}
                   getStatusColor={getStatusColor}
                   getStatusLabel={getStatusLabel}
+                  locale={locale}
                   trips={upcomingTrips}
                 />
 
@@ -225,14 +230,11 @@ function DashboardContent() {
                   />
                 </div>
               </div>
-              <RecentPaymentsTable
-                copy={copy}
-                payments={payments}
-              />
               <AllTripsGrid
                 copy={copy}
                 getStatusColor={getStatusColor}
                 getStatusLabel={getStatusLabel}
+                locale={locale}
                 trips={paidTrips}
               />
             </div>

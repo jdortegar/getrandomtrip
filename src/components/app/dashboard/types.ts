@@ -10,6 +10,7 @@ export interface DashboardCopy {
   allTrips: {
     emptyDestination: string;
     from: string;
+    paidOn: string;
     title: string;
     totalLabel: string;
     viewMore: string;
