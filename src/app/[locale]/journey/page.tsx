@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import HeaderHero from "@/components/journey/HeaderHero";
 import JourneyMainContent from "@/components/journey/JourneyMainContent";
@@ -14,6 +14,11 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
+import {
+  clearPendingJourneyDraftIdSession,
+  consumePendingJourneyDraftId,
+  saveJourneyDraftQueryString,
+} from "@/lib/helpers/journeyDraftStorage";
 
 function getAccordionForStep(tabId: string, substepId?: string): string {
   switch (tabId) {
@@ -82,6 +87,7 @@ function getInitialStepFromParams(params: URLSearchParams): {
 }
 
 function JourneyPageContent({ locale }: { locale?: string }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState("budget");
@@ -93,6 +99,26 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   useEffect(() => {
     getDictionary(resolvedLocale).then(setDict);
   }, [resolvedLocale]);
+
+  useEffect(() => {
+    const inUrl = searchParams.get("draftId");
+    if (inUrl) {
+      clearPendingJourneyDraftIdSession();
+      return;
+    }
+    const id = consumePendingJourneyDraftId();
+    const next = new URLSearchParams(searchParams.toString());
+    if (next.get("draftId") === id) return;
+    next.set("draftId", id);
+    router.replace(`?${next.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const journeyQuerySnapshot = searchParams.toString();
+  useEffect(() => {
+    const draftId = new URLSearchParams(journeyQuerySnapshot).get("draftId");
+    if (!draftId) return;
+    saveJourneyDraftQueryString(draftId, journeyQuerySnapshot);
+  }, [journeyQuerySnapshot]);
 
   useEffect(() => {
     const { tabId, sectionId } = getInitialStepFromParams(searchParams);

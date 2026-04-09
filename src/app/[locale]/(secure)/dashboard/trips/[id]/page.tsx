@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import SecureRoute from "@/components/auth/SecureRoute";
@@ -16,12 +16,10 @@ import {
   MapPin,
   Users,
   Moon,
-  Plane,
   Star,
   CreditCard,
   Eye,
   EyeOff,
-  DollarSign,
   CheckCircle,
   Clock,
   X as XIcon,
@@ -91,7 +89,6 @@ interface TripDetails {
 
 function TripDetailsContent() {
   const params = useParams();
-  const router = useRouter();
   const { data: session } = useSession();
   const [trip, setTrip] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -673,7 +670,7 @@ function TripDetailsContent() {
                       className="w-full justify-start"
                       asChild
                     >
-                      <Link href={`/trips/${trip.id}/details`}>
+                      <Link href={`/dashboard/trips/${trip.id}/details`}>
                         <Calendar className="w-4 h-4 mr-2" />
                         Ver Itinerario
                       </Link>

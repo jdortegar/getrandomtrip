@@ -62,35 +62,17 @@ export function UnpaidTripsAlert({
             <li key={trip.id}>
               <div
                 className={cn(
-                  "flex items-stretch overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm",
-                  "transition-all duration-300 hover:shadow-md",
+                  "flex items-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm",
+                  "transition-all duration-300 hover:shadow-md p-3",
                 )}
               >
-                {/* Thumbnail — tall cover, ~checkout-style proportion */}
-                <div
-                  className={cn(
-                    "max-w-[10rem] min-h-[5.5rem] min-w-[6.5rem] overflow-hidden relative shrink-0 w-[32%]",
-                    "bg-neutral-100",
-                  )}
-                >
-                  <div className="h-full min-h-[5.5rem] relative w-full">
-                    {typeImageSrc ? (
-                      <Img
-                        alt={travelerTypeTitle}
-                        className="absolute inset-0 h-full w-full object-cover"
-                        height={320}
-                        sizes="(max-width: 640px) 34vw, 160px"
-                        src={typeImageSrc}
-                        width={240}
-                      />
-                    ) : (
-                      <div
-                        aria-hidden
-                        className="absolute inset-0 bg-neutral-200"
-                      />
-                    )}
-                  </div>
-                </div>
+                <Img
+                  alt={travelerTypeTitle}
+                  height={100}
+                  sizes="(max-width: 640px) 34vw, 160px"
+                  src={typeImageSrc!}
+                  width={100}
+                />
 
                 {/* Trip info */}
                 <div className="min-w-0 flex-1 space-y-1 px-4 py-3 text-left">
@@ -107,6 +89,8 @@ export function UnpaidTripsAlert({
                       {levelName}
                     </span>
                   </p>
+                </div>
+                <div className="min-w-0 flex-1 space-y-1 px-4 py-3 text-left">
                   <p className="pt-0.5 text-xs text-neutral-400">
                     {copy.unpaidTrips.bookingRefLabel}:{" "}
                     <span className="font-medium text-neutral-500">
@@ -127,20 +111,9 @@ export function UnpaidTripsAlert({
 
                 {/* Price + CTA */}
                 <div className="flex shrink-0 flex-col items-end justify-center gap-2 px-4 py-3">
-                  <p className="text-right text-xs text-neutral-400">
-                    {copy.unpaidTrips.estimatedTripTotal}
-                  </p>
                   <p className="font-barlow-condensed text-2xl font-bold text-neutral-900 sm:text-3xl">
                     {usd(total)}
                   </p>
-                  <p className="text-right text-xs text-neutral-500">
-                    {copy.unpaidTrips.summaryHeroPriceCaption}: {usd(perPerson)}
-                  </p>
-                  {isEstimate ? (
-                    <p className="max-w-[11rem] text-right text-xs leading-snug text-neutral-400">
-                      {copy.unpaidTrips.priceEstimateNote}
-                    </p>
-                  ) : null}
                   <Button asChild size="sm">
                     <Link href={`/${locale}/checkout?tripId=${trip.id}`}>
                       <CreditCard className="mr-1.5 h-3.5 w-3.5" />

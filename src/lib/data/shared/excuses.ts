@@ -51,7 +51,7 @@ export const soloExcuses: ExcuseData[] = [
           key: 'extreme-sports',
           label: 'Deportes Extremos',
           desc: 'Adrenalina pura que te haga sentir vivo.',
-          img: 'https://images.unsplash.com/photo-1551524164-6cf77ac4e879',
+          img: 'https://images.unsplash.com/photo-1733185396898-2da8b2fe7b36',
         },
       ],
     },
@@ -72,7 +72,7 @@ export const soloExcuses: ExcuseData[] = [
           key: 'local-traditions',
           label: 'Tradiciones Locales',
           desc: 'Participar en ceremonias y festividades auténticas.',
-          img: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
+          img: 'https://images.unsplash.com/photo-1732798068339-4a686b74589f',
         },
         {
           key: 'culinary-tours',

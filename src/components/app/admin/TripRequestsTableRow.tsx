@@ -20,30 +20,30 @@ export function TripRequestsTableRow({
         isSelected && 'border-l-2 border-l-gray-900 bg-blue-50',
       )}
     >
-      <td className="px-4 py-2.5">
-        <p className="text-sm font-bold text-gray-900">{trip.user.name}</p>
-        <p className="text-xs text-gray-400">{trip.user.email}</p>
+      <td className="px-4 py-3.5">
+        <p className="text-sm font-semibold text-neutral-900">{trip.user.name}</p>
+        <p className="text-xs text-neutral-500">{trip.user.email}</p>
       </td>
-      <td className="px-4 py-2.5 text-sm text-gray-600">
+      <td className="px-4 py-3.5 text-sm text-neutral-600">
         {trip.originCity}, {trip.originCountry}
       </td>
-      <td className="px-4 py-2.5">
-        <p className="text-sm text-gray-700">{trip.type}</p>
-        <p className="text-xs text-gray-400">{trip.level}</p>
+      <td className="px-4 py-3.5">
+        <p className="text-sm text-neutral-700">{trip.type}</p>
+        <p className="text-xs text-neutral-500">{trip.level}</p>
       </td>
-      <td className="px-4 py-2.5">
+      <td className="px-4 py-3.5">
         <StatusBadge status={trip.status} variant="trip" />
       </td>
-      <td className="px-4 py-2.5">
+      <td className="px-4 py-3.5">
         {trip.payment ? (
           <StatusBadge status={trip.payment.status} variant="payment" />
         ) : (
-          <span className="text-xs text-gray-400">—</span>
+          <span className="text-xs text-neutral-400">—</span>
         )}
       </td>
-      <td className="px-4 py-2.5 text-right">
+      <td className="px-4 py-3.5 text-right">
         <button
-          className="text-xs font-semibold text-gray-600 hover:text-gray-900"
+          className="text-sm font-medium text-neutral-500 hover:text-neutral-900"
           onClick={() => onEdit(trip.id)}
           type="button"
         >

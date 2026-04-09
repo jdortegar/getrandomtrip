@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Accordion } from '@/components/ui/accordion';
-import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
-import { ExcusesCarousel } from '@/components/journey/ExcusesCarousel';
-import { RefineDetailsCarousel } from '@/components/journey/RefineDetailsCarousel';
-import { Button } from '@/components/ui/Button';
-import type { ExcuseData } from '@/lib/data/shared/excuses';
-import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+import { Accordion } from "@/components/ui/accordion";
+import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
+import { ExcusesCarousel } from "@/components/journey/ExcusesCarousel";
+import { RefineDetailsCarousel } from "@/components/journey/RefineDetailsCarousel";
+import { Button } from "@/components/ui/Button";
+import type { ExcuseData } from "@/lib/data/shared/excuses";
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 type LocalizedExcuse = {
   key: string;
@@ -147,7 +147,7 @@ export default function ExcuseStep({
                     options={refineDetailsOptions}
                     selectedOptions={refineDetails}
                   />
-                  <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                  {/* <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
                     <button
                       className="text-gray-500 text-sm font-medium underline hover:no-underline disabled:opacity-50"
                       onClick={onClearRefineDetails}
@@ -167,7 +167,7 @@ export default function ExcuseStep({
                     >
                       {labels.next}
                     </Button>
-                  </div>
+                  </div> */}
                 </>
               ) : (
                 <p className="py-4 text-center text-gray-500">
@@ -181,4 +181,3 @@ export default function ExcuseStep({
     </div>
   );
 }
-

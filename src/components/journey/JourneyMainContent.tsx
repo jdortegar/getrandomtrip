@@ -17,6 +17,7 @@ import {
   getExcuseOptions,
   getHasExcuseStep,
 } from '@/lib/helpers/excuse-helper';
+import { clearJourneyDraftStorage } from '@/lib/helpers/journeyDraftStorage';
 import {
   buildTripRequestPayloadFromSearchParams,
   checkAllComplete,
@@ -232,6 +233,7 @@ export default function JourneyMainContent({
         }
         return;
       }
+      clearJourneyDraftStorage(searchParams.get('draftId'));
       updateQuery({ tripRequestId: data.tripRequest.id });
       router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
     } catch (err) {

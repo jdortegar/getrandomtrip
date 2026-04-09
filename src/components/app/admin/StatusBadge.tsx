@@ -25,7 +25,7 @@ export function StatusBadge({ className, status, variant = 'trip' }: StatusBadge
   return (
     <span
       className={cn(
-        'inline-block rounded-full border px-2.5 py-0.5 text-xs font-bold',
+        'inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium',
         colors.bg,
         colors.border,
         colors.text,

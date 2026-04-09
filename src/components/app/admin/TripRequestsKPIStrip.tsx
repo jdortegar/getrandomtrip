@@ -9,7 +9,7 @@ interface TripRequestsKPIStripProps {
 export function TripRequestsKPIStrip({ trips }: TripRequestsKPIStripProps) {
   const counts = countTripsByStatus(trips);
   return (
-    <div className="grid grid-cols-4 gap-3 border-b border-gray-200 bg-gray-50 px-5 py-3">
+    <div className="grid grid-cols-4 gap-4 border-b border-gray-200 bg-white px-5 py-4">
       <AdminKPICard label="Confirmed"  count={counts.CONFIRMED}       />
       <AdminKPICard label="Pending"    count={counts.PENDING_PAYMENT} />
       <AdminKPICard label="Revealed"   count={counts.REVEALED}        />

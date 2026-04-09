@@ -4,7 +4,8 @@ const DASHBOARD_COPY_ES: DashboardCopy = {
   allTrips: {
     emptyDestination: 'Destino Sorpresa',
     from: 'Desde',
-    title: 'Viajes pagados',
+    paidOn: 'Pagado el',
+    title: 'Viajes realizados',
     totalLabel: 'viajes',
     viewMore: 'Ver mas',
   },
@@ -88,7 +89,8 @@ const DASHBOARD_COPY_EN: DashboardCopy = {
   allTrips: {
     emptyDestination: 'Surprise Destination',
     from: 'From',
-    title: 'Paid trips',
+    paidOn: 'Paid on',
+    title: 'Completed trips',
     totalLabel: 'trips',
     viewMore: 'View more',
   },
