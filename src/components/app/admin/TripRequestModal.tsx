@@ -220,7 +220,7 @@ export function TripRequestModal({
           {!deleteConfirming ? (
             <Button
               className={cn(
-                "border border-red-200 text-base text-red-800",
+                " border-red-800 text-base text-red-800",
                 "hover:bg-red-50",
               )}
               disabled={deleting}

@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
 import Img from "@/components/common/Img";
 import { useSearchParams } from "next/navigation";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/Badge";
 import { avoidCityLabelsEqual } from "@/lib/helpers/avoid-destinations";
 
 interface AvoidSuggestion {
@@ -58,18 +57,13 @@ export default function DestinationCard({
     return (
       <button
         aria-pressed={isSelected}
-        className={cn(
-          "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition",
-          isSelected
-            ? "border-gray-800 bg-gray-800 text-white"
-            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
-        )}
+        className="inline-flex cursor-pointer rounded-full border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2"
         onClick={toggle}
         type="button"
       >
-        <span>
+        <Badge selected={isSelected}>
           {suggestion.city}, {suggestion.country}
-        </span>
+        </Badge>
       </button>
     );
   }

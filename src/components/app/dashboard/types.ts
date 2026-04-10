@@ -55,6 +55,10 @@ export interface DashboardCopy {
   unpaidTrips: {
     action: string;
     bookingRefLabel: string;
+    deleteAction: string;
+    deleteConfirm: string;
+    deleteFailed: string;
+    editAction: string;
     estimatedTripTotal: string;
     experienceSection: string;
     message: string;

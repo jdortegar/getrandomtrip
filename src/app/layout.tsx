@@ -1,6 +1,7 @@
 import React from 'react';
 import './globals.css';
 import '@/styles/rt.css';
+import { LenisProvider } from '@/components/providers/LenisProvider';
 import {
   Barlow,
   Barlow_Condensed,
@@ -52,7 +53,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#fafafa" />
       </head>
       <body className="bg-neutral-50 text-neutral-900 antialiased overflow-x-hidden font-sans">
-        {children}
+        <LenisProvider>{children}</LenisProvider>
       </body>
     </html>
   );

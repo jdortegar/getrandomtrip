@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import SecureRoute from "@/components/auth/SecureRoute";
 import {
   AllTripsGrid,
@@ -14,6 +15,34 @@ import {
   UpcomingTripsPanel,
   type DashboardStats,
 } from "@/components/app/dashboard";
+
+function computeDashboardStats(
+  mappedTrips: Trip[],
+  allPayments: Payment[],
+): DashboardStats {
+  const completed = mappedTrips.filter((t) => t.status === "COMPLETED").length;
+  const upcoming = mappedTrips.filter(
+    (t) => t.status === "CONFIRMED" || t.status === "REVEALED",
+  ).length;
+  const totalSpent = allPayments
+    .filter((p) => p.status === "APPROVED" || p.status === "COMPLETED")
+    .reduce((sum, p) => sum + p.amount, 0);
+  const ratingsTrips = mappedTrips.filter((t) => t.customerRating);
+  const avgRating =
+    ratingsTrips.length > 0
+      ? ratingsTrips.reduce(
+          (sum, t) => sum + (t.customerRating || 0),
+          0,
+        ) / ratingsTrips.length
+      : 0;
+  return {
+    totalTrips: mappedTrips.length,
+    upcomingTrips: upcoming,
+    completedTrips: completed,
+    totalSpent,
+    averageRating: avgRating,
+  };
+}
 import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { useUserStore } from "@/store/slices";
@@ -91,35 +120,7 @@ function DashboardContent() {
         if (cancelled) return;
         setPayments(allPayments);
 
-        const completed = mappedTrips.filter(
-          (t: Trip) => t.status === "COMPLETED",
-        ).length;
-        const upcoming = mappedTrips.filter(
-          (t: Trip) => t.status === "CONFIRMED" || t.status === "REVEALED",
-        ).length;
-
-        const totalSpent = allPayments
-          .filter(
-            (p: Payment) => p.status === "APPROVED" || p.status === "COMPLETED",
-          )
-          .reduce((sum: number, p: Payment) => sum + p.amount, 0);
-
-        const ratingsTrips = mappedTrips.filter((t: Trip) => t.customerRating);
-        const avgRating =
-          ratingsTrips.length > 0
-            ? ratingsTrips.reduce(
-                (sum: number, t: Trip) => sum + (t.customerRating || 0),
-                0,
-              ) / ratingsTrips.length
-            : 0;
-
-        setStats({
-          totalTrips: mappedTrips.length,
-          upcomingTrips: upcoming,
-          completedTrips: completed,
-          totalSpent,
-          averageRating: avgRating,
-        });
+        setStats(computeDashboardStats(mappedTrips, allPayments));
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -152,7 +153,23 @@ function DashboardContent() {
     });
   }, [trips]);
 
-  console.log(paidTrips);
+  const handleTripDelete = useCallback(
+    async (id: string) => {
+      const res = await fetch(`/api/trips/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        toast.error(copy.unpaidTrips.deleteFailed);
+        throw new Error("Trip delete failed");
+      }
+      setTrips((prev) => {
+        const next = prev.filter((t) => t.id !== id);
+        setStats(computeDashboardStats(next, payments));
+        return next;
+      });
+    },
+    [copy.unpaidTrips.deleteFailed, payments],
+  );
 
   const upcomingTrips = trips
     .filter((t) => t.status === "CONFIRMED" || t.status === "REVEALED")
@@ -208,6 +225,7 @@ function DashboardContent() {
               <UnpaidTripsAlert
                 copy={copy}
                 locale={locale}
+                onDelete={handleTripDelete}
                 trips={unpaidTrips}
               />
 
