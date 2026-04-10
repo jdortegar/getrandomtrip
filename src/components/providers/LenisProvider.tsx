@@ -14,6 +14,7 @@ export function LenisProvider({ children }: LenisProviderProps) {
   return (
     <ReactLenis
       options={{
+        allowNestedScroll: true,
         lerp: 0.08,
         smoothWheel: true,
       }}

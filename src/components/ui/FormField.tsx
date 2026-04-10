@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { ReactNode } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { ChevronDown, Eye, EyeOff } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -73,14 +73,24 @@ export const FormSelectField = React.forwardRef<HTMLSelectElement, FormSelectFie
         <label className={formLabelClass} htmlFor={id}>
           {label}
         </label>
-        <select
-          className={cn(formControlClass, className)}
-          id={id}
-          ref={ref}
-          {...selectProps}
-        >
-          {children}
-        </select>
+        <div className="relative">
+          <select
+            className={cn(
+              formControlClass,
+              'appearance-none cursor-pointer pr-12',
+              className,
+            )}
+            id={id}
+            ref={ref}
+            {...selectProps}
+          >
+            {children}
+          </select>
+          <ChevronDown
+            aria-hidden
+            className="absolute -translate-y-1/2 h-5 pointer-events-none right-4 top-1/2 w-5 text-gray-500"
+          />
+        </div>
       </div>
     );
   },
