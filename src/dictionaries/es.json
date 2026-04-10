@@ -839,19 +839,44 @@
     },
     "excuses": [
       {
-        "key": "solo-adventure",
-        "title": "Aventura en Solitario",
-        "description": "Descubrir el mundo a tu ritmo, sin compromisos ni horarios."
+        "key": "solo-get-lost",
+        "title": "Get Lost",
+        "description": "Desconectar del ruido, caminar sin prisa y dejar que el destino hable bajito."
       },
       {
-        "key": "cultural-immersion",
-        "title": "Inmersión Cultural",
-        "description": "Sumergirse en tradiciones, sabores y costumbres locales."
+        "key": "solo-busqueda-interior",
+        "title": "Búsqueda Interior",
+        "description": "Volver adentro con prácticas que ordenan cabeza y cuerpo en el camino."
       },
       {
-        "key": "wellness-retreat",
-        "title": "Retiro de Bienestar",
-        "description": "Reconectar contigo mismo en un ambiente de paz y tranquilidad."
+        "key": "solo-aventura-desafio",
+        "title": "Aventura & Desafío",
+        "description": "Subir la apuesta: terreno, agua o altura para sentir que estás vivo."
+      },
+      {
+        "key": "solo-exploracion-cultural",
+        "title": "Exploración Cultural",
+        "description": "Ciudades, museos y vida cotidiana: entender el lugar desde adentro."
+      },
+      {
+        "key": "solo-fotografia-narrativa-visual",
+        "title": "Fotografía & Narrativa Visual",
+        "description": "Encuadrar el viaje: paisaje, calle, fauna o altura para contar tu historia."
+      },
+      {
+        "key": "solo-literatura-arte-talleres",
+        "title": "Literatura, Arte & Talleres Locales",
+        "description": "Libros, murales y manos en la masa: crear y leer el destino."
+      },
+      {
+        "key": "solo-musica-sonidos",
+        "title": "Música & Sonidos",
+        "description": "Escuchar el viaje: escenas locales, ritmos tradicionales y noches que suenan."
+      },
+      {
+        "key": "solo-tribe-encounters",
+        "title": "Tribe Encounters",
+        "description": "Cruce con otrxs viajerxs: hostels con onda, excursiones y mesas compartidas."
       },
       {
         "key": "romantic-getaway",
@@ -904,9 +929,34 @@
         "description": "Crear recuerdos inolvidables para toda la familia."
       },
       {
-        "key": "group-adventure",
-        "title": "Aventura Grupal",
-        "description": "Compartir experiencias únicas con tus amigos más cercanos."
+        "key": "group-aventura-familia",
+        "title": "Aventura en familia",
+        "description": "Primos, hermanos, tíos y abuelos: un mismo viaje, mil anécdotas para contar."
+      },
+      {
+        "key": "group-naturaleza-fauna",
+        "title": "Naturaleza & fauna",
+        "description": "Reservas, avistajes y silencios que suenan a aventura compartida."
+      },
+      {
+        "key": "group-cultura-tradiciones",
+        "title": "Cultura & tradiciones",
+        "description": "Festivales, artesanía y costumbres vividas en grupo, no solo fotografiadas."
+      },
+      {
+        "key": "group-playas-dunas",
+        "title": "Playas & dunas",
+        "description": "Arena, viento y atardeceres: el clásico viaje grupal que nunca falla."
+      },
+      {
+        "key": "group-graduaciones-celebraciones",
+        "title": "Graduaciones & celebraciones",
+        "description": "Egreso, cumpleaños redondos o “por fin nos juntamos”: excusa perfecta para viajar."
+      },
+      {
+        "key": "group-escapada-padres-hijos",
+        "title": "Escapadas Madre-hij@ / Padre-hij@",
+        "description": "Tiempo a solas con tu hijo o hija: hobbies, risas y recuerdos de por vida."
       },
       {
         "key": "honeymoon-luxury",
@@ -921,55 +971,180 @@
     ],
     "refineDetailOptions": {
       "solo": {
-        "solo-adventure": [
+        "solo-get-lost": [
           {
-            "key": "hiking-trekking",
-            "label": "Senderismo & Trekking",
-            "desc": "Caminar hacia lugares que solo se alcanzan a pie."
+            "key": "sl-gl-naturaleza-silenciosa",
+            "label": "Naturaleza silenciosa",
+            "desc": "Bosques, valles y miradores donde el silencio es parte del itinerario."
           },
           {
-            "key": "water-sports",
-            "label": "Deportes Acuáticos",
-            "desc": "Sumergirse en aventuras que te mantengan a flote."
+            "key": "sl-gl-digital-detox",
+            "label": "Digital Detox",
+            "desc": "Pausa real de notificaciones: el mundo puede esperar."
           },
           {
-            "key": "extreme-sports",
+            "key": "sl-gl-retiro-minimal",
+            "label": "Retiro Minimal",
+            "desc": "Espacios esenciales, pocas cosas y mucha claridad mental."
+          },
+          {
+            "key": "sl-gl-senderos-lentos",
+            "label": "Senderos Lentos",
+            "desc": "Caminar sin cronómetro: el ritmo lo ponés vos."
+          }
+        ],
+        "solo-busqueda-interior": [
+          {
+            "key": "sl-bi-meditacion-mindfulness",
+            "label": "Meditación & Mindfulness",
+            "desc": "Respiración, presencia y pausas que cambian el ritmo del viaje."
+          },
+          {
+            "key": "sl-bi-journaling-escritura",
+            "label": "Journaling & Escritura",
+            "desc": "Libreta, café y la libertad de ordenar lo que pasa por la cabeza."
+          },
+          {
+            "key": "sl-bi-yoga-movimiento",
+            "label": "Yoga & Movimiento",
+            "desc": "Cuerpo activo, mente más liviana: saludos al sol donde sea."
+          },
+          {
+            "key": "sl-bi-sabidurias-locales",
+            "label": "Sabidurías Locales",
+            "desc": "Encuentros con maestrxs, rituales y enseñanzas del lugar."
+          }
+        ],
+        "solo-aventura-desafio": [
+          {
+            "key": "sl-ad-trekking-hiking",
+            "label": "Trekking & Hiking",
+            "desc": "Picos, refugios y jornadas que exigen y regalan perspectiva."
+          },
+          {
+            "key": "sl-ad-aventura-acuatica",
+            "label": "Aventura Acuática",
+            "desc": "Kayak, snorkel o lo que el agua te proponga."
+          },
+          {
+            "key": "sl-ad-deportes-extremos",
             "label": "Deportes Extremos",
-            "desc": "Adrenalina pura que te haga sentir vivo."
+            "desc": "Adrenalina medida para quien no viaja para dormir tranquilo."
+          },
+          {
+            "key": "sl-ad-terrenos-inexplorados",
+            "label": "Terrenos Inexplorados",
+            "desc": "Rutas menos marcadas: el mapa todavía tiene bordes en blanco."
           }
         ],
-        "cultural-immersion": [
+        "solo-exploracion-cultural": [
           {
-            "key": "local-traditions",
-            "label": "Tradiciones Locales",
-            "desc": "Participar en ceremonias y festividades auténticas."
+            "key": "sl-ec-ciudades-arquitectura",
+            "label": "Ciudades & Arquitectura",
+            "desc": "Barrios, fachadas y plazas que cuentan siglos en un paseo."
           },
           {
-            "key": "culinary-tours",
-            "label": "Tours Culinarios",
-            "desc": "Saborear la gastronomía local con chefs y familias."
+            "key": "sl-ec-museos-patrimonio",
+            "label": "Museos & Patrimonio",
+            "desc": "Colecciones y sitios que merecen tiempo, no solo una foto."
           },
           {
-            "key": "art-galleries",
-            "label": "Arte & Galerías",
-            "desc": "Explorar el arte local y las expresiones culturales."
+            "key": "sl-ec-mercados-locales",
+            "label": "Mercados Locales",
+            "desc": "Sabores, olores y charlas con quienes hacen girar el barrio."
+          },
+          {
+            "key": "sl-ec-festividades-rituales",
+            "label": "Festividades & Rituales",
+            "desc": "Calendario vivo: ferias, celebraciones y costumbres que te invitan."
           }
         ],
-        "wellness-retreat": [
+        "solo-fotografia-narrativa-visual": [
           {
-            "key": "spa-treatments",
-            "label": "Tratamientos de Spa",
-            "desc": "Relajación y rejuvenecimiento en un ambiente de lujo."
+            "key": "sl-fn-paisajes-panoramicas",
+            "label": "Paisajes & Panorámicas",
+            "desc": "Horizontes amplios y luz que pide trípode o paciencia."
           },
           {
-            "key": "meditation-yoga",
-            "label": "Meditación & Yoga",
-            "desc": "Encuentra tu centro a través de la práctica consciente."
+            "key": "sl-fn-street-photography",
+            "label": "Street Photography",
+            "desc": "Gente, gestos y esquinas que no están en la guía."
           },
           {
-            "key": "nature-immersion",
-            "label": "Inmersión en la Naturaleza",
-            "desc": "Conecta con el entorno natural para encontrar paz interior."
+            "key": "sl-fn-fauna-wildlife",
+            "label": "Fauna & Wildlife",
+            "desc": "Vida salvaje con respeto y teleobjetivo (o binoculares)."
+          },
+          {
+            "key": "sl-fn-drone-alturas",
+            "label": "Drone & Alturas",
+            "desc": "Perspectivas desde arriba cuando las normas lo permiten."
+          }
+        ],
+        "solo-literatura-arte-talleres": [
+          {
+            "key": "sl-la-talleres-creativos",
+            "label": "Talleres Creativos",
+            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por vos."
+          },
+          {
+            "key": "sl-la-rutas-literarias",
+            "label": "Rutas Literarias",
+            "desc": "Lugares que ya fueron escenario en una novela o un poema."
+          },
+          {
+            "key": "sl-la-arte-urbano",
+            "label": "Arte Urbano",
+            "desc": "Murales, galerías alternativas y firmas locales."
+          },
+          {
+            "key": "sl-la-artesania-diseno",
+            "label": "Artesanía & Diseño",
+            "desc": "Objetos con historia y oficios que enseñan el alma del lugar."
+          }
+        ],
+        "solo-musica-sonidos": [
+          {
+            "key": "sl-ms-escenas-locales",
+            "label": "Escenas Locales",
+            "desc": "Bares, peñas y venues donde suena lo auténtico."
+          },
+          {
+            "key": "sl-ms-ritmos-tradicionales",
+            "label": "Ritmos Tradicionales",
+            "desc": "Folklore, instrumentos y danzas que cuentan identidades."
+          },
+          {
+            "key": "sl-ms-festivales-musica",
+            "label": "Festivales",
+            "desc": "Calendario de festivales para planear la escapada alrededor del cartel."
+          },
+          {
+            "key": "sl-ms-jam-sessions",
+            "label": "Jam Sessions",
+            "desc": "Improvisar con desconocidos que terminan siendo parte del viaje."
+          }
+        ],
+        "solo-tribe-encounters": [
+          {
+            "key": "sl-te-hostels-boutique",
+            "label": "Hostels Boutique",
+            "desc": "Diseño, comunidad y espacios para cruzarte con gente afín."
+          },
+          {
+            "key": "sl-te-meetups-viajeros",
+            "label": "Meetups de Viajeros",
+            "desc": "Eventos y quedadas para compartir tips y rutas."
+          },
+          {
+            "key": "sl-te-excursiones-grupales",
+            "label": "Excursiones Grupales",
+            "desc": "Salidas del día con grupo: compañía puntual, libertad después."
+          },
+          {
+            "key": "sl-te-community-dining",
+            "label": "Community Dining",
+            "desc": "Mesas largas, menú compartido y charla con quien llegó de otro continente."
           }
         ]
       },
@@ -1080,7 +1255,7 @@
           },
           {
             "key": "detox-retox",
-            "label": "Detox. Retox. Repeat",
+            "label": "Detox / Retox / Repeat",
             "desc": "Cuidarse como ritual compartido: lo que entra nutre cuerpo y vínculo."
           }
         ],
@@ -1141,7 +1316,7 @@
           },
           {
             "key": "cultura-shows",
-            "label": "Cultura & shows",
+            "label": "Cultura & Shows",
             "desc": "Salir a perderse en la ciudad que nunca duerme."
           },
           {
@@ -1171,21 +1346,106 @@
         ]
       },
       "group": {
-        "group-adventure": [
+        "group-aventura-familia": [
           {
-            "key": "team-building",
-            "label": "Actividades de Equipo",
-            "desc": "Fortalecer lazos a través de desafíos compartidos."
+            "key": "grp-avfam-multigeneracional",
+            "label": "Planes multigeneracionales",
+            "desc": "Actividades que conectan a niños, adultos y mayores sin aburrir a nadie."
           },
           {
-            "key": "nightlife",
-            "label": "Vida Nocturna",
-            "desc": "Disfrutar de la noche con tus mejores amigos."
+            "key": "grp-avfam-naturaleza-juntos",
+            "label": "Naturaleza en grupo",
+            "desc": "Senderos, miradores y aire puro para la familia entera."
           },
           {
-            "key": "sports-activities",
-            "label": "Actividades Deportivas",
-            "desc": "Competir y divertirse en actividades deportivas."
+            "key": "grp-avfam-juegos-desafios",
+            "label": "Juegos y desafíos",
+            "desc": "Dinámicas ligeras que rompen el hielo entre ramas de la familia."
+          }
+        ],
+        "group-naturaleza-fauna": [
+          {
+            "key": "grp-nat-reservas-avistaje",
+            "label": "Reservas y avistajes",
+            "desc": "Rutas pensadas para ver fauna con respeto y guías que suman."
+          },
+          {
+            "key": "grp-nat-trekking-grupal",
+            "label": "Trekking grupal",
+            "desc": "Caminatas de varios días o jornadas intensas para el mismo ritmo de grupo."
+          },
+          {
+            "key": "grp-nat-eco-talleres",
+            "label": "Eco-experiencias",
+            "desc": "Talleres y encuentros con conciencia ambiental sin perder la diversión."
+          }
+        ],
+        "group-cultura-tradiciones": [
+          {
+            "key": "grp-cul-festivales-ferias",
+            "label": "Festivales y ferias",
+            "desc": "Calendario cultural para ir en manada y no perderse el momento clave."
+          },
+          {
+            "key": "grp-cul-patrimonio-guiado",
+            "label": "Patrimonio guiado",
+            "desc": "Sitios UNESCO, museos y barrios con narrativa que engancha a todos."
+          },
+          {
+            "key": "grp-cul-artesania-oficios",
+            "label": "Artesanía y oficios",
+            "desc": "Manos a la obra: talleres donde el grupo crea algo para llevarse."
+          }
+        ],
+        "group-playas-dunas": [
+          {
+            "key": "grp-playa-chiringuitos-rutas",
+            "label": "Playas y calas",
+            "desc": "Rutas costeras para elegir playa según el mood del grupo."
+          },
+          {
+            "key": "grp-dunas-aventura",
+            "label": "Dunas y aventura",
+            "desc": "Subidas, bajadas y deportes sobre arena para los que no paran."
+          },
+          {
+            "key": "grp-costero-pueblos",
+            "label": "Pueblos costeros",
+            "desc": "Paseos entre puertos, pescado fresco y noches largas de charla."
+          }
+        ],
+        "group-graduaciones-celebraciones": [
+          {
+            "key": "grp-grad-viaje-egreso",
+            "label": "Viaje de graduación",
+            "desc": "Esa escapada que cierra una etapa y abre la siguiente con estilo."
+          },
+          {
+            "key": "grp-celebr-reuniones",
+            "label": "Reuniones y aniversarios",
+            "desc": "Amigos de toda la vida o familia lejana: volver a verse con propósito."
+          },
+          {
+            "key": "grp-celebr-fiestas-destino",
+            "label": "Fiesta en destino",
+            "desc": "Noches largas, buena mesa y espacio para el brindis grupal."
+          }
+        ],
+        "group-escapada-padres-hijos": [
+          {
+            "key": "grp-ph-aficion-compartida",
+            "label": "Afición compartida",
+            "desc": "Deporte, música, cómics o cocina: el viaje gira alrededor de lo que los une."
+          },
+          {
+            "key": "grp-ph-naturaleza-calma",
+            "label": "Naturaleza y calma",
+            "desc": "Ritmo suave, conversaciones largas y espacios para escucharse."
+          },
+          {
+            "key": "grp-ph-ciudad-descubrimiento",
+            "label": "Ciudad y descubrimiento",
+            "desc": "Museos, barrios y sorpresas urbanas para explorar mano a mano."
           }
         ]
       },
@@ -1338,7 +1598,7 @@
       "travelersModalAriaIncreaseRooms": "Aumentar habitaciones",
       "travelersAdultsMany": "{count} adultos",
       "travelersAdultsOne": "{count} adulto",
-      "travelersBreakdownSeparator": "  -  ",
+      "travelersBreakdownSeparator": "-",
       "travelersMany": "{count} viajeros",
       "travelersMinorsMany": "{count} menores",
       "travelersMinorsOne": "{count} menor",
@@ -1607,7 +1867,7 @@
       "title": "Contacto",
       "before": "¿Preguntas sobre privacidad? Escribinos a través de",
       "linkLabel": "Contacto",
-      "after": " y responderemos en un plazo razonable."
+      "after": "y responderemos en un plazo razonable."
     }
   },
   "legalRefund": {
@@ -1679,7 +1939,7 @@
       "title": "¿Ayuda con un reembolso?",
       "before": "Abrí una solicitud vía",
       "linkLabel": "Contacto",
-      "after": " con tu referencia de pedido y te guiaremos."
+      "after": "con tu referencia de pedido y te guiaremos."
     }
   },
   "legalTerms": {

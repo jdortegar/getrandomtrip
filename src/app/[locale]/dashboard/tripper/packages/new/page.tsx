@@ -350,7 +350,7 @@ function PackageForm() {
                       onChange={(e) =>
                         setFormData({ ...formData, excuseKey: e.target.value })
                       }
-                      placeholder="Ej: romantic-getaway, solo-adventure"
+                      placeholder="Ej: escapada-romantica, solo-exploracion-cultural"
                     />
                   </div>
                 </div>

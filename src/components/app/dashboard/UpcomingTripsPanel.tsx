@@ -54,13 +54,15 @@ export function UpcomingTripsPanel({
               return (
                 <li key={trip.id}>
                   <div className="flex items-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md p-3">
-                    <Img
-                      alt={travelerTypeTitle}
-                      height={100}
-                      sizes="(max-width: 640px) 34vw, 160px"
-                      src={typeImageSrc!}
-                      width={100}
-                    />
+                    <div className="w-[100px] h-[120px] rounded-lg overflow-hidden">
+                      <Img
+                        alt={travelerTypeTitle}
+                        height={120}
+                        sizes="(max-width: 640px) 34vw, 160px"
+                        src={typeImageSrc!}
+                        width={100}
+                      />
+                    </div>
 
                     {/* Travel type + level */}
                     <div className="min-w-0 flex-1 space-y-1 px-4 py-3 text-left">

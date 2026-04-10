@@ -1,9 +1,14 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* Global smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Lenis drives smooth scroll; native smooth conflicts with inertia */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis {
+  scroll-behavior: auto !important;
 }
 
 /* Infinite scroll animation */

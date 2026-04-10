@@ -1,5 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Calendar, CreditCard, MapPin } from "lucide-react";
+import {
+  AlertCircle,
+  Calendar,
+  CreditCard,
+  MapPin,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import {
@@ -14,20 +24,48 @@ function usd(n: number): string {
   return `USD ${Math.round(n)}`;
 }
 
+function buildEditUrl(locale: string, trip: Trip): string {
+  const params = new URLSearchParams();
+  if (trip.type) params.set("travelType", trip.type);
+  if (trip.level) params.set("experience", trip.level);
+  if (trip.country) params.set("originCountry", trip.country);
+  if (trip.city) params.set("originCity", trip.city);
+  if (trip.startDate)
+    params.set("startDate", trip.startDate.split("T")[0] ?? trip.startDate);
+  if (trip.nights) params.set("nights", String(trip.nights));
+  if (trip.transport) params.set("transportOrder", trip.transport);
+  return `/${locale}/journey?${params.toString()}`;
+}
+
 interface UnpaidTripsAlertProps {
   copy: DashboardCopy;
   locale: string;
+  /** Persist removal (e.g. DELETE /api/trips/:id) then update parent state. */
+  onDelete: (tripId: string) => Promise<void>;
   trips: Trip[];
 }
 
 export function UnpaidTripsAlert({
   copy,
   locale,
+  onDelete,
   trips,
 }: UnpaidTripsAlertProps) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   if (trips.length === 0) return null;
 
   const dateLocale = locale.toLowerCase().startsWith("en") ? "en-US" : "es-ES";
+
+  async function handleDelete(tripId: string) {
+    if (!confirm(copy.unpaidTrips.deleteConfirm)) return;
+    setDeletingId(tripId);
+    try {
+      await onDelete(tripId);
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
@@ -66,13 +104,14 @@ export function UnpaidTripsAlert({
                   "transition-all duration-300 hover:shadow-md p-3",
                 )}
               >
-                <Img
-                  alt={travelerTypeTitle}
-                  height={100}
-                  sizes="(max-width: 640px) 34vw, 160px"
-                  src={typeImageSrc!}
-                  width={100}
-                />
+                <div className="w-[100px] h-[120px] rounded-lg overflow-hidden">
+                  <Img
+                    alt={travelerTypeTitle}
+                    sizes="(max-width: 640px) 34vw, 160px"
+                    src={typeImageSrc!}
+                    className="object-cover h-full w-full"
+                  />
+                </div>
 
                 {/* Trip info */}
                 <div className="min-w-0 flex-1 space-y-1 px-4 py-3 text-left">
@@ -109,17 +148,38 @@ export function UnpaidTripsAlert({
                   </div>
                 </div>
 
-                {/* Price + CTA */}
+                {/* Price + CTAs */}
                 <div className="flex shrink-0 flex-col items-end justify-center gap-2 px-4 py-3">
                   <p className="font-barlow-condensed text-2xl font-bold text-neutral-900 sm:text-3xl">
                     {usd(total)}
                   </p>
-                  <Button asChild size="sm">
-                    <Link href={`/${locale}/checkout?tripId=${trip.id}`}>
-                      <CreditCard className="mr-1.5 h-3.5 w-3.5" />
-                      {copy.unpaidTrips.action}
-                    </Link>
-                  </Button>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <Button asChild size="sm">
+                      <Link href={`/${locale}/checkout?tripId=${trip.id}`}>
+                        <CreditCard className="mr-1.5 h-3.5 w-3.5" />
+                        {copy.unpaidTrips.action}
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="text-primary hover:bg-gray-50 hover:text-gray-700 border-primary"
+                    >
+                      <Link href={buildEditUrl(locale, trip)}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                    <Button
+                      disabled={deletingId === trip.id}
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDelete(trip.id)}
+                      className="text-red-400 hover:bg-red-50 hover:text-red-700 border-red-400"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </li>

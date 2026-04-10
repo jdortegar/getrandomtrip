@@ -65,6 +65,10 @@ const DASHBOARD_COPY_ES: DashboardCopy = {
   unpaidTrips: {
     action: 'Completar pago',
     bookingRefLabel: 'Referencia',
+    deleteAction: 'Eliminar',
+    deleteConfirm: '¿Seguro que querés eliminar este viaje? Esta acción no se puede deshacer.',
+    deleteFailed: 'No se pudo eliminar el viaje. Intentá de nuevo.',
+    editAction: 'Editar',
     estimatedTripTotal: 'Total estimado del viaje',
     experienceSection: 'Experiencia',
     message: 'Completa el pago para confirmar tu reserva. Puedes reintentar desde aca.',
@@ -150,6 +154,10 @@ const DASHBOARD_COPY_EN: DashboardCopy = {
   unpaidTrips: {
     action: 'Complete payment',
     bookingRefLabel: 'Reference',
+    deleteAction: 'Delete',
+    deleteConfirm: 'Are you sure you want to delete this trip? This action cannot be undone.',
+    deleteFailed: 'Could not delete the trip. Please try again.',
+    editAction: 'Edit',
     estimatedTripTotal: 'Estimated trip total',
     experienceSection: 'Experience',
     message: 'Complete payment to confirm your reservation. You can retry from here.',
