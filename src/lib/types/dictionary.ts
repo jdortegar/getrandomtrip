@@ -30,6 +30,56 @@ export interface LegalDocumentDict {
   sections: LegalDocumentSection[];
 }
 
+export interface TripperDashboardDict {
+  header: {
+    title: string;
+    description: string;
+  };
+  stats: {
+    totalBookings: string;
+    monthlyRevenue: string;
+    averageRating: string;
+    activePackages: string;
+  };
+  recentBookings: {
+    title: string;
+    viewAll: string;
+    empty: string;
+  };
+  quickActions: {
+    title: string;
+    createPackage: string;
+    createPackageSub: string;
+    earnings: string;
+    earningsSub: string;
+    reviews: string;
+    reviewsSub: string;
+    blogs: string;
+    blogsSub: string;
+    settings: string;
+    settingsSub: string;
+  };
+  keyMetrics: {
+    title: string;
+    totalClients: string;
+    conversionRate: string;
+    growth: string;
+  };
+  packages: {
+    title: string;
+    newPackage: string;
+    empty: string;
+    emptyCta: string;
+    viewAll: string;
+  };
+  status: {
+    confirmed: string;
+    revealed: string;
+    completed: string;
+    pending: string;
+  };
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -778,4 +828,5 @@ export interface MarketingDictionary {
       SAVED: string;
     };
   };
+  tripperDashboard: TripperDashboardDict;
 }

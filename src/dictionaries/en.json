@@ -2361,5 +2361,54 @@
     "copiedToast": "Signature HTML copied",
     "copyErrorToast": "Could not copy — try selecting the preview and copying manually",
     "previewHeading": "Preview"
+  },
+  "tripperDashboard": {
+    "header": {
+      "title": "Tripper OS",
+      "description": "Manage your travel packages and clients"
+    },
+    "stats": {
+      "totalBookings": "Total Bookings",
+      "monthlyRevenue": "Monthly Revenue",
+      "averageRating": "Average Rating",
+      "activePackages": "Active Packages"
+    },
+    "recentBookings": {
+      "title": "Recent Bookings",
+      "viewAll": "View all",
+      "empty": "No recent bookings"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createPackage": "Create Package",
+      "createPackageSub": "New travel offer",
+      "earnings": "View Earnings",
+      "earningsSub": "Detailed analytics",
+      "reviews": "Reviews & NPS",
+      "reviewsSub": "View feedback",
+      "blogs": "My Posts",
+      "blogsSub": "Manage blog",
+      "settings": "Settings",
+      "settingsSub": "Profile settings"
+    },
+    "keyMetrics": {
+      "title": "Key Metrics",
+      "totalClients": "Total Clients",
+      "conversionRate": "Conversion Rate",
+      "growth": "Growth"
+    },
+    "packages": {
+      "title": "My Packages",
+      "newPackage": "New Package",
+      "empty": "You have no active packages yet",
+      "emptyCta": "Create your first package",
+      "viewAll": "View all →"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "revealed": "Revealed",
+      "completed": "Completed",
+      "pending": "Pending"
+    }
   }
 }

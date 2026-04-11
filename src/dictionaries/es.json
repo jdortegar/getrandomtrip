@@ -2361,5 +2361,54 @@
     "copiedToast": "HTML de la firma copiado",
     "copyErrorToast": "No se pudo copiar — prueba a seleccionar la vista previa y copiar a mano",
     "previewHeading": "Vista previa"
+  },
+  "tripperDashboard": {
+    "header": {
+      "title": "Tripper OS",
+      "description": "Gestiona tus paquetes de viaje y clientes"
+    },
+    "stats": {
+      "totalBookings": "Reservas Totales",
+      "monthlyRevenue": "Ingresos Mensuales",
+      "averageRating": "Rating Promedio",
+      "activePackages": "Paquetes Activos"
+    },
+    "recentBookings": {
+      "title": "Reservas Recientes",
+      "viewAll": "Ver todas",
+      "empty": "No hay reservas recientes"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "createPackage": "Crear Paquete",
+      "createPackageSub": "Nueva oferta de viaje",
+      "earnings": "Ver Ganancias",
+      "earningsSub": "Análisis detallado",
+      "reviews": "Reseñas & NPS",
+      "reviewsSub": "Ver feedback",
+      "blogs": "Mis Posts",
+      "blogsSub": "Gestionar blog",
+      "settings": "Configuración",
+      "settingsSub": "Ajustes del perfil"
+    },
+    "keyMetrics": {
+      "title": "Métricas Clave",
+      "totalClients": "Clientes Totales",
+      "conversionRate": "Tasa de Conversión",
+      "growth": "Crecimiento"
+    },
+    "packages": {
+      "title": "Mis Paquetes",
+      "newPackage": "Nuevo Paquete",
+      "empty": "No tienes paquetes activos aún",
+      "emptyCta": "Crear tu primer paquete",
+      "viewAll": "Ver todos →"
+    },
+    "status": {
+      "confirmed": "Confirmado",
+      "revealed": "Revelado",
+      "completed": "Completado",
+      "pending": "Pendiente"
+    }
   }
 }

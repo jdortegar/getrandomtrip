@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import { ArrowLeft, Check } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
-import { JourneyUserBadge, type JourneyUserBadgeLabels } from '@/components/journey/JourneyUserBadge';
+import { ArrowLeft, Check } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
+import {
+  JourneyUserBadge,
+  type JourneyUserBadgeLabels,
+} from "@/components/journey/JourneyUserBadge";
 
 interface Tab {
   id: string;
@@ -31,23 +34,23 @@ export default function JourneyContentNavigation({
   const searchParams = useSearchParams();
 
   const isTabComplete = (tabId: string): boolean => {
-    const travelType = searchParams.get('travelType');
-    const experience = searchParams.get('experience');
-    const excuse = searchParams.get('excuse');
-    const originCountry = searchParams.get('originCountry');
-    const originCity = searchParams.get('originCity');
-    const startDate = searchParams.get('startDate');
-    const nights = searchParams.get('nights');
+    const travelType = searchParams.get("travelType");
+    const experience = searchParams.get("experience");
+    const excuse = searchParams.get("excuse");
+    const originCountry = searchParams.get("originCountry");
+    const originCity = searchParams.get("originCity");
+    const startDate = searchParams.get("startDate");
+    const nights = searchParams.get("nights");
     switch (tabId) {
-      case 'budget':
+      case "budget":
         return !!(travelType && experience);
-      case 'excuse':
+      case "excuse":
         return !!(travelType && experience && excuse);
-      case 'details':
+      case "details":
         return !!(originCountry && originCity && startDate && nights);
-      case 'preferences':
+      case "preferences":
         return isCompleteTransportOrderParam(
-          searchParams.get('transportOrder'),
+          searchParams.get("transportOrder"),
         );
       default:
         return false;
@@ -56,7 +59,7 @@ export default function JourneyContentNavigation({
 
   return (
     <nav
-      className={cn('w-full bg-white border-b border-gray-200 py-4', className)}
+      className={cn("w-full bg-white border-b border-gray-200 py-4", className)}
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-center">
@@ -88,11 +91,11 @@ export default function JourneyContentNavigation({
                   {/* Numbered Circle or Check Icon */}
                   <button
                     className={cn(
-                      'flex h-6 w-6 items-center justify-center rounded-full border transition-colors',
+                      "flex h-6 w-6 items-center justify-center rounded-full border transition-colors",
                       {
-                        'border-[#4F96B6] bg-[#4F96B6] text-white':
+                        "border-light-blue bg-light-blue text-white":
                           isActive || isCompleted,
-                        'border-gray-300 bg-gray-100 text-gray-400':
+                        "border-gray-300 bg-gray-100 text-gray-400":
                           !isActive && !isCompleted,
                       },
                     )}
@@ -108,9 +111,9 @@ export default function JourneyContentNavigation({
 
                   {/* Bullet Point */}
                   <span
-                    className={cn('text-sm', {
-                      'text-gray-700': isActive,
-                      'text-gray-300': !isActive,
+                    className={cn("text-sm", {
+                      "text-gray-700": isActive,
+                      "text-gray-300": !isActive,
                     })}
                   >
                     •
@@ -119,10 +122,10 @@ export default function JourneyContentNavigation({
                   {/* Text Label */}
                   <button
                     className={cn(
-                      'text-sm font-medium transition-colors whitespace-nowrap cursor-pointer',
+                      "text-sm font-medium transition-colors whitespace-nowrap cursor-pointer",
                       {
-                        'text-gray-900': isActive,
-                        'text-gray-500 hover:text-gray-700': !isActive,
+                        "text-gray-900": isActive,
+                        "text-gray-500 hover:text-gray-700": !isActive,
                       },
                     )}
                     onClick={() => onTabChange(tab.id)}
