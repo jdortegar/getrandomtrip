@@ -53,6 +53,8 @@ export async function GET(
         blocks: true,
         faq: true,
         tags: true,
+        travelType: true,
+        excuseKey: true,
         format: true,
         status: true,
         seo: true,
@@ -143,6 +145,8 @@ export async function PATCH(
       status,
       coverUrl,
       seo,
+      travelType,
+      excuseKey,
     } = body;
 
     // Validate required fields
@@ -177,6 +181,18 @@ export async function PATCH(
     if (blocks !== undefined) updateData.blocks = blocks;
     if (faq !== undefined) updateData.faq = faq ?? null;
     if (tags !== undefined) updateData.tags = tags;
+    if (travelType !== undefined) {
+      updateData.travelType =
+        typeof travelType === 'string' && travelType.trim().length > 0
+          ? travelType.trim()
+          : null;
+    }
+    if (excuseKey !== undefined) {
+      updateData.excuseKey =
+        typeof excuseKey === 'string' && excuseKey.trim().length > 0
+          ? excuseKey.trim()
+          : null;
+    }
     if (coverUrl !== undefined) updateData.coverUrl = coverUrl || null;
     if (seo !== undefined) updateData.seo = seo || null;
 
@@ -213,6 +229,8 @@ export async function PATCH(
         blocks: true,
         faq: true,
         tags: true,
+        travelType: true,
+        excuseKey: true,
         format: true,
         status: true,
         seo: true,

@@ -2363,6 +2363,71 @@
     "previewHeading": "Vista previa"
   },
   "tripperBlogs": {
+    "composer": {
+      "addTagAria": "Añadir etiqueta",
+      "audienceUnsetLabel": "Sin especificar",
+      "bodyLabel": "Contenido",
+      "bodyPlaceholder": "Escribe el cuerpo del artículo…",
+      "breadcrumbCreate": "Tripper OS / Crear post",
+      "breadcrumbEdit": "Tripper OS / Editar post",
+      "createHero": {
+        "title": "Crear nuevo post",
+        "description": "Comparte tus experiencias y consejos de viaje"
+      },
+      "cover": {
+        "hint": "JPG, PNG o WebP. Se muestra como imagen principal del post.",
+        "previewAlt": "Vista previa de la imagen de portada",
+        "remove": "Quitar imagen",
+        "title": "Imagen de portada",
+        "upload": "Subir imagen",
+        "uploading": "Subiendo…"
+      },
+      "editHero": {
+        "descriptionFallback": "Modifica tu contenido",
+        "titleFallback": "Editar post"
+      },
+      "editLoading": {
+        "description": "Obteniendo información del post…",
+        "title": "Cargando post"
+      },
+      "editNotFound": {
+        "backToList": "Volver a mis posts",
+        "descriptionFallback": "El post no está disponible o no tienes permiso para verlo.",
+        "title": "Post no encontrado"
+      },
+      "excuseKeyLabel": "Motivo del viaje",
+      "formatArticle": "Artículo",
+      "formatLabel": "Formato",
+      "formatMixed": "Mixto",
+      "formatPhoto": "Foto",
+      "formatVideo": "Video",
+      "preview": "Previsualizar",
+      "publish": "Publicar",
+      "publishing": "Publicando…",
+      "save": "Guardar borrador",
+      "saving": "Guardando…",
+      "settingsTitle": "Ajustes del post",
+      "statusDraft": "Borrador",
+      "statusLabel": "Estado",
+      "statusPublished": "Publicado",
+      "subtitlePlaceholder": "Subtítulo (opcional)",
+      "tagPlaceholder": "Añadir etiqueta",
+      "tagsLabel": "Etiquetas",
+      "titlePlaceholder": "Título del post",
+      "toasts": {
+        "genericPublishError": "Error al publicar el post",
+        "genericSaveError": "Error al guardar el post",
+        "publishError": "No se pudo publicar",
+        "publishSuccess": "Post publicado",
+        "saveError": "No se pudo guardar",
+        "saveSuccessCreate": "Borrador guardado",
+        "saveSuccessEdit": "Post actualizado",
+        "titleRequired": "El título es obligatorio",
+        "uploadError": "No se pudo subir la imagen"
+      },
+      "travelTypeLabel": "Tipo de viajero",
+      "unsaved": "Sin guardar"
+    },
     "header": {
       "title": "Mis Posts",
       "description": "Gestiona tu blog y comparte tus experiencias"

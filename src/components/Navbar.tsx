@@ -16,8 +16,9 @@ import {
   LOCALE_LABELS,
   type Locale,
 } from '@/lib/i18n/config';
-import { pathForLocale, pathWithoutLocale } from '@/lib/i18n/pathForLocale';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
+import { pathForLocale, pathWithoutLocale } from '@/lib/i18n/pathForLocale';
+import { cn } from '@/lib/utils';
 
 // Types
 export type NavbarVariant = 'overlay' | 'auto' | 'solid';
@@ -40,6 +41,8 @@ const PRIMARY_LINK_KEYS: LinkKey[] = [
 const EXTRA_LINK_KEYS: LinkKey[] = [];
 
 export interface NavbarProps {
+  /** Solid primary bar for pages without a hero (e.g. dashboard). */
+  backgroundPrimary?: boolean;
   dict?: Dictionary;
   locale?: Locale;
   variant?: NavbarVariant;
@@ -49,13 +52,16 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 // Main Navbar Component
 export default function Navbar({
+  backgroundPrimary = false,
   dict,
   locale: localeProp,
   variant = 'auto',
 }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  useScrollDetection({ variant });
+  useScrollDetection({
+    variant: backgroundPrimary ? 'solid' : variant,
+  });
   const { isAuthed, user, signOut, session } = useUserStore();
   const { isOpen, mode, close, openLogin } = useAuthModal();
   const linksMenu = useMenuState();
@@ -64,16 +70,20 @@ export default function Navbar({
   const nav = dict?.nav;
   const profileLabels = dict?.navbarProfile as NavbarProfileLabels;
 
-  const headerClass =
-    'absolute top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out';
+  const headerClass = backgroundPrimary
+    ? cn(
+        'bg-primary duration-500 ease-in-out ring-1 ring-black/10 shadow-sm sticky text-primary-foreground top-0 transition-all w-full z-50',
+        NAVBAR_CONSTANTS.HEIGHT,
+      )
+    : cn(
+        'absolute backdrop-blur-md bg-white/0 duration-500 ease-in-out inset-x-0 text-white top-0 transition-all z-50',
+        NAVBAR_CONSTANTS.HEIGHT,
+      );
   const logoSrc = '/assets/logos/logo_getrandomtrip_1.png';
 
   return (
     <>
-      <header
-        data-site-header
-        className={`${headerClass} ${NAVBAR_CONSTANTS.HEIGHT}`}
-      >
+      <header className={headerClass} data-site-header>
         <nav
           className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT}  ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between container`}
         >

@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import { useUserStore } from "@/store/slices/userStore";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
-import HeaderHero from "@/components/journey/HeaderHero";
 import { TripperDashboardSkeleton } from "@/components/app/dashboard/tripper/TripperDashboardSkeleton";
 import { TripperStatsGrid } from "@/components/app/dashboard/tripper/TripperStatsGrid";
 import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBookingsList";
@@ -81,15 +80,16 @@ function TripperContent() {
 
   return (
     <>
-      <HeaderHero
-        title={copy.header.title}
-        description={copy.header.description}
-        videoSrc="/videos/hero-video-1.mp4"
-        fallbackImage="/images/bg-playa-mexico.jpg"
-      />
-
       <Section>
         <div className="rt-container">
+          <div className="mb-8">
+            <h1 className="text-xl font-semibold text-neutral-900">
+              {copy.header.title}
+            </h1>
+            <p className="mt-2 text-sm text-neutral-600">
+              {copy.header.description}
+            </p>
+          </div>
           {loading ? (
             <TripperDashboardSkeleton />
           ) : (

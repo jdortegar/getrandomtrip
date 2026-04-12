@@ -2363,6 +2363,71 @@
     "previewHeading": "Preview"
   },
   "tripperBlogs": {
+    "composer": {
+      "addTagAria": "Add tag",
+      "audienceUnsetLabel": "Not specified",
+      "bodyLabel": "Body",
+      "bodyPlaceholder": "Write your article body…",
+      "breadcrumbCreate": "Tripper OS / Create post",
+      "breadcrumbEdit": "Tripper OS / Edit post",
+      "createHero": {
+        "title": "Create new post",
+        "description": "Share your travel stories and tips"
+      },
+      "cover": {
+        "hint": "JPG, PNG, or WebP. Shown as the main image for the post.",
+        "previewAlt": "Cover image preview",
+        "remove": "Remove image",
+        "title": "Cover image",
+        "upload": "Upload image",
+        "uploading": "Uploading…"
+      },
+      "editHero": {
+        "descriptionFallback": "Edit your story",
+        "titleFallback": "Edit post"
+      },
+      "editLoading": {
+        "description": "Fetching post details…",
+        "title": "Loading post"
+      },
+      "editNotFound": {
+        "backToList": "Back to my posts",
+        "descriptionFallback": "This post is unavailable or you do not have access.",
+        "title": "Post not found"
+      },
+      "excuseKeyLabel": "Travel reason",
+      "formatArticle": "Article",
+      "formatLabel": "Format",
+      "formatMixed": "Mixed",
+      "formatPhoto": "Photo",
+      "formatVideo": "Video",
+      "preview": "Preview",
+      "publish": "Publish",
+      "publishing": "Publishing…",
+      "save": "Save draft",
+      "saving": "Saving…",
+      "settingsTitle": "Post settings",
+      "statusDraft": "Draft",
+      "statusLabel": "Status",
+      "statusPublished": "Published",
+      "subtitlePlaceholder": "Subtitle (optional)",
+      "tagPlaceholder": "Add a tag",
+      "tagsLabel": "Tags",
+      "titlePlaceholder": "Post title",
+      "toasts": {
+        "genericPublishError": "Could not publish the post",
+        "genericSaveError": "Could not save the post",
+        "publishError": "Publish failed",
+        "publishSuccess": "Post published",
+        "saveError": "Save failed",
+        "saveSuccessCreate": "Draft saved",
+        "saveSuccessEdit": "Post updated",
+        "titleRequired": "Title is required",
+        "uploadError": "Image upload failed"
+      },
+      "travelTypeLabel": "Traveler type",
+      "unsaved": "Unsaved changes"
+    },
     "header": {
       "title": "My Posts",
       "description": "Manage your blog and share your experiences"

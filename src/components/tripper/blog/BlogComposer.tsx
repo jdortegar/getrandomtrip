@@ -1,31 +1,105 @@
 "use client";
 
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Image as ImageIcon, Video, Type, Quote, Link as LinkIcon, PlusCircle, Save, Sparkles, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { toast } from "sonner";
+import Img from "@/components/common/Img";
+import { BlogComposerSidebar } from "@/components/tripper/blog/BlogComposerSidebar";
+import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/blog";
+import type { TripperBlogComposerDict } from "@/lib/types/dictionary";
+
+const BlogRichTextEditor = dynamic(
+  () =>
+    import("@/components/tripper/blog/BlogRichTextEditor").then((m) => ({
+      default: m.BlogRichTextEditor,
+    })),
+  {
+    loading: () => (
+      <div className="min-h-[280px] rounded-lg border border-dashed border-neutral-200 bg-neutral-50" />
+    ),
+    ssr: false,
+  },
+);
 
 interface BlogComposerProps {
-  post: Partial<BlogPost>;
+  copy: TripperBlogComposerDict;
   mode: "create" | "edit";
+  post: Partial<BlogPost>;
 }
 
-export default function BlogComposer({ post: initialPost, mode }: BlogComposerProps) {
+async function uploadImageFile(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await fetch("/api/tripper/blog-media", {
+    body: formData,
+    method: "POST",
+  });
+  if (!response.ok) {
+    throw new Error("upload failed");
+  }
+  const data = (await response.json()) as { location?: string };
+  if (!data.location) {
+    throw new Error("no location");
+  }
+  return data.location;
+}
+
+export default function BlogComposer({
+  copy,
+  mode,
+  post: initialPost,
+}: BlogComposerProps) {
   const router = useRouter();
-  const [post, setPost] = useState<Partial<BlogPost>>(initialPost);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const [post, setPost] = useState<Partial<BlogPost>>({
+    ...initialPost,
+    blocks: initialPost.blocks ?? [],
+    content: initialPost.content ?? "",
+    tags: initialPost.tags ?? [],
+  });
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<any>(null);
-  const [format, setFormat] = useState<"article" | "photo" | "video" | "mixed">("article");
-  const [status, setStatus] = useState<"draft" | "published">(initialPost.status || "draft");
-  const [tags, setTags] = useState<string[]>(initialPost.tags || []);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [format, setFormat] = useState<BlogPost["format"]>(
+    initialPost.format ?? "article",
+  );
+  const [tags, setTags] = useState<string[]>(initialPost.tags ?? []);
   const [tagInput, setTagInput] = useState("");
 
-  // Save function - saves as draft
+  const contentHtml = typeof post.content === "string" ? post.content : "";
+
+  const handleUploadImage = async (file: File) => {
+    try {
+      return await uploadImageFile(file);
+    } catch {
+      toast.error(copy.toasts.uploadError);
+      throw new Error("upload failed");
+    }
+  };
+
+  const handleCoverFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setCoverUploading(true);
+    try {
+      const url = await uploadImageFile(file);
+      setPost((p) => ({ ...p, coverUrl: url }));
+    } catch {
+      toast.error(copy.toasts.uploadError);
+    } finally {
+      setCoverUploading(false);
+    }
+  };
+
   const handleSave = async () => {
-    if (!post.title) {
-      toast.error("El título es requerido");
+    if (!post.title?.trim()) {
+      toast.error(copy.toasts.titleRequired);
       return;
     }
 
@@ -33,53 +107,55 @@ export default function BlogComposer({ post: initialPost, mode }: BlogComposerPr
     try {
       const postData = {
         ...post,
+        blocks: [] as BlogPost["blocks"],
+        content: contentHtml,
+        coverUrl: post.coverUrl,
+        excuseKey: post.excuseKey?.trim() ? post.excuseKey.trim() : null,
         format,
-        status: "draft",
+        status: "draft" as const,
         tags,
-        blocks: post.blocks || [],
+        travelType: post.travelType?.trim() ? post.travelType.trim() : null,
       };
 
       if (mode === "create") {
         const response = await fetch("/api/tripper/blogs", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(postData),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
         });
 
         if (response.ok) {
-          const data = await response.json();
-          toast.success("Post guardado como borrador");
+          const data = (await response.json()) as { blog: { id: string } };
+          toast.success(copy.toasts.saveSuccessCreate);
           router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
         } else {
-          const error = await response.json();
-          toast.error(error.error || "Error al guardar el post");
+          const error = (await response.json()) as { error?: string };
+          toast.error(error.error ?? copy.toasts.saveError);
         }
       } else {
         const response = await fetch(`/api/tripper/blogs/${post.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(postData),
+          headers: { "Content-Type": "application/json" },
+          method: "PATCH",
         });
 
         if (response.ok) {
-          toast.success("Post actualizado");
+          toast.success(copy.toasts.saveSuccessEdit);
         } else {
-          const error = await response.json();
-          toast.error(error.error || "Error al actualizar el post");
+          const error = (await response.json()) as { error?: string };
+          toast.error(error.error ?? copy.toasts.saveError);
         }
       }
-    } catch (error) {
-      console.error("Error saving post:", error);
-      toast.error("Error al guardar el post");
+    } catch {
+      toast.error(copy.toasts.genericSaveError);
     } finally {
       setSaving(false);
     }
   };
 
-  // Publish function
   const handlePublish = async () => {
-    if (!post.title) {
-      toast.error("El título es requerido");
+    if (!post.title?.trim()) {
+      toast.error(copy.toasts.titleRequired);
       return;
     }
 
@@ -87,53 +163,57 @@ export default function BlogComposer({ post: initialPost, mode }: BlogComposerPr
     try {
       const postData = {
         ...post,
+        blocks: [] as BlogPost["blocks"],
+        content: contentHtml,
+        coverUrl: post.coverUrl,
+        excuseKey: post.excuseKey?.trim() ? post.excuseKey.trim() : null,
         format,
-        status: "published",
-        tags,
-        blocks: post.blocks || [],
         publishedAt: new Date().toISOString(),
+        status: "published" as const,
+        tags,
+        travelType: post.travelType?.trim() ? post.travelType.trim() : null,
       };
 
       if (mode === "create") {
         const response = await fetch("/api/tripper/blogs", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(postData),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
         });
 
         if (response.ok) {
-          const data = await response.json();
-          toast.success("Post publicado exitosamente");
+          const data = (await response.json()) as { blog: { id: string } };
+          toast.success(copy.toasts.publishSuccess);
           router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
         } else {
-          const error = await response.json();
-          toast.error(error.error || "Error al publicar el post");
+          const error = (await response.json()) as { error?: string };
+          toast.error(error.error ?? copy.toasts.publishError);
         }
       } else {
         const response = await fetch(`/api/tripper/blogs/${post.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(postData),
+          headers: { "Content-Type": "application/json" },
+          method: "PATCH",
         });
 
         if (response.ok) {
-          toast.success("Post publicado exitosamente");
+          toast.success(copy.toasts.publishSuccess);
         } else {
-          const error = await response.json();
-          toast.error(error.error || "Error al publicar el post");
+          const error = (await response.json()) as { error?: string };
+          toast.error(error.error ?? copy.toasts.publishError);
         }
       }
-    } catch (error) {
-      console.error("Error publishing post:", error);
-      toast.error("Error al publicar el post");
+    } catch {
+      toast.error(copy.toasts.genericPublishError);
     } finally {
       setPublishing(false);
     }
   };
 
   const addTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
+    const next = tagInput.trim();
+    if (next && !tags.includes(next)) {
+      setTags([...tags, next]);
       setTagInput("");
     }
   };
@@ -142,330 +222,164 @@ export default function BlogComposer({ post: initialPost, mode }: BlogComposerPr
     setTags(tags.filter((t) => t !== tag));
   };
 
-  const addBlock = (type: string) => {
-    const newBlock: any = { type };
-    if (type === "paragraph") {
-      newBlock.text = "";
-    } else if (type === "image" || type === "video") {
-      newBlock.url = "";
-      newBlock.caption = "";
-    } else if (type === "embed") {
-      newBlock.provider = "youtube";
-      newBlock.url = "";
-    } else if (type === "quote") {
-      newBlock.text = "";
-      newBlock.cite = "";
-    }
+  const breadcrumb =
+    mode === "create" ? copy.breadcrumbCreate : copy.breadcrumbEdit;
 
-    setPost({
-      ...post,
-      blocks: [...(post.blocks || []), newBlock],
-    });
-  };
-
-  const updateBlock = (index: number, updates: any) => {
-    const newBlocks = [...(post.blocks || [])];
-    newBlocks[index] = { ...newBlocks[index], ...updates };
-    setPost({ ...post, blocks: newBlocks });
-  };
-
-  const removeBlock = (index: number) => {
-    const newBlocks = [...(post.blocks || [])];
-    newBlocks.splice(index, 1);
-    setPost({ ...post, blocks: newBlocks });
-  };
-
-  // Assist: local suggestions only
-  const handleAiAssist = async () => {
-    setAiSuggestions({ titles: ["Sugerencia 1", "Sugerencia 2"], rewrites: ["Reescritura 1", "Reescritura 2"] });
-  };
+  const statusLine = saving
+    ? copy.saving
+    : publishing
+      ? copy.publishing
+      : copy.unsaved;
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] bg-neutral-100 rounded-2xl overflow-hidden shadow-lg">
-      {/* Col A: Media & Blocks Palette */}
-      <div className="w-72 bg-neutral-900 p-4 flex flex-col text-white">
-        <h3 className="text-lg font-semibold mb-4">Bloques & Media</h3>
-        <div className="space-y-3">
-          <button
-            onClick={() => addBlock("paragraph")}
-            className="w-full flex items-center p-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-colors"
-          >
-            <Type size={20} className="mr-3" /> Texto
-          </button>
-          <button
-            onClick={() => addBlock("image")}
-            className="w-full flex items-center p-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-colors"
-          >
-            <ImageIcon size={20} className="mr-3" /> Imagen
-          </button>
-          <button
-            onClick={() => addBlock("video")}
-            className="w-full flex items-center p-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-colors"
-          >
-            <Video size={20} className="mr-3" /> Video
-          </button>
-          <button
-            onClick={() => addBlock("embed")}
-            className="w-full flex items-center p-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-colors"
-          >
-            <LinkIcon size={20} className="mr-3" /> Embed
-          </button>
-          <button
-            onClick={() => addBlock("quote")}
-            className="w-full flex items-center p-3 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-colors"
-          >
-            <Quote size={20} className="mr-3" /> Cita
-          </button>
-        </div>
-        <div className="mt-auto pt-4 border-t border-neutral-700">
-          <h4 className="text-sm font-semibold mb-2">Media Tray</h4>
-          <div className="h-24 bg-neutral-800 rounded-lg flex items-center justify-center text-neutral-500 text-xs">
-            Miniaturas de media aquí
-          </div>
-        </div>
-      </div>
-
-      {/* Col B: Lienzo del Post */}
-      <div className="flex-1 bg-white p-8 overflow-y-auto">
-        {/* Top actions */}
-        <div className="sticky top-0 bg-white pb-4 z-10 border-b border-neutral-200 mb-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-sm text-neutral-500">Tripper OS / {mode === "create" ? "Crear Post" : "Editar Post"}</h3>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs text-neutral-500">
-                {saving ? "Guardando..." : publishing ? "Publicando..." : "Sin guardar"}
-              </span>
-              <button
+    <div className="flex min-h-[calc(100vh-10rem)] flex-col gap-6 lg:flex-row">
+      <div className="min-w-0 flex-1 space-y-6">
+        <div className="bg-white border-b border-neutral-200 pb-4 space-y-4 sticky top-0 z-10">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-neutral-500">{breadcrumb}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-neutral-500">{statusLine}</span>
+              <Button
+                disabled={publishing || saving}
                 onClick={handleSave}
-                disabled={saving || publishing}
-                className="px-3 py-1.5 text-sm rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors flex items-center gap-2 disabled:opacity-50"
+                size="sm"
+                type="button"
+                variant="secondary"
               >
-                <Save size={16} /> Guardar
-              </button>
+                <Save className="h-4 w-4" />
+                {copy.save}
+              </Button>
             </div>
           </div>
           <input
-            type="text"
-            placeholder="Título del Post"
-            className="w-full text-4xl font-bold font-serif mt-4 mb-2 outline-none border-none bg-transparent"
-            value={post.title || ""}
+            className="w-full border-none bg-transparent font-barlow-condensed text-3xl font-bold text-neutral-900 outline-none md:text-4xl"
             onChange={(e) => setPost({ ...post, title: e.target.value })}
+            placeholder={copy.titlePlaceholder}
+            type="text"
+            value={post.title ?? ""}
           />
           <input
-            type="text"
-            placeholder="Subtítulo (opcional)"
-            className="w-full text-xl font-semibold mb-4 outline-none border-none bg-transparent"
-            value={post.subtitle || ""}
+            className="w-full border-none bg-transparent text-xl font-semibold text-neutral-800 outline-none"
             onChange={(e) => setPost({ ...post, subtitle: e.target.value })}
+            placeholder={copy.subtitlePlaceholder}
+            type="text"
+            value={post.subtitle ?? ""}
           />
         </div>
 
-        {/* Blocks */}
-        <div className="space-y-4">
-          {post.blocks?.map((block: any, index: number) => (
-            <div key={index} className="bg-neutral-50 p-4 rounded-lg border border-neutral-200 relative group">
-              <button
-                onClick={() => removeBlock(index)}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-100 transition-opacity"
-              >
-                <X size={16} className="text-red-600" />
-              </button>
-              
-              {block.type === "paragraph" && (
-                <textarea
-                  value={block.text || ""}
-                  onChange={(e) => updateBlock(index, { text: e.target.value })}
-                  placeholder="Escribe tu párrafo aquí..."
-                  className="w-full min-h-[100px] p-2 border border-neutral-300 rounded bg-white resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                />
-              )}
-              
-              {block.type === "image" && (
-                <div className="space-y-2">
-                  <input
-                    type="url"
-                    value={block.url || ""}
-                    onChange={(e) => updateBlock(index, { url: e.target.value })}
-                    placeholder="URL de la imagen"
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={block.caption || ""}
-                    onChange={(e) => updateBlock(index, { caption: e.target.value })}
-                    placeholder="Descripción de la imagen (opcional)"
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                  {block.url && (
-                    <img src={block.url} alt={block.caption || ""} className="w-full rounded-lg" />
-                  )}
-                </div>
-              )}
-              
-              {block.type === "video" && (
-                <div className="space-y-2">
-                  <input
-                    type="url"
-                    value={block.url || ""}
-                    onChange={(e) => updateBlock(index, { url: e.target.value })}
-                    placeholder="URL del video"
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={block.caption || ""}
-                    onChange={(e) => updateBlock(index, { caption: e.target.value })}
-                    placeholder="Descripción del video (opcional)"
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                </div>
-              )}
-              
-              {block.type === "embed" && (
-                <div className="space-y-2">
-                  <select
-                    value={block.provider || "youtube"}
-                    onChange={(e) => updateBlock(index, { provider: e.target.value })}
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        <div className="bg-white border border-gray-200 p-6 relative rounded-xl shadow-sm space-y-6">
+          <div>
+            <h3 className="mb-2 text-lg font-semibold text-neutral-900">
+              {copy.cover.title}
+            </h3>
+            <p className="mb-3 text-sm text-neutral-600">{copy.cover.hint}</p>
+            <div className="flex flex-col gap-3">
+              <input
+                accept="image/*"
+                className="hidden"
+                onChange={handleCoverFileChange}
+                ref={coverInputRef}
+                type="file"
+              />
+              {post.coverUrl ? (
+                <>
+                  <div className="border border-neutral-200 h-40 max-w-md mx-auto overflow-hidden relative rounded-lg w-full">
+                    <Img
+                      alt={copy.cover.previewAlt}
+                      className="h-full w-full object-cover"
+                      height={320}
+                      sizes="(max-width: 768px) 100vw, 448px"
+                      src={post.coverUrl}
+                      width={448}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-3 items-center justify-center">
+                    <Button
+                      disabled={coverUploading}
+                      onClick={() => coverInputRef.current?.click()}
+                      type="button"
+                      variant="secondary"
+                    >
+                      {coverUploading ? copy.cover.uploading : copy.cover.upload}
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        setPost((p) => ({ ...p, coverUrl: undefined }))
+                      }
+                      type="button"
+                      variant="ghost"
+                    >
+                      {copy.cover.remove}
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    disabled={coverUploading}
+                    onClick={() => coverInputRef.current?.click()}
+                    type="button"
+                    variant="secondary"
                   >
-                    <option value="youtube">YouTube</option>
-                    <option value="vimeo">Vimeo</option>
-                    <option value="map">Mapa</option>
-                    <option value="other">Otro</option>
-                  </select>
-                  <input
-                    type="url"
-                    value={block.url || ""}
-                    onChange={(e) => updateBlock(index, { url: e.target.value })}
-                    placeholder="URL del embed"
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                </div>
-              )}
-              
-              {block.type === "quote" && (
-                <div className="space-y-2">
-                  <textarea
-                    value={block.text || ""}
-                    onChange={(e) => updateBlock(index, { text: e.target.value })}
-                    placeholder="Texto de la cita"
-                    className="w-full min-h-[80px] p-2 border border-neutral-300 rounded bg-white resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={block.cite || ""}
-                    onChange={(e) => updateBlock(index, { cite: e.target.value })}
-                    placeholder="Autor de la cita (opcional)"
-                    className="w-full p-2 border border-neutral-300 rounded bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
+                    {coverUploading ? copy.cover.uploading : copy.cover.upload}
+                  </Button>
                 </div>
               )}
             </div>
-          ))}
+          </div>
+
+          <div>
+            <label
+              className="mb-2 block text-sm font-medium text-neutral-500"
+              htmlFor="blog-composer-body"
+            >
+              {copy.bodyLabel}
+            </label>
+            <BlogRichTextEditor
+              aria-label={copy.bodyLabel}
+              id="blog-composer-body"
+              onChange={(html) => setPost({ ...post, content: html })}
+              onUploadImage={handleUploadImage}
+              placeholder={copy.bodyPlaceholder}
+              value={contentHtml}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Col C: Assistant & Settings */}
-      <div className="w-96 bg-neutral-50 p-4 flex flex-col border-l border-neutral-200">
-        <h3 className="text-lg font-semibold mb-4">Asistente IA & Ajustes</h3>
-        <div className="flex-1 space-y-6">
-          {/* AI Assist Panel */}
-          <div className="bg-white p-4 rounded-lg border border-neutral-200">
-            <h4 className="font-semibold mb-2">Asistente de Contenido</h4>
-            <button onClick={handleAiAssist} className="rt-btn rt-btn--secondary rt-btn--sm w-full"><Sparkles size={16} className="mr-2"/> Generar Sugerencias</button>
-            {aiSuggestions && (
-              <div className="mt-4 text-sm">
-                <p className="font-medium">Títulos Sugeridos:</p>
-                <ul className="list-disc list-inside">
-                  {aiSuggestions.titles.map((t: string) => <li key={t}>{t}</li>)}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          {/* Post Settings */}
-          <div className="bg-white p-4 rounded-lg border border-neutral-200">
-            <h4 className="font-semibold mb-2">Ajustes del Post</h4>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Formato</label>
-            <select
-              value={format}
-              onChange={(e) => setFormat(e.target.value as any)}
-              className="w-full p-2 border border-neutral-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <option value="article">Artículo</option>
-              <option value="photo">Foto</option>
-              <option value="video">Video</option>
-              <option value="mixed">Mixto</option>
-            </select>
-            <label className="block text-sm font-medium text-neutral-700 mt-3 mb-1">Estado</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as any)}
-              className="w-full p-2 border border-neutral-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <option value="draft">Borrador</option>
-              <option value="published">Publicado</option>
-            </select>
-            
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-neutral-700 mb-2">Tags</label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTag();
-                    }
-                  }}
-                  placeholder="Agregar tag"
-                  className="flex-1 p-2 border border-neutral-300 rounded-lg text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                />
-                <button
-                  onClick={addTag}
-                  className="px-3 py-2 bg-neutral-200 hover:bg-neutral-300 rounded-lg transition-colors"
-                >
-                  <PlusCircle size={16} />
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs flex items-center gap-1"
-                  >
-                    {tag}
-                    <button onClick={() => removeTag(tag)} className="hover:text-blue-900">
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-auto pt-4 border-t border-neutral-200 flex flex-col space-y-2">
-          <button
-            onClick={handlePublish}
-            disabled={saving || publishing}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {publishing ? "Publicando..." : "Publicar"}
-          </button>
-          {post.id && post.id !== 'new' && (
-            <button
-              onClick={() => router.push(`/dashboard/tripper/blogs/${post.id}/preview`)}
-              className="w-full px-4 py-2 bg-neutral-200 hover:bg-neutral-300 rounded-lg transition-colors"
-            >
-              Previsualizar
-            </button>
-          )}
-        </div>
-      </div>
+      <BlogComposerSidebar
+        copy={copy}
+        excuseKey={post.excuseKey ?? ""}
+        format={format}
+        onAddTag={addTag}
+        onExcuseKeyChange={(value) =>
+          setPost((p) => ({
+            ...p,
+            excuseKey: value.length > 0 ? value : undefined,
+          }))
+        }
+        onFormatChange={setFormat}
+        onPreview={() => {
+          if (!post.id) return;
+          router.push(`/dashboard/tripper/blogs/${post.id}/preview`);
+        }}
+        onPublish={handlePublish}
+        onRemoveTag={removeTag}
+        onTagInputChange={setTagInput}
+        onTravelTypeChange={(value) =>
+          setPost((p) => ({
+            ...p,
+            travelType: value.length > 0 ? value : undefined,
+          }))
+        }
+        postId={post.id}
+        postStatus={post.status}
+        publishing={publishing}
+        saving={saving}
+        tagInput={tagInput}
+        tags={tags}
+        travelType={post.travelType ?? ""}
+      />
     </div>
   );
 }

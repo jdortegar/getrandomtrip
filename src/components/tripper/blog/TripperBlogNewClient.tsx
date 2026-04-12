@@ -1,8 +1,6 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import SecureRoute from "@/components/auth/SecureRoute";
-import Section from "@/components/layout/Section";
 import BlogComposer from "@/components/tripper/blog/BlogComposer";
 import enCopy from "@/dictionaries/en.json";
 import esCopy from "@/dictionaries/es.json";
@@ -12,7 +10,7 @@ function getTripperBlogsCopy(locale: string) {
   return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
 }
 
-function CreateBlogContent() {
+export function TripperBlogNewClient() {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const blogsCopy = getTripperBlogsCopy(locale);
@@ -27,26 +25,12 @@ function CreateBlogContent() {
   };
 
   return (
-    <>
-      <Section>
-        <div className="mx-auto max-w-full">
-          <BlogComposer
-            copy={blogsCopy.composer}
-            mode="create"
-            post={initialPost}
-          />
-        </div>
-      </Section>
-    </>
+    <div className="p-8">
+      <BlogComposer
+        copy={blogsCopy.composer}
+        mode="create"
+        post={initialPost}
+      />
+    </div>
   );
 }
-
-function CreateBlogPage() {
-  return (
-    <SecureRoute requiredRole="tripper">
-      <CreateBlogContent />
-    </SecureRoute>
-  );
-}
-
-export default CreateBlogPage;

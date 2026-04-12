@@ -20,6 +20,10 @@ export interface BlogPost {
   >;
   faq?: { items: { question: string; answer: string }[] } | null;
   tags: string[];
+  /** Journey excuse key (e.g. solo-adventure); used for discovery filters. */
+  excuseKey?: string | null;
+  /** Journey traveler type key (e.g. solo, couple); used for discovery filters. */
+  travelType?: string | null;
   format: BlogFormat;
   status: BlogStatus;
   seo?: { title?: string; description?: string; keywords?: string[] };
