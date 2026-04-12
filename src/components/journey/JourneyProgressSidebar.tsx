@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { Check } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { getHasExcuseStep } from '@/lib/helpers/excuse-helper';
-import { isCompleteTransportOrderParam } from '@/lib/helpers/transport';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
+import { Check } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
+import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 
 interface Substep {
   description: string;
@@ -44,25 +44,25 @@ export default function JourneyProgressSidebar({
   const activeIndex = getActiveTabIndex();
 
   const isTabComplete = (tabId: string): boolean => {
-    const travelType = searchParams.get('travelType');
-    const experience = searchParams.get('experience');
-    const excuse = searchParams.get('excuse');
-    const originCountry = searchParams.get('originCountry');
-    const originCity = searchParams.get('originCity');
-    const startDate = searchParams.get('startDate');
-    const nights = searchParams.get('nights');
-    const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience);
+    const travelType = searchParams.get("travelType");
+    const experience = searchParams.get("experience");
+    const excuse = searchParams.get("excuse");
+    const originCountry = searchParams.get("originCountry");
+    const originCity = searchParams.get("originCity");
+    const startDate = searchParams.get("startDate");
+    const nights = searchParams.get("nights");
+    const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience);
 
     switch (tabId) {
-      case 'budget':
+      case "budget":
         return !!(travelType && experience);
-      case 'excuse':
+      case "excuse":
         return !!(travelType && experience && (excuse || !hasExcuseStep));
-      case 'details':
+      case "details":
         return !!(originCountry && originCity && startDate && nights);
-      case 'preferences':
+      case "preferences":
         return isCompleteTransportOrderParam(
-          searchParams.get('transportOrder'),
+          searchParams.get("transportOrder"),
         );
       default:
         return false;
@@ -70,53 +70,53 @@ export default function JourneyProgressSidebar({
   };
 
   const isSubstepComplete = (tabId: string, substepId: string): boolean => {
-    const travelType = searchParams.get('travelType');
-    const experience = searchParams.get('experience');
-    const excuse = searchParams.get('excuse');
-    const refineDetails = searchParams.get('refineDetails');
-    const originCountry = searchParams.get('originCountry');
-    const originCity = searchParams.get('originCity');
-    const startDate = searchParams.get('startDate');
-    const nights = searchParams.get('nights');
-    const transportOrder = searchParams.get('transportOrder');
-    const addons = searchParams.get('addons');
-    const hasExcuseStep = getHasExcuseStep(travelType ?? '', experience);
+    const travelType = searchParams.get("travelType");
+    const experience = searchParams.get("experience");
+    const excuse = searchParams.get("excuse");
+    const refineDetails = searchParams.get("refineDetails");
+    const originCountry = searchParams.get("originCountry");
+    const originCity = searchParams.get("originCity");
+    const startDate = searchParams.get("startDate");
+    const nights = searchParams.get("nights");
+    const transportOrder = searchParams.get("transportOrder");
+    const addons = searchParams.get("addons");
+    const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience);
 
-    if (tabId === 'budget') {
-      if (substepId === 'travel-type') {
+    if (tabId === "budget") {
+      if (substepId === "travel-type") {
         return !!travelType;
       }
-      if (substepId === 'experience') {
+      if (substepId === "experience") {
         return !!experience;
       }
     }
 
-    if (tabId === 'excuse') {
-      if (substepId === 'reason') {
+    if (tabId === "excuse") {
+      if (substepId === "reason") {
         return !!excuse || !hasExcuseStep;
       }
-      if (substepId === 'refine-details') {
+      if (substepId === "refine-details") {
         return !!refineDetails || !hasExcuseStep;
       }
     }
 
-    if (tabId === 'details') {
-      if (substepId === 'origin') {
+    if (tabId === "details") {
+      if (substepId === "origin") {
         return !!(originCountry && originCity);
       }
-      if (substepId === 'dates') {
+      if (substepId === "dates") {
         return !!(startDate && nights);
       }
-      if (substepId === 'transport') {
+      if (substepId === "transport") {
         return !!transportOrder;
       }
     }
 
-    if (tabId === 'preferences') {
-      if (substepId === 'filters') {
+    if (tabId === "preferences") {
+      if (substepId === "filters") {
         return isCompleteTransportOrderParam(transportOrder);
       }
-      if (substepId === 'addons') {
+      if (substepId === "addons") {
         if (!JOURNEY_ADDONS_ENABLED) return true;
         return !!addons;
       }
@@ -127,7 +127,7 @@ export default function JourneyProgressSidebar({
 
   return (
     <aside
-      className={cn('w-full md:w-80 flex-shrink-0 bg-white p-6', className)}
+      className={cn("w-full md:w-80 flex-shrink-0 bg-white p-6", className)}
     >
       <div className="relative pl-5">
         {/* Steps */}
@@ -146,7 +146,7 @@ export default function JourneyProgressSidebar({
                 key={tab.id}
                 onClick={() => onStepClick?.(tab.id)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     onStepClick?.(tab.id);
                   }
@@ -157,23 +157,26 @@ export default function JourneyProgressSidebar({
                 {/* Connecting line from main circle to next step */}
                 {tabIndex < tabs.length - 1 && (
                   <div
-                    className={cn('absolute left-[20px] top-10 w-0.5', {
-                      'bg-[#4F96B6]': isActive || isCompleted,
-                      'bg-gray-300': !isActive && !isCompleted,
+                    className={cn("absolute left-[20px] top-10 w-0.5", {
+                      "bg-light-blue": isActive || isCompleted,
+                      "bg-gray-300": !isActive && !isCompleted,
                     })}
-                    style={{ bottom: '-2rem' }}
+                    style={{ bottom: "-2rem" }}
                   />
                 )}
 
                 {/* Vertical line for last step: from circle down to last substep */}
                 {tabIndex === lastTabIndex && hasSubsteps && isActive && (
-                  <div
-                    className={cn('absolute left-[20px] top-10 w-0.5', {
-                      'bg-[#4F96B6]': isActive || isCompleted,
-                      'bg-gray-300': !isActive && !isCompleted,
-                    })}
-                    style={{ height: 'calc(100% - 4.75rem)' }}
-                  />
+                  <>
+                    <div
+                      className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
+                      style={{ height: "calc(100% - 11.3rem)" }}
+                    />
+                    <div
+                      className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
+                      style={{ height: "calc(100% - 4.75rem)" }}
+                    />
+                  </>
                 )}
 
                 {/* Main Step Circle */}
@@ -181,12 +184,12 @@ export default function JourneyProgressSidebar({
                   <div className="relative z-10 flex-shrink-0">
                     <div
                       className={cn(
-                        'relative w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all',
+                        "relative w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all",
                         {
-                          'bg-[#4F96B6] text-white': isCompleted,
-                          'bg-white border-2 border-[#4F96B6] text-[#4F96B6]':
+                          "bg-light-blue text-white": isCompleted,
+                          "bg-white border-2 border-light-blue text-light-blue":
                             isActive && !isCompleted,
-                          'bg-white border-2 border-gray-300 text-gray-400':
+                          "bg-white border-2 border-gray-300 text-gray-400":
                             !isActive && !isCompleted,
                         },
                       )}
@@ -202,10 +205,10 @@ export default function JourneyProgressSidebar({
                   {/* Main Step Heading */}
                   <div className="flex-1 pt-1">
                     <h2
-                      className={cn('text-lg font-bold mb-6', {
-                        'text-[#4F96B6]': isActive && !isCompleted,
-                        'text-gray-900': isCompleted,
-                        'text-gray-400': isUpcoming,
+                      className={cn("text-lg font-bold mb-6", {
+                        "text-light-blue": isActive && !isCompleted,
+                        "text-gray-900": isCompleted,
+                        "text-gray-400": isUpcoming,
                       })}
                     >
                       {tab.label}
@@ -216,8 +219,8 @@ export default function JourneyProgressSidebar({
                       <div className="space-y-6 ml-0">
                         {tab.substeps.map((substep, substepIndex) => {
                           const isAddonsComingSoon =
-                            tab.id === 'preferences' &&
-                            substep.id === 'addons' &&
+                            tab.id === "preferences" &&
+                            substep.id === "addons" &&
                             !JOURNEY_ADDONS_ENABLED;
                           const isSubstepActive =
                             isActive && substepIndex === 0;
@@ -232,10 +235,10 @@ export default function JourneyProgressSidebar({
                             <div
                               aria-disabled={isAddonsComingSoon}
                               className={cn(
-                                'flex gap-3 items-start relative',
+                                "flex gap-3 items-start relative",
                                 isAddonsComingSoon
-                                  ? 'cursor-not-allowed opacity-60'
-                                  : 'cursor-pointer',
+                                  ? "cursor-not-allowed opacity-60"
+                                  : "cursor-pointer",
                               )}
                               key={substep.id}
                               onClick={(e) => {
@@ -245,7 +248,7 @@ export default function JourneyProgressSidebar({
                               }}
                               onKeyDown={(e) => {
                                 if (isAddonsComingSoon) return;
-                                if (e.key === 'Enter' || e.key === ' ') {
+                                if (e.key === "Enter" || e.key === " ") {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   onStepClick?.(tab.id, substep.id);
@@ -256,31 +259,30 @@ export default function JourneyProgressSidebar({
                             >
                               {/* Horizontal line connecting to vertical timeline */}
                               <div
-                                className={cn('absolute top-[7px] h-0.5', {
-                                  'bg-[#4F96B6]':
+                                className={cn("absolute top-[7px] h-0.5", {
+                                  "bg-light-blue":
                                     !isAddonsComingSoon &&
                                     (isSubstepActive || isSubstepCompleted),
-                                  'bg-gray-300':
+                                  "bg-gray-300":
                                     isAddonsComingSoon ||
                                     (!isSubstepActive && !isSubstepCompleted),
                                 })}
-                                style={{ width: '40px', left: '-36px' }}
+                                style={{ width: "40px", left: "-36px" }}
                               />
 
                               {/* Substep Bullet */}
                               <div className="relative z-10 flex-shrink-0 mt-1">
                                 <div
-                                  className={cn('w-2 h-2 rounded-full', {
-                                    'bg-[#4F96B6]':
+                                  className={cn("w-2 h-2 rounded-full", {
+                                    "bg-light-blue":
                                       isSubstepCompleted && !isAddonsComingSoon,
-                                    'bg-white border border-[#4F96B6]':
+                                    "bg-white border border-light-blue":
                                       isSubstepActive &&
                                       !isSubstepCompleted &&
                                       !isAddonsComingSoon,
-                                    'bg-white border border-gray-300':
+                                    "bg-white border border-gray-300":
                                       isAddonsComingSoon ||
-                                      (!isSubstepActive &&
-                                        !isSubstepCompleted),
+                                      (!isSubstepActive && !isSubstepCompleted),
                                   })}
                                 />
                               </div>
@@ -289,12 +291,13 @@ export default function JourneyProgressSidebar({
                               <div className="flex-1">
                                 <h3
                                   className={cn(
-                                    'mb-1 flex flex-wrap items-center gap-2 text-sm font-bold uppercase',
+                                    "mb-1 flex flex-wrap items-center gap-2 text-sm font-bold uppercase",
                                     {
-                                      'text-[#4F96B6]':
-                                        (isSubstepActive || isSubstepCompleted) &&
+                                      "text-light-blue":
+                                        (isSubstepActive ||
+                                          isSubstepCompleted) &&
                                         !isAddonsComingSoon,
-                                      'text-gray-400':
+                                      "text-gray-400":
                                         (!isSubstepActive &&
                                           !isSubstepCompleted) ||
                                         isAddonsComingSoon,
@@ -303,19 +306,17 @@ export default function JourneyProgressSidebar({
                                 >
                                   {substep.title}
                                   {isAddonsComingSoon ? (
-                                    <span
-                                      className="inline-flex rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-semibold normal-case tracking-wide text-gray-700"
-                                    >
+                                    <span className="inline-flex rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-semibold normal-case tracking-wide text-gray-700">
                                       {addonsComingSoonLabel}
                                     </span>
                                   ) : null}
                                 </h3>
                                 <p
-                                  className={cn('text-xs leading-relaxed', {
-                                    'text-gray-700':
+                                  className={cn("text-xs leading-relaxed", {
+                                    "text-gray-700":
                                       (isSubstepActive || isSubstepCompleted) &&
                                       !isAddonsComingSoon,
-                                    'text-gray-400':
+                                    "text-gray-400":
                                       (!isSubstepActive &&
                                         !isSubstepCompleted) ||
                                       isAddonsComingSoon,

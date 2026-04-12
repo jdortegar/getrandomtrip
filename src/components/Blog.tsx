@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   CarouselRoot,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from '@/components/Carousel';
-import { useCarousel } from '@/components/Carousel';
-import BlogCard from '@/components/BlogCard';
-import Section from '@/components/layout/Section';
-import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
-import { motion } from 'framer-motion';
-import EmblaCarousel from './EmblaCarousel/EmblaCarousel';
+} from "@/components/Carousel";
+import { useCarousel } from "@/components/Carousel";
+import BlogCard from "@/components/BlogCard";
+import Section from "@/components/layout/Section";
+import type { BlogPost, BlogViewAll } from "@/lib/data/shared/blog-types";
+import { motion } from "framer-motion";
+import EmblaCarousel from "./EmblaCarousel/EmblaCarousel";
 
 export interface BlogContent {
   carouselSlideAriaLabel: string;
@@ -49,11 +49,11 @@ function BlogCarouselDots({
         {scrollSnaps.map((_: unknown, index: number) => (
           <button
             key={index}
-            aria-label={slideAriaLabelPattern.replace('{0}', String(index + 1))}
+            aria-label={slideAriaLabelPattern.replace("{0}", String(index + 1))}
             className={`h-2 rounded-full transition-all ${
               selectedIndex === index
-                ? 'bg-[#4F96B6] w-8'
-                : 'bg-[#4F96B6]/30 hover:bg-[#4F96B6]/50 w-2'
+                ? "bg-light-blue w-8"
+                : "bg-light-blue/30 hover:bg-light-blue/50 w-2"
             }`}
             onClick={() => scrollTo(index)}
             type="button"
@@ -68,18 +68,18 @@ export default function Blog({
   className,
   content,
   eyebrow,
-  id = 'blog',
+  id = "blog",
   posts,
   subtitle,
   title,
   viewAll,
 }: BlogProps) {
   const resolved: BlogContent = content ?? {
-    carouselSlideAriaLabel: 'Go to slide {0}',
-    eyebrow: eyebrow ?? '',
-    subtitle: subtitle ?? '',
-    title: title ?? '',
-    viewAll: viewAll ?? { href: '/blog', subtitle: '', title: '' },
+    carouselSlideAriaLabel: "Go to slide {0}",
+    eyebrow: eyebrow ?? "",
+    subtitle: subtitle ?? "",
+    title: title ?? "",
+    viewAll: viewAll ?? { href: "/blog", subtitle: "", title: "" },
   };
   const {
     carouselSlideAriaLabel,
@@ -100,10 +100,10 @@ export default function Blog({
           <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left">
             {resolvedEyebrow && (
               <motion.div
-                className="text-base font-bold uppercase tracking-[6px] text-[#4F96B6] md:text-lg md:tracking-[9px]"
+                className="text-base font-bold uppercase tracking-[6px] text-light-blue md:text-lg md:tracking-[9px]"
                 initial={{ opacity: 0, y: 40 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                viewport={{ margin: '-100px', once: true }}
+                viewport={{ margin: "-100px", once: true }}
                 whileInView={{ opacity: 1, y: 0 }}
               >
                 {resolvedEyebrow}
@@ -114,7 +114,7 @@ export default function Blog({
               className="font-barlow-condensed mt-4 text-[50px] font-bold uppercase leading-none text-gray-900 md:text-[70px]"
               initial={{ opacity: 0, y: 60 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              viewport={{ margin: '-100px', once: true }}
+              viewport={{ margin: "-100px", once: true }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               {resolvedTitle}
@@ -124,7 +124,7 @@ export default function Blog({
               className="mx-auto mt-8 text-lg text-[#888] md:mx-0"
               initial={{ opacity: 0, y: 40 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              viewport={{ margin: '-100px', once: true }}
+              viewport={{ margin: "-100px", once: true }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               {resolvedSubtitle}

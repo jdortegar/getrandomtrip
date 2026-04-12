@@ -133,3 +133,26 @@ export interface TripLike {
   userId: string;
   createdAt: Date;
 }
+
+// Tripper Dashboard
+export interface TripperDashboardStats {
+  totalBookings: number;
+  monthlyRevenue: number;
+  averageRating: number;
+  activePackages: number;
+  totalClients: number;
+  /** Percentage value, 0–100 (e.g. 12.5 means 12.5%). */
+  conversionRate: number;
+}
+
+export interface RecentBooking {
+  id: string;
+  clientName: string;
+  clientEmail: string;
+  packageName: string;
+  packageId?: string;
+  date: string;
+  amount: number;
+  status: 'confirmed' | 'revealed' | 'completed' | 'pending' | 'cancelled';
+  paymentStatus: 'APPROVED' | 'COMPLETED' | 'PENDING' | 'FAILED' | 'REJECTED' | 'CANCELLED';
+}

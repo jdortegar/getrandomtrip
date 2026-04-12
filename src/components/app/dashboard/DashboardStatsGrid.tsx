@@ -17,31 +17,32 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
   }> = [
     {
       icon: Plane,
-      iconClassName: "text-[#4f96b6]",
+      iconClassName: "text-light-blue",
       key: "total-trips",
       label: copy.stats.totalTrips,
       value: stats.totalTrips,
     },
     {
       icon: Calendar,
-      iconClassName: "text-[#4f96b6]",
+      iconClassName: "text-light-blue",
       key: "upcoming-trips",
       label: copy.stats.upcomingTrips,
       value: stats.upcomingTrips,
     },
     {
       icon: DollarSign,
-      iconClassName: "text-[#4f96b6]",
+      iconClassName: "text-light-blue",
       key: "total-spent",
       label: copy.stats.totalSpent,
       value: `$${(stats.totalSpent ?? 0).toFixed(0)}`,
     },
     {
       icon: Star,
-      iconClassName: "text-[#4f96b6]",
+      iconClassName: "text-light-blue",
       key: "average-rating",
       label: copy.stats.averageRating,
-      value: stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : "—",
+      value:
+        stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : "—",
     },
   ];
 

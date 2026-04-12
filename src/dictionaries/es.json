@@ -2361,5 +2361,137 @@
     "copiedToast": "HTML de la firma copiado",
     "copyErrorToast": "No se pudo copiar — prueba a seleccionar la vista previa y copiar a mano",
     "previewHeading": "Vista previa"
+  },
+  "tripperBlogs": {
+    "composer": {
+      "addTagAria": "Añadir etiqueta",
+      "audienceUnsetLabel": "Sin especificar",
+      "bodyLabel": "Contenido",
+      "bodyPlaceholder": "Escribe el cuerpo del artículo…",
+      "breadcrumbCreate": "Tripper OS / Crear post",
+      "breadcrumbEdit": "Tripper OS / Editar post",
+      "createHero": {
+        "title": "Crear nuevo post",
+        "description": "Comparte tus experiencias y consejos de viaje"
+      },
+      "cover": {
+        "hint": "JPG, PNG o WebP. Se muestra como imagen principal del post.",
+        "previewAlt": "Vista previa de la imagen de portada",
+        "remove": "Quitar imagen",
+        "title": "Imagen de portada",
+        "upload": "Subir imagen",
+        "uploading": "Subiendo…"
+      },
+      "editHero": {
+        "descriptionFallback": "Modifica tu contenido",
+        "titleFallback": "Editar post"
+      },
+      "editLoading": {
+        "description": "Obteniendo información del post…",
+        "title": "Cargando post"
+      },
+      "editNotFound": {
+        "backToList": "Volver a mis posts",
+        "descriptionFallback": "El post no está disponible o no tienes permiso para verlo.",
+        "title": "Post no encontrado"
+      },
+      "excuseKeyLabel": "Motivo del viaje",
+      "formatArticle": "Artículo",
+      "formatLabel": "Formato",
+      "formatMixed": "Mixto",
+      "formatPhoto": "Foto",
+      "formatVideo": "Video",
+      "preview": "Previsualizar",
+      "publish": "Publicar",
+      "publishing": "Publicando…",
+      "save": "Guardar borrador",
+      "saving": "Guardando…",
+      "settingsTitle": "Ajustes del post",
+      "statusDraft": "Borrador",
+      "statusLabel": "Estado",
+      "statusPublished": "Publicado",
+      "subtitlePlaceholder": "Subtítulo (opcional)",
+      "tagPlaceholder": "Añadir etiqueta",
+      "tagsLabel": "Etiquetas",
+      "titlePlaceholder": "Título del post",
+      "toasts": {
+        "genericPublishError": "Error al publicar el post",
+        "genericSaveError": "Error al guardar el post",
+        "publishError": "No se pudo publicar",
+        "publishSuccess": "Post publicado",
+        "saveError": "No se pudo guardar",
+        "saveSuccessCreate": "Borrador guardado",
+        "saveSuccessEdit": "Post actualizado",
+        "titleRequired": "El título es obligatorio",
+        "uploadError": "No se pudo subir la imagen"
+      },
+      "travelTypeLabel": "Tipo de viajero",
+      "unsaved": "Sin guardar"
+    },
+    "header": {
+      "title": "Mis Posts",
+      "description": "Gestiona tu blog y comparte tus experiencias"
+    },
+    "newPost": "Nuevo Post",
+    "empty": {
+      "message": "Aún no tienes posts. ¡Es hora de contar tu primera historia!",
+      "cta": "Crear mi primer post"
+    },
+    "row": {
+      "edit": "Editar",
+      "view": "Ver",
+      "published": "Publicado",
+      "draft": "Borrador",
+      "updatedAt": "Actualizado"
+    }
+  },
+  "tripperDashboard": {
+    "header": {
+      "title": "Tripper OS",
+      "description": "Gestiona tus paquetes de viaje y clientes"
+    },
+    "stats": {
+      "totalBookings": "Reservas Totales",
+      "monthlyRevenue": "Ingresos Mensuales",
+      "averageRating": "Rating Promedio",
+      "activePackages": "Paquetes Activos"
+    },
+    "recentBookings": {
+      "title": "Reservas Recientes",
+      "viewAll": "Ver todas",
+      "empty": "No hay reservas recientes"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "createPackage": "Crear Paquete",
+      "createPackageSub": "Nueva oferta de viaje",
+      "earnings": "Ver Ganancias",
+      "earningsSub": "Análisis detallado",
+      "reviews": "Reseñas & NPS",
+      "reviewsSub": "Ver feedback",
+      "blogs": "Mis Posts",
+      "blogsSub": "Gestionar blog",
+      "settings": "Configuración",
+      "settingsSub": "Ajustes del perfil"
+    },
+    "keyMetrics": {
+      "title": "Métricas Clave",
+      "totalClients": "Clientes Totales",
+      "conversionRate": "Tasa de Conversión",
+      "growth": "Crecimiento"
+    },
+    "packages": {
+      "title": "Mis Paquetes",
+      "newPackage": "Nuevo Paquete",
+      "empty": "No tienes paquetes activos aún",
+      "emptyCta": "Crear tu primer paquete",
+      "viewAll": "Ver todos →"
+    },
+    "status": {
+      "confirmed": "Confirmado",
+      "revealed": "Revelado",
+      "completed": "Completado",
+      "pending": "Pendiente"
+    }
   }
 }

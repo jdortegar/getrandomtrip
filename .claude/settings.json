@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/jdortega/repos/getrandomtrip diff 70e6f9c76609be1f2c4fd2408966ff1fa2fab5a1 HEAD -- src/lib/types/dictionary.ts)",
+      "Bash(git -C /Users/jdortega/repos/getrandomtrip diff 70e6f9c76609be1f2c4fd2408966ff1fa2fab5a1 HEAD --name-only)",
+      "Bash(git -C /Users/jdortega/repos/getrandomtrip log --oneline -5)",
+      "Bash(git -C /Users/jdortega/repos/getrandomtrip show 70e6f9c7:src/lib/types/dictionary.ts)",
+      "Bash(/usr/bin/python3 -c ':*)"
+    ]
+  }
+}

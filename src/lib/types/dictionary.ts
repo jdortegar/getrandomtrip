@@ -30,6 +30,142 @@ export interface LegalDocumentDict {
   sections: LegalDocumentSection[];
 }
 
+export interface TripperBlogComposerDict {
+  addTagAria: string;
+  audienceUnsetLabel: string;
+  bodyLabel: string;
+  bodyPlaceholder: string;
+  breadcrumbCreate: string;
+  breadcrumbEdit: string;
+  createHero: {
+    description: string;
+    title: string;
+  };
+  cover: {
+    hint: string;
+    previewAlt: string;
+    remove: string;
+    title: string;
+    upload: string;
+    uploading: string;
+  };
+  editHero: {
+    descriptionFallback: string;
+    titleFallback: string;
+  };
+  editLoading: {
+    description: string;
+    title: string;
+  };
+  editNotFound: {
+    backToList: string;
+    descriptionFallback: string;
+    title: string;
+  };
+  excuseKeyLabel: string;
+  formatArticle: string;
+  formatLabel: string;
+  formatMixed: string;
+  formatPhoto: string;
+  formatVideo: string;
+  preview: string;
+  publish: string;
+  publishing: string;
+  save: string;
+  saving: string;
+  settingsTitle: string;
+  statusDraft: string;
+  statusLabel: string;
+  statusPublished: string;
+  subtitlePlaceholder: string;
+  tagPlaceholder: string;
+  tagsLabel: string;
+  titlePlaceholder: string;
+  toasts: {
+    genericPublishError: string;
+    genericSaveError: string;
+    publishError: string;
+    publishSuccess: string;
+    saveError: string;
+    saveSuccessCreate: string;
+    saveSuccessEdit: string;
+    titleRequired: string;
+    uploadError: string;
+  };
+  travelTypeLabel: string;
+  unsaved: string;
+}
+
+export interface TripperBlogsDict {
+  composer: TripperBlogComposerDict;
+  header: {
+    title: string;
+    description: string;
+  };
+  newPost: string;
+  empty: {
+    message: string;
+    cta: string;
+  };
+  row: {
+    edit: string;
+    view: string;
+    published: string;
+    draft: string;
+    updatedAt: string;
+  };
+}
+
+export interface TripperDashboardDict {
+  header: {
+    title: string;
+    description: string;
+  };
+  stats: {
+    totalBookings: string;
+    monthlyRevenue: string;
+    averageRating: string;
+    activePackages: string;
+  };
+  recentBookings: {
+    title: string;
+    viewAll: string;
+    empty: string;
+  };
+  quickActions: {
+    title: string;
+    createPackage: string;
+    createPackageSub: string;
+    earnings: string;
+    earningsSub: string;
+    reviews: string;
+    reviewsSub: string;
+    blogs: string;
+    blogsSub: string;
+    settings: string;
+    settingsSub: string;
+  };
+  keyMetrics: {
+    title: string;
+    totalClients: string;
+    conversionRate: string;
+    growth: string;
+  };
+  packages: {
+    title: string;
+    newPackage: string;
+    empty: string;
+    emptyCta: string;
+    viewAll: string;
+  };
+  status: {
+    confirmed: string;
+    revealed: string;
+    completed: string;
+    pending: string;
+  };
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -778,4 +914,6 @@ export interface MarketingDictionary {
       SAVED: string;
     };
   };
+  tripperBlogs: TripperBlogsDict;
+  tripperDashboard: TripperDashboardDict;
 }

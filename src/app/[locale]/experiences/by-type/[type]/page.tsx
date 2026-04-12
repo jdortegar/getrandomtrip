@@ -1,20 +1,20 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import Hero from '@/components/Hero';
-import Paragraph from '@/components/Paragraph';
-import Testimonials from '@/components/Testimonials';
-import Blog from '@/components/Blog';
-import TypePlanner from '@/components/by-type/TypePlanner';
-import InspirationBanner from '@/components/InspirationBanner';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Hero from "@/components/Hero";
+import Paragraph from "@/components/Paragraph";
+import Testimonials from "@/components/Testimonials";
+import Blog from "@/components/Blog";
+import TypePlanner from "@/components/by-type/TypePlanner";
+import InspirationBanner from "@/components/InspirationBanner";
 import {
   getTravelerType,
   getAllTravelerTypePaths,
   type TravelerTypeSlug,
-} from '@/lib/data/traveler-types';
-import { getPlannerContentForType } from '@/lib/utils/experiencesData';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
+} from "@/lib/data/traveler-types";
+import { getPlannerContentForType } from "@/lib/utils/experiencesData";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 /**
  * Generate static paths for all traveler types and their aliases.
@@ -35,11 +35,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = hasLocale(params?.locale)
     ? (params.locale as Locale)
-    : ('es' as Locale);
+    : ("es" as Locale);
   const typeData = getTravelerType(params.type, locale);
 
   if (!typeData) {
-    return { title: 'Randomtrip' };
+    return { title: "Randomtrip" };
   }
 
   return {
@@ -57,7 +57,7 @@ export default async function TravelerTypePage({
 }) {
   const locale = hasLocale(params.locale)
     ? (params.locale as Locale)
-    : ('es' as Locale);
+    : ("es" as Locale);
   const typeData = getTravelerType(params.type, locale);
 
   if (!typeData) {
@@ -66,7 +66,7 @@ export default async function TravelerTypePage({
 
   const dict = await getDictionary(locale);
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
-  const blogHref = pathForLocale(locale, '/blog');
+  const blogHref = pathForLocale(locale, "/blog");
   const viewAll = typeData.blog.viewAll
     ? {
         ...typeData.blog.viewAll,
@@ -93,7 +93,7 @@ export default async function TravelerTypePage({
       />
       <Blog
         eyebrow={blogEyebrow}
-        id={`${typeData.meta.slug}-blog`}
+        id="blog"
         posts={typeData.blog.posts}
         subtitle={typeData.blog.subtitle}
         title={typeData.blog.title}

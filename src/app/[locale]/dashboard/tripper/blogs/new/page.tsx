@@ -1,39 +1,40 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
-import Hero from "@/components/Hero";
 import BlogComposer from "@/components/tripper/blog/BlogComposer";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
 import type { BlogPost } from "@/types/blog";
 
-function CreateBlogContent() {
-  const router = useRouter();
+function getTripperBlogsCopy(locale: string) {
+  return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
+}
 
-  // Initial empty post for creation
+function CreateBlogContent() {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
+  const blogsCopy = getTripperBlogsCopy(locale);
+
   const initialPost: Partial<BlogPost> = {
-    id: "new",
-    title: "",
-    subtitle: "",
     blocks: [],
+    content: "",
+    id: "new",
     status: "draft",
+    subtitle: "",
+    title: "",
   };
 
   return (
     <>
-      <Hero
-        content={{
-          title: "Crear Nuevo Post",
-          subtitle: "Comparte tus experiencias y consejos de viaje",
-          videoSrc: "/videos/hero-video-1.mp4",
-          fallbackImage: "/images/bg-playa-mexico.jpg",
-        }}
-        className="!h-[40vh]"
-      />
-
       <Section>
-        <div className="max-w-full mx-auto">
-          <BlogComposer post={initialPost} mode="create" />
+        <div className="mx-auto max-w-full">
+          <BlogComposer
+            copy={blogsCopy.composer}
+            mode="create"
+            post={initialPost}
+          />
         </div>
       </Section>
     </>

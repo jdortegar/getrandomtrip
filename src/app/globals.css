@@ -177,6 +177,58 @@ html.lenis {
   }
 }
 
+/*
+ * TinyMCE (tripper blog): lives in src/app/globals.css — Next.js serves it as a
+ * hashed chunk (e.g. layout.css in devtools), not a separate repo file.
+ * Do not set fixed svg width/height here; Tiny toolbar buttons are ~28px tall.
+ */
+.blog-rich-text .tox.tox-tinymce {
+  overflow: visible;
+}
+
+.blog-rich-text .tox .tox-editor-container {
+  overflow: visible;
+}
+
+.blog-rich-text .tox .tox-edit-area {
+  overflow: hidden;
+}
+
+.blog-rich-text .tox .tox-editor-header {
+  min-height: min-content;
+}
+
+.blog-rich-text .tox .tox-toolbar,
+.blog-rich-text .tox .tox-toolbar__primary,
+.blog-rich-text .tox .tox-toolbar-overlord {
+  min-height: 40px;
+}
+
+.blog-rich-text .tox button.tox-tbtn {
+  box-sizing: border-box;
+  height: 28px;
+  min-height: 28px;
+}
+
+.blog-rich-text .tox .tox-tbtn--select {
+  min-height: 28px;
+}
+
+.blog-rich-text .tox .tox-tbtn svg,
+.blog-rich-text .tox .tox-icon svg,
+.tox-tinymce-aux .tox .tox-tbtn svg,
+.tox-tinymce-aux .tox .tox-icon svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.blog-rich-text .tox .tox-editor-header.tox-editor-header--empty {
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  min-height: 2.5rem;
+  padding-block: 0.25rem;
+}
+
 /* DayPicker */
 
 .rdp-root {

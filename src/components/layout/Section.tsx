@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { slugify } from '@/lib/helpers/slugify';
-import { cn } from '@/lib/utils';
-import Container from './Container';
-import Img from '../common/Img';
+import React from "react";
+import { motion } from "framer-motion";
+import { slugify } from "@/lib/helpers/slugify";
+import { cn } from "@/lib/utils";
+import Container from "./Container";
+import Img from "../common/Img";
 
 type SectionProps = {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ type SectionProps = {
   subtitle?: string;
   eyebrow?: string;
   className?: string;
-  variant?: 'default' | 'light' | 'dark';
+  variant?: "default" | "light" | "dark";
   id?: string;
   fullWidth?: boolean;
   style?: React.CSSProperties;
@@ -27,7 +27,7 @@ const Section = ({
   subtitle,
   eyebrow,
   className,
-  variant = 'default',
+  variant = "default",
   id,
   fullWidth = false,
   style,
@@ -35,12 +35,12 @@ const Section = ({
   return (
     <section
       className={cn(
-        'text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32',
-        !fullWidth ? 'px-4' : 'px-0 mx-0',
+        "text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32",
+        !fullWidth ? "px-4" : "px-0 mx-0",
         {
-          'bg-white text-gray-900': variant === 'default',
-          'bg-gray-50 text-gray-900': variant === 'light',
-          'bg-primary text-white': variant === 'dark',
+          "bg-white text-gray-900": variant === "default",
+          "bg-gray-50 text-gray-900": variant === "light",
+          "bg-primary text-white": variant === "dark",
         },
         className,
       )}
@@ -63,10 +63,10 @@ const Section = ({
         <div className="mb-14">
           {eyebrow && (
             <motion.div
-              className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-[#4F96B6]"
+              className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-light-blue"
               initial={{ y: 40, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               {eyebrow}
@@ -75,16 +75,16 @@ const Section = ({
           {title && (
             <motion.h2
               className={cn(
-                'font-barlow-condensed text-[50px] md:text-[70px] uppercase font-bold mt-4 leading-none',
+                "font-barlow-condensed text-[50px] md:text-[70px] uppercase font-bold mt-4 leading-none",
                 {
-                  'text-gray-900': variant === 'default',
-                  'text-gray-50': variant === 'light',
-                  'text-white': variant === 'dark',
+                  "text-gray-900": variant === "default",
+                  "text-gray-50": variant === "light",
+                  "text-white": variant === "dark",
                 },
               )}
               initial={{ y: 60, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               {title}
@@ -92,14 +92,14 @@ const Section = ({
           )}
           {subtitle && (
             <motion.p
-              className={cn('text-lg text-[#888] mx-auto mt-8 ', {
-                'text-gray-700': variant === 'default',
-                'text-gray-900': variant === 'light',
-                'text-white': variant === 'dark',
+              className={cn("text-lg text-[#888] mx-auto mt-8 ", {
+                "text-gray-700": variant === "default",
+                "text-gray-900": variant === "light",
+                "text-white": variant === "dark",
               })}
               initial={{ y: 40, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
               {subtitle}
@@ -108,10 +108,10 @@ const Section = ({
         </div>
       )}
       <motion.div
-        className={cn('mx-auto w-full', !fullWidth && 'container')}
+        className={cn("mx-auto w-full", !fullWidth && "container")}
         initial={{ opacity: 0, y: 40 }}
         transition={{ duration: 0.6, delay: 0.8 }}
-        viewport={{ once: true, margin: '-100px' }}
+        viewport={{ once: true, margin: "-100px" }}
         whileInView={{ opacity: 1, y: 0 }}
       >
         {children}

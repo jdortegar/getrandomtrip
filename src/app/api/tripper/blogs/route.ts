@@ -46,6 +46,8 @@ export async function GET(request: NextRequest) {
         blocks: true,
         faq: true,
         tags: true,
+        travelType: true,
+        excuseKey: true,
         format: true,
         status: true,
         seo: true,
@@ -109,6 +111,8 @@ export async function POST(request: NextRequest) {
       status,
       coverUrl,
       seo,
+      travelType,
+      excuseKey,
     } = body;
 
     // Validate required fields
@@ -129,6 +133,15 @@ export async function POST(request: NextRequest) {
       mixed: 'MIXED',
     };
     const prismaFormat = formatMap[blogFormat.toLowerCase()] || 'ARTICLE';
+
+    const travelTypeValue =
+      typeof travelType === 'string' && travelType.trim().length > 0
+        ? travelType.trim()
+        : null;
+    const excuseKeyValue =
+      typeof excuseKey === 'string' && excuseKey.trim().length > 0
+        ? excuseKey.trim()
+        : null;
 
     const baseSlug = slugify(title) || 'post';
     let slug = baseSlug;
@@ -151,6 +164,8 @@ export async function POST(request: NextRequest) {
         blocks: blocks || [],
         faq: faq ?? null,
         tags: tags || [],
+        excuseKey: excuseKeyValue,
+        travelType: travelTypeValue,
         format: prismaFormat,
         status: blogStatus,
         coverUrl: coverUrl || null,
@@ -168,6 +183,8 @@ export async function POST(request: NextRequest) {
         blocks: true,
         faq: true,
         tags: true,
+        travelType: true,
+        excuseKey: true,
         format: true,
         status: true,
         seo: true,

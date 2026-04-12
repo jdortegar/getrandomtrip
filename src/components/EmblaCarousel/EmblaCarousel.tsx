@@ -89,8 +89,8 @@ const EmblaCarousel = ({
               className={cn(
                 'h-2 rounded-full transition-all',
                 i === selectedIndex
-                  ? 'w-8 bg-[#4F96B6]'
-                  : 'w-2 bg-[#4F96B6]/30 hover:bg-[#4F96B6]/50',
+                  ? 'w-8 bg-light-blue'
+                  : 'w-2 bg-light-blue/30 hover:bg-light-blue/50',
               )}
               onClick={() => onDotButtonClick(i)}
               type="button"

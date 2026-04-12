@@ -39,7 +39,7 @@ export function TabSelector({
           {activeTab === tab.id && (
             <motion.div
               className={cn(
-                'absolute -bottom-3 left-0 right-0 w-1/2 m-auto h-[2px] bg-[#4F96B6] rounded-full',
+                'absolute -bottom-3 left-0 right-0 w-1/2 m-auto h-[2px] bg-light-blue rounded-full',
               )}
               layoutId={layoutId}
               transition={{

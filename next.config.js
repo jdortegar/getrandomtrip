@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@tinymce/tinymce-react'],
   async redirects() {
     return [
       {

@@ -1,5 +1,5 @@
-import BrandingAnimation from './BrandingAnimation';
-import Section from './layout/Section';
+import BrandingAnimation from "./BrandingAnimation";
+import Section from "./layout/Section";
 
 export interface ParagraphContent {
   title: string;
@@ -16,7 +16,7 @@ interface ParagraphProps {
 export default function Paragraph({
   content,
   id,
-  className = '',
+  className = "",
 }: ParagraphProps) {
   return (
     <Section eyebrow={content.eyebrow} title={content.title}>
@@ -29,7 +29,7 @@ export default function Paragraph({
           ))}
         </div>
         <div className="flex items-center justify-center mt-20">
-          <BrandingAnimation className=" text-[#4F96B6]" />
+          <BrandingAnimation className=" text-light-blue" />
         </div>
       </div>
     </Section>

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Carousel } from '@/components/Carousel';
+import React, { useEffect, useState } from "react";
+import { Carousel } from "@/components/Carousel";
 
 interface TwoColumnsCarouselProps {
   children: React.ReactNode;
@@ -33,8 +33,8 @@ function PaginationDots({
           aria-label={`Go to slide ${index + 1}`}
           className={`h-2 w-2 rounded-full transition-all ${
             index === activeIndex
-              ? 'bg-primary'
-              : 'bg-gray-300 hover:bg-gray-400'
+              ? "bg-primary"
+              : "bg-gray-300 hover:bg-gray-400"
           }`}
           onClick={() => onDotClick(index)}
           type="button"
@@ -46,7 +46,7 @@ function PaginationDots({
 
 export default function TwoColumnsCarousel({
   children,
-  className = '',
+  className = "",
   leftColumn,
 }: TwoColumnsCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -62,11 +62,11 @@ export default function TwoColumnsCarousel({
       setActiveIndex(emblaApi.selectedScrollSnap());
     };
 
-    emblaApi.on('select', onSelect);
+    emblaApi.on("select", onSelect);
     onSelect();
 
     return () => {
-      emblaApi.off('select', onSelect);
+      emblaApi.off("select", onSelect);
     };
   }, [emblaApi]);
 
@@ -82,7 +82,7 @@ export default function TwoColumnsCarousel({
     >
       <aside className="flex w-full max-w-xl flex-col items-center text-center md:w-1/3 md:items-start md:text-left md:self-center">
         {leftColumn.eyebrow && (
-          <p className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-[#4F96B6]">
+          <p className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-light-blue">
             {leftColumn.eyebrow}
           </p>
         )}
@@ -99,7 +99,7 @@ export default function TwoColumnsCarousel({
           className="pb-8 md:pb-10"
           itemClassName="w-72 flex-shrink-0 md:w-96 pr-8"
           opts={{
-            align: 'start',
+            align: "start",
             slidesToScroll: 1,
           }}
           setApi={setEmblaApi}

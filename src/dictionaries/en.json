@@ -2361,5 +2361,137 @@
     "copiedToast": "Signature HTML copied",
     "copyErrorToast": "Could not copy — try selecting the preview and copying manually",
     "previewHeading": "Preview"
+  },
+  "tripperBlogs": {
+    "composer": {
+      "addTagAria": "Add tag",
+      "audienceUnsetLabel": "Not specified",
+      "bodyLabel": "Body",
+      "bodyPlaceholder": "Write your article body…",
+      "breadcrumbCreate": "Tripper OS / Create post",
+      "breadcrumbEdit": "Tripper OS / Edit post",
+      "createHero": {
+        "title": "Create new post",
+        "description": "Share your travel stories and tips"
+      },
+      "cover": {
+        "hint": "JPG, PNG, or WebP. Shown as the main image for the post.",
+        "previewAlt": "Cover image preview",
+        "remove": "Remove image",
+        "title": "Cover image",
+        "upload": "Upload image",
+        "uploading": "Uploading…"
+      },
+      "editHero": {
+        "descriptionFallback": "Edit your story",
+        "titleFallback": "Edit post"
+      },
+      "editLoading": {
+        "description": "Fetching post details…",
+        "title": "Loading post"
+      },
+      "editNotFound": {
+        "backToList": "Back to my posts",
+        "descriptionFallback": "This post is unavailable or you do not have access.",
+        "title": "Post not found"
+      },
+      "excuseKeyLabel": "Travel reason",
+      "formatArticle": "Article",
+      "formatLabel": "Format",
+      "formatMixed": "Mixed",
+      "formatPhoto": "Photo",
+      "formatVideo": "Video",
+      "preview": "Preview",
+      "publish": "Publish",
+      "publishing": "Publishing…",
+      "save": "Save draft",
+      "saving": "Saving…",
+      "settingsTitle": "Post settings",
+      "statusDraft": "Draft",
+      "statusLabel": "Status",
+      "statusPublished": "Published",
+      "subtitlePlaceholder": "Subtitle (optional)",
+      "tagPlaceholder": "Add a tag",
+      "tagsLabel": "Tags",
+      "titlePlaceholder": "Post title",
+      "toasts": {
+        "genericPublishError": "Could not publish the post",
+        "genericSaveError": "Could not save the post",
+        "publishError": "Publish failed",
+        "publishSuccess": "Post published",
+        "saveError": "Save failed",
+        "saveSuccessCreate": "Draft saved",
+        "saveSuccessEdit": "Post updated",
+        "titleRequired": "Title is required",
+        "uploadError": "Image upload failed"
+      },
+      "travelTypeLabel": "Traveler type",
+      "unsaved": "Unsaved changes"
+    },
+    "header": {
+      "title": "My Posts",
+      "description": "Manage your blog and share your experiences"
+    },
+    "newPost": "New Post",
+    "empty": {
+      "message": "You have no posts yet. Time to tell your first story!",
+      "cta": "Create my first post"
+    },
+    "row": {
+      "edit": "Edit",
+      "view": "View",
+      "published": "Published",
+      "draft": "Draft",
+      "updatedAt": "Updated"
+    }
+  },
+  "tripperDashboard": {
+    "header": {
+      "title": "Tripper OS",
+      "description": "Manage your travel packages and clients"
+    },
+    "stats": {
+      "totalBookings": "Total Bookings",
+      "monthlyRevenue": "Monthly Revenue",
+      "averageRating": "Average Rating",
+      "activePackages": "Active Packages"
+    },
+    "recentBookings": {
+      "title": "Recent Bookings",
+      "viewAll": "View all",
+      "empty": "No recent bookings"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createPackage": "Create Package",
+      "createPackageSub": "New travel offer",
+      "earnings": "View Earnings",
+      "earningsSub": "Detailed analytics",
+      "reviews": "Reviews & NPS",
+      "reviewsSub": "View feedback",
+      "blogs": "My Posts",
+      "blogsSub": "Manage blog",
+      "settings": "Settings",
+      "settingsSub": "Profile settings"
+    },
+    "keyMetrics": {
+      "title": "Key Metrics",
+      "totalClients": "Total Clients",
+      "conversionRate": "Conversion Rate",
+      "growth": "Growth"
+    },
+    "packages": {
+      "title": "My Packages",
+      "newPackage": "New Package",
+      "empty": "You have no active packages yet",
+      "emptyCta": "Create your first package",
+      "viewAll": "View all →"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "revealed": "Revealed",
+      "completed": "Completed",
+      "pending": "Pending"
+    }
   }
 }
