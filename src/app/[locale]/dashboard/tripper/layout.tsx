@@ -1,5 +1,5 @@
 // Route segment config to prevent static generation
-// All tripper dashboard pages use client-side hooks and must be dynamic
+// Tripper dashboard is dynamic (auth, role guard, mixed server/client pages)
 export const dynamic = 'force-dynamic';
 
 import TripperLayoutClient from './layout-client';

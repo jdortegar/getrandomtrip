@@ -30,6 +30,25 @@ export interface LegalDocumentDict {
   sections: LegalDocumentSection[];
 }
 
+export interface TripperBlogsDict {
+  header: {
+    title: string;
+    description: string;
+  };
+  newPost: string;
+  empty: {
+    message: string;
+    cta: string;
+  };
+  row: {
+    edit: string;
+    view: string;
+    published: string;
+    draft: string;
+    updatedAt: string;
+  };
+}
+
 export interface TripperDashboardDict {
   header: {
     title: string;
@@ -828,5 +847,6 @@ export interface MarketingDictionary {
       SAVED: string;
     };
   };
+  tripperBlogs: TripperBlogsDict;
   tripperDashboard: TripperDashboardDict;
 }

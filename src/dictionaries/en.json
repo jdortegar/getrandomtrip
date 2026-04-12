@@ -2362,6 +2362,24 @@
     "copyErrorToast": "Could not copy — try selecting the preview and copying manually",
     "previewHeading": "Preview"
   },
+  "tripperBlogs": {
+    "header": {
+      "title": "My Posts",
+      "description": "Manage your blog and share your experiences"
+    },
+    "newPost": "New Post",
+    "empty": {
+      "message": "You have no posts yet. Time to tell your first story!",
+      "cta": "Create my first post"
+    },
+    "row": {
+      "edit": "Edit",
+      "view": "View",
+      "published": "Published",
+      "draft": "Draft",
+      "updatedAt": "Updated"
+    }
+  },
   "tripperDashboard": {
     "header": {
       "title": "Tripper OS",
