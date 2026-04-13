@@ -2432,10 +2432,16 @@
       "title": "Mis Posts",
       "description": "Gestiona tu blog y comparte tus experiencias"
     },
-    "newPost": "Nuevo Post",
     "empty": {
       "message": "Aún no tienes posts. ¡Es hora de contar tu primera historia!",
       "cta": "Crear mi primer post"
+    },
+    "newPost": "Nuevo Post",
+    "previewPage": {
+      "backToEdit": "Volver al editor",
+      "banner": "Estás viendo una vista previa del borrador. El post público puede verse distinto.",
+      "emptyBody": "Este post aún no tiene contenido en el cuerpo.",
+      "loadError": "No se pudo cargar el post para la vista previa."
     },
     "row": {
       "edit": "Editar",

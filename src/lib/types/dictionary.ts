@@ -98,14 +98,20 @@ export interface TripperBlogComposerDict {
 
 export interface TripperBlogsDict {
   composer: TripperBlogComposerDict;
+  empty: {
+    message: string;
+    cta: string;
+  };
   header: {
     title: string;
     description: string;
   };
   newPost: string;
-  empty: {
-    message: string;
-    cta: string;
+  previewPage: {
+    backToEdit: string;
+    banner: string;
+    emptyBody: string;
+    loadError: string;
   };
   row: {
     edit: string;

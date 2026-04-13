@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "leaflet/dist/leaflet.css";
 
 /* Lenis drives smooth scroll; native smooth conflicts with inertia */

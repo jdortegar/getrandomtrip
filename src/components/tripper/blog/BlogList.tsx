@@ -45,7 +45,7 @@ export default function BlogList({ posts }: BlogListProps) {
                 ))}
               </div>
               <div className="flex space-x-3">
-                <Link href={`/dashboard/tripper/blogs/${post.id}/edit`} className="rt-btn rt-btn--secondary rt-btn--sm">Editar</Link>
+                <Link href={`/dashboard/tripper/blogs/${post.id}`} className="rt-btn rt-btn--secondary rt-btn--sm">Editar</Link>
                 <Link href={`/dashboard/tripper/blogs/${post.id}/preview`} className="rt-btn rt-btn--ghost rt-btn--sm">Previsualizar</Link>
                 {/* TODO: Publicar/Despublicar, Eliminar */}
               </div>
