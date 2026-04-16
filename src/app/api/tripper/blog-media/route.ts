@@ -10,6 +10,15 @@ export const runtime = "nodejs";
 
 const STORE_NAME = "blog-media";
 
+function getBlobStore() {
+  return getStore(STORE_NAME, {
+    consistency: "strong",
+    ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
+      ? { siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_AUTH_TOKEN }
+      : {}),
+  });
+}
+
 function isSafeBlobKey(key: string): boolean {
   if (key.length > 512 || key.length < 8) return false;
   if (!key.startsWith("blog/")) return false;
@@ -24,7 +33,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const store = getStore(STORE_NAME, { consistency: "strong" });
+    const store = getBlobStore();
     const result = await store.getWithMetadata(key, { type: "blob" });
     if (!result) {
       return new NextResponse("Not Found", { status: 404 });
@@ -76,7 +85,7 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const contentType = file.type || "application/octet-stream";
 
-    const store = getStore(STORE_NAME, { consistency: "strong" });
+    const store = getBlobStore();
     await store.set(key, arrayBuffer, {
       metadata: { contentType },
     });

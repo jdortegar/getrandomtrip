@@ -1,25 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import BlogArticle from "@/components/blog/BlogArticle";
-import Img from "@/components/common/Img";
-import HeaderHero from "@/components/journey/HeaderHero";
+import BlogPostHero from "@/components/blog/BlogPostHero";
+import FaqSection from "@/components/display/FaqSection";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import Section from "@/components/layout/Section";
+import LightboxCarousel from "@/components/media/LightboxCarousel";
+import Breadcrumb from "@/components/navigation/Breadcrumb";
 import { Button } from "@/components/ui/Button";
-import GlassCard from "@/components/ui/GlassCard";
 import enCopy from "@/dictionaries/en.json";
 import esCopy from "@/dictionaries/es.json";
-import { BLOG_LISTING_HERO_CONFIG } from "@/lib/constants/blog-listing-hero";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
-import { getDictionary, type Dictionary } from "@/lib/i18n/dictionaries";
 import type { BlogPost } from "@/types/blog";
 
 function getTripperBlogs(locale: string) {
   return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
+}
+
+interface PreviewBlogPost extends Partial<BlogPost> {
+  author?: {
+    id: string;
+    name: string;
+    tripperSlug: string | null;
+    avatarUrl: string | null;
+    bio?: string | null;
+    location?: string | null;
+    motto?: string | null;
+    specialization?: string | null;
+  };
 }
 
 export function TripperBlogPreviewClient() {
@@ -30,32 +42,17 @@ export function TripperBlogPreviewClient() {
   const locale: Locale = hasLocale(localeStr) ? (localeStr as Locale) : "es";
   const postId = params?.id?.toString() ?? "";
   const tripperBlogs = getTripperBlogs(locale);
-  const [dict, setDict] = useState<Dictionary | null>(null);
-  const [post, setPost] = useState<Partial<BlogPost> | null>(null);
+
+  const [post, setPost] = useState<PreviewBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    getDictionary(locale).then((d) => {
-      if (!cancelled) setDict(d);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [locale]);
-
-  useEffect(() => {
-    const tripperDict = getTripperBlogs(locale);
-
-    if (sessionStatus === "loading") {
-      return;
-    }
+    if (sessionStatus === "loading") return;
 
     if (!postId || !session?.user?.id) {
       setLoading(false);
-      setPost(null);
-      setError(tripperDict.previewPage.loadError);
+      setError(tripperBlogs.previewPage.loadError);
       return;
     }
 
@@ -67,37 +64,51 @@ export function TripperBlogPreviewClient() {
       try {
         const response = await fetch(`/api/tripper/blogs/${postId}`);
         const data = (await response.json()) as {
-          blog?: Partial<BlogPost>;
+          blog?: PreviewBlogPost;
           error?: string;
         };
-
         if (cancelled) return;
-
         if (response.ok && data.blog) {
           setPost(data.blog);
-          setError(null);
         } else {
-          setPost(null);
-          setError(data.error ?? tripperDict.previewPage.loadError);
+          setError(data.error ?? tripperBlogs.previewPage.loadError);
         }
       } catch {
-        if (!cancelled) {
-          setPost(null);
-          setError(tripperDict.previewPage.loadError);
-        }
+        if (!cancelled) setError(tripperBlogs.previewPage.loadError);
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
     void fetchPost();
-
     return () => {
       cancelled = true;
     };
-  }, [locale, postId, session?.user?.id, sessionStatus]);
+  }, [
+    locale,
+    postId,
+    session?.user?.id,
+    sessionStatus,
+    tripperBlogs.previewPage.loadError,
+  ]);
 
-  if (!dict || loading || sessionStatus === "loading") {
+  const carouselImages = useMemo(() => {
+    if (!post) return [];
+    const items: { url: string; caption?: string }[] = [];
+    if (post.coverUrl) items.push({ url: post.coverUrl });
+    (post.blocks ?? []).forEach((b) => {
+      if (b.type === "image" && "url" in b && b.url) {
+        items.push({
+          url: b.url,
+          caption:
+            "caption" in b ? (b.caption as string | undefined) : undefined,
+        });
+      }
+    });
+    return items;
+  }, [post?.coverUrl, post?.blocks]);
+
+  if (loading || sessionStatus === "loading") {
     return <LoadingSpinner />;
   }
 
@@ -118,68 +129,62 @@ export function TripperBlogPreviewClient() {
     );
   }
 
-  const contentHtml =
-    typeof post.content === "string" && post.content.length > 0
-      ? post.content
-      : null;
-
-  const heroTitle =
-    post.title && post.title.length > 0
-      ? post.title
-      : dict.blogPage.heroTitleDefault;
+  const author = post.author;
+  const faqItems = (() => {
+    if (!post.faq) return [];
+    const f = post.faq as
+      | { items?: { question: string; answer: string }[] }
+      | { question: string; answer: string }[];
+    if (Array.isArray(f)) return f;
+    if (f.items && Array.isArray(f.items)) return f.items;
+    return [];
+  })();
 
   return (
-    <>
-      <HeaderHero
-        {...BLOG_LISTING_HERO_CONFIG}
-        description={dict.blogPage.heroDescription}
-        title={heroTitle}
+    <div className="flex flex-col mb-10">
+      <div className="sticky top-0 z-40 border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-950">
+        {tripperBlogs.previewPage.banner}
+        {" · "}
+        <Link
+          className="font-medium underline underline-offset-2"
+          href={`/dashboard/tripper/blogs/${postId}`}
+        >
+          {tripperBlogs.previewPage.backToEdit}
+        </Link>
+      </div>
+
+      <BlogPostHero
+        author={{
+          avatarUrl: author?.avatarUrl ?? "",
+          location: author?.location ?? undefined,
+          name: author?.name ?? "",
+          slug: author?.tripperSlug ?? author?.id ?? "",
+        }}
+        coverUrl={post.coverUrl ?? null}
+        subtitle={post.subtitle ?? post.tagline ?? ""}
+        title={post.title ?? ""}
       />
+
       <Section>
-        <div className="rt-container">
-          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-            {tripperBlogs.previewPage.banner}
-          </div>
-          <div className="mb-8">
-            <Button asChild variant="secondary">
-              <Link href={`/dashboard/tripper/blogs/${postId}`}>
-                {tripperBlogs.previewPage.backToEdit}
-              </Link>
-            </Button>
-          </div>
-          <GlassCard>
-            <div className="p-8 md:p-12">
-              {post.coverUrl ? (
-                <div className="relative mb-8 h-56 w-full overflow-hidden rounded-xl md:h-72">
-                  <Img
-                    alt={post.title ?? ""}
-                    className="h-full w-full object-cover"
-                    height={432}
-                    sizes="(max-width: 768px) 100vw, 896px"
-                    src={post.coverUrl}
-                    width={896}
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
-                  />
-                </div>
-              ) : null}
-              {post.subtitle && post.subtitle.length > 0 ? (
-                <p className="mb-6 text-lg font-semibold text-neutral-700">
-                  {post.subtitle}
-                </p>
-              ) : null}
-              <BlogArticle
-                content={contentHtml}
-                emptyMessage={tripperBlogs.previewPage.emptyBody}
-                showTitle={false}
-                title={post.title ?? ""}
-              />
-            </div>
-          </GlassCard>
+        <div className="mx-auto max-w-4xl px-4">
+          <Breadcrumb
+            items={[
+              { href: "/blog", label: "Tripper Inspirations" },
+              { label: post.title ?? "" },
+            ]}
+          />
+
+          <BlogArticle
+            content={typeof post.content === "string" ? post.content : null}
+            emptyMessage={tripperBlogs.previewPage.emptyBody}
+            title={post.title ?? ""}
+          />
+
+          <FaqSection items={faqItems} />
         </div>
       </Section>
-    </>
+
+      <LightboxCarousel images={carouselImages} />
+    </div>
   );
 }

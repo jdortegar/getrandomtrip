@@ -25,7 +25,7 @@ interface BlogPost {
   tagline?: string;
   coverUrl: string | null;
   content: string | null;
-  blocks?: Array<{ type: string; url?: string }>;
+  blocks?: Array<{ type: string; url?: string; caption?: string }>;
   faq?: { items?: { question: string; answer: string }[] } | null;
   tags: string[];
   format: string;
@@ -177,12 +177,12 @@ function BlogDetailContent() {
 
   const carouselImages = useMemo(() => {
     if (!blog) return [];
-    const urls: string[] = [];
-    if (blog.coverUrl) urls.push(blog.coverUrl);
+    const items: { url: string; caption?: string }[] = [];
+    if (blog.coverUrl) items.push({ url: blog.coverUrl });
     (blog.blocks ?? []).forEach((b) => {
-      if (b.type === 'image' && b.url) urls.push(b.url);
+      if (b.type === 'image' && b.url) items.push({ url: b.url, caption: b.caption });
     });
-    return urls;
+    return items;
   }, [blog?.coverUrl, blog?.blocks]);
 
   if (loading) {

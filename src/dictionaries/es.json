@@ -2382,6 +2382,14 @@
         "upload": "Subir imagen",
         "uploading": "Subiendo…"
       },
+      "gallery": {
+        "captionPlaceholder": "Añadir descripción…",
+        "hint": "Añade fotos para el carrusel de tu publicación.",
+        "removeAria": "Eliminar imagen",
+        "title": "Galería de fotos",
+        "upload": "Subir fotos",
+        "uploading": "Subiendo…"
+      },
       "editHero": {
         "descriptionFallback": "Modifica tu contenido",
         "titleFallback": "Editar post"

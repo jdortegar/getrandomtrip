@@ -6,10 +6,15 @@ import { X } from 'lucide-react';
 import Section from '@/components/layout/Section';
 import { Carousel } from '@/components/Carousel';
 
+interface LightboxImage {
+  url: string;
+  caption?: string;
+}
+
 interface LightboxCarouselProps {
   ariaCloseLabel?: string;
   ariaViewLargeLabel?: string;
-  images: string[];
+  images: LightboxImage[];
 }
 
 export default function LightboxCarousel({
@@ -17,16 +22,16 @@ export default function LightboxCarousel({
   ariaViewLargeLabel = 'Ver imagen en grande',
   images,
 }: LightboxCarouselProps) {
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
 
   useEffect(() => {
-    if (!lightboxUrl) return;
+    if (!lightboxImage) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightboxUrl(null);
+      if (e.key === 'Escape') setLightboxImage(null);
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [lightboxUrl]);
+  }, [lightboxImage]);
 
   if (images.length === 0) return null;
 
@@ -42,19 +47,19 @@ export default function LightboxCarousel({
             showDots
             slidesToScroll={3}
           >
-            {images.map((url, index) => (
+            {images.map((image, index) => (
               <button
-                key={`${url}-${index}`}
+                key={`${image.url}-${index}`}
                 className="relative h-[316px] w-full cursor-pointer overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
-                onClick={() => setLightboxUrl(url)}
+                onClick={() => setLightboxImage(image)}
                 type="button"
               >
                 <Image
-                  alt=""
+                  alt={image.caption ?? ''}
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 85vw, (max-width: 1024px) 70vw, 55vw"
-                  src={url}
+                  src={image.url}
                 />
               </button>
             ))}
@@ -62,7 +67,7 @@ export default function LightboxCarousel({
         </div>
       </Section>
 
-      {lightboxUrl && (
+      {lightboxImage && (
         <div
           aria-label={ariaViewLargeLabel}
           aria-modal="true"
@@ -72,27 +77,26 @@ export default function LightboxCarousel({
           <div
             aria-hidden
             className="absolute inset-0 bg-black/50"
-            onClick={() => setLightboxUrl(null)}
+            onClick={() => setLightboxImage(null)}
           />
-          <div className="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg">
+          <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg">
             <button
               aria-label={ariaCloseLabel}
               className="absolute right-2 top-2 z-10 rounded-md p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
-              onClick={() => setLightboxUrl(null)}
+              onClick={() => setLightboxImage(null)}
               type="button"
             >
               <X className="h-5 w-5" />
             </button>
-            <div className="relative aspect-video w-full">
-              <Image
-                alt=""
-                className="object-contain"
-                fill
-                sizes="90vw"
-                src={lightboxUrl}
-                unoptimized
-              />
-            </div>
+            <Image
+              alt={lightboxImage.caption ?? ''}
+              height={0}
+              sizes="85vw"
+              src={lightboxImage.url}
+              style={{ display: 'block', height: 'auto', maxHeight: '80vh', maxWidth: '85vw', width: 'auto' }}
+              unoptimized
+              width={0}
+            />
           </div>
         </div>
       )}

@@ -49,6 +49,14 @@ export interface TripperBlogComposerDict {
     upload: string;
     uploading: string;
   };
+  gallery: {
+    captionPlaceholder: string;
+    hint: string;
+    removeAria: string;
+    title: string;
+    upload: string;
+    uploading: string;
+  };
   editHero: {
     descriptionFallback: string;
     titleFallback: string;

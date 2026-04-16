@@ -28,6 +28,7 @@ const nextConfig = {
   images: {
     deviceSizes: [320, 420, 768, 1024, 1200, 1600],
     remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'source.unsplash.com' },
       { protocol: 'https', hostname: 'plus.unsplash.com' },

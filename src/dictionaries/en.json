@@ -2382,6 +2382,14 @@
         "upload": "Upload image",
         "uploading": "Uploading…"
       },
+      "gallery": {
+        "captionPlaceholder": "Add a caption…",
+        "hint": "Add photos for your post's carousel.",
+        "removeAria": "Remove image",
+        "title": "Photo gallery",
+        "upload": "Upload photos",
+        "uploading": "Uploading…"
+      },
       "editHero": {
         "descriptionFallback": "Edit your story",
         "titleFallback": "Edit post"
