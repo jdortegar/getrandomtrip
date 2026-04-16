@@ -2,7 +2,6 @@
 
 import { useParams } from "next/navigation";
 import { BlogPostsList } from "@/components/app/dashboard/tripper/BlogPostsList";
-import HeaderHero from "@/components/journey/HeaderHero";
 import Section from "@/components/layout/Section";
 import type { BlogPost } from "@/types/blog";
 import enCopy from "@/dictionaries/en.json";
@@ -12,29 +11,28 @@ interface BlogsPageClientProps {
   posts: BlogPost[];
 }
 
-function getBlogsCopy(locale: string) {
+function getTripperBlogs(locale: string) {
   return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
 }
 
 export function BlogsPageClient({ posts }: BlogsPageClientProps) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
-  const copy = getBlogsCopy(locale);
-  const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
+  const tripperBlogs = getTripperBlogs(locale);
 
   return (
-    <>
-      <HeaderHero
-        description={copy.header.description}
-        fallbackImage="/images/bg-playa-mexico.jpg"
-        title={copy.header.title}
-        videoSrc="/videos/hero-video-1.mp4"
-      />
-      <Section>
-        <div className="rt-container">
-          <BlogPostsList copy={copy} dateLocale={dateLocale} posts={posts} />
+    <Section>
+      <div className="rt-container">
+        <div className="mb-8">
+          <h1 className="text-xl font-semibold text-neutral-900">
+            {tripperBlogs.header.title}
+          </h1>
+          <p className="mt-2 text-sm text-neutral-600">
+            {tripperBlogs.header.description}
+          </p>
         </div>
-      </Section>
-    </>
+        <BlogPostsList posts={posts} />
+      </div>
+    </Section>
   );
 }

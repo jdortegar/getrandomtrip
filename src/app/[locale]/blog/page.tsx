@@ -13,21 +13,13 @@ import HeaderHero from "@/components/journey/HeaderHero";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import Section from "@/components/layout/Section";
 import GlassCard from "@/components/ui/GlassCard";
+import { BLOG_LISTING_HERO_CONFIG } from "@/lib/constants/blog-listing-hero";
 import type { TripperFilterOption } from "@/lib/constants/blog-filters";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { cn } from "@/lib/utils";
-
-/** Single source of truth for blog page hero (SOLID: single responsibility, no duplication). */
-const BLOG_HERO_CONFIG = {
-  className: "!min-h-[40vh]",
-  eyebrowColor: "#F2C53D",
-  fallbackImage: "/images/hero-image-1.jpeg",
-  subtitle: "BLOG",
-  videoSrc: "/videos/hero-video-1.mp4",
-} as const;
 
 interface BlogPost {
   id: string;
@@ -220,7 +212,7 @@ function BlogListContent() {
   return (
     <>
       <HeaderHero
-        {...BLOG_HERO_CONFIG}
+        {...BLOG_LISTING_HERO_CONFIG}
         description={dict.blogPage.heroDescription}
         title={heroTitle}
       />

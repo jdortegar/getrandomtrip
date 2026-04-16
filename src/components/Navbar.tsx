@@ -177,7 +177,7 @@ export default function Navbar({
               </button>
             )}
 
-            {isAuthed && user && (
+            {isAuthed && user && profileLabels && (
               <NavbarProfile
                 labels={profileLabels}
                 onSignOut={signOut}

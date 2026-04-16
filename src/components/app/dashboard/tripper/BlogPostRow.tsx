@@ -6,16 +6,16 @@ import type { BlogPost } from '@/types/blog';
 import type { TripperBlogsDict } from '@/lib/types/dictionary';
 
 interface BlogPostRowProps {
-  copy: TripperBlogsDict['row'];
   dateLocale: string;
   post: BlogPost;
+  rowLabels: TripperBlogsDict['row'];
 }
 
 function StatusBadge({
-  copy,
+  rowLabels,
   status,
 }: {
-  copy: TripperBlogsDict['row'];
+  rowLabels: TripperBlogsDict['row'];
   status: BlogPost['status'];
 }) {
   const isPublished = status === 'published';
@@ -27,12 +27,12 @@ function StatusBadge({
           : 'bg-yellow-100 text-yellow-800 border-yellow-200'
       }`}
     >
-      {isPublished ? copy.published : copy.draft}
+      {isPublished ? rowLabels.published : rowLabels.draft}
     </span>
   );
 }
 
-export function BlogPostRow({ copy, dateLocale, post }: BlogPostRowProps) {
+export function BlogPostRow({ dateLocale, post, rowLabels }: BlogPostRowProps) {
   const dateOptions: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'short',
@@ -40,7 +40,7 @@ export function BlogPostRow({ copy, dateLocale, post }: BlogPostRowProps) {
   };
   const dateLabel = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString(dateLocale, dateOptions)
-    : `${copy.updatedAt}: ${new Date(post.updatedAt).toLocaleDateString(
+    : `${rowLabels.updatedAt}: ${new Date(post.updatedAt).toLocaleDateString(
         dateLocale,
         dateOptions,
       )}`;
@@ -90,11 +90,11 @@ export function BlogPostRow({ copy, dateLocale, post }: BlogPostRowProps) {
 
       {/* Actions */}
       <div className="shrink-0 flex flex-col items-end gap-2 px-4 py-3">
-        <StatusBadge copy={copy} status={post.status} />
+        <StatusBadge rowLabels={rowLabels} status={post.status} />
         <Button asChild size="sm" variant="ghost">
           <Link href={`/dashboard/tripper/blogs/${post.id}`}>
             <Edit className="h-3.5 w-3.5" />
-            {copy.edit}
+            {rowLabels.edit}
           </Link>
         </Button>
         {post.status === 'published' && (
@@ -105,7 +105,7 @@ export function BlogPostRow({ copy, dateLocale, post }: BlogPostRowProps) {
               target="_blank"
             >
               <Eye className="h-3.5 w-3.5" />
-              {copy.view}
+              {rowLabels.view}
             </Link>
           </Button>
         )}

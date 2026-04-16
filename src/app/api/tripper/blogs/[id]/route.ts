@@ -61,6 +61,18 @@ export async function GET(
         createdAt: true,
         updatedAt: true,
         publishedAt: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            tripperSlug: true,
+            avatarUrl: true,
+            bio: true,
+            location: true,
+            motto: true,
+            specialization: true,
+          },
+        },
       },
     });
 

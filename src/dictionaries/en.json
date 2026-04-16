@@ -2382,6 +2382,14 @@
         "upload": "Upload image",
         "uploading": "Uploading…"
       },
+      "gallery": {
+        "captionPlaceholder": "Add a caption…",
+        "hint": "Add photos for your post's carousel.",
+        "removeAria": "Remove image",
+        "title": "Photo gallery",
+        "upload": "Upload photos",
+        "uploading": "Uploading…"
+      },
       "editHero": {
         "descriptionFallback": "Edit your story",
         "titleFallback": "Edit post"
@@ -2432,10 +2440,16 @@
       "title": "My Posts",
       "description": "Manage your blog and share your experiences"
     },
-    "newPost": "New Post",
     "empty": {
       "message": "You have no posts yet. Time to tell your first story!",
       "cta": "Create my first post"
+    },
+    "newPost": "New Post",
+    "previewPage": {
+      "backToEdit": "Back to editor",
+      "banner": "You are viewing a draft preview. The public post may look different.",
+      "emptyBody": "This post has no body content yet.",
+      "loadError": "Could not load this post for preview."
     },
     "row": {
       "edit": "Edit",

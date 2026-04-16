@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Save } from "lucide-react";
+import { ImagePlus, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import Img from "@/components/common/Img";
 import { BlogComposerSidebar } from "@/components/tripper/blog/BlogComposerSidebar";
@@ -54,6 +54,8 @@ export default function BlogComposer({
 }: BlogComposerProps) {
   const router = useRouter();
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [post, setPost] = useState<Partial<BlogPost>>({
     ...initialPost,
     blocks: initialPost.blocks ?? [],
@@ -70,6 +72,13 @@ export default function BlogComposer({
   const [tagInput, setTagInput] = useState("");
 
   const contentHtml = typeof post.content === "string" ? post.content : "";
+
+  const galleryImages = (post.blocks ?? [])
+    .map((b, i) => ({ ...b, _index: i }))
+    .filter(
+      (b): b is { type: "image"; url: string; caption?: string; _index: number } =>
+        b.type === "image",
+    );
 
   const handleUploadImage = async (file: File) => {
     try {
@@ -97,79 +106,78 @@ export default function BlogComposer({
     }
   };
 
-  const handleSave = async () => {
-    if (!post.title?.trim()) {
-      toast.error(copy.toasts.titleRequired);
-      return;
-    }
-
-    setSaving(true);
+  const handleGalleryFilesChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (!files.length) return;
+    setGalleryUploading(true);
     try {
-      const postData = {
-        ...post,
-        blocks: [] as BlogPost["blocks"],
-        content: contentHtml,
-        coverUrl: post.coverUrl,
-        excuseKey: post.excuseKey?.trim() ? post.excuseKey.trim() : null,
-        format,
-        status: "draft" as const,
-        tags,
-        travelType: post.travelType?.trim() ? post.travelType.trim() : null,
-      };
-
-      if (mode === "create") {
-        const response = await fetch("/api/tripper/blogs", {
-          body: JSON.stringify(postData),
-          headers: { "Content-Type": "application/json" },
-          method: "POST",
-        });
-
-        if (response.ok) {
-          const data = (await response.json()) as { blog: { id: string } };
-          toast.success(copy.toasts.saveSuccessCreate);
-          router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
+      const results = await Promise.allSettled(files.map(uploadImageFile));
+      const urls: string[] = [];
+      let failCount = 0;
+      for (const result of results) {
+        if (result.status === "fulfilled") {
+          urls.push(result.value);
         } else {
-          const error = (await response.json()) as { error?: string };
-          toast.error(error.error ?? copy.toasts.saveError);
-        }
-      } else {
-        const response = await fetch(`/api/tripper/blogs/${post.id}`, {
-          body: JSON.stringify(postData),
-          headers: { "Content-Type": "application/json" },
-          method: "PATCH",
-        });
-
-        if (response.ok) {
-          toast.success(copy.toasts.saveSuccessEdit);
-        } else {
-          const error = (await response.json()) as { error?: string };
-          toast.error(error.error ?? copy.toasts.saveError);
+          failCount++;
         }
       }
-    } catch {
-      toast.error(copy.toasts.genericSaveError);
+      if (failCount > 0) {
+        toast.error(copy.toasts.uploadError);
+      }
+      if (urls.length > 0) {
+        setPost((p) => ({
+          ...p,
+          blocks: [
+            ...(p.blocks ?? []),
+            ...urls.map((url) => ({ type: "image" as const, url, caption: "" })),
+          ],
+        }));
+      }
     } finally {
-      setSaving(false);
+      setGalleryUploading(false);
     }
   };
 
-  const handlePublish = async () => {
+  const removeGalleryImage = (blockIndex: number) => {
+    setPost((p) => ({
+      ...p,
+      blocks: (p.blocks ?? []).filter((_, i) => i !== blockIndex),
+    }));
+  };
+
+  const updateGalleryCaption = (blockIndex: number, caption: string) => {
+    setPost((p) => ({
+      ...p,
+      blocks: (p.blocks ?? []).map((b, i) =>
+        i === blockIndex ? { ...b, caption } : b,
+      ),
+    }));
+  };
+
+  const submitPost = async (status: "draft" | "published") => {
     if (!post.title?.trim()) {
       toast.error(copy.toasts.titleRequired);
       return;
     }
 
-    setPublishing(true);
+    const isSaving = status === "draft";
+    isSaving ? setSaving(true) : setPublishing(true);
+
     try {
       const postData = {
         ...post,
-        blocks: [] as BlogPost["blocks"],
+        blocks: post.blocks,
         content: contentHtml,
         coverUrl: post.coverUrl,
         excuseKey: post.excuseKey?.trim() ? post.excuseKey.trim() : null,
         format,
-        publishedAt: new Date().toISOString(),
-        status: "published" as const,
+        ...(status === "published"
+          ? { publishedAt: new Date().toISOString() }
+          : {}),
+        status,
         tags,
         travelType: post.travelType?.trim() ? post.travelType.trim() : null,
       };
@@ -183,11 +191,18 @@ export default function BlogComposer({
 
         if (response.ok) {
           const data = (await response.json()) as { blog: { id: string } };
-          toast.success(copy.toasts.publishSuccess);
+          toast.success(
+            isSaving
+              ? copy.toasts.saveSuccessCreate
+              : copy.toasts.publishSuccess,
+          );
           router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
         } else {
           const error = (await response.json()) as { error?: string };
-          toast.error(error.error ?? copy.toasts.publishError);
+          toast.error(
+            error.error ??
+              (isSaving ? copy.toasts.saveError : copy.toasts.publishError),
+          );
         }
       } else {
         const response = await fetch(`/api/tripper/blogs/${post.id}`, {
@@ -197,16 +212,23 @@ export default function BlogComposer({
         });
 
         if (response.ok) {
-          toast.success(copy.toasts.publishSuccess);
+          toast.success(
+            isSaving ? copy.toasts.saveSuccessEdit : copy.toasts.publishSuccess,
+          );
         } else {
           const error = (await response.json()) as { error?: string };
-          toast.error(error.error ?? copy.toasts.publishError);
+          toast.error(
+            error.error ??
+              (isSaving ? copy.toasts.saveError : copy.toasts.publishError),
+          );
         }
       }
     } catch {
-      toast.error(copy.toasts.genericPublishError);
+      toast.error(
+        isSaving ? copy.toasts.genericSaveError : copy.toasts.genericPublishError,
+      );
     } finally {
-      setPublishing(false);
+      isSaving ? setSaving(false) : setPublishing(false);
     }
   };
 
@@ -241,7 +263,7 @@ export default function BlogComposer({
               <span className="text-xs text-neutral-500">{statusLine}</span>
               <Button
                 disabled={publishing || saving}
-                onClick={handleSave}
+                onClick={() => submitPost("draft")}
                 size="sm"
                 type="button"
                 variant="secondary"
@@ -267,54 +289,33 @@ export default function BlogComposer({
           />
         </div>
 
-        <div className="bg-white border border-gray-200 p-6 relative rounded-xl shadow-sm space-y-6">
-          <div>
-            <h3 className="mb-2 text-lg font-semibold text-neutral-900">
-              {copy.cover.title}
-            </h3>
-            <p className="mb-3 text-sm text-neutral-600">{copy.cover.hint}</p>
-            <div className="flex flex-col gap-3">
-              <input
-                accept="image/*"
-                className="hidden"
-                onChange={handleCoverFileChange}
-                ref={coverInputRef}
-                type="file"
-              />
-              {post.coverUrl ? (
-                <>
-                  <div className="border border-neutral-200 h-40 max-w-md mx-auto overflow-hidden relative rounded-lg w-full">
-                    <Img
-                      alt={copy.cover.previewAlt}
-                      className="h-full w-full object-cover"
-                      height={320}
-                      sizes="(max-width: 768px) 100vw, 448px"
-                      src={post.coverUrl}
-                      width={448}
-                    />
-                  </div>
-                  <div className="flex flex-wrap gap-3 items-center justify-center">
-                    <Button
-                      disabled={coverUploading}
-                      onClick={() => coverInputRef.current?.click()}
-                      type="button"
-                      variant="secondary"
-                    >
-                      {coverUploading ? copy.cover.uploading : copy.cover.upload}
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        setPost((p) => ({ ...p, coverUrl: undefined }))
-                      }
-                      type="button"
-                      variant="ghost"
-                    >
-                      {copy.cover.remove}
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-wrap items-center gap-3">
+        {/* Cover card */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <h3 className="mb-2 text-lg font-semibold text-neutral-900">
+            {copy.cover.title}
+          </h3>
+          <p className="mb-3 text-sm text-neutral-600">{copy.cover.hint}</p>
+          <div className="flex flex-col gap-3">
+            <input
+              accept="image/*"
+              className="hidden"
+              onChange={handleCoverFileChange}
+              ref={coverInputRef}
+              type="file"
+            />
+            {post.coverUrl ? (
+              <>
+                <div className="border border-neutral-200 h-40 max-w-md mx-auto overflow-hidden relative rounded-lg w-full">
+                  <Img
+                    alt={copy.cover.previewAlt}
+                    className="h-full w-full object-cover"
+                    height={320}
+                    sizes="(max-width: 768px) 100vw, 448px"
+                    src={post.coverUrl}
+                    width={448}
+                  />
+                </div>
+                <div className="flex flex-wrap gap-3 items-center justify-center">
                   <Button
                     disabled={coverUploading}
                     onClick={() => coverInputRef.current?.click()}
@@ -323,27 +324,108 @@ export default function BlogComposer({
                   >
                     {coverUploading ? copy.cover.uploading : copy.cover.upload}
                   </Button>
+                  <Button
+                    onClick={() =>
+                      setPost((p) => ({ ...p, coverUrl: undefined }))
+                    }
+                    type="button"
+                    variant="ghost"
+                  >
+                    {copy.cover.remove}
+                  </Button>
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  disabled={coverUploading}
+                  onClick={() => coverInputRef.current?.click()}
+                  type="button"
+                  variant="secondary"
+                >
+                  {coverUploading ? copy.cover.uploading : copy.cover.upload}
+                </Button>
+              </div>
+            )}
           </div>
+        </div>
 
-          <div>
-            <label
-              className="mb-2 block text-sm font-medium text-neutral-500"
-              htmlFor="blog-composer-body"
-            >
-              {copy.bodyLabel}
-            </label>
-            <BlogRichTextEditor
-              aria-label={copy.bodyLabel}
-              id="blog-composer-body"
-              onChange={(html) => setPost({ ...post, content: html })}
-              onUploadImage={handleUploadImage}
-              placeholder={copy.bodyPlaceholder}
-              value={contentHtml}
-            />
-          </div>
+        {/* Body card */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <label
+            className="mb-2 block text-sm font-medium text-neutral-500"
+            htmlFor="blog-composer-body"
+          >
+            {copy.bodyLabel}
+          </label>
+          <BlogRichTextEditor
+            aria-label={copy.bodyLabel}
+            id="blog-composer-body"
+            onChange={(html) => setPost({ ...post, content: html })}
+            onUploadImage={handleUploadImage}
+            placeholder={copy.bodyPlaceholder}
+            value={contentHtml}
+          />
+        </div>
+
+        {/* Gallery card */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <h3 className="mb-2 text-lg font-semibold text-neutral-900">
+            {copy.gallery.title}
+          </h3>
+          <p className="mb-4 text-sm text-neutral-600">{copy.gallery.hint}</p>
+
+          <input
+            accept="image/*"
+            className="hidden"
+            multiple
+            onChange={handleGalleryFilesChange}
+            ref={galleryInputRef}
+            type="file"
+          />
+
+          <Button
+            disabled={galleryUploading}
+            onClick={() => galleryInputRef.current?.click()}
+            type="button"
+            variant="secondary"
+          >
+            <ImagePlus className="h-4 w-4" />
+            {galleryUploading ? copy.gallery.uploading : copy.gallery.upload}
+          </Button>
+
+          {galleryImages.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {galleryImages.map((img, idx) => (
+                <div className="flex flex-col gap-1" key={img._index}>
+                  <div className="relative aspect-square overflow-hidden rounded-lg border border-neutral-200">
+                    <Img
+                      alt={img.caption || `${copy.gallery.title} ${idx + 1}`}
+                      className="h-full w-full object-cover"
+                      height={200}
+                      src={img.url}
+                      width={200}
+                    />
+                    <button
+                      aria-label={copy.gallery.removeAria}
+                      className="absolute right-1 top-1 rounded-full bg-white/80 p-1 text-neutral-700 hover:bg-white hover:text-neutral-900"
+                      onClick={() => removeGalleryImage(img._index)}
+                      type="button"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <input
+                    className="w-full rounded border border-neutral-200 px-2 py-1 text-xs text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    onChange={(e) => updateGalleryCaption(img._index, e.target.value)}
+                    placeholder={copy.gallery.captionPlaceholder}
+                    type="text"
+                    value={img.caption ?? ""}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -363,7 +445,7 @@ export default function BlogComposer({
           if (!post.id) return;
           router.push(`/dashboard/tripper/blogs/${post.id}/preview`);
         }}
-        onPublish={handlePublish}
+        onPublish={() => submitPost("published")}
         onRemoveTag={removeTag}
         onTagInputChange={setTagInput}
         onTravelTypeChange={(value) =>
