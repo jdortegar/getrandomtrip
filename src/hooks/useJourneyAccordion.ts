@@ -26,34 +26,43 @@ export function useJourneyAccordion(
   const accordionValue = isControlled ? (openSectionId ?? '') : internalAccordion;
   const setAccordionValue = isControlled ? onOpenSection! : setInternalAccordion;
 
-  // Auto-open the first section of each tab when the tab changes
+  // Auto-open the first section of each tab when the tab changes, or when the
+  // open section id does not belong to the current tab (e.g. after switching tabs).
+  // '' is valid: user collapsed all sections via header (collapsible accordions).
   useEffect(() => {
-    if (
-      activeTab === 'budget' &&
-      accordionValue !== 'travel-type' &&
-      accordionValue !== 'experience'
-    ) {
-      setAccordionValue('travel-type');
-    } else if (
-      activeTab === 'excuse' &&
-      accordionValue !== 'excuse' &&
-      accordionValue !== 'refine-details'
-    ) {
-      setAccordionValue('excuse');
-    } else if (
-      activeTab === 'details' &&
-      accordionValue !== 'dates' &&
-      accordionValue !== 'origin' &&
-      accordionValue !== 'transport'
-    ) {
-      setAccordionValue('origin');
-    } else if (
-      activeTab === 'preferences' &&
-      accordionValue !== '' &&
-      accordionValue !== 'filters' &&
-      !(JOURNEY_ADDONS_ENABLED && accordionValue === 'addons')
-    ) {
-      setAccordionValue('filters');
+    if (activeTab === 'budget') {
+      const valid =
+        accordionValue === 'travel-type' ||
+        accordionValue === 'experience' ||
+        accordionValue === '';
+      if (!valid) {
+        setAccordionValue('travel-type');
+      }
+    } else if (activeTab === 'excuse') {
+      const valid =
+        accordionValue === 'excuse' ||
+        accordionValue === 'refine-details' ||
+        accordionValue === '';
+      if (!valid) {
+        setAccordionValue('excuse');
+      }
+    } else if (activeTab === 'details') {
+      const valid =
+        accordionValue === 'origin' ||
+        accordionValue === 'dates' ||
+        accordionValue === 'transport' ||
+        accordionValue === '';
+      if (!valid) {
+        setAccordionValue('origin');
+      }
+    } else if (activeTab === 'preferences') {
+      const valid =
+        accordionValue === '' ||
+        accordionValue === 'filters' ||
+        (JOURNEY_ADDONS_ENABLED && accordionValue === 'addons');
+      if (!valid) {
+        setAccordionValue('filters');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, accordionValue]);
