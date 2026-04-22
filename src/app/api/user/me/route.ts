@@ -52,6 +52,7 @@ export async function GET() {
         interests: true,
         dislikes: true,
         role: true,
+        avatarUrl: true,
       },
     });
 
@@ -70,6 +71,7 @@ export async function GET() {
       interests: u.interests,
       dislikes: u.dislikes,
       role: u.role,
+      avatarUrl: u.avatarUrl,
     };
 
     return NextResponse.json({ user });
