@@ -2297,7 +2297,9 @@
       "passwordError": "Error al cambiar contraseña",
       "nameRequired": "El nombre es obligatorio",
       "saveError": "Error al guardar los datos",
-      "profileUpdated": "Perfil actualizado correctamente"
+      "profileUpdated": "Perfil actualizado correctamente",
+      "avatarUploadError": "No se pudo subir la foto de perfil.",
+      "avatarUploadSuccess": "Foto de perfil actualizada."
     }
   },
   "adminTripEditModal": {

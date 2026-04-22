@@ -30,9 +30,12 @@ interface BlogComposerProps {
   post: Partial<BlogPost>;
 }
 
-async function uploadImageFile(file: File): Promise<string> {
+async function uploadImageFile(file: File, postId?: string): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
+  if (postId) {
+    formData.append("postId", postId);
+  }
   const response = await fetch("/api/tripper/blog-media", {
     body: formData,
     method: "POST",
@@ -68,8 +71,6 @@ export default function BlogComposer({
   const [format, setFormat] = useState<BlogPost["format"]>(
     initialPost.format ?? "article",
   );
-  const [tags, setTags] = useState<string[]>(initialPost.tags ?? []);
-  const [tagInput, setTagInput] = useState("");
 
   const contentHtml = typeof post.content === "string" ? post.content : "";
 
@@ -82,7 +83,7 @@ export default function BlogComposer({
 
   const handleUploadImage = async (file: File) => {
     try {
-      return await uploadImageFile(file);
+      return await uploadImageFile(file, post.id);
     } catch {
       toast.error(copy.toasts.uploadError);
       throw new Error("upload failed");
@@ -97,7 +98,7 @@ export default function BlogComposer({
     if (!file) return;
     setCoverUploading(true);
     try {
-      const url = await uploadImageFile(file);
+      const url = await uploadImageFile(file, post.id);
       setPost((p) => ({ ...p, coverUrl: url }));
     } catch {
       toast.error(copy.toasts.uploadError);
@@ -114,7 +115,9 @@ export default function BlogComposer({
     if (!files.length) return;
     setGalleryUploading(true);
     try {
-      const results = await Promise.allSettled(files.map(uploadImageFile));
+      const results = await Promise.allSettled(
+        files.map((f) => uploadImageFile(f, post.id)),
+      );
       const urls: string[] = [];
       let failCount = 0;
       for (const result of results) {
@@ -178,7 +181,7 @@ export default function BlogComposer({
           ? { publishedAt: new Date().toISOString() }
           : {}),
         status,
-        tags,
+        tags: post.tags ?? [],
         travelType: post.travelType?.trim() ? post.travelType.trim() : null,
       };
 
@@ -230,18 +233,6 @@ export default function BlogComposer({
     } finally {
       isSaving ? setSaving(false) : setPublishing(false);
     }
-  };
-
-  const addTag = () => {
-    const next = tagInput.trim();
-    if (next && !tags.includes(next)) {
-      setTags([...tags, next]);
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
   };
 
   const breadcrumb =
@@ -432,22 +423,17 @@ export default function BlogComposer({
       <BlogComposerSidebar
         copy={copy}
         excuseKey={post.excuseKey ?? ""}
-        format={format}
-        onAddTag={addTag}
         onExcuseKeyChange={(value) =>
           setPost((p) => ({
             ...p,
             excuseKey: value.length > 0 ? value : undefined,
           }))
         }
-        onFormatChange={setFormat}
         onPreview={() => {
           if (!post.id) return;
           router.push(`/dashboard/tripper/blogs/${post.id}/preview`);
         }}
         onPublish={() => submitPost("published")}
-        onRemoveTag={removeTag}
-        onTagInputChange={setTagInput}
         onTravelTypeChange={(value) =>
           setPost((p) => ({
             ...p,
@@ -458,8 +444,6 @@ export default function BlogComposer({
         postStatus={post.status}
         publishing={publishing}
         saving={saving}
-        tagInput={tagInput}
-        tags={tags}
         travelType={post.travelType ?? ""}
       />
     </div>

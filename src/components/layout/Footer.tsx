@@ -24,7 +24,7 @@ export default function Footer({ dict, locale }: FooterProps) {
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-6">
-            <div className="flex flex-col gap-4 items-center justify-center lg:items-start sm:col-span-2 lg:col-span-2">
+            <div className="flex flex-col gap-4 items-center justify-center sm:col-span-2 lg:items-start">
               <Img
                 alt={dict.common.siteName}
                 height={40}

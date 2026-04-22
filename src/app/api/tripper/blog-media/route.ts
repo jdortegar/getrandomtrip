@@ -23,7 +23,8 @@ function isSafeBlobKey(key: string): boolean {
   if (key.length > 512 || key.length < 8) return false;
   if (!key.startsWith("blog/")) return false;
   if (key.includes("..") || key.includes("//")) return false;
-  return /^blog\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(key);
+  // Matches: blog/{userId}/{uuid}.ext  OR  blog/{userId}/{postId}/{uuid}.ext
+  return /^blog\/[a-zA-Z0-9_-]+\/(?:[a-zA-Z0-9_-]+\/)?[a-zA-Z0-9_.-]+$/.test(key);
 }
 
 export async function GET(request: NextRequest) {
@@ -78,9 +79,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file" }, { status: 400 });
     }
 
+    const rawPostId = formData.get("postId");
+    const postId =
+      typeof rawPostId === "string" && /^[a-zA-Z0-9_-]{1,64}$/.test(rawPostId)
+        ? rawPostId
+        : null;
+
     const rawExt = file.name.split(".").pop() ?? "bin";
     const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8) || "bin";
-    const key = `blog/${session.user.id}/${crypto.randomUUID()}.${ext}`;
+    const keySegment = postId
+      ? `${session.user.id}/${postId}`
+      : session.user.id;
+    const key = `blog/${keySegment}/${crypto.randomUUID()}.${ext}`;
 
     const arrayBuffer = await file.arrayBuffer();
     const contentType = file.type || "application/octet-stream";

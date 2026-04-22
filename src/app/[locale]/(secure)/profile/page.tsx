@@ -486,7 +486,7 @@ function ProfileContent() {
                     <Button
                       onClick={handleCancelDetailsEdit}
                       size="sm"
-                      variant="outline"
+                      variant="secondary"
                     >
                       {p.buttons.cancel}
                     </Button>

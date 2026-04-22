@@ -2297,7 +2297,9 @@
       "passwordError": "Could not change password",
       "nameRequired": "Name is required",
       "saveError": "Could not save your data",
-      "profileUpdated": "Profile updated successfully"
+      "profileUpdated": "Profile updated successfully",
+      "avatarUploadError": "Could not upload profile photo.",
+      "avatarUploadSuccess": "Profile photo updated."
     }
   },
   "adminTripEditModal": {

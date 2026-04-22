@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
+import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import Section from '@/components/layout/Section';
-import { Carousel } from '@/components/Carousel';
 
 interface LightboxImage {
   url: string;
@@ -39,14 +39,7 @@ export default function LightboxCarousel({
     <>
       <Section className="!py-0">
         <div className="relative">
-          <Carousel
-            edgeBleed={false}
-            itemClassName="min-w-0 flex-shrink-0 basis-full md:basis-[calc((100%-2*1rem)/3)]"
-            opts={{ align: 'start', loop: true }}
-            showArrows
-            showDots
-            slidesToScroll={3}
-          >
+          <EmblaCarousel options={{ align: 'start', loop: true }} slidesPerView={3}>
             {images.map((image, index) => (
               <button
                 key={`${image.url}-${index}`}
@@ -63,7 +56,7 @@ export default function LightboxCarousel({
                 />
               </button>
             ))}
-          </Carousel>
+          </EmblaCarousel>
         </div>
       </Section>
 
