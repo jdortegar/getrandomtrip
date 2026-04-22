@@ -2,13 +2,14 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { useUserStore } from "@/store/slices/userStore";
 
 interface UserAvatarProps {
   height: number;
   onAvatarChange?: (file: File) => void;
   showStatus?: boolean;
+  uploading?: boolean;
   width: number;
 }
 
@@ -16,6 +17,7 @@ export function UserAvatar({
   height,
   onAvatarChange,
   showStatus = false,
+  uploading = false,
   width,
 }: UserAvatarProps) {
   const { user } = useUserStore();
@@ -52,7 +54,13 @@ export function UserAvatar({
         </div>
       )}
 
-      {onAvatarChange && (
+      {uploading && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+          <Loader2 className="h-5 w-5 animate-spin text-white" />
+        </div>
+      )}
+
+      {onAvatarChange && !uploading && (
         <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
           <Camera className="h-5 w-5 text-white" />
         </div>
@@ -72,7 +80,8 @@ export function UserAvatar({
             type="file"
           />
           <button
-            className="group relative block h-full w-full cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            className="group relative block h-full w-full rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed cursor-pointer"
+            disabled={uploading}
             onClick={() => inputRef.current?.click()}
             type="button"
           >

@@ -485,8 +485,9 @@ function ProfileContent() {
             <div className="flex flex-col md:flex-row items-center gap-6">
               <UserAvatar
                 height={96}
-                onAvatarChange={avatarUploading ? undefined : handleAvatarChange}
+                onAvatarChange={handleAvatarChange}
                 showStatus
+                uploading={avatarUploading}
                 width={96}
               />
 
