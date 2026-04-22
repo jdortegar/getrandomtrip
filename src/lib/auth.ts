@@ -145,6 +145,7 @@ export const authOptions: NextAuthOptions = {
             travelerType: true,
             interests: true,
             dislikes: true,
+            avatarUrl: true,
           },
         });
 
@@ -157,6 +158,10 @@ export const authOptions: NextAuthOptions = {
           session.user.interests = dbUser.interests;
           session.user.dislikes = dbUser.dislikes;
           session.user.phone = dbUser.phone;
+          // Uploaded avatar takes precedence; otherwise keep OAuth image (e.g. Google)
+          if (dbUser.avatarUrl) {
+            session.user.image = dbUser.avatarUrl;
+          }
           session.user.address = dbUser.address as
             | Record<string, string>
             | null
