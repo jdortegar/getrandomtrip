@@ -90,8 +90,8 @@ export function getPricePerPerson(
 export const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
   'solo',
   'couple',
-  'family',
   'group',
+  'family',
   'honeymoon',
   'paws',
 ];

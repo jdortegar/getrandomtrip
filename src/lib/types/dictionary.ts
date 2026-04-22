@@ -676,6 +676,8 @@ export interface MarketingDictionary {
     contactTitle: string;
     cookiePolicy: string;
     copyright: string;
+    entityAddress: string;
+    entityNotice: string;
     faq: string;
     group: string;
     family: string;
@@ -880,6 +882,8 @@ export interface MarketingDictionary {
       preferencesUpdated: string;
       profileUpdated: string;
       saveError: string;
+      avatarUploadError: string;
+      avatarUploadSuccess: string;
     };
     travelerTypes: {
       couple: string;

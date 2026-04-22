@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
-import { Heart, Share2 } from 'lucide-react';
-import CountryFlag from '@/components/common/CountryFlag';
-import { Button } from '@/components/ui/Button';
+import Link from "next/link";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { Heart, Share2 } from "lucide-react";
+import CountryFlag from "@/components/common/CountryFlag";
+import { Button } from "@/components/ui/Button";
 
-const BLOG_EYEBROW_COLOR = '#F2C53D';
+const BLOG_EYEBROW_COLOR = "#F2C53D";
 
 /** Derive country for flag from location string (e.g. "México City, México" → "México"). */
 function getCountryFromLocation(
@@ -15,7 +15,7 @@ function getCountryFromLocation(
 ): string | null {
   if (!location?.trim()) return null;
   const parts = location
-    .split(',')
+    .split(",")
     .map((p) => p.trim())
     .filter(Boolean);
   return parts.length > 0 ? parts[parts.length - 1]! : location;
@@ -50,7 +50,7 @@ export default function BlogPostHero({
   return (
     <section
       className={cn(
-        'relative flex min-h-[80vh] flex-col justify-center overflow-hidden',
+        "relative flex min-h-[80vh] flex-col justify-center overflow-hidden",
         className,
       )}
     >
@@ -94,7 +94,7 @@ export default function BlogPostHero({
                 src={author.avatarUrl}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center font-barlow-condensed text-xl font-bold">
+              <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
                 {author.name.charAt(0)}
               </div>
             )}

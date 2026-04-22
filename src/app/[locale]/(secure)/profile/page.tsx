@@ -81,6 +81,7 @@ function ProfileContent() {
   });
   const [profileMe, setProfileMe] = useState<UserProfileMe | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [isDetailsEditing, setIsDetailsEditing] = useState(false);
   const [detailsForm, setDetailsForm] = useState<DetailsFormState>({
     city: "",
@@ -338,6 +339,41 @@ function ProfileContent() {
     setIsDetailsEditing(false);
   };
 
+  const handleAvatarChange = async (file: File) => {
+    if (!dict) return;
+    const t = dict.profile.toasts;
+    setAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/user/avatar", {
+        body: formData,
+        method: "POST",
+      });
+      if (!res.ok) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
+      const data = (await res.json()) as { avatarUrl?: string };
+      if (!data.avatarUrl) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
+      await updateSession({
+        ...session,
+        user: { ...session?.user, image: data.avatarUrl },
+      });
+      useUserStore.setState((s) => ({
+        user: s.user ? { ...s.user, avatar: data.avatarUrl } : s.user,
+      }));
+      toast.success(t.avatarUploadSuccess);
+    } catch {
+      toast.error(t.avatarUploadError);
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
   const handleSaveDetails = async () => {
     if (!dict || !profileMe) return;
     const t = dict.profile.toasts;
@@ -447,7 +483,13 @@ function ProfileContent() {
             )}
           >
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <UserAvatar height={96} showStatus width={96} />
+              <UserAvatar
+                height={96}
+                onAvatarChange={handleAvatarChange}
+                showStatus
+                uploading={avatarUploading}
+                width={96}
+              />
 
               <div className="flex-1 text-center md:text-left">
                 <h1 className="mb-2 text-3xl font-bold text-neutral-900">
@@ -486,7 +528,7 @@ function ProfileContent() {
                     <Button
                       onClick={handleCancelDetailsEdit}
                       size="sm"
-                      variant="outline"
+                      variant="secondary"
                     >
                       {p.buttons.cancel}
                     </Button>

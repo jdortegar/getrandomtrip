@@ -1701,6 +1701,8 @@
     "ariaFacebook": "Facebook",
     "ariaInstagram": "Instagram",
     "ariaTwitter": "Twitter",
+    "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, EE. UU.",
+    "entityNotice": "Randomtrip y getrandomtrip.com son marcas operadas por Randomtrip Inc.",
     "tagline": "Donde termina la rutina, comienza la aventura.",
     "copyright": "Todos los derechos reservados."
   },
@@ -2295,7 +2297,9 @@
       "passwordError": "Error al cambiar contraseña",
       "nameRequired": "El nombre es obligatorio",
       "saveError": "Error al guardar los datos",
-      "profileUpdated": "Perfil actualizado correctamente"
+      "profileUpdated": "Perfil actualizado correctamente",
+      "avatarUploadError": "No se pudo subir la foto de perfil.",
+      "avatarUploadSuccess": "Foto de perfil actualizada."
     }
   },
   "adminTripEditModal": {

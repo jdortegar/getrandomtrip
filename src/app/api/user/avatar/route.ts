@@ -2,34 +2,33 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getStore } from "@netlify/blobs";
 import { authOptions } from "@/lib/auth";
-import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const STORE_NAME = "blog-media";
-
 function getBlobStore() {
-  return getStore(STORE_NAME, {
+  return getStore("user-avatars", {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? { siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_AUTH_TOKEN }
+      ? {
+          siteID: process.env.NETLIFY_SITE_ID,
+          token: process.env.NETLIFY_AUTH_TOKEN,
+        }
       : {}),
   });
 }
 
-function isSafeBlobKey(key: string): boolean {
-  if (key.length > 512 || key.length < 8) return false;
-  if (!key.startsWith("blog/")) return false;
+function isSafeAvatarKey(key: string): boolean {
+  if (key.length > 256 || key.length < 8) return false;
+  if (!key.startsWith("avatars/")) return false;
   if (key.includes("..") || key.includes("//")) return false;
-  // Matches: blog/{userId}/{uuid}.ext  OR  blog/{userId}/{postId}/{uuid}.ext
-  return /^blog\/[a-zA-Z0-9_-]+\/(?:[a-zA-Z0-9_-]+\/)?[a-zA-Z0-9_.-]+$/.test(key);
+  return /^avatars\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(key);
 }
 
 export async function GET(request: NextRequest) {
   const key = request.nextUrl.searchParams.get("key");
-  if (!key || !isSafeBlobKey(key)) {
+  if (!key || !isSafeAvatarKey(key)) {
     return new NextResponse("Bad Request", { status: 400 });
   }
 
@@ -52,7 +51,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("[blog-media] GET", error);
+    console.error("[user-avatar] GET", error);
     return new NextResponse("Blob store unavailable", { status: 503 });
   }
 }
@@ -64,46 +63,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      select: { role: true },
-      where: { id: session.user.id },
-    });
-
-    if (!user || !hasRoleAccess(user.role, "tripper")) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const formData = await request.formData();
     const file = formData.get("file");
     if (!file || !(file instanceof File)) {
       return NextResponse.json({ error: "No file" }, { status: 400 });
     }
 
-    const rawPostId = formData.get("postId");
-    const postId =
-      typeof rawPostId === "string" && /^[a-zA-Z0-9_-]{1,64}$/.test(rawPostId)
-        ? rawPostId
-        : null;
-
     const rawExt = file.name.split(".").pop() ?? "bin";
     const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8) || "bin";
-    const keySegment = postId
-      ? `${session.user.id}/${postId}`
-      : session.user.id;
-    const key = `blog/${keySegment}/${crypto.randomUUID()}.${ext}`;
+    const key = `avatars/${session.user.id}/${crypto.randomUUID()}.${ext}`;
 
     const arrayBuffer = await file.arrayBuffer();
     const contentType = file.type || "application/octet-stream";
 
     const store = getBlobStore();
-    await store.set(key, arrayBuffer, {
-      metadata: { contentType },
+    await store.set(key, arrayBuffer, { metadata: { contentType } });
+
+    const avatarUrl = `${request.nextUrl.origin}/api/user/avatar?key=${encodeURIComponent(key)}`;
+
+    await prisma.user.update({
+      data: { avatarUrl },
+      where: { id: session.user.id },
     });
 
-    const location = `${request.nextUrl.origin}/api/tripper/blog-media?key=${encodeURIComponent(key)}`;
-    return NextResponse.json({ location });
+    return NextResponse.json({ avatarUrl });
   } catch (error) {
-    console.error("[blog-media] POST", error);
+    console.error("[user-avatar] POST", error);
     return NextResponse.json(
       { error: "Blob storage unavailable" },
       { status: 503 },

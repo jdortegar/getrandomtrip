@@ -11,4 +11,5 @@ export interface UserProfileMe {
   interests: string[];
   dislikes: string[];
   role: string;
+  avatarUrl?: string | null;
 }
