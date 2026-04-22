@@ -882,6 +882,8 @@ export interface MarketingDictionary {
       preferencesUpdated: string;
       profileUpdated: string;
       saveError: string;
+      avatarUploadError: string;
+      avatarUploadSuccess: string;
     };
     travelerTypes: {
       couple: string;
