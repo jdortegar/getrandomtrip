@@ -32,6 +32,7 @@ export default function JourneyContentNavigation({
   userBadgeLabels,
 }: JourneyContentNavigationProps) {
   const searchParams = useSearchParams();
+  const activeTabIndex = tabs.findIndex((item) => item.id === activeTab);
 
   const isTabComplete = (tabId: string): boolean => {
     const travelType = searchParams.get("travelType");
@@ -83,6 +84,7 @@ export default function JourneyContentNavigation({
           <div className="flex items-center justify-center gap-10 overflow-x-auto">
             {tabs.map((tab, index) => {
               const isActive = tab.id === activeTab;
+              const isClickable = index <= activeTabIndex;
               const stepNumber = index + 1;
               const isCompleted = isTabComplete(tab.id);
 
@@ -95,10 +97,12 @@ export default function JourneyContentNavigation({
                       {
                         "border-light-blue bg-light-blue text-white":
                           isActive || isCompleted,
-                        "border-gray-300 bg-gray-100 text-gray-400":
+                        "border-gray-300 bg-gray-100 text-gray-400 opacity-60":
                           !isActive && !isCompleted,
+                        "cursor-not-allowed": !isClickable,
                       },
                     )}
+                    disabled={!isClickable}
                     onClick={() => onTabChange(tab.id)}
                     type="button"
                   >
@@ -122,12 +126,15 @@ export default function JourneyContentNavigation({
                   {/* Text Label */}
                   <button
                     className={cn(
-                      "text-sm font-medium transition-colors whitespace-nowrap cursor-pointer",
+                      "text-sm font-medium transition-colors whitespace-nowrap",
                       {
                         "text-gray-900": isActive,
                         "text-gray-500 hover:text-gray-700": !isActive,
+                        "cursor-not-allowed opacity-60": !isClickable,
+                        "cursor-pointer": isClickable,
                       },
                     )}
+                    disabled={!isClickable}
                     onClick={() => onTabChange(tab.id)}
                     type="button"
                   >

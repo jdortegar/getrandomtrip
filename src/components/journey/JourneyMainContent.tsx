@@ -179,6 +179,7 @@ export default function JourneyMainContent({
     travelType: url.travelType,
     experience: url.experience,
     excuse: url.excuse,
+    refineDetails: url.refineDetails,
     hasExcuseStep,
     effectiveOriginCountry: draftDetails.effectiveOriginCountry,
     effectiveOriginCity: draftDetails.effectiveOriginCity,

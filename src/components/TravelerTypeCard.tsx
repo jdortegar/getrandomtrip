@@ -67,7 +67,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   return (
     <T
       className={cn(
-        "@container block duration-300 group origin-center relative transition-all py-3",
+        "@container block group origin-center relative  py-3",
         fill && "h-full w-full",
         className,
         disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
@@ -85,7 +85,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       )}
       <div
         className={cn(
-          "relative rounded-2xl overflow-hidden border-2",
+          "relative rounded-2xl overflow-hidden border-4 transition-all duration-300 border-transparent",
           fill && "h-full w-full",
           selected ? "border-[#172C36]" : "border-transparent",
         )}

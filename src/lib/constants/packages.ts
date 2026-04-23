@@ -1,5 +1,11 @@
 // src/lib/constants/packages.ts
 
+import { getExcusesByTravelerType } from '@/lib/data/shared/excuses';
+
+export function getExcuseOptionsForType(type: string): { value: string; label: string }[] {
+  return getExcusesByTravelerType(type).map((e) => ({ value: e.key, label: e.title }));
+}
+
 export const PACKAGE_TYPES = [
   { value: 'couple', label: 'Pareja (BOND©)' },
   { value: 'family', label: 'Familia (KIN©)' },
@@ -61,60 +67,6 @@ export const TIME_PREFERENCES = [
   { value: 'afternoon', label: 'Tarde' },
   { value: 'night', label: 'Noche' },
 ] as const;
-
-export const EXCUSE_KEYS_BY_TYPE: Record<string, string[]> = {
-  couple: [
-    'Escapada Romántica',
-    'Dúo de Aventura',
-    'Foodie Lovers',
-    'Cultura & Tradición',
-    'Wellness Retreat',
-    'Celebraciones',
-    'Playa & Dunas',
-    'Escapada Urbana',
-  ],
-  solo: [
-    'Get Lost',
-    'Búsqueda Interior',
-    'Aventura & Desafío',
-    'Exploración Cultural',
-    'Fotografía & Narrativa Visual',
-    'Literatura Arte & Talleres Locales',
-    'Música & Sonidos',
-    'Tribe Encounters',
-  ],
-  family: [
-    'Aventura en familia',
-    'Naturaleza & fauna',
-    'Cultura & tradiciones',
-    'Playas & dunas',
-    'Graduaciones & celebraciones',
-    'Escapadas Madre-hij@ / Padre-hij@',
-  ],
-  honeymoon: [],
-  paws: [
-    'Senderos & Naturaleza',
-    'Playas Dog-Friendly',
-    'Ciudades Pet Lovers',
-    'Aventura Outdoor',
-    'Relax & Bienestar',
-    'Escapadas Gastronómicas',
-    'Trips Rurales & Granja',
-    'Dog Events & Comunidades',
-  ],
-  group: [
-    'Narradores Visuales',
-    'Yoga & Bienestar',
-    'Religioso o Espiritual',
-    'Gastronómico',
-    'Historias & Fantasía',
-    'Naturaleza & Aventura',
-    'Amigos',
-    'Negocios',
-    'Estudiantes',
-    'Música & Festivales',
-  ],
-};
 
 export const MAX_NIGHTS_BY_LEVEL: Record<string, number | null> = {
   'essenza': 2,

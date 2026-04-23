@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/Button";
 import {
-  BLOG_EXCUSE_OPTIONS,
   BLOG_TRAVEL_TYPE_OPTIONS,
 } from "@/lib/constants/blog-filters";
+import { getExcusesByTravelerType } from "@/lib/data/shared/excuses";
 import type { TripperBlogComposerDict } from "@/lib/types/dictionary";
 import type { BlogPost } from "@/types/blog";
 
@@ -52,6 +52,11 @@ export function BlogComposerSidebar({
   const selectClassName =
     "mb-4 w-full rounded-lg border border-neutral-300 p-2 text-sm text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500";
 
+  const excuseOptions = getExcusesByTravelerType(travelType).map((excuse) => ({
+    key: excuse.key,
+    label: excuse.title,
+  }));
+
   const showPreview = Boolean(postId && postId !== "new");
 
   return (
@@ -94,7 +99,7 @@ export function BlogComposerSidebar({
           value={excuseKey}
         >
           <option value="">{copy.audienceUnsetLabel}</option>
-          {BLOG_EXCUSE_OPTIONS.map((opt) => (
+          {excuseOptions.map((opt) => (
             <option key={opt.key} value={opt.key}>
               {opt.label}
             </option>

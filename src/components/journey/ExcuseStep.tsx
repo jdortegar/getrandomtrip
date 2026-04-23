@@ -140,35 +140,12 @@ export default function ExcuseStep({
               </p>
 
               {refineDetailsOptions.length > 0 ? (
-                <>
-                  <RefineDetailsCarousel
-                    itemsPerView={3}
-                    onSelect={onSelectRefineDetails}
-                    options={refineDetailsOptions}
-                    selectedOptions={refineDetails}
-                  />
-                  {/* <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-                    <button
-                      className="text-gray-500 text-sm font-medium underline hover:no-underline disabled:opacity-50"
-                      onClick={onClearRefineDetails}
-                      type="button"
-                    >
-                      {labels.clearAll}
-                    </button>
-                    <Button
-                      className="text-sm font-normal normal-case"
-                      onClick={() => {
-                        if (onTabChange) onTabChange('details');
-                        onAccordionValueChange('origin');
-                      }}
-                      size="md"
-                      type="button"
-                      variant="default"
-                    >
-                      {labels.next}
-                    </Button>
-                  </div> */}
-                </>
+                <RefineDetailsCarousel
+                  itemsPerView={3}
+                  onSelect={onSelectRefineDetails}
+                  options={refineDetailsOptions}
+                  selectedOptions={refineDetails}
+                />
               ) : (
                 <p className="py-4 text-center text-gray-500">
                   {labels.refineDetailsPlaceholder}

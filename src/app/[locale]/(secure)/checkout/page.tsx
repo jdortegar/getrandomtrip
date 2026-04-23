@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import type { ReactNode } from "react";
 import { Suspense, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Calendar, Loader2, MapPin, Sparkle, X } from "lucide-react";
+import { Calendar, Loader2, MapPin, X } from "lucide-react";
 
-import { CheckoutIconValueCard } from "@/components/app/checkout/CheckoutIconValueCard";
-import { CheckoutTravelersSummarySection } from "@/components/app/checkout/CheckoutTravelersSummarySection";
+import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
+import {
+  CheckoutTravelDetailsCard,
+  type CheckoutIconDetailRow,
+} from "@/components/app/checkout/CheckoutTravelDetailsCard";
 import ChatFab from "@/components/chrome/ChatFab";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
-import Img from "@/components/common/Img";
 import {
   TRANSPORT_ICONS,
   TRANSPORT_OPTIONS,
@@ -25,7 +26,6 @@ import {
   getBasePricePerPerson,
   getPricePerPerson,
 } from "@/lib/data/traveler-types";
-import { TRAVELER_TYPE_LABELS } from "@/lib/data/journey-labels";
 import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import { formatUSD } from "@/lib/format";
 import {
@@ -42,8 +42,8 @@ import {
   parsePaxDetails,
 } from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
+import type { CheckoutFormFields, CheckoutTripFromApi } from "@/types/Checkout";
 import { Button } from "@/components/ui/Button";
-import { FormField } from "@/components/ui/FormField";
 import { usePayment } from "@/hooks/usePayment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "react-toastify";
@@ -126,51 +126,7 @@ function normalizeTripType(type: string): string {
   return type.trim().toLowerCase();
 }
 
-/** Trip from API (GET /api/trips list item). */
-interface TripFromApi {
-  id: string;
-  type: string;
-  level: string;
-  originCountry: string;
-  originCity: string;
-  startDate: string | null;
-  endDate: string | null;
-  nights: number;
-  pax: number;
-  paxDetails?: unknown;
-  transport: string;
-  climate: string;
-  maxTravelTime: string;
-  departPref: string;
-  arrivePref: string;
-  accommodationType?: string;
-  avoidDestinations: string[];
-  addons: Array<{ id: string; qty: number }> | null;
-  status: string;
-  updatedAt: string;
-}
-
-interface CheckoutIconDetailRow {
-  className?: string;
-  icon?: ReactNode;
-  id: string;
-  label: ReactNode;
-  value: ReactNode;
-  valueLayout?: "chips" | "default";
-}
-
-interface FormFields {
-  city: string;
-  country: string;
-  idDocument: string;
-  name: string;
-  phone: string;
-  state: string;
-  street: string;
-  zipCode: string;
-}
-
-function logisticsFromTrip(trip: TripFromApi, pax: number): Logistics {
+function logisticsFromTrip(trip: CheckoutTripFromApi, pax: number): Logistics {
   return {
     city: trip.originCity,
     country: trip.originCountry,
@@ -181,7 +137,7 @@ function logisticsFromTrip(trip: TripFromApi, pax: number): Logistics {
   };
 }
 
-function filtersFromTrip(trip: TripFromApi): Filters {
+function filtersFromTrip(trip: CheckoutTripFromApi): Filters {
   return {
     accommodationType: trip.accommodationType ?? "any",
     arrivePref: trip.arrivePref,
@@ -207,10 +163,13 @@ function CheckoutContent() {
 
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [paxDetails, setPaxDetails] = useState(DEFAULT_PAX_DETAILS);
-  const [trip, setTrip] = useState<TripFromApi | null>(null);
+  const [trip, setTrip] = useState<CheckoutTripFromApi | null>(null);
   const [tripError, setTripError] = useState<string | null>(null);
   const [tripLoading, setTripLoading] = useState(true);
-  const [formData, setFormData] = useState<FormFields>({
+  const [appliedPromocode, setAppliedPromocode] = useState<string | null>(null);
+  const [promocode, setPromocode] = useState("");
+  const [showPromocodeInput, setShowPromocodeInput] = useState(false);
+  const [formData, setFormData] = useState<CheckoutFormFields>({
     city: "",
     country: "",
     idDocument: "",
@@ -239,8 +198,16 @@ function CheckoutContent() {
     }
   }, [session, status]);
 
-  function handleChange(field: keyof FormFields, value: string) {
+  function handleChange(field: keyof CheckoutFormFields, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleApplyPromocode() {
+    const normalizedPromocode = promocode.trim();
+    if (!normalizedPromocode) return;
+    setAppliedPromocode(normalizedPromocode.toUpperCase());
+    setPromocode("");
+    setShowPromocodeInput(false);
   }
 
   useEffect(() => {
@@ -271,7 +238,7 @@ function CheckoutContent() {
           setTrip(null);
           return;
         }
-        const trips = (data.trips ?? []) as TripFromApi[];
+        const trips = (data.trips ?? []) as CheckoutTripFromApi[];
         const preferredId = tripIdParam?.trim();
         const byPreferredId = preferredId
           ? trips.find((t) => t.id === preferredId)
@@ -864,298 +831,48 @@ function CheckoutContent() {
 
       <div className="container mx-auto px-4 py-12 md:px-20">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
-          <div
-            className={cn(
-              "lg:col-span-1 flex gap-4 bg-white p-5 rounded-2xl shadow-md flex-col",
-              "ring-1 ring-gray-100 lg:sticky lg:top-4",
-            )}
-          >
-            <form className="space-y-8" onSubmit={handleSubmit}>
-              <h2 className="mb-4 text-4xl font-bold font-barlow-condensed uppercase ">
-                {checkoutCopy.contactTitle}
-              </h2>
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <FormField
-                    className="disabled:cursor-not-allowed disabled:opacity-80"
-                    disabled
-                    id="email"
-                    label={checkoutCopy.contactEmailLabel}
-                    readOnly
-                    type="email"
-                    value={session?.user?.email || ""}
-                  />
-                  <p className="mt-1 text-gray-500 text-base">
-                    {checkoutCopy.contactEmailHelper}
-                  </p>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    id="name"
-                    label={checkoutCopy.contactNameLabel}
-                    onChange={(e) => handleChange("name", e.target.value)}
-                    required
-                    type="text"
-                    value={formData.name}
-                  />
-                  <FormField
-                    id="phone"
-                    label={checkoutCopy.contactPhoneLabel}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                    required
-                    type="tel"
-                    value={formData.phone}
-                  />
-                  <div className="sm:col-span-2">
-                    <FormField
-                      id="id-document"
-                      label={checkoutCopy.contactIdDocumentLabel}
-                      onChange={(e) =>
-                        handleChange("idDocument", e.target.value)
-                      }
-                      required
-                      type="text"
-                      value={formData.idDocument}
-                    />
-                  </div>
-                </div>
+          <CheckoutContactCard
+            checkoutCopy={checkoutCopy}
+            formData={formData}
+            isProcessing={isProcessing}
+            onBack={() => router.back()}
+            onFieldChange={handleChange}
+            onSubmit={handleSubmit}
+            sessionEmail={session?.user?.email || ""}
+            summary={summary}
+          />
 
-                <FormField
-                  id="street"
-                  label={checkoutCopy.contactStreetLabel}
-                  onChange={(e) => handleChange("street", e.target.value)}
-                  required
-                  type="text"
-                  value={formData.street}
-                />
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    id="city"
-                    label={checkoutCopy.contactCityLabel}
-                    onChange={(e) => handleChange("city", e.target.value)}
-                    required
-                    type="text"
-                    value={formData.city}
-                  />
-                  <FormField
-                    id="state"
-                    label={checkoutCopy.contactStateLabel}
-                    onChange={(e) => handleChange("state", e.target.value)}
-                    required
-                    type="text"
-                    value={formData.state}
-                  />
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    id="zipCode"
-                    label={checkoutCopy.contactZipCodeLabel}
-                    onChange={(e) => handleChange("zipCode", e.target.value)}
-                    required
-                    type="text"
-                    value={formData.zipCode}
-                  />
-                  <FormField
-                    id="country"
-                    label={checkoutCopy.contactCountryLabel}
-                    onChange={(e) => handleChange("country", e.target.value)}
-                    required
-                    type="text"
-                    value={formData.country}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={cn(
-                  "mt-8 flex w-full gap-4 border-gray-200 border-t pt-6",
-                )}
-              >
-                <Button
-                  className="min-w-0 flex-1 text-sm font-normal normal-case"
-                  disabled={isProcessing}
-                  onClick={() => router.back()}
-                  size="lg"
-                  type="button"
-                  variant="ghost"
-                >
-                  {checkoutCopy.volverButton}
-                </Button>
-                <Button
-                  className="min-w-0 flex-1 "
-                  disabled={isProcessing}
-                  size="sm"
-                  type="submit"
-                  variant="default"
-                >
-                  {isProcessing
-                    ? checkoutCopy.payProcessingButton
-                    : checkoutCopy.payButton}
-                </Button>
-              </div>
-            </form>
-            <div className="mt-6 rounded-lg bg-[#E8F4FC] p-4 text-sm">
-              <div className="mb-2 flex items-center gap-2">
-                <Sparkle
-                  aria-hidden
-                  className="h-4 w-4 shrink-0 fill-[#5B7A8C] text-[#5B7A8C]"
-                />
-                <span className="font-bold text-base text-gray-900">
-                  {summary?.importantTitle}
-                </span>
-              </div>
-              <ul className="list-disc list-outside space-y-1 pl-4 font-normal text-gray-900 text-sm">
-                <li>{summary?.importantNote1}</li>
-                <li>{summary?.importantNote2}</li>
-                <li>{summary?.importantNote3}</li>
-                <li>{summary?.importantNote4}</li>
-              </ul>
-            </div>
-          </div>
-
-          <div
-            className={cn(
-              "lg:col-span-1 flex gap-4 bg-white p-5 rounded-2xl shadow-md flex-col",
-              "ring-1 ring-gray-100",
-            )}
-          >
-            <h2 className="mb-4 text-4xl font-bold font-barlow-condensed uppercase ">
-              {checkoutCopy.travelDetailsTitle}
-            </h2>
-            <div className="flex gap-4">
-              <div className="h-64 w-48 shrink-0 overflow-hidden rounded-2xl">
-                {selectedTravelTypeInfo?.image ? (
-                  <Img
-                    alt={selectedTravelTypeInfo?.label}
-                    className="h-full w-full object-cover"
-                    height={128}
-                    src={selectedTravelTypeInfo.image}
-                    width={96}
-                  />
-                ) : null}
-              </div>
-
-              <div className="flex flex-col justify-center gap-3">
-                <div>
-                  <p className="font-barlow text-2xl font-bold">
-                    <span>{summary?.travelTypeSection}</span>
-                    <span className="px-1.5">
-                      {checkoutCopy.travelTypeTitleSeparator}
-                    </span>
-                    <span className=" text-sky-600">
-                      {selectedTravelTypeInfo?.label}
-                    </span>
-                  </p>
-                  <p className="font-barlow text-lg font-normal text-gray-500">
-                    {summary?.experienceSection}{" "}
-                    <span className="font-bold">
-                      {selectedExperienceInfo?.label}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500 text-base">
-                    {checkoutCopy.summaryHeroPriceCaption}
-                  </p>
-                  <p className="font-barlow-condensed font-bold text-gray-900 text-3xl">
-                    {usd(pricePerPerson)}
-                  </p>
-                </div>
-                {ratingFormatted != null ? (
-                  <p className="text-base font-normal text-gray-500">
-                    {summary?.favoriteAmongTravelers}
-                    {ratingFormatted}
-                    {selectedTravelTypeInfo?.reviews != null &&
-                      ` (${selectedTravelTypeInfo.reviews})`}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-            <p className="mt-2 font-barlow text-gray-500 text-lg">
-              {checkoutCopy.itemsDescription}
-            </p>
-
-            <div className=" grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {checkoutIconDetailRows.map((row) => (
-                <CheckoutIconValueCard
-                  className={row.className}
-                  icon={row.icon}
-                  key={row.id}
-                  title={row.label}
-                  value={row.value}
-                  valueLayout={row.valueLayout}
-                />
-              ))}
-
-              <CheckoutTravelersSummarySection
-                checkoutCopy={checkoutCopy}
-                onSaveTravelers={persistCheckoutTravelers}
-                partyEditable={isTravelersPartyEditable(travelType)}
-                paxDetails={paxDetails}
-                tileClassName={checkoutItemTileClass}
-                tileLabelClassName={checkoutItemTileLabelClass}
-              />
-            </div>
-
-            <div className="border-gray-200 border-t mt-6 pt-4">
-              <div className="flex gap-4 items-start justify-between">
-                <p className="font-barlow font-bold text-lg text-gray-900">
-                  {checkoutCopy.summaryHeroPriceCaption}
-                </p>
-                <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
-                  {usd(basePerPax)}
-                </p>
-              </div>
-
-              <div className="mt-4 flex gap-4 items-start justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="font-barlow font-bold text-base text-gray-900">
-                    {checkoutCopy.filterFeeLabel}
-                  </p>
-                  <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
-                    {filterFeeDescription}
-                  </p>
-                </div>
-                <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
-                  {usd(filtersPerPax)}
-                </p>
-              </div>
-
-              {addonsPerPaxCombined > 0 ? (
-                <div className="mt-4 flex gap-4 items-start justify-between">
-                  <p className="font-barlow font-bold text-lg text-gray-900">
-                    {checkoutCopy.addonsPerPersonLabel}
-                  </p>
-                  <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
-                    {usd(addonsPerPaxCombined)}
-                  </p>
-                </div>
-              ) : null}
-
-              <div className="border-gray-200 border-t mt-4 flex gap-4 items-start justify-between pt-3">
-                <p className="font-barlow font-bold text-lg text-gray-900">
-                  {checkoutCopy.subtotalPerPersonLabel}
-                </p>
-                <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
-                  {usd(totalPerPax)}
-                </p>
-              </div>
-
-              <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
-                <div className="min-w-0 flex-1">
-                  <p className="font-barlow-condensed font-bold text-3xl text-gray-900 flex gap-1 items-end">
-                    {checkoutCopy.totalLabel}
-                    <span className="mt-1 font-barlow font-normal text-gray-600 text-lg">
-                      {filterFeePaxLine}
-                    </span>
-                  </p>
-                </div>
-                <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-gray-900">
-                  {usd(totalTrip)}
-                </p>
-              </div>
-            </div>
-          </div>
+          <CheckoutTravelDetailsCard
+            addonsPerPaxCombined={addonsPerPaxCombined}
+            appliedPromocode={appliedPromocode}
+            basePerPax={basePerPax}
+            checkoutCopy={checkoutCopy}
+            checkoutIconDetailRows={checkoutIconDetailRows}
+            checkoutItemTileClass={checkoutItemTileClass}
+            checkoutItemTileLabelClass={checkoutItemTileLabelClass}
+            filterFeeDescription={filterFeeDescription}
+            filterFeePaxLine={filterFeePaxLine}
+            filtersPerPax={filtersPerPax}
+            onApplyPromocode={handleApplyPromocode}
+            onPromocodeChange={setPromocode}
+            onRemovePromocode={() => setAppliedPromocode(null)}
+            onSaveTravelers={persistCheckoutTravelers}
+            onTogglePromocodeInput={() =>
+              setShowPromocodeInput((previous) => !previous)
+            }
+            partyEditable={isTravelersPartyEditable(travelType)}
+            paxDetails={paxDetails}
+            pricePerPerson={pricePerPerson}
+            promocode={promocode}
+            ratingFormatted={ratingFormatted}
+            selectedExperienceLabel={selectedExperienceInfo?.label}
+            selectedTravelTypeInfo={selectedTravelTypeInfo}
+            showPromocodeInput={showPromocodeInput}
+            summary={summary}
+            totalPerPax={totalPerPax}
+            totalTrip={totalTrip}
+            usd={usd}
+          />
         </div>
 
         <ChatFab />

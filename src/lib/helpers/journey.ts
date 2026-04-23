@@ -250,6 +250,7 @@ export interface JourneyStepValues {
   travelType: string | undefined;
   experience: string | undefined;
   excuse: string | undefined;
+  refineDetails: string[];
   hasExcuseStep: boolean;
   effectiveOriginCountry: string;
   effectiveOriginCity: string;
@@ -278,7 +279,10 @@ export function isStepComplete(
       return Boolean(v.travelType && v.experience);
     case 'excuse':
       return Boolean(
-        v.travelType && v.experience && (v.excuse || !v.hasExcuseStep),
+        v.travelType &&
+          v.experience &&
+          (v.excuse || !v.hasExcuseStep) &&
+          (!v.hasExcuseStep || v.refineDetails.length > 0),
       );
     case 'details':
       return Boolean(
@@ -299,6 +303,7 @@ export function checkAllComplete(v: JourneyStepValues): boolean {
     v.travelType &&
       v.experience &&
       (v.excuse || !v.hasExcuseStep) &&
+      (!v.hasExcuseStep || v.refineDetails.length > 0) &&
       v.effectiveOriginCountry &&
       v.effectiveOriginCity &&
       v.effectiveStartDate &&

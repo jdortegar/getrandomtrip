@@ -198,7 +198,6 @@ export function JourneyDetailsStep({
               <CitySelector
                 countryValue={originCountry}
                 onChange={onOriginCityChange}
-                onOptionSelect={() => onOpenSection('dates')}
                 placeholder={labels.cityPlaceholder}
                 size="lg"
                 value={originCity}
@@ -216,7 +215,6 @@ export function JourneyDetailsStep({
             labels={labelsProp?.datesPicker}
             maxNights={maxNights}
             nights={nights}
-            onConfirm={() => onOpenSection('transport')}
             onNightsChange={onNightsChange}
             onRangeChange={onRangeChange}
             onStartDateChange={onStartDateChange}
