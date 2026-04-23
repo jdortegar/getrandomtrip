@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '../ui/Button';
+import Image from "next/image";
+import React from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/Button";
+import { Check } from "lucide-react";
 
 interface ExcuseCardProps {
   className?: string;
@@ -17,7 +18,7 @@ interface ExcuseCardProps {
 
 export default function ExcuseCard({
   className,
-  ctaLabel = 'Elegir y continuar',
+  ctaLabel = "Elegir y continuar",
   description,
   imageUrl,
   onClick,
@@ -25,17 +26,25 @@ export default function ExcuseCard({
   title,
 }: ExcuseCardProps) {
   return (
-    <div
+    <button
       className={cn(
-        '@container group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center aspect-[293.95/347.82] w-full',
+        "@container group relative block origin-center aspect-[293.95/347.82] w-full py-3 cursor-pointer",
         className,
-        selected && 'ring-4 ring-yellow-400',
       )}
+      onClick={onClick}
     >
-      <button
-        className="h-full w-full text-left"
-        onClick={onClick}
-        type="button"
+      {selected && (
+        <div className="absolute -right-[9.8px] top-0 z-30 @[250px]:-right-[14px]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
+            <Check className="h-5 w-5 text-white" strokeWidth={3} />
+          </div>
+        </div>
+      )}
+      <div
+        className={cn(
+          "relative h-full w-full text-left overflow-hidden rounded-2xl transition-all duration-300 border-4 ",
+          selected ? "border-[#172C36]" : "border-transparent",
+        )}
       >
         <Image
           alt={title}
@@ -43,7 +52,7 @@ export default function ExcuseCard({
           fill
           priority
           src={imageUrl}
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: "cover" }}
         />
         <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-t from-black/75 to-transparent" />
 
@@ -57,21 +66,12 @@ export default function ExcuseCard({
               {description}
             </p>
           </div>
-          {/* <button
-            className="px-6 py-3 border-2 border-white rounded-lg font-semibold text-white hover:bg-white/10 transition-colors mt-auto"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }}
-            type="button"
-          >
-            {ctaLabel}
-          </button> */}
+
           <Button variant="outline" size="sm" onClick={onClick}>
             {ctaLabel}
           </Button>
         </div>
-      </button>
-    </div>
+      </div>
+    </button>
   );
 }

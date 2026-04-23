@@ -123,11 +123,6 @@
     },
     "exploration": {
       "buttonTrippers": "EXPLORE TRIPPERS",
-      "carousel": {
-        "ariaLabelNext": "Next slide",
-        "ariaLabelPrev": "Previous slide",
-        "ariaLabelSlide": "Go to slide {n}"
-      },
       "comingSoonText": "Coming soon! You'll be able to explore this section.",
       "eyebrow": "Shape your adventure",
       "subtitle": "Find the perfect starting point for your next trip.",

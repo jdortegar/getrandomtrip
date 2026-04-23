@@ -260,11 +260,6 @@ export interface MarketingDictionary {
     };
     exploration: {
       buttonTrippers: string;
-      carousel: {
-        ariaLabelNext: string;
-        ariaLabelPrev: string;
-        ariaLabelSlide: string;
-      };
       comingSoonText: string;
       eyebrow: string;
       subtitle: string;

@@ -129,34 +129,44 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
             .replace('{label}', option.label)
             .replace('{position}', String(index + 1));
           return (
-            <div
-              aria-label={ariaLabel}
-              className={cn(
-                'flex min-w-[100px] cursor-grab flex-col items-center justify-center gap-2 rounded-xl border-2 py-4 px-5 transition-colors active:cursor-grabbing',
-                isFirst
-                  ? 'border-gray-800 bg-gray-800 text-white'
-                  : 'border-gray-300 bg-white text-gray-600',
-                isDragging && 'opacity-50',
-                isDragOver && 'ring-2 ring-primary ring-offset-2',
-              )}
-              draggable
-              key={id}
-              onDragEnd={handleDragEnd}
-              onDragLeave={handleDragLeave}
-              onDragOver={(e) => handleDragOver(e, id)}
-              onDragStart={(e) => handleDragStart(e, id)}
-              onDrop={(e) => handleDrop(e, id)}
-              role="button"
-              tabIndex={0}
-            >
-              <Icon
-                className={isFirst ? 'text-white' : 'text-gray-500'}
-                size={36}
-              />
-
-              <span className="text-center text-sm font-medium">
-                {option.label}
-              </span>
+            <div className="flex min-w-[100px] flex-col items-center gap-2" key={id}>
+              <div
+                className={cn(
+                  'flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 px-5 py-4 transition-colors',
+                  isFirst
+                    ? 'border-gray-800 bg-gray-800 text-white'
+                    : 'border-gray-300 bg-white text-gray-600',
+                )}
+              >
+                <Icon
+                  className={isFirst ? 'text-white' : 'text-gray-500'}
+                  size={36}
+                />
+                <span className="text-center text-sm font-medium">
+                  {option.label}
+                </span>
+              </div>
+              <div
+                aria-label={ariaLabel}
+                className={cn(
+                  'flex h-9 w-9 cursor-grab items-center justify-center rounded-md border-2 bg-white text-sm font-semibold text-gray-700 transition-colors active:cursor-grabbing',
+                  isDragging && 'opacity-50',
+                  isDragOver
+                    ? 'border-primary ring-2 ring-primary ring-offset-2'
+                    : 'border-gray-300',
+                )}
+                draggable
+                onDragEnd={handleDragEnd}
+                onDragLeave={handleDragLeave}
+                onDragOver={(e) => handleDragOver(e, id)}
+                onDragStart={(e) => handleDragStart(e, id)}
+                onDrop={(e) => handleDrop(e, id)}
+                role="button"
+                tabIndex={0}
+                title={ariaLabel}
+              >
+                {index + 1}
+              </div>
             </div>
           );
         })}

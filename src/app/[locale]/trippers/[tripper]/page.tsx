@@ -151,7 +151,6 @@ export default async function Page({
         availableTypes={availableTypesFromPackages}
         tripperName={tripperData.name}
         tripperSlug={tripperData.tripperSlug}
-        hideOverflow={false}
       />
 
       {/* Blog / inspiración */}

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { Accordion } from '@/components/ui/accordion';
-import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
-import { TravelerTypesCarousel } from '@/components/landing/exploration/TravelerTypesCarousel';
-import TypePlanner from '@/components/by-type/TypePlanner';
-import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
-import { getPlannerContentForType } from '@/lib/utils/experiencesData';
+import { Accordion } from "@/components/ui/accordion";
+import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
+import { TravelerTypesCarousel } from "@/components/landing/exploration/TravelerTypesCarousel";
+import TypePlanner from "@/components/by-type/TypePlanner";
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 
 type TravelerTypeCardOption = {
   description: string;
@@ -22,7 +22,6 @@ interface BudgetStepLabels {
 interface BudgetStepProps {
   accordionValue: string;
   experienceContent: string;
-  fullViewportWidth?: boolean;
   handleExperienceSelect: (levelId: string) => void;
   handleTravelTypeSelect: (slug: string) => void;
   labels: BudgetStepLabels;
@@ -50,7 +49,6 @@ export default function BudgetStep({
   selectedTravelType,
   travelerType,
   travelTypeContent,
-  fullViewportWidth = false,
 }: BudgetStepProps) {
   const hasTravelType = Boolean(travelerType);
   const plannerContent = hasTravelType
@@ -72,12 +70,9 @@ export default function BudgetStep({
           value="travel-type"
         >
           <TravelerTypesCarousel
-            fullViewportWidth={fullViewportWidth}
-            itemsPerView={3}
             localizedTravelerTypes={localizedTravelerTypes}
             onSelect={handleTravelTypeSelect}
             selectedTravelType={selectedTravelType}
-            showArrows={false}
           />
         </JourneyDropdown>
 
@@ -88,17 +83,16 @@ export default function BudgetStep({
             value="experience"
           >
             <div className="space-y-4">
-              <p className="text-gray-600">{labels.experienceStepDescription}</p>
+              <p className="text-gray-600">
+                {labels.experienceStepDescription}
+              </p>
               <TypePlanner
                 compact
                 content={plannerContent}
-                fullViewportWidth={false}
-                gap={12}
                 itemsPerView={2}
                 minimizeAllFeatures={minimizeAllFeatures}
                 onSelect={handleExperienceSelect}
                 selectedLevel={selectedExperienceLevel}
-                showArrows={false}
                 type={travelerType as TravelerTypeSlug}
               />
             </div>
@@ -108,4 +102,3 @@ export default function BudgetStep({
     </div>
   );
 }
-
