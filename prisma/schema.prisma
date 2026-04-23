@@ -159,6 +159,14 @@ model Package {
   basePriceUsd Float  @default(0)
   displayPrice String @default("")
 
+  // Compatibility matching (mirrors TripRequest filter fields)
+  accommodationType String @default("any")
+  transport         String @default("any")
+  climate           String @default("any")
+  maxTravelTime     String @default("no-limit")
+  departPref        String @default("any")
+  arrivePref        String @default("any")
+
   // Visibility
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)
