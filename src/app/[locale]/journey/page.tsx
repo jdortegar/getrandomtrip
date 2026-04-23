@@ -72,12 +72,10 @@ function getInitialStepFromParams(params: URLSearchParams): {
   const transportOrder = params.get("transportOrder");
 
   if (!travelType) return { tabId: "budget", sectionId: "travel-type" };
-  if (!experience) return { tabId: "budget", sectionId: "experience" };
+  if (!experience) return { tabId: "budget", sectionId: "travel-type" };
   const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");
   if (hasExcuseStep && !excuse) return { tabId: "excuse", sectionId: "excuse" };
-  // Stay on excuse step (refine-details) until user clicks Next; card click must not advance
-  if (hasExcuseStep && excuse)
-    return { tabId: "excuse", sectionId: "refine-details" };
+  if (hasExcuseStep && excuse) return { tabId: "excuse", sectionId: "excuse" };
   if (!originCountry || !originCity)
     return { tabId: "details", sectionId: "origin" };
   if (!startDate || !nights) return { tabId: "details", sectionId: "dates" };
@@ -92,6 +90,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState("budget");
   const [openSectionId, setOpenSectionId] = useState("travel-type");
+  const hasSyncedJourneyStateFromUrl = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const resolvedLocale = hasLocale(locale) ? locale : "es";
@@ -120,17 +119,15 @@ function JourneyPageContent({ locale }: { locale?: string }) {
     saveJourneyDraftQueryString(draftId, journeyQuerySnapshot);
   }, [journeyQuerySnapshot]);
 
+  // Apply URL → tab/accordion once on load (e.g. shared link). In-flow URL updates from selections
+  // do not change tab or accordion; users advance with Continue, sidebar, or summary edit.
   useEffect(() => {
+    if (hasSyncedJourneyStateFromUrl.current) return;
     const { tabId, sectionId } = getInitialStepFromParams(searchParams);
     setActiveTab(tabId);
     setOpenSectionId(sectionId);
-    // Only re-sync when step-determining params change (not on every keystroke in origin/dates/transport)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- stepKey: only travelType, experience, excuse drive step
-  }, [
-    searchParams.get("travelType"),
-    searchParams.get("experience"),
-    searchParams.get("excuse"),
-  ]);
+    hasSyncedJourneyStateFromUrl.current = true;
+  }, [searchParams]);
 
   useEffect(() => {
     contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });

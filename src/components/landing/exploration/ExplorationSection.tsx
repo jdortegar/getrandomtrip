@@ -11,11 +11,6 @@ import { TravelerTypesCarousel } from './TravelerTypesCarousel';
 
 export interface ExplorationContent {
   buttonTrippers: string;
-  carousel: {
-    ariaLabelNext: string;
-    ariaLabelPrev: string;
-    ariaLabelSlide: string;
-  };
   comingSoonText: string;
   eyebrow: string;
   subtitle: string;
@@ -63,7 +58,6 @@ export function ExplorationSection({
 }: ExplorationSectionProps) {
   const {
     buttonTrippers: trippersButtonText,
-    carousel,
     comingSoonText,
     eyebrow,
     subtitle,
@@ -79,10 +73,6 @@ export function ExplorationSection({
       case 'byTraveller':
         return (
           <TravelerTypesCarousel
-            ariaLabelNext={carousel.ariaLabelNext}
-            ariaLabelPrev={carousel.ariaLabelPrev}
-            ariaLabelSlide={carousel.ariaLabelSlide}
-            hideOverflow={false}
             localizedTravelerTypes={localizedTravelerTypes}
           />
         );

@@ -8,14 +8,12 @@ interface TripperTravelerTypesSectionProps {
   availableTypes: string[];
   tripperName: string;
   tripperSlug: string | null;
-  hideOverflow?: boolean;
 }
 
 export function TripperTravelerTypesSection({
   availableTypes,
   tripperName,
   tripperSlug,
-  hideOverflow = false,
 }: TripperTravelerTypesSectionProps) {
   if (!availableTypes?.length) return null;
 
@@ -30,8 +28,6 @@ export function TripperTravelerTypesSection({
         availableTypes={availableTypes}
         tripperMode
         tripperSlug={tripperSlug ?? undefined}
-        itemsPerView={4}
-        hideOverflow={hideOverflow}
       />
     </Section>
   );

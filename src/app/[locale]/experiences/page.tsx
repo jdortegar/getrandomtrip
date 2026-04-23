@@ -51,8 +51,6 @@ export default function ExperiencesPage({
       >
         <div className="container mx-auto px-4 md:px-20">
           <TravelerTypesCarousel
-            fullViewportWidth
-            hideOverflow={false}
             localizedTravelerTypes={travelerTypes}
             onSelect={handleSelectTypeTraveler}
             selectedTravelType={selectedTypeTraveler}
@@ -62,7 +60,6 @@ export default function ExperiencesPage({
       <TypePlanner
         content={getPlannerContentForType(selectedTypeTraveler, locale)}
         itemsPerView={3}
-        hideOverflow={false} 
         type={selectedTypeTraveler}
       />
     </main>

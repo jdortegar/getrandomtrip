@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
@@ -24,6 +25,8 @@ interface LevelCardProps {
   featured?: boolean;
   level: Level;
   minimizeAllFeatures?: boolean;
+  /** When true, card click navigates to the CTA `href` instead of calling `onSelect`. */
+  navigateOnCardClick?: boolean;
   onSelect?: (levelId: string) => void;
   selected?: boolean;
   travelerType?: string;
@@ -47,12 +50,17 @@ export default function LevelCard({
   featured = false,
   level,
   minimizeAllFeatures = false,
+  navigateOnCardClick = false,
   onSelect,
   selected = false,
   travelerType,
   variant = 'light',
 }: LevelCardProps) {
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
+  const ctaHref = travelerType
+    ? `/journey?travelType=${travelerType}&experience=${level.id}`
+    : `/experiences/by-type/${level.id}`;
   const shouldMinimize = minimizeAllFeatures;
   const isDark = variant === 'dark';
   const textColor = isDark ? 'text-white' : 'text-gray-900';
@@ -81,9 +89,11 @@ export default function LevelCard({
     : level.features.length > 3;
 
   const handleClick = () => {
-    if (onSelect) {
-      onSelect(level.id);
+    if (navigateOnCardClick) {
+      router.push(ctaHref);
+      return;
     }
+    onSelect?.(level.id);
   };
 
   const handleExpandClick = (e: React.MouseEvent) => {
@@ -97,9 +107,9 @@ export default function LevelCard({
         bgColor,
         borderColor,
         featured && 'shadow-lg',
-        onSelect && 'cursor-pointer hover:shadow-xl',
+        (onSelect || navigateOnCardClick) && 'cursor-pointer hover:shadow-xl',
       )}
-      onClick={handleClick}
+      onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
       style={{ boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)' }}
     >
       {/* Featured Badge - Top Left */}
@@ -253,12 +263,9 @@ export default function LevelCard({
       <div className="mt-4 flex justify-center px-7 @[250px]:mt-6 @[250px]:px-10">
         <Button asChild variant="feature" size="sm">
           <Link
-            href={
-              travelerType
-                ? `/journey?travelType=${travelerType}&experience=${level.id}`
-                : `/experiences/by-type/${level.id}`
-            }
             className="uppercase"
+            href={ctaHref}
+            onClick={(e) => e.stopPropagation()}
           >
             {level.ctaLabel}
           </Link>

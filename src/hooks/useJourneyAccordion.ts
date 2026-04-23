@@ -14,7 +14,8 @@ export interface JourneyAccordionResult {
  * Supports both controlled mode (openSectionId + onOpenSection provided by parent)
  * and uncontrolled mode (internal state).
  *
- * Automatically opens the appropriate section when the active tab changes.
+ * Resolves invalid accordion state when the active **step** (tab) changes.
+ * Substep open/close is user-controlled; selection does not auto-advance substeps.
  */
 export function useJourneyAccordion(
   activeTab: string,
@@ -26,9 +27,8 @@ export function useJourneyAccordion(
   const accordionValue = isControlled ? (openSectionId ?? '') : internalAccordion;
   const setAccordionValue = isControlled ? onOpenSection! : setInternalAccordion;
 
-  // Auto-open the first section of each tab when the tab changes, or when the
-  // open section id does not belong to the current tab (e.g. after switching tabs).
-  // '' is valid: user collapsed all sections via header (collapsible accordions).
+  // When the step (tab) changes, or the open substep id is invalid for this step,
+  // align to a default substep. '' is valid: user may keep all substeps closed.
   useEffect(() => {
     if (activeTab === 'budget') {
       const valid =

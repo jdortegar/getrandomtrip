@@ -73,7 +73,7 @@ All user-facing routes live under `src/app/[locale]/` (i18n prefix: `es` or `en`
 | `/profile` / `/profile/edit` | User profile view / edit                 |
 | `/u/[handle]`                | Public tripper profile                   |
 | `/journey/*`                 | Trip booking flow                        |
-| `/experiences/*`            | Experience / package discovery flow     |
+| `/experiences/*`             | Experience / package discovery flow      |
 | `/blog`                      | Blog listing / articles                  |
 
 API routes live under `src/app/api/` and are not locale-prefixed.
@@ -158,3 +158,14 @@ MERCADOPAGO_TEST_ACCESS_TOKEN / TEST_PUBLIC_KEY
 - [ ] Responsive at ≥360px (mobile) and ≥1280px (desktop)
 - [ ] Accessibility: contrast AA compliant
 - [ ] Empty/error states handled with microcopy
+
+---
+
+## Skills
+
+Project-specific skills live in `.claude/skills/`. Invoke them with the `Skill` tool before starting the corresponding work.
+
+| Skill                | When to use                                                                 |
+| -------------------- | --------------------------------------------------------------------------- |
+| `create-component`   | Scaffolding any new component, page, or UI under `src/components/`          |
+| `refactor-component` | Refactoring or restyling an existing component — extract, migrate copy, fix layout |

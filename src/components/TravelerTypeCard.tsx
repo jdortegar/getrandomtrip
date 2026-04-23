@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import React from 'react';
+import Image from "next/image";
+import Link from "next/link";
+import { Check } from "lucide-react";
+import React from "react";
 
-import type { TravelerTypeLegacy } from '@/lib/utils/experiencesData';
-import { cn } from '@/lib/utils';
+import { ReviewBadge } from "@/components/ReviewBadge";
+import type { TravelerTypeLegacy } from "@/lib/utils/experiencesData";
+import { cn } from "@/lib/utils";
 
 interface TravelerTypeCardProps {
   className?: string;
@@ -17,6 +19,7 @@ interface TravelerTypeCardProps {
   fill?: boolean;
   height?: number;
   href?: string;
+  isComingSoon?: boolean;
   imageUrl?: string;
   onClick?: () => void;
   selected?: boolean;
@@ -26,6 +29,7 @@ interface TravelerTypeCardProps {
 
 const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   className,
+  isComingSoon = false,
   description: descriptionProp,
   disabled: disabledProp,
   fill = false,
@@ -38,9 +42,9 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   title: titleProp,
   width = 100,
 }) => {
-  const title = item?.title ?? titleProp ?? '';
-  const description = item?.description ?? descriptionProp ?? '';
-  const imageUrl = item?.imageUrl ?? imageUrlProp ?? '';
+  const title = item?.title ?? titleProp ?? "";
+  const description = item?.description ?? descriptionProp ?? "";
+  const imageUrl = item?.imageUrl ?? imageUrlProp ?? "";
   const disabled = item !== undefined ? !item.enabled : (disabledProp ?? false);
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (disabled) {
@@ -51,82 +55,64 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
     if (onClick) {
       e.preventDefault();
       onClick();
-    } else if (href === '#') {
+    } else if (href === "#") {
       e.preventDefault();
     }
   };
 
-  const cardContent = (
-    <>
-      <Image
-        alt={title}
-        className="transition-transform duration-300 group-hover:scale-110"
-        fill
-        priority
-        src={imageUrl}
-        style={{ objectFit: 'cover' }}
-      />
-      <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-t from-black/75 to-transparent" />
-
-      {/* Trustpilot Rating */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 backdrop-blur-sm">
-        <span className="text-xs font-semibold text-white">4.6</span>
-        <svg
-          className="h-3 w-3 text-yellow-400"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      </div>
-
-      {/* Card Content */}
-      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white @[300px]:pb-20">
-        <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase leading-tight @[300px]:text-5xl">
-          {title}
-        </h3>
-        <p className="font-barlow text-base text-white/90 @md:text-lg @[300px]:text-lg
-        ">
-          {description}
-        </p>
-      </div>
-    </>
-  );
-
-  const baseClassName = cn(
-    '@container group relative block overflow-hidden rounded-2xl transition-all duration-300 origin-center',
-    fill && 'h-full w-full',
-    className,
-    disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-    selected && 'ring-4 ring-yellow-400',
-  );
-
-  const sizeStyle = fill ? undefined : { height, width };
-
-  // If onClick is provided, render as button; otherwise render as Link
-  if (onClick || !href) {
-    return (
-      <button
-        className={baseClassName}
-        disabled={disabled}
-        onClick={handleClick}
-        style={sizeStyle}
-        type="button"
-      >
-        {cardContent}
-      </button>
-    );
-  }
+  /** `onClick` or missing `href` → native button; otherwise next/link. */
+  const isButton = Boolean(onClick || !href);
+  const T: React.ElementType = isButton ? "button" : Link;
 
   return (
-    <Link
-      className={baseClassName}
-      href={href}
+    <T
+      className={cn(
+        "@container block duration-300 group origin-center relative transition-all py-3",
+        fill && "h-full w-full",
+        className,
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+      )}
       onClick={handleClick}
-      style={sizeStyle}
+      style={fill ? undefined : { height, width }}
+      {...(isButton ? { disabled, type: "button" as const } : { href })}
     >
-      {cardContent}
-    </Link>
+      {selected && (
+        <div className="absolute -right-[9.8px] top-0 z-30 @[250px]:-right-[14px]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
+            <Check className="h-5 w-5 text-white" strokeWidth={3} />
+          </div>
+        </div>
+      )}
+      <div
+        className={cn(
+          "relative rounded-2xl overflow-hidden border-2",
+          fill && "h-full w-full",
+          selected ? "border-[#172C36]" : "border-transparent",
+        )}
+      >
+        <Image
+          alt={title}
+          className="transition-transform duration-300 group-hover:scale-110"
+          fill
+          priority
+          src={imageUrl}
+          style={{ objectFit: "cover" }}
+        />
+        <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-t from-black/75 to-transparent" />
+
+        <ReviewBadge rating="4.6" />
+
+        {/* Card copy */}
+        <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-left text-white @[300px]:pb-20">
+          <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase leading-tight @[300px]:text-5xl">
+            {title}
+          </h3>
+          <p className="font-barlow text-base text-white/90 @md:text-lg @[300px]:text-lg">
+            {description}
+          </p>
+        </div>
+      </div>
+    </T>
   );
 };
 

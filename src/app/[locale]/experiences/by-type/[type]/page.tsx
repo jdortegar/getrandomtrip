@@ -87,9 +87,9 @@ export default async function TravelerTypePage({
       />
       <TypePlanner
         content={getPlannerContentForType(typeData.meta.slug, locale)}
-        hideOverflow={false}
         itemsPerView={3}
         type={typeData.meta.slug as TravelerTypeSlug}
+        navigateOnCardClick={true}
       />
       <Blog
         eyebrow={blogEyebrow}

@@ -246,22 +246,14 @@ export default function JourneyMainContent({
 
   const handleTravelTypeSelect = (slug: string) => {
     updateQuery({ ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, travelType: slug });
-    setAccordionValue('experience');
   };
 
   const handleExperienceSelect = (levelId: string) => {
     updateQuery({ ...PARAMS_TO_RESET_AFTER_EXPERIENCE, experience: levelId });
-    // NOTE: uses levelId (the just-selected value), not the memoized hasExcuseStep
-    // which still reflects the previous experience value at this point.
-    const hasExcuseStepForSelection = getHasExcuseStep(url.travelType ?? '', levelId);
-    if (onTabChange)
-      onTabChange(hasExcuseStepForSelection ? 'excuse' : 'details');
-    setAccordionValue(hasExcuseStepForSelection ? 'excuse' : 'origin');
   };
 
   const handleExcuseSelect = (excuseKey: string) => {
     updateQuery({ excuse: excuseKey, refineDetails: undefined });
-    setAccordionValue('refine-details');
   };
 
   const handleRefineDetailsSelect = (optionKey: string) => {
@@ -412,6 +404,7 @@ export default function JourneyMainContent({
     const nextTab = getNextTab(activeTab, hasExcuseStep);
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
+      if (nextTab === 'excuse') setAccordionValue('excuse');
       if (nextTab === 'details') setAccordionValue('origin');
       if (nextTab === 'preferences') setAccordionValue('filters');
       scrollToActions();
@@ -434,7 +427,6 @@ export default function JourneyMainContent({
               locale,
               labels.experiencePlaceholder,
             )}
-            fullViewportWidth={false}
             handleExperienceSelect={handleExperienceSelect}
             handleTravelTypeSelect={handleTravelTypeSelect}
             labels={{

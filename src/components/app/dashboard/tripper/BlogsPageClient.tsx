@@ -24,7 +24,7 @@ export function BlogsPageClient({ posts }: BlogsPageClientProps) {
     <Section>
       <div className="rt-container">
         <div className="mb-8">
-          <h1 className="text-xl font-semibold text-neutral-900">
+          <h1 className="text-neutral-900 uppercase font-barlow-condensed text-5xl font-bold">
             {tripperBlogs.header.title}
           </h1>
           <p className="mt-2 text-sm text-neutral-600">

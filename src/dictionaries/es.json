@@ -123,11 +123,6 @@
     },
     "exploration": {
       "buttonTrippers": "EXPLORAR TRIPPERS",
-      "carousel": {
-        "ariaLabelNext": "Diapositiva siguiente",
-        "ariaLabelPrev": "Diapositiva anterior",
-        "ariaLabelSlide": "Ir a diapositiva {n}"
-      },
       "comingSoonText": "¡Pronto podrás explorar esta sección!",
       "eyebrow": "Dale forma a tu aventura",
       "subtitle": "Encuentra el punto de partida perfecto para tu próximo viaje.",
