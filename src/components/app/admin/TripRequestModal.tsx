@@ -36,7 +36,7 @@ interface Draft {
 type TripEditCopy = MarketingDictionary["adminTripEditModal"];
 
 interface TripRequestModalProps {
-  copy: TripEditCopy;
+  dict: TripEditCopy;
   onClose: () => void;
   onSaved: () => void;
   open: boolean;
@@ -44,7 +44,7 @@ interface TripRequestModalProps {
 }
 
 export function TripRequestModal({
-  copy,
+  dict,
   onClose,
   onSaved,
   open,
@@ -72,7 +72,7 @@ export function TripRequestModal({
   }, [trip.id]);
 
   function statusLabel(status: TripRequestStatus): string {
-    return copy.tripStatus[status];
+    return dict.tripStatus[status];
   }
 
   async function handleDelete() {
@@ -87,7 +87,7 @@ export function TripRequestModal({
       onClose();
       return;
     }
-    setDeleteError(copy.deleteError);
+    setDeleteError(dict.deleteError);
   }
 
   async function handleSave() {
@@ -107,11 +107,11 @@ export function TripRequestModal({
     }
   }
 
-  const modalDescription = interpolateTemplate(copy.description, {
+  const modalDescription = interpolateTemplate(dict.description, {
     tripId: trip.id,
   });
 
-  const modalTitle = interpolateTemplate(copy.title, {
+  const modalTitle = interpolateTemplate(dict.title, {
     userName: trip.user.name,
   });
 
@@ -157,30 +157,30 @@ export function TripRequestModal({
 
         <div className="border-b border-gray-200 px-6 py-4">
           <p className="mb-3 text-base font-bold uppercase tracking-wide text-gray-800">
-            {copy.sectionSummary}
+            {dict.sectionSummary}
           </p>
-          <TripRequestDetails labels={copy.details} trip={trip} />
+          <TripRequestDetails labels={dict.details} trip={trip} />
         </div>
 
         <div className="border-b border-gray-200 px-6 py-4">
           <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
-            {copy.sectionManageTrip}
+            {dict.sectionManageTrip}
           </p>
-          <p className="mb-3 text-base text-gray-700">{copy.destinationHelp}</p>
+          <p className="mb-3 text-base text-gray-700">{dict.destinationHelp}</p>
           <div className="flex flex-col gap-3">
             <FormField
               id="modal-trip-destination"
-              label={copy.destinationLabel}
+              label={dict.destinationLabel}
               onChange={(e) =>
                 setDraft((d) => ({ ...d, actualDestination: e.target.value }))
               }
-              placeholder={copy.destinationPlaceholder}
+              placeholder={dict.destinationPlaceholder}
               type="text"
               value={draft.actualDestination}
             />
             <FormSelectField
               id="modal-trip-status"
-              label={copy.statusLabel}
+              label={dict.statusLabel}
               onChange={(e) =>
                 setDraft((d) => ({
                   ...d,
@@ -202,16 +202,16 @@ export function TripRequestModal({
           <TripStatusTimeline
             currentStatus={draft.status}
             statusLabel={statusLabel}
-            timelineTitle={copy.sectionTimeline}
+            timelineTitle={dict.sectionTimeline}
             trip={trip}
           />
         </div>
 
         <div className="px-6 py-4">
           <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
-            {copy.sectionDanger}
+            {dict.sectionDanger}
           </p>
-          <p className="mb-3 text-base text-gray-700">{copy.deleteHint}</p>
+          <p className="mb-3 text-base text-gray-700">{dict.deleteHint}</p>
           {deleteError ? (
             <p className="mb-2 text-base font-medium text-red-600">
               {deleteError}
@@ -229,7 +229,7 @@ export function TripRequestModal({
               type="button"
               variant="secondary"
             >
-              {copy.deleteTrip}
+              {dict.deleteTrip}
             </Button>
           ) : (
             <div
@@ -239,7 +239,7 @@ export function TripRequestModal({
               )}
             >
               <p className="text-base font-semibold text-red-900">
-                {copy.deleteConfirm}
+                {dict.deleteConfirm}
               </p>
               <div className="flex flex-wrap justify-end gap-2">
                 <Button
@@ -253,7 +253,7 @@ export function TripRequestModal({
                   type="button"
                   variant="secondary"
                 >
-                  {copy.deleteCancel}
+                  {dict.deleteCancel}
                 </Button>
                 <Button
                   className="text-base"
@@ -263,7 +263,7 @@ export function TripRequestModal({
                   type="button"
                   variant="destructive"
                 >
-                  {deleting ? copy.deleteDeleting : copy.deleteTrip}
+                  {deleting ? dict.deleteDeleting : dict.deleteTrip}
                 </Button>
               </div>
             </div>
@@ -280,7 +280,7 @@ export function TripRequestModal({
           type="button"
           variant="secondary"
         >
-          {copy.cancel}
+          {dict.cancel}
         </Button>
         <Button
           className="text-base"
@@ -290,7 +290,7 @@ export function TripRequestModal({
           type="button"
           variant="default"
         >
-          {saving ? copy.saving : copy.saveChanges}
+          {saving ? dict.saving : dict.saveChanges}
         </Button>
       </DialogFooter>
     </Modal>

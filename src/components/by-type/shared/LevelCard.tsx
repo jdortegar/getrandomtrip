@@ -68,7 +68,7 @@ export default function LevelCard({
   const borderColor = selected
     ? "border-[#172C36]"
     : isDark
-      ? "border-gray-700"
+      ? "border-[#172C36]"
       : "border-transparent";
   const dividerColor = isDark ? "border-gray-700" : "border-gray-200";
   const priceDividerColor = "bg-yellow-400";

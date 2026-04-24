@@ -4,12 +4,13 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
 import SecureRoute from "@/components/auth/SecureRoute";
 import {
   AllTripsGrid,
   DashboardStatsGrid,
   FinancialSummary,
-  getDashboardCopy,
   QuickActions,
   UnpaidTripsAlert,
   UpcomingTripsPanel,
@@ -62,7 +63,7 @@ function DashboardContent() {
   const { user } = useUserStore();
   const router = useRouter();
   const locale = (params?.locale as string) ?? "es";
-  const copy = getDashboardCopy(locale);
+  const copy = locale.startsWith("en") ? enCopy.dashboard : esCopy.dashboard;
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -191,7 +192,8 @@ function DashboardContent() {
   };
 
   const getStatusLabel = (status: string) => {
-    return copy.tripStatus[status] ?? status;
+    const typedStatus = status as keyof typeof copy.tripStatus;
+    return copy.tripStatus[typedStatus] ?? status;
   };
 
   if (userRole === "tripper") {

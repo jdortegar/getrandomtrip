@@ -1,59 +1,73 @@
-import Navbar from '@/components/Navbar';
-import GlassCard from '@/components/ui/GlassCard';
-import BgCarousel from '@/components/media/BgCarousel';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AlertTriangle, Home, LayoutDashboard } from 'lucide-react';
+import { FullPageStatusLayout } from '@/components/layout/FullPageStatusLayout';
+import {
+  NotFoundStatusExploreAndTip,
+  NotFoundStatusHelpLine,
+} from '@/components/layout/NotFoundStatusPageExtras';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { hasLocale, type Locale } from '@/lib/i18n/config';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
 
-export default function UnauthorizedPage() {
+type LocaleParams = { params: { locale?: string | string[] } };
+
+function resolveLocale(raw: string | string[] | undefined): Locale {
+  const localeStr = typeof raw === 'string' ? raw : raw?.[0];
+  return hasLocale(localeStr) ? localeStr : 'es';
+}
+
+export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
+  const locale = resolveLocale(params?.locale);
+  const dict = await getDictionary(locale);
+  const meta = dict.unauthorized.meta;
+  return {
+    description: meta.description,
+    openGraph: {
+      description: meta.openGraphDescription,
+      title: meta.openGraphTitle,
+      type: 'website',
+    },
+    title: meta.title,
+  };
+}
+
+export default async function UnauthorizedPage({ params }: LocaleParams) {
+  const locale = resolveLocale(params?.locale);
+  const dict = await getDictionary(locale);
+  const copy = dict.unauthorized;
+  const nf = dict.notFound;
+  const homePath = pathForLocale(locale, '/');
+  const dashboardPath = pathForLocale(locale, '/dashboard');
+
   return (
-    <>
-      <Navbar />
-      <BgCarousel scrim={0.75} />
+    <FullPageStatusLayout
+      actions={
+        <>
+          <Link
+            className="group relative flex transform items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-xl"
+            href={homePath}
+          >
+            <Home className="h-5 w-5" />
+            <span className="relative z-10">{copy.cta.home}</span>
+            <div className="absolute inset-0 rounded-xl bg-primary opacity-0 blur transition-opacity duration-300 group-hover:opacity-75" />
+          </Link>
 
-      <main className="container mx-auto max-w-2xl px-4 pt-24 md:pt-28 pb-16">
-        <GlassCard>
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-8 h-8 text-red-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
-            </div>
-
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4">
-              Acceso Denegado
-            </h1>
-
-            <p className="text-neutral-600 mb-8">
-              No tienes permisos para acceder a esta página. Contacta al
-              administrador si crees que esto es un error.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Ir al Inicio
-              </Link>
-              <Link
-                href="/dashboard"
-                className="px-6 py-3 border border-neutral-200 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors"
-              >
-                Mi Dashboard
-              </Link>
-            </div>
-          </div>
-        </GlassCard>
-      </main>
-    </>
+          <Link
+            className="group flex transform items-center justify-center gap-2 rounded-xl border-2 border-primary/20 px-8 py-4 font-semibold text-primary transition-all duration-300 hover:scale-105 hover:border-primary/30 hover:bg-primary/5"
+            href={dashboardPath}
+          >
+            <LayoutDashboard className="h-5 w-5" />
+            {copy.cta.dashboard}
+          </Link>
+        </>
+      }
+      cardFooter={<NotFoundStatusExploreAndTip locale={locale} nf={nf} />}
+      code="403"
+      leadIcon={<AlertTriangle aria-hidden className="h-10 w-10 text-white" strokeWidth={2} />}
+      pageFooter={<NotFoundStatusHelpLine locale={locale} nf={nf} />}
+      subtitle={copy.description}
+      title={copy.title}
+    />
   );
 }

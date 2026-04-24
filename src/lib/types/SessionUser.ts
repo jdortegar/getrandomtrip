@@ -7,18 +7,32 @@ export type SessionUser = Session['user'] & {
   handle?: string | null;
   image?: string | null;
   role?: string;
+  roles?: Array<'admin' | 'client' | 'tripper'>;
   travelerType?: string | null;
   interests?: string[];
   dislikes?: string[];
 };
 
-function normalizeRole(role: string | undefined): UserRole | undefined {
-  if (!role) return undefined;
-  const normalized = role.toLowerCase();
+function normalizeRoleToken(token: string | undefined): UserRole | undefined {
+  if (!token) return undefined;
+  const normalized = token.toLowerCase();
   if (normalized === 'client' || normalized === 'tripper' || normalized === 'admin') {
     return normalized;
   }
+
+  const upper = token.toUpperCase();
+  if (upper === 'CLIENT') return 'client';
+  if (upper === 'TRIPPER') return 'tripper';
+  if (upper === 'ADMIN') return 'admin';
   return undefined;
+}
+
+function normalizeRoles(roles: SessionUser['roles'], legacyRole: SessionUser['role']): UserRole[] {
+  if (Array.isArray(roles) && roles.length > 0) {
+    return Array.from(new Set(roles));
+  }
+  const single = normalizeRoleToken(legacyRole);
+  return single ? [single] : [];
 }
 
 function normalizeTravelerType(value: string | null | undefined): TravelerType | undefined {
@@ -32,11 +46,21 @@ function normalizeTravelerType(value: string | null | undefined): TravelerType |
 export function mapSessionUserToStoreUser(sessionUser: SessionUser): User | null {
   if (!sessionUser.id || !sessionUser.name || !sessionUser.email) return null;
 
+  const roles = normalizeRoles(sessionUser.roles, sessionUser.role);
+  const role = sessionUser.role
+    ? normalizeRoleToken(sessionUser.role)
+    : roles.includes('admin')
+      ? 'admin'
+      : roles.includes('tripper')
+        ? 'tripper'
+        : roles[0];
+
   return {
     id: sessionUser.id,
     name: sessionUser.name,
     email: sessionUser.email,
-    role: normalizeRole(sessionUser.role),
+    role,
+    roles: roles.length > 0 ? roles : undefined,
     handle: sessionUser.handle ?? undefined,
     avatar: sessionUser.avatar ?? sessionUser.avatarUrl ?? sessionUser.image ?? undefined,
     prefs: {

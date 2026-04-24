@@ -2476,8 +2476,8 @@
     },
     "quickActions": {
       "title": "Acciones Rápidas",
-      "createPackage": "Crear Paquete",
-      "createPackageSub": "Nueva oferta de viaje",
+      "createExperience": "Crear Experiencia",
+      "createExperienceSub": "Nueva oferta de viaje",
       "earnings": "Ver Ganancias",
       "earningsSub": "Análisis detallado",
       "reviews": "Reseñas & NPS",
@@ -2506,5 +2506,349 @@
       "completed": "Completado",
       "pending": "Pendiente"
     }
+  },
+  "dashboard": {
+    "allTrips": {
+      "emptyDestination": "Destino Sorpresa",
+      "from": "Desde",
+      "paidOn": "Pagado el",
+      "title": "Viajes realizados",
+      "totalLabel": "viajes",
+      "viewMore": "Ver mas"
+    },
+    "common": {
+      "id": "ID",
+      "transactions": "transacciones"
+    },
+    "financialSummary": {
+      "completedPayments": "Pagos Completados",
+      "pendingPayments": "Pagos Pendientes",
+      "title": "Resumen Financiero",
+      "totalSpent": "Total Gastado"
+    },
+    "header": {
+      "description": "Gestiona tus viajes y descubre nuevas aventuras",
+      "helloFallbackName": "Viajero",
+      "helloPrefix": "Hola"
+    },
+    "paymentStatus": {
+      "APPROVED": "Aprobado",
+      "CANCELLED": "Cancelado",
+      "COMPLETED": "Completado",
+      "FAILED": "Fallido",
+      "IN_PROCESS": "En proceso",
+      "PENDING": "Pendiente",
+      "PROCESSING": "Procesando",
+      "REJECTED": "Rechazado"
+    },
+    "quickActions": {
+      "history": "Historial de Pagos",
+      "newTrip": "Planificar Nuevo Viaje",
+      "profile": "Ver Mi Perfil",
+      "title": "Acciones Rapidas"
+    },
+    "recentPayments": {
+      "amount": "Monto",
+      "date": "Fecha",
+      "empty": "No hay pagos registrados",
+      "status": "Estado",
+      "title": "Historial de Pagos",
+      "trip": "Viaje"
+    },
+    "stats": {
+      "averageRating": "Rating Promedio",
+      "totalSpent": "Gasto Total",
+      "totalTrips": "Viajes Totales",
+      "upcomingTrips": "Proximos Viajes"
+    },
+    "tripStatus": {
+      "CANCELLED": "Cancelado",
+      "COMPLETED": "Completado",
+      "CONFIRMED": "Confirmado",
+      "DRAFT": "Borrador",
+      "REVEALED": "Revelado",
+      "SAVED": "Guardado"
+    },
+    "unpaidTrips": {
+      "action": "Completar pago",
+      "bookingRefLabel": "Referencia",
+      "deleteAction": "Eliminar",
+      "deleteConfirm": "¿Seguro que querés eliminar este viaje? Esta acción no se puede deshacer.",
+      "deleteFailed": "No se pudo eliminar el viaje. Intentá de nuevo.",
+      "editAction": "Editar",
+      "estimatedTripTotal": "Total estimado del viaje",
+      "experienceSection": "Experiencia",
+      "message": "Completa el pago para confirmar tu reserva. Puedes reintentar desde aca.",
+      "paymentPrefix": "Pago",
+      "priceEstimateNote": "Precio referencia según catálogo",
+      "summaryHeroPriceCaption": "Precio base por persona",
+      "title": "Viajes pendientes de pago",
+      "travelTypeSection": "Tipo de viaje",
+      "travelTypeTitleSeparator": "|"
+    },
+    "upcomingTrips": {
+      "emptyCta": "Planificar Viaje",
+      "emptyMessage": "Comienza tu proxima aventura ahora.",
+      "emptyTitle": "No tienes viajes proximos",
+      "newTrip": "Nuevo Viaje",
+      "title": "Proximos Viajes",
+      "viewDetails": "Ver Detalles"
+    }
+  },
+  "packages": {
+    "title": "MIS EXPERIENCIAS",
+    "description": "Gestiona tus ofertas de viaje y mantén tu catálogo actualizado.",
+    "newPackage": "Nueva Experiencia",
+    "back": "Volver a Mis Experiencias",
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "allStatuses": "Todos los estados",
+      "allLevels": "Todos los niveles"
+    },
+    "table": {
+      "actions": "Acciones",
+      "package": "Experiencia",
+      "typeLevel": "Tipo / Nivel",
+      "status": "Estado",
+      "price": "Precio / persona",
+      "updated": "Actualizado",
+      "edit": "Editar"
+    },
+    "emptyState": {
+      "noPackages": "Aún no tienes experiencias.",
+      "noMatch": "Ninguna experiencia coincide con los filtros.",
+      "createFirst": "Crear mi primera experiencia"
+    },
+    "status": {
+      "ACTIVE": "Activo",
+      "DRAFT": "Borrador",
+      "INACTIVE": "Inactivo",
+      "ARCHIVED": "Archivado"
+    },
+    "form": {
+      "createTitle": "CREAR EXPERIENCIA",
+      "editTitle": "EDITAR EXPERIENCIA",
+      "createSubmit": "Crear Experiencia",
+      "editSubmit": "Guardar Cambios",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "nav": {
+        "sections": "Secciones"
+      },
+      "sections": {
+        "basic": "Básico",
+        "destination": "Destino",
+        "capacityPricing": "Capacidad & Precio",
+        "compatibility": "Compatibilidad",
+        "accommodation": "Alojamiento",
+        "activities": "Actividades",
+        "itinerary": "Itinerario",
+        "inclusions": "Incluye / No incluye",
+        "tagsMedia": "Tags, Highlights & Media",
+        "visibility": "Visibilidad"
+      },
+      "fields": {
+        "title": "Título",
+        "type": "Tipo de viaje",
+        "level": "Nivel",
+        "status": "Estado",
+        "teaser": "Teaser",
+        "teaserHint": "Descripción corta que aparece en las tarjetas (máx. 150 caracteres)",
+        "description": "Descripción completa",
+        "country": "País de destino",
+        "city": "Ciudad de destino",
+        "excuseKey": "Excusa del viaje",
+        "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
+        "minNights": "Noches mínimas",
+        "maxNights": "Noches máximas",
+        "maxNightsHint": "Este nivel admite máx. {n} noches",
+        "minPax": "Viajeros mínimos",
+        "maxPax": "Viajeros máximos",
+        "basePriceUsd": "Precio base por persona (USD)",
+        "basePriceUsdHint": "Precio por persona, en dólares",
+        "displayPrice": "Precio de visualización",
+        "displayPriceHint": "Texto libre que aparece en la tarjeta pública. Ej: Desde USD 450",
+        "accommodationType": "Tipo de alojamiento",
+        "transport": "Transporte principal",
+        "climate": "Clima del destino",
+        "maxTravelTime": "Tiempo máximo de viaje",
+        "departPref": "Preferencia de salida",
+        "arrivePref": "Preferencia de llegada",
+        "compatibilityHint": "Estos campos ayudan al algoritmo a hacer matching con solicitudes de clientes.",
+        "hotelName": "Nombre del hotel",
+        "hotelStars": "Estrellas",
+        "hotelLocation": "Ubicación",
+        "hotelCheckIn": "Check-in",
+        "hotelCheckOut": "Check-out",
+        "addHotel": "Agregar Hotel",
+        "noHotels": "No has agregado hoteles aún.",
+        "activityName": "Nombre de la actividad",
+        "activityDuration": "Duración",
+        "activityDesc": "Descripción",
+        "addActivity": "Agregar Actividad",
+        "noActivities": "No has agregado actividades aún.",
+        "itineraryTitle": "Título del día",
+        "itineraryDesc": "Descripción del día",
+        "addDay": "Agregar Día",
+        "noItinerary": "No has agregado días al itinerario aún.",
+        "inclusions": "¿Qué incluye?",
+        "addInclusion": "Agregar inclusión",
+        "exclusions": "¿Qué no incluye?",
+        "addExclusion": "Agregar exclusión",
+        "tags": "Tags",
+        "tagInput": "Nuevo tag (Enter para agregar)",
+        "highlights": "Highlights",
+        "highlightInput": "Nuevo highlight (Enter para agregar)",
+        "heroImage": "Imagen hero (URL)",
+        "heroImageHint": "URL de la imagen principal de la experiencia",
+        "isActive": "Experiencia activo",
+        "isActiveHint": "Visible para matching con clientes",
+        "isFeatured": "Destacado",
+        "isFeaturedHint": "Aparece en la sección destacada"
+      }
+    }
+  },
+  "tripperProfilePage": {
+    "meta": {
+      "title": "Perfil de tripper",
+      "description": "Gestioná tu perfil de tripper, experiencias y rendimiento.",
+      "openGraphTitle": "Perfil de tripper",
+      "openGraphDescription": "Gestioná tu perfil de tripper, experiencias y rendimiento."
+    },
+    "accessDenied": {
+      "title": "Acceso restringido",
+      "description": "Esta página es solo para trippers.",
+      "ctaHome": "Volver a la página principal"
+    },
+    "hero": {
+      "eyebrow": "Cuenta tripper",
+      "title": "Mi perfil de tripper",
+      "description": "Gestioná tu negocio de viajes"
+    },
+    "card": {
+      "nameFallback": "Tripper",
+      "tripperBadgePrefix": "Tripper",
+      "noLocation": "Sin ubicación",
+      "editProfile": "Editar perfil"
+    },
+    "sections": {
+      "about": "Sobre mí",
+      "destinations": "Mis destinos",
+      "travelTypes": "Tipos de viaje que ofrezco",
+      "experiences": "Mis experiencias",
+      "performance": "Rendimiento",
+      "navigation": "Navegación",
+      "quickStats": "Estadísticas rápidas",
+      "profileDetails": "Detalles del perfil"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "experiences": "Experiencias",
+      "performance": "Resumen de rendimiento",
+      "goToDashboard": "Ir al panel"
+    },
+    "experiences": {
+      "manageCta": "Gestionar experiencias",
+      "countBlurb": "Tenés {count} experiencia(s) creada(s). Andá al panel para crear otras o gestionar las existentes.",
+      "nightsLabel": "noches",
+      "peopleLabel": "personas",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "viewAll": "Ver todas las experiencias ({count})",
+      "emptyTitle": "Aún no creaste experiencias",
+      "emptyCta": "Ir al panel para crear experiencias"
+    },
+    "performance": {
+      "title": "Rendimiento",
+      "viewFullDashboard": "Ver panel completo",
+      "totalBookings": "Reservas totales",
+      "averageRating": "Rating promedio",
+      "totalEarnings": "Ganancias totales",
+      "activeExperiences": "Experiencias activas",
+      "hintBefore": "Para ver estadísticas detalladas, análisis y gestión de experiencias, abrí el",
+      "hintLink": "panel de tripper",
+      "hintAfter": "."
+    },
+    "quickStats": {
+      "title": "Estadísticas rápidas",
+      "experiences": "Experiencias",
+      "bookings": "Reservas",
+      "rating": "Rating"
+    },
+    "modal": {
+      "title": "Editar perfil de tripper",
+      "closeAria": "Cerrar",
+      "bio": "Biografía",
+      "bioPlaceholder": "Contanos sobre vos como tripper...",
+      "heroImage": "Imagen hero",
+      "heroImagePlaceholder": "https://ejemplo.com/imagen.jpg",
+      "location": "Ubicación",
+      "locationPlaceholder": "Buenos Aires, Argentina",
+      "tier": "Nivel de tripper",
+      "tierSelectPlaceholder": "Seleccionar...",
+      "tierRookie": "Rookie",
+      "tierPro": "Pro",
+      "tierElite": "Elite",
+      "destinations": "Destinos",
+      "destinationsPlaceholder": "Argentina, Chile, Uruguay",
+      "slug": "Slug de tripper",
+      "slugPlaceholder": "dawson",
+      "commission": "Comisión (0–1)",
+      "commissionPlaceholder": "0.15",
+      "availableTypes": "Tipos disponibles",
+      "availableTypesPlaceholder": "solo, couple, family",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "uploadImage": "Subir imagen de portada",
+      "uploadingImage": "Subiendo imagen…",
+      "imageUploadError": "No se pudo subir la imagen"
+    },
+    "toasts": {
+      "success": "Perfil de tripper actualizado correctamente",
+      "error": "No se pudo actualizar el perfil de tripper"
+    },
+    "details": {
+      "openImage": "Abrir imagen",
+      "heroPreviewAlt": "Vista previa del hero del tripper"
+    }
+  },
+  "unauthorized": {
+    "title": "Acceso denegado",
+    "description": "No tienes permisos para acceder a esta página. Contacta al administrador si crees que esto es un error.",
+    "cta": {
+      "home": "Ir al inicio",
+      "dashboard": "Mi panel"
+    },
+    "meta": {
+      "title": "Acceso denegado | Randomtrip",
+      "description": "No tienes permisos para acceder a esta página.",
+      "openGraphTitle": "Acceso denegado | Randomtrip",
+      "openGraphDescription": "No tienes permisos para acceder a esta página."
+    }
+  },
+  "adminUsers": {
+    "actions": "Acciones",
+    "edit": "Editar",
+    "editing": "editando",
+    "empty": "No se encontraron usuarios.",
+    "errorFallback": "No se pudieron cargar los usuarios",
+    "headers": {
+      "actions": "Acciones",
+      "joined": "Alta",
+      "roles": "Roles",
+      "tripperSlug": "Slug tripper",
+      "user": "Usuario"
+    },
+    "modal": {
+      "admin": "ADMIN",
+      "cancel": "Cancelar",
+      "clientBase": "CLIENT (base)",
+      "errorFallback": "No se pudo actualizar el rol",
+      "roleSection": "Roles",
+      "saveChanges": "Guardar cambios",
+      "saving": "Guardando…",
+      "tripper": "TRIPPER"
+    },
+    "usersCount": "{count} usuarios"
   }
 }

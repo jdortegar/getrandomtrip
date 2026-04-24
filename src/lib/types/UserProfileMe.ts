@@ -10,6 +10,13 @@ export interface UserProfileMe {
   travelerType: string | null;
   interests: string[];
   dislikes: string[];
-  role: string;
+  /**
+   * App-level role tokens (lowercase) derived from Prisma `User.roles`.
+   */
+  roles: Array<'admin' | 'client' | 'tripper'>;
+  /**
+   * Most privileged app role (lowercase), for simple UI checks.
+   */
+  role: 'admin' | 'client' | 'tripper';
   avatarUrl?: string | null;
 }

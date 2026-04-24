@@ -987,7 +987,7 @@ async function seedTrippersAndPackages() {
 
     // Get existing trippers
     const existingTrippers = await prisma.user.findMany({
-      where: { role: 'TRIPPER' },
+      where: { roles: { has: 'TRIPPER' } },
     });
 
     // Add Dawson with updated data
@@ -1032,6 +1032,9 @@ async function seedTrippersAndPackages() {
             availableTypes: tripperData.availableTypes,
             commission: tripperData.commission,
             avatarUrl: tripperData.avatarUrl,
+            roles: {
+              set: Array.from(new Set([...(tripper.roles ?? []), 'CLIENT', 'TRIPPER'])),
+            },
           },
         });
         console.log(`Updated existing tripper: ${tripper.name}`);
@@ -1041,7 +1044,7 @@ async function seedTrippersAndPackages() {
           data: {
             name: tripperData.name,
             email: tripperData.email,
-            role: 'TRIPPER',
+            roles: ['CLIENT', 'TRIPPER'],
             tripperSlug: tripperData.slug,
             bio: tripperData.bio,
             location: tripperData.location,

@@ -148,8 +148,8 @@ export interface TripperDashboardDict {
   };
   quickActions: {
     title: string;
-    createPackage: string;
-    createPackageSub: string;
+    createExperience: string;
+    createExperienceSub: string;
     earnings: string;
     earningsSub: string;
     reviews: string;
@@ -178,6 +178,313 @@ export interface TripperDashboardDict {
     completed: string;
     pending: string;
   };
+}
+
+export interface DashboardDict {
+  allTrips: {
+    emptyDestination: string;
+    from: string;
+    paidOn: string;
+    title: string;
+    totalLabel: string;
+    viewMore: string;
+  };
+  common: {
+    id: string;
+    transactions: string;
+  };
+  financialSummary: {
+    completedPayments: string;
+    pendingPayments: string;
+    title: string;
+    totalSpent: string;
+  };
+  header: {
+    description: string;
+    helloFallbackName: string;
+    helloPrefix: string;
+  };
+  paymentStatus: Record<string, string>;
+  quickActions: {
+    history: string;
+    newTrip: string;
+    profile: string;
+    title: string;
+  };
+  recentPayments: {
+    amount: string;
+    date: string;
+    empty: string;
+    status: string;
+    title: string;
+    trip: string;
+  };
+  stats: {
+    averageRating: string;
+    totalSpent: string;
+    totalTrips: string;
+    upcomingTrips: string;
+  };
+  tripStatus: Record<string, string>;
+  unpaidTrips: {
+    action: string;
+    bookingRefLabel: string;
+    deleteAction: string;
+    deleteConfirm: string;
+    deleteFailed: string;
+    editAction: string;
+    estimatedTripTotal: string;
+    experienceSection: string;
+    message: string;
+    paymentPrefix: string;
+    priceEstimateNote: string;
+    summaryHeroPriceCaption: string;
+    title: string;
+    travelTypeSection: string;
+    travelTypeTitleSeparator: string;
+  };
+  upcomingTrips: {
+    emptyCta: string;
+    emptyMessage: string;
+    emptyTitle: string;
+    newTrip: string;
+    title: string;
+    viewDetails: string;
+  };
+}
+
+export interface PackagesDict {
+  title: string;
+  description: string;
+  newPackage: string;
+  back: string;
+  filters: {
+    allTypes: string;
+    allStatuses: string;
+    allLevels: string;
+  };
+  table: {
+    actions: string;
+    package: string;
+    typeLevel: string;
+    status: string;
+    price: string;
+    updated: string;
+    edit: string;
+  };
+  emptyState: {
+    noPackages: string;
+    noMatch: string;
+    createFirst: string;
+  };
+  status: {
+    ACTIVE: string;
+    DRAFT: string;
+    INACTIVE: string;
+    ARCHIVED: string;
+  };
+  form: {
+    createTitle: string;
+    editTitle: string;
+    createSubmit: string;
+    editSubmit: string;
+    cancel: string;
+    saving: string;
+    nav: {
+      sections: string;
+    };
+    sections: {
+      basic: string;
+      destination: string;
+      capacityPricing: string;
+      compatibility: string;
+      accommodation: string;
+      activities: string;
+      itinerary: string;
+      inclusions: string;
+      tagsMedia: string;
+      visibility: string;
+    };
+    fields: {
+      title: string;
+      type: string;
+      level: string;
+      status: string;
+      teaser: string;
+      teaserHint: string;
+      description: string;
+      country: string;
+      city: string;
+      excuseKey: string;
+      excuseKeyHint: string;
+      minNights: string;
+      maxNights: string;
+      maxNightsHint: string;
+      minPax: string;
+      maxPax: string;
+      basePriceUsd: string;
+      basePriceUsdHint: string;
+      displayPrice: string;
+      displayPriceHint: string;
+      accommodationType: string;
+      transport: string;
+      climate: string;
+      maxTravelTime: string;
+      departPref: string;
+      arrivePref: string;
+      compatibilityHint: string;
+      hotelName: string;
+      hotelStars: string;
+      hotelLocation: string;
+      hotelCheckIn: string;
+      hotelCheckOut: string;
+      addHotel: string;
+      noHotels: string;
+      activityName: string;
+      activityDuration: string;
+      activityDesc: string;
+      addActivity: string;
+      noActivities: string;
+      itineraryTitle: string;
+      itineraryDesc: string;
+      addDay: string;
+      noItinerary: string;
+      inclusions: string;
+      addInclusion: string;
+      exclusions: string;
+      addExclusion: string;
+      tags: string;
+      tagInput: string;
+      highlights: string;
+      highlightInput: string;
+      heroImage: string;
+      heroImageHint: string;
+      isActive: string;
+      isActiveHint: string;
+      isFeatured: string;
+      isFeaturedHint: string;
+    };
+  };
+}
+
+export interface TripperProfilePageDict {
+  accessDenied: {
+    ctaHome: string;
+    description: string;
+    title: string;
+  };
+  card: {
+    editProfile: string;
+    nameFallback: string;
+    noLocation: string;
+    tripperBadgePrefix: string;
+  };
+  details: {
+    heroPreviewAlt: string;
+    openImage: string;
+  };
+  experiences: {
+    active: string;
+    countBlurb: string;
+    emptyCta: string;
+    emptyTitle: string;
+    inactive: string;
+    manageCta: string;
+    peopleLabel: string;
+    viewAll: string;
+    nightsLabel: string;
+  };
+  hero: {
+    description: string;
+    eyebrow: string;
+    title: string;
+  };
+  meta: {
+    description: string;
+    openGraphDescription: string;
+    openGraphTitle: string;
+    title: string;
+  };
+  modal: {
+    availableTypes: string;
+    availableTypesPlaceholder: string;
+    bio: string;
+    bioPlaceholder: string;
+    cancel: string;
+    closeAria: string;
+    commission: string;
+    commissionPlaceholder: string;
+    destinations: string;
+    destinationsPlaceholder: string;
+    heroImage: string;
+    heroImagePlaceholder: string;
+    imageUploadError: string;
+    location: string;
+    locationPlaceholder: string;
+    save: string;
+    slug: string;
+    slugPlaceholder: string;
+    tier: string;
+    tierElite: string;
+    tierPro: string;
+    tierRookie: string;
+    tierSelectPlaceholder: string;
+    title: string;
+    uploadImage: string;
+    uploadingImage: string;
+  };
+  performance: {
+    activeExperiences: string;
+    averageRating: string;
+    hintAfter: string;
+    hintBefore: string;
+    hintLink: string;
+    title: string;
+    totalBookings: string;
+    totalEarnings: string;
+    viewFullDashboard: string;
+  };
+  quickStats: {
+    bookings: string;
+    experiences: string;
+    rating: string;
+    title: string;
+  };
+  sections: {
+    about: string;
+    destinations: string;
+    experiences: string;
+    navigation: string;
+    performance: string;
+    profileDetails: string;
+    quickStats: string;
+    travelTypes: string;
+  };
+  tabs: {
+    experiences: string;
+    goToDashboard: string;
+    overview: string;
+    performance: string;
+  };
+  toasts: {
+    error: string;
+    success: string;
+  };
+}
+
+export interface UnauthorizedPageDict {
+  cta: {
+    dashboard: string;
+    home: string;
+  };
+  description: string;
+  meta: {
+    description: string;
+    openGraphDescription: string;
+    openGraphTitle: string;
+    title: string;
+  };
+  title: string;
 }
 
 export interface MarketingDictionary {
@@ -890,6 +1197,31 @@ export interface MarketingDictionary {
       solo: string;
     };
   };
+  adminUsers: {
+    actions: string;
+    edit: string;
+    editing: string;
+    empty: string;
+    errorFallback: string;
+    headers: {
+      actions: string;
+      joined: string;
+      roles: string;
+      tripperSlug: string;
+      user: string;
+    };
+    modal: {
+      admin: string;
+      cancel: string;
+      clientBase: string;
+      errorFallback: string;
+      roleSection: string;
+      saveChanges: string;
+      saving: string;
+      tripper: string;
+    };
+    usersCount: string;
+  };
   adminTripEditModal: {
     cancel: string;
     deleteCancel: string;
@@ -928,5 +1260,9 @@ export interface MarketingDictionary {
     };
   };
   tripperBlogs: TripperBlogsDict;
+  dashboard: DashboardDict;
   tripperDashboard: TripperDashboardDict;
+  tripperProfilePage: TripperProfilePageDict;
+  packages: PackagesDict;
+  unauthorized: UnauthorizedPageDict;
 }

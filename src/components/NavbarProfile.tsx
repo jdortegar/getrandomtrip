@@ -9,7 +9,7 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 /** Minimal user shape for navbar (all optional). */
-type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role">>;
+type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
 
 const PROFILE_MENU_ITEM = {
   href: "/profile",
@@ -50,10 +50,16 @@ export function NavbarProfile({
   user,
 }: NavbarProfileProps) {
   const { isOpen, toggle, close, menuRef } = useMenuState();
-  const role = ((session?.user as { role?: string } | undefined)?.role ?? user?.role) as
-    | string
+  const sessionUser = session?.user as
+    | { role?: string; roles?: User["roles"] }
     | undefined;
-  const isAdmin = hasRoleAccess(role, "admin");
+  const adminSubject =
+    sessionUser?.roles && sessionUser.roles.length > 0
+      ? { role: sessionUser.role, roles: sessionUser.roles }
+      : user?.roles && user.roles.length > 0
+        ? { role: user.role, roles: user.roles }
+        : { role: sessionUser?.role ?? user?.role };
+  const isAdmin = hasRoleAccess(adminSubject, "admin");
 
   const handleSignOut = () => {
     if (session) {

@@ -51,6 +51,17 @@ const params = useParams();
 const locale = (params?.locale as string) ?? "es";
 ```
 
+## Using Dictionaries in Server Pages and Layouts
+
+When a server page or layout receives `params.locale`, always normalize it with `hasLocale()` before calling `getDictionary()`:
+
+```ts
+const locale = hasLocale(params.locale) ? params.locale : "es";
+const dict = await getDictionary(locale);
+```
+
+Use this pattern consistently in server routes under `src/app/[locale]/`. Do not call `getDictionary(params.locale)` directly without validating the locale first.
+
 ## Domain Types
 
 All domain types live in `src/types/`:

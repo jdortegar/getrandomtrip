@@ -24,6 +24,8 @@ export interface User {
   name: string;
   email: string;
   role?: UserRole;
+  /** Multi-role membership (same tokens as `role`, but stacked). */
+  roles?: UserRole[];
   handle?: string;
   avatar?: string;
   prefs: UserPreferences;

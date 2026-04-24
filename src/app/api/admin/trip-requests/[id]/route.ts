@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { hasRoleAccess } from '@/lib/auth/roleAccess';
+import { attachAdminTripRequestRelations } from '@/lib/admin/trip-requests';
 import { prisma } from '@/lib/prisma';
 
 function parseStatus(status: unknown): TripRequestStatus | null {
@@ -27,10 +28,10 @@ export async function PATCH(
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, role: true },
+      select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user.role, 'admin')) {
+    if (!user || !hasRoleAccess(user, 'admin')) {
       return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
     }
 
@@ -73,34 +74,56 @@ export async function PATCH(
     const tripRequest = await prisma.tripRequest.update({
       where: { id: params.id },
       data,
-      include: {
-        package: {
-          select: {
-            excuseKey: true,
-            id: true,
-            level: true,
-            title: true,
-            type: true,
-          },
-        },
-        payment: {
-          select: {
-            amount: true,
-            currency: true,
-            status: true,
-          },
-        },
-        user: {
-          select: {
-            email: true,
-            id: true,
-            name: true,
-          },
-        },
-      },
     });
 
-    return NextResponse.json({ tripRequest });
+    const [pkg, payment, tripUser] = await Promise.all([
+      tripRequest.packageId
+        ? prisma.package.findUnique({
+            select: {
+              excuseKey: true,
+              id: true,
+              level: true,
+              title: true,
+              type: true,
+            },
+            where: { id: tripRequest.packageId },
+          })
+        : Promise.resolve(null),
+      prisma.payment.findUnique({
+        select: {
+          amount: true,
+          currency: true,
+          status: true,
+          tripRequestId: true,
+        },
+        where: { tripRequestId: tripRequest.id },
+      }),
+      prisma.user.findUnique({
+        select: {
+          email: true,
+          id: true,
+          name: true,
+        },
+        where: { id: tripRequest.userId },
+      }),
+    ]);
+
+    const [hydratedTripRequest] = attachAdminTripRequestRelations(
+      [tripRequest],
+      tripUser ? { [tripUser.id]: tripUser } : {},
+      pkg ? { [pkg.id]: pkg } : {},
+      payment
+        ? {
+            [payment.tripRequestId]: {
+              amount: payment.amount,
+              currency: payment.currency,
+              status: payment.status,
+            },
+          }
+        : {},
+    );
+
+    return NextResponse.json({ tripRequest: hydratedTripRequest });
   } catch (error) {
     console.error('Error updating admin trip request:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -120,10 +143,10 @@ export async function DELETE(
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, role: true },
+      select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user.role, 'admin')) {
+    if (!user || !hasRoleAccess(user, 'admin')) {
       return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
     }
 

@@ -65,11 +65,11 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      select: { role: true },
+      select: { roles: true },
       where: { id: session.user.id },
     });
 
-    if (!user || !hasRoleAccess(user.role, "tripper")) {
+    if (!user || !hasRoleAccess(user, "tripper")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const trippers = await prisma.user.findMany({
-    where: { role: 'TRIPPER' },
+    where: { roles: { has: 'TRIPPER' } },
     select: { id: true, name: true },
     orderBy: { name: 'asc' },
   });

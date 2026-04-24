@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { attachPaymentsToTrips } from '@/lib/utils/trip-relations';
 import {
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
@@ -36,13 +37,26 @@ export async function GET(request: NextRequest) {
     const trips = await prisma.tripRequest.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
-      include: {
-        payment: true,
-      },
     });
+    const paymentEntries = await Promise.all(
+      trips.map(async (trip) => {
+        const payment = await prisma.payment.findUnique({
+          where: { tripRequestId: trip.id },
+        });
+
+        return payment ? { payment, tripId: trip.id } : null;
+      }),
+    );
+    const paymentsByTripRequestId: Record<string, Record<string, unknown>> = {};
+    for (const entry of paymentEntries) {
+      if (!entry) continue;
+      paymentsByTripRequestId[entry.tripId] =
+        entry.payment as Record<string, unknown>;
+    }
+    const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId);
     console.log('Trips found:', trips.length);
 
-    return NextResponse.json({ trips }, { status: 200 });
+    return NextResponse.json({ trips: hydratedTrips }, { status: 200 });
   } catch (error) {
     console.error('Error fetching trips:', error);
     console.error(

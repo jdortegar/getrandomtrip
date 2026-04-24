@@ -23,7 +23,11 @@ model User {
   name      String
   password  String?
   avatarUrl String?
-  role      UserRole @default(CLIENT)
+  /**
+   * Membership roles for this account.
+   * `CLIENT` is the base: trippers and admins are also clients.
+   */
+  roles     UserRole[] @default([CLIENT])
 
   // Tripper-specific fields
   tripperSlug    String?  @unique // For trippers: 'dawson', 'alma', etc.

@@ -37,6 +37,8 @@ export interface User {
   name: string;
   email: string;
   role?: UserRole; // <-- agregado
+  /** Multi-role membership (app-level role tokens) */
+  roles?: UserRole[];
   handle?: string; // <-- agregado
   avatar?: string; // <-- agregado
   prefs: UserPrefs;
@@ -71,8 +73,13 @@ export const createUserSlice: StateCreator<UserStore> = (set, get) => ({
   authModalOpen: false,
   authModalStep: 'signin',
 
-  openAuth: (initialStep = 'signin') =>
-    set({ authModalOpen: true, authModalStep: initialStep }),
+  openAuth: (initialStep = 'signin') => {
+    const s = get();
+    if (s.authModalOpen && s.authModalStep === initialStep) {
+      return;
+    }
+    set({ authModalOpen: true, authModalStep: initialStep });
+  },
   closeAuth: () => set({ authModalOpen: false }),
 
   signOut: () => set({ isAuthed: false, user: null, session: null }),

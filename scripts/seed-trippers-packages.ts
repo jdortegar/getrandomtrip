@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { PrismaClient, BlogStatus, BlogFormat } from '@prisma/client';
+import { PrismaClient, BlogStatus, BlogFormat, type UserRole } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 import { slugify } from '../src/lib/helpers/slugify';
@@ -9,6 +9,8 @@ const adapter = connectionString ? new PrismaPg({ connectionString }) : undefine
 const prisma = new PrismaClient(
   (adapter ? { adapter, log: ['error'] } : { log: ['error'] }) as object,
 );
+
+const TRIPPER_MEMBERSHIP: UserRole[] = ['CLIENT', 'TRIPPER'];
 
 async function seedTrippersAndPackages() {
   console.log('🌱 Seeding trippers and packages...');
@@ -26,7 +28,7 @@ async function seedTrippersAndPackages() {
         tripperSlug: 'dawson',
         commission: 0.15,
         availableTypes: ['solo', 'couple', 'group'],
-        role: 'TRIPPER' as const,
+        roles: TRIPPER_MEMBERSHIP,
         bio: 'Aventurero urbano especializado en experiencias auténticas y descubrimientos inesperados. Con más de 8 años explorando ciudades del mundo, Dawson conoce los secretos mejor guardados de cada destino.',
         heroImage: '/images/trippers/dawson-hero.jpg',
         location: 'Buenos Aires, Argentina',
@@ -46,7 +48,7 @@ async function seedTrippersAndPackages() {
         tripperSlug: 'alma',
         commission: 0.12,
         availableTypes: ['family', 'honeymoon'],
-        role: 'TRIPPER' as const,
+        roles: TRIPPER_MEMBERSHIP,
         bio: 'Especialista en viajes familiares y lunas de miel inolvidables. Alma diseña experiencias que conectan a las familias y crean momentos mágicos para parejas. Su enfoque es crear recuerdos que duren toda la vida.',
         heroImage: '/images/trippers/alma-hero.jpg',
         location: 'Barcelona, España',
@@ -73,7 +75,7 @@ async function seedTrippersAndPackages() {
           'honeymoon',
           'paws',
         ],
-        role: 'TRIPPER' as const,
+        roles: TRIPPER_MEMBERSHIP,
         bio: 'El equipo de Randomtrip combina la experiencia de múltiples especialistas para crear viajes únicos y personalizados. Nuestra misión es democratizar el acceso a experiencias de viaje auténticas y memorables.',
         heroImage: '/images/trippers/randomtrip-hero.jpg',
         location: 'Global',
@@ -94,7 +96,7 @@ async function seedTrippersAndPackages() {
         tripperSlug: 'david-ortega',
         commission: 0.12,
         availableTypes: ['solo', 'couple', 'family', 'group'],
-        role: 'TRIPPER' as const,
+        roles: TRIPPER_MEMBERSHIP,
         bio: 'Experiencias auténticas para viajeros que buscan aventura y cultura en América Latina y Europa.',
         heroImage: '/images/trippers/david-hero.jpg',
         location: 'Ciudad de México, México',
@@ -109,7 +111,7 @@ async function seedTrippersAndPackages() {
         tripperSlug: 'sofia',
         commission: 0.09,
         availableTypes: ['solo', 'couple', 'group'],
-        role: 'TRIPPER' as const,
+        roles: TRIPPER_MEMBERSHIP,
         bio: 'Urban explorer y especialista en ciudades. Ayudo a viajeros a descubrir rincones secretos y la cultura de grandes ciudades.',
         heroImage:
           'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',

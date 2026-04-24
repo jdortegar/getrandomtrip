@@ -12,7 +12,8 @@ declare module 'next-auth' {
       interests?: string[];
       name: string;
       phone?: string | null;
-      role?: string;
+      role?: 'admin' | 'client' | 'tripper';
+      roles?: Array<'admin' | 'client' | 'tripper'>;
       travelerType?: string | null;
     };
   }

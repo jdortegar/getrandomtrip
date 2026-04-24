@@ -25,17 +25,39 @@ export default function SecureRoute({
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
-  const userRoleFromStore = user?.role;
-  const userRoleFromSession = (session?.user as any)?.role as string | undefined;
+  const sessionUser = session?.user as
+    | { role?: string; roles?: Array<'admin' | 'client' | 'tripper'> }
+    | undefined;
+
+  const subjectFromStore =
+    user?.roles && user.roles.length > 0 ? { role: user.role, roles: user.roles } : { role: user?.role };
+
+  const subjectFromSession =
+    sessionUser?.roles && sessionUser.roles.length > 0
+      ? { role: sessionUser.role, roles: sessionUser.roles }
+      : { role: sessionUser?.role };
+
   const normalizedRequiredRole = requiredRole ? requiredRole.toLowerCase() : null;
+
+  // Stable keys for effect deps (object literals above change identity every render and would retrigger the effect)
+  const storeRoleKey = user?.role ?? '';
+  const storeRolesKey = user?.roles?.length ? user.roles.join(',') : '';
+  const sessionRoleKey = sessionUser?.role ?? '';
+  const sessionRolesKey = sessionUser?.roles?.length ? sessionUser.roles.join(',') : '';
 
   useEffect(() => {
     if (status === 'loading') return;
 
+    const storeSubject =
+      user?.roles && user.roles.length > 0 ? { role: user.role, roles: user.roles } : { role: user?.role };
+    const sessionSubject =
+      sessionUser?.roles && sessionUser.roles.length > 0
+        ? { role: sessionUser.role, roles: sessionUser.roles }
+        : { role: sessionUser?.role };
+
     // When not authenticated: open auth modal on the same page (no redirect)
     if (!session && !isAuthed) {
-      const { openAuth } = useUserStore.getState();
-      openAuth('signin');
+      useUserStore.getState().openAuth('signin');
       setIsChecking(false);
       return;
     }
@@ -43,15 +65,25 @@ export default function SecureRoute({
     // Check role if required (compare normalized roles)
     if (
       normalizedRequiredRole &&
-      !hasRoleAccess(userRoleFromStore, normalizedRequiredRole as 'client' | 'tripper' | 'admin') &&
-      !hasRoleAccess(userRoleFromSession, normalizedRequiredRole as 'client' | 'tripper' | 'admin')
+      !hasRoleAccess(storeSubject, normalizedRequiredRole as 'client' | 'tripper' | 'admin') &&
+      !hasRoleAccess(sessionSubject, normalizedRequiredRole as 'client' | 'tripper' | 'admin')
     ) {
       router.push('/unauthorized');
       return;
     }
 
     setIsChecking(false);
-  }, [session, status, isAuthed, userRoleFromStore, userRoleFromSession, normalizedRequiredRole, router]);
+  }, [
+    isAuthed,
+    normalizedRequiredRole,
+    router,
+    session,
+    sessionRoleKey,
+    sessionRolesKey,
+    status,
+    storeRoleKey,
+    storeRolesKey,
+  ]);
 
   if (status === 'loading' || isChecking) {
     return <LoadingSpinner />;
@@ -65,8 +97,8 @@ export default function SecureRoute({
   // Check role if required (compare normalized roles)
   if (
     normalizedRequiredRole &&
-    !hasRoleAccess(userRoleFromStore, normalizedRequiredRole as 'client' | 'tripper' | 'admin') &&
-    !hasRoleAccess(userRoleFromSession, normalizedRequiredRole as 'client' | 'tripper' | 'admin')
+    !hasRoleAccess(subjectFromStore, normalizedRequiredRole as 'client' | 'tripper' | 'admin') &&
+    !hasRoleAccess(subjectFromSession, normalizedRequiredRole as 'client' | 'tripper' | 'admin')
   ) {
     return (
       fallback || (

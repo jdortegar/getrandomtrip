@@ -2,8 +2,15 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import {
+  primaryRoleFromMembership,
+  prismaUserRoleToAppRole,
+  prismaUserRolesToAppRoles,
+} from '@/lib/auth/prismaUserRoles';
 import type { UserProfileAddress } from '@/lib/types/UserProfileAddress';
 import type { UserProfileMe } from '@/lib/types/UserProfileMe';
+
+export const dynamic = 'force-dynamic';
 
 function toAddress(val: unknown): UserProfileAddress | null {
   if (!val || typeof val !== 'object' || Array.isArray(val)) {
@@ -51,7 +58,7 @@ export async function GET() {
         travelerType: true,
         interests: true,
         dislikes: true,
-        role: true,
+        roles: true,
         avatarUrl: true,
       },
     });
@@ -60,6 +67,7 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    const roles = prismaUserRolesToAppRoles(u.roles);
     const user: UserProfileMe = {
       id: u.id,
       name: u.name,
@@ -70,7 +78,8 @@ export async function GET() {
       travelerType: u.travelerType,
       interests: u.interests,
       dislikes: u.dislikes,
-      role: u.role,
+      role: prismaUserRoleToAppRole(primaryRoleFromMembership(u.roles)),
+      roles,
       avatarUrl: u.avatarUrl,
     };
 
