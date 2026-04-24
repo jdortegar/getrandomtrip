@@ -15,12 +15,12 @@ export default function Footer({ dict, locale }: FooterProps) {
 
   return (
     <footer className="relative overflow-hidden bg-gray-900 text-white">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50" />
       <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
 
       <div className="relative">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-6">
@@ -28,7 +28,7 @@ export default function Footer({ dict, locale }: FooterProps) {
               <Img
                 alt={dict.common.siteName}
                 height={40}
-                src="/assets/logos/logo_getrandomtrip_white.png"
+                src="/assets/logos/logo_white.svg"
                 width={240}
               />
               <div className="max-w-sm space-y-2 text-center md:text-left">
