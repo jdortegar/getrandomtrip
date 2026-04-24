@@ -2294,7 +2294,8 @@
       "saveError": "Could not save your data",
       "profileUpdated": "Profile updated successfully",
       "avatarUploadError": "Could not upload profile photo.",
-      "avatarUploadSuccess": "Profile photo updated."
+      "avatarUploadSuccess": "Profile photo updated.",
+      "avatarFileTooLarge": "Image must be under 5 MB."
     }
   },
   "adminTripEditModal": {
@@ -2430,7 +2431,8 @@
         "saveSuccessCreate": "Draft saved",
         "saveSuccessEdit": "Post updated",
         "titleRequired": "Title is required",
-        "uploadError": "Image upload failed"
+        "uploadError": "Image upload failed",
+        "fileTooLarge": "Image must be under 10 MB."
       },
       "travelTypeLabel": "Traveler type",
       "unsaved": "Unsaved changes"
@@ -2801,7 +2803,8 @@
       "save": "Save changes",
       "uploadImage": "Upload cover image",
       "uploadingImage": "Uploading image…",
-      "imageUploadError": "Could not upload image"
+      "imageUploadError": "Could not upload image",
+      "imageTooLarge": "Image must be under 5 MB."
     },
     "toasts": {
       "success": "Tripper profile updated successfully",

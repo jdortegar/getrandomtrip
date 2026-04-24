@@ -2294,7 +2294,8 @@
       "saveError": "Error al guardar los datos",
       "profileUpdated": "Perfil actualizado correctamente",
       "avatarUploadError": "No se pudo subir la foto de perfil.",
-      "avatarUploadSuccess": "Foto de perfil actualizada."
+      "avatarUploadSuccess": "Foto de perfil actualizada.",
+      "avatarFileTooLarge": "La imagen no puede superar 5 MB."
     }
   },
   "adminTripEditModal": {
@@ -2430,7 +2431,8 @@
         "saveSuccessCreate": "Borrador guardado",
         "saveSuccessEdit": "Post actualizado",
         "titleRequired": "El título es obligatorio",
-        "uploadError": "No se pudo subir la imagen"
+        "uploadError": "No se pudo subir la imagen",
+        "fileTooLarge": "La imagen no puede superar 10 MB."
       },
       "travelTypeLabel": "Tipo de viajero",
       "unsaved": "Sin guardar"
@@ -2801,7 +2803,8 @@
       "save": "Guardar cambios",
       "uploadImage": "Subir imagen de portada",
       "uploadingImage": "Subiendo imagen…",
-      "imageUploadError": "No se pudo subir la imagen"
+      "imageUploadError": "No se pudo subir la imagen",
+      "imageTooLarge": "La imagen no puede superar 5 MB."
     },
     "toasts": {
       "success": "Perfil de tripper actualizado correctamente",

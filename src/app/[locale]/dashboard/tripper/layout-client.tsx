@@ -1,17 +1,15 @@
 'use client';
-import TripperGuard from '@/components/tripper/TripperGuard';
+import SecureRoute from '@/components/auth/SecureRoute';
 
 export default function TripperLayoutClient({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Let TripperGuard handle all role checking and redirects
-  // This prevents duplicate redirects and loops
   return (
-    <TripperGuard>
+    <SecureRoute requiredRole="tripper">
       {children}
-    </TripperGuard>
+    </SecureRoute>
   );
 }
 

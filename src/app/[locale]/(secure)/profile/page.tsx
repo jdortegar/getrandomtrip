@@ -343,8 +343,15 @@ function ProfileContent() {
   const handleAvatarChange = async (file: File) => {
     if (!dict) return;
     const t = dict.profile.toasts;
+    const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_AVATAR_BYTES) {
+      toast.error(t.avatarFileTooLarge);
+      return;
+    }
     setAvatarUploading(true);
     try {
+      const oldAvatarUrl = user?.avatar;
+
       // 1. Upload file
       const formData = new FormData();
       formData.append("file", file);
@@ -382,6 +389,12 @@ function ProfileContent() {
       useUserStore.setState((s) => ({
         user: s.user ? { ...s.user, avatar: url } : s.user,
       }));
+
+      // 4. Delete old blob (fire-and-forget)
+      if (oldAvatarUrl?.includes("/api/upload?key=")) {
+        void fetch(oldAvatarUrl, { method: "DELETE" }).catch(() => null);
+      }
+
       toast.success(t.avatarUploadSuccess);
     } catch {
       toast.error(t.avatarUploadError);

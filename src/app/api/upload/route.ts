@@ -55,6 +55,32 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function DELETE(request: NextRequest) {
+  const key = request.nextUrl.searchParams.get("key");
+  if (!key || !isSafeKey(key)) {
+    return new NextResponse("Bad Request", { status: 400 });
+  }
+
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Ownership check: key must start with the requesting user's id
+    if (!key.startsWith(`${session.user.id}/`)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const store = getBlobStore();
+    await store.delete(key);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("[upload] DELETE", error);
+    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
