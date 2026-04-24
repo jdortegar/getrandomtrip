@@ -345,27 +345,42 @@ function ProfileContent() {
     const t = dict.profile.toasts;
     setAvatarUploading(true);
     try {
+      // 1. Upload file
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("/api/user/avatar", {
+      formData.append("feature", "avatar");
+      const uploadRes = await fetch("/api/upload", {
         body: formData,
         method: "POST",
       });
-      if (!res.ok) {
+      if (!uploadRes.ok) {
         toast.error(t.avatarUploadError);
         return;
       }
-      const data = (await res.json()) as { avatarUrl?: string };
-      if (!data.avatarUrl) {
+      const { url } = (await uploadRes.json()) as { url?: string };
+      if (!url) {
         toast.error(t.avatarUploadError);
         return;
       }
+
+      // 2. Persist to DB
+      const updateRes = await fetch("/api/user/update", {
+        body: JSON.stringify({ avatarUrl: url }),
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+      });
+      if (!updateRes.ok) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
+
+      // 3. Update session + store
       await updateSession({
         ...session,
-        user: { ...session?.user, image: data.avatarUrl },
+        user: { ...session?.user, image: url },
       });
       useUserStore.setState((s) => ({
-        user: s.user ? { ...s.user, avatar: data.avatarUrl } : s.user,
+        user: s.user ? { ...s.user, avatar: url } : s.user,
       }));
       toast.success(t.avatarUploadSuccess);
     } catch {
