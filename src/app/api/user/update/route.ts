@@ -57,14 +57,19 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { address, email, name, phone } = body as {
+    const { address, avatarUrl, email, name, phone } = body as {
       address?: unknown;
+      avatarUrl?: string;
       email?: string;
       name?: string;
       phone?: string | null;
     };
 
     const data: Prisma.UserUpdateInput = {};
+
+    if (typeof avatarUrl === "string" && avatarUrl.trim()) {
+      data.avatarUrl = avatarUrl.trim();
+    }
 
     if (typeof name === 'string') {
       const trimmed = name.trim();

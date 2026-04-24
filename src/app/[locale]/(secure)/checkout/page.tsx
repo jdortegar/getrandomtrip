@@ -46,7 +46,7 @@ import type { CheckoutFormFields, CheckoutTripFromApi } from "@/types/Checkout";
 import { Button } from "@/components/ui/Button";
 import { usePayment } from "@/hooks/usePayment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";

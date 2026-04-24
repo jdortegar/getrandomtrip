@@ -99,6 +99,7 @@ export interface TripperBlogComposerDict {
     saveSuccessEdit: string;
     titleRequired: string;
     uploadError: string;
+    fileTooLarge: string;
   };
   travelTypeLabel: string;
   unsaved: string;
@@ -419,6 +420,7 @@ export interface TripperProfilePageDict {
     heroImage: string;
     heroImagePlaceholder: string;
     imageUploadError: string;
+    imageTooLarge: string;
     location: string;
     locationPlaceholder: string;
     save: string;
@@ -1186,6 +1188,7 @@ export interface MarketingDictionary {
       saveError: string;
       avatarUploadError: string;
       avatarUploadSuccess: string;
+      avatarFileTooLarge: string;
     };
     travelerTypes: {
       couple: string;

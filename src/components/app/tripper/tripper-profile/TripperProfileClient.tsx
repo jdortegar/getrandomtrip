@@ -266,19 +266,30 @@ export function TripperProfileClient({
   };
 
   const handleUploadHeroImage = async (file: File) => {
+    const MAX_HERO_BYTES = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_HERO_BYTES) {
+      toast.error(copy.modal.imageTooLarge);
+      return;
+    }
     setIsUploadingHeroImage(true);
     try {
+      const oldHeroImage = formData.heroImage;
       const upload = new FormData();
       upload.append("file", file);
-      const response = await fetch("/api/tripper/blog-media", {
+      upload.append("feature", "tripper-hero");
+      const response = await fetch("/api/upload", {
         body: upload,
         method: "POST",
       });
       if (!response.ok) throw new Error("upload failed");
-      const data = (await response.json()) as { location?: string };
-      if (!data.location) throw new Error("missing url");
-      setFormData((prev) => ({ ...prev, heroImage: data.location as string }));
-      setProfile((prev) => ({ ...prev, heroImage: data.location as string }));
+      const data = (await response.json()) as { url?: string };
+      if (!data.url) throw new Error("missing url");
+      setFormData((prev) => ({ ...prev, heroImage: data.url as string }));
+      setProfile((prev) => ({ ...prev, heroImage: data.url as string }));
+      // Delete old blob (fire-and-forget)
+      if (oldHeroImage?.includes("/api/upload?key=")) {
+        void fetch(oldHeroImage, { method: "DELETE" }).catch(() => null);
+      }
     } catch (error) {
       console.error("Error uploading tripper cover image:", error);
       toast.error(copy.modal.imageUploadError);

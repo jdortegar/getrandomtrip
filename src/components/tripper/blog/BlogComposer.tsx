@@ -30,24 +30,37 @@ interface BlogComposerProps {
   post: Partial<BlogPost>;
 }
 
-async function uploadImageFile(file: File, postId?: string): Promise<string> {
+const MAX_BLOG_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+function validateFileSize(file: File): boolean {
+  return file.size <= MAX_BLOG_IMAGE_BYTES;
+}
+
+async function uploadImageFile(file: File, feature: string): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
-  if (postId) {
-    formData.append("postId", postId);
-  }
-  const response = await fetch("/api/tripper/blog-media", {
+  formData.append("feature", feature);
+  const response = await fetch("/api/upload", {
     body: formData,
     method: "POST",
   });
   if (!response.ok) {
     throw new Error("upload failed");
   }
-  const data = (await response.json()) as { location?: string };
-  if (!data.location) {
-    throw new Error("no location");
+  const data = (await response.json()) as { url?: string };
+  if (!data.url) {
+    throw new Error("no url");
   }
-  return data.location;
+  return data.url;
+}
+
+async function deleteImageFile(url: string): Promise<void> {
+  if (!url.includes("/api/upload?key=")) return;
+  const res = await fetch(url, { method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    console.error(`[deleteImageFile] ${res.status} ${res.statusText}`, body, url);
+  }
 }
 
 export default function BlogComposer({
@@ -83,7 +96,7 @@ export default function BlogComposer({
 
   const handleUploadImage = async (file: File) => {
     try {
-      return await uploadImageFile(file, post.id);
+      return await uploadImageFile(file, "blog-gallery");
     } catch {
       toast.error(copy.toasts.uploadError);
       throw new Error("upload failed");
@@ -96,10 +109,16 @@ export default function BlogComposer({
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+    if (!validateFileSize(file)) {
+      toast.error(copy.toasts.fileTooLarge);
+      return;
+    }
     setCoverUploading(true);
     try {
-      const url = await uploadImageFile(file, post.id);
+      const oldCover = post.coverUrl;
+      const url = await uploadImageFile(file, "blog-cover");
       setPost((p) => ({ ...p, coverUrl: url }));
+      if (oldCover) await deleteImageFile(oldCover).catch(() => null);
     } catch {
       toast.error(copy.toasts.uploadError);
     } finally {
@@ -113,10 +132,15 @@ export default function BlogComposer({
     const files = Array.from(event.target.files ?? []);
     event.target.value = "";
     if (!files.length) return;
+    const oversized = files.filter((f) => !validateFileSize(f));
+    if (oversized.length > 0) {
+      toast.error(copy.toasts.fileTooLarge);
+      return;
+    }
     setGalleryUploading(true);
     try {
       const results = await Promise.allSettled(
-        files.map((f) => uploadImageFile(f, post.id)),
+        files.map((f) => uploadImageFile(f, "blog-gallery")),
       );
       const urls: string[] = [];
       let failCount = 0;
@@ -145,10 +169,14 @@ export default function BlogComposer({
   };
 
   const removeGalleryImage = (blockIndex: number) => {
+    const block = post.blocks?.[blockIndex];
     setPost((p) => ({
       ...p,
       blocks: (p.blocks ?? []).filter((_, i) => i !== blockIndex),
     }));
+    if (block?.type === "image" && block.url) {
+      void deleteImageFile(block.url).catch(() => null);
+    }
   };
 
   const updateGalleryCaption = (blockIndex: number, caption: string) => {
@@ -174,7 +202,7 @@ export default function BlogComposer({
         ...post,
         blocks: post.blocks,
         content: contentHtml,
-        coverUrl: post.coverUrl,
+        coverUrl: post.coverUrl ?? null,
         excuseKey: post.excuseKey?.trim() ? post.excuseKey.trim() : null,
         format,
         ...(status === "published"
@@ -316,9 +344,11 @@ export default function BlogComposer({
                     {coverUploading ? copy.cover.uploading : copy.cover.upload}
                   </Button>
                   <Button
-                    onClick={() =>
-                      setPost((p) => ({ ...p, coverUrl: undefined }))
-                    }
+                    onClick={() => {
+                      const old = post.coverUrl;
+                      setPost((p) => ({ ...p, coverUrl: undefined }));
+                      if (old) void deleteImageFile(old).catch(() => null);
+                    }}
                     type="button"
                     variant="ghost"
                   >

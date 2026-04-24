@@ -343,30 +343,58 @@ function ProfileContent() {
   const handleAvatarChange = async (file: File) => {
     if (!dict) return;
     const t = dict.profile.toasts;
+    const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_AVATAR_BYTES) {
+      toast.error(t.avatarFileTooLarge);
+      return;
+    }
     setAvatarUploading(true);
     try {
+      const oldAvatarUrl = user?.avatar;
+
+      // 1. Upload file
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("/api/user/avatar", {
+      formData.append("feature", "avatar");
+      const uploadRes = await fetch("/api/upload", {
         body: formData,
         method: "POST",
       });
-      if (!res.ok) {
+      if (!uploadRes.ok) {
         toast.error(t.avatarUploadError);
         return;
       }
-      const data = (await res.json()) as { avatarUrl?: string };
-      if (!data.avatarUrl) {
+      const { url } = (await uploadRes.json()) as { url?: string };
+      if (!url) {
         toast.error(t.avatarUploadError);
         return;
       }
+
+      // 2. Persist to DB
+      const updateRes = await fetch("/api/user/update", {
+        body: JSON.stringify({ avatarUrl: url }),
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+      });
+      if (!updateRes.ok) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
+
+      // 3. Update session + store
       await updateSession({
         ...session,
-        user: { ...session?.user, image: data.avatarUrl },
+        user: { ...session?.user, image: url },
       });
       useUserStore.setState((s) => ({
-        user: s.user ? { ...s.user, avatar: data.avatarUrl } : s.user,
+        user: s.user ? { ...s.user, avatar: url } : s.user,
       }));
+
+      // 4. Delete old blob (fire-and-forget)
+      if (oldAvatarUrl?.includes("/api/upload?key=")) {
+        void fetch(oldAvatarUrl, { method: "DELETE" }).catch(() => null);
+      }
+
       toast.success(t.avatarUploadSuccess);
     } catch {
       toast.error(t.avatarUploadError);
@@ -467,7 +495,7 @@ function ProfileContent() {
   return (
     <>
       <HeaderHero
-        className="!h-[40vh]"
+        className="h-[40vh]"
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={p.hero.subtitle}
         title={p.hero.title}
@@ -542,8 +570,15 @@ function ProfileContent() {
                   profileMe
                     ? { roles: profileMe.roles }
                     : {
-                        role: (currentUser as { role?: string } | null | undefined)?.role,
-                        roles: (currentUser as { roles?: Array<"admin" | "client" | "tripper"> } | null | undefined)?.roles,
+                        role: (
+                          currentUser as { role?: string } | null | undefined
+                        )?.role,
+                        roles: (
+                          currentUser as
+                            | { roles?: Array<"admin" | "client" | "tripper"> }
+                            | null
+                            | undefined
+                        )?.roles,
                       },
                   "tripper",
                 ) && (

@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
+import { toast } from "sonner";
 import BudgetStep from '@/components/journey/BudgetStep';
 import ExcuseStep from '@/components/journey/ExcuseStep';
 import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';

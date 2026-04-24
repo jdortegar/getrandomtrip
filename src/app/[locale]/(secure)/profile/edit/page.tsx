@@ -1,6 +1,5 @@
 'use client';
 
-import GlassCard from '@/components/ui/GlassCard';
 import PageContainer from '@/components/user/PageContainer';
 import SectionCard from '@/components/user/SectionCard';
 import { useUserStore } from '@/store/slices/userStore';
@@ -9,7 +8,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
-  const { isAuthed, openAuth, updateAccount, upsertPrefs, user } =
+  const { updateAccount, upsertPrefs, user } =
     useUserStore();
 
   const [name, setName] = useState(user?.name ?? '');
@@ -25,10 +24,6 @@ export default function EditProfilePage() {
   );
 
   useEffect(() => {
-    if (!isAuthed) openAuth('signin');
-  }, [isAuthed, openAuth]);
-
-  useEffect(() => {
     if (user) {
       setName(user.name);
       setEmail(user.email);
@@ -41,18 +36,6 @@ export default function EditProfilePage() {
   const onSaveAccount = () => updateAccount?.(name, email);
   const onSavePrefs = () =>
     upsertPrefs?.({ travelerType, budget, publicProfile });
-
-  if (!isAuthed) {
-    return (
-      <PageContainer>
-        <GlassCard>
-          <div className="p-6 text-center text-neutral-700">
-            Inicia sesión para editar tu perfil.
-          </div>
-        </GlassCard>
-      </PageContainer>
-    );
-  }
 
   return (
     <PageContainer>
