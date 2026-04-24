@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
       headers: {
         "Cache-Control": "public, max-age=31536000, immutable",
         "Content-Type": contentType,
+        "X-Content-Type-Options": "nosniff",
       },
     });
   } catch (error) {
@@ -75,6 +76,24 @@ export async function POST(request: NextRequest) {
     const rawExt = file.name.split(".").pop() ?? "bin";
     const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8) || "bin";
     const key = `${session.user.id}/${rawFeature}/${crypto.randomUUID()}.${ext}`;
+
+    const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+    if (file.size > MAX_BYTES) {
+      return NextResponse.json({ error: "File too large" }, { status: 413 });
+    }
+
+    const ALLOWED_MIME_TYPES = new Set([
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/svg+xml",
+      "image/avif",
+    ]);
+
+    if (!ALLOWED_MIME_TYPES.has(file.type)) {
+      return NextResponse.json({ error: "Unsupported file type" }, { status: 415 });
+    }
 
     const arrayBuffer = await file.arrayBuffer();
     const contentType = file.type || "application/octet-stream";
