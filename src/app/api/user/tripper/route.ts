@@ -1,7 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { addMembershipRole, buildUserRoleUpdate } from '@/lib/auth/prismaUserRoles';
 import { prisma } from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        availableTypes: true,
+        bio: true,
+        commission: true,
+        destinations: true,
+        heroImage: true,
+        location: true,
+        tierLevel: true,
+        tripperSlug: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error('Error fetching tripper profile:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
+}
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -46,6 +82,19 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const existing = await prisma.user.findUnique({
+      select: { roles: true },
+      where: { id: session.user.id },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const { roles } = buildUserRoleUpdate(
+      addMembershipRole(existing.roles, 'TRIPPER'),
+    );
+
     // Update user with tripper data
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
@@ -58,14 +107,14 @@ export async function PATCH(request: NextRequest) {
         tripperSlug,
         commission,
         availableTypes,
-        role: 'TRIPPER', // Ensure role is set to TRIPPER
+        roles: { set: roles },
       },
       select: {
         id: true,
         name: true,
         email: true,
         avatarUrl: true,
-        role: true,
+        roles: true,
         bio: true,
         heroImage: true,
         location: true,

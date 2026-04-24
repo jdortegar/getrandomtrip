@@ -15,11 +15,11 @@ export async function GET() {
     }
 
     const caller = await prisma.user.findUnique({
-      select: { id: true, role: true },
+      select: { id: true, roles: true },
       where: { id: session.user.id },
     });
 
-    if (!caller || !hasRoleAccess(caller.role, 'admin')) {
+    if (!caller || !hasRoleAccess(caller, 'admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -31,7 +31,7 @@ export async function GET() {
         email: true,
         id: true,
         name: true,
-        role: true,
+        roles: true,
         tripperSlug: true,
       },
     });

@@ -6,7 +6,7 @@ export function getExcuseOptionsForType(type: string): { value: string; label: s
   return getExcusesByTravelerType(type).map((e) => ({ value: e.key, label: e.title }));
 }
 
-export const PACKAGE_TYPES = [
+export const EXPERIENCE_TYPES = [
   { value: 'couple', label: 'Pareja (BOND©)' },
   { value: 'family', label: 'Familia (KIN©)' },
   { value: 'group', label: 'Grupo (CREW©)' },
@@ -15,7 +15,7 @@ export const PACKAGE_TYPES = [
   { value: 'paws', label: 'Con Mascotas (PAWS©)' },
 ] as const;
 
-export const PACKAGE_LEVELS = [
+export const EXPERIENCE_LEVELS = [
   { value: 'essenza', label: 'Essenza' },
   { value: 'modo-explora', label: 'Modo Explora' },
   { value: 'explora-plus', label: 'Explora+' },
@@ -23,7 +23,7 @@ export const PACKAGE_LEVELS = [
   { value: 'atelier-getaway', label: 'Atelier Getaway' },
 ] as const;
 
-export const PACKAGE_STATUSES = [
+export const EXPERIENCE_STATUSES = [
   { value: 'DRAFT', label: 'Borrador' },
   { value: 'ACTIVE', label: 'Activo' },
   { value: 'INACTIVE', label: 'Inactivo' },

@@ -3,6 +3,7 @@
 // ============================================================================
 
 import { prisma } from '@/lib/prisma';
+import { primaryRoleFromMembership } from '@/lib/auth/prismaUserRoles';
 import type {
   FeaturedTrip,
   FeaturedTripCard,
@@ -19,14 +20,14 @@ export async function getTripperBySlug(
     const tripper = await prisma.user.findUnique({
       where: {
         tripperSlug: slug,
-        role: 'TRIPPER',
+        roles: { has: 'TRIPPER' },
       },
       select: {
         id: true,
         name: true,
         email: true,
         avatarUrl: true,
-        role: true,
+        roles: true,
         tripperSlug: true,
         commission: true,
         interests: true,
@@ -56,8 +57,11 @@ export async function getTripperBySlug(
 
     const availableTypes = packages.map((pkg) => pkg.type);
 
+    const { roles, ...tripperRest } = tripper;
+
     return {
-      ...tripper,
+      ...tripperRest,
+      role: primaryRoleFromMembership(roles),
       tripperSlug: tripper.tripperSlug,
       commission: tripper.commission || 0,
       availableTypes,
@@ -77,7 +81,7 @@ export async function getTripperFeaturedTrips(
 ): Promise<FeaturedTripCard[]> {
   try {
     const tripper = await prisma.user.findUnique({
-      where: { tripperSlug, role: 'TRIPPER' },
+      where: { tripperSlug, roles: { has: 'TRIPPER' } },
     });
 
     if (!tripper) return [];
@@ -136,7 +140,7 @@ export async function getTripperFeaturedTrips(
 export async function getAllTrippers() {
   try {
     return await prisma.user.findMany({
-      where: { role: 'TRIPPER' },
+      where: { roles: { has: 'TRIPPER' } },
       select: {
         id: true,
         name: true,

@@ -24,10 +24,10 @@ export async function GET(
     // Get user and verify they are a tripper
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, role: true },
+      select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user.role, 'tripper')) {
+    if (!user || !hasRoleAccess(user, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },
@@ -117,10 +117,10 @@ export async function PATCH(
     // Get user and verify they are a tripper
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, role: true },
+      select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user.role, 'tripper')) {
+    if (!user || !hasRoleAccess(user, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },
@@ -286,10 +286,10 @@ export async function DELETE(
     // Get user and verify they are a tripper
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, role: true },
+      select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user.role, 'tripper')) {
+    if (!user || !hasRoleAccess(user, 'tripper')) {
       return NextResponse.json(
         { error: 'Forbidden - Tripper access only' },
         { status: 403 },

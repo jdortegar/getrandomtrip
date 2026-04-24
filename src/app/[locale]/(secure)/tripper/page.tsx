@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
-import { useSession } from 'next-auth/react';
-import { useUserStore } from '@/store/slices/userStore';
-import Navbar from '@/components/Navbar';
-import SecureRoute from '@/components/auth/SecureRoute';
-import GlassCard from '@/components/ui/GlassCard';
-import BgCarousel from '@/components/media/BgCarousel';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import { useSession } from "next-auth/react";
+import { useUserStore } from "@/store/slices/userStore";
+import Navbar from "@/components/Navbar";
+import SecureRoute from "@/components/auth/SecureRoute";
+import GlassCard from "@/components/ui/GlassCard";
+import BgCarousel from "@/components/media/BgCarousel";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import {
   Users,
   DollarSign,
@@ -20,7 +20,7 @@ import {
   Plus,
   Settings,
   BarChart3,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface DashboardStats {
   totalBookings: number;
@@ -67,17 +67,17 @@ function TripperContent() {
 
       try {
         setLoading(true);
-        const response = await fetch('/api/tripper/dashboard');
+        const response = await fetch("/api/tripper/dashboard");
         const data = await response.json();
 
         if (response.ok && data.stats && data.recentBookings) {
           setTripperStats(data.stats);
           setRecentBookings(data.recentBookings);
         } else {
-          console.error('Error fetching dashboard data:', data.error);
+          console.error("Error fetching dashboard data:", data.error);
         }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -99,31 +99,31 @@ function TripperContent() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const getStatusLabel = (status: string) => {
     const statusMap: Record<string, string> = {
-      confirmed: 'Confirmado',
-      revealed: 'Revelado',
-      completed: 'Completado',
-      pending: 'Pendiente',
+      confirmed: "Confirmado",
+      revealed: "Revelado",
+      completed: "Completado",
+      pending: "Pendiente",
     };
     return statusMap[status] || status;
   };
 
   const getStatusColor = (status: string) => {
-    if (status === 'confirmed' || status === 'completed') {
-      return 'bg-green-100 text-green-800';
+    if (status === "confirmed" || status === "completed") {
+      return "bg-green-100 text-green-800";
     }
-    if (status === 'revealed') {
-      return 'bg-purple-100 text-purple-800';
+    if (status === "revealed") {
+      return "bg-purple-100 text-purple-800";
     }
-    return 'bg-yellow-100 text-yellow-800';
+    return "bg-yellow-100 text-yellow-800";
   };
 
   return (
@@ -164,7 +164,7 @@ function TripperContent() {
                 <div>
                   <p className="text-sm text-neutral-600">Ingresos Mensuales</p>
                   <p className="text-2xl font-bold text-neutral-900">
-                    ${tripperStats.monthlyRevenue.toLocaleString('es-AR')}
+                    ${tripperStats.monthlyRevenue.toLocaleString("es-AR")}
                   </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-600" />
@@ -244,7 +244,7 @@ function TripperContent() {
                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-neutral-900">
-                            ${booking.amount.toLocaleString('es-AR')}
+                            ${booking.amount.toLocaleString("es-AR")}
                           </p>
                           <span
                             className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
@@ -274,7 +274,7 @@ function TripperContent() {
                     <Plus className="h-5 w-5 text-blue-600" />
                     <div className="text-left">
                       <div className="font-medium text-blue-900">
-                        Crear Paquete
+                        Crear Experiencia
                       </div>
                       <div className="text-sm text-blue-700">
                         Nueva oferta de viaje
@@ -375,7 +375,7 @@ function TripperContent() {
                   </div>
                 ) : (
                   <p className="col-span-full text-sm text-neutral-600">
-                    {tripperStats.activePackages} paquete(s) activo(s).{' '}
+                    {tripperStats.activePackages} paquete(s) activo(s).{" "}
                     <a
                       href="/dashboard/tripper/packages"
                       className="text-blue-600 hover:underline"

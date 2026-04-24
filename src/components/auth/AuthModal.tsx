@@ -20,8 +20,6 @@ export default function AuthModal({
   isOpen,
   onClose,
 }: AuthModalProps) {
-  if (!isOpen) return null;
-
   const t = dict?.auth;
   const [mode, setMode] = useState<"login" | "register">(defaultMode);
   const [isLoading, setIsLoading] = useState(false);
@@ -184,6 +182,10 @@ export default function AuthModal({
     );
     window.location.href = `mailto:support@getrandomtrip.com?subject=${subject}&body=${body}`;
   }, [email, t?.forgotPasswordBody, t?.forgotPasswordSubject, t?.invalidEmail]);
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div

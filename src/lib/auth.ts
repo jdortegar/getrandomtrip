@@ -6,6 +6,11 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
 import { hasRoleAccess } from '@/lib/auth/roleAccess';
+import {
+  primaryRoleFromMembership,
+  prismaUserRoleToAppRole,
+  prismaUserRolesToAppRoles,
+} from '@/lib/auth/prismaUserRoles';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -31,7 +36,7 @@ export const authOptions: NextAuthOptions = {
             email: true,
             name: true,
             password: true,
-            role: true,
+            roles: true,
             avatarUrl: true,
             travelerType: true,
             interests: true,
@@ -83,7 +88,6 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name || 'Usuario',
             avatarUrl: user.image || null,
-            role: 'CLIENT',
             travelerType: null,
             interests: [],
             dislikes: [],
@@ -138,7 +142,7 @@ export const authOptions: NextAuthOptions = {
             id: true,
             name: true,
             email: true,
-            role: true,
+            roles: true,
             address: true,
             phone: true,
             createdAt: true,
@@ -153,7 +157,10 @@ export const authOptions: NextAuthOptions = {
           session.user.id = dbUser.id;
           session.user.name = dbUser.name;
           session.user.email = dbUser.email;
-          session.user.role = dbUser.role;
+          session.user.role = prismaUserRoleToAppRole(
+            primaryRoleFromMembership(dbUser.roles),
+          );
+          session.user.roles = prismaUserRolesToAppRoles(dbUser.roles);
           session.user.travelerType = dbUser.travelerType;
           session.user.interests = dbUser.interests;
           session.user.dislikes = dbUser.dislikes;
@@ -189,7 +196,7 @@ export async function assertTripper() {
     where: { email: session.user.email! },
   });
 
-  if (!user || !hasRoleAccess(user.role, 'tripper')) {
+  if (!user || !hasRoleAccess(user, 'tripper')) {
     redirect('/');
   }
 

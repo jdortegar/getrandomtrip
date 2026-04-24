@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { FormSelectField } from "@/components/ui/FormField";
 import {
   DialogDescription,
   DialogFooter,
@@ -10,29 +9,61 @@ import {
   DialogTitle,
   Modal,
 } from "@/components/ui/Modal";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 import type { AdminUser, UserRole } from "./UsersTableRow";
 
-const ROLE_OPTIONS: UserRole[] = ["CLIENT", "TRIPPER", "ADMIN"];
+function sortRoles(roles: UserRole[]): UserRole[] {
+  return [...roles].sort((a, b) => a.localeCompare(b));
+}
+
+function rolesEqual(a: UserRole[], b: UserRole[]): boolean {
+  const aa = sortRoles(a).join(",");
+  const bb = sortRoles(b).join(",");
+  return aa === bb;
+}
+
+function withMembershipToggled(
+  current: UserRole[],
+  member: "ADMIN" | "TRIPPER",
+  enabled: boolean,
+): UserRole[] {
+  const other = current.filter((r) => r !== "CLIENT" && r !== member);
+  if (enabled) {
+    return sortRoles(["CLIENT", member, ...other]);
+  }
+  return sortRoles(["CLIENT", ...other]);
+}
 
 interface UserRoleModalProps {
+  copy: MarketingDictionary["adminUsers"];
   onClose: () => void;
   onSaved: () => void;
   open: boolean;
   user: AdminUser;
 }
 
-export function UserRoleModal({ onClose, onSaved, open, user }: UserRoleModalProps) {
-  const [role, setRole] = useState<UserRole>(user.role);
+export function UserRoleModal({
+  copy,
+  onClose,
+  onSaved,
+  open,
+  user,
+}: UserRoleModalProps) {
+  const [roles, setRoles] = useState<UserRole[]>(user.roles);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Depend on role *contents* (order-independent), not array reference — a new
+  // `roles[]` reference each parent render would retrigger this and loop with setRoles.
+  const userRolesKey = sortRoles([...user.roles]).join(",");
+
   useEffect(() => {
-    setRole(user.role);
+    setRoles(sortRoles([...user.roles]));
     setError("");
-  }, [user.id, user.role]);
+  }, [user.id, userRolesKey]);
 
   async function handleSave() {
-    if (role === user.role) {
+    if (rolesEqual(roles, user.roles)) {
       onClose();
       return;
     }
@@ -40,7 +71,7 @@ export function UserRoleModal({ onClose, onSaved, open, user }: UserRoleModalPro
     setError("");
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, {
-        body: JSON.stringify({ role }),
+        body: JSON.stringify({ roles: sortRoles(roles) }),
         headers: { "Content-Type": "application/json" },
         method: "PATCH",
       });
@@ -49,10 +80,10 @@ export function UserRoleModal({ onClose, onSaved, open, user }: UserRoleModalPro
         onClose();
       } else {
         const data = (await res.json()) as { error?: string };
-        setError(data.error ?? "Failed to update role");
+        setError(data.error ?? copy.modal.errorFallback);
       }
     } catch {
-      setError("Failed to update role");
+      setError(copy.modal.errorFallback);
     } finally {
       setSaving(false);
     }
@@ -75,18 +106,44 @@ export function UserRoleModal({ onClose, onSaved, open, user }: UserRoleModalPro
       </DialogHeader>
 
       <div className="px-6 py-5">
-        <FormSelectField
-          id="user-role-select"
-          label="Role"
-          onChange={(e) => setRole(e.target.value as UserRole)}
-          value={role}
-        >
-          {ROLE_OPTIONS.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </FormSelectField>
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-neutral-900">{copy.modal.roleSection}</p>
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
+            <input
+              checked
+              className="h-4 w-4"
+              disabled
+              type="checkbox"
+            />
+            <span>{copy.modal.clientBase}</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
+            <input
+              checked={roles.includes("TRIPPER")}
+              className="h-4 w-4"
+              onChange={() => {
+                setRoles((prev) =>
+                  withMembershipToggled(prev, "TRIPPER", !prev.includes("TRIPPER")),
+                );
+              }}
+              type="checkbox"
+            />
+            <span>{copy.modal.tripper}</span>
+          </label>
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
+            <input
+              checked={roles.includes("ADMIN")}
+              className="h-4 w-4"
+              onChange={() => {
+                setRoles((prev) =>
+                  withMembershipToggled(prev, "ADMIN", !prev.includes("ADMIN")),
+                );
+              }}
+              type="checkbox"
+            />
+            <span>{copy.modal.admin}</span>
+          </label>
+        </div>
         {error && (
           <p className="mt-2 text-sm font-medium text-red-600">{error}</p>
         )}
@@ -100,16 +157,16 @@ export function UserRoleModal({ onClose, onSaved, open, user }: UserRoleModalPro
           type="button"
           variant="secondary"
         >
-          Cancel
+          {copy.modal.cancel}
         </Button>
         <Button
-          disabled={saving || role === user.role}
+          disabled={saving || rolesEqual(roles, user.roles)}
           onClick={() => void handleSave()}
           size="sm"
           type="button"
           variant="default"
         >
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? copy.modal.saving : copy.modal.saveChanges}
         </Button>
       </DialogFooter>
     </Modal>

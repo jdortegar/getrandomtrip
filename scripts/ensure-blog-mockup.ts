@@ -110,7 +110,7 @@ async function main() {
       select: { id: true },
     })) ??
     (await prisma.user.findFirst({
-      where: { role: 'TRIPPER' },
+      where: { roles: { has: 'TRIPPER' } },
       select: { id: true },
     }));
 

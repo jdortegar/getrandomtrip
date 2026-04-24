@@ -11,12 +11,23 @@ export default function TripperGuard({
   children: React.ReactNode;
 }) {
   const { isAuthed, user } = useUserStore();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const [hasChecked, setHasChecked] = useState(false);
 
-  const userRole = ((session?.user as any)?.role || user?.role) as string | undefined;
+  const sessionUser = session?.user as
+    | { role?: string; roles?: Array<"admin" | "client" | "tripper"> }
+    | undefined;
+
+  const roleSubject =
+    sessionUser?.roles && sessionUser.roles.length > 0
+      ? { role: sessionUser.role, roles: sessionUser.roles }
+      : user?.roles && user.roles.length > 0
+        ? { role: user.role, roles: user.roles }
+        : { role: sessionUser?.role ?? user?.role };
+
+  const isTripper = hasRoleAccess(roleSubject, "tripper");
 
   useEffect(() => {
     if (!isAuthed) {
@@ -26,28 +37,31 @@ export default function TripperGuard({
       return;
     }
     
-    // Only redirect if we have a role and it's NOT tripper
-    // Don't redirect if role is still loading (null)
-    if (userRole && !hasRoleAccess(userRole, 'tripper')) {
-      router.replace('/dashboard');
-    } else if (hasRoleAccess(userRole, 'tripper') || (isAuthed && !userRole && session?.user)) {
-      // User is a tripper or session is loading, allow access
+    if (status === "loading") return;
+
+    if (isTripper) {
       setHasChecked(true);
+      return;
     }
-  }, [isAuthed, userRole, router, pathname, session?.user]);
 
-  // Show nothing while checking or if not authenticated
-  if (!isAuthed || (!hasChecked && !userRole)) {
+    // If session is present but roles haven't hydrated yet, wait
+    if (session?.user && !sessionUser?.roles && !user?.roles && !sessionUser?.role && !user?.role) {
+      return;
+    }
+
+    router.replace("/dashboard");
+  }, [isAuthed, isTripper, router, pathname, session?.user, sessionUser?.role, sessionUser?.roles, status, user?.role, user?.roles]);
+
+  if (status === "loading" || !isAuthed) {
     return null;
   }
 
-  // If we have a role and it's not tripper, show nothing (redirecting)
-  if (userRole && !hasRoleAccess(userRole, 'tripper')) {
+  // Show nothing while checking
+  if (!hasChecked) {
     return null;
   }
 
-  // Only render if user is a tripper
-  if (!hasRoleAccess(userRole, 'tripper')) {
+  if (!isTripper) {
     return null;
   }
 

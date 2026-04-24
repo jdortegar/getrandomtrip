@@ -55,6 +55,32 @@ export interface Earning {
   payoutDate?: string;
 }
 
+/** Optional tripper fields on session (JWT / updateSession) or extended user view. */
+export interface TripperSessionExtras {
+  availableTypes?: string[];
+  bio?: string;
+  commission?: number;
+  destinations?: string[];
+  heroImage?: string;
+  location?: string;
+  tierLevel?: string;
+  tripperSlug?: string;
+}
+
+export interface TripperOwnExperienceListItem {
+  displayPrice: string;
+  id: string;
+  isActive: boolean;
+  level: string;
+  maxNights: number;
+  maxPax: number;
+  minNights: number;
+  minPax: number;
+  teaser: string;
+  title: string;
+  type: string;
+}
+
 // Tripper Profile from Database
 export interface TripperProfile {
   id: string;
@@ -155,4 +181,92 @@ export interface RecentBooking {
   amount: number;
   status: 'confirmed' | 'revealed' | 'completed' | 'pending' | 'cancelled';
   paymentStatus: 'APPROVED' | 'COMPLETED' | 'PENDING' | 'FAILED' | 'REJECTED' | 'CANCELLED';
+}
+
+// ─── Package Types ────────────────────────────────────────────────────────────
+
+export interface ExperienceHotel {
+  name: string;
+  stars?: number;
+  location?: string;
+  checkIn?: string;
+  checkOut?: string;
+}
+
+export interface ExperienceActivity {
+  name: string;
+  duration?: string;
+  description?: string;
+}
+
+export interface ExperienceItineraryDay {
+  day: number;
+  title: string;
+  description: string;
+}
+
+export interface ExperienceFormData {
+  // Identity
+  type: string;
+  level: string;
+  title: string;
+  status: string;
+
+  // Display
+  teaser: string;
+  description: string;
+  heroImage: string;
+
+  // Destination
+  destinationCountry: string;
+  destinationCity: string;
+  excuseKey: string;
+
+  // Capacity
+  minNights: number;
+  maxNights: number;
+  minPax: number;
+  maxPax: number;
+
+  // Pricing
+  basePriceUsd: number;
+  displayPrice: string;
+
+  // Matching (mirrors TripRequest filters)
+  accommodationType: string;
+  transport: string;
+  climate: string;
+  maxTravelTime: string;
+  departPref: string;
+  arrivePref: string;
+
+  // Content
+  hotels: ExperienceHotel[];
+  activities: ExperienceActivity[];
+  itinerary: ExperienceItineraryDay[];
+  inclusions: string[];
+  exclusions: string[];
+
+  // Discovery
+  tags: string[];
+  highlights: string[];
+
+  // Visibility
+  isActive: boolean;
+  isFeatured: boolean;
+}
+
+export interface ExperienceListItem {
+  id: string;
+  title: string;
+  type: string;
+  level: string;  
+  status: string;
+  isActive: boolean;
+  basePriceUsd: number;
+  displayPrice: string;
+  destinationCountry: string;
+  destinationCity: string;
+  createdAt: string;
+  updatedAt: string;
 }

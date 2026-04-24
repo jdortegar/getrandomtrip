@@ -23,7 +23,11 @@ model User {
   name      String
   password  String?
   avatarUrl String?
-  role      UserRole @default(CLIENT)
+  /**
+   * Membership roles for this account.
+   * `CLIENT` is the base: trippers and admins are also clients.
+   */
+  roles     UserRole[] @default([CLIENT])
 
   // Tripper-specific fields
   tripperSlug    String?  @unique // For trippers: 'dawson', 'alma', etc.
@@ -158,6 +162,14 @@ model Package {
   // Pricing
   basePriceUsd Float  @default(0)
   displayPrice String @default("")
+
+  // Compatibility matching (mirrors TripRequest filter fields)
+  accommodationType String @default("any")
+  transport         String @default("any")
+  climate           String @default("any")
+  maxTravelTime     String @default("no-limit")
+  departPref        String @default("any")
+  arrivePref        String @default("any")
 
   // Visibility
   isActive   Boolean @default(true)

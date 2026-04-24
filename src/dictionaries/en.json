@@ -2476,8 +2476,8 @@
     },
     "quickActions": {
       "title": "Quick Actions",
-      "createPackage": "Create Package",
-      "createPackageSub": "New travel offer",
+      "createExperience": "Create Experience",
+      "createExperienceSub": "New travel offer",
       "earnings": "View Earnings",
       "earningsSub": "Detailed analytics",
       "reviews": "Reviews & NPS",
@@ -2506,5 +2506,349 @@
       "completed": "Completed",
       "pending": "Pending"
     }
+  },
+  "dashboard": {
+    "allTrips": {
+      "emptyDestination": "Surprise Destination",
+      "from": "From",
+      "paidOn": "Paid on",
+      "title": "Completed trips",
+      "totalLabel": "trips",
+      "viewMore": "View more"
+    },
+    "common": {
+      "id": "ID",
+      "transactions": "transactions"
+    },
+    "financialSummary": {
+      "completedPayments": "Completed Payments",
+      "pendingPayments": "Pending Payments",
+      "title": "Financial Summary",
+      "totalSpent": "Total Spent"
+    },
+    "header": {
+      "description": "Manage your trips and discover new adventures",
+      "helloFallbackName": "Traveler",
+      "helloPrefix": "Hello"
+    },
+    "paymentStatus": {
+      "APPROVED": "Approved",
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed",
+      "IN_PROCESS": "In process",
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "REJECTED": "Rejected"
+    },
+    "quickActions": {
+      "history": "Payment History",
+      "newTrip": "Plan New Trip",
+      "profile": "View My Profile",
+      "title": "Quick Actions"
+    },
+    "recentPayments": {
+      "amount": "Amount",
+      "date": "Date",
+      "empty": "No payments found",
+      "status": "Status",
+      "title": "Payment History",
+      "trip": "Trip"
+    },
+    "stats": {
+      "averageRating": "Average Rating",
+      "totalSpent": "Total Spent",
+      "totalTrips": "Total Trips",
+      "upcomingTrips": "Upcoming Trips"
+    },
+    "tripStatus": {
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "CONFIRMED": "Confirmed",
+      "DRAFT": "Draft",
+      "REVEALED": "Revealed",
+      "SAVED": "Saved"
+    },
+    "unpaidTrips": {
+      "action": "Complete payment",
+      "bookingRefLabel": "Reference",
+      "deleteAction": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this trip? This action cannot be undone.",
+      "deleteFailed": "Could not delete the trip. Please try again.",
+      "editAction": "Edit",
+      "estimatedTripTotal": "Estimated trip total",
+      "experienceSection": "Experience",
+      "message": "Complete payment to confirm your reservation. You can retry from here.",
+      "paymentPrefix": "Payment",
+      "priceEstimateNote": "Reference price from catalog",
+      "summaryHeroPriceCaption": "Base price per person",
+      "title": "Trips Pending Payment",
+      "travelTypeSection": "Travel type",
+      "travelTypeTitleSeparator": "|"
+    },
+    "upcomingTrips": {
+      "emptyCta": "Plan Trip",
+      "emptyMessage": "Start your next adventure now.",
+      "emptyTitle": "You have no upcoming trips",
+      "newTrip": "New Trip",
+      "title": "Upcoming Trips",
+      "viewDetails": "View Details"
+    }
+  },
+  "packages": {
+    "title": "MY EXPERIENCES",
+    "description": "Manage your travel offers and keep your catalog up to date.",
+    "newPackage": "New Experience",
+    "back": "Back to My Experiences",
+    "filters": {
+      "allTypes": "All types",
+      "allStatuses": "All statuses",
+      "allLevels": "All levels"
+    },
+    "table": {
+      "actions": "Actions",
+      "package": "Experience",
+      "typeLevel": "Type / Level",
+      "status": "Status",
+      "price": "Price / person",
+      "updated": "Updated",
+      "edit": "Edit"
+    },
+    "emptyState": {
+      "noPackages": "You don't have any experiences yet.",
+      "noMatch": "No experiences match the current filters.",
+      "createFirst": "Create my first experience"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "DRAFT": "Draft",
+      "INACTIVE": "Inactive",
+      "ARCHIVED": "Archived"
+    },
+    "form": {
+      "createTitle": "CREATE EXPERIENCE",
+      "editTitle": "EDIT EXPERIENCE",
+      "createSubmit": "Create Experience",
+      "editSubmit": "Save Changes",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "nav": {
+        "sections": "Sections"
+      },
+      "sections": {
+        "basic": "Basic",
+        "destination": "Destination",
+        "capacityPricing": "Capacity & Pricing",
+        "compatibility": "Compatibility",
+        "accommodation": "Accommodation",
+        "activities": "Activities",
+        "itinerary": "Itinerary",
+        "inclusions": "Inclusions / Exclusions",
+        "tagsMedia": "Tags, Highlights & Media",
+        "visibility": "Visibility"
+      },
+      "fields": {
+        "title": "Title",
+        "type": "Trip type",
+        "level": "Level",
+        "status": "Status",
+        "teaser": "Teaser",
+        "teaserHint": "Short description shown on cards (max 150 characters)",
+        "description": "Full description",
+        "country": "Destination country",
+        "city": "Destination city",
+        "excuseKey": "Trip excuse",
+        "excuseKeyHint": "The excuse the client uses to justify the trip",
+        "minNights": "Minimum nights",
+        "maxNights": "Maximum nights",
+        "maxNightsHint": "This level supports max {n} nights",
+        "minPax": "Minimum travelers",
+        "maxPax": "Maximum travelers",
+        "basePriceUsd": "Base price per person (USD)",
+        "basePriceUsdHint": "Price per person, in USD",
+        "displayPrice": "Display price",
+        "displayPriceHint": "Free text shown on the public card. E.g.: From USD 450",
+        "accommodationType": "Accommodation type",
+        "transport": "Main transport",
+        "climate": "Destination climate",
+        "maxTravelTime": "Max travel time",
+        "departPref": "Departure preference",
+        "arrivePref": "Arrival preference",
+        "compatibilityHint": "These fields help the matching algorithm pair your package with client requests.",
+        "hotelName": "Hotel name",
+        "hotelStars": "Stars",
+        "hotelLocation": "Location",
+        "hotelCheckIn": "Check-in",
+        "hotelCheckOut": "Check-out",
+        "addHotel": "Add Hotel",
+        "noHotels": "No hotels added yet.",
+        "activityName": "Activity name",
+        "activityDuration": "Duration",
+        "activityDesc": "Description",
+        "addActivity": "Add Activity",
+        "noActivities": "No activities added yet.",
+        "itineraryTitle": "Day title",
+        "itineraryDesc": "Day description",
+        "addDay": "Add Day",
+        "noItinerary": "No itinerary days added yet.",
+        "inclusions": "What's included?",
+        "addInclusion": "Add inclusion",
+        "exclusions": "What's not included?",
+        "addExclusion": "Add exclusion",
+        "tags": "Tags",
+        "tagInput": "New tag (Enter to add)",
+        "highlights": "Highlights",
+        "highlightInput": "New highlight (Enter to add)",
+        "heroImage": "Hero image (URL)",
+        "heroImageHint": "URL of the experience's main image",
+        "isActive": "Experience active",
+        "isActiveHint": "Visible for matching with clients",
+        "isFeatured": "Featured",
+        "isFeaturedHint": "Appears in the featured section"
+      }
+    }
+  },
+  "tripperProfilePage": {
+    "meta": {
+      "title": "Tripper profile",
+      "description": "Manage your tripper profile, experiences, and performance.",
+      "openGraphTitle": "Tripper profile",
+      "openGraphDescription": "Manage your tripper profile, experiences, and performance."
+    },
+    "accessDenied": {
+      "title": "Restricted access",
+      "description": "This page is for trippers only.",
+      "ctaHome": "Back to home"
+    },
+    "hero": {
+      "eyebrow": "Tripper account",
+      "title": "My tripper profile",
+      "description": "Manage your travel business"
+    },
+    "card": {
+      "nameFallback": "Tripper",
+      "tripperBadgePrefix": "Tripper",
+      "noLocation": "No location",
+      "editProfile": "Edit profile"
+    },
+    "sections": {
+      "about": "About me",
+      "destinations": "My destinations",
+      "travelTypes": "Travel types I offer",
+      "experiences": "My experiences",
+      "performance": "Performance",
+      "navigation": "Navigation",
+      "quickStats": "Quick stats",
+      "profileDetails": "Profile details"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "experiences": "Experiences",
+      "performance": "Performance summary",
+      "goToDashboard": "Open dashboard"
+    },
+    "experiences": {
+      "manageCta": "Manage experiences",
+      "countBlurb": "You have {count} experience(s). Go to the dashboard to create new ones or manage existing ones.",
+      "nightsLabel": "nights",
+      "peopleLabel": "people",
+      "active": "Active",
+      "inactive": "Inactive",
+      "viewAll": "View all experiences ({count})",
+      "emptyTitle": "You have not created any experiences yet",
+      "emptyCta": "Open dashboard to create experiences"
+    },
+    "performance": {
+      "title": "Performance",
+      "viewFullDashboard": "View full dashboard",
+      "totalBookings": "Total bookings",
+      "averageRating": "Average rating",
+      "totalEarnings": "Total earnings",
+      "activeExperiences": "Active experiences",
+      "hintBefore": "For detailed stats, performance insights, and experience management, open the",
+      "hintLink": "tripper dashboard",
+      "hintAfter": "."
+    },
+    "quickStats": {
+      "title": "Quick stats",
+      "experiences": "Experiences",
+      "bookings": "Bookings",
+      "rating": "Rating"
+    },
+    "modal": {
+      "title": "Edit tripper profile",
+      "closeAria": "Close",
+      "bio": "Biography",
+      "bioPlaceholder": "Tell us about you as a tripper...",
+      "heroImage": "Hero image",
+      "heroImagePlaceholder": "https://example.com/image.jpg",
+      "location": "Location",
+      "locationPlaceholder": "Buenos Aires, Argentina",
+      "tier": "Tripper tier",
+      "tierSelectPlaceholder": "Select...",
+      "tierRookie": "Rookie",
+      "tierPro": "Pro",
+      "tierElite": "Elite",
+      "destinations": "Destinations",
+      "destinationsPlaceholder": "Argentina, Chile, Uruguay",
+      "slug": "Tripper slug",
+      "slugPlaceholder": "dawson",
+      "commission": "Commission (0–1)",
+      "commissionPlaceholder": "0.15",
+      "availableTypes": "Available types",
+      "availableTypesPlaceholder": "solo, couple, family",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "uploadImage": "Upload cover image",
+      "uploadingImage": "Uploading image…",
+      "imageUploadError": "Could not upload image"
+    },
+    "toasts": {
+      "success": "Tripper profile updated successfully",
+      "error": "Could not update tripper profile"
+    },
+    "details": {
+      "openImage": "Open image",
+      "heroPreviewAlt": "Tripper hero preview"
+    }
+  },
+  "unauthorized": {
+    "title": "Access denied",
+    "description": "You do not have permission to view this page. Contact an administrator if you think this is a mistake.",
+    "cta": {
+      "home": "Back to home",
+      "dashboard": "My dashboard"
+    },
+    "meta": {
+      "title": "Access denied | Randomtrip",
+      "description": "You do not have permission to view this page.",
+      "openGraphTitle": "Access denied | Randomtrip",
+      "openGraphDescription": "You do not have permission to view this page."
+    }
+  },
+  "adminUsers": {
+    "actions": "Actions",
+    "edit": "Edit",
+    "editing": "editing",
+    "empty": "No users found.",
+    "errorFallback": "Failed to load users",
+    "headers": {
+      "actions": "Actions",
+      "joined": "Joined",
+      "roles": "Roles",
+      "tripperSlug": "Tripper slug",
+      "user": "User"
+    },
+    "modal": {
+      "admin": "ADMIN",
+      "cancel": "Cancel",
+      "clientBase": "CLIENT (base)",
+      "errorFallback": "Failed to update role",
+      "roleSection": "Roles",
+      "saveChanges": "Save changes",
+      "saving": "Saving…",
+      "tripper": "TRIPPER"
+    },
+    "usersCount": "{count} users"
   }
 }

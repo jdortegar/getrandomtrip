@@ -61,7 +61,7 @@ interface ButtonProps
 function Button({
   asChild = false,
   className,
-  size,
+  size = "sm",
   trackClick,
   variant = "default",
   onClick,

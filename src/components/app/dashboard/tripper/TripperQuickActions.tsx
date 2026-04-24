@@ -10,11 +10,11 @@ interface TripperQuickActionsProps {
 export function TripperQuickActions({ copy }: TripperQuickActionsProps) {
   const actions = [
     {
-      href: "/dashboard/tripper/packages",
+      href: "/dashboard/tripper/experiences",
       icon: Plus,
       key: "packages",
-      label: copy.createPackage,
-      sub: copy.createPackageSub,
+      label: copy.createExperience,
+      sub: copy.createExperienceSub,
     },
     {
       href: "/dashboard/tripper/earnings",

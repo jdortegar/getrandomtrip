@@ -16,6 +16,7 @@ import { Briefcase, Edit, Lock, Settings, User, X } from "lucide-react";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionaries";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { toast } from "sonner";
 import type { UserProfileMe } from "@/lib/types/UserProfileMe";
 import { cn } from "@/lib/utils";
@@ -537,7 +538,15 @@ function ProfileContent() {
                     </Button>
                   </>
                 )}
-                {(currentUser as any)?.role === "TRIPPER" && (
+                {hasRoleAccess(
+                  profileMe
+                    ? { roles: profileMe.roles }
+                    : {
+                        role: (currentUser as { role?: string } | null | undefined)?.role,
+                        roles: (currentUser as { roles?: Array<"admin" | "client" | "tripper"> } | null | undefined)?.roles,
+                      },
+                  "tripper",
+                ) && (
                   <Button asChild>
                     <a
                       href={pathForLocale(resolvedLocale, "/trippers/profile")}
