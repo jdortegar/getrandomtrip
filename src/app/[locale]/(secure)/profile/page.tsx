@@ -482,7 +482,7 @@ function ProfileContent() {
   return (
     <>
       <HeaderHero
-        className="!h-[40vh]"
+        className="h-[40vh]"
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={p.hero.subtitle}
         title={p.hero.title}
@@ -557,8 +557,15 @@ function ProfileContent() {
                   profileMe
                     ? { roles: profileMe.roles }
                     : {
-                        role: (currentUser as { role?: string } | null | undefined)?.role,
-                        roles: (currentUser as { roles?: Array<"admin" | "client" | "tripper"> } | null | undefined)?.roles,
+                        role: (
+                          currentUser as { role?: string } | null | undefined
+                        )?.role,
+                        roles: (
+                          currentUser as
+                            | { roles?: Array<"admin" | "client" | "tripper"> }
+                            | null
+                            | undefined
+                        )?.roles,
                       },
                   "tripper",
                 ) && (
