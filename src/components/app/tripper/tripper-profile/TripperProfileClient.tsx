@@ -270,15 +270,16 @@ export function TripperProfileClient({
     try {
       const upload = new FormData();
       upload.append("file", file);
-      const response = await fetch("/api/tripper/blog-media", {
+      upload.append("feature", "tripper-hero");
+      const response = await fetch("/api/upload", {
         body: upload,
         method: "POST",
       });
       if (!response.ok) throw new Error("upload failed");
-      const data = (await response.json()) as { location?: string };
-      if (!data.location) throw new Error("missing url");
-      setFormData((prev) => ({ ...prev, heroImage: data.location as string }));
-      setProfile((prev) => ({ ...prev, heroImage: data.location as string }));
+      const data = (await response.json()) as { url?: string };
+      if (!data.url) throw new Error("missing url");
+      setFormData((prev) => ({ ...prev, heroImage: data.url as string }));
+      setProfile((prev) => ({ ...prev, heroImage: data.url as string }));
     } catch (error) {
       console.error("Error uploading tripper cover image:", error);
       toast.error(copy.modal.imageUploadError);
