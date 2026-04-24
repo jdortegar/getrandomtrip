@@ -30,24 +30,22 @@ interface BlogComposerProps {
   post: Partial<BlogPost>;
 }
 
-async function uploadImageFile(file: File, postId?: string): Promise<string> {
+async function uploadImageFile(file: File, feature: string): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
-  if (postId) {
-    formData.append("postId", postId);
-  }
-  const response = await fetch("/api/tripper/blog-media", {
+  formData.append("feature", feature);
+  const response = await fetch("/api/upload", {
     body: formData,
     method: "POST",
   });
   if (!response.ok) {
     throw new Error("upload failed");
   }
-  const data = (await response.json()) as { location?: string };
-  if (!data.location) {
-    throw new Error("no location");
+  const data = (await response.json()) as { url?: string };
+  if (!data.url) {
+    throw new Error("no url");
   }
-  return data.location;
+  return data.url;
 }
 
 export default function BlogComposer({
@@ -83,7 +81,7 @@ export default function BlogComposer({
 
   const handleUploadImage = async (file: File) => {
     try {
-      return await uploadImageFile(file, post.id);
+      return await uploadImageFile(file, "blog-gallery");
     } catch {
       toast.error(copy.toasts.uploadError);
       throw new Error("upload failed");
@@ -98,7 +96,7 @@ export default function BlogComposer({
     if (!file) return;
     setCoverUploading(true);
     try {
-      const url = await uploadImageFile(file, post.id);
+      const url = await uploadImageFile(file, "blog-cover");
       setPost((p) => ({ ...p, coverUrl: url }));
     } catch {
       toast.error(copy.toasts.uploadError);
@@ -116,7 +114,7 @@ export default function BlogComposer({
     setGalleryUploading(true);
     try {
       const results = await Promise.allSettled(
-        files.map((f) => uploadImageFile(f, post.id)),
+        files.map((f) => uploadImageFile(f, "blog-gallery")),
       );
       const urls: string[] = [];
       let failCount = 0;
