@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { useUserStore } from "@/store/slices/userStore";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
+import { PageHeading } from "@/components/layout/PageHeading";
 import { TripperDashboardSkeleton } from "@/components/app/dashboard/tripper/TripperDashboardSkeleton";
 import { TripperStatsGrid } from "@/components/app/dashboard/tripper/TripperStatsGrid";
 import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBookingsList";
@@ -82,14 +83,10 @@ function TripperContent() {
     <>
       <Section>
         <div className="rt-container">
-          <div className="mb-8">
-            <h1 className="font-bold text-neutral-900 uppercase font-barlow-condensed text-5xl">
-              {copy.header.title}
-            </h1>
-            <p className="mt-2 text-sm text-neutral-600">
-              {copy.header.description}
-            </p>
-          </div>
+          <PageHeading
+            description={copy.header.description}
+            title={copy.header.title}
+          />
           {loading ? (
             <TripperDashboardSkeleton />
           ) : (
