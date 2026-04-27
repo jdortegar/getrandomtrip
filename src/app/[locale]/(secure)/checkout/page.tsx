@@ -884,7 +884,14 @@ function CheckoutContent() {
                 options={{ clientSecret, appearance: { theme: 'stripe' } }}
                 stripe={stripePromise}
               >
-                <StripePaymentForm onCancel={() => setClientSecret(null)} />
+                <StripePaymentForm
+                  copy={{
+                    paymentBack: checkoutCopy.paymentBack,
+                    paymentSubmit: checkoutCopy.paymentSubmit,
+                    paymentProcessing: checkoutCopy.paymentProcessing,
+                  }}
+                  onCancel={() => setClientSecret(null)}
+                />
               </Elements>
             </div>
           </div>

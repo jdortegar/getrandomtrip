@@ -6,12 +6,19 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { hasLocale } from '@/lib/i18n/config';
 
+interface StripePaymentFormCopy {
+  paymentBack: string;
+  paymentSubmit: string;
+  paymentProcessing: string;
+}
+
 interface StripePaymentFormProps {
+  copy: StripePaymentFormCopy;
   /** Called when user clicks Back to return to the contact form step. */
   onCancel: () => void;
 }
 
-export function StripePaymentForm({ onCancel }: StripePaymentFormProps) {
+export function StripePaymentForm({ copy, onCancel }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const params = useParams();
@@ -62,14 +69,14 @@ export function StripePaymentForm({ onCancel }: StripePaymentFormProps) {
           type="button"
           variant="ghost"
         >
-          Back
+          {copy.paymentBack}
         </Button>
         <Button
           className="flex-1"
           disabled={!stripe || isProcessing}
           type="submit"
         >
-          {isProcessing ? 'Processing...' : 'Pay now'}
+          {isProcessing ? copy.paymentProcessing : copy.paymentSubmit}
         </Button>
       </div>
     </form>

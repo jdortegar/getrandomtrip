@@ -841,6 +841,9 @@ export interface MarketingDictionary {
       backToEdit: string;
       continueToPayment: string;
       paymentTitle: string;
+      paymentBack: string;
+      paymentSubmit: string;
+      paymentProcessing: string;
       contactCityLabel: string;
       contactCountryLabel: string;
       contactEmailHelper: string;
