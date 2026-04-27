@@ -840,6 +840,7 @@ export interface MarketingDictionary {
     checkout: {
       backToEdit: string;
       continueToPayment: string;
+      paymentTitle: string;
       contactCityLabel: string;
       contactCountryLabel: string;
       contactEmailHelper: string;

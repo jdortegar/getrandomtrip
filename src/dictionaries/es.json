@@ -1541,6 +1541,7 @@
     "checkout": {
       "backToEdit": "← Volver a editar",
       "continueToPayment": "Continuar a pago",
+      "paymentTitle": "Completar pago",
       "contactCityLabel": "Ciudad",
       "contactCountryLabel": "País",
       "contactEmailHelper": "Este es el email asociado a tu cuenta",

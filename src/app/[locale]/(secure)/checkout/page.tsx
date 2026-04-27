@@ -44,6 +44,9 @@ import {
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { CheckoutFormFields, CheckoutTripFromApi } from "@/types/Checkout";
 import { Button } from "@/components/ui/Button";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripe-client";
+import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import { usePayment } from "@/hooks/usePayment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "sonner";
@@ -169,6 +172,7 @@ function CheckoutContent() {
   const [appliedPromocode, setAppliedPromocode] = useState<string | null>(null);
   const [promocode, setPromocode] = useState("");
   const [showPromocodeInput, setShowPromocodeInput] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [formData, setFormData] = useState<CheckoutFormFields>({
     city: "",
     country: "",
@@ -299,21 +303,18 @@ function CheckoutContent() {
 
   const effectiveLogistics = logistics;
 
-  const { isProcessing, calculateTotals, initiatePayment } = usePayment(
-    {
-      addons,
-      avoidCount: avoidDestinations.length,
-      basePriceUsd,
-      filters: filtersResolved,
-      logistics: effectiveLogistics ?? {
-        city: "",
-        country: "",
-        nights: 1,
-        pax: 1,
-      },
+  const { isProcessing, calculateTotals, createPaymentIntent } = usePayment({
+    addons,
+    avoidCount: avoidDestinations.length,
+    basePriceUsd,
+    filters: filtersResolved,
+    logistics: effectiveLogistics ?? {
+      city: "",
+      country: "",
+      nights: 1,
+      pax: 1,
     },
-    { locale: resolvedLocale },
-  );
+  });
 
   useEffect(() => {
     if (!hasTripId) return;
@@ -514,13 +515,14 @@ function CheckoutContent() {
     );
   }
 
-  const payNow = async (payer?: { email?: string; name?: string }) => {
+  const createPayment = async () => {
     if (!trip?.id) return;
     try {
       await persistCheckoutTravelers(paxDetails);
-      await initiatePayment(trip.id, payer);
+      const { clientSecret: secret } = await createPaymentIntent(trip.id);
+      setClientSecret(secret);
     } catch (err) {
-      console.error("Error initiating payment:", err);
+      console.error("Error creating payment intent:", err);
       toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
     }
   };
@@ -583,10 +585,7 @@ function CheckoutContent() {
         },
       });
 
-      await payNow({
-        email: payerEmail,
-        name: saveJson.user?.name ?? formData.name.trim(),
-      });
+      await createPayment();
     } catch (err) {
       console.error("Checkout submit error:", err);
       toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
@@ -874,6 +873,22 @@ function CheckoutContent() {
             usd={usd}
           />
         </div>
+
+        {clientSecret && (
+          <div className="mt-8 mx-auto max-w-xl">
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+              <h2 className="text-xl font-semibold text-neutral-900 mb-6">
+                {dict?.journey?.checkout?.paymentTitle ?? 'Payment'}
+              </h2>
+              <Elements
+                options={{ clientSecret, appearance: { theme: 'stripe' } }}
+                stripe={stripePromise}
+              >
+                <StripePaymentForm onCancel={() => setClientSecret(null)} />
+              </Elements>
+            </div>
+          </div>
+        )}
 
         <ChatFab />
       </div>

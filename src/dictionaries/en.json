@@ -1540,6 +1540,7 @@
     "checkout": {
       "backToEdit": "← Back to edit",
       "continueToPayment": "Continue to payment",
+      "paymentTitle": "Complete your payment",
       "contactCityLabel": "City",
       "contactCountryLabel": "Country",
       "contactEmailHelper": "This email is associated with your account",
