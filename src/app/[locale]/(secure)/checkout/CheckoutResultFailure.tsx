@@ -1,45 +1,29 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect } from "react";
-import HeaderHero from "@/components/journey/HeaderHero";
-import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
-import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import type { Dictionary } from "@/lib/i18n/dictionaries";
-import { persistMercadoPagoCheckoutReturnParams } from "@/lib/helpers/persist-mercadopago-checkout-return";
-import { confirmMercadoPagoPaymentFromReturnParams } from "@/lib/helpers/confirm-mercadopago-payment-from-return";
-import type { MercadoPagoCheckoutReturnParams } from "@/lib/types/MercadoPagoCheckoutReturnParams";
+import Link from 'next/link';
+import HeaderHero from '@/components/journey/HeaderHero';
+import { Button } from '@/components/ui/Button';
+import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
+import { pathForLocale } from '@/lib/i18n/pathForLocale';
+import type { Dictionary } from '@/lib/i18n/dictionaries';
 
 interface CheckoutResultFailureProps {
-  labels: Dictionary["paymentFailure"];
+  labels: Dictionary['paymentFailure'];
   locale: string;
-  mercadoPagoParams?: MercadoPagoCheckoutReturnParams | null;
+  /** tripId to pre-fill the retry link. */
+  tripId?: string | null;
 }
 
 export default function CheckoutResultFailure({
   labels,
   locale,
-  mercadoPagoParams,
+  tripId,
 }: CheckoutResultFailureProps) {
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-
-  /** Client / traveler dashboard — `/dashboard` (never `/dashboard/tripper`). */
-  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
-
-  const retryTripId = mercadoPagoParams?.externalReference?.trim() || null;
-  const tryAgainHref = retryTripId
-    ? pathForLocale(
-        safeLocale,
-        `/checkout?tripId=${encodeURIComponent(retryTripId)}`,
-      )
-    : pathForLocale(safeLocale, "/journey");
-
-  useEffect(() => {
-    if (!mercadoPagoParams) return;
-    void persistMercadoPagoCheckoutReturnParams(mercadoPagoParams);
-    void confirmMercadoPagoPaymentFromReturnParams(mercadoPagoParams);
-  }, [mercadoPagoParams]);
+  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const tryAgainHref = tripId
+    ? pathForLocale(safeLocale, `/checkout?tripId=${encodeURIComponent(tripId)}`)
+    : pathForLocale(safeLocale, '/journey');
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -56,7 +40,6 @@ export default function CheckoutResultFailure({
             <p className="text-center font-barlow text-base leading-relaxed text-gray-600 md:text-lg">
               {labels.body}
             </p>
-
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <Button asChild size="lg">
                 <Link href={tryAgainHref}>{labels.ctaTryAgain}</Link>

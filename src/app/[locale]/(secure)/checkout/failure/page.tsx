@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import CheckoutResultFailure from '../CheckoutResultFailure';
-import { parseMercadoPagoCheckoutReturnParams } from '@/lib/helpers/mercadopago-checkout-params';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 
@@ -31,13 +30,14 @@ export default async function CheckoutFailurePage({
   }
 
   const dict = await getDictionary(params.locale);
-  const mercadoPagoParams = parseMercadoPagoCheckoutReturnParams(searchParams);
+  const tripId =
+    typeof searchParams.tripId === 'string' ? searchParams.tripId : null;
 
   return (
     <CheckoutResultFailure
       labels={dict.paymentFailure}
       locale={params.locale}
-      mercadoPagoParams={mercadoPagoParams}
+      tripId={tripId}
     />
   );
 }

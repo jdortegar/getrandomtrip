@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import CheckoutResultPending from '../CheckoutResultPending';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { parseMercadoPagoCheckoutReturnParams } from '@/lib/helpers/mercadopago-checkout-params';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 
@@ -23,17 +22,14 @@ export async function generateMetadata({
 
 export default async function CheckoutPendingPage({
   params,
-  searchParams,
 }: {
   params: { locale: string };
-  searchParams: Record<string, string | string[] | undefined>;
 }) {
   if (!hasLocale(params.locale)) {
     notFound();
   }
 
   const dict = await getDictionary(params.locale);
-  const mercadoPagoParams = parseMercadoPagoCheckoutReturnParams(searchParams);
 
   return (
     <Suspense
@@ -46,7 +42,6 @@ export default async function CheckoutPendingPage({
       <CheckoutResultPending
         labels={dict.paymentPending}
         locale={params.locale}
-        mercadoPagoParams={mercadoPagoParams}
       />
     </Suspense>
   );

@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import CheckoutResultSuccess from '../CheckoutResultSuccess';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { parseMercadoPagoCheckoutReturnParams } from '@/lib/helpers/mercadopago-checkout-params';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 
@@ -33,7 +32,16 @@ export default async function CheckoutSuccessPage({
   }
 
   const dict = await getDictionary(params.locale);
-  const mercadoPagoParams = parseMercadoPagoCheckoutReturnParams(searchParams);
+
+  // Parse Stripe 3DS redirect params from the URL
+  const raw = (key: string) => {
+    const v = searchParams[key];
+    return typeof v === 'string' ? v : (Array.isArray(v) ? v[0] : null) ?? null;
+  };
+  const stripeReturn = {
+    paymentIntent: raw('payment_intent'),
+    redirectStatus: raw('redirect_status'),
+  };
 
   return (
     <Suspense
@@ -47,7 +55,7 @@ export default async function CheckoutSuccessPage({
         hero={dict.confirmation.hero}
         labels={dict.confirmation.page}
         locale={params.locale}
-        mercadoPagoParams={mercadoPagoParams}
+        stripeReturn={stripeReturn}
       />
     </Suspense>
   );
