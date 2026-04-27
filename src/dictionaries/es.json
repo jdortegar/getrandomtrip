@@ -2853,5 +2853,51 @@
       "tripper": "TRIPPER"
     },
     "usersCount": "{count} usuarios"
+  },
+  "contactPage": {
+    "meta": {
+      "title": "Contacto | Randomtrip",
+      "description": "Contactanos para consultas sobre viajes sorpresa, colaboraciones y partnerships.",
+      "openGraphTitle": "Contacto | Randomtrip",
+      "openGraphDescription": "Contactanos para consultas sobre viajes sorpresa, colaboraciones y partnerships."
+    },
+    "hero": {
+      "title": "Contacto",
+      "description": "¿Tenés preguntas sobre tu próximo viaje? Estamos para ayudarte."
+    },
+    "intro": {
+      "title": "Hablemos",
+      "p1": "¿Tenés alguna pregunta sobre tu próximo Randomtrip o sobre cómo funcionan nuestros viajes sorpresa?",
+      "p2": "Completá el formulario o escribinos directamente a hola@randomtrip.com",
+      "p3": "¿Te interesa colaborar con Randomtrip o explorar oportunidades de publicidad o partnerships?",
+      "p4": "¡Nos encanta! Escribinos a partnerships@randomtrip.com."
+    },
+    "contact": {
+      "heading": "Email",
+      "email": "contacto@randomtrip.com",
+      "socials": {
+        "instagram": "getrandomtrip",
+        "facebook": "getrandomtrip",
+        "x": "X"
+      },
+      "socialsHeading": "Socials media"
+    },
+    "form": {
+      "name": "Nombre",
+      "email": "Email",
+      "interest": "¿Estás interesado en?",
+      "interestOptions": {
+        "trips": "Viajes sorpresa",
+        "collaboration": "Colaboraciones",
+        "partnerships": "Partnerships",
+        "other": "Otro"
+      },
+      "message": "Mensaje",
+      "success": {
+        "title": "Consulta recibida",
+        "description": "Te responderemos a la brevedad."
+      },
+      "submit": "Enviar"
+    }
   }
 }

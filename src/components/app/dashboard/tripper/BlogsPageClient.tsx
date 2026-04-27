@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { BlogPostsList } from "@/components/app/dashboard/tripper/BlogPostsList";
+import { PageHeading } from "@/components/layout/PageHeading";
 import Section from "@/components/layout/Section";
 import type { BlogPost } from "@/types/blog";
 import enCopy from "@/dictionaries/en.json";
@@ -23,14 +24,10 @@ export function BlogsPageClient({ posts }: BlogsPageClientProps) {
   return (
     <Section>
       <div className="rt-container">
-        <div className="mb-8">
-          <h1 className="text-neutral-900 uppercase font-barlow-condensed text-5xl font-bold">
-            {tripperBlogs.header.title}
-          </h1>
-          <p className="mt-2 text-sm text-neutral-600">
-            {tripperBlogs.header.description}
-          </p>
-        </div>
+        <PageHeading
+          description={tripperBlogs.header.description}
+          title={tripperBlogs.header.title}
+        />
         <BlogPostsList posts={posts} />
       </div>
     </Section>

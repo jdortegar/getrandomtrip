@@ -1087,6 +1087,52 @@ export interface MarketingDictionary {
       sectionTitle: string;
     };
   };
+  contactPage: {
+    contact: {
+      email: string;
+      heading: string;
+      socialsHeading: string;
+      socials: {
+        facebook: string;
+        instagram: string;
+        x: string;
+      };
+    };
+    form: {
+      email: string;
+      interest: string;
+      interestOptions: {
+        collaboration: string;
+        other: string;
+        partnerships: string;
+        trips: string;
+      };
+      message: string;
+      name: string;
+      success: {
+        description: string;
+        title: string;
+      };
+      submit: string;
+    };
+    hero: {
+      description: string;
+      title: string;
+    };
+    intro: {
+      p1: string;
+      p2: string;
+      p3: string;
+      p4: string;
+      title: string;
+    };
+    meta: {
+      description: string;
+      openGraphDescription: string;
+      openGraphTitle: string;
+      title: string;
+    };
+  };
   notFound: {
     contactUs: string;
     exploreSections: string;
