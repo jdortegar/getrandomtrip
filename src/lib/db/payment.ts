@@ -1,17 +1,13 @@
 import { prisma } from '@/lib/prisma';
 import type { PaymentStatus, Prisma } from '@prisma/client';
-import type { MercadoPagoCheckoutReturnParams } from '@/lib/types/MercadoPagoCheckoutReturnParams';
 
 export interface CreatePaymentData {
   userId: string;
   tripRequestId: string;
   provider: string;
-  providerPreferenceId?: string;
   amount: number;
   currency?: string;
-  mpExternalReference?: string;
-  mpDescription?: string;
-  mpStatementDescriptor?: string;
+  stripePaymentIntentId?: string;
   expiresAt?: Date;
 }
 
@@ -44,12 +40,9 @@ export async function createPayment(data: CreatePaymentData) {
       userId: data.userId,
       tripRequestId: data.tripRequestId,
       provider: data.provider,
-      providerPreferenceId: data.providerPreferenceId,
+      stripePaymentIntentId: data.stripePaymentIntentId,
       amount: data.amount,
       currency: data.currency || 'ARS',
-      mpExternalReference: data.mpExternalReference,
-      mpDescription: data.mpDescription,
-      mpStatementDescriptor: data.mpStatementDescriptor,
       expiresAt: data.expiresAt,
       status: 'PENDING',
     },
@@ -68,11 +61,8 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
       amount: data.amount,
       currency,
       expiresAt: data.expiresAt,
-      mpDescription: data.mpDescription,
-      mpExternalReference: data.mpExternalReference,
-      mpStatementDescriptor: data.mpStatementDescriptor,
       provider: data.provider,
-      providerPreferenceId: data.providerPreferenceId,
+      stripePaymentIntentId: data.stripePaymentIntentId,
       status: 'PENDING',
       tripRequestId: data.tripRequestId,
       userId: data.userId,
@@ -81,11 +71,8 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
       amount: data.amount,
       currency,
       expiresAt: data.expiresAt,
-      mpDescription: data.mpDescription,
-      mpExternalReference: data.mpExternalReference,
-      mpStatementDescriptor: data.mpStatementDescriptor,
-      providerPreferenceId: data.providerPreferenceId,
-      /** New Checkout Pro attempt — MP will assign a new payment id via webhook. */
+      stripePaymentIntentId: data.stripePaymentIntentId,
+      /** New checkout attempt — provider will assign a new payment id via webhook. */
       providerPaymentId: null,
       status: 'PENDING',
     },
@@ -123,68 +110,16 @@ export async function findPaymentByProviderId(providerPaymentId: string) {
 }
 
 /**
- * Find payment by preference ID
+ * Find payment by Stripe PaymentIntent ID
  */
-export async function findPaymentByPreferenceId(providerPreferenceId: string) {
-  return await prisma.payment.findFirst({
-    where: { providerPreferenceId },
+export async function findPaymentByStripeIntentId(stripePaymentIntentId: string) {
+  return await prisma.payment.findUnique({
+    where: { stripePaymentIntentId },
     include: {
       user: true,
       tripRequest: true,
     },
   });
-}
-
-/** Mercado Pago payment API resource (snake_case and/or camelCase). */
-export type MercadoPagoPaymentResource = Record<string, unknown>;
-
-function stringFromMp(value: unknown): string | null {
-  if (value === undefined || value === null) return null;
-  const s = String(value).trim();
-  return s.length > 0 ? s : null;
-}
-
-/**
- * Resolves our `Payment` row from a Mercado Pago **payment** API resource.
- * Order: `providerPaymentId` → `mpExternalReference` (MP `external_reference`) → `providerPreferenceId`.
- */
-export async function findPaymentForMercadoPagoResource(mp: unknown) {
-  const resource = mp as MercadoPagoPaymentResource;
-  const mpPaymentId = stringFromMp(resource.id);
-  if (mpPaymentId) {
-    const byProviderId = await findPaymentByProviderId(mpPaymentId);
-    if (byProviderId) return byProviderId;
-  }
-
-  const externalRef =
-    stringFromMp(resource.external_reference) ??
-    stringFromMp(resource.externalReference);
-  if (externalRef) {
-    const byTrip = await prisma.payment.findFirst({
-      include: {
-        tripRequest: true,
-        user: true,
-      },
-      where: { mpExternalReference: externalRef },
-    });
-    if (byTrip) return byTrip;
-  }
-
-  const preferenceId =
-    stringFromMp(resource.preference_id) ??
-    stringFromMp(
-      (resource.metadata as Record<string, unknown> | undefined)
-        ?.preference_id,
-    ) ??
-    stringFromMp(
-      (resource.metadata as Record<string, unknown> | undefined)?.preferenceId,
-    );
-  if (preferenceId) {
-    const byPref = await findPaymentByPreferenceId(preferenceId);
-    if (byPref) return byPref;
-  }
-
-  return null;
 }
 
 /**
@@ -212,43 +147,6 @@ export async function getUserPayments(userId: string, limit = 10) {
 }
 
 /**
- * Merges Mercado Pago **browser redirect** query params into `providerResponse`
- * under `mpCheckoutReturn` (does not replace MP API payloads from webhooks).
- */
-export async function mergeCheckoutReturnIntoProviderResponse(
-  paymentId: string,
-  checkoutReturn: MercadoPagoCheckoutReturnParams,
-) {
-  const payment = await prisma.payment.findUnique({
-    where: { id: paymentId },
-    select: { providerResponse: true },
-  });
-
-  if (!payment) {
-    throw new Error('Payment not found');
-  }
-
-  const raw = payment.providerResponse;
-  const prev =
-    raw !== null && typeof raw === 'object' && !Array.isArray(raw)
-      ? { ...(raw as Record<string, unknown>) }
-      : {};
-
-  const merged = JSON.parse(
-    JSON.stringify({
-      ...prev,
-      mpCheckoutReturn: checkoutReturn,
-      mpCheckoutReturnAt: new Date().toISOString(),
-    }),
-  ) as Prisma.InputJsonValue;
-
-  return prisma.payment.update({
-    where: { id: paymentId },
-    data: { providerResponse: merged },
-  });
-}
-
-/**
  * Get trip payment
  */
 export async function getTripPayment(tripRequestId: string) {
@@ -267,56 +165,24 @@ export async function getTripPayment(tripRequestId: string) {
 }
 
 /**
- * Update payment from Mercado Pago **payment** API resource (e.g. `Payment.get()` after webhook).
- * Resolves DB row even when `providerPaymentId` was not set yet (matches `external_reference` / preference).
+ * Update payment from a Stripe PaymentIntent webhook event.
+ * Resolves the DB row via `stripePaymentIntentId` → `providerPaymentId` fallback.
  */
-export async function updatePaymentFromWebhook(
-  mercadoPagoPaymentResource: unknown,
+export async function updatePaymentFromStripeWebhook(
+  stripePaymentIntentId: string,
+  updateData: UpdatePaymentData,
   webhookPayload?: unknown,
 ) {
-  const mp = mercadoPagoPaymentResource as MercadoPagoPaymentResource;
-
-  const payment = await findPaymentForMercadoPagoResource(mp);
+  // Try fast lookup via unique index first, then fall back to providerPaymentId
+  const payment =
+    (await findPaymentByStripeIntentId(stripePaymentIntentId)) ??
+    (await findPaymentByProviderId(stripePaymentIntentId));
 
   if (!payment) {
-    const mpId = stringFromMp(mp.id);
     throw new Error(
-      `Payment not found for Mercado Pago payment id=${mpId ?? 'unknown'}`,
+      `Payment not found for Stripe PaymentIntent id=${stripePaymentIntentId}`,
     );
   }
-
-  const order = mp.order as { id?: string | number } | undefined;
-  const card = mp.card as
-    | {
-        last_four_digits?: string;
-        lastFourDigits?: string;
-        cardholder?: { name?: string };
-      }
-    | undefined;
-
-  // Map MercadoPago status to our PaymentStatus
-  const statusMap: Record<string, PaymentStatus> = {
-    approved: 'APPROVED',
-    pending: 'PENDING_WAITING_PAYMENT',
-    in_process: 'IN_PROCESS',
-    in_mediation: 'IN_MEDIATION',
-    rejected: 'REJECTED',
-    cancelled: 'CANCELLED',
-    refunded: 'REFUNDED',
-    charged_back: 'CHARGEBACK',
-  };
-
-  const statusRaw = typeof mp.status === 'string' ? mp.status : undefined;
-  const statusDetail =
-    (typeof mp.status_detail === 'string' ? mp.status_detail : undefined) ??
-    (typeof mp.statusDetail === 'string' ? mp.statusDetail : undefined);
-  const orderId = order?.id;
-  const paymentMethod =
-    (typeof mp.payment_method_id === 'string' ? mp.payment_method_id : undefined) ??
-    (typeof mp.paymentMethodId === 'string' ? mp.paymentMethodId : undefined);
-  const last4 =
-    card?.last_four_digits ?? card?.lastFourDigits;
-  const cardBrand = card?.cardholder?.name;
 
   const existingRaw = payment.providerResponse;
   const existingObj =
@@ -326,48 +192,22 @@ export async function updatePaymentFromWebhook(
       ? (existingRaw as Record<string, unknown>)
       : {};
 
-  const mergedPlain = {
-    ...existingObj,
-    ...mp,
-  };
-
-  if ('mpCheckoutReturn' in existingObj) {
-    mergedPlain.mpCheckoutReturn = existingObj.mpCheckoutReturn;
-  }
-  if ('mpCheckoutReturnAt' in existingObj) {
-    mergedPlain.mpCheckoutReturnAt = existingObj.mpCheckoutReturnAt;
-  }
-
   const mergedProviderResponse = JSON.parse(
-    JSON.stringify(mergedPlain),
+    JSON.stringify({ ...existingObj, ...(webhookPayload ?? {}) }),
   ) as Prisma.InputJsonValue;
 
-  const mpPaymentIdForRow = stringFromMp(mp.id);
-
-  const updateData: UpdatePaymentData = {
-    cardBrand,
-    cardLast4: last4,
-    paidAt: statusRaw === 'approved' ? new Date() : undefined,
-    paymentMethod,
-    providerMerchantOrderId:
-      orderId !== undefined && orderId !== null
-        ? String(orderId)
-        : undefined,
-    providerPaymentId: mpPaymentIdForRow ?? payment.providerPaymentId ?? undefined,
+  const finalData: UpdatePaymentData = {
+    ...updateData,
     providerResponse: mergedProviderResponse,
-    status: statusRaw ? statusMap[statusRaw] || 'PENDING' : 'PENDING',
-    statusDetail,
-    webhookData:
-      (webhookPayload as MercadoPagoPaymentResource | undefined) ?? mp,
+    webhookData: (webhookPayload as UpdatePaymentData['webhookData']) ?? undefined,
   };
 
-  // Update trip status based on payment status
-  if (updateData.status === 'APPROVED') {
+  if (finalData.status === 'APPROVED') {
     await prisma.tripRequest.update({
       where: { id: payment.tripRequestId },
       data: { status: 'CONFIRMED' },
     });
   }
 
-  return await updatePayment(payment.id, updateData);
+  return await updatePayment(payment.id, finalData);
 }

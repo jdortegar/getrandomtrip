@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { updatePaymentFromWebhook } from '@/lib/db/payment';
+import { findPaymentByProviderId, updatePayment } from '@/lib/db/payment';
+import type { PaymentStatus } from '@prisma/client';
 
 function getMercadoPagoAccessToken(): string {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -57,7 +58,28 @@ export async function POST(request: NextRequest) {
 
       try {
         const paymentDetails = await paymentApi.get({ id: paymentId });
-        await updatePaymentFromWebhook(paymentDetails, body);
+        const mp = paymentDetails as unknown as Record<string, unknown>;
+        const payment = await findPaymentByProviderId(paymentId);
+        if (payment) {
+          const statusMap: Record<string, PaymentStatus> = {
+            approved: 'APPROVED',
+            pending: 'PENDING_WAITING_PAYMENT',
+            in_process: 'IN_PROCESS',
+            in_mediation: 'IN_MEDIATION',
+            rejected: 'REJECTED',
+            cancelled: 'CANCELLED',
+            refunded: 'REFUNDED',
+            charged_back: 'CHARGEBACK',
+          };
+          const statusRaw = typeof mp.status === 'string' ? mp.status : undefined;
+          await updatePayment(payment.id, {
+            status: statusRaw ? (statusMap[statusRaw] ?? 'PENDING') : 'PENDING',
+            statusDetail: typeof mp.status_detail === 'string' ? mp.status_detail : undefined,
+            providerPaymentId: paymentId,
+            providerResponse: JSON.parse(JSON.stringify(mp)) as Record<string, unknown>,
+            webhookData: body as Record<string, unknown>,
+          });
+        }
         console.log('MercadoPago webhook: payment updated', { id: paymentId });
       } catch (error) {
         console.error('MercadoPago webhook: payment update failed', {

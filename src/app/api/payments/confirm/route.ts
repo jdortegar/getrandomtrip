@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { updatePaymentFromWebhook } from '@/lib/db/payment';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,10 +43,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Find the payment by external reference (trip ID)
+    // Find the payment by trip request ID (externalReference was always the tripRequestId)
     const payment = await prisma.payment.findFirst({
       where: {
-        mpExternalReference: externalReference,
+        tripRequestId: externalReference,
         userId: user.id,
       },
       include: {

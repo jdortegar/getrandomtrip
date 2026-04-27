@@ -175,12 +175,8 @@ export async function POST(request: NextRequest) {
           userId,
           tripRequestId: tripId,
           provider: 'mercadopago',
-          providerPreferenceId: response.id,
           amount: total,
           currency: 'USD',
-          mpExternalReference: tripId,
-          mpDescription: preferenceData.items[0].description,
-          mpStatementDescriptor: 'GETRANDOMTRIP',
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         });
 

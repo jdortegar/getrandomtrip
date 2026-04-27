@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { mergeCheckoutReturnIntoProviderResponse } from '@/lib/db/payment';
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 import type { MercadoPagoCheckoutReturnParams } from '@/lib/types/MercadoPagoCheckoutReturnParams';
 
 export async function POST(request: NextRequest) {
@@ -37,16 +37,34 @@ export async function POST(request: NextRequest) {
 
     const payment = await prisma.payment.findFirst({
       where: {
-        mpExternalReference: externalReference,
+        tripRequestId: externalReference,
         userId: user.id,
       },
+      select: { id: true, providerResponse: true },
     });
 
     if (!payment) {
       return NextResponse.json({ error: 'Payment not found' }, { status: 404 });
     }
 
-    await mergeCheckoutReturnIntoProviderResponse(payment.id, checkoutReturn);
+    const raw = payment.providerResponse;
+    const prev =
+      raw !== null && typeof raw === 'object' && !Array.isArray(raw)
+        ? { ...(raw as Record<string, unknown>) }
+        : {};
+
+    const merged = JSON.parse(
+      JSON.stringify({
+        ...prev,
+        mpCheckoutReturn: checkoutReturn,
+        mpCheckoutReturnAt: new Date().toISOString(),
+      }),
+    ) as Prisma.InputJsonValue;
+
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: { providerResponse: merged },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

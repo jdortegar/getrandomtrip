@@ -198,10 +198,10 @@ model Payment {
   tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
 
   // Provider Information
-  provider                String // 'mercadopago' | 'stripe' | 'paypal'
-  providerPaymentId       String? // MP payment ID
-  providerPreferenceId    String? // MP preference ID
-  providerMerchantOrderId String? // MP merchant order ID
+  provider                String  // 'stripe'
+  providerPaymentId       String? // Stripe PaymentIntent ID
+  stripePaymentIntentId   String? @unique // Stripe PaymentIntent ID for fast webhook lookup
+  providerMerchantOrderId String? // MP merchant order ID (legacy, kept for historical rows)
   providerSessionId       String? // Session/token for provider
 
   // Payment Details
@@ -216,12 +216,6 @@ model Payment {
   cardExpiryMonth Int? // MM
   cardExpiryYear  Int? // YYYY
   cardholderName  String? // Cardholder name
-
-  // MercadoPago Specific
-  mpExternalReference   String? // External reference sent to MP
-  mpDescription         String? // Payment description
-  mpStatementDescriptor String? // Statement descriptor
-  mpMetadata            Json? // Additional MP metadata
 
   // Payment Status & Flow
   status        PaymentStatus @default(PENDING)
