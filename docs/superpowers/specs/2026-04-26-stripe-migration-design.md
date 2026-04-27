@@ -27,7 +27,7 @@ Replace MercadoPago with Stripe as the sole payment provider. Use Stripe Element
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| POST | `/api/stripe/payment-intent` | Authenticated. Creates a Stripe `PaymentIntent` for the trip. Upserts the `Payment` row in DB. Returns `{ clientSecret, paymentIntentId }`. |
+| POST | `/api/stripe/payment-intent` | Authenticated. Fetches the trip from DB and computes the total server-side (never trusts a client-supplied amount). If a `PENDING` payment with a `stripePaymentIntentId` already exists for the trip, retrieves and returns the existing PaymentIntent's `clientSecret` from Stripe rather than creating a new one. Otherwise creates a new PaymentIntent, upserts the `Payment` row, and returns `{ clientSecret, paymentIntentId }`. |
 | POST | `/api/stripe/webhook` | Verifies Stripe signature via `STRIPE_WEBHOOK_SECRET`. Must read raw body with `request.text()` (not `request.json()`) before calling `stripe.webhooks.constructEvent()`. Handles `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`. Updates `Payment` status and sets `TripRequest.status = CONFIRMED` on success. |
 
 ### Deleted
@@ -58,6 +58,11 @@ Replace MercadoPago with Stripe as the sole payment provider. Use Stripe Element
 - When `clientSecret` is set, render `<Elements stripe={stripePromise} options={{ clientSecret }}>` wrapping a new `<StripePaymentForm>`.
 - `stripePromise` is initialized once via `loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)`.
 
+### New: `src/lib/stripe-client.ts`
+
+- Initializes and exports `stripePromise` via `loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)` as a module-level singleton.
+- Imported by `checkout/page.tsx` to avoid re-initializing on every render.
+
 ### New: `src/components/app/checkout/StripePaymentForm.tsx`
 
 - Renders `<PaymentElement />` + "Pay" submit button.
@@ -72,6 +77,21 @@ Replace MercadoPago with Stripe as the sole payment provider. Use Stripe Element
 ### `src/app/[locale]/(secure)/checkout/CheckoutResultPending.tsx` and `CheckoutResultFailure.tsx`
 
 - Strip MP-specific param handling. Keep generic UI.
+
+### `src/app/[locale]/(secure)/checkout/success/page.tsx`
+
+- Remove import of `parseMercadoPagoCheckoutReturnParams`.
+- Remove `mercadoPagoParams` prop passed to `CheckoutResultSuccess`.
+- Parse `payment_intent` and `redirect_status` from `searchParams` and pass as a generic `stripeReturn` prop instead.
+
+### `src/app/[locale]/(secure)/checkout/failure/page.tsx` and `pending/page.tsx`
+
+- Remove any MP-specific imports or props if present.
+
+### Dictionary Cleanup
+
+- Remove the MP-specific key block from `src/dictionaries/en.json` and `src/dictionaries/es.json`: `mpDetailsTitle`, `mpCollectionId`, `mpCollectionStatus`, `mpExternalReference`, `mpMerchantAccountId`, `mpMerchantOrderId`, `mpPaymentId`, `mpPaymentType`, `mpPreferenceId`, `mpProcessingMode`, `mpSiteId`, `mpStatus`. These keys are defined but not used in any component.
+- Remove the corresponding fields from the `confirmation.page` interface in `src/lib/types/dictionary.ts`.
 
 ### Deleted Files
 
@@ -150,14 +170,21 @@ MERCADOPAGO_LIVE_ACCESS_TOKEN
 |--------|------|
 | Create | `src/app/api/stripe/payment-intent/route.ts` |
 | Create | `src/app/api/stripe/webhook/route.ts` |
+| Create | `src/lib/stripe-client.ts` |
 | Create | `src/components/app/checkout/StripePaymentForm.tsx` |
 | Edit | `src/hooks/usePayment.ts` |
 | Edit | `src/app/[locale]/(secure)/checkout/page.tsx` |
 | Edit | `src/app/[locale]/(secure)/checkout/CheckoutResultSuccess.tsx` |
 | Edit | `src/app/[locale]/(secure)/checkout/CheckoutResultPending.tsx` |
 | Edit | `src/app/[locale]/(secure)/checkout/CheckoutResultFailure.tsx` |
+| Edit | `src/app/[locale]/(secure)/checkout/success/page.tsx` |
+| Edit | `src/app/[locale]/(secure)/checkout/failure/page.tsx` |
+| Edit | `src/app/[locale]/(secure)/checkout/pending/page.tsx` |
 | Edit | `src/lib/db/payment.ts` |
 | Edit | `prisma/schema.prisma` |
+| Edit | `src/dictionaries/en.json` |
+| Edit | `src/dictionaries/es.json` |
+| Edit | `src/lib/types/dictionary.ts` |
 | Delete | `src/app/api/mercadopago/preference/route.ts` |
 | Delete | `src/app/api/mercadopago/webhook/route.ts` |
 | Delete | `src/app/api/payments/confirm/route.ts` |
