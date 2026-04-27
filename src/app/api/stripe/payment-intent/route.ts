@@ -50,7 +50,11 @@ export async function POST(request: NextRequest) {
     const existing = await stripe.paymentIntents.retrieve(
       trip.payment.stripePaymentIntentId,
     );
-    if (existing.status === 'requires_payment_method' || existing.status === 'requires_confirmation') {
+    if (
+      existing.status === 'requires_payment_method' ||
+      existing.status === 'requires_confirmation' ||
+      existing.status === 'requires_action'
+    ) {
       return NextResponse.json({
         clientSecret: existing.client_secret,
         paymentIntentId: existing.id,
