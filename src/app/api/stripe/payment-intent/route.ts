@@ -8,7 +8,9 @@ import { getPricePerPerson } from '@/lib/data/traveler-types';
 import { upsertPaymentForTripCheckout } from '@/lib/db/payment';
 import type { AddonSelection, Filters, Logistics } from '@/store/slices/journeyStore';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2026-04-22.dahlia',
+});
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -42,6 +44,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
+  const PAYABLE_STATUSES = ['SAVED', 'PENDING_PAYMENT'] as const;
+  if (!PAYABLE_STATUSES.includes(trip.status as 'SAVED' | 'PENDING_PAYMENT')) {
+    return NextResponse.json({ error: 'Trip is not in a payable state' }, { status: 409 });
+  }
+
   // Idempotency: return existing PENDING intent if present
   if (
     trip.payment?.status === 'PENDING' &&
@@ -55,10 +62,14 @@ export async function POST(request: NextRequest) {
       existing.status === 'requires_confirmation' ||
       existing.status === 'requires_action'
     ) {
-      return NextResponse.json({
-        clientSecret: existing.client_secret,
-        paymentIntentId: existing.id,
-      });
+      if (!existing.client_secret) {
+        // Intent exists but secret is unavailable — fall through to create a new one
+      } else {
+        return NextResponse.json({
+          clientSecret: existing.client_secret,
+          paymentIntentId: existing.id,
+        });
+      }
     }
   }
 
@@ -111,16 +122,26 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // Upsert Payment row
-  await upsertPaymentForTripCheckout({
-    userId: session.user.id,
-    tripRequestId: tripId,
-    provider: 'stripe',
-    amount: amountUsd,
-    currency: 'USD',
-    stripePaymentIntentId: intent.id,
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-  });
+  if (!intent.client_secret) {
+    return NextResponse.json({ error: 'Failed to obtain payment client secret' }, { status: 500 });
+  }
+
+  // Upsert Payment row — if this fails, cancel the Stripe intent to avoid orphaned intents
+  try {
+    await upsertPaymentForTripCheckout({
+      userId: session.user.id,
+      tripRequestId: tripId,
+      provider: 'stripe',
+      amount: amountUsd,
+      currency: 'USD',
+      stripePaymentIntentId: intent.id,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    });
+  } catch (dbError) {
+    console.error('DB upsert failed after Stripe intent creation, cancelling intent:', dbError);
+    await stripe.paymentIntents.cancel(intent.id).catch(() => {});
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 
   return NextResponse.json({
     clientSecret: intent.client_secret,
