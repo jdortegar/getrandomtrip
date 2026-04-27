@@ -1650,19 +1650,7 @@
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
     "ctaTryAgain": "Try again",
-    "ctaMyTrips": "Go to my trips",
-    "mpDetailsTitle": "Mercado Pago details",
-    "mpExternalReference": "External reference",
-    "mpPreferenceId": "Preference ID",
-    "mpPaymentId": "Payment ID",
-    "mpStatus": "Status",
-    "mpCollectionId": "Collection ID",
-    "mpCollectionStatus": "Collection status",
-    "mpPaymentType": "Payment type",
-    "mpMerchantOrderId": "Merchant order ID",
-    "mpSiteId": "Site",
-    "mpProcessingMode": "Processing mode",
-    "mpMerchantAccountId": "Merchant account ID"
+    "ctaMyTrips": "Go to my trips"
   },
   "paymentPending": {
     "title": "Payment pending",

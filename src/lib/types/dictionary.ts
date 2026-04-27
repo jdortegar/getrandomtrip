@@ -949,18 +949,6 @@ export interface MarketingDictionary {
     ctaMyTrips: string;
     ctaTryAgain: string;
     metaDescription: string;
-    mpCollectionId: string;
-    mpCollectionStatus: string;
-    mpDetailsTitle: string;
-    mpExternalReference: string;
-    mpMerchantAccountId: string;
-    mpMerchantOrderId: string;
-    mpPaymentId: string;
-    mpPaymentType: string;
-    mpPreferenceId: string;
-    mpProcessingMode: string;
-    mpSiteId: string;
-    mpStatus: string;
     subtitle: string;
     title: string;
   };

@@ -1650,19 +1650,7 @@
     "ctaBackToJourney": "Volver al viaje",
     "ctaHome": "Ir al inicio",
     "ctaTryAgain": "Intentar de nuevo",
-    "ctaMyTrips": "Ir a mis viajes",
-    "mpDetailsTitle": "Detalles (Mercado Pago)",
-    "mpExternalReference": "Referencia externa",
-    "mpPreferenceId": "ID de preferencia",
-    "mpPaymentId": "ID de pago",
-    "mpStatus": "Estado",
-    "mpCollectionId": "ID de colección",
-    "mpCollectionStatus": "Estado de colección",
-    "mpPaymentType": "Tipo de pago",
-    "mpMerchantOrderId": "ID orden comercio",
-    "mpSiteId": "Sitio",
-    "mpProcessingMode": "Modo de procesamiento",
-    "mpMerchantAccountId": "ID cuenta comercio"
+    "ctaMyTrips": "Ir a mis viajes"
   },
   "paymentPending": {
     "title": "Pago pendiente",
