@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { updatePaymentFromStripeWebhook } from '@/lib/db/payment';
@@ -7,9 +9,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-04-22.dahlia',
 });
 
+// Only maps statuses produced by the three events we handle.
+// payment_intent.processing is intentionally omitted — we don't subscribe to that event.
 const STRIPE_STATUS_MAP: Record<string, UpdatePaymentData['status']> = {
   succeeded: 'APPROVED',
-  processing: 'PROCESSING',
   canceled: 'CANCELLED',
   requires_payment_method: 'FAILED',
   requires_action: 'PENDING',
@@ -44,7 +47,8 @@ export async function POST(request: NextRequest) {
           status: newStatus,
           providerPaymentId: intent.id,
           stripePaymentIntentId: intent.id,
-          paidAt: intent.status === 'succeeded' ? new Date() : undefined,
+          // Use Stripe's settlement timestamp, not server clock
+          paidAt: intent.status === 'succeeded' ? new Date(intent.created * 1000) : undefined,
         };
         await updatePaymentFromStripeWebhook(intent.id, updateData, event);
         break;
@@ -54,8 +58,18 @@ export async function POST(request: NextRequest) {
         break;
     }
   } catch (error) {
+    const isNotFound =
+      error instanceof Error && error.message.includes('Payment not found');
+
+    if (isNotFound) {
+      // Permanent mismatch — retrying won't help (payment was never created on our side)
+      console.error('Stripe webhook: no matching payment row', { eventType: event.type, error });
+      return NextResponse.json({ received: true });
+    }
+
+    // Transient error (DB timeout, etc.) — return 500 so Stripe retries
     console.error('Stripe webhook processing error:', { eventType: event.type, error });
-    // Return 200 anyway — Stripe retries on non-2xx which causes duplicate processing
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });

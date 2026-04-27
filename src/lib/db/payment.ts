@@ -185,6 +185,16 @@ export async function updatePaymentFromStripeWebhook(
     );
   }
 
+  // Prevent late/duplicate events from overwriting a terminal status
+  const TERMINAL_STATUSES: PaymentStatus[] = ['APPROVED', 'COMPLETED', 'REFUNDED'];
+  if (
+    TERMINAL_STATUSES.includes(payment.status) &&
+    updateData.status !== undefined &&
+    !TERMINAL_STATUSES.includes(updateData.status)
+  ) {
+    return payment;
+  }
+
   const existingRaw = payment.providerResponse;
   const existingObj =
     existingRaw !== null &&
