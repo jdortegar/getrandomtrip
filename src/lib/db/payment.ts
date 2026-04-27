@@ -16,6 +16,7 @@ export interface UpdatePaymentData {
   statusDetail?: string;
   failureReason?: string;
   providerPaymentId?: string;
+  stripePaymentIntentId?: string;
   providerMerchantOrderId?: string;
   paymentMethod?: string;
   cardLast4?: string;
@@ -42,7 +43,7 @@ export async function createPayment(data: CreatePaymentData) {
       provider: data.provider,
       stripePaymentIntentId: data.stripePaymentIntentId,
       amount: data.amount,
-      currency: data.currency || 'ARS',
+      currency: data.currency ?? 'USD',
       expiresAt: data.expiresAt,
       status: 'PENDING',
     },
@@ -51,10 +52,10 @@ export async function createPayment(data: CreatePaymentData) {
 
 /**
  * Creates or updates the single `Payment` row for a trip (unique `tripRequestId`).
- * Used when the user starts checkout again — Mercado Pago gets a new preference id each time.
+ * Used when the user starts checkout again — resets to PENDING with new Stripe PaymentIntent.
  */
 export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
-  const currency = data.currency || 'ARS';
+  const currency = data.currency ?? 'USD';
 
   return prisma.payment.upsert({
     create: {
