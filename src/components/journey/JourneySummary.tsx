@@ -445,7 +445,6 @@ export default function JourneySummary({
         startDate: startDate ? new Date(startDate) : undefined,
       },
     },
-    { locale },
   );
 
   const paymentTotals = calculateTotals();
