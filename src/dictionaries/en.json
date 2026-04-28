@@ -2853,5 +2853,51 @@
       "tripper": "TRIPPER"
     },
     "usersCount": "{count} users"
+  },
+  "contactPage": {
+    "meta": {
+      "title": "Contact | Randomtrip",
+      "description": "Reach out for surprise trip questions, collaborations, and partnerships.",
+      "openGraphTitle": "Contact | Randomtrip",
+      "openGraphDescription": "Reach out for surprise trip questions, collaborations, and partnerships."
+    },
+    "hero": {
+      "title": "Contact",
+      "description": "Have questions about your next trip? We are here to help."
+    },
+    "intro": {
+      "title": "Let's talk",
+      "p1": "Do you have any question about your next Randomtrip or how our surprise trips work?",
+      "p2": "Complete the form or email us directly at hola@randomtrip.com",
+      "p3": "Interested in collaborating with Randomtrip or exploring advertising or partnership opportunities?",
+      "p4": "We'd love to hear from you. Email us at partnerships@randomtrip.com."
+    },
+    "contact": {
+      "heading": "Email",
+      "email": "contacto@randomtrip.com",
+      "socials": {
+        "instagram": "getrandomtrip",
+        "facebook": "getrandomtrip",
+        "x": "X"
+      },
+      "socialsHeading": "Social media"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "interest": "What are you interested in?",
+      "interestOptions": {
+        "trips": "Surprise trips",
+        "collaboration": "Collaborations",
+        "partnerships": "Partnerships",
+        "other": "Other"
+      },
+      "message": "Message",
+      "success": {
+        "title": "Inquiry received",
+        "description": "We will get back to you shortly."
+      },
+      "submit": "Send"
+    }
   }
 }
