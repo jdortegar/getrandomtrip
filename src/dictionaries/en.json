@@ -1642,7 +1642,8 @@
       "travelersRoomsOne": "{count} room",
       "travelersTileTitle": "Travelers",
       "travelTypeTitleSeparator": "|",
-      "volverButton": "Back"
+      "volverButton": "Back",
+      "contactCountryPlaceholder": "Select a country"
     },
     "userBadge": {
       "guest": "Guest profile",

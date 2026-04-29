@@ -1643,7 +1643,8 @@
       "travelersRoomsOne": "{count} habitación",
       "travelersTileTitle": "Viajeros",
       "travelTypeTitleSeparator": "|",
-      "volverButton": "Volver"
+      "volverButton": "Volver",
+      "contactCountryPlaceholder": "Selecciona un país"
     },
     "userBadge": {
       "guest": "Perfil invitado",
