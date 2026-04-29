@@ -489,6 +489,29 @@ export interface UnauthorizedPageDict {
   title: string;
 }
 
+export interface XsedPageDict {
+  hero: {
+    availabilityNote: string;
+    fallbackImage: string;
+    helper: string;
+    inputLabel: string;
+    inputPlaceholder: string;
+    scrollText?: string;
+    submitAriaLabel: string;
+    submitLabel: string;
+    subtitle: string;
+    tagline: string;
+    title: string;
+    videoSrc: string;
+  };
+  meta: {
+    description: string;
+    openGraphDescription: string;
+    openGraphTitle: string;
+    title: string;
+  };
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -498,12 +521,14 @@ export interface MarketingDictionary {
     ariaLabelNosotros: string;
     ariaLabelTripbuddy: string;
     ariaLabelTrippers: string;
+    ariaLabelXsed: string;
     labelBitacoras: string;
     labelExperiences: string;
     labelInspiration: string;
     labelNosotros: string;
     labelTrippers: string;
     labelTripbuddy: string;
+    labelXsed: string;
     openMenu: string;
     search: string;
     selectLanguage: string;
@@ -521,6 +546,7 @@ export interface MarketingDictionary {
   common: {
     siteName: string;
   };
+  xsedPage: XsedPageDict;
   auth: {
     close: string;
     continueWithGoogle: string;
@@ -840,6 +866,10 @@ export interface MarketingDictionary {
     checkout: {
       backToEdit: string;
       continueToPayment: string;
+      paymentTitle: string;
+      paymentBack: string;
+      paymentSubmit: string;
+      paymentProcessing: string;
       contactCityLabel: string;
       contactCountryLabel: string;
       contactEmailHelper: string;
@@ -948,18 +978,6 @@ export interface MarketingDictionary {
     ctaMyTrips: string;
     ctaTryAgain: string;
     metaDescription: string;
-    mpCollectionId: string;
-    mpCollectionStatus: string;
-    mpDetailsTitle: string;
-    mpExternalReference: string;
-    mpMerchantAccountId: string;
-    mpMerchantOrderId: string;
-    mpPaymentId: string;
-    mpPaymentType: string;
-    mpPreferenceId: string;
-    mpProcessingMode: string;
-    mpSiteId: string;
-    mpStatus: string;
     subtitle: string;
     title: string;
   };

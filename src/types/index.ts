@@ -13,7 +13,6 @@ export interface Booking {
   totalPrice: number;
   premiumFilters: string[];
   selectedAddons: string[];
-  mercadoPagoPreferenceId?: string;
   revealEmailSent: boolean;
   duration_nights?: number;
   destination?: string;

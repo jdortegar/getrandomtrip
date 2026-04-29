@@ -45,6 +45,9 @@ interface CheckoutTravelDetailsCardProps {
   partyEditable: boolean;
   paxDetails: PaxDetails;
   pricePerPerson: number;
+  promoDiscount: number;
+  promoError: string | null;
+  promoLoading: boolean;
   promocode: string;
   ratingFormatted: string | null;
   selectedExperienceLabel?: string;
@@ -75,6 +78,9 @@ export function CheckoutTravelDetailsCard({
   partyEditable,
   paxDetails,
   pricePerPerson,
+  promoDiscount,
+  promoError,
+  promoLoading,
   promocode,
   ratingFormatted,
   selectedExperienceLabel,
@@ -178,6 +184,9 @@ export function CheckoutTravelDetailsCard({
         onPromocodeChange={onPromocodeChange}
         onRemovePromocode={onRemovePromocode}
         onTogglePromocodeInput={onTogglePromocodeInput}
+        promoDiscount={promoDiscount}
+        promoError={promoError}
+        promoLoading={promoLoading}
         promocode={promocode}
         showPromocodeInput={showPromocodeInput}
         totalPerPax={totalPerPax}

@@ -1,72 +1,43 @@
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import {
   calculatePaymentTotals,
   type PaymentTotalsInput,
   type PaymentTotalsResult,
 } from '@/lib/helpers/payment-totals';
 
-interface UsePaymentOptions {
-  locale?: string;
-}
-
 /**
- * Custom hook for payment calculations and MercadoPago integration
- * Follows Single Responsibility Principle - handles only payment logic
+ * Hook for payment calculations and Stripe PaymentIntent creation.
+ * Amount is computed server-side; this hook only triggers the intent creation.
  */
-export function usePayment(
-  paymentData: PaymentTotalsInput,
-  options?: UsePaymentOptions,
-) {
+export function usePayment(paymentData: PaymentTotalsInput) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { data: session } = useSession();
-  const locale = options?.locale ?? 'es';
 
   const calculateTotals = (): PaymentTotalsResult =>
     calculatePaymentTotals(paymentData);
 
-  const initiatePayment = async (
-    tripId?: string,
-    payer?: { email?: string; name?: string },
-  ): Promise<void> => {
+  /**
+   * Creates a Stripe PaymentIntent for the given trip.
+   * Returns the client secret needed to mount <PaymentElement>.
+   */
+  const createPaymentIntent = async (
+    tripId: string,
+  ): Promise<{ clientSecret: string }> => {
     setIsProcessing(true);
-
     try {
-      const totals = calculateTotals();
-
-      const response = await fetch('/api/mercadopago/preference', {
+      const response = await fetch('/api/stripe/payment-intent', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          locale,
-          total: totals.totalTrip,
-          tripId: tripId || `trip-${Date.now()}`,
-          userEmail:
-            payer?.email ?? session?.user?.email ?? 'cliente@example.com',
-          userName: payer?.name ?? session?.user?.name ?? 'Cliente',
-          userId: session?.user?.id || null,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tripId }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Payment preference error:', errorData);
-        throw new Error(
-          errorData.error || 'Failed to create payment preference',
-        );
+        const errorData = (await response.json()) as { error?: string };
+        throw new Error(errorData.error ?? 'Failed to create payment intent');
       }
 
-      const { init_point } = await response.json();
-      window.location.href = init_point;
-    } catch (error) {
-      console.error('Payment error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Error al procesar el pago. Intenta nuevamente.';
-      alert(errorMessage);
+      const { clientSecret } = (await response.json()) as { clientSecret: string };
+      return { clientSecret };
+    } finally {
       setIsProcessing(false);
     }
   };
@@ -74,6 +45,6 @@ export function usePayment(
   return {
     isProcessing,
     calculateTotals,
-    initiatePayment,
+    createPaymentIntent,
   };
 }

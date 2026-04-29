@@ -6,12 +6,14 @@
     "labelTripbuddy": "North IA",
     "labelBitacoras": "Off the Record",
     "labelExperiences": "Experiences",
+    "labelXsed": "XSED",
     "ariaLabelTrippers": "Go to Trippers page",
     "ariaLabelInspiration": "Go to inspiration section",
     "ariaLabelExperiences": "Go to Experiences",
     "ariaLabelNosotros": "Go to about us page",
     "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
     "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
+    "ariaLabelXsed": "Go to XSED",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Open navigation menu",
     "search": "Search",
@@ -29,6 +31,27 @@
   },
   "common": {
     "siteName": "Randomtrip"
+  },
+  "xsedPage": {
+    "meta": {
+      "title": "XSED | Randomtrip",
+      "description": "X Luck is Sunday: one night, one dinner, and one surprise local experience close to home.",
+      "openGraphTitle": "XSED | Randomtrip",
+      "openGraphDescription": "Join the XSED waitlist and get notified before checkout opens every Sunday."
+    },
+    "hero": {
+      "title": "XSED",
+      "subtitle": "X LUCK IS SUNDAY",
+      "tagline": "1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE less than 300km from home.",
+      "availabilityNote": "Only 10 spots released every Sunday per country.",
+      "inputLabel": "Email Address or WA",
+      "inputPlaceholder": "Email Address or WA",
+      "submitLabel": "JOIN THE WAITLIST",
+      "submitAriaLabel": "Join the XSED waitlist",
+      "helper": "We will notify you 10 minutes before checkout opens every Sunday. Blink, and you are out.",
+      "fallbackImage": "/images/hero-image-1.jpeg",
+      "videoSrc": "/videos/hero-video-1.mp4"
+    }
   },
   "auth": {
     "close": "Close",
@@ -1540,6 +1563,10 @@
     "checkout": {
       "backToEdit": "← Back to edit",
       "continueToPayment": "Continue to payment",
+      "paymentTitle": "Complete your payment",
+      "paymentBack": "Back",
+      "paymentSubmit": "Pay now",
+      "paymentProcessing": "Processing...",
       "contactCityLabel": "City",
       "contactCountryLabel": "Country",
       "contactEmailHelper": "This email is associated with your account",
@@ -1630,7 +1657,7 @@
       "title": "Thank you for your purchase!",
       "body": "Your GetRandomTrip surprise adventure is confirmed.",
       "messageApproved": "Payment approved. Your surprise trip is confirmed.",
-      "messagePending": "Payment status: {status}. Check your email or the Mercado Pago app.",
+      "messagePending": "Payment status: {status}. Check your email for confirmation.",
       "messageGeneric": "Thank you for your purchase. If you just paid, your trip is being confirmed.",
       "errorTitle": "Error loading order",
       "metaDescription": "Your GetRandomTrip purchase is confirmed.",
@@ -1649,23 +1676,11 @@
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
     "ctaTryAgain": "Try again",
-    "ctaMyTrips": "Go to my trips",
-    "mpDetailsTitle": "Mercado Pago details",
-    "mpExternalReference": "External reference",
-    "mpPreferenceId": "Preference ID",
-    "mpPaymentId": "Payment ID",
-    "mpStatus": "Status",
-    "mpCollectionId": "Collection ID",
-    "mpCollectionStatus": "Collection status",
-    "mpPaymentType": "Payment type",
-    "mpMerchantOrderId": "Merchant order ID",
-    "mpSiteId": "Site",
-    "mpProcessingMode": "Processing mode",
-    "mpMerchantAccountId": "Merchant account ID"
+    "ctaMyTrips": "Go to my trips"
   },
   "paymentPending": {
     "title": "Payment pending",
-    "body": "Your payment is being processed. Check your email or the Mercado Pago app for status.",
+    "body": "Your payment is being processed. Check your email for confirmation.",
     "metaDescription": "Your payment is pending. GetRandomTrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
     "ctaBackToJourney": "Back to journey",
