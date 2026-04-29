@@ -1,10 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
-import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { hasLocale } from '@/lib/i18n/config';
+import { useState } from "react";
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { hasLocale } from "@/lib/i18n/config";
 
 interface StripePaymentFormCopy {
   paymentBack: string;
@@ -13,16 +17,30 @@ interface StripePaymentFormCopy {
 }
 
 interface StripePaymentFormProps {
+  billingEmail: string;
+  billingName: string;
+  billingPhone: string;
   copy: StripePaymentFormCopy;
-  /** Called when user clicks Back to return to the contact form step. */
+  /** Validates contact form and saves user data before payment. Return false to abort. */
+  onBeforeConfirm: () => Promise<boolean>;
+  /** Called when user clicks Back. */
   onCancel: () => void;
 }
 
-export function StripePaymentForm({ copy, onCancel }: StripePaymentFormProps) {
+export function StripePaymentForm({
+  billingEmail,
+  billingName,
+  billingPhone,
+  copy,
+  onBeforeConfirm,
+  onCancel,
+}: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const params = useParams();
-  const locale = hasLocale(params?.locale as string) ? (params?.locale as string) : 'es';
+  const locale = hasLocale(params?.locale as string)
+    ? (params?.locale as string)
+    : "es";
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,29 +52,51 @@ export function StripePaymentForm({ copy, onCancel }: StripePaymentFormProps) {
     setIsProcessing(true);
     setErrorMessage(null);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/${locale}/checkout/success`,
-      },
-      // For non-3DS cards: resolves here without redirect.
-      // For 3DS cards: redirects to return_url, which is /checkout/success.
-      redirect: 'if_required',
-    });
-
-    if (error) {
-      setErrorMessage(error.message ?? 'Payment failed. Please try again.');
+    const ok = await onBeforeConfirm();
+    if (!ok) {
       setIsProcessing(false);
       return;
     }
 
-    // Non-3DS success — navigate to success page
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/${locale}/checkout/success`,
+        payment_method_data: {
+          billing_details: {
+            email: billingEmail.trim() || undefined,
+            name: billingName.trim() || undefined,
+            phone: billingPhone.trim() || undefined,
+          },
+        },
+      },
+      redirect: "if_required",
+    });
+
+    if (error) {
+      setErrorMessage(error.message ?? "Payment failed. Please try again.");
+      setIsProcessing(false);
+      return;
+    }
+
     window.location.href = `/${locale}/checkout/success`;
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
+      <PaymentElement
+        options={{
+          layout: "tabs",
+          fields: {
+            billingDetails: {
+              name: "never",
+              email: "never",
+              phone: "never",
+              address: "never",
+            },
+          },
+        }}
+      />
       {errorMessage && (
         <p className="text-sm text-red-600" role="alert">
           {errorMessage}
@@ -68,6 +108,7 @@ export function StripePaymentForm({ copy, onCancel }: StripePaymentFormProps) {
           onClick={onCancel}
           type="button"
           variant="ghost"
+          size="lg"
         >
           {copy.paymentBack}
         </Button>
@@ -75,6 +116,7 @@ export function StripePaymentForm({ copy, onCancel }: StripePaymentFormProps) {
           className="flex-1"
           disabled={!stripe || isProcessing}
           type="submit"
+          size="lg"
         >
           {isProcessing ? copy.paymentProcessing : copy.paymentSubmit}
         </Button>

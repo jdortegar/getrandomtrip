@@ -29,6 +29,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 alt={dict.common.siteName}
                 height={40}
                 src="/assets/logos/logo_white.svg"
+                style={{ height: "auto" }}
                 width={240}
               />
               <div className="max-w-sm space-y-2 text-center md:text-left">

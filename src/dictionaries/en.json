@@ -6,12 +6,14 @@
     "labelTripbuddy": "North IA",
     "labelBitacoras": "Off the Record",
     "labelExperiences": "Experiences",
+    "labelXsed": "XSED",
     "ariaLabelTrippers": "Go to Trippers page",
     "ariaLabelInspiration": "Go to inspiration section",
     "ariaLabelExperiences": "Go to Experiences",
     "ariaLabelNosotros": "Go to about us page",
     "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
     "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
+    "ariaLabelXsed": "Go to XSED",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Open navigation menu",
     "search": "Search",
@@ -29,6 +31,27 @@
   },
   "common": {
     "siteName": "Randomtrip"
+  },
+  "xsedPage": {
+    "meta": {
+      "title": "XSED | Randomtrip",
+      "description": "X Luck is Sunday: one night, one dinner, and one surprise local experience close to home.",
+      "openGraphTitle": "XSED | Randomtrip",
+      "openGraphDescription": "Join the XSED waitlist and get notified before checkout opens every Sunday."
+    },
+    "hero": {
+      "title": "XSED",
+      "subtitle": "X LUCK IS SUNDAY",
+      "tagline": "1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE less than 300km from home.",
+      "availabilityNote": "Only 10 spots released every Sunday per country.",
+      "inputLabel": "Email Address or WA",
+      "inputPlaceholder": "Email Address or WA",
+      "submitLabel": "JOIN THE WAITLIST",
+      "submitAriaLabel": "Join the XSED waitlist",
+      "helper": "We will notify you 10 minutes before checkout opens every Sunday. Blink, and you are out.",
+      "fallbackImage": "/images/hero-image-1.jpeg",
+      "videoSrc": "/videos/hero-video-1.mp4"
+    }
   },
   "auth": {
     "close": "Close",

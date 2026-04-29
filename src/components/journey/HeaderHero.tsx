@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_DESCRIPTION = (
   <>
@@ -53,9 +53,9 @@ function HeaderHeroVideoBackground({
       setHasError(true);
     };
 
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.addEventListener('error', handleError);
+    video.addEventListener("canplay", handleCanPlay);
+    video.addEventListener("loadeddata", handleLoadedData);
+    video.addEventListener("error", handleError);
 
     const fallbackTimer = setTimeout(() => {
       if (!isVideoReady && !hasError) {
@@ -64,9 +64,9 @@ function HeaderHeroVideoBackground({
     }, 2000);
 
     return () => {
-      video.removeEventListener('canplay', handleCanPlay);
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('error', handleError);
+      video.removeEventListener("canplay", handleCanPlay);
+      video.removeEventListener("loadeddata", handleLoadedData);
+      video.removeEventListener("error", handleError);
       clearTimeout(fallbackTimer);
     };
   }, [isVideoReady, hasError]);
@@ -87,7 +87,7 @@ function HeaderHeroVideoBackground({
           ref={videoRef}
           autoPlay
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-            isVideoReady ? 'opacity-100' : 'opacity-0'
+            isVideoReady ? "opacity-100" : "opacity-0"
           }`}
           loop
           muted
@@ -95,7 +95,7 @@ function HeaderHeroVideoBackground({
           poster={fallbackImage}
           preload="metadata"
         >
-          <source src={videoSrc.replace('.mp4', '.webm')} type="video/webm" />
+          <source src={videoSrc.replace(".mp4", ".webm")} type="video/webm" />
           <source src={videoSrc} type="video/mp4" />
         </video>
       )}
@@ -111,15 +111,15 @@ export default function HeaderHero({
   className,
   description = DEFAULT_DESCRIPTION,
   eyebrowColor,
-  fallbackImage = '/images/bg-playa-mexico.jpg',
+  fallbackImage = "/images/bg-video-hero.jpg",
   subtitle = DEFAULT_SUBTITLE,
   title,
-  videoSrc = '/videos/hero-video-1.mp4',
+  videoSrc = "/videos/hero-video-1.mp4",
 }: HeaderHeroProps) {
   return (
     <section
       className={cn(
-        'relative flex min-h-[40vh] items-center justify-center overflow-hidden',
+        "relative flex min-h-[40vh] items-center justify-center overflow-hidden",
         className,
       )}
     >
@@ -149,7 +149,7 @@ export default function HeaderHero({
         <p
           className="mb-2 font-bold text-sm uppercase tracking-[0.4em] md:text-base"
           style={eyebrowColor ? { color: eyebrowColor } : undefined}
-          {...(typeof subtitle === 'string'
+          {...(typeof subtitle === "string"
             ? { dangerouslySetInnerHTML: { __html: subtitle } }
             : { children: subtitle })}
         />

@@ -35,6 +35,7 @@ const PRIMARY_LINK_KEYS: LinkKey[] = [
   { href: '/trippers', labelKey: 'labelTrippers', ariaKey: 'ariaLabelTrippers' },
   { href: '/blog', labelKey: 'labelInspiration', ariaKey: 'ariaLabelInspiration' },
   { href: '/experiences', labelKey: 'labelExperiences', ariaKey: 'ariaLabelExperiences' },
+  { href: '/xsed', labelKey: 'labelXsed', ariaKey: 'ariaLabelXsed' },
   { href: '/about-us', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
 ];
 
@@ -95,7 +96,9 @@ export default function Navbar({
             <Image
               alt={nav?.ariaLabelLogo ?? 'Randomtrip'}
               height={50}
+              priority
               src={logoSrc}
+              style={{ height: 'auto' }}
               width={180}
             />
           </Link>

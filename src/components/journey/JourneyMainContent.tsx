@@ -200,7 +200,7 @@ export default function JourneyMainContent({
   };
 
   const handleGoToCheckout = useCallback(async () => {
-    const tripPayload = buildTripRequestPayloadFromSearchParams(searchParams);
+    const tripPayload = { ...buildTripRequestPayloadFromSearchParams(searchParams), status: 'SAVED' };
     const { originCountry, originCity } = tripPayload;
     if (!originCountry || !originCity) {
       toast.error('Completá ciudad y país de origen para continuar.');

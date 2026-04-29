@@ -13,6 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
+  try {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -147,4 +148,11 @@ export async function POST(request: NextRequest) {
     clientSecret: intent.client_secret,
     paymentIntentId: intent.id,
   });
+  } catch (error) {
+    console.error('payment-intent unhandled error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 },
+    );
+  }
 }
