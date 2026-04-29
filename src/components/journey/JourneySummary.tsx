@@ -15,6 +15,7 @@ import {
   getExcuseTitle,
   getHasExcuseStep,
 } from "@/lib/helpers/excuse-helper";
+import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
 import { FILTER_OPTIONS } from "@/store/slices/journeyStore";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import {
@@ -396,14 +397,16 @@ export default function JourneySummary({
       .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
   }, [addonIds]);
 
-  const pax = useMemo(
-    () =>
-      Math.max(
-        1,
-        Math.min(20, parseInt(searchParams.get("pax") ?? "2", 10) || 2),
-      ),
-    [searchParams],
-  );
+  const pax = useMemo(() => {
+    if (travelType) {
+      const fixed = getFixedPaxDetailsForTravelType(travelType);
+      if (fixed) return fixed.adults + fixed.minors;
+    }
+    return Math.max(
+      1,
+      Math.min(20, parseInt(searchParams.get("pax") ?? "1", 10) || 1),
+    );
+  }, [searchParams, travelType]);
 
   const filtersForPricing = useMemo((): Filters => {
     return {

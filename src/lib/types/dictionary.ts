@@ -512,6 +512,17 @@ export interface XsedPageDict {
   };
 }
 
+export interface AdminSidebarDict {
+  links: {
+    experiences: string;
+    payments: string;
+    reviews: string;
+    tripRequests: string;
+    users: string;
+    waitlist: string;
+  };
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -546,6 +557,7 @@ export interface MarketingDictionary {
   common: {
     siteName: string;
   };
+  adminSidebar: AdminSidebarDict;
   xsedPage: XsedPageDict;
   auth: {
     close: string;

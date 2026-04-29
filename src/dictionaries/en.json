@@ -32,6 +32,16 @@
   "common": {
     "siteName": "Randomtrip"
   },
+  "adminSidebar": {
+    "links": {
+      "tripRequests": "Trip Requests",
+      "users": "Users",
+      "experiences": "Experiences",
+      "payments": "Payments",
+      "reviews": "Reviews",
+      "waitlist": "Waitlist"
+    }
+  },
   "xsedPage": {
     "meta": {
       "title": "XSED | Randomtrip",

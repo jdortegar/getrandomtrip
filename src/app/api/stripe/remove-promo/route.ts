@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { calculatePaymentTotals } from '@/lib/helpers/payment-totals';
 import { getPricePerPerson } from '@/lib/data/traveler-types';
+import { getFixedPaxDetailsForTravelType } from '@/lib/helpers/pax-details';
 import type { AddonSelection, Filters, Logistics } from '@/store/slices/journeyStore';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -42,8 +43,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Recalculate original (undiscounted) amount
-    const basePriceUsd = getPricePerPerson(trip.type, trip.level, trip.pax);
+    // Recalculate original (undiscounted) amount using effective pax for the travel type
+    const fixedPax = getFixedPaxDetailsForTravelType(trip.type);
+    const effectivePax = fixedPax ? fixedPax.adults + fixedPax.minors : trip.pax;
+    const basePriceUsd = getPricePerPerson(trip.type, trip.level, effectivePax);
     const addonsRaw = Array.isArray(trip.addons)
       ? (trip.addons as unknown as AddonSelection[])
       : [];
@@ -61,7 +64,7 @@ export async function POST(request: NextRequest) {
       country: trip.originCountry,
       endDate: trip.endDate ?? undefined,
       nights: trip.nights,
-      pax: trip.pax,
+      pax: effectivePax,
       startDate: trip.startDate ?? undefined,
     };
     const { totalTrip: originalAmountUsd } = calculatePaymentTotals({

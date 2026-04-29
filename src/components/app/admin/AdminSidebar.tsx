@@ -10,11 +10,19 @@ import {
   Users,
 } from "lucide-react";
 import { AdminSidebarLink } from "./AdminSidebarLink";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
+import type { AdminSidebarDict } from "@/lib/types/dictionary";
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
+  const copy = (
+    (locale.startsWith("en") ? enCopy : esCopy) as unknown as {
+      adminSidebar: AdminSidebarDict;
+    }
+  ).adminSidebar;
 
   function base(path: string) {
     return `/${locale}/dashboard/admin${path}`;
@@ -27,12 +35,12 @@ export function AdminSidebar() {
   }
 
   const links = [
-    { href: base(""), icon: Briefcase, label: "Trip Requests" },
-    { href: base("/users"), icon: Users, label: "Users" },
-    { href: base("/experiences"), icon: Package, label: "Experiences" },
-    { href: base("/payments"), icon: CreditCard, label: "Payments" },
-    { href: base("/reviews"), icon: Star, label: "Reviews" },
-    { href: base("/waitlist"), icon: Mail, label: "Waitlist" },
+    { href: base(""), icon: Briefcase, label: copy.links.tripRequests },
+    { href: base("/users"), icon: Users, label: copy.links.users },
+    { href: base("/experiences"), icon: Package, label: copy.links.experiences },
+    { href: base("/payments"), icon: CreditCard, label: copy.links.payments },
+    { href: base("/reviews"), icon: Star, label: copy.links.reviews },
+    { href: base("/waitlist"), icon: Mail, label: copy.links.waitlist },
   ];
 
   return (
