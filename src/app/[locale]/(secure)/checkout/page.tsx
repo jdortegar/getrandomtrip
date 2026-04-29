@@ -52,10 +52,23 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 import { pickCheckoutTrip } from "@/lib/helpers/checkout-trip";
+import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
 
 const usd = (n: number) => `USD ${Math.round(n)}`;
+
+/** Converts a stored country value (full name or code) to a 2-letter ISO code. */
+function normalizeCountryToCode(value: string | undefined | null): string {
+  if (!value) return "";
+  const trimmed = value.trim();
+  const upper = trimmed.toUpperCase();
+  if (AMERICAN_COUNTRIES.some((c) => c.code === upper)) return upper;
+  const byName = AMERICAN_COUNTRIES.find(
+    (c) => c.name.toLowerCase() === trimmed.toLowerCase(),
+  );
+  return byName ? byName.code : "";
+}
 
 const DEFAULT_CHECKOUT_FILTERS: Filters = {
   accommodationType: "any",
@@ -199,7 +212,7 @@ function CheckoutContent() {
       const addr = session.user.address ?? {};
       setFormData((prev) => ({
         city: addr.city || prev.city,
-        country: addr.country || prev.country,
+        country: normalizeCountryToCode(addr.country) || prev.country,
         idDocument: addr.idDocument || prev.idDocument,
         name: session.user?.name || prev.name,
         phone: session.user?.phone || prev.phone,

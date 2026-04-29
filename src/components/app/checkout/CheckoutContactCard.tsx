@@ -5,7 +5,8 @@ import type { Appearance, StripeElementLocale } from "@stripe/stripe-js";
 import { Sparkle } from "lucide-react";
 import { useParams } from "next/navigation";
 
-import { FormField } from "@/components/ui/FormField";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import type { CheckoutFormFields } from "@/types/Checkout";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
@@ -292,14 +293,20 @@ export function CheckoutContactCard({
             type="text"
             value={formData.zipCode}
           />
-          <FormField
+          <FormSelectField
             id="country"
             label={checkoutCopy.contactCountryLabel}
             onChange={(e) => onFieldChange("country", e.target.value)}
             required
-            type="text"
             value={formData.country}
-          />
+          >
+            <option value="">{checkoutCopy.contactCountryPlaceholder}</option>
+            {AMERICAN_COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name}
+              </option>
+            ))}
+          </FormSelectField>
         </div>
 
         {/* ID Document */}
@@ -335,9 +342,14 @@ export function CheckoutContactCard({
             stripe={stripePromise}
           >
             <StripePaymentForm
+              billingCity={formData.city}
+              billingCountry={formData.country}
               billingEmail={sessionEmail}
+              billingLine1={formData.street}
               billingName={formData.name}
               billingPhone={formData.phone}
+              billingPostalCode={formData.zipCode}
+              billingState={formData.state}
               copy={{
                 paymentBack: checkoutCopy.paymentBack,
                 paymentProcessing: checkoutCopy.paymentProcessing,

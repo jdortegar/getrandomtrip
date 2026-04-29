@@ -17,9 +17,14 @@ interface StripePaymentFormCopy {
 }
 
 interface StripePaymentFormProps {
+  billingCity: string;
+  billingCountry: string;
   billingEmail: string;
+  billingLine1: string;
   billingName: string;
   billingPhone: string;
+  billingPostalCode: string;
+  billingState: string;
   copy: StripePaymentFormCopy;
   /** Validates contact form and saves user data before payment. Return false to abort. */
   onBeforeConfirm: () => Promise<boolean>;
@@ -28,9 +33,14 @@ interface StripePaymentFormProps {
 }
 
 export function StripePaymentForm({
+  billingCity,
+  billingCountry,
   billingEmail,
+  billingLine1,
   billingName,
   billingPhone,
+  billingPostalCode,
+  billingState,
   copy,
   onBeforeConfirm,
   onCancel,
@@ -67,6 +77,13 @@ export function StripePaymentForm({
             email: billingEmail.trim() || undefined,
             name: billingName.trim() || undefined,
             phone: billingPhone.trim() || undefined,
+            address: {
+              line1: billingLine1.trim() || undefined,
+              city: billingCity.trim() || undefined,
+              state: billingState.trim() || undefined,
+              postal_code: billingPostalCode.trim() || undefined,
+              country: billingCountry.trim().toUpperCase() || undefined,
+            },
           },
         },
       },

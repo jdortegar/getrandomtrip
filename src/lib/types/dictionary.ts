@@ -884,6 +884,7 @@ export interface MarketingDictionary {
       paymentProcessing: string;
       contactCityLabel: string;
       contactCountryLabel: string;
+      contactCountryPlaceholder: string;
       contactEmailHelper: string;
       contactEmailLabel: string;
       contactIdDocumentLabel: string;
