@@ -82,7 +82,10 @@ export const createUserSlice: StateCreator<UserStore> = (set, get) => ({
   },
   closeAuth: () => set({ authModalOpen: false }),
 
-  signOut: () => set({ isAuthed: false, user: null, session: null }),
+  signOut: () => {
+    set({ isAuthed: false, user: null, session: null });
+    useUserStore.persist.clearStorage();
+  },
 
   updateAccount: (name?: string, email?: string) =>
     set((s) => {
@@ -114,10 +117,8 @@ export const createUserSlice: StateCreator<UserStore> = (set, get) => ({
 export const useUserStore = create<UserStore>()(
   persist(createUserSlice, {
     name: 'rt-user',
-    // Don't persist session data as it should come from NextAuth
+    // Only persist UI state — never user/auth data, which must come from NextAuth
     partialize: (state) => ({
-      user: state.user,
-      isAuthed: state.isAuthed,
       authModalOpen: state.authModalOpen,
       authModalStep: state.authModalStep,
     }),
