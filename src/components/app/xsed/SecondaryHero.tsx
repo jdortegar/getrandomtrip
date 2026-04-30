@@ -1,36 +1,86 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
+import { useState, type FormEvent } from "react";
 
-import BrandingAnimation from "@/components/BrandingAnimation";
 import VideoBackground from "@/components/media/VideoBackground";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
 import type { XsedPageDict } from "@/lib/types/dictionary";
+import { formatTitleWithCopyright } from "@/lib/helpers/stringHelpers";
 import { cn } from "@/lib/utils";
+import { parseXsedNotificationBody } from "@/lib/xsed/notifications";
 
 interface SecondaryHeroProps {
   className?: string;
   content: XsedPageDict["hero"];
   id?: string;
+  locale: string;
   scrollIndicator?: boolean;
   titleClassName?: string;
 }
+
+type SubmitStatus = "idle" | "error" | "invalid" | "success";
 
 export function SecondaryHero({
   className,
   content,
   id,
+  locale,
   scrollIndicator = false,
   titleClassName,
 }: SecondaryHeroProps) {
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+
+  const statusMessage =
+    status === "success"
+      ? content.successMessage
+      : status === "invalid"
+        ? content.invalidEmailMessage
+        : status === "error"
+          ? content.errorMessage
+          : null;
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const parsed = parseXsedNotificationBody({ email, locale });
+    if (!parsed) {
+      setStatus("invalid");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus("idle");
+    try {
+      const response = await fetch("/api/xsed/notifications", {
+        body: JSON.stringify(parsed),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        setStatus("error");
+        return;
+      }
+
+      setEmail("");
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <section
-      className={cn("relative flex h-screen flex-col overflow-hidden", className)}
+      className={cn(
+        "relative flex h-screen flex-col overflow-hidden",
+        className,
+      )}
       id={id || "secondary-hero"}
     >
       <div
@@ -42,100 +92,92 @@ export function SecondaryHero({
         fallbackImage={content.fallbackImage}
         videoSrc={content.videoSrc}
       />
-
-      <div className="container relative z-10 mx-auto flex h-full flex-col justify-center px-4 md:px-20">
-        <BrandingAnimation className="relative mb-4 flex items-center justify-center gap-3 md:justify-start" />
-
-        <div className="flex max-w-3xl flex-col justify-center text-center md:text-left">
+      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
+        <div className="max-w-3xl flex flex-col justify-center text-left">
           <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 flex items-end justify-center gap-3 md:justify-start"
-            initial={{ opacity: 0, y: 60 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
+            className={cn("flex gap-5 items-end mb-8 text-white")}
+            initial={{ y: 60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h1
-              className={cn(
-                "z-10 font-barlow-condensed text-[80px] font-extrabold leading-none text-white",
-                "[&_sup]:text-[0.6em] [&_sup]:leading-none",
-                "md:text-[88px]",
-                titleClassName,
-              )}
-            >
-              {content.title}
-            </h1>
-            <p className="mb-4 max-w-24 text-left text-xs font-semibold leading-tight uppercase tracking-wide text-white md:text-sm">
-              {content.subtitle}
-            </p>
+            <h2 className="font-barlow-condensed font-extrabold text-[80px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
+              {formatTitleWithCopyright(content.title)}
+            </h2>
+            <p
+              className="font-barlow font-medium leading-none text-lg whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: content.subtitle }}
+            />
           </motion.div>
 
           <motion.p
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-2 max-w-2xl font-barlow text-sm font-normal leading-relaxed text-white md:text-base [&_strong]:font-bold [&_strong]:text-white"
-            initial={{ opacity: 0, y: 40 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
-            <strong>{content.tagline}</strong>
-          </motion.p>
-
-          <motion.p
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12 max-w-xl font-barlow text-xs font-normal leading-relaxed text-white md:text-sm"
-            initial={{ opacity: 0, y: 40 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
-            {content.availabilityNote}
-          </motion.p>
+            className="font-barlow text-lg leading-relaxed text-white mb-8 [&_strong]:font-bold"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            dangerouslySetInnerHTML={{ __html: content.tagline }}
+          />
         </div>
 
         <motion.form
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-5 flex max-w-[465px] flex-col justify-center gap-0 md:justify-start sm:flex-row"
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          className="flex flex-col md:flex-row justify-start gap-4  mb-8"
+          noValidate
           onSubmit={handleSubmit}
-          transition={{ delay: 1.2, duration: 0.6 }}
         >
-          <label className="sr-only" htmlFor="xsed-contact">
-            {content.inputLabel}
-          </label>
-          <input
-            className={cn(
-              "h-12 min-w-0 flex-1 rounded-none border border-white/40 bg-transparent px-6 text-center text-sm text-white",
-              "placeholder:text-white",
-              "focus:border-white focus:outline-none focus:ring-2 focus:ring-white/40",
-            )}
-            id="xsed-contact"
-            name="contact"
+          <Input
+            aria-label={content.inputLabel}
+            className="h-14 w-[300px] rounded-md border-2 border-white bg-transparent px-4 font-barlow text-lg font-semibold text-white shadow-none placeholder:text-white focus-visible:ring-2 focus-visible:ring-white/40"
+            disabled={isSubmitting}
+            id="xsed-email-input"
+            onChange={(event) => {
+              setEmail(event.target.value);
+              if (status !== "idle") setStatus("idle");
+            }}
             placeholder={content.inputPlaceholder}
-            type="text"
+            required
+            type="email"
+            value={email}
           />
           <Button
             aria-label={content.submitAriaLabel}
-            className="h-12 px-7 text-xs md:text-sm"
+            disabled={isSubmitting}
             size="lg"
             type="submit"
             variant="tertiary"
           >
-            {content.submitLabel}
+            {isSubmitting ? content.submittingLabel : content.submitLabel}
           </Button>
         </motion.form>
 
+        {statusMessage && (
+          <p
+            className={cn(
+              "mb-6 font-barlow text-lg font-semibold",
+              status === "success" ? "text-emerald-500!" : "text-red-500!",
+            )}
+          >
+            {statusMessage}
+          </p>
+        )}
+
         <motion.p
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-xl font-barlow text-sm font-normal leading-relaxed text-white"
-          initial={{ opacity: 0, y: 40 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          {content.helper}
-        </motion.p>
+          className="font-barlow text-lg leading-relaxed text-white mb-8 [&_strong]:font-bold"
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1.6 }}
+          dangerouslySetInnerHTML={{ __html: content.helper }}
+        />
       </div>
 
       {scrollIndicator && (
-        <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div
+            className="scroll-indicator pointer-events-none select-none z-10 text-white"
             aria-hidden="true"
-            className="scroll-indicator pointer-events-none z-10 select-none text-white"
           >
-            {content.scrollText || "SCROLL"}
+            "SCROLL"
           </div>
         </div>
       )}

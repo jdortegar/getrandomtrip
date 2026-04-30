@@ -68,7 +68,7 @@ export function StripePaymentForm({
       return;
     }
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/${locale}/checkout/success`,
@@ -96,7 +96,17 @@ export function StripePaymentForm({
       return;
     }
 
-    window.location.href = `/${locale}/checkout/success`;
+    // Pass payment_intent to success page so it can confirm the trip
+    // even if the Stripe webhook hasn't arrived yet.
+    const successUrl = new URL(
+      `/${locale}/checkout/success`,
+      window.location.origin,
+    );
+    if (paymentIntent?.id) {
+      successUrl.searchParams.set("payment_intent", paymentIntent.id);
+      successUrl.searchParams.set("redirect_status", paymentIntent.status);
+    }
+    window.location.href = successUrl.toString();
   }
 
   return (

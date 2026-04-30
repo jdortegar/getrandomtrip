@@ -39,7 +39,8 @@
       "experiences": "Experiences",
       "payments": "Payments",
       "reviews": "Reviews",
-      "waitlist": "Waitlist"
+      "waitlist": "Waitlist",
+      "xsedNotifications": "XSED Alerts"
     }
   },
   "xsedPage": {
@@ -51,16 +52,39 @@
     },
     "hero": {
       "title": "XSED",
-      "subtitle": "X LUCK IS SUNDAY",
-      "tagline": "1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE less than 300km from home.",
+      "subtitle": "X LUCK<br/>IS SUNDAY",
+      "tagline": "<strong>1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE</strong> less than 300km from home.",
       "availabilityNote": "Only 10 spots released every Sunday per country.",
-      "inputLabel": "Email Address or WA",
-      "inputPlaceholder": "Email Address or WA",
+      "errorMessage": "We could not add you to the list. Please try again.",
+      "invalidEmailMessage": "Enter a valid email address.",
+      "inputLabel": "Email Address",
+      "inputPlaceholder": "Email Address",
       "submitLabel": "JOIN THE WAITLIST",
       "submitAriaLabel": "Join the XSED waitlist",
+      "submittingLabel": "JOINING...",
+      "successMessage": "You are on the list. We will notify you before the next opening.",
       "helper": "We will notify you 10 minutes before checkout opens every Sunday. Blink, and you are out.",
       "fallbackImage": "/images/hero-image-1.jpeg",
       "videoSrc": "/videos/hero-video-1.mp4"
+    },
+    "iconText": {
+      "items": [
+        {
+          "icon": "alert",
+          "title": "The Alert",
+          "description": "On Sunday at 6:00 PM, <strong>you receive the hidden access.</strong><br/>You have 4 hours to book one of 10 limited escapes at a fixed price of $250 USD per person."
+        },
+        {
+          "icon": "rhythm",
+          "title": "Reveal at your pace",
+          "description": "You control the wonder. <strong>Exactly 48 hours before</strong>, we send you the driving distance and weather so you can prep the car and pack your bag. The secret coordinates are unlocked: you can see them that Thursday, or keep the intrigue alive and open the map right before leaving on Saturday."
+        },
+        {
+          "icon": "escape",
+          "title": "The escape",
+          "description": "On Saturday, you take your car. <strong>You arrive at a destination less than 300km from home.</strong> It includes the hotel night, Saturday dinner, Sunday breakfast, and a curated local experience."
+        }
+      ]
     }
   },
   "auth": {

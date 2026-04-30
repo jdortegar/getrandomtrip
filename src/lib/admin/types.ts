@@ -105,3 +105,10 @@ export interface AdminWaitlistEntry {
   lastName: string | null;
   name: string | null;
 }
+
+export interface AdminXsedNotificationEntry {
+  createdAt: string;
+  email: string;
+  id: string;
+  locale: string | null;
+}

@@ -2,6 +2,7 @@
 
 import { useParams, usePathname } from "next/navigation";
 import {
+  Bell,
   Briefcase,
   CreditCard,
   Mail,
@@ -41,6 +42,11 @@ export function AdminSidebar() {
     { href: base("/payments"), icon: CreditCard, label: copy.links.payments },
     { href: base("/reviews"), icon: Star, label: copy.links.reviews },
     { href: base("/waitlist"), icon: Mail, label: copy.links.waitlist },
+    {
+      href: base("/xsed-notifications"),
+      icon: Bell,
+      label: copy.links.xsedNotifications,
+    },
   ];
 
   return (
