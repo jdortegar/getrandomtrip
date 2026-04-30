@@ -398,3 +398,15 @@ model WaitlistEntry {
   @@index([email])
   @@map("waitlist_entries")
 }
+
+model XsedNotificationSignup {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  locale    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("xsed_notification_signups")
+}

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source inline("{bg,border,text}-{slate,gray,zinc,neutral,stone,red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-{50,100,200,300,400,500,600,700,800,900,950}");
 @plugin "@tailwindcss/typography";
 @import "leaflet/dist/leaflet.css";
 
@@ -115,6 +116,17 @@ html.lenis {
   /* Light blue (carousel buttons, links) */
   --color-light-blue: #4f96b6;
   --color-light-blue-600: #3d7a94;
+
+  --color-xsed: #d97e4a;
+  --color-xsed-50: #fef2f2;
+  --color-xsed-100: #fee2e2;
+  --color-xsed-200: #fecaca;
+  --color-xsed-300: #fca5a5;
+  --color-xsed-400: #f87171;
+  --color-xsed-500: #ef4444;
+  --color-xsed-600: #dc2626;
+  --color-xsed-700: #b91c1c;
+  --color-xsed-800: #991b1b;
 }
 /* Scroll Indicator Styles*/
 .scroll-indicator {

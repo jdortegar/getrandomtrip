@@ -491,18 +491,30 @@ export interface UnauthorizedPageDict {
 
 export interface XsedPageDict {
   hero: {
-    availabilityNote: string;
-    fallbackImage: string;
-    helper: string;
-    inputLabel: string;
-    inputPlaceholder: string;
-    scrollText?: string;
-    submitAriaLabel: string;
-    submitLabel: string;
+    errorMessage: string;
+    primaryCta?: { ariaLabel: string; href: string; text: string };
+    invalidEmailMessage: string;
+    secondaryCta?: { ariaLabel: string; href: string; text: string };
+    submittingLabel: string;
+    successMessage: string;
+    title: string;
     subtitle: string;
     tagline: string;
-    title: string;
+    availabilityNote: string;
+    inputLabel: string;
+    inputPlaceholder: string;
+    submitLabel: string;
+    submitAriaLabel: string;
+    helper: string;
+    fallbackImage: string;
     videoSrc: string;
+  };
+  iconText: {
+    items: Array<{
+      description: string;
+      icon: "alert" | "escape" | "rhythm";
+      title: string;
+    }>;
   };
   meta: {
     description: string;
@@ -520,6 +532,7 @@ export interface AdminSidebarDict {
     tripRequests: string;
     users: string;
     waitlist: string;
+    xsedNotifications: string;
   };
 }
 

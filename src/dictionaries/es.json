@@ -39,7 +39,8 @@
       "experiences": "Experiencias",
       "payments": "Pagos",
       "reviews": "Reseñas",
-      "waitlist": "Lista de espera"
+      "waitlist": "Lista de espera",
+      "xsedNotifications": "Avisos XSED"
     }
   },
   "xsedPage": {
@@ -51,16 +52,39 @@
     },
     "hero": {
       "title": "XSED",
-      "subtitle": "X SUERTE ES DOMINGO",
-      "tagline": "1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL única a menos de 300km de tu casa.",
+      "subtitle": "X SUERTE<br/>ES DOMINGO",
+      "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> única a menos de 300km de tu casa.<br/>Solo 10 cupos liberados cada domingo por país.",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
-      "inputLabel": "Email Address o WA",
-      "inputPlaceholder": "Email Address o WA",
+      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
+      "invalidEmailMessage": "Ingresá un email válido.",
+      "inputLabel": "Email Address",
+      "inputPlaceholder": "Ingresa tu email",
       "submitLabel": "UNIRME A LA LISTA DE ESPERA",
       "submitAriaLabel": "Unirme a la lista de espera de XSED",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo. Si parpadeás, te quedás fuera.",
+      "submittingLabel": "SUMANDO...",
+      "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.<br/>Si parpadeás, te quedás fuera.",
       "fallbackImage": "/images/hero-image-1.jpeg",
       "videoSrc": "/videos/hero-video-1.mp4"
+    },
+    "iconText": {
+      "items": [
+        {
+          "icon": "alert",
+          "title": "La Alerta",
+          "description": "El domingo a las 18:00 hs <strong>recibís el acceso oculto.</strong><br/>Tenés 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona."
+        },
+        {
+          "icon": "rhythm",
+          "title": "Reveal a tu ritmo",
+          "description": "Vos controlás el asombro. <strong>Exactamente 48 horas antes</strong>, te enviamos la distancia de manejo y el clima para que prepares el auto y la maleta. Las coordenadas secretas estarán desbloqueadas: podés verlas ese mismo jueves, o jugar con la intriga y abrir el mapa justo antes de arrancar el sábado."
+        },
+        {
+          "icon": "escape",
+          "title": "El escape",
+          "description": "El sábado tomás tu auto. <strong>Llegás a un destino a menos de 300km de tu casa.</strong> Incluye la noche de hotel, la cena del sábado, el desayuno del domingo y una experiencia local curada."
+        }
+      ]
     }
   },
   "auth": {
