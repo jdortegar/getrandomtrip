@@ -51,7 +51,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
-import { pickCheckoutTrip } from "@/lib/helpers/checkout-trip";
+import { pickCheckoutTrip, CHECKOUT_TRIP_STATUSES } from "@/lib/helpers/checkout-trip";
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
@@ -307,8 +307,20 @@ function CheckoutContent() {
         }
         const trips = (data.trips ?? []) as CheckoutTripFromApi[];
         const preferredId = tripIdParam?.trim();
+
+        // If the requested trip exists but is already paid, redirect to dashboard
+        if (preferredId) {
+          const requestedTrip = trips.find((t) => t.id === preferredId);
+          if (requestedTrip && !CHECKOUT_TRIP_STATUSES.has(requestedTrip.status)) {
+            router.replace(pathForLocale(resolvedLocale, "/dashboard"));
+            return;
+          }
+        }
+
         const byPreferredId = preferredId
-          ? trips.find((t) => t.id === preferredId)
+          ? trips.find(
+              (t) => t.id === preferredId && CHECKOUT_TRIP_STATUSES.has(t.status),
+            )
           : undefined;
         const picked = byPreferredId ?? pickCheckoutTrip(trips);
         if (!picked) {

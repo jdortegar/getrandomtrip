@@ -37,6 +37,23 @@ export default function CheckoutResultSuccess({
   const [loading, setLoading] = useState(false);
   const showSuccess = !hasFailed;
 
+  const paymentIntentId =
+    stripeReturn?.paymentIntent ?? searchParams.get('payment_intent');
+
+  // Fallback confirmation: call our API to mark the trip CONFIRMED in case
+  // the Stripe webhook hasn't arrived yet.
+  useEffect(() => {
+    if (!paymentIntentId || hasFailed) return;
+    fetch('/api/stripe/confirm-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentIntentId }),
+    }).catch(() => {
+      // Best-effort — webhook will still arrive eventually
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentIntentId]);
+
   useEffect(() => {
     setLoading(false);
   }, []);
