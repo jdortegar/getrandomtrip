@@ -1222,6 +1222,8 @@ export interface MarketingDictionary {
       saveChanges: string;
       tripperProfile: string;
     };
+    comingSoon: string;
+    comingSoonDescription: string;
     header: {
       badgeActiveTraveler: string;
       emailFallback: string;
@@ -1262,8 +1264,26 @@ export interface MarketingDictionary {
       title: string;
       travelerType: string;
     };
+    nav: {
+      summary: string;
+      personal: string;
+      travelDocs: string;
+      preferences: string;
+      payments: string;
+      security: string;
+      tripperProfile: string;
+      tripperOs: string;
+    };
     personalSectionTitle: string;
     preferencesSectionTitle: string;
+    sections: {
+      summary: string;
+      travelDocs: string;
+      payments: string;
+      security: string;
+      tripperProfile: string;
+      tripperOs: string;
+    };
     toasts: {
       nameRequired: string;
       passwordError: string;
@@ -1288,6 +1308,12 @@ export interface MarketingDictionary {
       paws: string;
       selectPlaceholder: string;
       solo: string;
+    };
+    tripperSections: {
+      publicProfileCta: string;
+      publicProfileDescription: string;
+      tripperOsCta: string;
+      tripperOsDescription: string;
     };
   };
   adminUsers: {

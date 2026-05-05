@@ -17,7 +17,7 @@ export function QuickActions({ copy }: QuickActionsProps) {
       variant: "default" as const,
     },
     {
-      href: "/profile",
+      href: "/account",
       icon: MapPin,
       key: "profile",
       label: copy.quickActions.profile,
