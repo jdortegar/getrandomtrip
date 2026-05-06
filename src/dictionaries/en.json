@@ -24,7 +24,7 @@
   "navbarProfile": {
     "ariaOpenProfileMenu": "Open profile menu",
     "dashboard": "Travel Logs",
-    "editProfile": "Edit profile",
+    "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
     "adminDashboard": "Admin Dashboard"
@@ -85,6 +85,24 @@
           "description": "On Saturday, you take your car. <strong>You arrive at a destination less than 300km from home.</strong> It includes the hotel night, Saturday dinner, Sunday breakfast, and a curated local experience."
         }
       ]
+    },
+    "countdown": {
+      "title": "BUY YOUR",
+      "titleHighlight": "XSED Nº{number}",
+      "subtitle": "You have 10 minutes before we open the payment gateway.",
+      "nextDropLabel": "NEXT DROP",
+      "daysLabel": "DAYS",
+      "minLabel": "MIN",
+      "secLabel": "SEC",
+      "soldLabel": "{sold}/{total} sold",
+      "ctaLabel": "BUY XSED",
+      "ctaHref": "/journey"
+    },
+    "testimonials": {
+      "eyebrow": "Traveler reviews",
+      "title": "THE VERDICT",
+      "subtitle": "Your next XSED is just one click away. Stop overthinking it.",
+      "viewFullReviewLabel": "View full review"
     }
   },
   "auth": {
@@ -2270,15 +2288,41 @@
     }
   },
   "profile": {
-    "actionsAria": "Profile actions",
+    "actionsAria": "Account actions",
     "hero": {
-      "title": "My profile",
+      "title": "My Account",
       "subtitle": "Manage your account and preferences"
     },
     "header": {
       "userFallback": "User",
       "emailFallback": "user@email.com",
       "badgeActiveTraveler": "Active traveler"
+    },
+    "nav": {
+      "summary": "Summary",
+      "personal": "Personal data",
+      "travelDocs": "Travel documents",
+      "preferences": "Travel preferences",
+      "payments": "Payment methods",
+      "security": "Security",
+      "tripperProfile": "Public profile",
+      "tripperOs": "Tripper OS"
+    },
+    "sections": {
+      "summary": "Summary",
+      "travelDocs": "Travel documents",
+      "payments": "Payment methods",
+      "security": "Security",
+      "tripperProfile": "Tripper public profile",
+      "tripperOs": "Tripper OS"
+    },
+    "comingSoon": "Coming soon",
+    "comingSoonDescription": "This section will be available soon.",
+    "tripperSections": {
+      "publicProfileDescription": "Your public profile is what clients see when looking for trippers. Keeping it updated improves your visibility.",
+      "publicProfileCta": "View and edit public profile",
+      "tripperOsDescription": "Access the operations panel to manage packages, trips and clients.",
+      "tripperOsCta": "Go to Tripper OS"
     },
     "buttons": {
       "editProfile": "Edit profile",
@@ -2289,7 +2333,7 @@
       "modalCancel": "Cancel",
       "modalSave": "Save changes"
     },
-    "personalSectionTitle": "Personal information",
+    "personalSectionTitle": "Personal data",
     "preferencesSectionTitle": "Travel preferences",
     "labels": {
       "email": "Email",

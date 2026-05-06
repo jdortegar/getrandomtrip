@@ -12,6 +12,7 @@ type SectionProps = {
   title?: string;
   subtitle?: string;
   eyebrow?: string;
+  eyebrowColor?: string;
   className?: string;
   variant?: "default" | "light" | "dark";
   id?: string;
@@ -26,6 +27,7 @@ const Section = ({
   title,
   subtitle,
   eyebrow,
+  eyebrowColor,
   className,
   variant = "default",
   id,
@@ -64,6 +66,7 @@ const Section = ({
           {eyebrow && (
             <motion.div
               className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-light-blue"
+              style={eyebrowColor ? { color: eyebrowColor } : undefined}
               initial={{ y: 40, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -86,9 +89,8 @@ const Section = ({
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              {title}
-            </motion.h2>
+              dangerouslySetInnerHTML={{ __html: title }}
+              />
           )}
           {subtitle && (
             <motion.p

@@ -490,6 +490,18 @@ export interface UnauthorizedPageDict {
 }
 
 export interface XsedPageDict {
+  countdown: {
+    ctaHref: string;
+    ctaLabel: string;
+    daysLabel: string;
+    minLabel: string;
+    nextDropLabel: string;
+    secLabel: string;
+    soldLabel: string;
+    subtitle: string;
+    title: string;
+    titleHighlight: string;
+  };
   hero: {
     errorMessage: string;
     primaryCta?: { ariaLabel: string; href: string; text: string };
@@ -521,6 +533,12 @@ export interface XsedPageDict {
     openGraphDescription: string;
     openGraphTitle: string;
     title: string;
+  };
+  testimonials: {
+    eyebrow: string;
+    subtitle: string;
+    title: string;
+    viewFullReviewLabel: string;
   };
 }
 
@@ -1222,6 +1240,8 @@ export interface MarketingDictionary {
       saveChanges: string;
       tripperProfile: string;
     };
+    comingSoon: string;
+    comingSoonDescription: string;
     header: {
       badgeActiveTraveler: string;
       emailFallback: string;
@@ -1262,8 +1282,26 @@ export interface MarketingDictionary {
       title: string;
       travelerType: string;
     };
+    nav: {
+      summary: string;
+      personal: string;
+      travelDocs: string;
+      preferences: string;
+      payments: string;
+      security: string;
+      tripperProfile: string;
+      tripperOs: string;
+    };
     personalSectionTitle: string;
     preferencesSectionTitle: string;
+    sections: {
+      summary: string;
+      travelDocs: string;
+      payments: string;
+      security: string;
+      tripperProfile: string;
+      tripperOs: string;
+    };
     toasts: {
       nameRequired: string;
       passwordError: string;
@@ -1288,6 +1326,12 @@ export interface MarketingDictionary {
       paws: string;
       selectPlaceholder: string;
       solo: string;
+    };
+    tripperSections: {
+      publicProfileCta: string;
+      publicProfileDescription: string;
+      tripperOsCta: string;
+      tripperOsDescription: string;
     };
   };
   adminUsers: {

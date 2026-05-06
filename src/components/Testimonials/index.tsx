@@ -12,6 +12,7 @@ export type { TestimonialData, TestimonialsContent } from './types';
 interface TestimonialsProps {
   content?: TestimonialsContent;
   eyebrow?: string;
+  featureColor?: string;
   testimonials: TestimonialData[];
   testId?: string;
   subtitle?: string;
@@ -22,6 +23,7 @@ interface TestimonialsProps {
 export default function Testimonials({
   content,
   eyebrow,
+  featureColor,
   testimonials,
   testId = 'testimonials',
   subtitle,
@@ -45,13 +47,15 @@ export default function Testimonials({
     <Section
       className="min-h-[60vh]"
       eyebrow={resolvedEyebrow}
+      eyebrowColor={featureColor}
       subtitle={resolvedSubtitle}
       title={resolvedTitle}
     >
       <div className="container mx-auto mt-12 px-4 md:px-20">
-        <EmblaCarousel slidesPerView={3}>
+        <EmblaCarousel accentColor={featureColor} slidesPerView={3}>
           {testimonials.slice(0, 9).map((testimonial, index) => (
             <TestimonialCard
+              accentColor={featureColor}
               index={index}
               key={`${testimonial.author}-${index}`}
               testimonial={testimonial}

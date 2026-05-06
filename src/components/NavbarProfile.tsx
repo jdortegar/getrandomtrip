@@ -12,7 +12,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
 
 const PROFILE_MENU_ITEM = {
-  href: "/profile",
+  href: "/account",
 };
 
 const TRIPPER_MENU_ITEM = {
@@ -61,6 +61,12 @@ export function NavbarProfile({
         : { role: sessionUser?.role ?? user?.role };
   const isAdmin = hasRoleAccess(adminSubject, "admin");
 
+  // Strict check — does not promote admin to tripper.
+  const userRoles: string[] = (
+    sessionUser?.roles ?? user?.roles ?? []
+  ) as string[];
+  const isTripper = userRoles.some((r) => r?.toLowerCase() === "tripper");
+
   const handleSignOut = () => {
     if (session) {
       nextAuthSignOut({ callbackUrl: "/" });
@@ -105,14 +111,16 @@ export function NavbarProfile({
           >
             {labels.dashboard}
           </Link>
-          <Link
-            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-            href={TRIPPER_MENU_ITEM.href}
-            onClick={close}
-            role="menuitem"
-          >
-            {labels.tripperOs}
-          </Link>
+          {isTripper && (
+            <Link
+              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+              href={TRIPPER_MENU_ITEM.href}
+              onClick={close}
+              role="menuitem"
+            >
+              {labels.tripperOs}
+            </Link>
+          )}
           {isAdmin ? (
             <Link
               className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"

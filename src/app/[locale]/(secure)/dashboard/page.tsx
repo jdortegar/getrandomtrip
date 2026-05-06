@@ -232,14 +232,6 @@ function DashboardContent() {
               />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <UpcomingTripsPanel
-                  copy={copy}
-                  getStatusColor={getStatusColor}
-                  getStatusLabel={getStatusLabel}
-                  locale={locale}
-                  trips={upcomingTrips}
-                />
-
                 {/* Sidebar */}
                 <div className="space-y-6">
                   <QuickActions copy={copy} />
@@ -249,6 +241,14 @@ function DashboardContent() {
                     stats={stats}
                   />
                 </div>
+
+                <UpcomingTripsPanel
+                  copy={copy}
+                  getStatusColor={getStatusColor}
+                  getStatusLabel={getStatusLabel}
+                  locale={locale}
+                  trips={upcomingTrips}
+                />
               </div>
               <AllTripsGrid
                 copy={copy}
