@@ -11,6 +11,7 @@ import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
 import { cn } from "@/lib/utils";
 
 type EmblaCarouselProps = {
+  accentColor?: string;
   children: React.ReactNode;
   options?: EmblaOptionsType;
   slideClassName?: string;
@@ -23,6 +24,7 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
 };
 
 const EmblaCarousel = ({
+  accentColor,
   children,
   options,
   slidesPerView = 3,
@@ -53,8 +55,8 @@ const EmblaCarousel = ({
     <div className="@container mx-auto w-full">
       {slides.length > 1 && (
         <div className="flex self-end items-center justify-end gap-2.5 mb-6">
-          <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} />
-          <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} />
+          <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} style={accentColor ? { backgroundColor: accentColor } : undefined} />
+          <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} style={accentColor ? { backgroundColor: accentColor } : undefined} />
         </div>
       )}
       <div className="relative w-full overflow-hidden p-1" ref={emblaRef}>
@@ -94,9 +96,14 @@ const EmblaCarousel = ({
                 className={cn(
                   "h-2 rounded-full transition-all",
                   i === selectedIndex
-                    ? "w-8 bg-light-blue"
-                    : "w-2 bg-light-blue/30 hover:bg-light-blue/50",
+                    ? cn("w-8", !accentColor && "bg-light-blue")
+                    : cn("w-2", !accentColor && "bg-light-blue/30 hover:bg-light-blue/50"),
                 )}
+                style={
+                  accentColor
+                    ? { backgroundColor: accentColor, opacity: i === selectedIndex ? 1 : 0.3 }
+                    : undefined
+                }
                 onClick={() => onDotButtonClick(i)}
                 type="button"
               />

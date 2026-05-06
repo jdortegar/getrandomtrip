@@ -490,6 +490,18 @@ export interface UnauthorizedPageDict {
 }
 
 export interface XsedPageDict {
+  countdown: {
+    ctaHref: string;
+    ctaLabel: string;
+    daysLabel: string;
+    minLabel: string;
+    nextDropLabel: string;
+    secLabel: string;
+    soldLabel: string;
+    subtitle: string;
+    title: string;
+    titleHighlight: string;
+  };
   hero: {
     errorMessage: string;
     primaryCta?: { ariaLabel: string; href: string; text: string };
@@ -521,6 +533,12 @@ export interface XsedPageDict {
     openGraphDescription: string;
     openGraphTitle: string;
     title: string;
+  };
+  testimonials: {
+    eyebrow: string;
+    subtitle: string;
+    title: string;
+    viewFullReviewLabel: string;
   };
 }
 

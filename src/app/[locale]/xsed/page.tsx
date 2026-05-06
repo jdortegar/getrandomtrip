@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
 import { SecondaryHero } from "@/components/app/xsed/SecondaryHero";
+import { CountDown } from "@/components/app/xsed/CountDown";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { MultiColumnIconText } from "@/components/app/xsed/MultiColumnIconText";
+import Testimonials from "@/components/Testimonials";
+import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 
 type LocaleParams = { params: { locale?: string | string[] } };
 
@@ -40,7 +43,19 @@ export default async function XsedPage({ params }: LocaleParams) {
         locale={normalizedLocale}
         scrollIndicator
       />
+      <CountDown
+        copy={dict.xsedPage.countdown}
+        locale={normalizedLocale}
+        soldCount={2}
+        targetDate="2026-10-06T18:00:00-03:00"
+        totalSlots={10}
+      />
       <MultiColumnIconText content={dict.xsedPage.iconText} />
+      <Testimonials
+        content={dict.xsedPage.testimonials}
+        featureColor="#D97E4A"
+        testimonials={XSED_TESTIMONIALS}
+      />
     </>
   );
 }

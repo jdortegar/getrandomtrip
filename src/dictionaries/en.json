@@ -85,6 +85,24 @@
           "description": "On Saturday, you take your car. <strong>You arrive at a destination less than 300km from home.</strong> It includes the hotel night, Saturday dinner, Sunday breakfast, and a curated local experience."
         }
       ]
+    },
+    "countdown": {
+      "title": "BUY YOUR",
+      "titleHighlight": "XSED Nº{number}",
+      "subtitle": "You have 10 minutes before we open the payment gateway.",
+      "nextDropLabel": "NEXT DROP",
+      "daysLabel": "DAYS",
+      "minLabel": "MIN",
+      "secLabel": "SEC",
+      "soldLabel": "{sold}/{total} sold",
+      "ctaLabel": "BUY XSED",
+      "ctaHref": "/journey"
+    },
+    "testimonials": {
+      "eyebrow": "Traveler reviews",
+      "title": "THE VERDICT",
+      "subtitle": "Your next XSED is just one click away. Stop overthinking it.",
+      "viewFullReviewLabel": "View full review"
     }
   },
   "auth": {

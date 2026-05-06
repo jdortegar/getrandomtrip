@@ -85,6 +85,24 @@
           "description": "El sábado tomás tu auto. <strong>Llegás a un destino a menos de 300km de tu casa.</strong> Incluye la noche de hotel, la cena del sábado, el desayuno del domingo y una experiencia local curada."
         }
       ]
+    },
+    "countdown": {
+      "title": "COMPRÁ TU",
+      "titleHighlight": "XSED Nº{number}",
+      "subtitle": "Tenés 10 minutos antes de que activemos la pasarela.",
+      "nextDropLabel": "NEXT DROP",
+      "daysLabel": "DÍAS",
+      "minLabel": "MIN",
+      "secLabel": "SEG",
+      "soldLabel": "Vendidos {sold}/{total}",
+      "ctaLabel": "COMPRAR XSED",
+      "ctaHref": "/journey"
+    },
+    "testimonials": {
+      "eyebrow": "Opiniones de viajeros",
+      "title": "EL VEREDICTO",
+      "subtitle": "Tu próximo XSED está a un solo click de distancia. No lo pienses más.",
+      "viewFullReviewLabel": "Ver opinión completa"
     }
   },
   "auth": {
