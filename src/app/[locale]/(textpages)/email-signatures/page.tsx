@@ -4,15 +4,15 @@ import { EmailSignaturesClient } from '@/components/marketing/EmailSignaturesCli
 import { hasLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
 function resolveLocale(raw: string | string[] | undefined): Locale {
   const localeStr = typeof raw === 'string' ? raw : raw?.[0];
   return hasLocale(localeStr) ? localeStr : 'es';
 }
 
-function getPreviewOrigin(): string {
-  const h = headers();
+async function getPreviewOrigin(): Promise<string> {
+  const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host');
   if (!host) {
     return 'http://localhost:3010';
@@ -24,7 +24,8 @@ function getPreviewOrigin(): string {
   return `${proto}://${host}`;
 }
 
-export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const locale = resolveLocale(params?.locale);
   const dict = await getDictionary(locale);
   const meta = dict.emailSignatures.meta;
@@ -39,10 +40,11 @@ export async function generateMetadata({ params }: LocaleParams): Promise<Metada
   };
 }
 
-export default async function EmailSignaturesPage({ params }: LocaleParams) {
+export default async function EmailSignaturesPage(props: LocaleParams) {
+  const params = await props.params;
   const locale = resolveLocale(params?.locale);
   const dict = await getDictionary(locale);
-  const previewOrigin = getPreviewOrigin();
+  const previewOrigin = await getPreviewOrigin();
   const copyBaseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://getrandomtrip.com').replace(/\/$/, '');
 
   return (

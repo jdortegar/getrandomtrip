@@ -12,11 +12,10 @@ import { XsedHero } from "@/components/app/xsed/XsedHero";
 import { DropGrid } from "@/components/app/xsed/DropGrid";
 import { XSED_DROPS } from "@/lib/data/xsed-drops";
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const raw = params?.locale;
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const dict = await getDictionary(hasLocale(locale) ? locale : "es");
@@ -33,7 +32,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function XsedPage({ params }: LocaleParams) {
+export default async function XsedPage(props: LocaleParams) {
+  const params = await props.params;
   const raw = params?.locale;
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const normalizedLocale = hasLocale(locale) ? locale : "es";

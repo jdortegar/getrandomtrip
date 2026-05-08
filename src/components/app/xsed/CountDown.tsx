@@ -108,7 +108,6 @@ export function CountDown({ copy, locale, soldCount, targetDate, totalSlots }: C
 
         {/* Countdown digits */}
         <motion.div
-          aria-label={`${time.days} ${copy.daysLabel}, ${time.min} ${copy.minLabel}, ${time.sec} ${copy.secLabel}`}
           className="mt-4 flex items-end justify-center"
           initial={{ opacity: 0, y: 20 }}
           viewport={{ once: true }}

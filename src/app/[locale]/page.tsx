@@ -11,11 +11,12 @@ import { getAllTrippers } from '@/lib/db/tripper-queries';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 
-export default async function HomePage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default async function HomePage(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : 'es';
   const dict = await getDictionary(locale);
   const trippers = await getAllTrippers();

@@ -178,7 +178,7 @@ interface CheckoutContactCardProps {
   checkoutCopy: Dictionary["journey"]["checkout"];
   clientSecret: string | null;
   formData: CheckoutFormFields;
-  formRef: React.RefObject<HTMLFormElement>;
+  formRef: React.RefObject<HTMLFormElement | null>;
   onBack: () => void;
   onBeforeConfirm: () => Promise<boolean>;
   onFieldChange: (field: keyof CheckoutFormFields, value: string) => void;

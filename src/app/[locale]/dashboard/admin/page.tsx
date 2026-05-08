@@ -2,11 +2,12 @@ import { AdminTripRequestsPageClient } from "./AdminTripRequestsPageClient";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 
-export default async function AdminTripRequestsPage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default async function AdminTripRequestsPage(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : "es";
   const dict = await getDictionary(locale);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import Hero from '@/components/Hero';
 import TypePlanner from '@/components/by-type/TypePlanner';
 import { TravelerTypesCarousel } from '@/components/landing/exploration/TravelerTypesCarousel';
@@ -13,11 +13,12 @@ import { hasLocale } from '@/lib/i18n/config';
 import type { Dictionary } from '@/lib/i18n/dictionaries';
 import { getPlannerContentForType, getPlannerLevelsForType } from '@/lib/utils/experiencesData';
 
-export default function ExperiencesPage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default function ExperiencesPage(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = use(props.params);
   const locale = hasLocale(params.locale) ? params.locale : 'es';
   const dict = (locale === 'en' ? en : es) as Dictionary;
   const exp = dict.experiences;

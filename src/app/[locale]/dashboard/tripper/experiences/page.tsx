@@ -8,11 +8,12 @@ import Section from "@/components/layout/Section";
 import ExperiencesPageClient from "@/components/app/dashboard/tripper/experiences/ExperiencesPageClient";
 import type { ExperienceListItem } from "@/types/tripper";
 
-export default async function TripperExperiencesPage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default async function TripperExperiencesPage(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {

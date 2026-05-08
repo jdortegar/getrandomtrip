@@ -5,11 +5,12 @@ import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = await props.params;
   if (!hasLocale(params.locale)) {
     return { title: 'Payment' };
   }
@@ -20,11 +21,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function CheckoutPendingPage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default async function CheckoutPendingPage(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = await props.params;
   if (!hasLocale(params.locale)) {
     notFound();
   }

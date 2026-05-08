@@ -9,11 +9,10 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const raw = params?.locale;
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const dict = await getDictionary(hasLocale(locale) ? locale : "es");
@@ -42,7 +41,8 @@ const PHILOSOPHY_IMAGE =
 const FOUNDER_IMAGE =
   "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=600";
 
-export default async function AboutUsPage({ params }: LocaleParams) {
+export default async function AboutUsPage(props: LocaleParams) {
+  const params = await props.params;
   const raw = params?.locale;
   const localeStr = typeof raw === "string" ? raw : raw?.[0];
   const locale = hasLocale(localeStr) ? localeStr : "es";

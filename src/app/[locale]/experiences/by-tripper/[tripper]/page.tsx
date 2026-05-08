@@ -54,11 +54,12 @@ function getLevelInfo(level: string) {
   return { duration, activities };
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { tripper: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ tripper: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const dbTripper = await getTripperBySlug(params.tripper);
 
   if (!dbTripper) return { title: 'Randomtrip' };
@@ -80,11 +81,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { tripper: string };
-}) {
+export default async function Page(
+  props: {
+    params: Promise<{ tripper: string }>;
+  }
+) {
+  const params = await props.params;
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === 'undefined') {
     redirect('/experiences/by-type/group');
@@ -175,7 +177,6 @@ export default async function Page({
           </div>
         </div>
       </div>
-
       {/* Packages Content */}
       <div className="rt-container px-4 sm:px-6 lg:px-8 py-8">
         {allPackages.length === 0 ? (

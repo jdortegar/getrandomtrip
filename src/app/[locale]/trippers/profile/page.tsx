@@ -4,14 +4,15 @@ import { TripperProfileClient } from '@/components/app/tripper/tripper-profile/T
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale, type Locale } from '@/lib/i18n/config';
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
 function resolveLocale(raw: string | string[] | undefined): Locale {
   const localeStr = typeof raw === 'string' ? raw : raw?.[0];
   return hasLocale(localeStr) ? localeStr : 'es';
 }
 
-export async function generateMetadata({ params }: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const locale = resolveLocale(params?.locale);
   const dict = await getDictionary(locale);
   const meta = dict.tripperProfilePage.meta;
@@ -26,7 +27,8 @@ export async function generateMetadata({ params }: LocaleParams): Promise<Metada
   };
 }
 
-export default async function TripperProfilePage({ params }: LocaleParams) {
+export default async function TripperProfilePage(props: LocaleParams) {
+  const params = await props.params;
   const locale = resolveLocale(params?.locale);
   const dict = await getDictionary(locale);
   return (

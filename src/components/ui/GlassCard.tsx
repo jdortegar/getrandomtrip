@@ -1,10 +1,10 @@
 'use client';
-import type { PropsWithChildren } from 'react';
+import type { ElementType, PropsWithChildren } from 'react';
 
 type GlassCardProps = PropsWithChildren<{
   className?: string;
   /** Opcional: cambiar el tag raíz (div, section, article, etc.) */
-  as?: keyof JSX.IntrinsicElements;
+  as?: ElementType;
 }>;
 
 export default function GlassCard({

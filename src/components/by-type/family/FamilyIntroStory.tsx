@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { type JSX } from 'react';
 
 export default function FamilyIntroStory(): JSX.Element {
   return (
