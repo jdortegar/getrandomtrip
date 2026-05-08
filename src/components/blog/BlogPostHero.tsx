@@ -84,7 +84,7 @@ export default function BlogPostHero({
 
         {/* Author row: avatar, name, location (flag style from tripper), actions, FOLLOW */}
         <div className="flex flex-wrap items-center gap-4 md:gap-6 mb-8 ">
-          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
             {author.avatarUrl ? (
               <Image
                 alt={author.name}
@@ -94,7 +94,7 @@ export default function BlogPostHero({
                 src={author.avatarUrl}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
+              <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
                 {author.name.charAt(0)}
               </div>
             )}

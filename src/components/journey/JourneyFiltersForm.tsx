@@ -55,7 +55,7 @@ function FilterSeg({ onChange, options, value }: FilterSegProps) {
           </button>
           {opt.tooltip ? (
             <span
-              className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 min-w-[320px] max-w-[320px] -translate-x-1/2 rounded-md border border-gray-200 bg-gray-900 px-3 py-2 text-left text-xs font-normal leading-snug text-white shadow-lg opacity-0 transition-opacity duration-150 group-hover:opacity-100 [width:320px]"
+              className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 min-w-[320px] max-w-[320px] -translate-x-1/2 rounded-md border border-gray-200 bg-gray-900 px-3 py-2 text-left text-xs font-normal leading-snug text-white shadow-lg opacity-0 transition-opacity duration-150 group-hover:opacity-100 w-[320px]"
               role="tooltip"
             >
               {opt.tooltip}

@@ -253,7 +253,7 @@ export const Divider: React.FC<DividerProps> = ({
   };
 
   const thicknessClasses = {
-    thin: 'border-1',
+    thin: 'border',
     medium: 'border-2',
     thick: 'border-4',
   };

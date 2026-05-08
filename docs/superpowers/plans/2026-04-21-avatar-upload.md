@@ -401,7 +401,7 @@ export function UserAvatar({
         </div>
       ) : (
         <div
-          className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-bold text-white"
+          className="flex h-full w-full items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white"
           style={{ fontSize }}
         >
           {initial}

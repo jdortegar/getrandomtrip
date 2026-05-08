@@ -18,7 +18,7 @@ export default async function TrippersPage({
   return (
     <main className="min-h-screen bg-white">
       <HeaderHero
-        className="!min-h-[50vh]"
+        className="min-h-[50vh]!"
         description={hero.description}
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={hero.subtitle}

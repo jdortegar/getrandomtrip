@@ -45,7 +45,7 @@ export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
           whileInView={{ opacity: 1, y: 0 }}
         >
           <button
-            className="group flex aspect-[269/230] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-800 p-6 text-left text-white shadow-xl transition-all hover:scale-[1.03]"
+            className="group flex aspect-269/230 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg bg-linear-to-br from-primary to-primary-800 p-6 text-left text-white shadow-xl transition-all hover:scale-[1.03]"
             onClick={() => setSearchOpen(true)}
             type="button"
           >

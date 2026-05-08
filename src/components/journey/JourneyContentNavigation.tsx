@@ -71,7 +71,7 @@ export default function JourneyContentNavigation({
             {/* Back Button */}
             {onBack && (
               <button
-                className="p-2 rounded-md hover:bg-gray-100 transition-colors flex-shrink-0"
+                className="p-2 rounded-md hover:bg-gray-100 transition-colors shrink-0"
                 onClick={onBack}
                 type="button"
               >

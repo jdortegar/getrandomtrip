@@ -17,15 +17,15 @@ const travelButtonVariants = cva(
           'border border-primary text-primary hover:bg-primary hover:text-primary-foreground',
         ghost: 'text-primary hover:bg-primary/10',
         luxury:
-          'bg-gradient-to-r from-primary to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
+          'bg-linear-to-r from-primary to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
         adventure:
-          'bg-gradient-to-r from-tropical-coral to-desert-orange text-white hover:from-tropical-coral/90 hover:to-desert-orange/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
+          'bg-linear-to-r from-tropical-coral to-desert-orange text-white hover:from-tropical-coral/90 hover:to-desert-orange/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
         coastal:
-          'bg-gradient-to-r from-coastal-deep to-coastal-teal text-white hover:from-coastal-deep/90 hover:to-coastal-teal/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
+          'bg-linear-to-r from-coastal-deep to-coastal-teal text-white hover:from-coastal-deep/90 hover:to-coastal-teal/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
         mountain:
-          'bg-gradient-to-r from-mountain-rich to-mountain-forest text-white hover:from-mountain-rich/90 hover:to-mountain-forest/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
+          'bg-linear-to-r from-mountain-rich to-mountain-forest text-white hover:from-mountain-rich/90 hover:to-mountain-forest/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
         urban:
-          'bg-gradient-to-r from-urban-charcoal to-urban-vibrant text-white hover:from-urban-charcoal/90 hover:to-urban-vibrant/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
+          'bg-linear-to-r from-urban-charcoal to-urban-vibrant text-white hover:from-urban-charcoal/90 hover:to-urban-vibrant/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5',
       },
       size: {
         sm: 'h-9 px-4 text-sm',

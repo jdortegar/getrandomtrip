@@ -535,7 +535,7 @@ export default function AdminLayoutClient({
   return (
     <SecureRoute requiredRole="admin">
       <HeaderHero
-        className="!min-h-[30vh]"
+        className="min-h-[30vh]!"
         description="Manage trip requests, users, packages and payments."
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle="ADMIN DASHBOARD"

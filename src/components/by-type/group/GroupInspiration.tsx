@@ -25,7 +25,7 @@ const GroupInspiration: React.FC = () => {
   };
 
   return (
-    <section id="inspiracion-group" className="py-20 px-8 bg-[#111827] text-white">
+    <section id="inspiracion-group" className="py-20 px-8 bg-primary text-white">
       <div className="rt-container grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
         {/* Columna izquierda: título + copy + flechas */}
         <div className="md:col-span-1 text-left">
@@ -71,7 +71,7 @@ const GroupInspiration: React.FC = () => {
 
             {/* Tarjeta "View All" */}
             <Link href="/blogs/group">
-              <div className="bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center p-6 w-80 flex-shrink-0 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700">
+              <div className="bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center p-6 w-80 shrink-0 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700">
                 <div className="w-16 h-16 border-2 border-gray-500 rounded-full flex items-center justify-center mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
                        fill="none" viewBox="0 0 24 24" stroke="currentColor">

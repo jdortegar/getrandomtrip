@@ -213,7 +213,7 @@ export default async function Page({
                         className="bg-white rounded-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:border-primary group relative"
                       >
                         {/* Mystery overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-black/40 z-10" />
+                        <div className="absolute inset-0 bg-linear-to-br from-black/20 to-black/40 z-10" />
 
                         <div className="relative h-56 w-full">
                           <Image

@@ -94,10 +94,10 @@ export default function TwoColumnsCarousel({
         </p>
       </aside>
 
-      <div className="relative flex-1 md:-mr-[40vw] md:min-w-2/3 md:pr-16">
+      <div className="relative flex-1 md:mr-[-40vw] md:min-w-2/3 md:pr-16">
         <Carousel
           className="pb-8 md:pb-10"
-          itemClassName="w-72 flex-shrink-0 md:w-96 pr-8"
+          itemClassName="w-72 shrink-0 md:w-96 pr-8"
           opts={{
             align: "start",
             slidesToScroll: 1,

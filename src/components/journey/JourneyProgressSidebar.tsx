@@ -127,7 +127,7 @@ export default function JourneyProgressSidebar({
 
   return (
     <aside
-      className={cn("w-full md:w-80 flex-shrink-0 bg-white p-6", className)}
+      className={cn("w-full md:w-80 shrink-0 bg-white p-6", className)}
     >
       <div className="relative pl-5">
         {/* Steps */}
@@ -181,7 +181,7 @@ export default function JourneyProgressSidebar({
 
                 {/* Main Step Circle */}
                 <div className="flex items-start gap-4">
-                  <div className="relative z-10 flex-shrink-0">
+                  <div className="relative z-10 shrink-0">
                     <div
                       className={cn(
                         "relative w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all",
@@ -271,7 +271,7 @@ export default function JourneyProgressSidebar({
                               />
 
                               {/* Substep Bullet */}
-                              <div className="relative z-10 flex-shrink-0 mt-1">
+                              <div className="relative z-10 shrink-0 mt-1">
                                 <div
                                   className={cn("w-2 h-2 rounded-full", {
                                     "bg-light-blue":

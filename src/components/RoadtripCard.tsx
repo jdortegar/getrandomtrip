@@ -31,7 +31,7 @@ const RoadtripCard: React.FC<RoadtripCardProps> = ({
           width={1200}
           height={960}
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-gradient-to-t from-black/80 to-transparent text-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-linear-to-t from-black/80 to-transparent text-center">
           <h3 className="font-barlow-condensed text-4xl font-bold text-white">{title}</h3>
           <p className="text-lg text-gray-200 mt-2">{description}</p>
         </div>

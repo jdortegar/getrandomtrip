@@ -48,7 +48,7 @@ export default function ExcuseOptionCard({
         }
         width={1200}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/70 to-black/20" />
 
       {/* Check si está seleccionada */}
       {selected && (

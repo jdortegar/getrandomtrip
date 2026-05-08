@@ -494,7 +494,7 @@ export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) 
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shrink-0">
+                  <div className="w-10 h-10 bg-linear-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shrink-0">
                     {booking.clientName.charAt(0).toUpperCase()}
                   </div>
                   <div>

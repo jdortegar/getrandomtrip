@@ -16,20 +16,20 @@ export interface ModalProps {
   showCloseButton?: boolean;
 }
 
-/** App-wide modal shell: Radix Dialog + overlay/content z-[1100] (aligned with checkout). */
+/** App-wide modal shell: Radix Dialog + overlay/content z-1100 (aligned with checkout). */
 export function Modal({
   children,
   className,
   onOpenChange,
   open,
-  overlayClassName = 'z-[1100]',
+  overlayClassName = 'z-1100',
   showCloseButton = true,
 }: ModalProps) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent
         className={cn(
-          'z-[1100] gap-0 rounded-2xl border-gray-100 bg-white shadow-xl',
+          'z-1100 gap-0 rounded-2xl border-gray-100 bg-white shadow-xl',
           className,
         )}
         overlayClassName={overlayClassName}

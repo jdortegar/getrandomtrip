@@ -72,18 +72,18 @@ const EventFinder: React.FC = () => {
       </div>
 
       {/* Elegant gradient background overlay */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50 pointer-events-none" />
+      <div className="absolute inset-0 z-1 bg-linear-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50 pointer-events-none" />
 
       {/* Subtle accent glow */}
-      <div className="absolute left-1/4 top-0 z-[1] h-96 w-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 z-[1] h-96 w-96 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+      <div className="absolute left-1/4 top-0 z-1 h-96 w-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 z-1 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
         {/* Decorative top border accent */}
-        <div className="absolute -top-12 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary/60 via-primary/30 to-transparent" />
+        <div className="absolute -top-12 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-linear-to-r from-primary/60 via-primary/30 to-transparent" />
 
         <div className="flex flex-col items-center justify-center gap-2">
-          <h2 className="font-barlow-condensed text-4xl md:text-6xl font-bold mb-3 bg-gradient-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight md:mb-4">
+          <h2 className="font-barlow-condensed text-4xl md:text-6xl font-bold mb-3 bg-linear-to-br from-white via-white to-gray-300 bg-clip-text text-transparent drop-shadow-lg leading-tight md:mb-4">
             Descubre tu próxima experiencia
           </h2>
           <div className="flex items-center gap-2 text-gray-300/90">

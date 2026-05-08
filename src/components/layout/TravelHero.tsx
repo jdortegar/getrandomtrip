@@ -87,7 +87,7 @@ export function TravelHero({
       {overlay && (
         <div
           className={cn(
-            'absolute inset-0 bg-gradient-to-br',
+            'absolute inset-0 bg-linear-to-br',
             getVariantStyles(),
           )}
         />

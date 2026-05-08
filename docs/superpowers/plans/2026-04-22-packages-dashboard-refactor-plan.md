@@ -1186,7 +1186,7 @@ export default function PackageFormNav({
             }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                 isActive ? "bg-neutral-900" : "bg-neutral-300"
               }`}
             />

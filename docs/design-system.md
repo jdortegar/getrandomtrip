@@ -32,7 +32,7 @@ Consolidated patterns extracted from the live codebase. **New requirements must 
 ### Dark overlay (hero/image sections)
 
 ```
-bg-gradient-to-t from-black/75 to-transparent   // image overlay, full coverage
+bg-linear-to-t from-black/75 to-transparent   // image overlay, full coverage
 bg-black/20 to bg-black/75                       // range used across image cards
 ```
 

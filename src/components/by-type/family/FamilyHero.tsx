@@ -18,7 +18,7 @@ export default function FamilyHero(): JSX.Element {
   }, []);
 
   return (
-    <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
+    <section className="relative min-h-[90svh] md:h-svh w-full overflow-hidden">
       {/* Fondo video + overlay */}
       <div className="absolute inset-0 z-0">
         {!reduceMotion ? (

@@ -61,7 +61,7 @@ export default function TripperMottoBanner({
               {attribution}
             </Link>
           </cite>
-          <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-2 border-white">
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white">
             {avatarUrl ? (
               <Image
                 alt={authorName}

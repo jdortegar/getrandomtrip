@@ -53,7 +53,7 @@ export default async function AboutUsPage({ params }: LocaleParams) {
   return (
     <div className="bg-white font-barlow text-neutral-900">
       <HeaderHero
-        className="!min-h-[40vh]"
+        className="min-h-[40vh]!"
         description={au.hero.description}
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={au.hero.eyebrow}
@@ -100,7 +100,7 @@ export default async function AboutUsPage({ params }: LocaleParams) {
               <p>{au.philosophy.p1}</p>
               <p>{au.philosophy.p2}</p>
             </div>
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-200">
+            <div className="relative aspect-4/3 w-full overflow-hidden rounded-3xl border border-neutral-200">
               <Image
                 alt={au.philosophy.imageAlt}
                 className="object-cover"
