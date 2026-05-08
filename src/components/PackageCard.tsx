@@ -34,7 +34,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
             <li key={index} className="flex items-start"> {/* Align items to start for better icon alignment */}
               {/* Custom checkmark icon */}
               <svg
-                className="w-5 h-5 mr-3 text-yellow-600 flex-shrink-0"
+                className="w-5 h-5 mr-3 text-yellow-600 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

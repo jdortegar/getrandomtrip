@@ -40,7 +40,7 @@ export default function PawsExperienceCard({
         <p className="text-gray-800 text-sm">{subtitle}</p>
 
         <div className="mt-6">
-          <div className="font-display text-3xl leading-tight font-bold text-[var(--rt-terracotta)]">
+          <div className="font-display text-3xl leading-tight font-bold text-(--rt-terracotta)">
             {priceLabel}
           </div>
           <span className="block text-xs text-gray-900">{priceFootnote}</span>

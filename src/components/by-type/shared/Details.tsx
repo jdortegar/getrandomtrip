@@ -165,7 +165,7 @@ export default function Details({
           width={1600}
         />
         <div className={`absolute inset-0 ${spec.tint || 'bg-black/30'}`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-black/10" />
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
           <h3 className="font-barlow-condensed text-2xl md:text-4xl drop-shadow">

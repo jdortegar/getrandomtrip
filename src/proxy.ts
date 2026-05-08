@@ -36,7 +36,7 @@ function applyCanonRedirect(req: NextRequest): NextResponse | null {
   return NextResponse.redirect(url, 308);
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const i18nResponse = handleI18n(req);
   if (i18nResponse) return i18nResponse;
 

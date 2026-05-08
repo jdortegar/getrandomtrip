@@ -16,7 +16,7 @@ export function LegalDocumentPage({ document: doc, locale }: LegalDocumentPagePr
   return (
     <>
       <HeaderHero
-        className="!min-h-[40vh]"
+        className="min-h-[40vh]!"
         description={hero.description}
         eyebrowColor="#F2C53D"
         fallbackImage="/images/hero-image-1.jpeg"

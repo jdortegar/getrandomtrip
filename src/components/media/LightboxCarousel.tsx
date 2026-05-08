@@ -37,7 +37,7 @@ export default function LightboxCarousel({
 
   return (
     <>
-      <Section className="!py-0">
+      <Section className="py-0!">
         <div className="relative">
           <EmblaCarousel options={{ align: 'start', loop: true }} slidesPerView={3}>
             {images.map((image, index) => (

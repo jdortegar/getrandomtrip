@@ -20,7 +20,7 @@ export default function HoneymoonHero() {
   }, []);
 
   return (
-    <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
+    <section className="relative min-h-[90svh] md:h-svh w-full overflow-hidden">
       {/* Video de fondo */}
       {!reduceMotion && (
         <video

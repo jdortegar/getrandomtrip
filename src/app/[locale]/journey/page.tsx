@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, use } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
@@ -236,11 +236,12 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   );
 }
 
-export default function JourneyPage({
-  params,
-}: {
-  params?: { locale?: string };
-}) {
+export default function JourneyPage(
+  props: {
+    params?: Promise<{ locale?: string }>;
+  }
+) {
+  const params = use(props.params ?? Promise.resolve({ locale: undefined }));
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <JourneyPageContent locale={params?.locale} />

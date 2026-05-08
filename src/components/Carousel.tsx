@@ -557,7 +557,7 @@ function Carousel({
             {showArrows && (
               <div
                 className={cn(
-                  'flex flex-shrink-0 items-center gap-2',
+                  'flex shrink-0 items-center gap-2',
                   !title && 'ml-auto',
                   classes?.navigationContainer,
                 )}

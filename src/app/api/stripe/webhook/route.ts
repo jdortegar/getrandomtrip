@@ -2,12 +2,9 @@ export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { getStripe } from '@/lib/stripe';
 import { updatePaymentFromStripeWebhook } from '@/lib/db/payment';
 import type { UpdatePaymentData } from '@/lib/db/payment';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-04-22.dahlia',
-});
 
 // Only maps statuses produced by the three events we handle.
 // payment_intent.processing is intentionally omitted — we don't subscribe to that event.
@@ -20,6 +17,7 @@ const STRIPE_STATUS_MAP: Record<string, UpdatePaymentData['status']> = {
 };
 
 export async function POST(request: NextRequest) {
+  const stripe = getStripe();
   // Must read raw text — request.json() corrupts the body and breaks signature verification
   const body = await request.text();
   const sig = request.headers.get('stripe-signature');

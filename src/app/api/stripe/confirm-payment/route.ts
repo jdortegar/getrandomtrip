@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import Stripe from 'stripe';
+import { getStripe } from '@/lib/stripe';
 import { authOptions } from '@/lib/auth';
 import { updatePaymentFromStripeWebhook } from '@/lib/db/payment';
 import type { UpdatePaymentData } from '@/lib/db/payment';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-04-22.dahlia',
-});
 
 /**
  * POST /api/stripe/confirm-payment
@@ -19,6 +16,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
  * Body: { paymentIntentId: string }
  */
 export async function POST(request: NextRequest) {
+  const stripe = getStripe();
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

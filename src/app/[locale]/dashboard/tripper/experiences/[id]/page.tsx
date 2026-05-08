@@ -8,11 +8,12 @@ import Section from "@/components/layout/Section";
 import ExperienceFormClient from "@/components/app/dashboard/tripper/experiences/ExperienceFormClient";
 import type { ExperienceFormData } from "@/types/tripper";
 
-export default async function EditPackagePage({
-  params,
-}: {
-  params: { locale: string; id: string };
-}) {
+export default async function EditPackagePage(
+  props: {
+    params: Promise<{ locale: string; id: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {

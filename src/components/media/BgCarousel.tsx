@@ -35,7 +35,7 @@ export default function BgCarousel({
           key={src + i}
           src={src}
           alt=""
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ${
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1200 ${
             i === idx ? 'opacity-100' : 'opacity-0'
           }`}
           width={1920} // Assuming a common background image width

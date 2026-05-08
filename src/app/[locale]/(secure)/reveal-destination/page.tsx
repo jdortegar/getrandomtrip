@@ -13,11 +13,11 @@ export default function RevealDestinationPage() {
     <div className="min-h-screen flex flex-col">
       <header className="w-full p-4 bg-white shadow-md flex justify-between items-center">
         <button className="text-[#0A2240] font-semibold">&larr; Back</button>
-        <div className="flex-grow mx-4">
+        <div className="grow mx-4">
           <ProgressBar currentStep={7} totalSteps={7} />
         </div>
       </header>
-      <main className="flex-grow">
+      <main className="grow">
         <Suspense fallback={<LoadingSpinner />}>
           <RevealDestinationClient />
         </Suspense>

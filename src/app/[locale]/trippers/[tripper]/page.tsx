@@ -12,14 +12,6 @@ import TripperHero from '@/components/tripper/TripperHero';
 import TripperPlanner from '@/components/tripper/TripperPlanner';
 import TripperInspirationGallery from '@/components/tripper/TripperInspirationGallery';
 import Blog from '@/components/Blog';
-import nextDynamic from 'next/dynamic';
-const TripperVisitedMap = nextDynamic(
-  () => import('@/components/tripper/TripperVisitedMap'),
-  {
-    loading: () => <div className="h-72 rounded-xl bg-gray-100" />,
-    ssr: false,
-  },
-);
 import Testimonials from '@/components/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import HomeInfo from '@/components/HomeInfo';
@@ -64,11 +56,12 @@ export async function generateStaticParams() {
   return TRIPPERS.map((t) => ({ tripper: t.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { tripper: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ tripper: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const dbTripper = await getTripperBySlug(params.tripper);
 
   if (!dbTripper) return { title: 'Randomtrip' };
@@ -84,11 +77,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { locale?: string; tripper: string };
-}) {
+export default async function Page(
+  props: {
+    params: Promise<{ locale?: string; tripper: string }>;
+  }
+) {
+  const params = await props.params;
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === 'undefined') {
     redirect('/trippers');

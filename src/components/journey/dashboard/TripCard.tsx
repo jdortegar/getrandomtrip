@@ -34,7 +34,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
           {trip.coverUrl ? (
             <Image src={trip.coverUrl} alt={trip.title} fill className="object-cover" />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-300" />
+            <div className="absolute inset-0 bg-linear-to-br from-neutral-200 to-neutral-300" />
           )}
         </div>
       </div>

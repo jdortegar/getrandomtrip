@@ -17,7 +17,7 @@ export default function EmpathyCard({
       className={clsx(
         'group relative rounded-2xl overflow-hidden shadow-lg',
         'transition-all duration-300 hover:shadow-xl ring-1 ring-black/5',
-        'aspect-[2/3] w-full max-w-[260px]',
+        'aspect-2/3 w-full max-w-[260px]',
         color
       )}
       role="img"

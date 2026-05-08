@@ -7,11 +7,12 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import Section from "@/components/layout/Section";
 import ExperienceFormClient from "@/components/app/dashboard/tripper/experiences/ExperienceFormClient";
 
-export default async function NewPackagePage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default async function NewPackagePage(
+  props: {
+    params: Promise<{ locale: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -28,7 +29,7 @@ export default async function NewPackagePage({
   }
 
   const dict = await getDictionary(params.locale);
-  
+
 
   return (
     <Section>

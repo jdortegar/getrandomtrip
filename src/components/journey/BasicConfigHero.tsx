@@ -25,8 +25,8 @@ export default function BasicConfigHero() {
     <Hero
       content={heroContent}
       id="basic-config-hero"
-      className="!h-[50vh]"
-      titleClassName="!text-4xl"
+      className="h-[50vh]!"
+      titleClassName="text-4xl!"
       scrollIndicator={false}
     />
   );

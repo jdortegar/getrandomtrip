@@ -24,7 +24,7 @@ export default function TripperCard({
     <Link href={`/trippers/${href}`} className="block relative">
       <div
         className={cn(
-          'group rounded-lg overflow-hidden shadow-xl bg-white aspect-[269/230] w-full relative block origin-center',
+          'group rounded-lg overflow-hidden shadow-xl bg-white aspect-269/230 w-full relative block origin-center',
           className,
         )}
       >
@@ -36,8 +36,8 @@ export default function TripperCard({
             style={{ objectFit: 'cover' }}
             priority
           />
-          <div className="absolute bottom-0 left-0 z-20 w-full text-left text-white px-8 py-6 bg-gradient-to-t from-black/70 to-transparent">
-            <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase break-words whitespace-normal">
+          <div className="absolute bottom-0 left-0 z-20 w-full text-left text-white px-8 py-6 bg-linear-to-t from-black/70 to-transparent">
+            <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase wrap-break-word whitespace-normal">
               {name}
             </h3>
             <div className="flex justify-between text-base text-white/90">

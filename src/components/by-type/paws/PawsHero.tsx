@@ -34,7 +34,7 @@ export default function PawsHero() {
   }, []);
 
   return (
-    <section className="relative min-h-[90svh] md:h-[100svh] w-full overflow-hidden">
+    <section className="relative min-h-[90svh] md:h-svh w-full overflow-hidden">
       {/* Media layer */}
       <div className="absolute inset-0 z-0">
         {/* Video (si el codec está OK) */}

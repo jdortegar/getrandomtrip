@@ -490,12 +490,12 @@ export default function JourneySummary({
   const detailClass = "text-sm font-normal text-gray-900";
   const captionClass = "text-xs font-normal text-gray-500";
   const actionButtonClass =
-    "flex-shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-gray-900 hover:bg-gray-200";
+    "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-gray-900 hover:bg-gray-200";
 
   return (
     <aside
       className={cn(
-        "flex w-full flex-shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80",
+        "flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80",
         className,
       )}
     >
@@ -506,7 +506,7 @@ export default function JourneySummary({
         {selectedTravelTypeInfo ? (
           <div className="flex min-w-0 flex-1 items-stretch gap-3">
             {selectedTravelTypeInfo.image && (
-              <div className="w-20 flex-shrink-0 overflow-hidden rounded-lg">
+              <div className="w-20 shrink-0 overflow-hidden rounded-lg">
                 <Img
                   alt={selectedTravelTypeInfo.label}
                   className="h-full w-full object-cover"
@@ -545,7 +545,7 @@ export default function JourneySummary({
               {summary.travelTypeSection}
             </p>
             <button
-              className={cn(actionButtonClass, "flex-shrink-0")}
+              className={cn(actionButtonClass, "shrink-0")}
               onClick={() => onEdit?.("travel-type")}
               type="button"
             >
@@ -643,7 +643,7 @@ export default function JourneySummary({
                         <span>{label}</span>
                         <button
                           aria-label={summary.detailRemoveAria}
-                          className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                          className="shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
                           onClick={() => handleRemoveDetail(key)}
                           type="button"
                         >
@@ -686,7 +686,7 @@ export default function JourneySummary({
           {originCity && originCountry ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <MapPin className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                <MapPin className="h-4 w-4 shrink-0 text-gray-900" />
                 <p className={detailClass}>
                   {originCity}, {originCountry}.
                 </p>
@@ -722,7 +722,7 @@ export default function JourneySummary({
           {startDate && nights > 0 ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <Calendar className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                <Calendar className="h-4 w-4 shrink-0 text-gray-900" />
                 <p className={detailClass}>
                   {formatDatesSummary(
                     startDate,
@@ -763,7 +763,7 @@ export default function JourneySummary({
           {transportLabel && TransportIcon ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <TransportIcon className="h-4 w-4 flex-shrink-0 text-gray-900" />
+                <TransportIcon className="h-4 w-4 shrink-0 text-gray-900" />
                 <p className={detailClass}>
                   {transportLabel}
                   <span className="font-normal text-gray-500">
@@ -815,7 +815,7 @@ export default function JourneySummary({
                     <span>{label}</span>
                     <button
                       aria-label={summary.filterRemoveAria}
-                      className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                      className="shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
                       onClick={() => handleRemoveFilter(kind, value)}
                       type="button"
                     >
@@ -874,7 +874,7 @@ export default function JourneySummary({
                       </span>
                       <button
                         aria-label={summary.addonRemoveAria}
-                        className="flex-shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
+                        className="shrink-0 rounded p-0.5 hover:bg-gray-200 hover:text-gray-700"
                         onClick={() => handleRemoveAddon(addon.id)}
                         type="button"
                       >

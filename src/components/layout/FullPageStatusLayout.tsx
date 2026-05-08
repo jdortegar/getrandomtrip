@@ -51,7 +51,7 @@ export function FullPageStatusLayout({
             <div className="rounded-3xl border border-neutral-200 bg-white p-8 text-center shadow-2xl md:p-12">
               <div className="mb-8">
                 <div className="relative inline-block">
-                  <h1 className="animate-pulse bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-8xl font-black text-transparent md:text-9xl">
+                  <h1 className="animate-pulse bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-8xl font-black text-transparent md:text-9xl">
                     {code}
                   </h1>
                   <div className="absolute inset-0 -z-10 text-8xl font-black text-primary/20 blur-sm md:text-9xl">

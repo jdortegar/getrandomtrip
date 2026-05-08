@@ -10,10 +10,8 @@ function isCuid(param: string): boolean {
   return param.length === 25 && param.startsWith('c') && /^c[a-z0-9]+$/.test(param);
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const idOrSlug = params.id;
 

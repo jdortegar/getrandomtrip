@@ -76,7 +76,7 @@ export default function CheckoutResultSuccess({
           title={labels.errorTitle}
           videoSrc="/videos/hero-video-1.mp4"
         />
-        <main className="flex-grow">
+        <main className="grow">
           <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
             <div className="flex w-full max-w-3xl flex-col items-center space-y-4 rounded-lg bg-white px-6 py-10 text-center shadow-lg sm:px-8 sm:py-14">
               <p className="max-w-[80%] font-barlow text-base leading-relaxed text-gray-700 md:text-lg">
@@ -107,7 +107,7 @@ export default function CheckoutResultSuccess({
           title={hero.title}
           videoSrc="/videos/hero-video-1.mp4"
         />
-        <main className="flex-grow">
+        <main className="grow">
           <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
             <div className="w-full max-w-3xl space-y-6 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14">
               <p className="text-center font-barlow text-base leading-relaxed text-gray-600 md:text-lg">

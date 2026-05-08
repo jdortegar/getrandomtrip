@@ -135,7 +135,7 @@ export default function PawsPetConfiguratorTab({ levelId, onBackToLevels, onNext
           height={1080} // Assuming a common cinematic background height
         />
         <div className="absolute inset-0 bg-black/45" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/55 to-transparent" />
       </div>
 
       <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 md:py-12">

@@ -54,7 +54,7 @@ export const usePrevNextButtons = (
 type PropType = ComponentPropsWithRef<'button'>;
 
 const buttonBaseClass =
-  'inline-flex h-9 w-9 touch-manipulation cursor-pointer items-center justify-center rounded-full border-2 border-neutral-400 bg-transparent p-0 text-neutral-700 [-webkit-tap-highlight-color:rgba(0,0,0,0.1)] [appearance:none] disabled:border-neutral-300 disabled:text-neutral-400';
+  'inline-flex h-9 w-9 touch-manipulation cursor-pointer items-center justify-center rounded-full border-2 border-neutral-400 bg-transparent p-0 text-neutral-700 [-webkit-tap-highlight-color:rgba(0,0,0,0.1)] appearance-none disabled:border-neutral-300 disabled:text-neutral-400';
 
 export const PrevButton = (props: PropType) => {
   const { children, className, disabled, ...restProps } = props;

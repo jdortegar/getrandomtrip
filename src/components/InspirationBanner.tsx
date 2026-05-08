@@ -33,7 +33,7 @@ export default function InspirationBanner({
 }: InspirationBannerProps) {
 
   return (
-    <Section className={cn('!text-left !py-12 md:!py-16 ', className)}>
+    <Section className={cn('text-left! py-12! md:py-16! ', className)}>
       {/* Label */}
       {labelText && (
           <Label
@@ -52,7 +52,7 @@ export default function InspirationBanner({
             width={1200}
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
 
         {/* Content Overlay */}
         <div

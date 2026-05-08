@@ -69,13 +69,13 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
           sizes="100vw"
           src={bannerSrc}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 to-slate-950/80" />
+        <div className="absolute inset-0 bg-linear-to-b from-slate-950/50 to-slate-950/80" />
 
         {/* Centered content block: avatar left, text right */}
         <div className="absolute inset-0 flex items-center justify-center px-4">
           <div className="rt-container flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-center lg:gap-12">
             {/* Circular profile image with white border */}
-            <div className="relative h-40 w-40 flex-shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl md:h-52 md:w-52">
+            <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl md:h-52 md:w-52">
               <SafeImage
                 alt={`Retrato de ${tripperName || 'tripper'}`}
                 className="object-cover"

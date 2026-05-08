@@ -48,9 +48,9 @@ export function NotFoundStatusExploreAndTip({ locale, nf }: NotFoundStatusPageEx
         </div>
       </div>
 
-      <div className="mt-8 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-4">
+      <div className="mt-8 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-4">
         <p className="flex items-center gap-2 text-sm text-gray-700">
-          <MapPin className="h-4 w-4 flex-shrink-0 text-primary" />
+          <MapPin className="h-4 w-4 shrink-0 text-primary" />
           <span>
             <strong>{nf.tipLabel}</strong> {nf.tipText}
           </span>

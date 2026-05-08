@@ -152,7 +152,7 @@ export default function TripperReviewsPage() {
                 className="border-b border-neutral-100 pb-6 last:border-0 last:pb-0"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                  <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                     {review.userName.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1">

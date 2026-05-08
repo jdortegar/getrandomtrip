@@ -168,7 +168,7 @@ export default function Budget({
       {/* Pricing Table */}
       <div className="flex no-wrap rounded-md overflow-hidden mx-auto justify-center">
         {/* Categories Header Card */}
-        <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-12 min-w-[200px]">
+        <div className="bg-linear-to-r from-primary-50 to-primary-100 px-6 py-12 min-w-[200px]">
           {/* Plan Name */}
           <div className="h-[80px] text-left">
             <h3 className="text-2xl font-bold text-primary-700">

@@ -73,7 +73,7 @@ export function TravelerTypesCarousel({
           return (
             <div
               key={t.key}
-              className="aspect-[280/332] w-full min-h-0 relative"
+              className="aspect-280/332 w-full min-h-0 relative"
             >
               <TravelerTypeCard
                 fill

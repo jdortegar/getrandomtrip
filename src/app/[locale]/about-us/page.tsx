@@ -9,11 +9,10 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const raw = params?.locale;
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const dict = await getDictionary(hasLocale(locale) ? locale : "es");
@@ -42,7 +41,8 @@ const PHILOSOPHY_IMAGE =
 const FOUNDER_IMAGE =
   "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=600";
 
-export default async function AboutUsPage({ params }: LocaleParams) {
+export default async function AboutUsPage(props: LocaleParams) {
+  const params = await props.params;
   const raw = params?.locale;
   const localeStr = typeof raw === "string" ? raw : raw?.[0];
   const locale = hasLocale(localeStr) ? localeStr : "es";
@@ -53,7 +53,7 @@ export default async function AboutUsPage({ params }: LocaleParams) {
   return (
     <div className="bg-white font-barlow text-neutral-900">
       <HeaderHero
-        className="!min-h-[40vh]"
+        className="min-h-[40vh]!"
         description={au.hero.description}
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={au.hero.eyebrow}
@@ -100,7 +100,7 @@ export default async function AboutUsPage({ params }: LocaleParams) {
               <p>{au.philosophy.p1}</p>
               <p>{au.philosophy.p2}</p>
             </div>
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-neutral-200">
+            <div className="relative aspect-4/3 w-full overflow-hidden rounded-3xl border border-neutral-200">
               <Image
                 alt={au.philosophy.imageAlt}
                 className="object-cover"

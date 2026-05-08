@@ -266,7 +266,7 @@ export default function PackageFormClient({
       {/* Layout: sidebar nav + scrollable form */}
       <div className="flex w-full flex-col gap-8 lg:flex-row">
         {/* Sidebar — fixed width, sticky */}
-        <div className="top-[100px] flex flex-col lg:w-80 lg:flex-shrink-0 lg:self-start lg:sticky">
+        <div className="top-[100px] flex flex-col lg:w-80 lg:shrink-0 lg:self-start lg:sticky">
           <ExperienceFormNav
             sections={sections}
             activeSection={activeSection}

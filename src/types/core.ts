@@ -283,3 +283,15 @@ export interface FormState<T = Record<string, any>> {
   isSubmitting: boolean;
   isValid: boolean;
 }
+
+export interface DropEntry {
+  /** XSED drop number, e.g. 5 */
+  number: number;
+  image: string;
+  /** Formatted date string, e.g. "20 FEBRERO 2026" */
+  date: string;
+  title: string;
+  soldOut?: boolean;
+  /** Detail shown next to SOLD OUT, e.g. "EN 10 MINUTOS" */
+  soldOutDetail?: string;
+}

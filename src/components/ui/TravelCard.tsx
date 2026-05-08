@@ -12,15 +12,15 @@ const travelCardVariants = cva(
         default: 'border-border',
         elevated: 'border-border shadow-lg hover:shadow-xl',
         luxury:
-          'border-primary/20 bg-gradient-to-br from-card to-primary/5 shadow-lg hover:shadow-xl',
+          'border-primary/20 bg-linear-to-br from-card to-primary/5 shadow-lg hover:shadow-xl',
         adventure:
-          'border-tropical-coral/20 bg-gradient-to-br from-card to-tropical-coral/5 shadow-lg hover:shadow-xl',
+          'border-tropical-coral/20 bg-linear-to-br from-card to-tropical-coral/5 shadow-lg hover:shadow-xl',
         coastal:
-          'border-coastal-deep/20 bg-gradient-to-br from-card to-coastal-deep/5 shadow-lg hover:shadow-xl',
+          'border-coastal-deep/20 bg-linear-to-br from-card to-coastal-deep/5 shadow-lg hover:shadow-xl',
         mountain:
-          'border-mountain-rich/20 bg-gradient-to-br from-card to-mountain-rich/5 shadow-lg hover:shadow-xl',
+          'border-mountain-rich/20 bg-linear-to-br from-card to-mountain-rich/5 shadow-lg hover:shadow-xl',
         urban:
-          'border-urban-charcoal/20 bg-gradient-to-br from-card to-urban-charcoal/5 shadow-lg hover:shadow-xl',
+          'border-urban-charcoal/20 bg-linear-to-br from-card to-urban-charcoal/5 shadow-lg hover:shadow-xl',
         glass:
           'border-white/20 bg-white/10 backdrop-blur-sm shadow-lg hover:shadow-xl',
       },

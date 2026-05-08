@@ -34,7 +34,7 @@ export default function ExcuseCard({
       onClick={onClick}
     >
       {selected && (
-        <div className="absolute -right-[9.8px] top-0 z-30 @[250px]:-right-[14px]">
+        <div className="absolute right-[-9.8px] top-0 z-30 @[250px]:right-[-14px]">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
@@ -54,7 +54,7 @@ export default function ExcuseCard({
           src={imageUrl}
           style={{ objectFit: "cover" }}
         />
-        <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-t from-black/75 to-transparent" />
+        <div className="absolute inset-0 z-10 rounded-2xl bg-linear-to-t from-black/75 to-transparent" />
 
         {/* Card Content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center text-white">

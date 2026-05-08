@@ -29,7 +29,7 @@ export default function ExperienceLevelGrid({
           key={level.key}
           className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
         >
-          <div className="flex-grow p-6">
+          <div className="grow p-6">
             <h3 className="mb-2 text-2xl font-bold text-gray-900">
               {level.title}
             </h3>
@@ -41,7 +41,7 @@ export default function ExperienceLevelGrid({
               {level.bullets.map((bullet, index) => (
                 <li key={index} className="flex items-center">
                   <svg
-                    className="w-4 h-4 text-[#D4AF37] mr-2 flex-shrink-0"
+                    className="w-4 h-4 text-[#D4AF37] mr-2 shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

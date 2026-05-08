@@ -57,7 +57,7 @@ export default function ActivityFeed() {
           const Icon = iconMap[activity.type];
           return (
             <li key={activity.id} className="flex items-start space-x-3">
-              <div className="flex-shrink-0 p-2 rounded-full bg-neutral-700 text-neutral-300">
+              <div className="shrink-0 p-2 rounded-full bg-neutral-700 text-neutral-300">
                 <Icon size={18} />
               </div>
               <div className="flex-1">

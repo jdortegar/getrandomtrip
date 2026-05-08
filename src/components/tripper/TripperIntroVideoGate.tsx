@@ -107,13 +107,13 @@ export default function TripperIntroVideoGate({
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+      className="fixed inset-0 z-80 flex items-center justify-center p-4"
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal} />
 
       {/* Modal */}
-      <div className="relative z-[81] w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden">
+      <div className="relative z-81 w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b">
           <h2 id={titleId} className="text-sm text-neutral-700">
             ¿Primera vez por acá? Te contamos en 40s 👇
