@@ -553,6 +553,14 @@ export interface XsedPageDict {
     successMessage: string;
     title: string;
   };
+  dropGrid: {
+    ctaHref: string;
+    ctaLabel: string;
+    description: string;
+    eyebrow: string;
+    title: string;
+    titleHighlight: string;
+  };
   testimonials: {
     eyebrow: string;
     subtitle: string;

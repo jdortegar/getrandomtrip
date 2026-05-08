@@ -104,6 +104,14 @@
       "subtitle": "Your next XSED is just one click away. Stop overthinking it.",
       "viewFullReviewLabel": "View full review"
     },
+    "dropGrid": {
+      "eyebrow": "PREVIOUS DROPS",
+      "title": "ESCAPE LOG BY",
+      "titleHighlight": "XSED",
+      "description": "What others lived. What you could live.",
+      "ctaLabel": "VIEW ALL",
+      "ctaHref": "/xsed/drops"
+    },
     "xsedHero": {
       "backgroundImage": "/images/hero-image-1.jpeg",
       "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE. WILL YOU BE ONE OF THEM?",

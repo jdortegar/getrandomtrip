@@ -62,7 +62,7 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
   }
 
   return (
-    <Section backgroundImage="/images/xsed-hero.jpg" backgroundOpacity={0.4} className="min-h-3/4">
+    <Section backgroundImage="/images/xsed-hero.jpg" backgroundOpacity={0.4} className="min-h-<80>">
       <div className="relative z-10 w-full px-6 md:px-20 flex justify-center items-center">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
@@ -84,10 +84,10 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
               initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="whitespace-pre-line text-center mb-6 font-barlow-condensed font-bold uppercase leading-tight text-white text-[50px] md:text-[70px]">
+              <h2 className="whitespace-pre-line text-center mb-10 font-barlow-condensed font-bold uppercase leading-tight text-white text-[50px] md:text-[70px]">
                 {content.title}
               </h2>
-              <p className="text-center mb-8 text-lg leading-relaxed text-white">
+              <p className="whitespace-pre-line text-center mb-10 text-lg leading-relaxed text-white">
                 {content.helper}
               </p>
               <form

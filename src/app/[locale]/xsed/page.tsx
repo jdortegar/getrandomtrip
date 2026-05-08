@@ -9,6 +9,8 @@ import Testimonials from "@/components/Testimonials";
 import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
+import { DropGrid } from "@/components/app/xsed/DropGrid";
+import { XSED_DROPS } from "@/lib/data/xsed-drops";
 
 type LocaleParams = { params: { locale?: string | string[] } };
 
@@ -52,6 +54,7 @@ export default async function XsedPage({ params }: LocaleParams) {
         targetDate="2026-10-06T18:00:00-03:00"
         totalSlots={10}
       />
+      <DropGrid content={dict.xsedPage.dropGrid} drops={XSED_DROPS} />
       <FaqBlock copy={dict.xsedPage.faq} />
       <MultiColumnIconText content={dict.xsedPage.iconText} />
       <XsedHero content={dict.xsedPage.xsedHero} locale={normalizedLocale} />

@@ -23,8 +23,8 @@ export function FaqBlock({ className, copy }: FaqBlockProps) {
   }));
 
   return (
-    <Section className={className}>
-      <Container size="2xl" className="py-16 md:py-24">
+    <Section className="pt-0">
+      
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between text-left w-full flex-wrap">
           <div className="max-w-2xl font-barlow-condensed lg:whitespace-nowrap">
             <p className=" text-xl font-extralight uppercase tracking-widest text-xsed">
@@ -39,7 +39,7 @@ export function FaqBlock({ className, copy }: FaqBlockProps) {
           </p>
         </div>
         <FaqSection items={items} />
-      </Container>
+
     </Section>
   );
 }

@@ -104,11 +104,19 @@
       "subtitle": "Tu próximo XSED está a un solo click de distancia. No lo pienses más.",
       "viewFullReviewLabel": "Ver opinión completa"
     },
+    "dropGrid": {
+      "eyebrow": "DROPS ANTERIORES",
+      "title": "BITÁCORA DE ESCAPADAS BY",
+      "titleHighlight": "XSED",
+      "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
+      "ctaLabel": "VER TODAS",
+      "ctaHref": "/xsed/drops"
+    },
     "xsedHero": {
 
       "backgroundImage": "/images/hero-image-1.jpeg",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo. Si parpadeás, te quedás fuera.",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
       "inputLabel": "Email Address",
       "inputPlaceholder": "Ingresa tu email",
       "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
