@@ -12,14 +12,6 @@ import TripperHero from '@/components/tripper/TripperHero';
 import TripperPlanner from '@/components/tripper/TripperPlanner';
 import TripperInspirationGallery from '@/components/tripper/TripperInspirationGallery';
 import Blog from '@/components/Blog';
-import nextDynamic from 'next/dynamic';
-const TripperVisitedMap = nextDynamic(
-  () => import('@/components/tripper/TripperVisitedMap'),
-  {
-    loading: () => <div className="h-72 rounded-xl bg-gray-100" />,
-    ssr: false,
-  },
-);
 import Testimonials from '@/components/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import HomeInfo from '@/components/HomeInfo';

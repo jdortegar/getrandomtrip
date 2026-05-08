@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import Stripe from 'stripe';
+import { getStripe } from '@/lib/stripe';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { calculatePaymentTotals } from '@/lib/helpers/payment-totals';
@@ -8,12 +8,9 @@ import { getPricePerPerson } from '@/lib/data/traveler-types';
 import { getFixedPaxDetailsForTravelType } from '@/lib/helpers/pax-details';
 import type { AddonSelection, Filters, Logistics } from '@/store/slices/journeyStore';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-04-22.dahlia',
-});
-
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripe();
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
