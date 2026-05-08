@@ -103,6 +103,43 @@
       "title": "EL VEREDICTO",
       "subtitle": "Tu próximo XSED está a un solo click de distancia. No lo pienses más.",
       "viewFullReviewLabel": "Ver opinión completa"
+    },
+    "xsedHero": {
+
+      "backgroundImage": "/images/hero-image-1.jpeg",
+      "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo. Si parpadeás, te quedás fuera.",
+      "inputLabel": "Email Address",
+      "inputPlaceholder": "Ingresa tu email",
+      "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
+      "submitAriaLabel": "Notificarme del próximo drop de XSED",
+      "submittingLabel": "SUMANDO...",
+      "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
+      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
+      "invalidEmailMessage": "Ingresá un email válido."
+    },
+    "faq": {
+      "eyebrow": "FAQ'S",
+      "title": "PREGUNTAS DESTACADAS",
+      "description": "Más de 1.000 Trippers compartiendo experiencias! Descubrí viajes exclusivos, curados a no más de 300Km de distancia.",
+      "items": [
+        {
+          "question": "¿Qué día empieza mi escapada?",
+          "answer": "Tu escapada XSED comienza el sábado. Recibirás las instrucciones el jueves anterior con 48 horas de anticipación."
+        },
+        {
+          "question": "¿Puedo elegir el tipo de lugar? (Playa, Hotel, Cabaña)",
+          "answer": "Podés indicar preferencias generales en el brief (entorno natural, ciudad, costa), pero el destino exacto es siempre una sorpresa curada por nuestro equipo."
+        },
+        {
+          "question": "¿Qué pasa si tengo que cambiar la fecha?",
+          "answer": "Podés reagendar hasta 7 días antes del XSED. Contactanos por soporte y te ayudamos a mover tu cupo al siguiente disponible."
+        },
+        {
+          "question": "¿Qué incluye?",
+          "answer": "Incluye 1 noche de alojamiento, cena del sábado, desayuno del domingo y una experiencia local curada. El transporte hasta el destino corre por tu cuenta."
+        }
+      ]
     }
   },
   "auth": {

@@ -103,6 +103,42 @@
       "title": "THE VERDICT",
       "subtitle": "Your next XSED is just one click away. Stop overthinking it.",
       "viewFullReviewLabel": "View full review"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/hero-image-1.jpeg",
+      "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE. WILL YOU BE ONE OF THEM?",
+      "helper": "We'll notify you 10 minutes before the gateway opens every Sunday. Blink and you're out.",
+      "inputLabel": "Email Address",
+      "inputPlaceholder": "Email Address or WhatsApp",
+      "submitLabel": "NOTIFY ME OF THE NEXT DROP",
+      "submitAriaLabel": "Notify me of the next XSED drop",
+      "submittingLabel": "JOINING...",
+      "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
+      "errorMessage": "We couldn't add you. Please try again.",
+      "invalidEmailMessage": "Please enter a valid email."
+    },
+    "faq": {
+      "eyebrow": "FAQ'S",
+      "title": "TOP QUESTIONS",
+      "description": "Over 1,000 Trippers sharing experiences! Discover exclusive trips, curated within 300km of your home.",
+      "items": [
+        {
+          "question": "What day does my escape start?",
+          "answer": "Your XSED escape starts on Saturday. You'll receive instructions on Thursday, 48 hours in advance."
+        },
+        {
+          "question": "Can I choose the type of place? (Beach, Hotel, Cabin)",
+          "answer": "You can indicate general preferences in the brief (nature, city, coast), but the exact destination is always a curated surprise."
+        },
+        {
+          "question": "What if I need to change the date?",
+          "answer": "You can reschedule up to 7 days before your XSED. Contact support and we'll move your spot to the next available drop."
+        },
+        {
+          "question": "What's included?",
+          "answer": "Includes 1 night accommodation, Saturday dinner, Sunday breakfast, and a curated local experience. Transportation to the destination is not included."
+        }
+      ]
     }
   },
   "auth": {

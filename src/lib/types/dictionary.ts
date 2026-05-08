@@ -534,6 +534,25 @@ export interface XsedPageDict {
     openGraphTitle: string;
     title: string;
   };
+  faq: {
+    description: string;
+    eyebrow: string;
+    items: Array<{ answer: string; question: string }>;
+    title: string;
+  };
+  xsedHero: {
+    backgroundImage: string;
+    errorMessage: string;
+    helper: string;
+    inputLabel: string;
+    inputPlaceholder: string;
+    invalidEmailMessage: string;
+    submitAriaLabel: string;
+    submitLabel: string;
+    submittingLabel: string;
+    successMessage: string;
+    title: string;
+  };
   testimonials: {
     eyebrow: string;
     subtitle: string;

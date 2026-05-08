@@ -19,6 +19,7 @@ type SectionProps = {
   fullWidth?: boolean;
   style?: React.CSSProperties;
   backgroundImage?: string;
+  backgroundOpacity?: number;
 };
 
 const Section = ({
@@ -33,6 +34,7 @@ const Section = ({
   id,
   fullWidth = false,
   style,
+  backgroundOpacity = 0.5,
 }: SectionProps) => {
   return (
     <section
@@ -58,7 +60,7 @@ const Section = ({
             src={backgroundImage}
             width={1920}
           />
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/60" style={{ opacity: backgroundOpacity }} />
         </div>
       )}
       {(eyebrow || title || subtitle) && (

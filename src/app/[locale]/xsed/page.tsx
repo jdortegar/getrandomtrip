@@ -7,6 +7,8 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { MultiColumnIconText } from "@/components/app/xsed/MultiColumnIconText";
 import Testimonials from "@/components/Testimonials";
 import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
+import { FaqBlock } from "@/components/display/FaqBlock";
+import { XsedHero } from "@/components/app/xsed/XsedHero";
 
 type LocaleParams = { params: { locale?: string | string[] } };
 
@@ -50,12 +52,15 @@ export default async function XsedPage({ params }: LocaleParams) {
         targetDate="2026-10-06T18:00:00-03:00"
         totalSlots={10}
       />
+      <FaqBlock copy={dict.xsedPage.faq} />
       <MultiColumnIconText content={dict.xsedPage.iconText} />
+      <XsedHero content={dict.xsedPage.xsedHero} locale={normalizedLocale} />
       <Testimonials
         content={dict.xsedPage.testimonials}
         featureColor="#D97E4A"
         testimonials={XSED_TESTIMONIALS}
       />
+      
     </>
   );
 }
