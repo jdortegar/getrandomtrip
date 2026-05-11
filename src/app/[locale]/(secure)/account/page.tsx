@@ -251,7 +251,7 @@ function AccountContent() {
       if (!updateRes.ok) { toast.error(t.avatarUploadError); return; }
       await updateSession({ ...session, user: { ...session?.user, image: url } });
       useUserStore.setState((s) => ({ user: s.user ? { ...s.user, avatar: url } : s.user }));
-      if (oldAvatarUrl?.includes("/api/upload?key=")) {
+      if (oldAvatarUrl?.includes("/api/upload")) {
         void fetch(oldAvatarUrl, { method: "DELETE" }).catch(() => null);
       }
       toast.success(t.avatarUploadSuccess);

@@ -9,7 +9,7 @@ import type { ExcuseData } from '@/lib/data/shared/excuses';
 interface ExcusesCarouselProps {
   ctaLabel?: string;
   excuses: ExcuseData[];
-  itemsPerView?: number;
+  itemsPerView?: 2 | 3 | 4;
   /** Localized excuse titles/descriptions by key (e.g. journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
   onSelect?: (excuseKey: string) => void;

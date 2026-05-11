@@ -15,7 +15,10 @@ import Blog from '@/components/Blog';
 import TripperMottoBanner from '@/components/blog/TripperMottoBanner';
 import Testimonials from '@/components/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
-import type { BlogPost as BlogCardPost } from '@/lib/data/shared/blog-types';
+import type {
+  BlogDetailAuthor,
+  BlogPost as BlogCardPost,
+} from '@/lib/data/shared/blog-types';
 
 interface BlogPost {
   id: string;
@@ -37,16 +40,7 @@ interface BlogPost {
   publishedAt?: string;
   createdAt: string;
   updatedAt: string;
-  author: {
-    id: string;
-    name: string;
-    slug: string;
-    avatarUrl: string;
-    bio?: string;
-    location?: string;
-    motto?: string | null;
-    specialization?: string | null;
-  };
+  author: BlogDetailAuthor;
 }
 
 function BlogDetailContent() {
@@ -247,32 +241,32 @@ function BlogDetailContent() {
       />
 
       <Section>
-        <div className="mx-auto max-w-4xl px-4">
-          <Breadcrumb
-            items={[
-              { href: '/blog', label: 'Tripper Inspirations' },
-              { label: blog.title },
-            ]}
-          />
 
-          {/* Main content */}
-          <BlogArticle
-            content={blog.content}
-            emptyMessage="Este post aún no tiene contenido."
-            title={blog.title}
-          />
+        <Breadcrumb
+          items={[
+            { href: '/blog', label: 'Tripper Inspirations' },
+            { label: blog.title },
+          ]}
+        />
 
-          <FaqSection items={faqItems} />
-        </div>
+        {/* Main content */}
+        <BlogArticle
+          content={blog.content}
+          emptyMessage="Este post aún no tiene contenido."
+          title={blog.title}
+        />
+
+        <FaqSection items={faqItems} />
+
       </Section>
-      <LightboxCarousel images={carouselImages} />
+      <LightboxCarousel images={carouselImages} className="" />
 
       {blog.author.motto && (
         <TripperMottoBanner
           authorName={blog.author.name}
           authorSlug={blog.author.slug}
           avatarUrl={blog.author.avatarUrl}
-          backgroundImageUrl={blog.coverUrl}
+          backgroundImageUrl={blog.coverUrl ?? ''}
           motto={blog.author.motto}
           specialization={blog.author.specialization}
         />

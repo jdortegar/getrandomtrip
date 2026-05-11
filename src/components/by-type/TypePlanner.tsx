@@ -15,7 +15,7 @@ interface TypePlannerProps {
   onSelect?: (levelId: string) => void;
   selectedLevel?: string;
   type: TravelerTypeSlug;
-  itemsPerView?: number;
+  itemsPerView?: 2 | 3 | 4;
 }
 
 export default function TypePlanner({

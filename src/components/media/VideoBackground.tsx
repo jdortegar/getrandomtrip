@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 export interface VideoBackgroundProps {
   fallbackImage?: string;
   overlayClassName?: string;
-  videoSrc: string;
+  videoSrc?: string;
   className?: string;
 }
 
@@ -16,7 +16,7 @@ export default function VideoBackground({
   videoSrc,
   className,
 }: VideoBackgroundProps) {
-  if (!videoSrc) return null;
+  if (!videoSrc && !fallbackImage) return null;
   return (
     <div
       className={cn('absolute inset-0 w-full h-full', className)}
@@ -29,19 +29,21 @@ export default function VideoBackground({
         />
       )}
 
-      <video
-        autoPlay
-        className="absolute inset-0 z-10 w-full h-full object-cover"
-        loop
-        muted
-        playsInline
-        poster={fallbackImage}
-        preload="auto"
-        src={videoSrc}
-      >
-        <source src={videoSrc.replace('.mp4', '.webm')} type="video/webm" />
-        <source src={videoSrc} type="video/mp4" />
-      </video>
+      {videoSrc && (
+        <video
+          autoPlay
+          className="absolute inset-0 z-10 w-full h-full object-cover"
+          loop
+          muted
+          playsInline
+          poster={fallbackImage}
+          preload="auto"
+          src={videoSrc}
+        >
+          <source src={videoSrc.replace('.mp4', '.webm')} type="video/webm" />
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+      )}
 
       <div
         className={cn('absolute inset-0 z-10 bg-black/40', overlayClassName)}
