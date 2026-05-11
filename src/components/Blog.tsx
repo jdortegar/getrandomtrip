@@ -50,11 +50,10 @@ function BlogCarouselDots({
           <button
             key={index}
             aria-label={slideAriaLabelPattern.replace("{0}", String(index + 1))}
-            className={`h-2 rounded-full transition-all ${
-              selectedIndex === index
-                ? "bg-light-blue w-8"
-                : "bg-light-blue/30 hover:bg-light-blue/50 w-2"
-            }`}
+            className={`h-2 rounded-full transition-all ${selectedIndex === index
+              ? "bg-light-blue w-8"
+              : "bg-light-blue/30 hover:bg-light-blue/50 w-2"
+              }`}
             onClick={() => scrollTo(index)}
             type="button"
           />
@@ -82,19 +81,17 @@ export default function Blog({
     viewAll: viewAll ?? { href: "/blog", subtitle: "", title: "" },
   };
   const {
-    carouselSlideAriaLabel,
     eyebrow: resolvedEyebrow,
     subtitle: resolvedSubtitle,
     title: resolvedTitle,
   } = resolved;
   return (
     <Section
-      // className="overflow-visible pl-4 md:pl-[8%]"
       id={id}
       variant="default"
-      // fullWidth
+      fullWidth
     >
-      <div className="container mx-auto mt-12 px-4 md:px-20">
+      <div className="mt-12 container ml-auto">
         <div className="relative flex flex-col gap-12 lg:flex-row md:items-stretch md:gap-8 ">
           {/* Left Column - Full-height white panel so carousel never bleeds through */}
           <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left">
@@ -133,7 +130,7 @@ export default function Blog({
 
           {/* Right Column - Carousel */}
           <div className="relative z-0 flex-1 lg:min-w-2/3">
-            <EmblaCarousel slidesPerView={2}>
+            <EmblaCarousel slidesPerView={2} overflow="right" arrowsClassName="!pr-8 md:!pr-40">
               {posts.map((post, index) => (
                 <BlogCard key={post.title || index} post={post} />
               ))}

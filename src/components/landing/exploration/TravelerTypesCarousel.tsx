@@ -65,37 +65,21 @@ export function TravelerTypesCarousel({
       viewport={{ once: true }}
       whileInView={{ opacity: 1, y: 0 }}
     >
-      <EmblaCarousel slidesPerView={3}>
+      <EmblaCarousel slidesPerView={3} overflow="both">
         {typesToShow.map((t) => {
           const slug = t.key.toLowerCase() as TravelerTypeSlug;
-          const href = `/experiences/by-type/${slugify(t.key)}`;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
           return (
-            <div
+            <TravelerTypeCard
               key={t.key}
-              className="aspect-280/332 w-full min-h-0 relative"
-            >
-              <TravelerTypeCard
-                fill
-                href={isComingSoon ? undefined : href}
-                item={cardDataToCardItem(t)}
-                onClick={
-                  isComingSoon
-                    ? undefined
-                    : onSelect
-                      ? () => onSelect(slug)
-                      : undefined
-                }
-                selected={selectedTravelType === slug}
-              />
-              {isComingSoon && (
-                <div className="absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-black/50 cursor-not-allowed">
-                  <span className="font-barlow-condensed text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-lg">
-                    {locale === "es" ? "Próximamente" : "Coming Soon"}
-                  </span>
-                </div>
-              )}
-            </div>
+              fill
+              className="aspect-3/4"
+              comingSoonLabel={isComingSoon ? (locale === "es" ? "Próximamente" : "Coming Soon") : undefined}
+              href={isComingSoon ? undefined : `/experiences/by-type/${slugify(t.key)}`}
+              item={cardDataToCardItem(t)}
+              onClick={onSelect && !isComingSoon ? () => onSelect(slug) : undefined}
+              selected={selectedTravelType === slug}
+            />
           );
         })}
       </EmblaCarousel>

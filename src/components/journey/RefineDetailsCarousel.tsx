@@ -13,7 +13,7 @@ interface RefineDetailsOption {
 }
 
 interface RefineDetailsCarouselProps {
-  itemsPerView?: number;
+  itemsPerView?: 2 | 3 | 4;
   onSelect?: (optionKey: string) => void;
   options: RefineDetailsOption[];
   selectedOptions?: string[];

@@ -50,20 +50,19 @@ export default function Testimonials({
       eyebrowColor={featureColor}
       subtitle={resolvedSubtitle}
       title={resolvedTitle}
+      fullWidth
     >
-      <div className="container mx-auto mt-12 px-4 md:px-20">
-        <EmblaCarousel accentColor={featureColor} slidesPerView={3}>
-          {testimonials.slice(0, 9).map((testimonial, index) => (
-            <TestimonialCard
-              accentColor={featureColor}
-              index={index}
-              key={`${testimonial.author}-${index}`}
-              testimonial={testimonial}
-              viewFullReviewLabel={resolvedViewFullReviewLabel}
-            />
-          ))}
-        </EmblaCarousel>
-      </div>
+      <EmblaCarousel accentColor={featureColor} slidesPerView={3} overflow="both">
+        {testimonials.slice(0, 9).map((testimonial, index) => (
+          <TestimonialCard
+            accentColor={featureColor}
+            index={index}
+            key={`${testimonial.author}-${index}`}
+            testimonial={testimonial}
+            viewFullReviewLabel={resolvedViewFullReviewLabel}
+          />
+        ))}
+      </EmblaCarousel>
     </Section>
   );
 }

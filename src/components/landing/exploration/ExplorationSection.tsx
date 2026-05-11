@@ -100,6 +100,7 @@ export function ExplorationSection({
       id="exploration-section"
       subtitle={subtitle}
       title={title}
+      fullWidth
     >
       {/* Tab Navigation */}
       <motion.div
@@ -119,7 +120,6 @@ export function ExplorationSection({
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          className="container mx-auto mt-12 flex justify-center overflow-x-visible px-4 md:px-20"
           animate={{ y: 0, opacity: 1 }}
           initial={{ y: 40, opacity: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
