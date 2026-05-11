@@ -16,6 +16,16 @@ const COUNTRY_NAME_OVERRIDES: Record<string, string> = {
 };
 
 /**
+ * Derives the country portion from a "City, Country" location string.
+ * e.g. "México City, México" → "México"
+ */
+export function getCountryFromLocation(location: string | null | undefined): string | null {
+  if (!location?.trim()) return null;
+  const parts = location.split(',').map((p) => p.trim()).filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1]! : location;
+}
+
+/**
  * Returns ISO 3166-1 alpha-2 code from country name or passthrough if already a 2-letter code.
  * Supports all countries via country-to-iso; overrides for Spanish names (España, Perú, etc.).
  * Use countryCode in data when possible; use this when only the name is available.

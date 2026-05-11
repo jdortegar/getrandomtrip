@@ -54,9 +54,10 @@ export default async function XsedPage(props: LocaleParams) {
         targetDate="2026-10-06T18:00:00-03:00"
         totalSlots={10}
       />
+      <MultiColumnIconText content={dict.xsedPage.iconText} />
       <DropGrid content={dict.xsedPage.dropGrid} drops={XSED_DROPS} />
       <FaqBlock copy={dict.xsedPage.faq} />
-      <MultiColumnIconText content={dict.xsedPage.iconText} />
+
       <XsedHero content={dict.xsedPage.xsedHero} locale={normalizedLocale} />
       <Testimonials
         content={dict.xsedPage.testimonials}

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import Section from '@/components/layout/Section';
+import { cn } from '@/lib/utils';
 
 interface LightboxImage {
   url: string;
@@ -15,9 +16,11 @@ interface LightboxCarouselProps {
   ariaCloseLabel?: string;
   ariaViewLargeLabel?: string;
   images: LightboxImage[];
+  className?: string;
 }
 
 export default function LightboxCarousel({
+  className,
   ariaCloseLabel = 'Cerrar',
   ariaViewLargeLabel = 'Ver imagen en grande',
   images,
@@ -37,19 +40,19 @@ export default function LightboxCarousel({
 
   return (
     <>
-      <Section className="py-0!">
+      <Section className={cn("py-10!", className)}>
         <div className="relative">
           <EmblaCarousel options={{ align: 'start', loop: true }} slidesPerView={3}>
             {images.map((image, index) => (
               <button
                 key={`${image.url}-${index}`}
-                className="relative h-[316px] w-full cursor-pointer overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
+                className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
                 onClick={() => setLightboxImage(image)}
                 type="button"
               >
                 <Image
                   alt={image.caption ?? ''}
-                  className="object-cover"
+                  className="object-cover aspect-video"
                   fill
                   sizes="(max-width: 768px) 85vw, (max-width: 1024px) 70vw, 55vw"
                   src={image.url}

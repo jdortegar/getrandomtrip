@@ -9,7 +9,7 @@ interface TripperMottoBannerProps {
   authorName: string;
   authorSlug: string;
   avatarUrl: string;
-  backgroundImageUrl?: string | null;
+  backgroundImageUrl: string;
   className?: string;
   motto: string;
   specialization?: string | null;
@@ -29,26 +29,8 @@ export default function TripperMottoBanner({
     : authorName.toUpperCase();
 
   return (
-    <Section fullWidth>
-      <section
-        className={cn(
-          'relative flex min-h-[320px] flex-col items-center justify-center overflow-hidden px-6 py-16 text-center md:min-h-[380px] md:px-12 md:py-20',
-          className,
-        )}
-      >
-      <div className="absolute inset-0">
-        <Image
-          alt=""
-          className="object-cover object-center"
-          fill
-          priority={false}
-          sizes="(max-width: 768px) 100vw, 1200px"
-          src={backgroundImageUrl!}
-        />
-        <div className="absolute inset-0 bg-neutral-900/70" />
-      </div>
-
-      <div className="relative z-10 flex max-w-3xl flex-col items-center gap-6">
+    <Section fullWidth backgroundImage={backgroundImageUrl} className={cn(className)}>
+      <div className="relative z-10 flex max-w-3xl flex-col items-center gap-6 mx-auto">
         <blockquote className="font-barlow-condensed text-2xl font-bold uppercase leading-snug text-white md:text-3xl lg:text-4xl">
           &ldquo;{motto}&rdquo;
         </blockquote>
@@ -78,7 +60,6 @@ export default function TripperMottoBanner({
           </div>
         </footer>
       </div>
-    </section>
     </Section>
   );
 }
