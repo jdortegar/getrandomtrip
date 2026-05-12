@@ -70,6 +70,7 @@ export default function BudgetStep({
           value="travel-type"
         >
           <TravelerTypesCarousel
+            overflow="right"
             localizedTravelerTypes={localizedTravelerTypes}
             onSelect={handleTravelTypeSelect}
             selectedTravelType={selectedTravelType}

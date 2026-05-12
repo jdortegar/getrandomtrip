@@ -99,7 +99,7 @@ const EmblaCarousel = ({
   const maskStyle = mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined;
 
   return (
-    <div className="@container w-full">
+    <div className="@container mx-auto w-full">
       {arrows && <div className={cn("container mx-auto mb-6 px-4", overflow ? " md:px-20" : "", arrowsClassName)}>{arrows}</div>}
 
       <div style={maskStyle}>

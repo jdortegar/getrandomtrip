@@ -73,7 +73,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
 
         {/* Centered content block: avatar left, text right */}
         <div className="absolute inset-0 flex items-center justify-center px-4">
-          <div className="rt-container flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-center lg:gap-12">
+          <div className="rt-container flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-left lg:gap-12">
             {/* Circular profile image with white border */}
             <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl md:h-52 md:w-52">
               <SafeImage
