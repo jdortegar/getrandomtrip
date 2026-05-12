@@ -254,6 +254,10 @@
           "id": "topTrippers",
           "label": "Top Trippers",
           "href": "/en/trippers"
+        },
+        {
+          "id": "xsed",
+          "label": "XSED"
         }
       ],
       "title": "Starting Points",
@@ -289,7 +293,15 @@
           "description": "Adventures with your pet."
         }
       ],
-      "trippersHref": "/en/trippers"
+      "trippersHref": "/en/trippers",
+      "xsedIntro": {
+        "eyebrow": "XSED | X LUCK IS SUNDAY",
+        "title": "A new experience every Sunday",
+        "description": "1 night, every Sunday, a new place, a meal and a unique local experience per country.",
+        "ctaLabel": "LEARN MORE",
+        "ctaHref": "/xsed",
+        "backgroundImage": "/images/xsed-hero.jpg"
+      }
     },
     "blog": {
       "carouselSlideAriaLabel": "Go to slide {0}",
@@ -307,6 +319,20 @@
       "subtitle": "Your next unforgettable memory is just one click away. Don't think twice.",
       "title": "What people say about RandomTrip",
       "viewFullReviewLabel": "View full review"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/xsed-hero.jpg",
+      "eyebrow": "XSED",
+      "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
+      "helper": "We'll notify you 10 minutes before the gateway opens every Sunday.\nBlink and you're out.",
+      "inputLabel": "Email or WhatsApp",
+      "inputPlaceholder": "Email or WhatsApp",
+      "submitLabel": "NOTIFY ME OF THE NEXT DROP",
+      "submitAriaLabel": "Notify me of the next XSED drop",
+      "submittingLabel": "JOINING...",
+      "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
+      "errorMessage": "We couldn't add you. Please try again.",
+      "invalidEmailMessage": "Please enter a valid email."
     }
   },
   "experiences": {
@@ -336,6 +362,11 @@
       "subtitle": "OUR TRIPPERS",
       "title": "Our Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
+    },
+    "grid": {
+      "searchCardTitle": "Find your Tripper",
+      "searchCardDescription": "Find the perfect expert for your adventure.",
+      "searchCardCta": "Explore Trippers"
     }
   },
   "blogPage": {

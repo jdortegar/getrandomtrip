@@ -10,6 +10,7 @@ import { HOME_TESTIMONIALS } from '@/lib/data/home-testimonials';
 import { getAllTrippers } from '@/lib/db/tripper-queries';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { hasLocale } from '@/lib/i18n/config';
+import { XsedHero } from '@/components/app/xsed/XsedHero';
 
 export default async function HomePage(
   props: {
@@ -32,6 +33,7 @@ export default async function HomePage(
           trippers={trippers as any}
         />
         <Blog content={home.blog} posts={BLOG_CONSTANTS.posts} />
+        <XsedHero content={dict.home.xsedHero} locale={locale} />
         <Testimonials
           content={home.testimonials}
           testimonials={HOME_TESTIMONIALS.items}

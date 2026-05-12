@@ -136,6 +136,8 @@ export default async function Page(
           tripperPackagesByType={tripperPackagesByType}
         />
       )}
+
+
       {/* Featured Trips Gallery */}
       {featuredTrips.length > 0 && (
         <TripperInspirationGallery trips={featuredTrips} tripperName={tripperData.name} />
@@ -165,7 +167,7 @@ export default async function Page(
         testimonials={getAllTestimonialsForTripper(tripperData)}
         content={{ title: `Lo que dicen sobre ${tripperData.name}` }}
       />
-      
+
     </main>
   );
 }

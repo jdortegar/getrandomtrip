@@ -1,5 +1,5 @@
 import React from "react";
-import TopTrippersGridComponent from "@/components/tripper/TopTrippersGrid";
+import TopTrippersGrid from "@/components/tripper/TopTrippersGrid";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -27,7 +27,7 @@ export default async function TrippersPage(
         videoSrc="/videos/hero-video-1.mp4"
       />
 
-      <TopTrippersGridComponent trippers={trippers} />
+      <TopTrippersGrid trippers={trippers} />
     </main>
   );
 }

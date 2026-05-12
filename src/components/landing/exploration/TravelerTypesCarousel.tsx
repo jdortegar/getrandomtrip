@@ -28,6 +28,8 @@ interface TravelerTypesCarouselProps {
   tripperMode?: boolean;
   /** When set, card links go to this tripper's packages page (tripper context). */
   tripperSlug?: string;
+  /** When set, the carousel will overflow to the left or right. */
+  overflow?: "both" | "left" | "right" | undefined;
 }
 
 const COMING_SOON_SLUGS: TravelerTypeSlug[] = ["family", "paws", "honeymoon"];
@@ -39,6 +41,7 @@ export function TravelerTypesCarousel({
   selectedTravelType,
   tripperMode = false,
   tripperSlug,
+  overflow = "both",
 }: TravelerTypesCarouselProps) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
@@ -65,7 +68,7 @@ export function TravelerTypesCarousel({
       viewport={{ once: true }}
       whileInView={{ opacity: 1, y: 0 }}
     >
-      <EmblaCarousel slidesPerView={3} overflow="both">
+      <EmblaCarousel slidesPerView={3} overflow={overflow}>
         {typesToShow.map((t) => {
           const slug = t.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);

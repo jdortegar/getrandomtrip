@@ -130,7 +130,7 @@ export default function Blog({
 
           {/* Right Column - Carousel */}
           <div className="relative z-0 flex-1 lg:min-w-2/3">
-            <EmblaCarousel slidesPerView={2} overflow="right" arrowsClassName="!pr-8 md:!pr-40">
+            <EmblaCarousel slidesPerView={2} overflow="right" arrowsClassName="md:!pr-40" wrapperClassName="px-4">
               {posts.map((post, index) => (
                 <BlogCard key={post.title || index} post={post} />
               ))}

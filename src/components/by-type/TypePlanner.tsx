@@ -41,7 +41,7 @@ export default function TypePlanner({
 
   const contentElement = (
     <div className="relative flex w-full flex-col">
-      <EmblaCarousel slidesPerView={itemsPerView}>
+      <EmblaCarousel slidesPerView={itemsPerView} overflow="right">
         {content.levels.map((level, index) => {
           // Alternate between light and dark variants
           const variant = index % 2 === 0 ? "light" : "dark";

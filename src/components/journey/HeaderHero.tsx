@@ -111,7 +111,7 @@ export default function HeaderHero({
   className,
   description = DEFAULT_DESCRIPTION,
   eyebrowColor,
-  fallbackImage = "/images/bg-video-hero.jpg",
+  fallbackImage = "/images/hero-image-1.jpeg",
   subtitle = DEFAULT_SUBTITLE,
   title,
   videoSrc = "/videos/hero-video-1.mp4",
