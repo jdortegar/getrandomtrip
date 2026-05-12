@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Img from '@/components/common/Img';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { parseXsedNotificationBody } from '@/lib/xsed/notifications';
@@ -24,7 +23,7 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
 
   const errorMessage =
     status === 'invalid'
-        ? content.invalidEmailMessage
+      ? content.invalidEmailMessage
       : status === 'error'
         ? content.errorMessage
         : null;
@@ -62,7 +61,7 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
   }
 
   return (
-    <Section backgroundImage="/images/xsed-hero.jpg" backgroundOpacity={0.4} className="min-h-<80>">
+    <Section backgroundImage={content.backgroundImage} backgroundOpacity={0.4} className="min-h-screen">
       <div className="relative z-10 w-full px-6 md:px-20 flex justify-center items-center">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
@@ -127,6 +126,6 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
           )}
         </AnimatePresence>
       </div>
-      </Section>
+    </Section>
   );
 }

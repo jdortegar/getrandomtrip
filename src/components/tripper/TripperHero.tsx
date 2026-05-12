@@ -50,7 +50,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
 
   return (
     <section
-      className="relative bg-slate-950 pb-20 text-white"
+      className="relative bg-slate-950  text-white"
       id="tripper-hero"
     >
       <div

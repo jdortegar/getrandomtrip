@@ -8,6 +8,7 @@ import { TabSelector } from '@/components/ui/TabSelector';
 import type { TravelerTypeCardData } from '@/lib/utils/experiencesData';
 import { TopTrippersGrid } from './TopTrippersGrid';
 import { TravelerTypesCarousel } from './TravelerTypesCarousel';
+import { XsedIntro } from './XsedIntro';
 
 export interface ExplorationContent {
   buttonTrippers: string;
@@ -84,6 +85,8 @@ export function ExplorationSection({
             trippers={trippers}
           />
         );
+      case 'xsed':
+        return <XsedIntro />;
       case 'roadtrips':
         return <ComingSoon message={comingSoonText} />;
       case 'trippersDecode':

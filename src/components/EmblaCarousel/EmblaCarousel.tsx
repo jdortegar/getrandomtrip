@@ -20,6 +20,7 @@ type EmblaCarouselProps = {
   slideClassName?: string;
   slidesPerView?: 2 | 3 | 4;
   arrowsClassName?: string;
+  wrapperClassName?: string;
 };
 
 const EMBLA_OPTIONS: EmblaOptionsType = {
@@ -50,6 +51,7 @@ const EmblaCarousel = ({
   slideClassName,
   slidesPerView = 3,
   arrowsClassName,
+  wrapperClassName,
 }: EmblaCarouselProps) => {
   const slides = React.Children.toArray(children);
   const wheelGestures = useMemo(() => WheelGestures(), []);
@@ -66,24 +68,6 @@ const EmblaCarousel = ({
   const { nextBtnDisabled, onNextButtonClick, onPrevButtonClick, prevBtnDisabled } = usePrevNextButtons(emblaApi);
 
   const accentStyle = accentColor ? { backgroundColor: accentColor } : undefined;
-
-  const track = (
-    <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start -ml-3">
-      {slides.map((child, index) => (
-        <div
-          key={index}
-          className={cn(
-            "min-w-0 shrink-0 pl-3",
-            "flex-[0_0_80%]",
-            SLIDE_SIZE[slidesPerView],
-            slideClassName,
-          )}
-        >
-          {child}
-        </div>
-      ))}
-    </div>
-  );
 
   const arrows = slides.length > 1 && (
     <div className="flex items-center justify-end gap-2.5 mb-6">
@@ -116,15 +100,29 @@ const EmblaCarousel = ({
 
   return (
     <div className="@container w-full">
-      {arrows && <div className={cn("container mx-auto mb-6", overflow ? "px-4 md:px-20" : "", arrowsClassName)}>{arrows}</div>}
+      {arrows && <div className={cn("container mx-auto mb-6 px-4", overflow ? " md:px-20" : "", arrowsClassName)}>{arrows}</div>}
 
       <div style={maskStyle}>
         <div ref={emblaRef} className={cn("w-full",
           overflow === "left" ? "overflow-visible container mx-auto pl-4 md:pl-20" :
             overflow === "right" ? "overflow-visible container mx-auto pr-4 md:pr-20" :
               overflow === "both" ? "overflow-visible container mx-auto px-4 md:px-20" :
-                "overflow-hidden")}>
-          {track}
+                "overflow-hidden", wrapperClassName)}>
+          <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start -ml-3">
+            {slides.map((child, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "min-w-0 shrink-0 pl-3",
+                  "flex-[0_0_80%]",
+                  SLIDE_SIZE[slidesPerView],
+                  slideClassName,
+                )}
+              >
+                {child}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

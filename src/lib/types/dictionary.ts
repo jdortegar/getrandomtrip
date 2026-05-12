@@ -542,6 +542,7 @@ export interface XsedPageDict {
   };
   xsedHero: {
     backgroundImage: string;
+    eyebrow?: string;
     errorMessage: string;
     helper: string;
     inputLabel: string;
@@ -677,6 +678,14 @@ export interface MarketingDictionary {
       title: string;
       travelerTypes: Array<{ description: string; key: string; title: string }>;
       trippersHref: string;
+      xsedIntro: {
+        backgroundImage: string;
+        ctaHref: string;
+        ctaLabel: string;
+        description: string;
+        eyebrow: string;
+        title: string;
+      };
     };
     blog: {
       carouselSlideAriaLabel: string;
@@ -690,6 +699,20 @@ export interface MarketingDictionary {
       subtitle: string;
       title: string;
       viewFullReviewLabel: string;
+    };
+    xsedHero: {
+      backgroundImage: string;
+      eyebrow: string;
+      errorMessage: string;
+      helper: string;
+      inputLabel: string;
+      inputPlaceholder: string;
+      invalidEmailMessage: string;
+      submitAriaLabel: string;
+      submitLabel: string;
+      submittingLabel: string;
+      successMessage: string;
+      title: string;
     };
   };
   experiences: {
@@ -712,6 +735,11 @@ export interface MarketingDictionary {
       subtitle: string;
       title: string;
       videoSrc: string;
+    };
+    grid: {
+      searchCardCta: string;
+      searchCardDescription: string;
+      searchCardTitle: string;
     };
   };
   blogPage: {

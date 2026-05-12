@@ -113,7 +113,6 @@
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
-
       "backgroundImage": "/images/hero-image-1.jpeg",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
@@ -255,6 +254,10 @@
           "id": "topTrippers",
           "label": "Top Trippers",
           "href": "/trippers"
+        },
+        {
+          "id": "xsed",
+          "label": "XSED"
         }
       ],
       "title": "Puntos de Partida",
@@ -290,7 +293,15 @@
           "description": "Aventuras con tu mascota."
         }
       ],
-      "trippersHref": "/trippers"
+      "trippersHref": "/trippers",
+      "xsedIntro": {
+        "eyebrow": "XSED | X SUERTE ES DOMINGO",
+        "title": "Una experiencia nueva todos los domingos",
+        "description": "1 noche, cada domingo, un lugar nuevo, una comida y una vivencia única por país.",
+        "ctaLabel": "CONOCER MÁS",
+        "ctaHref": "/xsed",
+        "backgroundImage": "/images/xsed-hero.jpg"
+      }
     },
     "blog": {
       "carouselSlideAriaLabel": "Ir al slide {0}",
@@ -308,6 +319,20 @@
       "subtitle": "Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.",
       "title": "Lo que dicen sobre RandomTrip",
       "viewFullReviewLabel": "Ver opinión completa"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/xsed-hero.jpg",
+      "eyebrow": "XSED",
+      "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
+      "inputLabel": "Email o WhatsApp",
+      "inputPlaceholder": "Email o WhatsApp",
+      "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
+      "submitAriaLabel": "Notificarme del próximo drop de XSED",
+      "submittingLabel": "SUMANDO...",
+      "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
+      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
+      "invalidEmailMessage": "Ingresá un email válido."
     }
   },
   "experiences": {
@@ -337,6 +362,11 @@
       "subtitle": "NUESTROS TRIPPERS",
       "title": "Nuestros Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
+    },
+    "grid": {
+      "searchCardTitle": "Buscá tu Tripper",
+      "searchCardDescription": "Encontrá el experto perfecto para tu aventura.",
+      "searchCardCta": "Explorar Trippers"
     }
   },
   "blogPage": {

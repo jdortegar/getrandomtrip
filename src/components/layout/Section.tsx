@@ -64,7 +64,7 @@ const Section = ({
         </div>
       )}
       {(eyebrow || title || subtitle) && (
-        <div className="mb-14">
+        <div className="mb-14 container mx-auto px-4 md:px-20">
           {eyebrow && (
             <motion.div
               className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-light-blue"
@@ -92,7 +92,7 @@ const Section = ({
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.4 }}
               dangerouslySetInnerHTML={{ __html: title }}
-              />
+            />
           )}
           {subtitle && (
             <motion.p
