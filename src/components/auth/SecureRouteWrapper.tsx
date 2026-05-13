@@ -2,10 +2,11 @@
 
 import SecureRoute from '@/components/auth/SecureRoute';
 
-interface SecureRouteWrapperProps {
+interface Props {
   children: React.ReactNode;
+  requiredRole?: 'client' | 'tripper' | 'admin';
 }
 
-export default function SecureRouteWrapper({ children }: SecureRouteWrapperProps) {
-  return <SecureRoute>{children}</SecureRoute>;
+export default function SecureRouteWrapper({ children, requiredRole }: Props) {
+  return <SecureRoute requiredRole={requiredRole}>{children}</SecureRoute>;
 }
