@@ -149,6 +149,8 @@ export interface TripperDashboardDict {
   };
   quickActions: {
     title: string;
+    experiences: string;
+    experiencesSub: string;
     createExperience: string;
     createExperienceSub: string;
     earnings: string;
@@ -578,7 +580,200 @@ export interface AdminSidebarDict {
     tripRequests: string;
     users: string;
     waitlist: string;
+    xsed: string;
     xsedNotifications: string;
+  };
+}
+
+export interface AdminXsedDict {
+  list: {
+    dropsCount: string;
+    newDrop: string;
+    filterAllStatuses: string;
+    empty: string;
+    errorLoad: string;
+    confirmDelete: string;
+    columns: {
+      title: string;
+      slug: string;
+      status: string;
+      destination: string;
+      origin: string;
+      distKm: string;
+      tripDate: string;
+      revealAt: string;
+      pricePerPerson: string;
+      spots: string;
+      sold: string;
+      costTotal: string;
+      marginPct: string;
+      included: string;
+      notIncluded: string;
+      conditions: string;
+      cancellation: string;
+      weather: string;
+      accessibility: string;
+      safety: string;
+      revealCopy: string;
+      preRevealCopy: string;
+      packingHints: string;
+      whatsappMsg: string;
+      adminNotes: string;
+      supplierNotes: string;
+      created: string;
+      updated: string;
+      actions: string;
+    };
+    actions: {
+      edit: string;
+      activate: string;
+      deactivate: string;
+      archive: string;
+      delete: string;
+      deleting: string;
+    };
+  };
+  form: {
+    eyebrow: string;
+    title: string;
+    titleEdit: string;
+    back: string;
+    submit: string;
+    submitEdit: string;
+    saving: string;
+    cancel: string;
+    toastCreated: string;
+    toastUpdated: string;
+    toastError: string;
+    sections: {
+      basic: string;
+      location: string;
+      dates: string;
+      pricing: string;
+      guest: string;
+      reveal: string;
+      internal: string;
+      benefits: string;
+    };
+    fields: {
+      titleInternal: string;
+      titlePublicTeaser: string;
+      slug: string;
+      slugHint: string;
+      status: string;
+      heroImage: string;
+      destinationCity: string;
+      destinationState: string;
+      originCity: string;
+      originCountry: string;
+      distanceKm: string;
+      tripDate: string;
+      revealAt: string;
+      pricePerPerson: string;
+      currency: string;
+      currencyHint: string;
+      minSpots: string;
+      maxSpots: string;
+      costEstimateTotal: string;
+      targetMarginPercent: string;
+      included: string;
+      notIncluded: string;
+      generalConditions: string;
+      cancellationPolicy: string;
+      weatherPolicy: string;
+      accessibilityNotes: string;
+      safetyNotes: string;
+      revealCopy: string;
+      preRevealCopy: string;
+      packingHints: string;
+      whatsappMessageTemplate: string;
+      adminNotes: string;
+      supplierNotes: string;
+    };
+  };
+  benefits: {
+    saveFirst: string;
+    add: string;
+    empty: string;
+    save: string;
+    cancel: string;
+    delete: string;
+    unnamed: string;
+    types: { ACCOMMODATION: string; DINNER: string; ACTIVITY: string };
+    confirmationStatus: { PENDING: string; CONFIRMED: string; CANCELLED: string };
+    fields: {
+      type: string;
+      name: string;
+      sortOrder: string;
+      providerName: string;
+      address: string;
+      city: string;
+      state: string;
+      googleMapsUrl: string;
+      customerVisibleNotes: string;
+      internalNotes: string;
+      confirmationStatus: string;
+      reservationCode: string;
+    };
+  };
+}
+
+export interface AdminPagesDict {
+  payments: {
+    count: string;
+    errorLoad: string;
+    empty: string;
+    columns: {
+      paymentId: string;
+      traveler: string;
+      amount: string;
+      status: string;
+      provider: string;
+      created: string;
+    };
+  };
+  experiences: {
+    count: string;
+    errorLoad: string;
+    empty: string;
+    columns: {
+      experience: string;
+      tripper: string;
+      status: string;
+      updated: string;
+      actions: string;
+    };
+    status: { active: string; inactive: string; featured: string; normal: string };
+    actions: { disable: string; enable: string; unfeature: string; feature: string };
+  };
+  reviews: {
+    count: string;
+    errorLoad: string;
+    empty: string;
+    columns: {
+      traveler: string;
+      review: string;
+      rating: string;
+      status: string;
+      created: string;
+      actions: string;
+    };
+    status: { approved: string; pending: string; public: string; private: string };
+    actions: { unapprove: string; approve: string; hide: string; publish: string };
+  };
+  waitlist: {
+    count: string;
+    errorLoad: string;
+    empty: string;
+    columns: { name: string; email: string; joined: string; actions: string };
+    actions: { delete: string; deleting: string };
+  };
+  xsedNotifications: {
+    count: string;
+    errorLoad: string;
+    empty: string;
+    columns: { email: string; locale: string; joined: string; actions: string };
+    actions: { delete: string; deleting: string };
   };
 }
 
@@ -612,11 +807,14 @@ export interface MarketingDictionary {
     editProfile: string;
     signOut: string;
     tripperOs: string;
+    xsedDrops: string;
   };
   common: {
     siteName: string;
   };
   adminSidebar: AdminSidebarDict;
+  adminXsed: AdminXsedDict;
+  adminPages: AdminPagesDict;
   xsedPage: XsedPageDict;
   auth: {
     close: string;

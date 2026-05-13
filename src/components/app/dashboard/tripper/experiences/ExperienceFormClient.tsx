@@ -241,7 +241,7 @@ export default function PackageFormClient({
     "block text-left text-sm font-medium text-neutral-700 mb-1.5";
   const hintClass = "text-xs text-neutral-400 mt-1";
   const sectionClassName =
-    "scroll-mt-24 bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-left";
+    "bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-left";
 
   return (
     <div className="space-y-6">
@@ -292,7 +292,7 @@ export default function PackageFormClient({
           className="min-w-0 flex-1 space-y-6"
         >
           {/* Section 1: Básico */}
-          <div id="section-basic" className={sectionClassName}>
+          <div id="section-basic" className={activeSection === "basic" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.basic}
             </h2>
@@ -388,7 +388,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 2: Destino */}
-          <div id="section-destination" className={sectionClassName}>
+          <div id="section-destination" className={activeSection === "destination" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.destination}
             </h2>
@@ -441,7 +441,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 3: Capacidad & Precio */}
-          <div id="section-capacity" className={sectionClassName}>
+          <div id="section-capacity" className={activeSection === "capacity" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.capacityPricing}
             </h2>
@@ -535,7 +535,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 4: Compatibilidad */}
-          <div id="section-compatibility" className={sectionClassName}>
+          <div id="section-compatibility" className={activeSection === "compatibility" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-1">
               {copy.sections.compatibility}
             </h2>
@@ -594,7 +594,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 5: Alojamiento */}
-          <div id="section-accommodation" className={sectionClassName}>
+          <div id="section-accommodation" className={activeSection === "accommodation" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.accommodation}
             </h2>
@@ -729,7 +729,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 6: Actividades */}
-          <div id="section-activities" className={sectionClassName}>
+          <div id="section-activities" className={activeSection === "activities" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.activities}
             </h2>
@@ -829,7 +829,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 7: Itinerario */}
-          <div id="section-itinerary" className={sectionClassName}>
+          <div id="section-itinerary" className={activeSection === "itinerary" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.itinerary}
             </h2>
@@ -919,7 +919,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 8: Incluye / No Incluye */}
-          <div id="section-inclusions" className={sectionClassName}>
+          <div id="section-inclusions" className={activeSection === "inclusions" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.inclusions}
             </h2>
@@ -966,7 +966,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 9: Tags, Highlights & Media */}
-          <div id="section-tags-media" className={sectionClassName}>
+          <div id="section-tags-media" className={activeSection === "tags-media" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.tagsMedia}
             </h2>
@@ -1025,7 +1025,7 @@ export default function PackageFormClient({
           </div>
 
           {/* Section 10: Visibilidad */}
-          <div id="section-visibility" className={sectionClassName}>
+          <div id="section-visibility" className={activeSection === "visibility" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.visibility}
             </h2>

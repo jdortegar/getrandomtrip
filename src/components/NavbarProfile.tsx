@@ -27,6 +27,10 @@ const ADMIN_MENU_ITEM = {
   href: "/dashboard/admin",
 };
 
+const XSED_DROPS_MENU_ITEM = {
+  href: "/dashboard/admin/xsed",
+};
+
 export interface NavbarProfileLabels {
   adminDashboard: string;
   ariaOpenProfileMenu: string;
@@ -34,6 +38,7 @@ export interface NavbarProfileLabels {
   editProfile: string;
   signOut: string;
   tripperOs: string;
+  xsedDrops: string;
 }
 
 interface NavbarProfileProps {
@@ -122,14 +127,28 @@ export function NavbarProfile({
             </Link>
           )}
           {isAdmin ? (
-            <Link
-              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-              href={ADMIN_MENU_ITEM.href}
-              onClick={close}
-              role="menuitem"
-            >
-              {labels.adminDashboard}
-            </Link>
+            <>
+              <div className="my-1 h-px bg-neutral-200" />
+              <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                Admin
+              </p>
+              <Link
+                className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                href={ADMIN_MENU_ITEM.href}
+                onClick={close}
+                role="menuitem"
+              >
+                {labels.adminDashboard}
+              </Link>
+              <Link
+                className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                href={XSED_DROPS_MENU_ITEM.href}
+                onClick={close}
+                role="menuitem"
+              >
+                {labels.xsedDrops}
+              </Link>
+            </>
           ) : null}
 
           <div className="my-1 h-px bg-neutral-200" />

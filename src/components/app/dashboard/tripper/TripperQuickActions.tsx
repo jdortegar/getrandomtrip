@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, BarChart3, Star, BookOpen, Settings } from "lucide-react";
+import { Plus, LayoutList, BarChart3, Star, BookOpen, Settings } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
@@ -10,11 +10,18 @@ interface TripperQuickActionsProps {
 export function TripperQuickActions({ copy }: TripperQuickActionsProps) {
   const actions = [
     {
-      href: "/dashboard/tripper/experiences",
+      href: "/dashboard/tripper/experiences/new",
       icon: Plus,
       key: "packages",
       label: copy.createExperience,
       sub: copy.createExperienceSub,
+    },
+    {
+      href: "/dashboard/tripper/experiences",
+      icon: LayoutList,
+      key: "experiences",
+      label: copy.experiences,
+      sub: copy.experiencesSub,
     },
     {
       href: "/dashboard/tripper/earnings",

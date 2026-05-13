@@ -27,7 +27,8 @@
     "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Admin Dashboard"
+    "adminDashboard": "Admin Dashboard",
+    "xsedDrops": "XSED Drops"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -40,7 +41,242 @@
       "payments": "Payments",
       "reviews": "Reviews",
       "waitlist": "Waitlist",
-      "xsedNotifications": "XSED Alerts"
+      "xsed": "XSED Drops",
+      "xsedNotifications": "XSED Notifications"
+    }
+  },
+  "adminXsed": {
+    "list": {
+      "dropsCount": "{n} XSED drops",
+      "newDrop": "New drop",
+      "filterAllStatuses": "All statuses",
+      "empty": "No XSED drops found.",
+      "errorLoad": "Failed to load XSED drops",
+      "confirmDelete": "Delete this XSED drop? This cannot be undone.",
+      "columns": {
+        "title": "Title",
+        "slug": "Slug",
+        "status": "Status",
+        "destination": "Destination",
+        "origin": "Origin",
+        "distKm": "Dist. km",
+        "tripDate": "Trip Date",
+        "revealAt": "Reveal At",
+        "pricePerPerson": "Price/person",
+        "spots": "Spots",
+        "sold": "Sold",
+        "costTotal": "Cost total",
+        "marginPct": "Margin %",
+        "included": "Included",
+        "notIncluded": "Not included",
+        "conditions": "Conditions",
+        "cancellation": "Cancellation",
+        "weather": "Weather",
+        "accessibility": "Accessibility",
+        "safety": "Safety",
+        "revealCopy": "Reveal copy",
+        "preRevealCopy": "Pre-reveal copy",
+        "packingHints": "Packing hints",
+        "whatsappMsg": "WhatsApp msg",
+        "adminNotes": "Admin notes",
+        "supplierNotes": "Supplier notes",
+        "created": "Created",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "archive": "Archive",
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      }
+    },
+    "form": {
+      "eyebrow": "Admin",
+      "title": "New XSED Drop",
+      "back": "Back",
+      "submit": "Create drop",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "titleEdit": "Edit XSED Drop",
+      "submitEdit": "Save changes",
+      "toastCreated": "Drop created",
+      "toastUpdated": "Drop updated",
+      "toastError": "Something went wrong",
+      "sections": {
+        "basic": "Basic info",
+        "location": "Location",
+        "dates": "Dates",
+        "pricing": "Pricing & capacity",
+        "guest": "Guest-facing content",
+        "reveal": "Mystery / reveal",
+        "internal": "Internal",
+        "benefits": "Benefits"
+      },
+      "fields": {
+        "titleInternal": "Title (internal)",
+        "titlePublicTeaser": "Public teaser",
+        "slug": "Slug",
+        "slugHint": "URL-friendly identifier, e.g. patagonia-2026",
+        "status": "Status",
+        "heroImage": "Hero image URL",
+        "destinationCity": "Destination city",
+        "destinationState": "Destination state / region",
+        "originCity": "Origin city",
+        "originCountry": "Origin country",
+        "distanceKm": "Distance from origin (km)",
+        "tripDate": "Trip date",
+        "revealAt": "Reveal at",
+        "pricePerPerson": "Price per person",
+        "currency": "Currency",
+        "currencyHint": "e.g. USD, ARS",
+        "minSpots": "Min spots",
+        "maxSpots": "Max spots",
+        "costEstimateTotal": "Cost estimate total",
+        "targetMarginPercent": "Target margin %",
+        "included": "Included",
+        "notIncluded": "Not included",
+        "generalConditions": "General conditions",
+        "cancellationPolicy": "Cancellation policy",
+        "weatherPolicy": "Weather policy",
+        "accessibilityNotes": "Accessibility notes",
+        "safetyNotes": "Safety notes",
+        "revealCopy": "Reveal copy",
+        "preRevealCopy": "Pre-reveal copy",
+        "packingHints": "Packing hints",
+        "whatsappMessageTemplate": "WhatsApp message template",
+        "adminNotes": "Admin notes",
+        "supplierNotes": "Supplier notes"
+      }
+    },
+    "benefits": {
+      "saveFirst": "Save the drop first, then come back to manage benefits.",
+      "add": "Add benefit",
+      "empty": "No benefits yet.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "unnamed": "Unnamed benefit",
+      "types": {
+        "ACCOMMODATION": "Accommodation",
+        "DINNER": "Dinner",
+        "ACTIVITY": "Activity"
+      },
+      "confirmationStatus": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled"
+      },
+      "fields": {
+        "type": "Type",
+        "name": "Name",
+        "sortOrder": "Sort order",
+        "providerName": "Provider",
+        "address": "Address",
+        "city": "City",
+        "state": "State / Region",
+        "googleMapsUrl": "Google Maps URL",
+        "customerVisibleNotes": "Guest-facing notes",
+        "internalNotes": "Internal notes",
+        "confirmationStatus": "Confirmation status",
+        "reservationCode": "Reservation code"
+      }
+    }
+  },
+  "adminPages": {
+    "payments": {
+      "count": "{n} payments",
+      "errorLoad": "Failed to load payments",
+      "empty": "No payments found.",
+      "columns": {
+        "paymentId": "Payment ID",
+        "traveler": "Traveler",
+        "amount": "Amount",
+        "status": "Status",
+        "provider": "Provider",
+        "created": "Created"
+      }
+    },
+    "experiences": {
+      "count": "{n} experiences",
+      "errorLoad": "Failed to load experiences",
+      "empty": "No experiences found.",
+      "columns": {
+        "experience": "Experience",
+        "tripper": "Tripper",
+        "status": "Status",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "featured": "Featured",
+        "normal": "Normal"
+      },
+      "actions": {
+        "disable": "Disable",
+        "enable": "Enable",
+        "unfeature": "Unfeature",
+        "feature": "Feature"
+      }
+    },
+    "reviews": {
+      "count": "{n} reviews",
+      "errorLoad": "Failed to load reviews",
+      "empty": "No reviews found.",
+      "columns": {
+        "traveler": "Traveler",
+        "review": "Review",
+        "rating": "Rating",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "public": "Public",
+        "private": "Private"
+      },
+      "actions": {
+        "unapprove": "Unapprove",
+        "approve": "Approve",
+        "hide": "Hide",
+        "publish": "Publish"
+      }
+    },
+    "waitlist": {
+      "count": "{n} waitlist entries",
+      "errorLoad": "Failed to load waitlist",
+      "empty": "No waitlist entries found.",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      }
+    },
+    "xsedNotifications": {
+      "count": "{n} XSED notification entries",
+      "errorLoad": "Failed to load XSED notifications",
+      "empty": "No XSED notification entries found.",
+      "columns": {
+        "email": "Email",
+        "locale": "Locale",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      }
     }
   },
   "xsedPage": {
@@ -2647,6 +2883,8 @@
     },
     "quickActions": {
       "title": "Quick Actions",
+      "experiences": "My Experiences",
+      "experiencesSub": "View all experiences",
       "createExperience": "Create Experience",
       "createExperienceSub": "New travel offer",
       "earnings": "View Earnings",

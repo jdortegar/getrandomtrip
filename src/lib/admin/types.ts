@@ -112,3 +112,59 @@ export interface AdminXsedNotificationEntry {
   id: string;
   locale: string | null;
 }
+
+export interface AdminXsedBenefit {
+  id: string;
+  type: "ACCOMMODATION" | "DINNER" | "ACTIVITY";
+  sortOrder: number;
+  name: string | null;
+  providerName: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  googleMapsUrl: string | null;
+  customerVisibleNotes: string | null;
+  internalNotes: string | null;
+  confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
+  reservationCode: string | null;
+}
+
+export interface AdminXsedExperience {
+  id: string;
+  slug: string | null;
+  status: string;
+  titleInternal: string;
+  titlePublicTeaser: string | null;
+  heroImage: string | null;
+  destinationCity: string | null;
+  destinationState: string | null;
+  originCity: string | null;
+  originCountry: string | null;
+  distanceKmFromOrigin: number | null;
+  tripDate: string | null;
+  revealAt: string | null;
+  pricePerPerson: number | null;
+  currency: string;
+  maxSpots: number | null;
+  minSpots: number | null;
+  costEstimateTotal: number | null;
+  /** Percentage 0–100 (e.g. 20 = 20%). */
+  targetMarginPercent: number | null;
+  included: string | null;
+  notIncluded: string | null;
+  generalConditions: string | null;
+  cancellationPolicy: string | null;
+  weatherPolicy: string | null;
+  accessibilityNotes: string | null;
+  safetyNotes: string | null;
+  revealCopy: string | null;
+  preRevealCopy: string | null;
+  packingHints: string | null;
+  whatsappMessageTemplate: string | null;
+  adminNotes: string | null;
+  supplierNotes: string | null;
+  /** Confirmed bookings count. */
+  soldCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
