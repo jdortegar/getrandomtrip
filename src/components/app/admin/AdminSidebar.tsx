@@ -5,6 +5,7 @@ import {
   Bell,
   Briefcase,
   CreditCard,
+  Compass,
   Mail,
   Package,
   Star,
@@ -42,6 +43,7 @@ export function AdminSidebar() {
     { href: base("/payments"), icon: CreditCard, label: copy.links.payments },
     { href: base("/reviews"), icon: Star, label: copy.links.reviews },
     { href: base("/waitlist"), icon: Mail, label: copy.links.waitlist },
+    { href: base("/xsed"), icon: Compass, label: copy.links.xsed },
     {
       href: base("/xsed-notifications"),
       icon: Bell,

@@ -578,6 +578,7 @@ export interface AdminSidebarDict {
     tripRequests: string;
     users: string;
     waitlist: string;
+    xsed: string;
     xsedNotifications: string;
   };
 }

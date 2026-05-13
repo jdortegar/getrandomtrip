@@ -40,7 +40,8 @@
       "payments": "Payments",
       "reviews": "Reviews",
       "waitlist": "Waitlist",
-      "xsedNotifications": "XSED Alerts"
+      "xsed": "XSED Drops",
+      "xsedNotifications": "XSED Notifications"
     }
   },
   "xsedPage": {
