@@ -63,6 +63,8 @@ model User {
   reviews       Review[]
   likedPackages PackageLike[]
   blogPosts     BlogPost[]    @relation("BlogAuthor")
+  xsedExperiencesCreated XsedExperience[] @relation("XsedExperienceCreatedBy")
+  xsedExperiencesUpdated XsedExperience[] @relation("XsedExperienceUpdatedBy")
 
   @@map("users")
 }
@@ -102,6 +104,10 @@ model TripRequest {
   // Package Assignment
   packageId String? // Assigned package when user selects one
 
+  /** When set, this trip request is an XSED drop purchase (see `XsedExperience`). Use existing `Payment` (1:1) for checkout; `packageId` is usually null. */
+  xsedExperienceId String?
+  xsedExperience   XsedExperience? @relation(fields: [xsedExperienceId], references: [id], onDelete: SetNull)
+
   // Completed trip data (optional - populated after trip completion)
   actualDestination     String? // Revealed destination
   destinationRevealedAt DateTime? // When destination was revealed (48h before)
@@ -119,6 +125,7 @@ model TripRequest {
   package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
   payment Payment?
 
+  @@index([xsedExperienceId])
   @@map("trip_requests")
 }
 
@@ -409,4 +416,146 @@ model XsedNotificationSignup {
   @@index([email])
   @@index([createdAt])
   @@map("xsed_notification_signups")
+}
+
+// ============================================================================
+// XSED – curated Sunday-drop experiences (components + media)
+// ============================================================================
+
+enum XsedBenefitType {
+  ACCOMMODATION
+  DINNER
+  ACTIVITY
+}
+
+enum XsedConfirmationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model XsedExperience {
+  id     String        @id @default(cuid())
+  slug   String?       @unique
+  /** Same lifecycle vocabulary as `Package.status`. */
+  status PackageStatus @default(DRAFT)
+
+  titleInternal       String
+  titlePublicTeaser   String?
+  heroImage           String?
+  destinationCity     String?
+  destinationState    String?
+  originCity          String?
+  originCountry       String?
+  distanceKmFromOrigin Int?
+  tripDate            DateTime?
+  revealAt            DateTime?
+
+  pricePerPerson        Float?
+  currency              String   @default("USD")
+  maxSpots              Int?
+  minSpots              Int?
+  costEstimateTotal     Float?
+  targetMarginPercent   Float?
+
+  included              String? @db.Text
+  notIncluded           String? @db.Text
+  generalConditions     String? @db.Text
+  cancellationPolicy    String? @db.Text
+  weatherPolicy         String? @db.Text
+  accessibilityNotes    String? @db.Text
+  safetyNotes           String? @db.Text
+
+  revealCopy               String? @db.Text
+  preRevealCopy            String? @db.Text
+  packingHints             String? @db.Text
+  whatsappMessageTemplate  String? @db.Text
+
+  adminNotes    String? @db.Text
+  supplierNotes String? @db.Text
+
+  /** What the drop includes operationally (stay, dinner, Sunday pillar); `XsedComponent.type` is one of `XsedBenefitType`. */
+  benefits     XsedComponent[]
+  tripRequests TripRequest[]
+
+  createdById String?
+  updatedById String?
+  createdBy   User? @relation("XsedExperienceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy   User? @relation("XsedExperienceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([revealAt])
+  @@index([tripDate])
+  @@map("xsed_experiences")
+}
+
+model XsedComponent {
+  id            String          @id @default(cuid())
+  experienceId  String
+  /** Which pillar of the XSED weekend this row describes. Multiple components of the same type are allowed (e.g. two hotel nights). */
+  type          XsedBenefitType
+  sortOrder     Int             @default(0)
+  experience    XsedExperience  @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  name          String?
+  providerName  String?
+  address       String?
+  city          String?
+  state         String?
+  googleMapsUrl String?
+  contactName   String?
+  contactPhone  String?
+  contactEmail  String?
+  websiteUrl    String?
+
+  scheduledStart DateTime?
+  scheduledEnd   DateTime?
+  checkInTime    String?
+  checkOutTime   String?
+
+  confirmationStatus XsedConfirmationStatus @default(PENDING)
+  reservationCode    String?
+  cost               Float?
+  currency           String  @default("USD")
+  paymentStatus      String?
+
+  capacity     Int?
+  conditions   String? @db.Text
+  restrictions String? @db.Text
+  whatToBring  String? @db.Text
+  included     String? @db.Text
+  notIncluded  String? @db.Text
+
+  internalNotes          String? @db.Text
+  customerVisibleNotes   String? @db.Text
+
+  photos XsedMedia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([experienceId, type])
+  @@index([experienceId, sortOrder])
+  @@map("xsed_components")
+}
+
+model XsedMedia {
+  id          String         @id @default(cuid())
+  componentId String
+  component   XsedComponent  @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  url       String
+  altText   String?
+  /** Media slot (string slug). E.g. `cover` | `gallery` | `map`. */
+  type      String @default("gallery")
+  sortOrder Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([componentId])
+  @@map("xsed_media")
 }
