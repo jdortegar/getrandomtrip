@@ -1,8 +1,8 @@
-import { AdminUsersPageClient } from "../AdminUsersPageClient";
+import { AdminTripRequestsPageClient } from "../AdminTripRequestsPageClient";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 
-export default async function AdminUsersPage(
+export default async function AdminTripRequestsPage(
   props: {
     params: Promise<{ locale: string }>;
   }
@@ -10,5 +10,6 @@ export default async function AdminUsersPage(
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : "es";
   const dict = await getDictionary(locale);
-  return <AdminUsersPageClient copy={dict.adminUsers} />;
+
+  return <AdminTripRequestsPageClient dict={dict.adminTripEditModal} />;
 }

@@ -86,3 +86,62 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const admin = await requireAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = (await request.json()) as Record<string, unknown>;
+
+    if (!body.titleInternal || typeof body.titleInternal !== 'string') {
+      return NextResponse.json({ error: 'titleInternal is required' }, { status: 400 });
+    }
+
+    const experience = await prisma.xsedExperience.create({
+      data: {
+        titleInternal: body.titleInternal as string,
+        slug: (body.slug as string | undefined) || null,
+        status: (body.status as string | undefined) === 'ACTIVE' ? 'ACTIVE' : 'DRAFT',
+        titlePublicTeaser: (body.titlePublicTeaser as string | undefined) || null,
+        heroImage: (body.heroImage as string | undefined) || null,
+        destinationCity: (body.destinationCity as string | undefined) || null,
+        destinationState: (body.destinationState as string | undefined) || null,
+        originCity: (body.originCity as string | undefined) || null,
+        originCountry: (body.originCountry as string | undefined) || null,
+        distanceKmFromOrigin: body.distanceKmFromOrigin != null ? Number(body.distanceKmFromOrigin) : null,
+        tripDate: body.tripDate ? new Date(body.tripDate as string) : null,
+        revealAt: body.revealAt ? new Date(body.revealAt as string) : null,
+        pricePerPerson: body.pricePerPerson != null ? Number(body.pricePerPerson) : null,
+        currency: (body.currency as string | undefined) || 'USD',
+        maxSpots: body.maxSpots != null ? Number(body.maxSpots) : null,
+        minSpots: body.minSpots != null ? Number(body.minSpots) : null,
+        costEstimateTotal: body.costEstimateTotal != null ? Number(body.costEstimateTotal) : null,
+        targetMarginPercent: body.targetMarginPercent != null ? Number(body.targetMarginPercent) : null,
+        included: (body.included as string | undefined) || null,
+        notIncluded: (body.notIncluded as string | undefined) || null,
+        generalConditions: (body.generalConditions as string | undefined) || null,
+        cancellationPolicy: (body.cancellationPolicy as string | undefined) || null,
+        weatherPolicy: (body.weatherPolicy as string | undefined) || null,
+        accessibilityNotes: (body.accessibilityNotes as string | undefined) || null,
+        safetyNotes: (body.safetyNotes as string | undefined) || null,
+        revealCopy: (body.revealCopy as string | undefined) || null,
+        preRevealCopy: (body.preRevealCopy as string | undefined) || null,
+        packingHints: (body.packingHints as string | undefined) || null,
+        whatsappMessageTemplate: (body.whatsappMessageTemplate as string | undefined) || null,
+        adminNotes: (body.adminNotes as string | undefined) || null,
+        supplierNotes: (body.supplierNotes as string | undefined) || null,
+        createdById: admin.id,
+        updatedById: admin.id,
+      },
+      select: { id: true },
+    });
+
+    return NextResponse.json({ experience }, { status: 201 });
+  } catch (error) {
+    console.error('[admin/xsed] POST', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

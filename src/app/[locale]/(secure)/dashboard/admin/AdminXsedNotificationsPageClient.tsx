@@ -1,11 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { AdminXsedNotificationEntry } from "@/lib/admin/types";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
+
+function getCopy(locale: string) {
+  return locale.startsWith("en")
+    ? enCopy.adminPages.xsedNotifications
+    : esCopy.adminPages.xsedNotifications;
+}
 
 export function AdminXsedNotificationsPageClient() {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
+  const copy = getCopy(locale);
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [entries, setEntries] = useState<AdminXsedNotificationEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -21,12 +33,12 @@ export function AdminXsedNotificationsPageClient() {
         error?: string;
       };
       if (!res.ok || !data.entries) {
-        setError(data.error ?? "Failed to load XSED notifications");
+        setError(data.error ?? copy.errorLoad);
         return;
       }
       setEntries(data.entries);
     } catch {
-      setError("Failed to load XSED notifications");
+      setError(copy.errorLoad);
     } finally {
       setLoading(false);
     }
@@ -35,9 +47,7 @@ export function AdminXsedNotificationsPageClient() {
   async function removeEntry(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/xsed-notifications/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`/api/admin/xsed-notifications/${id}`, { method: "DELETE" });
       if (!res.ok) return;
       setEntries((prev) => prev.filter((entry) => entry.id !== id));
     } finally {
@@ -50,15 +60,15 @@ export function AdminXsedNotificationsPageClient() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) {
-    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
-  }
+  if (error) return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+
+  const cols = copy.columns;
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="shrink-0 border-b border-gray-200 px-5 py-4">
         <p className="text-xs text-neutral-500">
-          {entries.length} XSED notification entries
+          {copy.count.replace("{n}", String(entries.length))}
         </p>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -66,28 +76,21 @@ export function AdminXsedNotificationsPageClient() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200">
-                {["Email", "Locale", "Joined", "Actions"].map((heading) => (
+                {[cols.email, cols.locale, cols.joined, cols.actions].map((h) => (
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
-                    key={heading}
+                    key={h}
                   >
-                    {heading}
+                    {h}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {entries.map((entry) => (
-                <tr
-                  className="border-b border-gray-100 last:border-0"
-                  key={entry.id}
-                >
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {entry.email}
-                  </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {entry.locale ?? "-"}
-                  </td>
+                <tr className="border-b border-gray-100 last:border-0" key={entry.id}>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">{entry.email}</td>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">{entry.locale ?? "—"}</td>
                   <td className="px-4 py-3.5 text-xs text-neutral-400">
                     {new Date(entry.createdAt).toLocaleDateString()}
                   </td>
@@ -98,18 +101,16 @@ export function AdminXsedNotificationsPageClient() {
                       onClick={() => void removeEntry(entry.id)}
                       type="button"
                     >
-                      {deletingId === entry.id ? "Deleting..." : "Delete"}
+                      {deletingId === entry.id ? copy.actions.deleting : copy.actions.delete}
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {entries.length === 0 ? (
-            <p className="py-10 text-center text-sm text-gray-400">
-              No XSED notification entries found.
-            </p>
-          ) : null}
+          {entries.length === 0 && (
+            <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+          )}
         </div>
       </div>
     </div>

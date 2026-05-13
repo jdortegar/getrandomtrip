@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { Plus } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { AdminXsedExperience } from "@/lib/admin/types";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
@@ -30,39 +35,48 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-const COLUMNS = [
-  "Title",
-  "Slug",
-  "Status",
-  "Destination",
-  "Origin",
-  "Dist. km",
-  "Trip Date",
-  "Reveal At",
-  "Price/person",
-  "Spots",
-  "Sold",
-  "Cost total",
-  "Margin %",
-  "Included",
-  "Not included",
-  "Conditions",
-  "Cancellation",
-  "Weather",
-  "Accessibility",
-  "Safety",
-  "Reveal copy",
-  "Pre-reveal copy",
-  "Packing hints",
-  "WhatsApp msg",
-  "Admin notes",
-  "Supplier notes",
-  "Created",
-  "Updated",
-  "Actions",
-];
+function getCopy(locale: string) {
+  return locale.startsWith("en") ? enCopy.adminXsed : esCopy.adminXsed;
+}
 
 export function AdminXsedPageClient() {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
+  const copy = getCopy(locale);
+  const cols = copy.list.columns;
+
+  const COLUMNS = [
+    cols.title,
+    cols.slug,
+    cols.status,
+    cols.destination,
+    cols.origin,
+    cols.distKm,
+    cols.tripDate,
+    cols.revealAt,
+    cols.pricePerPerson,
+    cols.spots,
+    cols.sold,
+    cols.costTotal,
+    cols.marginPct,
+    cols.included,
+    cols.notIncluded,
+    cols.conditions,
+    cols.cancellation,
+    cols.weather,
+    cols.accessibility,
+    cols.safety,
+    cols.revealCopy,
+    cols.preRevealCopy,
+    cols.packingHints,
+    cols.whatsappMsg,
+    cols.adminNotes,
+    cols.supplierNotes,
+    cols.created,
+    cols.updated,
+    cols.actions,
+  ];
+
   const [experiences, setExperiences] = useState<AdminXsedExperience[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -79,12 +93,12 @@ export function AdminXsedPageClient() {
         experiences?: AdminXsedExperience[];
       };
       if (!res.ok || !data.experiences) {
-        setError(data.error ?? "Failed to load XSED experiences");
+        setError(data.error ?? copy.list.errorLoad);
         return;
       }
       setExperiences(data.experiences);
     } catch {
-      setError("Failed to load XSED experiences");
+      setError(copy.list.errorLoad);
     } finally {
       setLoading(false);
     }
@@ -108,7 +122,7 @@ export function AdminXsedPageClient() {
   }
 
   async function deleteExperience(id: string) {
-    if (!confirm("Delete this XSED experience? This cannot be undone.")) return;
+    if (!confirm(copy.list.confirmDelete)) return;
     setDeletingId(id);
     try {
       const res = await fetch(`/api/admin/xsed/${id}`, { method: "DELETE" });
@@ -129,10 +143,17 @@ export function AdminXsedPageClient() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-gray-200 px-5 py-4">
+      <div className="flex shrink-0 items-center justify-between border-b border-gray-200 px-5 py-4">
         <p className="text-xs text-neutral-500">
-          {experiences.length} XSED drop{experiences.length !== 1 ? "s" : ""}
+          {copy.list.dropsCount.replace("{n}", String(experiences.length))}
         </p>
+        <Link
+          className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-700"
+          href={`/${locale}/dashboard/admin/xsed/new`}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {copy.list.newDrop}
+        </Link>
       </div>
 
       <div className="flex-1 overflow-auto">
@@ -276,7 +297,7 @@ export function AdminXsedPageClient() {
                           onClick={() => void updateStatus(e.id, "ACTIVE")}
                           type="button"
                         >
-                          Activate
+                          {copy.list.actions.activate}
                         </button>
                       )}
                       {e.status === "ACTIVE" && (
@@ -286,7 +307,7 @@ export function AdminXsedPageClient() {
                           onClick={() => void updateStatus(e.id, "INACTIVE")}
                           type="button"
                         >
-                          Deactivate
+                          {copy.list.actions.deactivate}
                         </button>
                       )}
                       {e.status !== "ARCHIVED" && (
@@ -296,7 +317,7 @@ export function AdminXsedPageClient() {
                           onClick={() => void updateStatus(e.id, "ARCHIVED")}
                           type="button"
                         >
-                          Archive
+                          {copy.list.actions.archive}
                         </button>
                       )}
                       <button
@@ -305,7 +326,9 @@ export function AdminXsedPageClient() {
                         onClick={() => void deleteExperience(e.id)}
                         type="button"
                       >
-                        {deletingId === e.id ? "Deleting…" : "Delete"}
+                        {deletingId === e.id
+                          ? copy.list.actions.deleting
+                          : copy.list.actions.delete}
                       </button>
                     </div>
                   </td>
@@ -315,7 +338,7 @@ export function AdminXsedPageClient() {
           </table>
           {experiences.length === 0 && (
             <p className="py-10 text-center text-sm text-gray-400">
-              No XSED experiences found.
+              {copy.list.empty}
             </p>
           )}
         </div>

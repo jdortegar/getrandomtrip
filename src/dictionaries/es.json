@@ -27,7 +27,8 @@
     "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Panel de Admin"
+    "adminDashboard": "Panel de Admin",
+    "xsedDrops": "Drops XSED"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -42,6 +43,201 @@
       "waitlist": "Lista de espera",
       "xsed": "Drops XSED",
       "xsedNotifications": "Notificaciones XSED"
+    }
+  },
+  "adminXsed": {
+    "list": {
+      "dropsCount": "{n} drops XSED",
+      "newDrop": "Nuevo drop",
+      "empty": "No se encontraron drops XSED.",
+      "errorLoad": "Error al cargar los drops XSED",
+      "confirmDelete": "¿Eliminar este drop XSED? Esta acción no se puede deshacer.",
+      "columns": {
+        "title": "Título",
+        "slug": "Slug",
+        "status": "Estado",
+        "destination": "Destino",
+        "origin": "Origen",
+        "distKm": "Dist. km",
+        "tripDate": "Fecha del viaje",
+        "revealAt": "Revelar el",
+        "pricePerPerson": "Precio/persona",
+        "spots": "Cupos",
+        "sold": "Vendidos",
+        "costTotal": "Costo total",
+        "marginPct": "Margen %",
+        "included": "Incluido",
+        "notIncluded": "No incluido",
+        "conditions": "Condiciones",
+        "cancellation": "Cancelación",
+        "weather": "Clima",
+        "accessibility": "Accesibilidad",
+        "safety": "Seguridad",
+        "revealCopy": "Texto revelación",
+        "preRevealCopy": "Texto pre-revelación",
+        "packingHints": "Consejos equipaje",
+        "whatsappMsg": "Mensaje WhatsApp",
+        "adminNotes": "Notas admin",
+        "supplierNotes": "Notas proveedor",
+        "created": "Creado",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "activate": "Activar",
+        "deactivate": "Desactivar",
+        "archive": "Archivar",
+        "delete": "Eliminar",
+        "deleting": "Eliminando…"
+      }
+    },
+    "form": {
+      "eyebrow": "Admin",
+      "title": "Nuevo Drop XSED",
+      "back": "Volver",
+      "submit": "Crear drop",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "toastCreated": "Drop creado",
+      "toastError": "Error al crear el drop",
+      "sections": {
+        "basic": "Info básica",
+        "location": "Ubicación",
+        "dates": "Fechas",
+        "pricing": "Precio y capacidad",
+        "guest": "Contenido para el viajero",
+        "reveal": "Misterio / revelación",
+        "internal": "Interno"
+      },
+      "fields": {
+        "titleInternal": "Título (interno)",
+        "titlePublicTeaser": "Teaser público",
+        "slug": "Slug",
+        "slugHint": "Identificador URL, ej: patagonia-2026",
+        "status": "Estado",
+        "heroImage": "URL imagen principal",
+        "destinationCity": "Ciudad de destino",
+        "destinationState": "Estado / región de destino",
+        "originCity": "Ciudad de origen",
+        "originCountry": "País de origen",
+        "distanceKm": "Distancia desde el origen (km)",
+        "tripDate": "Fecha del viaje",
+        "revealAt": "Revelar el",
+        "pricePerPerson": "Precio por persona",
+        "currency": "Moneda",
+        "currencyHint": "ej: USD, ARS",
+        "minSpots": "Cupos mínimos",
+        "maxSpots": "Cupos máximos",
+        "costEstimateTotal": "Estimado de costo total",
+        "targetMarginPercent": "Margen objetivo %",
+        "included": "Incluido",
+        "notIncluded": "No incluido",
+        "generalConditions": "Condiciones generales",
+        "cancellationPolicy": "Política de cancelación",
+        "weatherPolicy": "Política climática",
+        "accessibilityNotes": "Notas de accesibilidad",
+        "safetyNotes": "Notas de seguridad",
+        "revealCopy": "Texto de revelación",
+        "preRevealCopy": "Texto pre-revelación",
+        "packingHints": "Consejos de equipaje",
+        "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
+        "adminNotes": "Notas del admin",
+        "supplierNotes": "Notas del proveedor"
+      }
+    }
+  },
+  "adminPages": {
+    "payments": {
+      "count": "{n} pagos",
+      "errorLoad": "Error al cargar los pagos",
+      "empty": "No se encontraron pagos.",
+      "columns": {
+        "paymentId": "ID de pago",
+        "traveler": "Viajero",
+        "amount": "Monto",
+        "status": "Estado",
+        "provider": "Proveedor",
+        "created": "Creado"
+      }
+    },
+    "experiences": {
+      "count": "{n} experiencias",
+      "errorLoad": "Error al cargar las experiencias",
+      "empty": "No se encontraron experiencias.",
+      "columns": {
+        "experience": "Experiencia",
+        "tripper": "Tripper",
+        "status": "Estado",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "status": {
+        "active": "Activa",
+        "inactive": "Inactiva",
+        "featured": "Destacada",
+        "normal": "Normal"
+      },
+      "actions": {
+        "disable": "Desactivar",
+        "enable": "Activar",
+        "unfeature": "Quitar destaque",
+        "feature": "Destacar"
+      }
+    },
+    "reviews": {
+      "count": "{n} reseñas",
+      "errorLoad": "Error al cargar las reseñas",
+      "empty": "No se encontraron reseñas.",
+      "columns": {
+        "traveler": "Viajero",
+        "review": "Reseña",
+        "rating": "Calificación",
+        "status": "Estado",
+        "created": "Creado",
+        "actions": "Acciones"
+      },
+      "status": {
+        "approved": "Aprobada",
+        "pending": "Pendiente",
+        "public": "Pública",
+        "private": "Privada"
+      },
+      "actions": {
+        "unapprove": "Rechazar",
+        "approve": "Aprobar",
+        "hide": "Ocultar",
+        "publish": "Publicar"
+      }
+    },
+    "waitlist": {
+      "count": "{n} entradas en lista de espera",
+      "errorLoad": "Error al cargar la lista de espera",
+      "empty": "No se encontraron entradas en la lista de espera.",
+      "columns": {
+        "name": "Nombre",
+        "email": "Email",
+        "joined": "Se unió",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "delete": "Eliminar",
+        "deleting": "Eliminando…"
+      }
+    },
+    "xsedNotifications": {
+      "count": "{n} notificaciones XSED",
+      "errorLoad": "Error al cargar las notificaciones XSED",
+      "empty": "No se encontraron notificaciones XSED.",
+      "columns": {
+        "email": "Email",
+        "locale": "Idioma",
+        "joined": "Se unió",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "delete": "Eliminar",
+        "deleting": "Eliminando…"
+      }
     }
   },
   "xsedPage": {

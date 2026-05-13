@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic';
 
 import SecureRouteWrapper from '@/components/auth/SecureRouteWrapper';
-import AdminShell from './AdminLayoutClient';
 
 export default function AdminLayout({
   children,
@@ -9,8 +8,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SecureRouteWrapper requiredRole="admin">
-      <AdminShell>{children}</AdminShell>
-    </SecureRouteWrapper>
+    <SecureRouteWrapper requiredRole="admin">{children}</SecureRouteWrapper>
   );
 }
