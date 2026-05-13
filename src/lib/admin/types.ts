@@ -113,6 +113,22 @@ export interface AdminXsedNotificationEntry {
   locale: string | null;
 }
 
+export interface AdminXsedBenefit {
+  id: string;
+  type: "ACCOMMODATION" | "DINNER" | "ACTIVITY";
+  sortOrder: number;
+  name: string | null;
+  providerName: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  googleMapsUrl: string | null;
+  customerVisibleNotes: string | null;
+  internalNotes: string | null;
+  confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
+  reservationCode: string | null;
+}
+
 export interface AdminXsedExperience {
   id: string;
   slug: string | null;

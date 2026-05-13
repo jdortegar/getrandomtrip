@@ -7,6 +7,8 @@ import { ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/Button";
 import ExperienceFormNav from "@/components/app/dashboard/tripper/experiences/ExperienceFormNav";
+import { AdminXsedBenefitsSection } from "./AdminXsedBenefitsSection";
+import type { AdminXsedBenefit } from "@/lib/admin/types";
 import enCopy from "@/dictionaries/en.json";
 import esCopy from "@/dictionaries/es.json";
 
@@ -44,15 +46,16 @@ interface AdminXsedFormClientProps {
   locale: string;
   experienceId?: string;
   initialData?: FormValues;
+  initialBenefits?: AdminXsedBenefit[];
 }
 
-export function AdminXsedFormClient({ locale, experienceId, initialData }: AdminXsedFormClientProps) {
+export function AdminXsedFormClient({ locale, experienceId, initialData, initialBenefits = [] }: AdminXsedFormClientProps) {
   const router = useRouter();
   const copy = getCopy(locale);
   const f = copy.form.fields;
   const isEdit = Boolean(experienceId);
 
-  const SECTIONS: { id: string; label: string; fields: Field[] }[] = [
+  const SECTIONS: { id: string; label: string; fields?: Field[] }[] = [
     {
       id: "basic",
       label: copy.form.sections.basic,
@@ -100,6 +103,7 @@ export function AdminXsedFormClient({ locale, experienceId, initialData }: Admin
         { key: "targetMarginPercent", label: f.targetMarginPercent, type: "number" },
       ],
     },
+    { id: "benefits", label: copy.form.sections.benefits },
     {
       id: "guest",
       label: copy.form.sections.guest,
@@ -133,13 +137,12 @@ export function AdminXsedFormClient({ locale, experienceId, initialData }: Admin
     },
   ];
 
-  const allKeys = SECTIONS.flatMap(({ fields }) => fields.map(({ key }) => key));
+  const allKeys = SECTIONS.flatMap(({ fields }) => (fields ?? []).map(({ key }) => key));
   const [values, setValues] = useState<FormValues>(() => buildInitialValues(allKeys, initialData));
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("basic");
 
   const backPath = `/${locale}/dashboard/admin/xsed`;
-  const navSections = SECTIONS.map(({ id, label }) => ({ id, label }));
 
   function set(key: string, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -199,7 +202,7 @@ export function AdminXsedFormClient({ locale, experienceId, initialData }: Admin
         {/* Sticky sidebar */}
         <div className="top-[100px] flex flex-col lg:w-80 lg:shrink-0 lg:self-start lg:sticky">
           <ExperienceFormNav
-            sections={navSections}
+            sections={SECTIONS}
             activeSection={activeSection}
             onSectionClick={setActiveSection}
             mode="create"
@@ -212,7 +215,7 @@ export function AdminXsedFormClient({ locale, experienceId, initialData }: Admin
 
         {/* Form */}
         <form
-          className="min-w-0 flex-1"
+          className={`min-w-0 flex-1 ${activeSection === "benefits" ? "hidden" : ""}`}
           id="package-form"
           onSubmit={handleSubmit}
         >
@@ -224,7 +227,7 @@ export function AdminXsedFormClient({ locale, experienceId, initialData }: Admin
             >
               <h2 className="text-lg font-semibold text-neutral-900 mb-4">{label}</h2>
               <div className="space-y-4">
-                {fields.map(({ key, label: fieldLabel, type = "text", options, required, hint }) => (
+                {(fields ?? []).map(({ key, label: fieldLabel, type = "text", options, required, hint }) => (
                   <div key={key}>
                     <label className={labelClass} htmlFor={key}>
                       {fieldLabel}
@@ -269,6 +272,17 @@ export function AdminXsedFormClient({ locale, experienceId, initialData }: Admin
             </div>
           ))}
         </form>
+
+        {/* Benefits section — outside form, managed independently */}
+        {activeSection === "benefits" && (
+          <div className="min-w-0 flex-1">
+            <AdminXsedBenefitsSection
+              experienceId={experienceId}
+              initialBenefits={initialBenefits}
+              copy={copy.benefits}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -653,6 +653,7 @@ export interface AdminXsedDict {
       guest: string;
       reveal: string;
       internal: string;
+      benefits: string;
     };
     fields: {
       titleInternal: string;
@@ -688,6 +689,31 @@ export interface AdminXsedDict {
       whatsappMessageTemplate: string;
       adminNotes: string;
       supplierNotes: string;
+    };
+  };
+  benefits: {
+    saveFirst: string;
+    add: string;
+    empty: string;
+    save: string;
+    cancel: string;
+    delete: string;
+    unnamed: string;
+    types: { ACCOMMODATION: string; DINNER: string; ACTIVITY: string };
+    confirmationStatus: { PENDING: string; CONFIRMED: string; CANCELLED: string };
+    fields: {
+      type: string;
+      name: string;
+      sortOrder: string;
+      providerName: string;
+      address: string;
+      city: string;
+      state: string;
+      googleMapsUrl: string;
+      customerVisibleNotes: string;
+      internalNotes: string;
+      confirmationStatus: string;
+      reservationCode: string;
     };
   };
 }

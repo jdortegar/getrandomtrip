@@ -112,7 +112,8 @@
         "pricing": "Pricing & capacity",
         "guest": "Guest-facing content",
         "reveal": "Mystery / reveal",
-        "internal": "Internal"
+        "internal": "Internal",
+        "benefits": "Benefits"
       },
       "fields": {
         "titleInternal": "Title (internal)",
@@ -148,6 +149,39 @@
         "whatsappMessageTemplate": "WhatsApp message template",
         "adminNotes": "Admin notes",
         "supplierNotes": "Supplier notes"
+      }
+    },
+    "benefits": {
+      "saveFirst": "Save the drop first, then come back to manage benefits.",
+      "add": "Add benefit",
+      "empty": "No benefits yet.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "unnamed": "Unnamed benefit",
+      "types": {
+        "ACCOMMODATION": "Accommodation",
+        "DINNER": "Dinner",
+        "ACTIVITY": "Activity"
+      },
+      "confirmationStatus": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled"
+      },
+      "fields": {
+        "type": "Type",
+        "name": "Name",
+        "sortOrder": "Sort order",
+        "providerName": "Provider",
+        "address": "Address",
+        "city": "City",
+        "state": "State / Region",
+        "googleMapsUrl": "Google Maps URL",
+        "customerVisibleNotes": "Guest-facing notes",
+        "internalNotes": "Internal notes",
+        "confirmationStatus": "Confirmation status",
+        "reservationCode": "Reservation code"
       }
     }
   },

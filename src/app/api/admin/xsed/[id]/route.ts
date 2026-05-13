@@ -40,8 +40,19 @@ export async function PATCH(
       'adminNotes', 'supplierNotes',
     ] as const;
 
+    const INT_FIELDS = new Set(['distanceKmFromOrigin', 'maxSpots', 'minSpots']);
+    const FLOAT_FIELDS = new Set(['pricePerPerson', 'costEstimateTotal', 'targetMarginPercent']);
+    const DATE_FIELDS = new Set(['tripDate', 'revealAt']);
+
     const data = Object.fromEntries(
-      allowed.filter((k) => k in body).map((k) => [k, body[k]]),
+      allowed.filter((k) => k in body).map((k) => {
+        const v = body[k];
+        if (v === '' || v === null) return [k, null];
+        if (INT_FIELDS.has(k)) return [k, parseInt(v as string, 10)];
+        if (FLOAT_FIELDS.has(k)) return [k, parseFloat(v as string)];
+        if (DATE_FIELDS.has(k)) return [k, new Date(v as string)];
+        return [k, v];
+      }),
     );
 
     const updated = await prisma.xsedExperience.update({

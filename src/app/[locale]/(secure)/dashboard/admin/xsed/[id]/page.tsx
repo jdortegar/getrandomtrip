@@ -3,6 +3,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import Section from "@/components/layout/Section";
 import { prisma } from "@/lib/prisma";
 import { AdminXsedFormClient } from "../../AdminXsedFormClient";
+import type { AdminXsedBenefit } from "@/lib/admin/types";
 
 export default async function AdminXsedEditPage(props: {
   params: Promise<{ locale: string; id: string }>;
@@ -44,14 +45,34 @@ export default async function AdminXsedEditPage(props: {
       whatsappMessageTemplate: true,
       adminNotes: true,
       supplierNotes: true,
+      benefits: {
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          type: true,
+          sortOrder: true,
+          name: true,
+          providerName: true,
+          address: true,
+          city: true,
+          state: true,
+          googleMapsUrl: true,
+          customerVisibleNotes: true,
+          internalNotes: true,
+          confirmationStatus: true,
+          reservationCode: true,
+        },
+      },
     },
     where: { id },
   });
 
   if (!drop) notFound();
 
+  const { benefits, ...fields } = drop;
+
   const initialData: Record<string, string> = {};
-  for (const [k, v] of Object.entries(drop)) {
+  for (const [k, v] of Object.entries(fields)) {
     if (k === "id") continue;
     if (v == null) continue;
     if (v instanceof Date) {
@@ -67,6 +88,7 @@ export default async function AdminXsedEditPage(props: {
         locale={locale}
         experienceId={drop.id}
         initialData={initialData}
+        initialBenefits={benefits as AdminXsedBenefit[]}
       />
     </Section>
   );

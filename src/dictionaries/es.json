@@ -112,7 +112,8 @@
         "pricing": "Precio y capacidad",
         "guest": "Contenido para el viajero",
         "reveal": "Misterio / revelación",
-        "internal": "Interno"
+        "internal": "Interno",
+        "benefits": "Beneficios"
       },
       "fields": {
         "titleInternal": "Título (interno)",
@@ -148,6 +149,39 @@
         "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
         "adminNotes": "Notas del admin",
         "supplierNotes": "Notas del proveedor"
+      }
+    },
+    "benefits": {
+      "saveFirst": "Guardá el drop primero y luego volvé a gestionar los beneficios.",
+      "add": "Agregar beneficio",
+      "empty": "Sin beneficios aún.",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "unnamed": "Beneficio sin nombre",
+      "types": {
+        "ACCOMMODATION": "Alojamiento",
+        "DINNER": "Cena",
+        "ACTIVITY": "Actividad"
+      },
+      "confirmationStatus": {
+        "PENDING": "Pendiente",
+        "CONFIRMED": "Confirmado",
+        "CANCELLED": "Cancelado"
+      },
+      "fields": {
+        "type": "Tipo",
+        "name": "Nombre",
+        "sortOrder": "Orden",
+        "providerName": "Proveedor",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Provincia / Región",
+        "googleMapsUrl": "URL de Google Maps",
+        "customerVisibleNotes": "Notas para el viajero",
+        "internalNotes": "Notas internas",
+        "confirmationStatus": "Estado de confirmación",
+        "reservationCode": "Código de reserva"
       }
     }
   },
