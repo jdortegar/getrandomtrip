@@ -149,6 +149,8 @@ export interface TripperDashboardDict {
   };
   quickActions: {
     title: string;
+    experiences: string;
+    experiencesSub: string;
     createExperience: string;
     createExperienceSub: string;
     earnings: string;
@@ -587,6 +589,7 @@ export interface AdminXsedDict {
   list: {
     dropsCount: string;
     newDrop: string;
+    filterAllStatuses: string;
     empty: string;
     errorLoad: string;
     confirmDelete: string;
@@ -622,6 +625,7 @@ export interface AdminXsedDict {
       actions: string;
     };
     actions: {
+      edit: string;
       activate: string;
       deactivate: string;
       archive: string;
@@ -632,11 +636,14 @@ export interface AdminXsedDict {
   form: {
     eyebrow: string;
     title: string;
+    titleEdit: string;
     back: string;
     submit: string;
+    submitEdit: string;
     saving: string;
     cancel: string;
     toastCreated: string;
+    toastUpdated: string;
     toastError: string;
     sections: {
       basic: string;

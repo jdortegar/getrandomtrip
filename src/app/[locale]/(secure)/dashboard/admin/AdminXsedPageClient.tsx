@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { AdminXsedExperience } from "@/lib/admin/types";
 import enCopy from "@/dictionaries/en.json";
@@ -11,27 +13,18 @@ import esCopy from "@/dictionaries/es.json";
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
-  ARCHIVED: "bg-red-100 text-red-800 border-red-200",
+  ARCHIVED: "bg-neutral-100 text-neutral-600 border-neutral-200",
   DRAFT: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  INACTIVE: "bg-gray-100 text-gray-600 border-gray-200",
+  INACTIVE: "bg-red-100 text-red-800 border-red-200",
 };
 
-function fmt(iso: string | null) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+const STATUSES = ["DRAFT", "ACTIVE", "INACTIVE", "ARCHIVED"] as const;
 
-function StatusBadge({ status }: { status: string }) {
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[status] ?? "bg-gray-100 text-gray-600 border-gray-200"}`}
-    >
-      {status}
-    </span>
+function fmt(iso: string | null, locale: string) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString(
+    locale.startsWith("en") ? "en-US" : "es-AR",
+    { day: "numeric", month: "short", year: "numeric" },
   );
 }
 
@@ -45,43 +38,12 @@ export function AdminXsedPageClient() {
   const copy = getCopy(locale);
   const cols = copy.list.columns;
 
-  const COLUMNS = [
-    cols.title,
-    cols.slug,
-    cols.status,
-    cols.destination,
-    cols.origin,
-    cols.distKm,
-    cols.tripDate,
-    cols.revealAt,
-    cols.pricePerPerson,
-    cols.spots,
-    cols.sold,
-    cols.costTotal,
-    cols.marginPct,
-    cols.included,
-    cols.notIncluded,
-    cols.conditions,
-    cols.cancellation,
-    cols.weather,
-    cols.accessibility,
-    cols.safety,
-    cols.revealCopy,
-    cols.preRevealCopy,
-    cols.packingHints,
-    cols.whatsappMsg,
-    cols.adminNotes,
-    cols.supplierNotes,
-    cols.created,
-    cols.updated,
-    cols.actions,
-  ];
-
   const [experiences, setExperiences] = useState<AdminXsedExperience[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   async function fetchExperiences() {
     setLoading(true);
@@ -141,207 +103,184 @@ export function AdminXsedPageClient() {
   if (error)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
+  const filtered =
+    statusFilter === "all"
+      ? experiences
+      : experiences.filter((e) => e.status === statusFilter);
+
+  const newDropPath = `/${locale}/dashboard/admin/xsed/new`;
+
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex shrink-0 items-center justify-between border-b border-gray-200 px-5 py-4">
-        <p className="text-xs text-neutral-500">
+    <div className="space-y-6">
+      {/* Page header */}
+      <div className="mb-10">
+        <p className="text-xs uppercase tracking-[0.18em] font-semibold text-neutral-500 mb-2">
+          Admin
+        </p>
+        <h1 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase">
+          XSED Drops
+        </h1>
+        <p className="mt-2 text-sm text-neutral-600">
           {copy.list.dropsCount.replace("{n}", String(experiences.length))}
         </p>
-        <Link
-          className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-700"
-          href={`/${locale}/dashboard/admin/xsed/new`}
-        >
-          <Plus className="h-3.5 w-3.5" />
-          {copy.list.newDrop}
-        </Link>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="mx-5 my-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-gray-200">
-                {COLUMNS.map((h) => (
-                  <th
-                    className="whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-neutral-600"
-                    key={h}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {experiences.map((e) => (
-                <tr
-                  className="border-b border-gray-100 last:border-0"
-                  key={e.id}
-                >
-                  {/* Title */}
-                  <td className="px-4 py-3.5">
-                    <p className="whitespace-nowrap text-sm font-semibold text-neutral-900">
-                      {e.titleInternal}
-                    </p>
-                    {e.titlePublicTeaser && (
-                      <p className="max-w-48 truncate text-xs text-neutral-500">
-                        {e.titlePublicTeaser}
-                      </p>
-                    )}
-                  </td>
-                  {/* Slug */}
-                  <td className="px-4 py-3.5 text-xs text-neutral-500">
-                    {e.slug ?? "—"}
-                  </td>
-                  {/* Status */}
-                  <td className="px-4 py-3.5">
-                    <StatusBadge status={e.status} />
-                  </td>
-                  {/* Destination */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-sm text-neutral-700">
-                    {e.destinationCity ?? "—"}
-                    {e.destinationState ? `, ${e.destinationState}` : ""}
-                  </td>
-                  {/* Origin */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-sm text-neutral-700">
-                    {e.originCity ?? "—"}
-                    {e.originCountry ? `, ${e.originCountry}` : ""}
-                  </td>
-                  {/* Distance */}
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {e.distanceKmFromOrigin ?? "—"}
-                  </td>
-                  {/* Trip Date */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-sm text-neutral-700">
-                    {fmt(e.tripDate)}
-                  </td>
-                  {/* Reveal At */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-sm text-neutral-700">
-                    {fmt(e.revealAt)}
-                  </td>
-                  {/* Price/person */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-sm text-neutral-700">
-                    {e.pricePerPerson != null
-                      ? `${e.currency} ${e.pricePerPerson.toLocaleString()}`
-                      : "—"}
-                  </td>
-                  {/* Spots */}
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {e.minSpots ?? "—"} – {e.maxSpots ?? "—"}
-                  </td>
-                  {/* Sold */}
-                  <td className="px-4 py-3.5 text-sm font-medium text-neutral-900">
-                    {e.soldCount}
-                  </td>
-                  {/* Cost total */}
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {e.costEstimateTotal != null
-                      ? `${e.currency} ${e.costEstimateTotal.toLocaleString()}`
-                      : "—"}
-                  </td>
-                  {/* Margin % */}
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {e.targetMarginPercent != null
-                      ? `${e.targetMarginPercent}%`
-                      : "—"}
-                  </td>
-                  {/* Text fields — truncated */}
-                  {(
-                    [
-                      e.included,
-                      e.notIncluded,
-                      e.generalConditions,
-                      e.cancellationPolicy,
-                      e.weatherPolicy,
-                      e.accessibilityNotes,
-                      e.safetyNotes,
-                      e.revealCopy,
-                      e.preRevealCopy,
-                      e.packingHints,
-                      e.whatsappMessageTemplate,
-                      e.adminNotes,
-                      e.supplierNotes,
-                    ] as (string | null)[]
-                  ).map((val, i) => (
-                    <td
-                      className="px-4 py-3.5"
-                      // eslint-disable-next-line react/no-array-index-key
-                      key={i}
+      {/* Filters + new button */}
+      <div className="flex items-center justify-between gap-3">
+        <Select
+          onChange={(e) => setStatusFilter(e.target.value)}
+          value={statusFilter}
+        >
+          <option value="all">{copy.list.filterAllStatuses}</option>
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </Select>
+        <Button asChild>
+          <Link href={newDropPath}>
+            <Plus className="h-4 w-4 mr-2" />
+            {copy.list.newDrop}
+          </Link>
+        </Button>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {filtered.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className="text-sm text-neutral-500 mb-4">
+              {experiences.length === 0 ? copy.list.empty : copy.list.filterAllStatuses}
+            </p>
+            {experiences.length === 0 && (
+              <Button asChild size="sm" className="mx-auto max-w-xs">
+                <Link href={newDropPath}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  {copy.list.newDrop}
+                </Link>
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  {[
+                    cols.title,
+                    cols.destination,
+                    cols.tripDate,
+                    cols.revealAt,
+                    cols.pricePerPerson,
+                    cols.spots,
+                    cols.sold,
+                    cols.status,
+                    cols.updated,
+                    cols.actions,
+                  ].map((h) => (
+                    <th
+                      className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider whitespace-nowrap"
+                      key={h}
                     >
-                      {val ? (
-                        <span
-                          className="block max-w-40 truncate text-xs text-neutral-600"
-                          title={val}
-                        >
-                          {val}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-neutral-300">—</span>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 text-left">
+                {filtered.map((e) => (
+                  <tr
+                    className="hover:bg-gray-50 transition-colors"
+                    key={e.id}
+                  >
+                    {/* Drop */}
+                    <td className="px-5 py-4">
+                      <p className="text-sm font-medium text-neutral-900 whitespace-nowrap">
+                        {e.titleInternal}
+                      </p>
+                      {e.titlePublicTeaser && (
+                        <p className="text-xs text-neutral-500 max-w-48 truncate">
+                          {e.titlePublicTeaser}
+                        </p>
+                      )}
+                      {e.slug && (
+                        <p className="text-xs text-neutral-400 font-mono mt-0.5">
+                          {e.slug}
+                        </p>
                       )}
                     </td>
-                  ))}
-                  {/* Created */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-xs text-neutral-400">
-                    {fmt(e.createdAt)}
-                  </td>
-                  {/* Updated */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-xs text-neutral-400">
-                    {fmt(e.updatedAt)}
-                  </td>
-                  {/* Actions */}
-                  <td className="px-4 py-3.5">
-                    <div className="flex flex-col gap-1">
-                      {e.status !== "ACTIVE" && (
-                        <button
-                          className="whitespace-nowrap text-xs font-medium text-green-700 hover:text-green-900 disabled:opacity-50"
-                          disabled={savingId === e.id}
-                          onClick={() => void updateStatus(e.id, "ACTIVE")}
-                          type="button"
-                        >
-                          {copy.list.actions.activate}
-                        </button>
+
+                    {/* Destination */}
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <p className="text-sm text-neutral-700">
+                        {e.destinationCity ?? "—"}
+                        {e.destinationState ? `, ${e.destinationState}` : ""}
+                      </p>
+                      {e.originCity && (
+                        <p className="text-xs text-neutral-500">
+                          {cols.origin}: {e.originCity}
+                          {e.originCountry ? `, ${e.originCountry}` : ""}
+                        </p>
                       )}
-                      {e.status === "ACTIVE" && (
-                        <button
-                          className="whitespace-nowrap text-xs font-medium text-yellow-700 hover:text-yellow-900 disabled:opacity-50"
-                          disabled={savingId === e.id}
-                          onClick={() => void updateStatus(e.id, "INACTIVE")}
-                          type="button"
-                        >
-                          {copy.list.actions.deactivate}
-                        </button>
-                      )}
-                      {e.status !== "ARCHIVED" && (
-                        <button
-                          className="whitespace-nowrap text-xs font-medium text-neutral-500 hover:text-neutral-800 disabled:opacity-50"
-                          disabled={savingId === e.id}
-                          onClick={() => void updateStatus(e.id, "ARCHIVED")}
-                          type="button"
-                        >
-                          {copy.list.actions.archive}
-                        </button>
-                      )}
-                      <button
-                        className="whitespace-nowrap text-xs font-medium text-red-600 hover:text-red-800 disabled:opacity-50"
-                        disabled={deletingId === e.id}
-                        onClick={() => void deleteExperience(e.id)}
-                        type="button"
+                    </td>
+
+                    {/* Trip Date */}
+                    <td className="px-5 py-4 text-sm text-neutral-700 whitespace-nowrap">
+                      {fmt(e.tripDate, locale)}
+                    </td>
+
+                    {/* Reveal At */}
+                    <td className="px-5 py-4 text-sm text-neutral-700 whitespace-nowrap">
+                      {fmt(e.revealAt, locale)}
+                    </td>
+
+                    {/* Price */}
+                    <td className="px-5 py-4 text-sm text-neutral-700 whitespace-nowrap">
+                      {e.pricePerPerson != null
+                        ? `${e.currency} ${e.pricePerPerson.toLocaleString()}`
+                        : "—"}
+                    </td>
+
+                    {/* Spots */}
+                    <td className="px-5 py-4 text-sm text-neutral-700 whitespace-nowrap">
+                      {e.minSpots ?? "—"} – {e.maxSpots ?? "—"}
+                    </td>
+
+                    {/* Sold */}
+                    <td className="px-5 py-4 text-sm font-semibold text-neutral-900">
+                      {e.soldCount}
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-5 py-4">
+                      <span
+                        className={`px-2 py-0.5 text-xs rounded-full border ${STATUS_COLORS[e.status] ?? STATUS_COLORS.DRAFT}`}
                       >
-                        {deletingId === e.id
-                          ? copy.list.actions.deleting
-                          : copy.list.actions.delete}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {experiences.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">
-              {copy.list.empty}
-            </p>
-          )}
-        </div>
+                        {e.status}
+                      </span>
+                    </td>
+
+                    {/* Updated */}
+                    <td className="px-5 py-4 text-sm text-neutral-500 whitespace-nowrap">
+                      {fmt(e.updatedAt, locale)}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <Link href={`/${locale}/dashboard/admin/xsed/${e.id}`}>
+                          {copy.list.actions.edit}
+                        </Link>
+
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

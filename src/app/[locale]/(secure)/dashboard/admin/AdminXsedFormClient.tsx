@@ -25,8 +25,8 @@ interface Field {
 
 type FormValues = Record<string, string>;
 
-function buildInitialValues(keys: string[]): FormValues {
-  const init: FormValues = { currency: "USD", status: "DRAFT" };
+function buildInitialValues(keys: string[], seed: FormValues = {}): FormValues {
+  const init: FormValues = { currency: "USD", status: "DRAFT", ...seed };
   keys.forEach((key) => {
     if (!(key in init)) init[key] = "";
   });
@@ -40,10 +40,17 @@ const hintClass = "text-xs text-neutral-400 mt-1";
 const sectionClassName =
   "bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-left";
 
-export function AdminXsedFormClient({ locale }: { locale: string }) {
+interface AdminXsedFormClientProps {
+  locale: string;
+  experienceId?: string;
+  initialData?: FormValues;
+}
+
+export function AdminXsedFormClient({ locale, experienceId, initialData }: AdminXsedFormClientProps) {
   const router = useRouter();
   const copy = getCopy(locale);
   const f = copy.form.fields;
+  const isEdit = Boolean(experienceId);
 
   const SECTIONS: { id: string; label: string; fields: Field[] }[] = [
     {
@@ -127,7 +134,7 @@ export function AdminXsedFormClient({ locale }: { locale: string }) {
   ];
 
   const allKeys = SECTIONS.flatMap(({ fields }) => fields.map(({ key }) => key));
-  const [values, setValues] = useState<FormValues>(() => buildInitialValues(allKeys));
+  const [values, setValues] = useState<FormValues>(() => buildInitialValues(allKeys, initialData));
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("basic");
 
@@ -148,17 +155,19 @@ export function AdminXsedFormClient({ locale }: { locale: string }) {
     });
 
     try {
-      const res = await fetch("/api/admin/xsed", {
+      const url = isEdit ? `/api/admin/xsed/${experienceId}` : "/api/admin/xsed";
+      const method = isEdit ? "PATCH" : "POST";
+      const res = await fetch(url, {
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
-        method: "POST",
+        method,
       });
       const data = (await res.json()) as { experience?: { id: string }; error?: string };
       if (!res.ok || !data.experience) {
         toast.error(data.error ?? copy.form.toastError);
         return;
       }
-      toast.success(copy.form.toastCreated);
+      toast.success(isEdit ? copy.form.toastUpdated : copy.form.toastCreated);
       router.push(backPath);
     } catch {
       toast.error(copy.form.toastError);
@@ -181,7 +190,7 @@ export function AdminXsedFormClient({ locale }: { locale: string }) {
           {copy.form.eyebrow}
         </p>
         <h1 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase">
-          {copy.form.title}
+          {isEdit ? copy.form.titleEdit : copy.form.title}
         </h1>
       </div>
 
@@ -196,7 +205,7 @@ export function AdminXsedFormClient({ locale }: { locale: string }) {
             mode="create"
             loading={saving}
             onCancel={() => router.push(backPath)}
-            submitLabel={saving ? copy.form.saving : copy.form.submit}
+            submitLabel={saving ? copy.form.saving : isEdit ? copy.form.submitEdit : copy.form.submit}
             cancelLabel={copy.form.cancel}
           />
         </div>

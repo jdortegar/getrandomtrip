@@ -49,6 +49,7 @@
     "list": {
       "dropsCount": "{n} drops XSED",
       "newDrop": "Nuevo drop",
+      "filterAllStatuses": "Todos los estados",
       "empty": "No se encontraron drops XSED.",
       "errorLoad": "Error al cargar los drops XSED",
       "confirmDelete": "¿Eliminar este drop XSED? Esta acción no se puede deshacer.",
@@ -84,6 +85,7 @@
         "actions": "Acciones"
       },
       "actions": {
+        "edit": "Editar",
         "activate": "Activar",
         "deactivate": "Desactivar",
         "archive": "Archivar",
@@ -98,8 +100,11 @@
       "submit": "Crear drop",
       "saving": "Guardando…",
       "cancel": "Cancelar",
+      "titleEdit": "Editar Drop XSED",
+      "submitEdit": "Guardar cambios",
       "toastCreated": "Drop creado",
-      "toastError": "Error al crear el drop",
+      "toastUpdated": "Drop actualizado",
+      "toastError": "Algo salió mal",
       "sections": {
         "basic": "Info básica",
         "location": "Ubicación",
@@ -2852,6 +2857,8 @@
       "reviewsSub": "Ver feedback",
       "blogs": "Mis Posts",
       "blogsSub": "Gestionar blog",
+      "experiences": "Mis Experiencias",
+      "experiencesSub": "Ver todas las experiencias",
       "settings": "Configuración",
       "settingsSub": "Ajustes del perfil"
     },

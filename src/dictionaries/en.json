@@ -49,6 +49,7 @@
     "list": {
       "dropsCount": "{n} XSED drops",
       "newDrop": "New drop",
+      "filterAllStatuses": "All statuses",
       "empty": "No XSED drops found.",
       "errorLoad": "Failed to load XSED drops",
       "confirmDelete": "Delete this XSED drop? This cannot be undone.",
@@ -84,6 +85,7 @@
         "actions": "Actions"
       },
       "actions": {
+        "edit": "Edit",
         "activate": "Activate",
         "deactivate": "Deactivate",
         "archive": "Archive",
@@ -98,8 +100,11 @@
       "submit": "Create drop",
       "saving": "Saving…",
       "cancel": "Cancel",
+      "titleEdit": "Edit XSED Drop",
+      "submitEdit": "Save changes",
       "toastCreated": "Drop created",
-      "toastError": "Failed to create drop",
+      "toastUpdated": "Drop updated",
+      "toastError": "Something went wrong",
       "sections": {
         "basic": "Basic info",
         "location": "Location",
@@ -2844,6 +2849,8 @@
     },
     "quickActions": {
       "title": "Quick Actions",
+      "experiences": "My Experiences",
+      "experiencesSub": "View all experiences",
       "createExperience": "Create Experience",
       "createExperienceSub": "New travel offer",
       "earnings": "View Earnings",

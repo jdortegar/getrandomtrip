@@ -10,7 +10,7 @@ export interface XsedInternalHeroContent {
   date: string;
   title: string;
   backgroundImage: string;
-  author: {
+  author?: {
     name: string;
     location: string;
     avatarUrl: string;
@@ -30,7 +30,7 @@ export function XsedInternalHero({ content }: XsedInternalHeroProps) {
     author,
   } = content;
 
-  const countryForFlag = getCountryFromLocation(author.location);
+  const countryForFlag = author ? getCountryFromLocation(author.location) : null;
 
   return (
     <section className="relative h-[60vh] min-h-[520px] w-full overflow-hidden bg-slate-950 text-white">
@@ -74,44 +74,44 @@ export function XsedInternalHero({ content }: XsedInternalHeroProps) {
             </h1>
           </div>
           {/* Tripper identity row */}
-          <div className="flex flex-wrap items-center gap-4 md:gap-6">
-            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
-              {author.avatarUrl ? (
-                <Image
-                  alt={author.name ?? ''}
-                  className="object-cover"
-                  fill
-                  sizes="64px"
-                  src={author.avatarUrl}
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
-                  {author.name?.charAt(0)}
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="flex items-center gap-3">
-                <p className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
-                  {author.name}
-                </p>
-
+          {author && (
+            <div className="flex flex-wrap items-center gap-4 md:gap-6">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
+                {author.avatarUrl ? (
+                  <Image
+                    alt={author.name ?? ''}
+                    className="object-cover"
+                    fill
+                    sizes="64px"
+                    src={author.avatarUrl}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
+                    {author.name?.charAt(0)}
+                  </div>
+                )}
               </div>
-
-              {author.location && (
-                <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
-                  {countryForFlag && (
-                    <CountryFlag
-                      className="inline-block shrink-0 align-baseline"
-                      country={countryForFlag}
-                      title={author.location}
-                    />
-                  )}
-                  <span>{author.location.toUpperCase()}</span>
+              <div>
+                <div className="flex items-center gap-3">
+                  <p className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
+                    {author.name}
+                  </p>
                 </div>
-              )}
+                {author.location && (
+                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
+                    {countryForFlag && (
+                      <CountryFlag
+                        className="inline-block shrink-0 align-baseline"
+                        country={countryForFlag}
+                        title={author.location}
+                      />
+                    )}
+                    <span>{author.location.toUpperCase()}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
