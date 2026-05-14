@@ -39,7 +39,15 @@ export async function GET(request: NextRequest) {
 
   try {
     const store = getBlobStore(feature);
-    const result = await store.getWithMetadata(key, { type: "blob" });
+    let result = await store.getWithMetadata(key, { type: "blob" });
+
+    // Blobs uploaded before the feature-store split all lived in user-media.
+    // Fall back to the legacy store so old URLs keep working.
+    if (!result && feature !== DEFAULT_STORE) {
+      const legacyStore = getBlobStore(undefined);
+      result = await legacyStore.getWithMetadata(key, { type: "blob" });
+    }
+
     if (!result) {
       return new NextResponse("Not Found", { status: 404 });
     }

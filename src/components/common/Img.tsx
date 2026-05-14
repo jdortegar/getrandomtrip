@@ -1,5 +1,8 @@
 'use client';
 import Image, { ImageProps } from 'next/image';
+import { useState } from 'react';
+
+const PLACEHOLDER = '/images/placeholder/placeholder.jpg';
 
 type ImgProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'width' | 'height'> & {
   src: string;
@@ -22,12 +25,12 @@ export default function Img({
   unoptimized,
   ...rest
 }: ImgProps) {
-  // Fallbacks razonables para casos donde <img> no tenía width/height
+  const [current, setCurrent] = useState(src);
   const w = width ?? 1200;
   const h = height ?? 675;
   return (
     <Image
-      src={src}
+      src={current}
       alt={alt}
       width={w}
       height={h}
@@ -35,7 +38,8 @@ export default function Img({
       priority={priority}
       sizes={sizes}
       unoptimized={unoptimized}
+      onError={() => { if (current !== PLACEHOLDER) setCurrent(PLACEHOLDER); }}
       {...rest}
-    />  
+    />
   );
 }

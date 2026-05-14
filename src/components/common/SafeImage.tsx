@@ -52,7 +52,7 @@ function normalizeUnsplash(u: string) {
 export default function SafeImage({
   src,
   alt,
-  fallbackSrc = '/images/fallbacks/tripper-avatar.svg',
+  fallbackSrc = '/images/placeholder/placeholder.jpg',
   fill,
   width,
   height,
