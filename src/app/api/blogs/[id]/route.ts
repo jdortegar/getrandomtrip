@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { normalizeUploadUrl } from '@/lib/media/upload-url';
 
 /** CUIDs start with 'c' and are 25 chars; slug is lowercase with dashes */
 function isCuid(param: string): boolean {
@@ -87,7 +88,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         name: blog.author.name,
         slug: blog.author.tripperSlug ?? '',
         specialization: blog.author.specialization ?? null,
-        avatarUrl: blog.author.avatarUrl ?? '',
+        avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? '',
       },
     };
 

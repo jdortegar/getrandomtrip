@@ -46,11 +46,6 @@ const Hero: React.FC<HeroProps> = ({
         className,
       )}
     >
-      <div
-        id="hero-sentinel"
-        aria-hidden
-        className="absolute top-0 left-0 h-px w-px"
-      />
       <VideoBackground
         fallbackImage={content.fallbackImage}
         videoSrc={content.videoSrc}

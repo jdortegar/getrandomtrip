@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import SafeImage from '@/components/SafeImage';
 import { cn } from '@/lib/utils';
 
 type TripperCardProps = {
@@ -29,7 +29,7 @@ export default function TripperCard({
         )}
       >
         <div className="relative w-full h-full">
-          <Image
+          <SafeImage
             src={imageUrl}
             alt={name}
             fill

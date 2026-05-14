@@ -3,6 +3,7 @@
 // ============================================================================
 
 import { BlogStatus } from '@prisma/client';
+import { normalizeUploadUrl } from '@/lib/media/upload-url';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
     type BlogWithAuthor = (typeof blogs)[number];
     const transformedBlogs = blogs.map((blog: BlogWithAuthor) => ({
       author: {
-        avatarUrl: blog.author.avatarUrl ?? '',
+        avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? '',
         id: blog.author.id,
         name: blog.author.name,
         slug: blog.author.tripperSlug ?? '',

@@ -1,21 +1,26 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import Testimonials from '@/components/Testimonials';
 import { XsedInternalHero } from '@/components/app/xsed/XsedInternalHero';
 import { XsedDropBody } from '@/components/app/xsed/XsedDropBody';
 import LightboxCarousel from '@/components/media/LightboxCarousel';
 import Breadcrumb from '@/components/navigation/Breadcrumb';
 import Section from '@/components/layout/Section';
+import { XSED_TESTIMONIALS } from '@/lib/data/xsed-testimonials';
+import { hasLocale } from '@/lib/i18n/config';
+import { getDictionary } from '@/lib/i18n/dictionaries';
+import { prisma } from '@/lib/prisma';
+import { getXsedDropTestimonials } from '@/lib/xsed/get-xsed-drop-testimonials';
 
 type Props = {
   params: Promise<{ locale?: string; slug?: string }>;
 };
 
 export default async function XsedInternalPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug, locale: rawLocale } = await params;
 
   if (!slug) notFound();
 
-  const [drop, dropNumber] = await Promise.all([
+  const [drop] = await Promise.all([
     prisma.xsedExperience.findUnique({
       where: { slug },
       include: {
@@ -27,25 +32,26 @@ export default async function XsedInternalPage({ params }: Props) {
         },
       },
     }),
-    prisma.xsedExperience.count({
-      where: {
-        status: 'ACTIVE',
-        tripDate: { lte: new Date() },
-      },
-    }),
   ]);
 
   if (!drop || drop.status !== 'ACTIVE') notFound();
 
+  const normalizedLocale = hasLocale(rawLocale) ? rawLocale : 'es';
+  const [dropTestimonials, dict] = await Promise.all([
+    getXsedDropTestimonials(drop.id),
+    getDictionary(normalizedLocale),
+  ]);
   const title = drop.titlePublicTeaser ?? drop.titleInternal;
   const heroImage = drop.heroImage ?? '/images/drops/drops-mendoza.jpg';
 
+  const dropNumber = Number(drop.slug);
+
   const date = drop.tripDate
     ? drop.tripDate.toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      }).toUpperCase()
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }).toUpperCase()
     : '';
 
   const article = drop.benefits.map((b) => ({
@@ -61,11 +67,14 @@ export default async function XsedInternalPage({ params }: Props) {
     .map((p) => ({ url: p.url, caption: p.altText ?? undefined }));
 
   const heroContent = {
-    dropNumber: dropNumber + 1,
+    dropNumber,
     date,
     title,
     backgroundImage: heroImage,
   };
+
+  const testimonials =
+    dropTestimonials.length > 0 ? dropTestimonials : XSED_TESTIMONIALS;
 
   return (
     <>
@@ -74,7 +83,7 @@ export default async function XsedInternalPage({ params }: Props) {
         <Breadcrumb
           items={[
             { href: '/xsed', label: 'Bitácora de escapadas' },
-            { label: `Nº${dropNumber + 1}` },
+            { label: `Nº ${dropNumber}` },
           ]}
         />
         <XsedDropBody content={article} />
@@ -82,6 +91,11 @@ export default async function XsedInternalPage({ params }: Props) {
       {galleryImages.length > 0 && (
         <LightboxCarousel images={galleryImages} className="bg-gray-100" />
       )}
+      <Testimonials
+        content={dict.xsedPage.testimonials}
+        featureColor="#D97E4A"
+        testimonials={testimonials}
+      />
     </>
   );
 }

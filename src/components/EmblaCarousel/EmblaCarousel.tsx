@@ -28,7 +28,6 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
   containScroll: false,
 };
 
-// 100%/n fractions — slides always fill available width. Gap = -ml-3/pl-3 (0.75rem).
 const SLIDE_SIZE: Record<2 | 3 | 4, string> = {
   2: "@[640px]:flex-[0_0_50%]",
   3: "@[1024px]:flex-[0_0_33.3333%]",
@@ -99,7 +98,7 @@ const EmblaCarousel = ({
   const maskStyle = mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined;
 
   return (
-    <div className="@container mx-auto w-full">
+    <div className="@container mx-auto w-full overflow-x-clip">
       {arrows && <div className={cn("container mx-auto mb-6 px-4", overflow ? " md:px-20" : "", arrowsClassName)}>{arrows}</div>}
 
       <div style={maskStyle}>
@@ -108,12 +107,12 @@ const EmblaCarousel = ({
             overflow === "right" ? "overflow-visible container mx-auto pr-4 md:pr-20" :
               overflow === "both" ? "overflow-visible container mx-auto px-4 md:px-20" :
                 "overflow-hidden", wrapperClassName)}>
-          <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start -ml-3">
+          <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start gap-3">
             {slides.map((child, index) => (
               <div
                 key={index}
                 className={cn(
-                  "min-w-0 shrink-0 pl-3",
+                  "min-w-0 shrink-0",
                   "flex-[0_0_80%]",
                   SLIDE_SIZE[slidesPerView],
                   slideClassName,

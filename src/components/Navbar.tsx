@@ -67,26 +67,31 @@ export default function Navbar({
   const { isOpen, mode, close, openLogin } = useAuthModal();
   const linksMenu = useMenuState();
   const languageMenu = useMenuState();
+  const mobileMenu = useMenuState();
   const currentLocale: Locale = localeProp ?? 'es';
   const nav = dict?.nav;
   const profileLabels = dict?.navbarProfile as NavbarProfileLabels;
 
   const headerClass = backgroundPrimary
     ? cn(
-        'bg-primary duration-500 ease-in-out ring-1 ring-black/10 shadow-sm sticky text-primary-foreground top-0 transition-all w-full z-50',
-        NAVBAR_CONSTANTS.HEIGHT,
-      )
+      'bg-primary duration-500 ease-in-out ring-1 ring-black/10 shadow-sm sticky text-primary-foreground top-0 transition-all w-full z-50',
+      NAVBAR_CONSTANTS.HEIGHT,
+    )
     : cn(
-        'absolute backdrop-blur-md bg-white/0 duration-500 ease-in-out inset-x-0 text-white top-0 transition-all z-50',
-        NAVBAR_CONSTANTS.HEIGHT,
-      );
+      'absolute backdrop-blur-md bg-white/0 duration-500 ease-in-out inset-x-0 text-white top-0 transition-all z-50',
+      NAVBAR_CONSTANTS.HEIGHT,
+    );
   const logoSrc = '/assets/logos/logo_getrandomtrip_1.png';
 
   return (
     <>
       <header className={headerClass} data-site-header>
         <nav
-          className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT}  ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between container`}
+          className={cn(
+            NAVBAR_CONSTANTS.HEIGHT,
+            NAVBAR_CONSTANTS.MAX_WIDTH,
+            'flex items-center justify-between',
+          )}
         >
           <Link
             aria-label={nav?.ariaLabelLogo ?? 'Randomtrip'}
@@ -103,11 +108,11 @@ export default function Navbar({
             />
           </Link>
 
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
             <button
               aria-label={nav?.search ?? 'Search'}
               className="p-2 rounded-lg hover:bg-white/10"
-              onClick={() => {}}
+              onClick={() => { }}
               type="button"
             >
               <Search className="h-5 w-5" />
@@ -115,7 +120,7 @@ export default function Navbar({
             {PRIMARY_LINK_KEYS.map((link) => (
               <Link
                 key={link.href}
-                aria-label={nav?.[link.ariaKey] }
+                aria-label={nav?.[link.ariaKey]}
                 className="hover:underline underline-offset-4 uppercase text-base font-barlow "
                 href={pathForLocale(currentLocale, link.href)}
               >
@@ -188,6 +193,39 @@ export default function Navbar({
                 user={user}
               />
             )}
+            <div className="relative lg:hidden" ref={mobileMenu.menuRef}>
+              <button
+                aria-expanded={mobileMenu.isOpen}
+                aria-haspopup="menu"
+                aria-label={nav?.openMenu ?? 'Open menu'}
+                className="p-2 rounded-lg hover:bg-white/10"
+                onClick={mobileMenu.toggle}
+                type="button"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+
+              {mobileMenu.isOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                >
+                  {PRIMARY_LINK_KEYS.map((link) => (
+                    <Link
+                      key={link.href}
+                      aria-label={nav?.[link.ariaKey]}
+                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                      href={pathForLocale(currentLocale, link.href)}
+                      role="menuitem"
+                      onClick={mobileMenu.close}
+                    >
+                      {nav?.[link.labelKey]}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="relative" ref={languageMenu.menuRef}>
               <button
                 aria-expanded={languageMenu.isOpen}

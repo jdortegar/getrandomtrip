@@ -40,13 +40,13 @@ export default function LightboxCarousel({
 
   return (
     <>
-      <Section className={cn("py-10!", className)}>
+      <Section className={cn("py-10!", className)} fullWidth>
         <div className="relative">
-          <EmblaCarousel options={{ align: 'start', loop: true }} slidesPerView={3}>
+          <EmblaCarousel slidesPerView={3} wrapperClassName="w-full p-0!">
             {images.map((image, index) => (
               <button
                 key={`${image.url}-${index}`}
-                className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
+                className="relative aspect-video w-full cursor-pointer overflow-hidden focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
                 onClick={() => setLightboxImage(image)}
                 type="button"
               >

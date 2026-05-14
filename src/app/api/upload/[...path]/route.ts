@@ -46,7 +46,12 @@ export async function GET(_: NextRequest, { params }: { params: Promise<Params> 
 
   try {
     const store = getBlobStore(feature);
-    const result = await store.getWithMetadata(key, { type: "blob" });
+    let result = await store.getWithMetadata(key, { type: "blob" });
+
+    if (!result && feature !== DEFAULT_STORE) {
+      result = await getBlobStore(undefined).getWithMetadata(key, { type: "blob" });
+    }
+
     if (!result) return new NextResponse("Not Found", { status: 404 });
 
     const contentType =

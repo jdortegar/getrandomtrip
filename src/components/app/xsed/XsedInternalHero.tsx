@@ -58,7 +58,7 @@ export function XsedInternalHero({ content }: XsedInternalHeroProps) {
                 <div className="flex flex-col justify-end">
                   <p className="font-barlow text-lg uppercase leading-tight tracking-wide text-white">
                     X SUERTE<br />ES DOMINGO&nbsp;
-                    <span className="font-bold">Nº{dropNumber}</span>
+                    <span className="font-bold">Nº {dropNumber}</span>
                   </p>
                   <p className="font-barlow text-sm font-semibold uppercase tracking-[0.18em] text-xsed mt-1">
                     {date}

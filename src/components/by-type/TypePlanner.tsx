@@ -41,7 +41,7 @@ export default function TypePlanner({
 
   const contentElement = (
     <div className="relative flex w-full flex-col">
-      <EmblaCarousel slidesPerView={itemsPerView} overflow="right">
+      <EmblaCarousel slidesPerView={itemsPerView} overflow="both">
         {content.levels.map((level, index) => {
           // Alternate between light and dark variants
           const variant = index % 2 === 0 ? "light" : "dark";
@@ -87,10 +87,9 @@ export default function TypePlanner({
       subtitle={content.subtitle}
       title={content.title}
       id="type-planner"
+      fullWidth
     >
-      <div className="container mx-auto mt-12 flex justify-center overflow-x-visible px-4 md:px-20">
-        {contentElement}
-      </div>
+      {contentElement}
     </Section>
   );
 }

@@ -1,11 +1,9 @@
 'use client';
 
-import React from 'react';
 import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import Section from '@/components/layout/Section';
 import { TestimonialCard } from './TestimonialCard';
 import type { TestimonialData, TestimonialsContent } from './types';
-import { EmblaOptionsType } from 'embla-carousel';
 
 export type { TestimonialData, TestimonialsContent } from './types';
 
@@ -14,7 +12,6 @@ interface TestimonialsProps {
   eyebrow?: string;
   featureColor?: string;
   testimonials: TestimonialData[];
-  testId?: string;
   subtitle?: string;
   title?: string;
   viewFullReviewLabel?: string;
@@ -25,7 +22,6 @@ export default function Testimonials({
   eyebrow,
   featureColor,
   testimonials,
-  testId = 'testimonials',
   subtitle,
   title,
   viewFullReviewLabel,

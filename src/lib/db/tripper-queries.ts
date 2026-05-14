@@ -4,6 +4,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { primaryRoleFromMembership } from '@/lib/auth/prismaUserRoles';
+import { normalizeUploadUrl } from '@/lib/media/upload-url';
 import type {
   FeaturedTrip,
   FeaturedTripCard,
@@ -61,6 +62,7 @@ export async function getTripperBySlug(
 
     return {
       ...tripperRest,
+      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
       role: primaryRoleFromMembership(roles),
       tripperSlug: tripper.tripperSlug,
       commission: tripper.commission || 0,

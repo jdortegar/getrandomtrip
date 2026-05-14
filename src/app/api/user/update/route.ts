@@ -68,7 +68,15 @@ export async function PATCH(request: NextRequest) {
     const data: Prisma.UserUpdateInput = {};
 
     if (typeof avatarUrl === "string" && avatarUrl.trim()) {
-      data.avatarUrl = avatarUrl.trim();
+      // Store as relative path so the URL works in any environment.
+      // Strip the origin if the URL points to the same site.
+      const raw = avatarUrl.trim();
+      try {
+        const parsed = new URL(raw);
+        data.avatarUrl = parsed.pathname + parsed.search;
+      } catch {
+        data.avatarUrl = raw;
+      }
     }
 
     if (typeof name === 'string') {
