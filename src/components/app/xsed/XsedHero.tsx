@@ -61,8 +61,8 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
   }
 
   return (
-    <Section backgroundImage={content.backgroundImage} backgroundOpacity={0.4} className="min-h-screen">
-      <div className="relative z-10 w-full px-6 md:px-20 flex justify-center items-center">
+    <Section backgroundImage={content.backgroundImage} backgroundOpacity={0.4} className="min-h-screen" data-component="xsed-hero">
+      <div className="relative z-10 flex justify-center items-center">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
             <motion.h2
@@ -90,13 +90,13 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
                 {content.helper}
               </p>
               <form
-                className="flex flex-col gap-4 md:flex-row md:items-center justify-center"
+                className="flex flex-col gap-4 md:flex-row md:items-center justify-center flex-wrap px-20 md:px-0"
                 noValidate
                 onSubmit={handleSubmit}
               >
                 <Input
                   aria-label={content.inputLabel}
-                  className="h-14 w-full max-w-xs rounded-md border-2 border-white/40 bg-black/40 px-4 font-barlow text-base font-medium text-white shadow-none placeholder:text-white/60 focus-visible:ring-2 focus-visible:ring-white/30 md:w-72"
+                  className="h-14 w-full lg:w-1/3 rounded-md border-2 border-white/40 bg-black/40 px-4 font-barlow text-base font-medium text-white shadow-none placeholder:text-white/60 focus-visible:ring-2 focus-visible:ring-white/30"
                   disabled={isSubmitting}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -113,6 +113,7 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
                   size="lg"
                   type="submit"
                   variant="tertiary"
+                  className="w-full lg:w-auto"
                 >
                   {isSubmitting ? content.submittingLabel : content.submitLabel}
                 </Button>

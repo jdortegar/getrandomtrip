@@ -91,10 +91,10 @@ export default function Blog({
       variant="default"
       fullWidth
     >
-      <div className="mt-12 container ml-auto">
+      <div className="mt-12 lg:container lg:ml-auto">
         <div className="relative flex flex-col gap-12 lg:flex-row md:items-stretch md:gap-8 ">
           {/* Left Column - Full-height white panel so carousel never bleeds through */}
-          <aside className="relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left">
+          <aside className="px-4 md:px-0 relative z-20 flex w-full flex-col items-center justify-center bg-white py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left">
             {resolvedEyebrow && (
               <motion.div
                 className="text-base font-bold uppercase tracking-[6px] text-light-blue md:text-lg md:tracking-[9px]"
@@ -130,7 +130,7 @@ export default function Blog({
 
           {/* Right Column - Carousel */}
           <div className="relative z-0 flex-1 lg:min-w-2/3">
-            <EmblaCarousel slidesPerView={2} overflow="right" arrowsClassName="md:!pr-40" wrapperClassName="px-4">
+            <EmblaCarousel slidesPerView={2} overflow="right" arrowsClassName="md:!pr-40" wrapperClassName="px-4 md:px-0">
               {posts.map((post, index) => (
                 <BlogCard key={post.title || index} post={post} />
               ))}
