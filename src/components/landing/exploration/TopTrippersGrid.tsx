@@ -37,13 +37,11 @@ export function TopTrippersGrid({
         : count === 2
           ? 'sm:grid-cols-2'
           : 'sm:grid-cols-1';
-  const gridWidth =
-    count > 0 && count < 4 ? 'w-full sm:w-fit sm:mx-auto' : 'w-full';
 
   return (
-    <div className="w-full container mx-auto px-4 md:px-20">
+    <div className="rt-container">
       <motion.div
-        className={`grid grid-cols-1 gap-4 ${smGridCols}`}
+        className={`grid gap-4 ${smGridCols} justify-center`}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

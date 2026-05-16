@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Hero from "@/components/Hero";
 import Paragraph from "@/components/Paragraph";
-import Testimonials from "@/components/Testimonials";
+import Testimonials from "@/components/Testimonials/Testimonials";
 import Blog from "@/components/Blog";
 import TypePlanner from "@/components/by-type/TypePlanner";
 import InspirationBanner from "@/components/InspirationBanner";
@@ -110,8 +110,10 @@ export default async function TravelerTypePage(
         title={inspirationBanner.title}
       />
       <Testimonials
+       
         testimonials={typeData.testimonials.items}
         title={typeData.testimonials.title}
+       
       />
     </main>
   );

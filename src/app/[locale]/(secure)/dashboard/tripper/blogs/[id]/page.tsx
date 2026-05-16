@@ -9,19 +9,13 @@ import Section from "@/components/layout/Section";
 import BlogComposer from "@/components/tripper/blog/BlogComposer";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
 import type { BlogPost } from "@/types/blog";
 import { ArrowLeft } from "lucide-react";
-
-function getTripperBlogsCopy(locale: string) {
-  return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
-}
+import { useDictionary } from "@/hooks/useDictionary";
 
 function EditBlogContent() {
   const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const blogsCopy = getTripperBlogsCopy(locale);
+  const blogsCopy = useDictionary(d => d.tripperBlogs);
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<Partial<BlogPost> | null>(null);

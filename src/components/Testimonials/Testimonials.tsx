@@ -3,49 +3,31 @@
 import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import Section from '@/components/layout/Section';
 import { TestimonialCard } from './TestimonialCard';
-import type { TestimonialData, TestimonialsContent } from './types';
+import type { TestimonialData } from './types';
 
 export type { TestimonialData, TestimonialsContent } from './types';
 
 interface TestimonialsProps {
-  content?: TestimonialsContent;
   eyebrow?: string;
-  featureColor?: string;
-  testimonials: TestimonialData[];
   subtitle?: string;
   title?: string;
   viewFullReviewLabel?: string;
+  testimonials: TestimonialData[];
+  featureColor?: string;
 }
 
 export default function Testimonials({
-  content,
-  eyebrow,
-  featureColor,
+  eyebrow, subtitle, title, viewFullReviewLabel,
   testimonials,
-  subtitle,
-  title,
-  viewFullReviewLabel,
+  featureColor,
 }: TestimonialsProps) {
-  const {
-    eyebrow: resolvedEyebrow,
-    subtitle: resolvedSubtitle,
-    title: resolvedTitle,
-    viewFullReviewLabel: resolvedViewFullReviewLabel,
-  } = {
-    eyebrow: eyebrow ?? '',
-    subtitle: subtitle ?? '',
-    title: title ?? '',
-    viewFullReviewLabel: viewFullReviewLabel ?? 'View full review',
-    ...content,
-  };
-
   return (
     <Section
       className="min-h-[60vh]"
-      eyebrow={resolvedEyebrow}
+      eyebrow={eyebrow}
       eyebrowColor={featureColor}
-      subtitle={resolvedSubtitle}
-      title={resolvedTitle}
+      subtitle={subtitle}
+      title={title}
       fullWidth
     >
       <EmblaCarousel accentColor={featureColor} slidesPerView={3} overflow="both">
@@ -55,7 +37,7 @@ export default function Testimonials({
             index={index}
             key={`${testimonial.author}-${index}`}
             testimonial={testimonial}
-            viewFullReviewLabel={resolvedViewFullReviewLabel}
+            viewFullReviewLabel={viewFullReviewLabel ?? 'View full review'}
           />
         ))}
       </EmblaCarousel>

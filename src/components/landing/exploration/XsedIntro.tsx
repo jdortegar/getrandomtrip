@@ -1,32 +1,22 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import esCopy from '@/dictionaries/es.json';
-import enCopy from '@/dictionaries/en.json';
-
-function getCopy(locale: string) {
-  return locale.startsWith('en')
-    ? enCopy.home.exploration.xsedIntro
-    : esCopy.home.exploration.xsedIntro;
-}
+import { useDictionary } from '@/hooks/useDictionary';
 
 export function XsedIntro() {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
-  const copy = getCopy(locale);
+  const copy = useDictionary(d => d.home.exploration.xsedIntro);
 
   return (
-    <div className="relative w-full overflow-hidden container mx-auto px-4 md:px-20" style={{ minHeight: 420 }}>
+    <div className="relative w-full overflow-hidden rt-container min-h-96 rounded-lg">
       {/* Background image */}
       <div className="relative">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center rounded-lg"
           style={{ backgroundImage: `url(${copy.backgroundImage})` }}
         />
 
-        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-black/45 rounded-lg" />
 
         {/* Content */}
         <div className="text-left relative z-10 flex h-full min-h-[420px] flex-col justify-center px-10 md:px-16 lg:px-24">

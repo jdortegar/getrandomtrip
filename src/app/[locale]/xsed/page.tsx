@@ -5,7 +5,7 @@ import { CountDown } from "@/components/app/xsed/CountDown";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { MultiColumnIconText } from "@/components/app/xsed/MultiColumnIconText";
-import Testimonials from "@/components/Testimonials";
+import Testimonials from "@/components/Testimonials/Testimonials";
 import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
@@ -60,7 +60,10 @@ export default async function XsedPage(props: LocaleParams) {
 
       <XsedHero content={dict.xsedPage.xsedHero} locale={normalizedLocale} />
       <Testimonials
-        content={dict.xsedPage.testimonials}
+        title={dict.xsedPage.testimonials.title}
+        subtitle={dict.xsedPage.testimonials.subtitle}
+        eyebrow={dict.xsedPage.testimonials.eyebrow}
+        viewFullReviewLabel={dict.xsedPage.testimonials.viewFullReviewLabel}
         featureColor="#D97E4A"
         testimonials={XSED_TESTIMONIALS}
       />

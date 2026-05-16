@@ -52,7 +52,7 @@ const Hero: React.FC<HeroProps> = ({
       />
 
       {/* Main Content - Left Aligned */}
-      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
+      <div className="relative z-10 flex flex-col justify-center h-full rt-container px-20!">
         {/* Top Left Branding */}
 
         <BrandingAnimation className="flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
@@ -90,7 +90,7 @@ const Hero: React.FC<HeroProps> = ({
             </motion.p>
           )}
         </div>
-        <div className="flex items-center justify-center md:justify-start gap-4">
+        <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
           {/* CTA Button - Lower Left */}
           {content.primaryCta && (
             <motion.div

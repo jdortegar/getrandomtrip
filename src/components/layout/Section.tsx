@@ -57,14 +57,14 @@ const Section = ({
         </div>
       )}
       <div className={cn(
-        "text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32 z-10",
-        !fullWidth && "px-4 md:px-20 container mx-auto",
+        "text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32",
+        !fullWidth && "rt-container",
         className,
       )}
         id={id}
         style={style}>
         {(eyebrow || title || subtitle) && (
-          <div className={cn("mb-14 ", fullWidth && "px-4 md:px-20 container mx-auto")}>
+          <div className={cn("mb-14 ", fullWidth && "rt-container")}>
             {eyebrow && (
               <motion.div
                 className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-light-blue"
@@ -82,8 +82,7 @@ const Section = ({
                 className={cn(
                   "font-barlow-condensed text-[50px] md:text-[70px] uppercase font-bold mt-4 leading-none",
                   {
-                    "text-gray-900": variant === "default",
-                    "text-gray-50": variant === "light",
+                    "text-gray-900": variant === "default" || variant === "light",
                     "text-white": variant === "dark",
                   },
                 )}
@@ -112,7 +111,7 @@ const Section = ({
           </div>
         )}
         <motion.div
-          className={cn("mx-auto w-full", !fullWidth && "container")}
+          className="mx-auto w-full"
           initial={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           viewport={{ once: true, margin: "-100px" }}

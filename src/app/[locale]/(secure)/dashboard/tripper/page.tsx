@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
 import { useUserStore } from "@/store/slices/userStore";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
@@ -15,14 +14,7 @@ import { TripperQuickActions } from "@/components/app/dashboard/tripper/TripperQ
 import { TripperKeyMetrics } from "@/components/app/dashboard/tripper/TripperKeyMetrics";
 import { TripperPackagesSummary } from "@/components/app/dashboard/tripper/TripperPackagesSummary";
 import type { TripperDashboardStats, RecentBooking } from "@/types/tripper";
-import esCopy from "@/dictionaries/es.json";
-import enCopy from "@/dictionaries/en.json";
-
-function getTripperCopy(locale: string) {
-  return locale.startsWith("en")
-    ? enCopy.tripperDashboard
-    : esCopy.tripperDashboard;
-}
+import { useDictionary } from "@/hooks/useDictionary";
 
 const EMPTY_STATS: TripperDashboardStats = {
   totalBookings: 0,
@@ -36,9 +28,7 @@ const EMPTY_STATS: TripperDashboardStats = {
 function TripperContent() {
   const { data: session } = useSession();
   const { user } = useUserStore();
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = getTripperCopy(locale);
+  const copy = useDictionary(d => d.tripperDashboard);
 
   const currentUser = session?.user || user;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Bell,
   Briefcase,
@@ -12,19 +12,13 @@ import {
   Users,
 } from "lucide-react";
 import { AdminSidebarLink } from "./AdminSidebarLink";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
 import type { AdminSidebarDict } from "@/lib/types/dictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = (
-    (locale.startsWith("en") ? enCopy : esCopy) as unknown as {
-      adminSidebar: AdminSidebarDict;
-    }
-  ).adminSidebar;
+  const locale = useLocale();
+  const copy = useDictionary(d => (d as unknown as { adminSidebar: AdminSidebarDict }).adminSidebar);
 
   function base(path: string) {
     return `/${locale}/dashboard/admin${path}`;

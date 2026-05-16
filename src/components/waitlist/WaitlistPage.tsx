@@ -64,7 +64,7 @@ export function WaitlistPage({ dict, onOpenLogin }: WaitlistPageProps) {
   };
 
   return (
-    <section className="grid h-screen grid-cols-1 md:grid-cols-2">
+    <section className="grid h-screen grid-cols-1 lg:grid-cols-2 rt-container">
       <div className="flex min-w-0 items-center justify-center py-4 md:py-6">
         <img
           alt="RandomTrip"
@@ -128,7 +128,7 @@ export function WaitlistPage({ dict, onOpenLogin }: WaitlistPageProps) {
             </p>
           )}
           <Button
-            className="mt-8 underline normal-case font-barlow text-base"
+            className="mt-8 underline normal-case font-barlow text-base mx-auto"
             onClick={onOpenLogin}
             type="button"
             variant="link"

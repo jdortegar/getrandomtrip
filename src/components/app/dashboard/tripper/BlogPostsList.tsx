@@ -1,26 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { BookOpen, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { BlogPostRow } from "@/components/app/dashboard/tripper/BlogPostRow";
 import type { BlogPost } from "@/types/blog";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface BlogPostsListProps {
   posts: BlogPost[];
 }
 
-function getTripperBlogs(locale: string) {
-  return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
-}
-
 export function BlogPostsList({ posts }: BlogPostsListProps) {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const tripperBlogs = getTripperBlogs(locale);
+  const locale = useLocale();
+  const tripperBlogs = useDictionary(d => d.tripperBlogs);
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
 
   return (

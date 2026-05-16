@@ -255,3 +255,7 @@ html.lenis {
     margin: 0 auto;
   }
 }
+
+@utility rt-container {
+  @apply w-full container mx-auto px-4 sm:px-6 lg:px-8;
+}
