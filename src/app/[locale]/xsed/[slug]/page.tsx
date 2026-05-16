@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import Testimonials from '@/components/Testimonials';
+import Testimonials from '@/components/Testimonials/Testimonials';
 import { XsedInternalHero } from '@/components/app/xsed/XsedInternalHero';
 import { XsedDropBody } from '@/components/app/xsed/XsedDropBody';
 import LightboxCarousel from '@/components/media/LightboxCarousel';
@@ -92,7 +92,10 @@ export default async function XsedInternalPage({ params }: Props) {
         <LightboxCarousel images={galleryImages} className="bg-gray-100" />
       )}
       <Testimonials
-        content={dict.xsedPage.testimonials}
+        title={dict.xsedPage.testimonials.title}
+        subtitle={dict.xsedPage.testimonials.subtitle}
+        eyebrow={dict.xsedPage.testimonials.eyebrow}
+        viewFullReviewLabel={dict.xsedPage.testimonials.viewFullReviewLabel}
         featureColor="#D97E4A"
         testimonials={testimonials}
       />

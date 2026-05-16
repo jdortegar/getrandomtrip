@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { AdminXsedExperience } from "@/lib/admin/types";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
@@ -28,14 +26,9 @@ function fmt(iso: string | null, locale: string) {
   );
 }
 
-function getCopy(locale: string) {
-  return locale.startsWith("en") ? enCopy.adminXsed : esCopy.adminXsed;
-}
-
 export function AdminXsedPageClient() {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = getCopy(locale);
+  const locale = useLocale();
+  const copy = useDictionary(d => d.adminXsed);
   const cols = copy.list.columns;
 
   const [experiences, setExperiences] = useState<AdminXsedExperience[]>([]);

@@ -81,6 +81,17 @@ export interface TripperOwnExperienceListItem {
   type: string;
 }
 
+/** Public fields returned by listing queries (grids, home, GET /api/trippers). */
+export interface TripperListItem {
+  id: string;
+  name: string;
+  tripperSlug: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  location: string | null;
+  commission: number | null;
+}
+
 // Tripper Profile from Database
 export interface TripperProfile {
   id: string;

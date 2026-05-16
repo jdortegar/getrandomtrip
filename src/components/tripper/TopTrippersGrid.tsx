@@ -1,27 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import TripperCard from '@/components/TripperCard';
 import TripperSearchModal, { type TripperSearchItem } from '@/components/tripper/TripperSearchModal';
-import esCopy from '@/dictionaries/es.json';
-import enCopy from '@/dictionaries/en.json';
+import { useDictionary } from '@/hooks/useDictionary';
 
 interface TopTrippersGridProps {
   trippers: TripperSearchItem[];
 }
 
-function getCopy(locale: string) {
-  return locale.startsWith('en') ? enCopy.trippers.grid : esCopy.trippers.grid;
-}
-
 export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
   const [searchOpen, setSearchOpen] = useState(false);
-  const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
-  const copy = getCopy(locale);
+  const copy = useDictionary(d => d.trippers.grid);
 
   return (
     <div className=" py-16 container mx-auto px-4 md:px-20">

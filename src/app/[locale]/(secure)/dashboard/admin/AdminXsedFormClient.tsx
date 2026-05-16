@@ -9,12 +9,7 @@ import { Button } from "@/components/ui/Button";
 import ExperienceFormNav from "@/components/app/dashboard/tripper/experiences/ExperienceFormNav";
 import { AdminXsedBenefitsSection } from "./AdminXsedBenefitsSection";
 import type { AdminXsedBenefit } from "@/lib/admin/types";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
-
-function getCopy(locale: string) {
-  return locale.startsWith("en") ? enCopy.adminXsed : esCopy.adminXsed;
-}
+import { useDictionary } from "@/hooks/useDictionary";
 
 interface Field {
   key: string;
@@ -51,7 +46,7 @@ interface AdminXsedFormClientProps {
 
 export function AdminXsedFormClient({ locale, experienceId, initialData, initialBenefits = [] }: AdminXsedFormClientProps) {
   const router = useRouter();
-  const copy = getCopy(locale);
+  const copy = useDictionary(d => d.adminXsed);
   const f = copy.form.fields;
   const isEdit = Boolean(experienceId);
 

@@ -4,8 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import SecureRoute from "@/components/auth/SecureRoute";
 import {
   AllTripsGrid,
@@ -49,7 +48,7 @@ import HeaderHero from "@/components/journey/HeaderHero";
 import { useUserStore } from "@/store/slices";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   getPayments,
   getTrips,
@@ -58,12 +57,11 @@ import {
 } from "@/lib/utils/trips";
 
 function DashboardContent() {
-  const params = useParams();
   const { data: session, status: sessionStatus } = useSession();
   const { user } = useUserStore();
   const router = useRouter();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = locale.startsWith("en") ? enCopy.dashboard : esCopy.dashboard;
+  const locale = useLocale();
+  const copy = useDictionary(d => d.dashboard);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({

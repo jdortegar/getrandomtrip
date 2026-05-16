@@ -12,14 +12,9 @@ import Section from "@/components/layout/Section";
 import LightboxCarousel from "@/components/media/LightboxCarousel";
 import Breadcrumb from "@/components/navigation/Breadcrumb";
 import { Button } from "@/components/ui/Button";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { BlogPost } from "@/types/blog";
-
-function getTripperBlogs(locale: string) {
-  return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
-}
+import { useDictionary } from "@/hooks/useDictionary";
 
 interface PreviewBlogPost extends Partial<BlogPost> {
   author?: {
@@ -41,7 +36,7 @@ export function TripperBlogPreviewClient() {
   const localeStr = typeof rawLocale === "string" ? rawLocale : rawLocale?.[0];
   const locale: Locale = hasLocale(localeStr) ? (localeStr as Locale) : "es";
   const postId = params?.id?.toString() ?? "";
-  const tripperBlogs = getTripperBlogs(locale);
+  const tripperBlogs = useDictionary(d => d.tripperBlogs);
 
   const [post, setPost] = useState<PreviewBlogPost | null>(null);
   const [loading, setLoading] = useState(true);

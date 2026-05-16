@@ -28,12 +28,6 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
   containScroll: false,
 };
 
-const SLIDE_SIZE: Record<2 | 3 | 4, string> = {
-  2: "@[640px]:flex-[0_0_50%]",
-  3: "@[1024px]:flex-[0_0_33.3333%]",
-  4: "@[1280px]:flex-[0_0_25%]",
-};
-
 const EDGE_HOLD = 1;
 const FADE_WIDTH = 4;
 const MASKS: Record<OverflowSide, string> = {
@@ -99,22 +93,26 @@ const EmblaCarousel = ({
 
   return (
     <div className="@container mx-auto w-full overflow-x-clip">
-      {arrows && <div className={cn("container mx-auto mb-6 px-4", overflow ? " md:px-20" : "", arrowsClassName)}>{arrows}</div>}
+      {arrows && <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>}
 
       <div style={maskStyle}>
         <div ref={emblaRef} className={cn("w-full",
-          overflow === "left" ? "overflow-visible container mx-auto pl-4 md:pl-20" :
-            overflow === "right" ? "overflow-visible container mx-auto pr-4 md:pr-20" :
-              overflow === "both" ? "overflow-visible container mx-auto px-4 md:px-20" :
-                "overflow-hidden", wrapperClassName)}>
+        {
+          "overflow-visible container mx-auto w-full pl-4 sm:pl-6 lg:pl-8" : overflow === "right",
+          "overflow-visible container mx-auto w-full pr-4 sm:pr-6 lg:pr-8" : overflow === "left", 
+          "overflow-visible rt-container" : overflow === "both",
+          "overflow-hidden" : overflow === undefined}, 
+        wrapperClassName)}>
           <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start gap-3">
             {slides.map((child, index) => (
               <div
                 key={index}
                 className={cn(
                   "min-w-0 shrink-0",
-                  "flex-[0_0_80%]",
-                  SLIDE_SIZE[slidesPerView],
+                  "flex-[0_0_80%] sm:flex-[0_0_50%]",{
+                  "md:flex-[0_0_33.3333%]": slidesPerView === 3, 
+                  "lg:flex-[0_0_25%]": slidesPerView === 4
+                  },
                   slideClassName,
                 )}
               >

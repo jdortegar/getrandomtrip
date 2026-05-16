@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Section from '@/components/layout/Section';
-import HeaderHero from '@/components/journey/HeaderHero';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
 
@@ -93,28 +92,6 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
               </details>
             </div>
           )}
-
-          {/* Help Info */}
-          {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-            <h3 className="font-semibold text-blue-900 mb-2">
-              💡 ¿Necesitas ayuda?
-            </h3>
-            <ul className="text-sm text-blue-800 space-y-2">
-              <li>
-                • Intenta recargar la página o volver a intentar la acción
-              </li>
-              <li>• Verifica tu conexión a internet</li>
-              <li>
-                • Si el problema persiste, contacta a soporte en{' '}
-                <a
-                  href="mailto:soporte@getrandomtrip.com"
-                  className="underline hover:text-blue-900"
-                >
-                  soporte@getrandomtrip.com
-                </a>
-              </li>
-            </ul>
-          </div> */}
         </div>
       </Section>
     </>

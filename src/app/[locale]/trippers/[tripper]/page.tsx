@@ -12,7 +12,7 @@ import TripperHero from '@/components/tripper/TripperHero';
 import TripperPlanner from '@/components/tripper/TripperPlanner';
 import TripperInspirationGallery from '@/components/tripper/TripperInspirationGallery';
 import Blog from '@/components/Blog';
-import Testimonials from '@/components/Testimonials';
+import Testimonials from '@/components/Testimonials/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import HomeInfo from '@/components/HomeInfo';
 import {
@@ -165,7 +165,11 @@ export default async function Page(
       )}
       <Testimonials
         testimonials={getAllTestimonialsForTripper(tripperData)}
-        content={{ title: `Lo que dicen sobre ${tripperData.name}` }}
+        title={`Lo que dicen sobre ${tripperData.name}`}
+        subtitle={`Lo que dicen sobre ${tripperData.name}`}
+        eyebrow={`Lo que dicen sobre ${tripperData.name}`}
+        viewFullReviewLabel={`Lo que dicen sobre ${tripperData.name}`}
+
       />
 
     </main>

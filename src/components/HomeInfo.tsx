@@ -10,9 +10,9 @@ import ThreeColumns from './ThreeColumns';
 import Section from './layout/Section';
 import type { ThreeColumnsItem } from './ThreeColumns';
 
-const TAB_IDS = [
-  { id: 'how', contentKey: 'howItWorks' as const },
-  { id: 'benefits', contentKey: 'benefits' as const },
+const TABS = [
+  { id: 'how', labelKey: 'tabHowLabel' },
+  { id: 'benefits', labelKey: 'tabBenefitsLabel' },
 ] as const;
 
 export interface HomeInfoContent {
@@ -32,21 +32,8 @@ interface HomeInfoProps {
 }
 
 export default function HomeInfo({ content }: HomeInfoProps) {
-  const {
-    benefitsSteps,
-    ctaScrollTarget,
-    ctaText,
-    eyebrow,
-    howItWorksSteps,
-    tabBenefitsLabel,
-    tabHowLabel,
-    title,
-  } = content;
-  const tabs = [
-    { id: TAB_IDS[0].id, label: tabHowLabel, contentKey: TAB_IDS[0].contentKey },
-    { id: TAB_IDS[1].id, label: tabBenefitsLabel, contentKey: TAB_IDS[1].contentKey },
-  ];
-  const [activeTab, setActiveTab] = useState<string>(tabs[0].id);
+  const { benefitsSteps, ctaScrollTarget, ctaText, eyebrow, howItWorksSteps, title } = content;
+  const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
 
   return (
     <Section
@@ -62,7 +49,7 @@ export default function HomeInfo({ content }: HomeInfoProps) {
           activeTab={activeTab}
           layoutId="activeTabHomeInfo"
           onTabChange={setActiveTab}
-          tabs={tabs.map(({ id, label }) => ({ id, label }))}
+          tabs={TABS.map(({ id, labelKey }) => ({ id, label: content[labelKey] }))}
         />
       </motion.div>
 

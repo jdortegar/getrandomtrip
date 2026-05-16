@@ -98,9 +98,8 @@ export function ExplorationSection({
 
   return (
     <Section
-      className="relative flex items-center py-20"
-      eyebrow={eyebrow}
       id="exploration-section"
+      eyebrow={eyebrow}
       subtitle={subtitle}
       title={title}
       fullWidth

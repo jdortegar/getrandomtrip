@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useParams } from "next/navigation";
 import TravelerTypeCard from "@/components/TravelerTypeCard";
 import { slugify } from "@/lib/slugify";
 import {
@@ -12,11 +11,10 @@ import {
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import { motion } from "framer-motion";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface TravelerTypesCarouselProps {
-  /** When set, only these traveler type slugs are shown. In tripper context, only these are shown; otherwise all are shown unless this filters them. */
   availableTypes?: string[];
-  /** Localized labels from dictionary (home.exploration.travelerTypes). Merged with base data. */
   localizedTravelerTypes?: Array<{
     description: string;
     key: string;
@@ -24,11 +22,8 @@ interface TravelerTypesCarouselProps {
   }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   selectedTravelType?: TravelerTypeSlug;
-  /** When true, only show types in availableTypes; hide carousel if none. Use on tripper pages. */
   tripperMode?: boolean;
-  /** When set, card links go to this tripper's packages page (tripper context). */
   tripperSlug?: string;
-  /** When set, the carousel will overflow to the left or right. */
   overflow?: "both" | "left" | "right" | undefined;
 }
 
@@ -43,8 +38,8 @@ export function TravelerTypesCarousel({
   tripperSlug,
   overflow = "both",
 }: TravelerTypesCarouselProps) {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
+  const locale = useLocale();
+  const comingSoonLabel = useDictionary(d => d.profile.comingSoon);
 
   const cards = getCarouselCardOptions(locale, {
     localizedTravelerTypes,
@@ -69,17 +64,17 @@ export function TravelerTypesCarousel({
       whileInView={{ opacity: 1, y: 0 }}
     >
       <EmblaCarousel slidesPerView={3} overflow={overflow}>
-        {typesToShow.map((t) => {
-          const slug = t.key.toLowerCase() as TravelerTypeSlug;
+        {typesToShow.map((type) => {
+          const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
           return (
             <TravelerTypeCard
-              key={t.key}
+              key={type.key}
               fill
               className="aspect-3/4"
-              comingSoonLabel={isComingSoon ? (locale === "es" ? "Próximamente" : "Coming Soon") : undefined}
-              href={isComingSoon ? undefined : `/experiences/by-type/${slugify(t.key)}`}
-              item={cardDataToCardItem(t)}
+              comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
+              href={isComingSoon ? undefined : `/experiences/by-type/${slugify(type.key)}`}
+              item={cardDataToCardItem(type)}
               onClick={onSelect && !isComingSoon ? () => onSelect(slug) : undefined}
               selected={selectedTravelType === slug}
             />

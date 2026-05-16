@@ -1,22 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { AdminXsedNotificationEntry } from "@/lib/admin/types";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
-
-function getCopy(locale: string) {
-  return locale.startsWith("en")
-    ? enCopy.adminPages.xsedNotifications
-    : esCopy.adminPages.xsedNotifications;
-}
+import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminXsedNotificationsPageClient() {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = getCopy(locale);
+  const copy = useDictionary(d => d.adminPages.xsedNotifications);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [entries, setEntries] = useState<AdminXsedNotificationEntry[]>([]);

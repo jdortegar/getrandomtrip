@@ -13,7 +13,7 @@ import FaqSection from '@/components/display/FaqSection';
 import { ArrowLeft } from 'lucide-react';
 import Blog from '@/components/Blog';
 import TripperMottoBanner from '@/components/blog/TripperMottoBanner';
-import Testimonials from '@/components/Testimonials';
+import Testimonials from '@/components/Testimonials/Testimonials';
 import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
 import type {
   BlogDetailAuthor,

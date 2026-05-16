@@ -8,6 +8,7 @@ import { normalizeUploadUrl } from '@/lib/media/upload-url';
 import type {
   FeaturedTrip,
   FeaturedTripCard,
+  TripperListItem,
   TripperProfile,
 } from '@/types/tripper';
 
@@ -139,9 +140,9 @@ export async function getTripperFeaturedTrips(
 /**
  * Get all trippers (for listings/search)
  */
-export async function getAllTrippers() {
+export async function getAllTrippers(): Promise<TripperListItem[]> {
   try {
-    return await prisma.user.findMany({
+    const trippers = await prisma.user.findMany({
       where: { roles: { has: 'TRIPPER' } },
       select: {
         id: true,
@@ -151,11 +152,19 @@ export async function getAllTrippers() {
         bio: true,
         location: true,
         commission: true,
-        availableTypes: true,
-        interests: true,
       },
       orderBy: { name: 'asc' },
     });
+
+    return trippers.map((tripper) => ({
+      id: tripper.id,
+      name: tripper.name,
+      tripperSlug: tripper.tripperSlug,
+      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+      bio: tripper.bio,
+      location: tripper.location,
+      commission: tripper.commission,
+    }));
   } catch (error) {
     console.error('Error fetching all trippers:', error);
     return [];
@@ -389,9 +398,9 @@ export async function getTripperDashboardStats(tripperId: string) {
     const averageRating =
       completedTrips.length > 0
         ? completedTrips.reduce(
-            (sum, tr) => sum + (tr.customerRating || 0),
-            0,
-          ) / completedTrips.length
+          (sum, tr) => sum + (tr.customerRating || 0),
+          0,
+        ) / completedTrips.length
         : 0;
 
     // Active packages

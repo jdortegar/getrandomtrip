@@ -1,20 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { AdminWaitlistEntry } from "@/lib/admin/types";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
-
-function getCopy(locale: string) {
-  return locale.startsWith("en") ? enCopy.adminPages.waitlist : esCopy.adminPages.waitlist;
-}
+import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminWaitlistPageClient() {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = getCopy(locale);
+  const copy = useDictionary(d => d.adminPages.waitlist);
 
   const [entries, setEntries] = useState<AdminWaitlistEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
