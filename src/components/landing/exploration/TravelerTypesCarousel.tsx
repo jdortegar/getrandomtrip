@@ -63,7 +63,7 @@ export function TravelerTypesCarousel({
       viewport={{ once: true }}
       whileInView={{ opacity: 1, y: 0 }}
     >
-      <EmblaCarousel slidesPerView={3} overflow={overflow}>
+      <EmblaCarousel slidesPerView={4} overflow={overflow}>
         {typesToShow.map((type) => {
           const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
