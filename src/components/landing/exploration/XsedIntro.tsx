@@ -20,7 +20,7 @@ export function XsedIntro() {
 
         {/* Content */}
         <div className="text-left relative z-10 flex h-full min-h-[420px] flex-col justify-center px-10 md:px-16 lg:px-24">
-          <p className="tracking-[6px] mb-2 font-barlow text-xs font-bold uppercase text-white">
+          <p className="tracking-[2px] md:tracking-[6px] mb-2 font-barlow text-xs font-bold uppercase text-white">
             {copy.eyebrow}
           </p>
           <h3 className="mb-4 max-w-xl font-barlow-condensed text-5xl font-bold leading-none text-white md:text-5xl">

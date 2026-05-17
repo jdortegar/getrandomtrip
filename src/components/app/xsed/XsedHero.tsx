@@ -90,7 +90,7 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
                 {content.helper}
               </p>
               <form
-                className="flex flex-col gap-4 md:flex-row md:items-center justify-center flex-wrap px-20 md:px-0"
+                className="flex flex-col gap-4 md:flex-row md:items-center justify-center flex-wrap"
                 noValidate
                 onSubmit={handleSubmit}
               >

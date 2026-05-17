@@ -52,15 +52,15 @@ const Hero: React.FC<HeroProps> = ({
       />
 
       {/* Main Content - Left Aligned */}
-      <div className="relative z-10 flex flex-col justify-center h-full rt-container px-20!">
+      <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">
         {/* Top Left Branding */}
 
-        <BrandingAnimation className="flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+        <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
 
-        <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
+        <div className="max-w-3xl flex flex-col justify-center text-center lg:text-left">
           <motion.h2
             className={cn(
-              'mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[130px] z-10 leading-none [&_sup]:text-[0.6em] [&_sup]:leading-none',
+              'text-center md:text-left mb-6 text-white font-barlow-condensed font-extrabold text-[60px] md:text-[80px] lg:text-[130px] z-10 leading-none [&_sup]:text-[0.6em] [&_sup]:leading-none',
               titleClassName,
             )}
             dangerouslySetInnerHTML={{
@@ -72,7 +72,7 @@ const Hero: React.FC<HeroProps> = ({
           />
 
           <motion.p
-            className="font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            className="text-center md:text-left font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -81,7 +81,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {content.tagline && (
             <motion.p
-              className="font-barlow text-base md:text-lg font-bold leading-relaxed text-white max-w-xl mb-8"
+              className="text-center md:text-left font-barlow text-base md:text-lg font-bold leading-relaxed text-white max-w-xl mb-8"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
