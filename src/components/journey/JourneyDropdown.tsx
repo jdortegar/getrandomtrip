@@ -39,14 +39,14 @@ export function JourneyDropdown({
       <AccordionPrimitive.Header className="flex">
         <AccordionPrimitive.Trigger
           className={cn(
-            'flex flex-1 items-center justify-between cursor-pointer',
+            'flex flex-1 items-center justify-between cursor-pointer gap-2',
             'hover:text-gray-900',
             '[&[data-state=open]>div:first-child>span:first-child]:text-xl',
             '[&[data-state=closed]>div:first-child>span:first-child]:text-base',
           )}
         >
           <div className="flex flex-col items-start gap-1">
-            <span className="text-gray-500 text-base transition-[font-size] duration-300 ease-in-out">
+            <span className="text-gray-500 text-base text-left transition-[font-size] duration-300 ease-in-out">
               {label}
             </span>
             {/* {linkLabel && linkHref && (
@@ -60,7 +60,7 @@ export function JourneyDropdown({
             )} */}
           </div>
 
-          <span className="text-sm font-bold text-gray-700">{content}</span>
+          <span className="text-sm font-bold text-gray-700 text-right">{content}</span>
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
 

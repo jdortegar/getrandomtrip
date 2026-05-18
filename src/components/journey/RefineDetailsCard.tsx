@@ -25,7 +25,7 @@ export default function RefineDetailsCard({
   return (
     <button
       className={cn(
-        "group relative block duration-300 origin-center aspect-[293.95/347.82] w-full cursor-pointer text-left",
+        "@container group relative block duration-300 origin-center aspect-[293.95/347.82] w-full cursor-pointer text-left",
         className,
       )}
       onClick={onClick}
@@ -57,10 +57,10 @@ export default function RefineDetailsCard({
         {/* Card Content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center text-white">
           <div className="flex-1 flex flex-col items-center justify-center">
-            <h3 className="font-barlow-condensed text-3xl @[300]:text-4xl font-extrabold uppercase leading-tight mb-4">
+            <h3 className="font-barlow-condensed text-2xl font-extrabold uppercase leading-tight mb-4 @[300px]:text-3xl">
               {title}
             </h3>
-            <p className="font-barlow text-base @[300px]:text-lg text-white/90 max-w-xs">
+            <p className="font-barlow text-sm @[300px]:text-lg text-white/90 max-w-xs hidden @[200px]:block">
               {description}
             </p>
           </div>

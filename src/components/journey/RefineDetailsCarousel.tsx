@@ -37,7 +37,7 @@ export function RefineDetailsCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel slidesPerView={itemsPerView}>
+      <EmblaCarousel slidesPerView={itemsPerView} wrapperClassName="px-0!" overflow="right">
         {options.map((option) => {
           const isSelected = selectedOptions.includes(option.key);
 

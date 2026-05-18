@@ -41,7 +41,7 @@ export function TopTrippersGrid({
   return (
     <div className="rt-container">
       <motion.div
-        className={`grid gap-4 ${smGridCols} justify-center`}
+        className={`grid gap-4 grid-cols-1 ${smGridCols} justify-center`}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

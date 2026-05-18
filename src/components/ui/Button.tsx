@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   [
-    "cursor-pointer flex items-center justify-center outline-none shrink-0 text-center transition-all whitespace-nowrap",
+    "cursor-pointer flex items-center justify-center outline-none shrink-0 text-center transition-all",
     "font-barlow font-semibold leading-[24px] tracking-[1.5px] uppercase",
     "disabled:pointer-events-none disabled:opacity-50",
     "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -37,10 +37,10 @@ const buttonVariants = cva(
         feature: "bg-yellow-400 text-gray-800 hover:bg-yellow-500",
       },
       size: {
-        default: "h-9 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-[10px]",
-        sm: "h-11 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-2.5",
-        md: "h-11 px-6 gap-[10px] rounded-sm text-base has-[>svg]:px-4",
-        lg: "h-14 px-10 gap-[10px] rounded-sm text-base md:text-lg has-[>svg]:px-4",
+        default: "min-h-9 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-[10px]",
+        sm: "min-h-11 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-2.5",
+        md: "min-h-11 px-6 gap-[10px] rounded-sm text-base has-[>svg]:px-4",
+        lg: "min-h-14 px-10 gap-[10px] rounded-sm text-base md:text-lg has-[>svg]:px-4",
         icon: "size-9 rounded-md text-base",
       },
     },

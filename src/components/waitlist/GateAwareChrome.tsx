@@ -17,7 +17,7 @@ interface GateAwareChromeProps {
 }
 
 export function GateAwareChrome({ children, dict, locale }: GateAwareChromeProps) {
-  const [gateUnlocked, setGateUnlocked] = useState(false);
+  const [gateUnlocked, setGateUnlocked] = useState<boolean | null>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [navbarBackgroundPrimary, setNavbarBackgroundPrimary] = useState(false);
 
@@ -30,6 +30,8 @@ export function GateAwareChrome({ children, dict, locale }: GateAwareChromeProps
     setLoginModalOpen(false);
     setGateUnlocked(true);
   };
+
+  if (gateUnlocked === null) return null;
 
   if (!gateUnlocked) {
     return (
