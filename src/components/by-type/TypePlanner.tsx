@@ -16,6 +16,7 @@ interface TypePlannerProps {
   selectedLevel?: string;
   type: TravelerTypeSlug;
   itemsPerView?: 2 | 3 | 4;
+  cardClassName?: string;
 }
 
 export default function TypePlanner({
@@ -27,6 +28,7 @@ export default function TypePlanner({
   selectedLevel: externalSelectedLevel,
   type,
   itemsPerView = 4,
+  cardClassName
 }: TypePlannerProps) {
   const [internalSelectedLevel, setInternalSelectedLevel] = useState<
     string | null
@@ -49,7 +51,7 @@ export default function TypePlanner({
           const isFeatured = index === 2;
 
           return (
-            <div className="@container w-full min-w-0 py-3" key={level.id}>
+            <div className=" w-full min-w-0 py-3" key={level.id}>
               <LevelCard
                 featured={isFeatured}
                 level={level}
@@ -59,6 +61,7 @@ export default function TypePlanner({
                 selected={selectedLevel === level.id}
                 travelerType={type}
                 variant={variant}
+                className={cardClassName}
               />
             </div>
           );

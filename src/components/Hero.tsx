@@ -133,7 +133,7 @@ const Hero: React.FC<HeroProps> = ({
       </div>
 
       {scrollIndicator && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 hidden md:block">
           <div
             className="scroll-indicator pointer-events-none select-none z-10 text-white"
             aria-hidden="true"

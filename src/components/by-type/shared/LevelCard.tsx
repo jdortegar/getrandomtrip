@@ -31,6 +31,7 @@ interface LevelCardProps {
   selected?: boolean;
   travelerType?: string;
   variant?: "light" | "dark";
+  className?: string;
 }
 
 const FEATURE_ICONS: Record<
@@ -55,6 +56,7 @@ export default function LevelCard({
   selected = false,
   travelerType,
   variant = "light",
+  className
 }: LevelCardProps) {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -108,6 +110,7 @@ export default function LevelCard({
         borderColor,
         featured && "shadow-lg",
         (onSelect || navigateOnCardClick) && "cursor-pointer hover:shadow-xl",
+        className
       )}
       onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
       style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
@@ -140,7 +143,8 @@ export default function LevelCard({
       </p>
 
       {/* Title and Price Row */}
-      <div className="mb-3 flex @[280px]:items-end gap-3 @[280px]:mb-4 @[280px]:gap-4 flex-col @[280px]:flex-row">
+      {/* <div className="mb-3 flex-wrap flex @[280px]:items-end gap-3 @[280px]:mb-4 @[280px]:gap-4 flex-col @[280px]:flex-row"> */}
+      <div className="mb-3 flex-wrap flex items-end gap-3">
         <h3
           className={cn(
             "flex-1 font-barlow-condensed font-extrabold uppercase text-left text-[2.1rem] @[250px]:text-5xl",
@@ -150,9 +154,10 @@ export default function LevelCard({
         >
           {level.name}
         </h3>
+        <div className="flex gap-3 flex-1 items-stretch">
         <div
           className={cn(
-            "h-px w-12 shrink-0 @[280px]:h-8 @[280px]:w-px",
+            " w-px shrink-0 self-stretch",
             priceDividerColor,
           )}
         />
@@ -173,6 +178,7 @@ export default function LevelCard({
           >
             {level.priceFootnote}
           </span>
+        </div>
         </div>
       </div>
 
@@ -260,7 +266,7 @@ export default function LevelCard({
           </button>
         </div>
       )}
-      <div className="mt-4 flex justify-center px-7 @[250px]:mt-6 @[250px]:px-10">
+      <div className="mt-4 mx-auto">
         <Button asChild variant="feature" size="sm">
           <Link
             className="uppercase"

@@ -42,13 +42,15 @@ export function JourneyActionBar({
         </button>
       ) : null}
 
-      {canContinue && (
-        <Button onClick={onContinue} size="sm" variant="default">
+      
+      {!isAllStepsComplete && (
+        <Button onClick={onContinue} size="sm" variant="default" disabled={!canContinue}>
           {labels.next}
         </Button>
       )}
+      
 
-      {isAllStepsComplete && !canContinue && (
+      {isAllStepsComplete && (
         <Button
           disabled={isSavingAndRedirecting}
           onClick={onGoToCheckout}

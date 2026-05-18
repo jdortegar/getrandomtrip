@@ -53,6 +53,7 @@ interface JourneyMainContentLabels {
   experienceLabel: string;
   experiencePlaceholder: string;
   experienceStepDescription: string;
+  selectTravelTypeFirst: string;
   extrasTabDescription: string;
   extrasTabTitle: string;
   next: string;
@@ -433,6 +434,7 @@ export default function JourneyMainContent({
             labels={{
               experienceLabel: labels.experienceLabel,
               experienceStepDescription: labels.experienceStepDescription,
+              selectTravelTypeFirst: labels.selectTravelTypeFirst,
               travelTypeLabel: labels.travelTypeLabel,
             }}
             locale={locale}

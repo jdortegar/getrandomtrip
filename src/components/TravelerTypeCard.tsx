@@ -67,7 +67,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   return (
     <T
       className={cn(
-        "block group origin-center relative py-3",
+        "@container block group origin-center relative py-3",
         fill && "w-full",
         className,
         disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
@@ -104,10 +104,10 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         <ReviewBadge rating="4.6" />
 
         <div className="absolute bottom-0 left-0 z-20 w-full p-5 pb-20 text-left text-white">
-          <h3 className="font-barlow-condensed text-5xl font-extrabold uppercase leading-tight">
+          <h3 className="font-barlow-condensed text-3xl @[200px]:text-5xl font-extrabold uppercase leading-tight">
             {title}
           </h3>
-          <p className="font-barlow text-lg text-white/90">
+          <p className="font-barlow text-base @[200px]:text-lg text-white/90">
             {description}
           </p>
         </div>

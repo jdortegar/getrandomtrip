@@ -16,6 +16,7 @@ type TravelerTypeCardOption = {
 interface BudgetStepLabels {
   experienceLabel: string;
   experienceStepDescription: string;
+  selectTravelTypeFirst: string;
   travelTypeLabel: string;
 }
 
@@ -55,13 +56,16 @@ export default function BudgetStep({
     ? getPlannerContentForType(travelerType as TravelerTypeSlug, locale)
     : null;
 
+  // Force travel-type open until the user has made a selection
+  const effectiveAccordionValue = !selectedTravelType ? 'travel-type' : accordionValue;
+
   return (
     <div>
       <Accordion
         collapsible
         onValueChange={onAccordionValueChange}
         type="single"
-        value={accordionValue}
+        value={effectiveAccordionValue}
       >
         <JourneyDropdown
           className="mb-4 "
@@ -72,17 +76,22 @@ export default function BudgetStep({
           <TravelerTypesCarousel
             overflow="right"
             localizedTravelerTypes={localizedTravelerTypes}
-            onSelect={handleTravelTypeSelect}
+            onSelect={(slug) => {
+              handleTravelTypeSelect(slug);
+              onAccordionValueChange('travel-type');
+            }}
             selectedTravelType={selectedTravelType}
           />
         </JourneyDropdown>
 
-        {hasTravelType && plannerContent && (
+        
           <JourneyDropdown
             content={experienceContent}
             label={labels.experienceLabel}
             value="experience"
           >
+            {hasTravelType && plannerContent ? (
+
             <div className="space-y-4">
               <p className="text-gray-600">
                 {labels.experienceStepDescription}
@@ -95,10 +104,14 @@ export default function BudgetStep({
                 onSelect={handleExperienceSelect}
                 selectedLevel={selectedExperienceLevel}
                 type={travelerType as TravelerTypeSlug}
+                cardClassName="min-h-[450px]!"
               />
             </div>
+          ): <div className="py-8 text-center">
+              <p className="text-gray-500">{labels.selectTravelTypeFirst}</p>
+            </div>}
           </JourneyDropdown>
-        )}
+        
       </Accordion>
     </div>
   );

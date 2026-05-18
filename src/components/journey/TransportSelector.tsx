@@ -20,9 +20,9 @@ export const TRANSPORT_OPTIONS = [
 ] as const;
 
 export const DEFAULT_TRANSPORT_ORDER: string[] = [
-  'plane',
-  'train',
   'bus',
+  'train',
+  'plane',
   'ship',
 ];
 
@@ -115,6 +115,41 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
     [onChange, orderedOptions],
   );
 
+  const commitSwap = useCallback(
+    (sourceId: string, targetId: string) => {
+      if (!sourceId || sourceId === targetId) return;
+      const current = [...orderedOptions];
+      const fromIndex = current.indexOf(sourceId);
+      const toIndex = current.indexOf(targetId);
+      if (fromIndex === -1 || toIndex === -1) return;
+      current.splice(fromIndex, 1);
+      current.splice(toIndex, 0, sourceId);
+      onChange(current);
+    },
+    [onChange, orderedOptions],
+  );
+
+  const handleTouchStart = useCallback((_e: React.TouchEvent, id: string) => {
+    setDraggedId(id);
+  }, []);
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const card = el?.closest('[data-transport-id]');
+      const targetId = card?.getAttribute('data-transport-id') ?? null;
+      if (targetId && targetId !== draggedId) setDragOverId(targetId);
+    },
+    [draggedId],
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    if (draggedId && dragOverId) commitSwap(draggedId, dragOverId);
+    setDraggedId(null);
+    setDragOverId(null);
+  }, [commitSwap, draggedId, dragOverId]);
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-center gap-4">
@@ -129,7 +164,7 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
             .replace('{label}', option.label)
             .replace('{position}', String(index + 1));
           return (
-            <div className="flex min-w-[100px] flex-col items-center gap-2" key={id}>
+            <div className="flex min-w-[100px] flex-col items-center gap-2" data-transport-id={id} key={id}>
               <div
                 className={cn(
                   'flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 px-5 py-4 transition-colors',
@@ -149,7 +184,7 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
               <div
                 aria-label={ariaLabel}
                 className={cn(
-                  'flex h-9 w-9 cursor-grab items-center justify-center rounded-md border-2 bg-white text-sm font-semibold text-gray-700 transition-colors active:cursor-grabbing',
+                  'flex h-9 w-9 cursor-grab touch-none items-center justify-center rounded-md border-2 bg-white text-sm font-semibold text-gray-700 transition-colors active:cursor-grabbing',
                   isDragging && 'opacity-50',
                   isDragOver
                     ? 'border-primary ring-2 ring-primary ring-offset-2'
@@ -161,6 +196,9 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
                 onDragOver={(e) => handleDragOver(e, id)}
                 onDragStart={(e) => handleDragStart(e, id)}
                 onDrop={(e) => handleDrop(e, id)}
+                onTouchEnd={handleTouchEnd}
+                onTouchMove={handleTouchMove}
+                onTouchStart={(e) => handleTouchStart(e, id)}
                 role="button"
                 tabIndex={0}
                 title={ariaLabel}

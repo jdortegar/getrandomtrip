@@ -147,14 +147,14 @@ export default function HeaderHero({
       {/* Content */}
       <div className="relative z-10 mx-auto min-w-7/12 px-6 text-left text-white">
         <p
-          className="mb-2 font-bold text-sm uppercase tracking-[0.4em] md:text-base"
+          className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base"
           style={eyebrowColor ? { color: eyebrowColor } : undefined}
           {...(typeof subtitle === "string"
             ? { dangerouslySetInnerHTML: { __html: subtitle } }
             : { children: subtitle })}
         />
 
-        <h1 className="mb-6 font-barlow-condensed text-7xl font-extrabold">
+        <h1 className="mb-6 font-barlow-condensed text-5xl md:text-7xl font-extrabold">
           {title}
         </h1>
 

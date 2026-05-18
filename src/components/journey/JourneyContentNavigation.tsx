@@ -62,10 +62,10 @@ export default function JourneyContentNavigation({
     <nav
       className={cn("w-full bg-white border-b border-gray-200 py-4", className)}
     >
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-center">
+      <div className="container mx-auto md:px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-center justify-center md:justify-start">
           {/* Left Section: User Profile & Back Button */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-center lg:justify-start">
             <JourneyUserBadge labels={userBadgeLabels} />
 
             {/* Back Button */}
@@ -81,7 +81,7 @@ export default function JourneyContentNavigation({
           </div>
 
           {/* Right Section: Navigation Tabs */}
-          <div className="flex items-center justify-center gap-10 overflow-x-auto">
+          <div className="flex items-center justify-start md:justify-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar">
             {tabs.map((tab, index) => {
               const isActive = tab.id === activeTab;
               const isClickable = index <= activeTabIndex;

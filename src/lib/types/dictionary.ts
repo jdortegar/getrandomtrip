@@ -1006,6 +1006,7 @@ export interface MarketingDictionary {
       experienceLabel: string;
       experiencePlaceholder: string;
       experienceStepDescription: string;
+      selectTravelTypeFirst: string;
       extrasTabDescription: string;
       extrasTabTitle: string;
       next: string;

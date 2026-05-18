@@ -62,12 +62,12 @@ export default function ExcuseCard({
             <h3 className="font-barlow-condensed text-2xl font-extrabold uppercase leading-tight mb-4 @[300px]:text-3xl">
               {title}
             </h3>
-            <p className="font-barlow text-base @[300px]:text-lg text-white/90 max-w-xs">
+            <p className="font-barlow text-sm @[300px]:text-lg text-white/90 max-w-xs hidden @[200px]:block">
               {description}
             </p>
           </div>
 
-          <Button variant="outline" size="sm" onClick={onClick}>
+          <Button variant="outline" size="sm" onClick={onClick} className="py-1">
             {ctaLabel}
           </Button>
         </div>

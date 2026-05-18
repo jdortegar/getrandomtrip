@@ -42,7 +42,7 @@ export function ExcusesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel slidesPerView={itemsPerView}>
+      <EmblaCarousel slidesPerView={itemsPerView} overflow="right" wrapperClassName="px-0!">
         {excuses.map((excuse) => {
           const isSelected = selectedExcuse === excuse.key;
 
