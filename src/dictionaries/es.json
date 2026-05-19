@@ -181,7 +181,8 @@
         "customerVisibleNotes": "Notas para el viajero",
         "internalNotes": "Notas internas",
         "confirmationStatus": "Estado de confirmación",
-        "reservationCode": "Código de reserva"
+        "reservationCode": "Código de reserva",
+        "photos": "Fotos"
       }
     }
   },

@@ -6,12 +6,12 @@ import { AdminXsedFormClient } from "../../AdminXsedFormClient";
 import type { AdminXsedBenefit } from "@/lib/admin/types";
 
 export default async function AdminXsedEditPage(props: {
-  params: Promise<{ locale: string; id: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { locale: raw, id } = await props.params;
+  const { locale: raw, slug } = await props.params;
   const locale = hasLocale(raw) ? raw : "es";
 
-  const drop = await prisma.xsedExperience.findUnique({
+  const drop = await prisma.xsedExperience.findFirst({
     select: {
       id: true,
       slug: true,
@@ -61,10 +61,14 @@ export default async function AdminXsedEditPage(props: {
           internalNotes: true,
           confirmationStatus: true,
           reservationCode: true,
+          photos: {
+            orderBy: { sortOrder: "asc" },
+            select: { id: true, url: true, altText: true, sortOrder: true },
+          },
         },
       },
     },
-    where: { id },
+    where: { slug },
   });
 
   if (!drop) notFound();

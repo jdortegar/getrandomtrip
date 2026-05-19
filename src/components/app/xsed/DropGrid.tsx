@@ -39,7 +39,7 @@ export function DropGrid({ content, drops }: DropGridProps) {
                 index === 0 ? 'md:col-span-2 md:row-span-2 md:flex md:flex-col' : ''
               }
             >
-              <DropCard drop={drop} big={index === 0} />
+              <DropCard drop={drop} />
             </div>
           ))}
         </div>

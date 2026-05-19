@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/Button";
+import { ImageUploadInput } from "./ImageUploadInput";
 import ExperienceFormNav from "@/components/app/dashboard/tripper/experiences/ExperienceFormNav";
 import { AdminXsedBenefitsSection } from "./AdminXsedBenefitsSection";
 import type { AdminXsedBenefit } from "@/lib/admin/types";
@@ -14,7 +15,7 @@ import { useDictionary } from "@/hooks/useDictionary";
 interface Field {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "datetime-local" | "select";
+  type?: "text" | "textarea" | "number" | "datetime-local" | "select" | "image";
   options?: string[];
   required?: boolean;
   hint?: string;
@@ -64,7 +65,7 @@ export function AdminXsedFormClient({ locale, experienceId, initialData, initial
           type: "select",
           options: ["DRAFT", "ACTIVE", "INACTIVE", "ARCHIVED"],
         },
-        { key: "heroImage", label: f.heroImage },
+        { key: "heroImage", label: f.heroImage, type: "image" },
       ],
     },
     {
@@ -228,7 +229,15 @@ export function AdminXsedFormClient({ locale, experienceId, initialData, initial
                       {fieldLabel}
                       {required && <span className="ml-0.5 text-red-500"> *</span>}
                     </label>
-                    {type === "textarea" ? (
+                    {type === "image" ? (
+                      <ImageUploadInput
+                        feature="xsed"
+                        max={1}
+                        onAdd={(url) => set(key, url)}
+                        onRemove={() => set(key, "")}
+                        values={values[key] ? [values[key]] : []}
+                      />
+                    ) : type === "textarea" ? (
                       <textarea
                         className={`${fieldClass} min-h-24`}
                         id={key}

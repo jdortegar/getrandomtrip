@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
@@ -18,11 +18,70 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUSES = ["DRAFT", "ACTIVE", "INACTIVE", "ARCHIVED"] as const;
 
+type SortKey = "dropNumber" | "titleInternal" | "destinationCity" | "tripDate" | "revealAt" | "pricePerPerson" | "soldCount" | "status" | "updatedAt";
+type SortDir = "asc" | "desc";
+
 function fmt(iso: string | null, locale: string) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString(
     locale.startsWith("en") ? "en-US" : "es-AR",
     { day: "numeric", month: "short", year: "numeric" },
+  );
+}
+
+function dropNumber(slug: string | null): number {
+  if (!slug) return 0;
+  const n = parseInt(slug, 10);
+  return isFinite(n) ? n : 0;
+}
+
+function sortValue(e: AdminXsedExperience, key: SortKey): string | number {
+  switch (key) {
+    case "dropNumber":     return dropNumber(e.slug);
+    case "titleInternal":  return e.titleInternal?.toLowerCase() ?? "";
+    case "destinationCity": return e.destinationCity?.toLowerCase() ?? "";
+    case "tripDate":       return e.tripDate ?? "";
+    case "revealAt":       return e.revealAt ?? "";
+    case "pricePerPerson": return e.pricePerPerson ?? 0;
+    case "soldCount":      return e.soldCount;
+    case "status":         return e.status;
+    case "updatedAt":      return e.updatedAt ?? "";
+  }
+}
+
+function applySorting(rows: AdminXsedExperience[], key: SortKey, dir: SortDir) {
+  return [...rows].sort((a, b) => {
+    const av = sortValue(a, key);
+    const bv = sortValue(b, key);
+    const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+    return dir === "asc" ? cmp : -cmp;
+  });
+}
+
+interface SortHeaderProps {
+  label: string;
+  sortKey: SortKey;
+  active: SortKey | null;
+  dir: SortDir;
+  onSort: (key: SortKey) => void;
+}
+
+function SortHeader({ label, sortKey, active, dir, onSort }: SortHeaderProps) {
+  const isActive = active === sortKey;
+  return (
+    <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider whitespace-nowrap">
+      <button
+        className="inline-flex items-center gap-1 hover:text-neutral-900 transition-colors"
+        onClick={() => onSort(sortKey)}
+      >
+        {label}
+        {isActive ? (
+          dir === "asc" ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+        ) : (
+          <ChevronsUpDown className="h-3 w-3 opacity-40" />
+        )}
+      </button>
+    </th>
   );
 }
 
@@ -37,6 +96,17 @@ export function AdminXsedPageClient() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sortKey, setSortKey] = useState<SortKey | null>("dropNumber");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+
+  function handleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  }
 
   async function fetchExperiences() {
     setLoading(true);
@@ -96,12 +166,17 @@ export function AdminXsedPageClient() {
   if (error)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
-  const filtered =
+  let filtered =
     statusFilter === "all"
       ? experiences
       : experiences.filter((e) => e.status === statusFilter);
 
+  if (sortKey) {
+    filtered = applySorting(filtered, sortKey, sortDir);
+  }
+
   const newDropPath = `/${locale}/dashboard/admin/xsed/new`;
+  const sortProps = { active: sortKey, dir: sortDir, onSort: handleSort };
 
   return (
     <div className="space-y-6">
@@ -160,25 +235,17 @@ export function AdminXsedPageClient() {
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
-                  {[
-                    cols.title,
-                    cols.destination,
-                    cols.tripDate,
-                    cols.revealAt,
-                    cols.pricePerPerson,
-                    cols.spots,
-                    cols.sold,
-                    cols.status,
-                    cols.updated,
-                    cols.actions,
-                  ].map((h) => (
-                    <th
-                      className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider whitespace-nowrap"
-                      key={h}
-                    >
-                      {h}
-                    </th>
-                  ))}
+                  <SortHeader label="Nº" sortKey="dropNumber" {...sortProps} />
+                  <SortHeader label={cols.title} sortKey="titleInternal" {...sortProps} />
+                  <SortHeader label={cols.destination} sortKey="destinationCity" {...sortProps} />
+                  <SortHeader label={cols.tripDate} sortKey="tripDate" {...sortProps} />
+                  <SortHeader label={cols.revealAt} sortKey="revealAt" {...sortProps} />
+                  <SortHeader label={cols.pricePerPerson} sortKey="pricePerPerson" {...sortProps} />
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider whitespace-nowrap">{cols.spots}</th>
+                  <SortHeader label={cols.sold} sortKey="soldCount" {...sortProps} />
+                  <SortHeader label={cols.status} sortKey="status" {...sortProps} />
+                  <SortHeader label={cols.updated} sortKey="updatedAt" {...sortProps} />
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider whitespace-nowrap">{cols.actions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 text-left">
@@ -187,7 +254,12 @@ export function AdminXsedPageClient() {
                     className="hover:bg-gray-50 transition-colors"
                     key={e.id}
                   >
-                    {/* Drop */}
+                    {/* Nº */}
+                    <td className="px-5 py-4 text-sm font-mono font-semibold text-xsed whitespace-nowrap">
+                      {dropNumber(e.slug) > 0 ? `#${dropNumber(e.slug)}` : "—"}
+                    </td>
+
+                    {/* Title */}
                     <td className="px-5 py-4">
                       <p className="text-sm font-medium text-neutral-900 whitespace-nowrap">
                         {e.titleInternal}
@@ -261,11 +333,24 @@ export function AdminXsedPageClient() {
 
                     {/* Actions */}
                     <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <Link href={`/${locale}/dashboard/admin/xsed/${e.id}`}>
-                          {copy.list.actions.edit}
-                        </Link>
-
+                      <div className="flex items-center gap-1">
+                        <Button asChild size="sm" variant="ghost">
+                          <Link href={`/${locale}/dashboard/admin/xsed/${e.slug}`} title={copy.list.actions.edit}>
+                            <Pencil className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          disabled={deletingId === e.id}
+                          onClick={() => deleteExperience(e.id)}
+                          size="sm"
+                          title={copy.list.actions.delete}
+                          variant="ghost"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          {deletingId === e.id
+                            ? <Loader2 className="h-4 w-4 animate-spin" />
+                            : <Trash2 className="h-4 w-4" />}
+                        </Button>
                       </div>
                     </td>
                   </tr>

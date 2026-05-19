@@ -714,6 +714,7 @@ export interface AdminXsedDict {
       internalNotes: string;
       confirmationStatus: string;
       reservationCode: string;
+      photos: string;
     };
   };
 }

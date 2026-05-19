@@ -4,24 +4,19 @@ import type { DropEntry } from "@/types/core";
 
 interface DropCardProps {
   drop: DropEntry;
-  big: boolean;
 }
 
-export function DropCard({ drop, big }: DropCardProps) {
+export function DropCard({ drop }: DropCardProps) {
   return (
     <Link
-      className={`flex flex-col text-left group ${big ? "h-full" : ""}`}
+      className="flex h-full flex-col text-left group"
       href={`/xsed/drops/${drop.slug}`}
     >
-      <div
-        className={`relative overflow-hidden rounded-xl mb-2 flex-1 ${
-          big ? "flex-1 min-h-0" : "h-52"
-        }`}
-      >
+      <div className="relative mb-2 flex-1 min-h-0 overflow-hidden rounded-xl">
         <Img
           alt={drop.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          height={big ? 600 : 220}
+          height={600}
           src={drop.image}
           width={800}
         />

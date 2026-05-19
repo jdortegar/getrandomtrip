@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { AdminXsedBenefit } from "@/lib/admin/types";
 import type { AdminXsedDict } from "@/lib/types/dictionary";
+import { ImageUploadInput } from "./ImageUploadInput";
 
 const BENEFIT_TYPES = ["ACCOMMODATION", "DINNER", "ACTIVITY"] as const;
 const CONFIRMATION_STATUSES = ["PENDING", "CONFIRMED", "CANCELLED"] as const;
@@ -16,7 +17,7 @@ const labelClass = "block text-left text-sm font-medium text-neutral-700 mb-1.5"
 const sectionClassName = "bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-left";
 
 type BenefitCopy = AdminXsedDict["benefits"];
-type BenefitFields = Omit<AdminXsedBenefit, "id">;
+type BenefitFields = Omit<AdminXsedBenefit, "id" | "photos">;
 
 const TYPE_COLORS: Record<string, string> = {
   ACCOMMODATION: "bg-blue-100 text-blue-800 border-blue-200",
@@ -60,9 +61,30 @@ function BenefitCard({ benefit, copy, experienceId, onUpdate, onDelete }: Benefi
   const [fields, setFields] = useState<BenefitFields>(() => benefitToFields(benefit));
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [photos, setPhotos] = useState(benefit.photos);
 
   function set(key: keyof BenefitFields, value: string | number) {
     setFields((prev) => ({ ...prev, [key]: value === "" ? null : value }));
+  }
+
+  async function addPhoto(url: string) {
+    const res = await fetch(`/api/admin/xsed/${experienceId}/benefits/${benefit.id}/photos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    const data = (await res.json()) as { photo?: { id: string; url: string; altText: string | null; sortOrder: number } };
+    if (data.photo) setPhotos((prev) => [...prev, data.photo!]);
+  }
+
+  async function removePhoto(url: string) {
+    const photo = photos.find((p) => p.url === url);
+    if (!photo) return;
+    const res = await fetch(
+      `/api/admin/xsed/${experienceId}/benefits/${benefit.id}/photos?photoId=${photo.id}`,
+      { method: "DELETE" },
+    );
+    if (res.ok) setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
   }
 
   async function handleSave() {
@@ -194,6 +216,18 @@ function BenefitCard({ benefit, copy, experienceId, onUpdate, onDelete }: Benefi
             <label className={labelClass}>{copy.fields.internalNotes}</label>
             <textarea className={`${fieldClass} min-h-20`} rows={3} value={fields.internalNotes ?? ""} onChange={(e) => set("internalNotes", e.target.value)} />
           </div>
+          {/* Photos */}
+          <div>
+            <label className={labelClass}>{copy.fields.photos} <span className="text-neutral-400 font-normal">(máx. 6)</span></label>
+            <ImageUploadInput
+              feature="xsed"
+              max={6}
+              onAdd={addPhoto}
+              onRemove={removePhoto}
+              values={photos.map((p) => p.url)}
+            />
+          </div>
+
           {/* Actions */}
           <div className="flex items-center gap-3 pt-1">
             <Button size="sm" onClick={handleSave} disabled={saving} type="button">

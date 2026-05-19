@@ -181,7 +181,8 @@
         "customerVisibleNotes": "Guest-facing notes",
         "internalNotes": "Internal notes",
         "confirmationStatus": "Confirmation status",
-        "reservationCode": "Reservation code"
+        "reservationCode": "Reservation code",
+        "photos": "Photos"
       }
     }
   },

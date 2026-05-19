@@ -61,7 +61,7 @@ export function AllDropsGrid({ excludeId, initialDrops, initialHasMore }: AllDro
       {/* Cards grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {drops.map((drop) => (
-          <DropCard key={drop.number} drop={drop} big={false} />
+          <DropCard key={drop.number} drop={drop} />
         ))}
       </div>
 
