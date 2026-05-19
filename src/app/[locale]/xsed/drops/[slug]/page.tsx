@@ -8,7 +8,7 @@ import Section from '@/components/layout/Section';
 import { XSED_TESTIMONIALS } from '@/lib/data/xsed-testimonials';
 import { hasLocale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/dictionaries';
-import { prisma } from '@/lib/prisma';
+import { findActiveXsedExperienceBySlug } from '@/lib/data/xsed';
 import { getXsedDropTestimonials } from '@/lib/xsed/get-xsed-drop-testimonials';
 
 type Props = {
@@ -20,19 +20,7 @@ export default async function XsedInternalPage({ params }: Props) {
 
   if (!slug) notFound();
 
-  const [drop] = await Promise.all([
-    prisma.xsedExperience.findUnique({
-      where: { slug },
-      include: {
-        benefits: {
-          orderBy: { sortOrder: 'asc' },
-          include: {
-            photos: { orderBy: { sortOrder: 'asc' } },
-          },
-        },
-      },
-    }),
-  ]);
+  const drop = await findActiveXsedExperienceBySlug(slug);
 
   if (!drop || drop.status !== 'ACTIVE') notFound();
 

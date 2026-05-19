@@ -287,6 +287,7 @@ export interface FormState<T = Record<string, any>> {
 export interface DropEntry {
   /** XSED drop number, e.g. 5 */
   number: number;
+  slug: string;
   image: string;
   /** Formatted date string, e.g. "20 FEBRERO 2026" */
   date: string;

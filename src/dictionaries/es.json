@@ -279,6 +279,14 @@
       }
     }
   },
+  "xsedDropsPage": {
+    "title": "BITÁCORA DE ESCAPADAS",
+    "titleHighlight": "XSED",
+    "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
+    "filterDate": "Fecha",
+    "filterOrderBy": "Ordenar por",
+    "loadMore": "VER MÁS"
+  },
   "xsedPage": {
     "meta": {
       "title": "XSED | Randomtrip",

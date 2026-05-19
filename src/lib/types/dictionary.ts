@@ -816,6 +816,14 @@ export interface MarketingDictionary {
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
   xsedPage: XsedPageDict;
+  xsedDropsPage: {
+    description: string;
+    filterDate: string;
+    filterOrderBy: string;
+    loadMore: string;
+    title: string;
+    titleHighlight: string;
+  };
   auth: {
     close: string;
     continueWithGoogle: string;

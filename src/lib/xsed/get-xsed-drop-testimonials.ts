@@ -1,6 +1,6 @@
 import type { TestimonialData } from '@/components/Testimonials/types';
+import { findCompletedXsedTripRequestsForTestimonials } from '@/lib/data/xsed';
 import { getCountryCode } from '@/lib/helpers/flags';
-import { prisma } from '@/lib/prisma';
 
 function formatReviewerAuthor(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -19,18 +19,7 @@ function formatReviewerAuthor(fullName: string): string {
 export async function getXsedDropTestimonials(
   xsedExperienceId: string,
 ): Promise<TestimonialData[]> {
-  const rows = await prisma.tripRequest.findMany({
-    where: {
-      xsedExperienceId,
-      status: 'COMPLETED',
-      customerFeedback: { not: null },
-    },
-    orderBy: { completedAt: 'desc' },
-    take: 24,
-    include: {
-      user: { select: { name: true, avatarUrl: true } },
-    },
-  });
+  const rows = await findCompletedXsedTripRequestsForTestimonials(xsedExperienceId);
 
   const out: TestimonialData[] = [];
   for (const tr of rows) {

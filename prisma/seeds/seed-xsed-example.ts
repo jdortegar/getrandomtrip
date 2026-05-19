@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { prisma } from '../src/lib/prisma';
+import { prisma } from '../../src/lib/prisma';
 
 async function main() {
   const drop = await prisma.xsedExperience.upsert({
