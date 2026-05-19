@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
+import { useDictionary } from "@/hooks/useDictionary";
+import { XsedNotifyForm } from "./XsedNotifyForm";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,11 +24,13 @@ export interface CountDownDict {
 }
 
 interface CountDownProps {
-  copy: CountDownDict;
+  copy?: CountDownDict;
   locale: string;
+  number: number;
   soldCount: number;
   targetDate: string; // ISO 8601
   totalSlots: number;
+  useForm?: boolean;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -63,7 +67,9 @@ const ORANGE = "#D97E4A";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function CountDown({ copy, locale, soldCount, targetDate, totalSlots }: CountDownProps) {
+export function CountDown({ copy: copyProp, locale, number, soldCount, targetDate, totalSlots, useForm = false }: CountDownProps) {
+  const dictCopy = useDictionary((d) => d.xsedPage.countdown);
+  const copy = copyProp ?? dictCopy;
   const [time, setTime] = useState<TimeLeft>(() => computeTimeLeft(targetDate));
 
   useEffect(() => {
@@ -84,7 +90,7 @@ export function CountDown({ copy, locale, soldCount, targetDate, totalSlots }: C
     { label: copy.secLabel,  value: pad(time.sec) },
   ];
 
-  const titleHighlight = copy.titleHighlight.replace("{number}", String(soldCount));
+  const titleHighlight = copy.titleHighlight.replace("{number}", String(number));
 
   return (
     <Section fullWidth={true} id="xsed" title={`${copy.title} <span class="text-xsed">${titleHighlight}</span>`} subtitle={copy.subtitle}>
@@ -120,10 +126,10 @@ export function CountDown({ copy, locale, soldCount, targetDate, totalSlots }: C
               
               {/* Digit + subscript label */}
               <div className="inline-flex items-end">
-                <span className="leading-none tabular-nums text-neutral-800 text-[140px]">
+                <span className="leading-none tabular-nums text-neutral-800 text-[80px] md:text-[140px]">
                 {i>0 && ':'}{unit.value}
                 </span>
-                <span className="mb-[0.45rem] ml-0.5 whitespace-nowrap uppercase tracking-[0.18em] text-neutral-400 md:mb-[0.6rem] text-xl font-normal">
+                <span className="mb-[0.45rem] ml-0.5 whitespace-nowrap uppercase tracking-[0.18em] text-neutral-400 md:mb-[0.6rem] text-base md:text-xl font-normal">
                   {unit.label}
                 </span>
               </div>
@@ -156,19 +162,23 @@ export function CountDown({ copy, locale, soldCount, targetDate, totalSlots }: C
         </motion.div>
 
         {/* CTA */}
-       
+        
         <motion.div
         className="mt-12 flex justify-center"
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 1 }}
       >
+        {useForm ? (
+          <XsedNotifyForm variant="light"/>
+        ) : (
         <Button asChild size="lg" variant="tertiary">
           <Link href={copy.ctaHref} scroll={true}>
             {copy.ctaLabel}
           </Link>
         </Button>
-      </motion.div>
+        )}
+      </motion.div>  
     </Section>
   );
 }

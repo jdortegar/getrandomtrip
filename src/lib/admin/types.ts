@@ -127,6 +127,7 @@ export interface AdminXsedBenefit {
   internalNotes: string | null;
   confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
   reservationCode: string | null;
+  photos: { id: string; url: string; altText: string | null; sortOrder: number }[];
 }
 
 export interface AdminXsedExperience {

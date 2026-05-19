@@ -181,7 +181,8 @@
         "customerVisibleNotes": "Notas para el viajero",
         "internalNotes": "Notas internas",
         "confirmationStatus": "Estado de confirmación",
-        "reservationCode": "Código de reserva"
+        "reservationCode": "Código de reserva",
+        "photos": "Fotos"
       }
     }
   },
@@ -278,6 +279,14 @@
         "deleting": "Eliminando…"
       }
     }
+  },
+  "xsedDropsPage": {
+    "title": "BITÁCORA DE ESCAPADAS",
+    "titleHighlight": "XSED",
+    "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
+    "filterDate": "Fecha",
+    "filterOrderBy": "Ordenar por",
+    "loadMore": "VER MÁS"
   },
   "xsedPage": {
     "meta": {

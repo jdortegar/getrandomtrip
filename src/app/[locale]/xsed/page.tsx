@@ -10,7 +10,10 @@ import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import { DropGrid } from "@/components/app/xsed/DropGrid";
-import { XSED_DROPS } from "@/lib/data/xsed-drops";
+import {
+  getCurrentXsedDrop,
+  getXsedDropsForGrid,
+} from "@/lib/data/xsed";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -38,6 +41,12 @@ export default async function XsedPage(props: LocaleParams) {
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const normalizedLocale = hasLocale(locale) ? locale : "es";
   const dict = await getDictionary(normalizedLocale);
+  const currentDrop = await getCurrentXsedDrop();
+  const allGridDrops = await getXsedDropsForGrid(
+    currentDrop?.id ?? null,
+    normalizedLocale,
+  );
+  const gridDrops = allGridDrops.slice(0, 5);
 
   return (
     <>
@@ -47,15 +56,18 @@ export default async function XsedPage(props: LocaleParams) {
         locale={normalizedLocale}
         scrollIndicator
       />
-      <CountDown
-        copy={dict.xsedPage.countdown}
-        locale={normalizedLocale}
-        soldCount={2}
-        targetDate="2026-10-06T18:00:00-03:00"
-        totalSlots={10}
-      />
+      {currentDrop ? (
+        <CountDown
+          copy={dict.xsedPage.countdown}
+          locale={normalizedLocale}
+          number={currentDrop.number}
+          soldCount={currentDrop.soldCount}
+          targetDate={currentDrop.targetDate}
+          totalSlots={currentDrop.totalSlots}
+        />
+      ) : null}
       <MultiColumnIconText content={dict.xsedPage.iconText} />
-      <DropGrid content={dict.xsedPage.dropGrid} drops={XSED_DROPS} />
+      <DropGrid content={dict.xsedPage.dropGrid} drops={gridDrops} />
       <FaqBlock copy={dict.xsedPage.faq} />
 
       <XsedHero content={dict.xsedPage.xsedHero} locale={normalizedLocale} />
@@ -66,8 +78,7 @@ export default async function XsedPage(props: LocaleParams) {
         viewFullReviewLabel={dict.xsedPage.testimonials.viewFullReviewLabel}
         featureColor="#D97E4A"
         testimonials={XSED_TESTIMONIALS}
-      />
-      
+      /> 
     </>
   );
 }

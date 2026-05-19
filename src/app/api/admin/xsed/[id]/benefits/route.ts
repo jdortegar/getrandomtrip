@@ -30,6 +30,10 @@ const BENEFIT_SELECT = {
   internalNotes: true,
   confirmationStatus: true,
   reservationCode: true,
+  photos: {
+    orderBy: { sortOrder: "asc" as const },
+    select: { id: true, url: true, altText: true, sortOrder: true },
+  },
 } as const;
 
 export async function POST(

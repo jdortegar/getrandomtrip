@@ -4,6 +4,7 @@ import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
 import Section from '@/components/layout/Section';
 import { TestimonialCard } from './TestimonialCard';
 import type { TestimonialData } from './types';
+import { useDictionary } from '@/hooks/useDictionary';
 
 export type { TestimonialData, TestimonialsContent } from './types';
 
@@ -21,13 +22,18 @@ export default function Testimonials({
   testimonials,
   featureColor,
 }: TestimonialsProps) {
+  const dict = useDictionary((d) => d.xsedPage.testimonials);
+  const resolvedTitle = title ?? dict.title;
+  const resolvedSubtitle = subtitle ?? dict.subtitle;
+  const resolvedEyebrow = eyebrow ?? dict.eyebrow;
+  const resolvedViewFullReviewLabel = viewFullReviewLabel ?? dict.viewFullReviewLabel;
   return (
     <Section
       className="min-h-[60vh]"
-      eyebrow={eyebrow}
+      eyebrow={resolvedEyebrow}
       eyebrowColor={featureColor}
-      subtitle={subtitle}
-      title={title}
+      subtitle={resolvedSubtitle}
+      title={resolvedTitle}
       fullWidth
     >
       <EmblaCarousel accentColor={featureColor} slidesPerView={3} overflow="both">
@@ -37,7 +43,7 @@ export default function Testimonials({
             index={index}
             key={`${testimonial.author}-${index}`}
             testimonial={testimonial}
-            viewFullReviewLabel={viewFullReviewLabel ?? 'View full review'}
+            viewFullReviewLabel={resolvedViewFullReviewLabel}
           />
         ))}
       </EmblaCarousel>

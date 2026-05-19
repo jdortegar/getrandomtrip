@@ -4,12 +4,14 @@ import Image from 'next/image';
 import CountryFlag from '@/components/common/CountryFlag';
 import VideoBackground from '@/components/media/VideoBackground';
 import { getCountryFromLocation } from '@/lib/helpers/flags';
+import { useDictionary } from '@/hooks/useDictionary';
 
 export interface XsedInternalHeroContent {
-  dropNumber: number;
-  date: string;
-  title: string;
-  backgroundImage: string;
+  dropNumber?: number;
+  date?: string;
+  title?: string;
+  description?: string;
+  backgroundImage?: string;
   author?: {
     name: string;
     location: string;
@@ -22,13 +24,12 @@ interface XsedInternalHeroProps {
 }
 
 export function XsedInternalHero({ content }: XsedInternalHeroProps) {
-  const {
-    dropNumber,
-    date,
-    title,
-    backgroundImage,
-    author,
-  } = content;
+  const dropsDict = useDictionary((d) => d.xsedDropsPage);
+  const fallbackImage = useDictionary((d) => d.xsedPage.hero.fallbackImage);
+  const { dropNumber, date, author } = content;
+  const title = content.title ?? dropsDict.title;
+  const description = content.description ?? dropsDict.description;
+  const backgroundImage = content.backgroundImage ?? fallbackImage;
 
   const countryForFlag = author ? getCountryFromLocation(author.location) : null;
 
@@ -57,21 +58,28 @@ export function XsedInternalHero({ content }: XsedInternalHeroProps) {
                 />
                 <div className="flex flex-col justify-end">
                   <p className="font-barlow text-lg uppercase leading-tight tracking-wide text-white">
-                    X SUERTE<br />ES DOMINGO&nbsp;
-                    <span className="font-bold">Nº {dropNumber}</span>
+                    X SUERTE<br />ES DOMINGO
+                    {dropNumber ? <>&nbsp;<span className="font-bold">Nº {dropNumber}</span></> : null}
                   </p>
-                  <p className="font-barlow text-sm font-semibold uppercase tracking-[0.18em] text-xsed mt-1">
-                    {date}
-                  </p>
+                  {date && (
+                    <p className="font-barlow text-sm font-semibold uppercase tracking-[0.18em] text-xsed mt-1">
+                      {date}
+                    </p>
+                  )}
                 </div>
               </div>
 
             </div>
 
             {/* Big drop title */}
-            <h1 className="font-barlow-condensed font-extrabold text-[80px] md:text-[100px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
+            <h1 className="font-barlow-condensed font-extrabold text-[60px] md:text-[80px] lg:text-[100px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
               {title}
             </h1>
+            {description && (
+              <p className="font-barlow mt-4 text-base text-white/70 max-w-sm">
+                {description}
+              </p>
+            )}
           </div>
           {/* Tripper identity row */}
           {author && (

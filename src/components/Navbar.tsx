@@ -76,19 +76,27 @@ export default function Navbar({
   return (
     <>
       <header className={headerClass} data-site-header>
-        <nav className="rt-container h-16 flex items-center justify-between">
+        <nav className="rt-container h-16 flex items-center justify-between gap-1">
           <Link
             aria-label={nav?.ariaLabelLogo ?? 'Randomtrip'}
             className="flex items-center gap-2 shrink-0 py-2"
             href={pathForLocale(currentLocale, '/')}
           >
             <Image
-              alt={nav?.ariaLabelLogo ?? 'Randomtrip'}
+              alt="Randomtrip"
+              width={45}
+              height={45}
+              src="/assets/logos/iso-randomtrip.svg"
+              className="sm:hidden"
+            />
+            <Image
+              alt="Randomtrip"
               height={50}
               priority
               src="/assets/logos/logo_getrandomtrip_1.png"
               style={{ height: 'auto' }}
               width={180}
+              className="hidden sm:block"
             />
           </Link>
 
