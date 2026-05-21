@@ -284,6 +284,7 @@
     "hero": {
       "title": "TGIS",
       "subtitle": "THANK GOD<br/>IT'S SUNDAY",
+      "dropNumberLabel": "No. {number}",
       "tagline": "<strong>1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE</strong> less than 300km from home.",
       "availabilityNote": "Only 10 spots released every Sunday per country.",
       "errorMessage": "We could not add you to the list. Please try again.",

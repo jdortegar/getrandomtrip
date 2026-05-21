@@ -34,12 +34,15 @@ export default async function XsedInternalPage({ params }: Props) {
 
   const dropNumber = Number(drop.slug);
 
+  const dateLocale = normalizedLocale === 'en' ? 'en-US' : 'es-AR';
   const date = drop.tripDate
-    ? drop.tripDate.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    }).toUpperCase()
+    ? drop.tripDate
+        .toLocaleDateString(dateLocale, {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        })
+        .toUpperCase()
     : '';
 
   const benefits = parseDropBenefits(drop.hotels, drop.activities);
@@ -68,7 +71,10 @@ export default async function XsedInternalPage({ params }: Props) {
 
   return (
     <>
-      <XsedInternalHero content={heroContent} />
+      <XsedInternalHero
+        content={heroContent}
+        hero={dict.xsedPage.hero}
+      />
       <Section className="md:px-20 px-4">
         <Breadcrumb
           items={[

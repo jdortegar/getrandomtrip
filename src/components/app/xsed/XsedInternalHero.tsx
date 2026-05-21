@@ -4,85 +4,92 @@ import Image from 'next/image';
 import CountryFlag from '@/components/common/CountryFlag';
 import VideoBackground from '@/components/media/VideoBackground';
 import { getCountryFromLocation } from '@/lib/helpers/flags';
-import { useDictionary } from '@/hooks/useDictionary';
+import { formatTitleWithCopyright } from '@/lib/helpers/stringHelpers';
+import type { MarketingDictionary, XsedPageDict } from '@/lib/types/dictionary';
 
 export interface XsedInternalHeroContent {
-  dropNumber?: number;
-  date?: string;
-  title?: string;
-  description?: string;
-  backgroundImage?: string;
   author?: {
-    name: string;
-    location: string;
     avatarUrl: string;
+    location: string;
+    name: string;
   };
+  backgroundImage?: string;
+  date?: string;
+  description?: string;
+  dropNumber?: number;
+  title?: string;
 }
 
 interface XsedInternalHeroProps {
   content: XsedInternalHeroContent;
+  dropsPage?: MarketingDictionary['xsedDropsPage'];
+  hero: XsedPageDict['hero'];
 }
 
-export function XsedInternalHero({ content }: XsedInternalHeroProps) {
-  const dropsDict = useDictionary((d) => d.xsedDropsPage);
-  const fallbackImage = useDictionary((d) => d.xsedPage.hero.fallbackImage);
-  const { dropNumber, date, author } = content;
-  const title = content.title ?? dropsDict.title;
-  const description = content.description ?? dropsDict.description;
-  const backgroundImage = content.backgroundImage ?? fallbackImage;
+export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroProps) {
+  const { author, date, dropNumber } = content;
+  const title = content.title ?? dropsPage?.title ?? '';
+  const description = content.description ?? dropsPage?.description ?? '';
+  const backgroundImage = content.backgroundImage ?? hero.fallbackImage;
 
   const countryForFlag = author ? getCountryFromLocation(author.location) : null;
+  const dropNumberText =
+    dropNumber != null && !Number.isNaN(dropNumber)
+      ? hero.dropNumberLabel.replace('{number}', String(dropNumber))
+      : null;
 
   return (
     <section className="relative h-[60vh] min-h-[520px] w-full overflow-hidden bg-slate-950 text-white">
-      {/* Background image */}
-      <VideoBackground
-        fallbackImage={backgroundImage}
-      />
+      <VideoBackground fallbackImage={backgroundImage} />
 
-      {/* Content pinned to bottom-left */}
-      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
+      <div className="relative z-10 flex h-full flex-col justify-center container mx-auto px-4 md:px-20">
         <div className="flex flex-col gap-6">
           <div>
-            {/* XSED + drop info row */}
-            <div className="flex items-end gap-3 mb-3">
-              <h2 className="font-barlow-condensed font-extrabold text-[80px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
-                XSED
+            <div className="mb-3 flex items-end gap-3">
+              <h2
+                className="font-barlow-condensed text-[80px] font-extrabold leading-[0.8] z-10 md:text-[130px] [&_sup]:text-[0.6em]"
+              >
+                {formatTitleWithCopyright(hero.title)}
               </h2>
 
               <div className="flex justify-end gap-2">
                 <span
                   aria-hidden
-                  className="self-stretch w-px bg-xsed rounded-full"
+                  className="self-stretch w-px rounded-full bg-xsed"
                   style={{ minHeight: 40 }}
                 />
                 <div className="flex flex-col justify-end">
-                  <p className="font-barlow text-lg uppercase leading-tight tracking-wide text-white">
-                    X SUERTE<br />ES DOMINGO
-                    {dropNumber ? <>&nbsp;<span className="font-bold">Nº {dropNumber}</span></> : null}
-                  </p>
-                  {date && (
-                    <p className="font-barlow text-sm font-semibold uppercase tracking-[0.18em] text-xsed mt-1">
+                  <p
+                    className="font-barlow text-lg uppercase leading-tight tracking-wide text-white"
+                    dangerouslySetInnerHTML={{ __html: hero.subtitle }}
+                  />
+                  {dropNumberText ? (
+                    <p className="font-barlow mt-1 text-sm font-bold uppercase tracking-wide text-white">
+                      {dropNumberText}
+                    </p>
+                  ) : null}
+                  {date ? (
+                    <p className="font-barlow mt-1 text-sm font-semibold uppercase tracking-[0.18em] text-xsed">
                       {date}
                     </p>
-                  )}
+                  ) : null}
                 </div>
               </div>
-
             </div>
 
-            {/* Big drop title */}
-            <h1 className="font-barlow-condensed font-extrabold text-[60px] md:text-[80px] lg:text-[100px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
-              {title}
-            </h1>
-            {description && (
-              <p className="font-barlow mt-4 text-base text-white/70 max-w-sm">
+            {title ? (
+              <h1 className="font-barlow-condensed text-[60px] font-extrabold leading-[0.8] z-10 md:text-[80px] lg:text-[100px] [&_sup]:text-[0.6em]">
+                {title}
+              </h1>
+            ) : null}
+            {description ? (
+              <p className="font-barlow mt-4 max-w-sm text-base text-white/70">
                 {description}
               </p>
-            )}
+            ) : null}
           </div>
-          {/* Tripper identity row */}
-          {author && (
+
+          {author ? (
             <div className="flex flex-wrap items-center gap-4 md:gap-6">
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
                 {author.avatarUrl ? (
@@ -94,7 +101,7 @@ export function XsedInternalHero({ content }: XsedInternalHeroProps) {
                     src={author.avatarUrl}
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-barlow-condensed text-4xl font-bold text-white">
                     {author.name?.charAt(0)}
                   </div>
                 )}
@@ -105,22 +112,21 @@ export function XsedInternalHero({ content }: XsedInternalHeroProps) {
                     {author.name}
                   </p>
                 </div>
-                {author.location && (
-                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
-                    {countryForFlag && (
+                {author.location ? (
+                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase leading-none tracking-[0.4em] text-[#F2C53D]">
+                    {countryForFlag ? (
                       <CountryFlag
                         className="inline-block shrink-0 align-baseline"
                         country={countryForFlag}
                         title={author.location}
                       />
-                    )}
+                    ) : null}
                     <span>{author.location.toUpperCase()}</span>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
-          )}
-
+          ) : null}
         </div>
       </div>
     </section>

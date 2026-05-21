@@ -284,6 +284,7 @@
     "hero": {
       "title": "XSED",
       "subtitle": "X SUERTE<br/>ES DOMINGO",
+      "dropNumberLabel": "Nº {number}",
       "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> única a menos de 300km de tu casa.<br/>Solo 10 cupos liberados cada domingo por país.",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
       "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",

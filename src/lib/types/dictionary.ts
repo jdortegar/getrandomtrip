@@ -526,6 +526,7 @@ export interface XsedPageDict {
     titleHighlight: string;
   };
   hero: {
+    dropNumberLabel: string;
     errorMessage: string;
     primaryCta?: { ariaLabel: string; href: string; text: string };
     invalidEmailMessage: string;
