@@ -33,8 +33,8 @@ function getCountryFromLocation(
 export default function TripperHero({ tripper }: TripperHeroProps) {
   const firstName = tripper.name?.split(' ')[0] ?? tripper.name ?? ''
   const tripperName = tripper.name;
-  const tripperAvatar = tripper.avatarUrl ?? '/images/fallback-profile.jpg';
-  const tripperHeroImage = tripper.heroImage ?? tripper.avatarUrl ?? '/images/fallback-profile.jpg';
+  const tripperAvatar = tripper.avatarUrl || null;
+  const tripperHeroImage = tripper.heroImage || tripper.avatarUrl || null;
   const tripperBio = tripper.bio;
   const tripperLocation = tripper.location;
 
@@ -45,8 +45,8 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
     () => [tripperName, tripperBio].filter(Boolean).join('. ') || 'Tripper banner',
     [tripperName, tripperBio],
   );
-  const bannerSrc = tripperHeroImage || tripperAvatar || undefined;
-  const avatarSrc = tripperAvatar || tripperHeroImage || undefined;
+  const bannerSrc = tripperHeroImage ?? tripperAvatar ?? undefined;
+  const avatarSrc = tripperAvatar ?? tripperHeroImage ?? undefined;
 
   return (
     <section
