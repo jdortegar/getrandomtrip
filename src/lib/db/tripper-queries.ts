@@ -291,7 +291,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         excuseKey: true,
         destinationCountry: true,
         destinationCity: true,
-        basePriceUsd: true,
+        basePrice: true,
         displayPrice: true,
       },
       orderBy: [{ type: 'asc' }, { level: 'asc' }, { title: 'asc' }],
@@ -307,11 +307,12 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         packagesByType[type] = {};
       }
 
-      if (!packagesByType[type][level]) {
-        packagesByType[type][level] = [];
+      const levelKey = level ?? 'unknown';
+      if (!packagesByType[type][levelKey]) {
+        packagesByType[type][levelKey] = [];
       }
 
-      packagesByType[type][level].push(pkg);
+      packagesByType[type][levelKey].push(pkg);
     });
 
     return packagesByType;
@@ -348,7 +349,7 @@ export async function getTripperDashboardStats(tripperId: string) {
           select: { id: true, name: true },
         },
         experience: {
-          select: { id: true, title: true, basePriceUsd: true },
+          select: { id: true, title: true, basePrice: true },
         },
         payment: {
           select: {
@@ -464,7 +465,7 @@ export async function getTripperRecentBookings(
           select: { id: true, name: true, email: true },
         },
         experience: {
-          select: { id: true, title: true, basePriceUsd: true },
+          select: { id: true, title: true, basePrice: true },
         },
         payment: {
           select: { id: true, amount: true, status: true },
@@ -481,7 +482,7 @@ export async function getTripperRecentBookings(
       experienceName: booking.experience?.title || 'Experiencia eliminada',
       experienceId: booking.experience?.id,
       date: booking.createdAt.toISOString(),
-      amount: booking.payment?.amount || booking.experience?.basePriceUsd || 0,
+      amount: booking.payment?.amount || booking.experience?.basePrice || 0,
       status: booking.status.toLowerCase(),
       paymentStatus: booking.payment?.status?.toLowerCase() || 'pending',
     }));
@@ -524,7 +525,7 @@ export async function getTripperEarnings(
         experience: {
           select: {
             id: true,
-            basePriceUsd: true,
+            basePrice: true,
             owner: {
               select: {
                 commission: true,
@@ -718,7 +719,7 @@ export async function getTripperExperiences(tripperId: string) {
         level: true,
         status: true,
         isActive: true,
-        basePriceUsd: true,
+        basePrice: true,
         destinationCountry: true,
         destinationCity: true,
         createdAt: true,
@@ -735,7 +736,7 @@ export async function getTripperExperiences(tripperId: string) {
       level: pkg.level,
       status: pkg.status.toLowerCase() as any,
       isActive: pkg.isActive,
-      price: pkg.basePriceUsd,
+      price: pkg.basePrice,
       destination: `${pkg.destinationCity}, ${pkg.destinationCountry}`,
       createdAt: pkg.createdAt.toISOString(),
       updatedAt: pkg.updatedAt.toISOString(),

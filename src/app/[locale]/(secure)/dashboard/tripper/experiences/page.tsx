@@ -39,7 +39,7 @@ export default async function TripperExperiencesPage(
       level: true,
       status: true,
       isActive: true,
-      basePriceUsd: true,
+      basePrice: true,
       displayPrice: true,
       destinationCountry: true,
       destinationCity: true,

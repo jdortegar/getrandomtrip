@@ -56,7 +56,7 @@ export interface CreateTripData {
   arrivePref?: string;
   avoidDestinations?: string[];
   addons?: any;
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice?: string;
   filtersCostUsd?: number;
   addonsCostUsd?: number;

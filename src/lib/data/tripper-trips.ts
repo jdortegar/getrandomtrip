@@ -108,7 +108,7 @@ export async function getTripperAvailableLevelsForType(
       distinct: ['level'],
     });
 
-    return packages.map((pkg) => pkg.level);
+    return packages.map((pkg) => pkg.level).filter((l): l is string => l !== null);
   } catch (error) {
     console.error('Error fetching tripper levels for type:', error);
     return [];

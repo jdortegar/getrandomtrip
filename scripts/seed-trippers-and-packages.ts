@@ -1118,8 +1118,9 @@ async function seedTrippersAndPackages() {
 
       const byType = tripperPackages.reduce((acc, pkg) => {
         if (!acc[pkg.type]) acc[pkg.type] = {};
-        if (!acc[pkg.type][pkg.level]) acc[pkg.type][pkg.level] = 0;
-        acc[pkg.type][pkg.level]++;
+        const lk = pkg.level ?? 'unknown';
+        if (!acc[pkg.type][lk]) acc[pkg.type][lk] = 0;
+        acc[pkg.type][lk]++;
         return acc;
       }, {} as any);
 

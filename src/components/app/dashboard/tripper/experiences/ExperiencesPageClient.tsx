@@ -206,7 +206,7 @@ export default function ExperiencesPageClient({
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {experience.displayPrice ||
-                        `USD ${experience.basePriceUsd.toLocaleString()}`}
+                        `USD ${experience.basePrice.toLocaleString()}`}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-500">
                       {new Date(experience.updatedAt).toLocaleDateString(

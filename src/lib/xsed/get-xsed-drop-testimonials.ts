@@ -13,13 +13,12 @@ function formatReviewerAuthor(fullName: string): string {
 }
 
 /**
- * Public testimonials from travelers who completed this XSED drop and left feedback
- * (`TripRequest` linked via `xsedExperienceId`).
+ * Public testimonials from travelers who completed this XSED drop and left feedback.
  */
 export async function getXsedDropTestimonials(
-  xsedExperienceId: string,
+  experienceId: string,
 ): Promise<TestimonialData[]> {
-  const rows = await findCompletedXsedTripRequestsForTestimonials(xsedExperienceId);
+  const rows = await findCompletedXsedTripRequestsForTestimonials(experienceId);
 
   const out: TestimonialData[] = [];
   for (const tr of rows) {

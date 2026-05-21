@@ -18,8 +18,8 @@ datasource db {
 // ============================================================================
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String     @id @default(cuid())
+  email     String     @unique
   name      String
   password  String?
   avatarUrl String?
@@ -35,13 +35,13 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
-  bio             String? // Tripper biography/description
-  heroImage       String? // Hero banner image
-  location        String? // Tripper location
-  motto           String? // Inspirational quote for testimonial banner
-  specialization  String? // e.g. "Tripper especializada en aventuras acuáticas"
-  tierLevel       String? // Tripper tier level
-  destinations    String[] @default([]) // Countries/cities they specialize in
+  bio            String? // Tripper biography/description
+  heroImage      String? // Hero banner image
+  location       String? // Tripper location
+  motto          String? // Inspirational quote for testimonial banner
+  specialization String? // e.g. "Tripper especializada en aventuras acuáticas"
+  tierLevel      String? // Tripper tier level
+  destinations   String[] @default([]) // Countries/cities they specialize in
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -52,19 +52,21 @@ model User {
   interests    String[] @default([])
   dislikes     String[] @default([])
 
-  /** Contact / checkout: phone and structured address (street, city, state, zipCode, country). */
+  /**
+   * Contact / checkout: phone and structured address (street, city, state, zipCode, country).
+   */
   phone   String?
   address Json?
 
   // Relations
-  tripRequests  TripRequest[] @relation("CustomerTripRequests")
-  ownedExperiences Experience[]  @relation("OwnedExperiences")
-  payments         Payment[]
-  reviews          Review[]
-  likedExperiences ExperienceLike[]
-  blogPosts     BlogPost[]    @relation("BlogAuthor")
-  xsedExperiencesCreated XsedExperience[] @relation("XsedExperienceCreatedBy")
-  xsedExperiencesUpdated XsedExperience[] @relation("XsedExperienceUpdatedBy")
+  tripRequests       TripRequest[]    @relation("CustomerTripRequests")
+  ownedExperiences   Experience[]     @relation("OwnedExperiences")
+  payments           Payment[]
+  reviews            Review[]
+  likedExperiences   ExperienceLike[]
+  blogPosts          BlogPost[]       @relation("BlogAuthor")
+  experiencesCreated Experience[]     @relation("ExperienceCreatedBy")
+  experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
 
   @@map("users")
 }
@@ -86,7 +88,9 @@ model TripRequest {
   endDate       DateTime?
   nights        Int       @default(1)
   pax           Int       @default(1)
-  /** Family/group: { adults, minors, rooms }; headcount stays in `pax`. */
+  /**
+   * Family/group: { adults, minors, rooms }; headcount stays in `pax`.
+   */
   paxDetails    Json?
 
   // Filters
@@ -102,11 +106,7 @@ model TripRequest {
   addons Json? // Array of { id: string, qty: number, optionId?: string }
 
   // Experience Assignment
-  experienceId String? // Assigned experience when user selects one
-
-  /** When set, this trip request is an XSED drop purchase (see `XsedExperience`). Use existing `Payment` (1:1) for checkout; `experienceId` is usually null. */
-  xsedExperienceId String?
-  xsedExperience   XsedExperience? @relation(fields: [xsedExperienceId], references: [id], onDelete: SetNull)
+  experienceId String? // Assigned experience when user selects one (tripper or XSED)
 
   // Completed trip data (optional - populated after trip completion)
   actualDestination     String? // Revealed destination
@@ -125,7 +125,6 @@ model TripRequest {
   experience Experience? @relation(fields: [experienceId], references: [id], onDelete: SetNull)
   payment    Payment?
 
-  @@index([xsedExperienceId])
   @@map("trip_requests")
 }
 
@@ -134,9 +133,9 @@ model Experience {
   ownerId String // Tripper who created this experience
   status  ExperienceStatus @default(DRAFT)
 
-  // Experience metadata
-  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
-  level String // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+  // Experience metadata — type also accepts 'XSED' for Sunday drops
+  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
+  level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
 
   // User preference matching (for filtering)
   excuseKey String? // Excuse key that this package supports (e.g., 'romantic-getaway', 'solo-adventure')
@@ -167,7 +166,8 @@ model Experience {
   exclusions Json? // What's not included
 
   // Pricing
-  basePriceUsd Float  @default(0)
+  basePrice    Float  @default(0)
+  currency     String @default("USD")
   displayPrice String @default("")
 
   // Compatibility matching (mirrors TripRequest filter fields)
@@ -178,20 +178,48 @@ model Experience {
   departPref        String @default("any")
   arrivePref        String @default("any")
 
+  // XSED-specific fields (null on tripper experiences)
+  slug                    String?   @unique
+  titleInternal           String?
+  tripDate                DateTime?
+  revealAt                DateTime?
+  maxSpots                Int?
+  minSpots                Int?
+  cancellationPolicy      String?   @db.Text
+  weatherPolicy           String?   @db.Text
+  accessibilityNotes      String?   @db.Text
+  safetyNotes             String?   @db.Text
+  revealCopy              String?   @db.Text
+  preRevealCopy           String?   @db.Text
+  packingHints            String?   @db.Text
+  whatsappMessageTemplate String?   @db.Text
+  adminNotes              String?   @db.Text
+  supplierNotes           String?   @db.Text
+
   // Visibility
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)
   likes      Int     @default(0)
+
+  // Audit trail
+  createdById String?
+  updatedById String?
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  owner           User          @relation("OwnedExperiences", fields: [ownerId], references: [id], onDelete: Cascade)
-  tripRequests    TripRequest[] @relation
+  owner           User             @relation("OwnedExperiences", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdBy       User?            @relation("ExperienceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy       User?            @relation("ExperienceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  tripRequests    TripRequest[]    @relation
   experienceLikes ExperienceLike[]
 
+  @@index([type])
+  @@index([slug])
+  @@index([tripDate])
+  @@index([revealAt])
   @@map("experiences")
 }
 
@@ -205,7 +233,7 @@ model Payment {
   tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
 
   // Provider Information
-  provider                String  // 'stripe'
+  provider                String // 'stripe'
   providerPaymentId       String? // Stripe PaymentIntent ID
   stripePaymentIntentId   String? @unique // Stripe PaymentIntent ID for fast webhook lookup
   providerMerchantOrderId String? // MP merchant order ID (legacy, kept for historical rows)
@@ -296,7 +324,7 @@ model BlogPost {
 
   // Basic info
   title    String
-  slug     String?  @unique // SEO-friendly URL (e.g. aventura-acuatica)
+  slug     String? @unique // SEO-friendly URL (e.g. aventura-acuatica)
   subtitle String?
   tagline  String?
   coverUrl String? // Hero/cover image URL
@@ -308,7 +336,7 @@ model BlogPost {
   blocks Json @default("[]")
 
   // Metadata
-  tags String[] @default([])
+  tags       String[] @default([])
   travelType String? // solo | couple | family | group | honeymoon | paws
   excuseKey  String? // e.g. solo-adventure (from shared excuses)
 
@@ -416,146 +444,4 @@ model XsedNotificationSignup {
   @@index([email])
   @@index([createdAt])
   @@map("xsed_notification_signups")
-}
-
-// ============================================================================
-// XSED – curated Sunday-drop experiences (components + media)
-// ============================================================================
-
-enum XsedBenefitType {
-  ACCOMMODATION
-  DINNER
-  ACTIVITY
-}
-
-enum XsedConfirmationStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
-model XsedExperience {
-  id     String        @id @default(cuid())
-  slug   String?       @unique
-  /** Same lifecycle vocabulary as `Experience.status`. */
-  status ExperienceStatus @default(DRAFT)
-
-  titleInternal       String
-  titlePublicTeaser   String?
-  heroImage           String?
-  destinationCity     String?
-  destinationState    String?
-  originCity          String?
-  originCountry       String?
-  distanceKmFromOrigin Int?
-  tripDate            DateTime?
-  revealAt            DateTime?
-
-  pricePerPerson        Float?
-  currency              String   @default("USD")
-  maxSpots              Int?
-  minSpots              Int?
-  costEstimateTotal     Float?
-  targetMarginPercent   Float?
-
-  included              String? @db.Text
-  notIncluded           String? @db.Text
-  generalConditions     String? @db.Text
-  cancellationPolicy    String? @db.Text
-  weatherPolicy         String? @db.Text
-  accessibilityNotes    String? @db.Text
-  safetyNotes           String? @db.Text
-
-  revealCopy               String? @db.Text
-  preRevealCopy            String? @db.Text
-  packingHints             String? @db.Text
-  whatsappMessageTemplate  String? @db.Text
-
-  adminNotes    String? @db.Text
-  supplierNotes String? @db.Text
-
-  /** What the drop includes operationally (stay, dinner, Sunday pillar); `XsedComponent.type` is one of `XsedBenefitType`. */
-  benefits     XsedComponent[]
-  tripRequests TripRequest[]
-
-  createdById String?
-  updatedById String?
-  createdBy   User? @relation("XsedExperienceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  updatedBy   User? @relation("XsedExperienceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status])
-  @@index([revealAt])
-  @@index([tripDate])
-  @@map("xsed_experiences")
-}
-
-model XsedComponent {
-  id            String          @id @default(cuid())
-  experienceId  String
-  /** Which pillar of the XSED weekend this row describes. Multiple components of the same type are allowed (e.g. two hotel nights). */
-  type          XsedBenefitType
-  sortOrder     Int             @default(0)
-  experience    XsedExperience  @relation(fields: [experienceId], references: [id], onDelete: Cascade)
-
-  name          String?
-  providerName  String?
-  address       String?
-  city          String?
-  state         String?
-  googleMapsUrl String?
-  contactName   String?
-  contactPhone  String?
-  contactEmail  String?
-  websiteUrl    String?
-
-  scheduledStart DateTime?
-  scheduledEnd   DateTime?
-  checkInTime    String?
-  checkOutTime   String?
-
-  confirmationStatus XsedConfirmationStatus @default(PENDING)
-  reservationCode    String?
-  cost               Float?
-  currency           String  @default("USD")
-  paymentStatus      String?
-
-  capacity     Int?
-  conditions   String? @db.Text
-  restrictions String? @db.Text
-  whatToBring  String? @db.Text
-  included     String? @db.Text
-  notIncluded  String? @db.Text
-
-  internalNotes          String? @db.Text
-  customerVisibleNotes   String? @db.Text
-
-  photos XsedMedia[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([experienceId, type])
-  @@index([experienceId, sortOrder])
-  @@map("xsed_components")
-}
-
-model XsedMedia {
-  id          String         @id @default(cuid())
-  componentId String
-  component   XsedComponent  @relation(fields: [componentId], references: [id], onDelete: Cascade)
-
-  url       String
-  altText   String?
-  /** Media slot (string slug). E.g. `cover` | `gallery` | `map`. */
-  type      String @default("gallery")
-  sortOrder Int    @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([componentId])
-  @@map("xsed_media")
 }

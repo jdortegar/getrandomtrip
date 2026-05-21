@@ -48,7 +48,7 @@ const EMPTY_FORM: ExperienceFormData = {
   maxNights: 2,
   minPax: 1,
   maxPax: 8,
-  basePriceUsd: 0,
+  basePrice: 0,
   displayPrice: "",
   accommodationType: "any",
   transport: "any",
@@ -172,6 +172,7 @@ export default function ExperienceFormClient({
     { id: "activities", label: copy.sections.activities },
     { id: "itinerary", label: copy.sections.itinerary },
     { id: "inclusions", label: copy.sections.inclusions },
+    { id: "policies", label: copy.sections.policies },
     { id: "tags-media", label: copy.sections.tagsMedia },
     { id: "visibility", label: copy.sections.visibility },
   ];
@@ -384,6 +385,25 @@ export default function ExperienceFormClient({
                   placeholder="Describe tu experiencia en detalle..."
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>{copy.fields.titleInternal}</label>
+                  <Input
+                    value={form.titleInternal ?? ""}
+                    onChange={(e) => set("titleInternal", e.target.value || null)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>{copy.fields.slug}</label>
+                  <Input
+                    value={form.slug ?? ""}
+                    onChange={(e) => set("slug", e.target.value || null)}
+                    placeholder="mi-experiencia-baires"
+                  />
+                  <p className={hintClass}>{copy.fields.slugHint}</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -505,19 +525,19 @@ export default function ExperienceFormClient({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>
-                    {copy.fields.basePriceUsd}
+                    {copy.fields.basePrice}
                   </label>
                   <Input
                     type="number"
                     min={0}
                     step={0.01}
-                    value={form.basePriceUsd}
+                    value={form.basePrice}
                     onChange={(e) =>
-                      set("basePriceUsd", parseFloat(e.target.value) || 0)
+                      set("basePrice", parseFloat(e.target.value) || 0)
                     }
                     placeholder="0.00"
                   />
-                  <p className={hintClass}>{copy.fields.basePriceUsdHint}</p>
+                  <p className={hintClass}>{copy.fields.basePriceHint}</p>
                 </div>
                 <div>
                   <label className={labelClass}>
@@ -529,6 +549,53 @@ export default function ExperienceFormClient({
                     placeholder="Ej: Desde USD 450"
                   />
                   <p className={hintClass}>{copy.fields.displayPriceHint}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>{copy.fields.currency}</label>
+                  <Input
+                    value={form.currency ?? "USD"}
+                    onChange={(e) => set("currency", e.target.value)}
+                    placeholder="USD"
+                  />
+                  <p className={hintClass}>{copy.fields.currencyHint}</p>
+                </div>
+                <div></div>
+                <div>
+                  <label className={labelClass}>{copy.fields.minSpots}</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.minSpots ?? ""}
+                    onChange={(e) => set("minSpots", e.target.value ? parseInt(e.target.value) : null)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>{copy.fields.maxSpots}</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={form.maxSpots ?? ""}
+                    onChange={(e) => set("maxSpots", e.target.value ? parseInt(e.target.value) : null)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>{copy.fields.tripDate}</label>
+                  <Input
+                    type="datetime-local"
+                    value={form.tripDate ?? ""}
+                    onChange={(e) => set("tripDate", e.target.value || null)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>{copy.fields.revealAt}</label>
+                  <Input
+                    type="datetime-local"
+                    value={form.revealAt ?? ""}
+                    onChange={(e) => set("revealAt", e.target.value || null)}
+                  />
                 </div>
               </div>
             </div>
@@ -965,7 +1032,38 @@ export default function ExperienceFormClient({
             </div>
           </div>
 
-          {/* Section 9: Tags, Highlights & Media */}
+          {/* Section 9: Policies & Communication */}
+          <div id="section-policies" className={activeSection === "policies" ? sectionClassName : "hidden"}>
+            <h2 className="text-lg font-semibold text-neutral-900 mb-4">
+              {copy.sections.policies}
+            </h2>
+            <div className="space-y-4">
+              {([
+                ["cancellationPolicy", copy.fields.cancellationPolicy],
+                ["weatherPolicy", copy.fields.weatherPolicy],
+                ["accessibilityNotes", copy.fields.accessibilityNotes],
+                ["safetyNotes", copy.fields.safetyNotes],
+                ["revealCopy", copy.fields.revealCopy],
+                ["preRevealCopy", copy.fields.preRevealCopy],
+                ["packingHints", copy.fields.packingHints],
+                ["whatsappMessageTemplate", copy.fields.whatsappMessageTemplate],
+                ["adminNotes", copy.fields.adminNotes],
+                ["supplierNotes", copy.fields.supplierNotes],
+              ] as [keyof ExperienceFormData, string][]).map(([key, label]) => (
+                <div key={key}>
+                  <label className={labelClass}>{label}</label>
+                  <textarea
+                    value={(form[key] as string) ?? ""}
+                    onChange={(e) => set(key, e.target.value || null)}
+                    rows={3}
+                    className={fieldClass}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 10: Tags, Highlights & Media */}
           <div id="section-tags-media" className={activeSection === "tags-media" ? sectionClassName : "hidden"}>
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.tagsMedia}

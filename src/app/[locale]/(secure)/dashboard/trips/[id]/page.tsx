@@ -58,7 +58,7 @@ interface TripDetails {
   addons: any;
 
   // Pricing
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice: string;
   filtersCostUsd: number;
   addonsCostUsd: number;
@@ -473,7 +473,7 @@ function TripDetailsContent() {
                       Precio Base
                     </span>
                     <span className="font-semibold text-neutral-900">
-                      ${(trip.basePriceUsd ?? 0).toFixed(2)}
+                      ${(trip.basePrice ?? 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pb-3 border-b border-gray-200">

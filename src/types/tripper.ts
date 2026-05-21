@@ -240,7 +240,7 @@ export interface ExperienceFormData {
   maxPax: number;
 
   // Pricing
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice: string;
 
   // Matching (mirrors TripRequest filters)
@@ -265,16 +265,35 @@ export interface ExperienceFormData {
   // Visibility
   isActive: boolean;
   isFeatured: boolean;
+
+  // XSED Drop fields
+  titleInternal?: string | null;
+  slug?: string | null;
+  tripDate?: string | null;
+  revealAt?: string | null;
+  minSpots?: number | null;
+  maxSpots?: number | null;
+  currency?: string;
+  cancellationPolicy?: string | null;
+  weatherPolicy?: string | null;
+  accessibilityNotes?: string | null;
+  safetyNotes?: string | null;
+  revealCopy?: string | null;
+  preRevealCopy?: string | null;
+  packingHints?: string | null;
+  whatsappMessageTemplate?: string | null;
+  adminNotes?: string | null;
+  supplierNotes?: string | null;
 }
 
 export interface ExperienceListItem {
   id: string;
   title: string;
   type: string;
-  level: string;  
+  level: string | null;
   status: string;
   isActive: boolean;
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice: string;
   destinationCountry: string;
   destinationCity: string;

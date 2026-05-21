@@ -13,6 +13,7 @@ export const EXPERIENCE_TYPES = [
   { value: 'solo', label: 'Solo (SOLUM©)' },
   { value: 'honeymoon', label: 'Luna de Miel (NUPTIA©)' },
   { value: 'paws', label: 'Con Mascotas (PAWS©)' },
+  { value: 'XSED', label: 'XSED Drop' },
 ] as const;
 
 export const EXPERIENCE_LEVELS = [

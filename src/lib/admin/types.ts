@@ -7,7 +7,7 @@ export type StatusFilterValue = TripRequestStatus | 'ALL';
 export interface AdminTripExperience {
   excuseKey: string | null;
   id: string;
-  level: string;
+  level: string | null;
   title: string;
   type: string;
 }
@@ -134,26 +134,21 @@ export interface AdminXsedExperience {
   id: string;
   slug: string | null;
   status: string;
-  titleInternal: string;
-  titlePublicTeaser: string | null;
-  heroImage: string | null;
-  destinationCity: string | null;
-  destinationState: string | null;
-  originCity: string | null;
-  originCountry: string | null;
-  distanceKmFromOrigin: number | null;
+  titleInternal: string | null;
+  teaser: string;
+  heroImage: string;
+  destinationCity: string;
+  destinationCountry: string;
   tripDate: string | null;
   revealAt: string | null;
-  pricePerPerson: number | null;
+  basePrice: number;
   currency: string;
   maxSpots: number | null;
   minSpots: number | null;
-  costEstimateTotal: number | null;
-  /** Percentage 0–100 (e.g. 20 = 20%). */
-  targetMarginPercent: number | null;
-  included: string | null;
-  notIncluded: string | null;
-  generalConditions: string | null;
+  inclusions: unknown;
+  exclusions: unknown;
+  hotels: unknown;
+  activities: unknown;
   cancellationPolicy: string | null;
   weatherPolicy: string | null;
   accessibilityNotes: string | null;
