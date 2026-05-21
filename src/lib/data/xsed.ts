@@ -1,9 +1,9 @@
-import type { PackageStatus, Prisma, TripRequestStatus } from '@prisma/client';
+import type { ExperienceStatus, Prisma, TripRequestStatus } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import type { DropEntry } from '@/types/core';
 
-export const PUBLIC_XSED_GRID_STATUSES: PackageStatus[] = [
+export const PUBLIC_XSED_GRID_STATUSES: ExperienceStatus[] = [
   'ACTIVE',
   'INACTIVE',
   'ARCHIVED',
@@ -23,7 +23,7 @@ const xsedListSelect = {
   slug: true,
   status: true,
   titleInternal: true,
-  titlePublicTeaser: true,
+  teaser: true,
   tripDate: true,
   _count: {
     select: {
@@ -34,28 +34,74 @@ const xsedListSelect = {
   },
 } as const;
 
-export type XsedListRow = Prisma.XsedExperienceGetPayload<{
+export type XsedListRow = Prisma.ExperienceGetPayload<{
   select: typeof xsedListSelect;
 }>;
 
-const xsedDetailInclude = {
-  benefits: {
-    orderBy: { sortOrder: 'asc' as const },
-    include: {
-      photos: { orderBy: { sortOrder: 'asc' as const } },
-    },
-  },
-} satisfies Prisma.XsedExperienceInclude;
+const xsedDetailSelect = {
+  id: true,
+  slug: true,
+  status: true,
+  titleInternal: true,
+  teaser: true,
+  heroImage: true,
+  destinationCity: true,
+  destinationCountry: true,
+  tripDate: true,
+  revealAt: true,
+  basePrice: true,
+  currency: true,
+  maxSpots: true,
+  minSpots: true,
+  inclusions: true,
+  exclusions: true,
+  hotels: true,
+  activities: true,
+  cancellationPolicy: true,
+  weatherPolicy: true,
+  accessibilityNotes: true,
+  safetyNotes: true,
+  revealCopy: true,
+  preRevealCopy: true,
+  packingHints: true,
+} as const;
 
-export type XsedExperienceDetail = Prisma.XsedExperienceGetPayload<{
-  include: typeof xsedDetailInclude;
+export type XsedExperienceDetail = Prisma.ExperienceGetPayload<{
+  select: typeof xsedDetailSelect;
 }>;
+
+export interface XsedDropBenefit {
+  id: string;
+  type: 'ACCOMMODATION' | 'DINNER' | 'ACTIVITY';
+  sortOrder: number;
+  name: string | null;
+  providerName: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  googleMapsUrl: string | null;
+  customerVisibleNotes: string | null;
+  internalNotes: string | null;
+  confirmationStatus: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+  reservationCode: string | null;
+  photos: { id: string; url: string; altText: string | null; type: string; sortOrder: number }[];
+}
+
+export function parseDropBenefits(
+  hotels: Prisma.JsonValue | null,
+  activities: Prisma.JsonValue | null,
+): XsedDropBenefit[] {
+  const hotelItems = Array.isArray(hotels) ? (hotels as unknown as XsedDropBenefit[]) : [];
+  const activityItems = Array.isArray(activities) ? (activities as unknown as XsedDropBenefit[]) : [];
+  return [...hotelItems, ...activityItems].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+}
 
 export async function findUpcomingActiveXsedExperiences(
   now: Date = new Date(),
 ): Promise<XsedListRow[]> {
-  return prisma.xsedExperience.findMany({
+  return prisma.experience.findMany({
     where: {
+      type: 'XSED',
       status: 'ACTIVE',
       OR: [{ tripDate: { gte: now } }, { tripDate: null }],
     },
@@ -65,16 +111,16 @@ export async function findUpcomingActiveXsedExperiences(
 }
 
 export async function findLatestActiveXsedExperience(): Promise<XsedListRow | null> {
-  return prisma.xsedExperience.findFirst({
-    where: { status: 'ACTIVE' },
+  return prisma.experience.findFirst({
+    where: { type: 'XSED', status: 'ACTIVE' },
     orderBy: [{ tripDate: 'desc' }, { createdAt: 'desc' }],
     select: xsedListSelect,
   });
 }
 
 export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
-  return prisma.xsedExperience.findMany({
-    where: { status: { in: PUBLIC_XSED_GRID_STATUSES } },
+  return prisma.experience.findMany({
+    where: { type: 'XSED', status: { in: PUBLIC_XSED_GRID_STATUSES } },
     orderBy: [{ tripDate: 'desc' }, { createdAt: 'desc' }],
     select: xsedListSelect,
   });
@@ -83,18 +129,18 @@ export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
 export async function findActiveXsedExperienceBySlug(
   slug: string,
 ): Promise<XsedExperienceDetail | null> {
-  return prisma.xsedExperience.findUnique({
+  return prisma.experience.findUnique({
     where: { slug },
-    include: xsedDetailInclude,
+    select: xsedDetailSelect,
   });
 }
 
 export async function findCompletedXsedTripRequestsForTestimonials(
-  xsedExperienceId: string,
+  experienceId: string,
 ) {
   return prisma.tripRequest.findMany({
     where: {
-      xsedExperienceId,
+      experienceId,
       status: 'COMPLETED',
       customerFeedback: { not: null },
     },
@@ -147,7 +193,7 @@ function toDropEntry(drop: XsedListRow, locale: string): DropEntry {
     number: parseDropNumber(drop.slug),
     slug: drop.slug ?? '',
     soldOut: isCapacitySoldOut || isStatusSoldOut,
-    title: drop.titlePublicTeaser ?? drop.titleInternal,
+    title: drop.teaser ?? drop.titleInternal ?? '',
   };
 }
 

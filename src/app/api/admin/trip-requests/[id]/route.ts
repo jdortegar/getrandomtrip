@@ -74,9 +74,9 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       data,
     });
 
-    const [pkg, payment, tripUser] = await Promise.all([
-      tripRequest.packageId
-        ? prisma.package.findUnique({
+    const [exp, payment, tripUser] = await Promise.all([
+      tripRequest.experienceId
+        ? prisma.experience.findUnique({
             select: {
               excuseKey: true,
               id: true,
@@ -84,7 +84,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
               title: true,
               type: true,
             },
-            where: { id: tripRequest.packageId },
+            where: { id: tripRequest.experienceId },
           })
         : Promise.resolve(null),
       prisma.payment.findUnique({
@@ -109,7 +109,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     const [hydratedTripRequest] = attachAdminTripRequestRelations(
       [tripRequest],
       tripUser ? { [tripUser.id]: tripUser } : {},
-      pkg ? { [pkg.id]: pkg } : {},
+      exp ? { [exp.id]: exp } : {},
       payment
         ? {
             [payment.tripRequestId]: {

@@ -772,7 +772,7 @@ async function seedTrippersAndPackages() {
 
     // Create packages
     for (const packageData of packages) {
-      const pkg = await prisma.package.create({
+      const pkg = await prisma.experience.create({
         data: packageData,
       });
       console.log(

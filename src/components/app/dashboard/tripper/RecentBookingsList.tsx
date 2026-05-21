@@ -59,7 +59,7 @@ export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) 
                     <p className="font-medium text-neutral-900">
                       {booking.clientName}
                     </p>
-                    <p className="text-sm text-neutral-600">{booking.packageName}</p>
+                    <p className="text-sm text-neutral-600">{booking.experienceName}</p>
                     <p className="text-xs text-neutral-500 flex items-center gap-1 mt-0.5">
                       <Calendar className="h-3 w-3" />
                       {formatDate(booking.date)}

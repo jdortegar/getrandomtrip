@@ -1095,7 +1095,7 @@ async function seedTrippersAndPackages() {
 
       // Create packages in database
       for (const packageData of packages) {
-        await prisma.package.create({
+        await prisma.experience.create({
           data: packageData,
         });
         totalPackages++;
@@ -1111,15 +1111,16 @@ async function seedTrippersAndPackages() {
     // Display summary
     console.log('\n📊 Summary:');
     for (const tripper of createdTrippers) {
-      const tripperPackages = await prisma.package.findMany({
+      const tripperPackages = await prisma.experience.findMany({
         where: { ownerId: tripper.id },
         select: { type: true, level: true, destinationCountry: true },
       });
 
       const byType = tripperPackages.reduce((acc, pkg) => {
         if (!acc[pkg.type]) acc[pkg.type] = {};
-        if (!acc[pkg.type][pkg.level]) acc[pkg.type][pkg.level] = 0;
-        acc[pkg.type][pkg.level]++;
+        const lk = pkg.level ?? 'unknown';
+        if (!acc[pkg.type][lk]) acc[pkg.type][lk] = 0;
+        acc[pkg.type][lk]++;
         return acc;
       }, {} as any);
 

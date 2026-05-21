@@ -29,7 +29,7 @@ export default async function TripperExperiencesPage(
     redirect(`/${params.locale}/dashboard`);
   }
 
-  const rawExperiences = await prisma.package.findMany({
+  const rawExperiences = await prisma.experience.findMany({
     where: { ownerId: user.id },
     orderBy: { updatedAt: "desc" },
     select: {
@@ -39,7 +39,7 @@ export default async function TripperExperiencesPage(
       level: true,
       status: true,
       isActive: true,
-      basePriceUsd: true,
+      basePrice: true,
       displayPrice: true,
       destinationCountry: true,
       destinationCity: true,
@@ -60,7 +60,7 @@ export default async function TripperExperiencesPage(
   return (
     <Section>
       <ExperiencesPageClient
-        dict={dict.packages}
+        dict={dict.tripperExperiences}
         experiences={experiences}
         locale={locale}
       />

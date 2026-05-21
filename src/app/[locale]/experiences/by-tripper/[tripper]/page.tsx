@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import {
   getTripperBySlug,
-  getTripperPackagesByTypeAndLevel,
+  getTripperExperiencesByTypeAndLevel,
 } from '@/lib/db/tripper-queries';
 import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
 import TripperCard from '@/components/TripperCard';
@@ -98,22 +98,22 @@ export default async function Page(
   // Must have database tripper data
   if (!dbTripper) return notFound();
 
-  // Fetch tripper packages organized by type and level
-  const tripperPackagesByType = await getTripperPackagesByTypeAndLevel(
+  // Fetch tripper experiences organized by type and level
+  const tripperExperiencesByType = await getTripperExperiencesByTypeAndLevel(
     dbTripper.id,
   );
 
-  // Get all packages for display
-  const allPackages = Object.values(tripperPackagesByType)
-    .flatMap((levelPackages) => Object.values(levelPackages))
+  // Get all experiences for display
+  const allExperiences = Object.values(tripperExperiencesByType)
+    .flatMap((levelExperiences) => Object.values(levelExperiences))
     .flat();
 
-  // Group packages by type for better organization
-  const packagesByType = Object.entries(tripperPackagesByType).map(
-    ([type, levelPackages]) => ({
+  // Group experiences by type for better organization
+  const experiencesByType = Object.entries(tripperExperiencesByType).map(
+    ([type, levelExperiences]) => ({
       type,
-      packages: Object.values(levelPackages).flat(),
-      totalPackages: Object.values(levelPackages).flat().length,
+      experiences: Object.values(levelExperiences).flat(),
+      totalExperiences: Object.values(levelExperiences).flat().length,
     }),
   );
 
@@ -159,7 +159,7 @@ export default async function Page(
                 )}
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
-                  {allPackages.length} paquetes disponibles
+                  {allExperiences.length} experiencias disponibles
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4" />
@@ -177,16 +177,16 @@ export default async function Page(
           </div>
         </div>
       </div>
-      {/* Packages Content */}
+      {/* Experiences Content */}
       <div className="rt-container px-4 sm:px-6 lg:px-8 py-8">
-        {allPackages.length === 0 ? (
+        {allExperiences.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">📦</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No hay paquetes disponibles
+              No hay experiencias disponibles
             </h3>
             <p className="text-gray-600 mb-6">
-              {dbTripper.name} aún no ha creado paquetes de viaje.
+              {dbTripper.name} aún no ha creado experiencias de viaje.
             </p>
             <Button asChild>
               <Link href="/trippers">Explorar otros Trippers</Link>
@@ -194,19 +194,19 @@ export default async function Page(
           </div>
         ) : (
           <div className="space-y-12">
-            {packagesByType.map(({ type, packages, totalPackages }) => (
+            {experiencesByType.map(({ type, experiences, totalExperiences }) => (
               <div key={type}>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 capitalize">
-                    {type.replace(/-/g, ' ')} Packages
+                    {type.replace(/-/g, ' ')} Experiences
                   </h2>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {totalPackages} paquetes
+                    {totalExperiences} experiencias
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {packages.map((pkg) => {
+                  {experiences.map((pkg) => {
                     const levelInfo = getLevelInfo(pkg.level);
                     return (
                       <div

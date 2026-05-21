@@ -27,8 +27,7 @@
     "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Panel de Admin",
-    "xsedDrops": "Drops XSED"
+    "adminDashboard": "Panel de Admin"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -58,18 +57,11 @@
         "slug": "Slug",
         "status": "Estado",
         "destination": "Destino",
-        "origin": "Origen",
-        "distKm": "Dist. km",
         "tripDate": "Fecha del viaje",
         "revealAt": "Revelar el",
-        "pricePerPerson": "Precio/persona",
+        "basePrice": "Precio/persona",
         "spots": "Cupos",
         "sold": "Vendidos",
-        "costTotal": "Costo total",
-        "marginPct": "Margen %",
-        "included": "Incluido",
-        "notIncluded": "No incluido",
-        "conditions": "Condiciones",
         "cancellation": "Cancelación",
         "weather": "Clima",
         "accessibility": "Accesibilidad",
@@ -117,28 +109,22 @@
       },
       "fields": {
         "titleInternal": "Título (interno)",
-        "titlePublicTeaser": "Teaser público",
+        "teaser": "Teaser público",
         "slug": "Slug",
         "slugHint": "Identificador URL, ej: patagonia-2026",
         "status": "Estado",
         "heroImage": "URL imagen principal",
         "destinationCity": "Ciudad de destino",
-        "destinationState": "Estado / región de destino",
-        "originCity": "Ciudad de origen",
-        "originCountry": "País de origen",
-        "distanceKm": "Distancia desde el origen (km)",
+        "destinationCountry": "País de destino",
         "tripDate": "Fecha del viaje",
         "revealAt": "Revelar el",
-        "pricePerPerson": "Precio por persona",
+        "basePrice": "Precio por persona",
         "currency": "Moneda",
         "currencyHint": "ej: USD, ARS",
         "minSpots": "Cupos mínimos",
         "maxSpots": "Cupos máximos",
-        "costEstimateTotal": "Estimado de costo total",
-        "targetMarginPercent": "Margen objetivo %",
-        "included": "Incluido",
-        "notIncluded": "No incluido",
-        "generalConditions": "Condiciones generales",
+        "inclusions": "Incluido",
+        "exclusions": "No incluido",
         "cancellationPolicy": "Política de cancelación",
         "weatherPolicy": "Política climática",
         "accessibilityNotes": "Notas de accesibilidad",
@@ -298,6 +284,7 @@
     "hero": {
       "title": "XSED",
       "subtitle": "X SUERTE<br/>ES DOMINGO",
+      "dropNumberLabel": "Nº {number}",
       "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> única a menos de 300km de tu casa.<br/>Solo 10 cupos liberados cada domingo por país.",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
       "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
@@ -2884,7 +2871,7 @@
       "totalBookings": "Reservas Totales",
       "monthlyRevenue": "Ingresos Mensuales",
       "averageRating": "Rating Promedio",
-      "activePackages": "Paquetes Activos"
+      "activeExperiences": "Paquetes Activos"
     },
     "recentBookings": {
       "title": "Reservas Recientes",
@@ -2912,9 +2899,9 @@
       "conversionRate": "Tasa de Conversión",
       "growth": "Crecimiento"
     },
-    "packages": {
+    "experiences": {
       "title": "Mis Paquetes",
-      "newPackage": "Nuevo Paquete",
+      "newExperience": "Nuevo Paquete",
       "empty": "No tienes paquetes activos aún",
       "emptyCta": "Crear tu primer paquete",
       "viewAll": "Ver todos →"
@@ -3014,10 +3001,10 @@
       "viewDetails": "Ver Detalles"
     }
   },
-  "packages": {
+  "tripperExperiences": {
     "title": "MIS EXPERIENCIAS",
     "description": "Gestiona tus ofertas de viaje y mantén tu catálogo actualizado.",
-    "newPackage": "Nueva Experiencia",
+    "newExperience": "Nueva Experiencia",
     "back": "Volver a Mis Experiencias",
     "filters": {
       "allTypes": "Todos los tipos",
@@ -3034,7 +3021,7 @@
       "edit": "Editar"
     },
     "emptyState": {
-      "noPackages": "Aún no tienes experiencias.",
+      "noExperiences": "Aún no tienes experiencias.",
       "noMatch": "Ninguna experiencia coincide con los filtros.",
       "createFirst": "Crear mi primera experiencia"
     },
@@ -3064,7 +3051,8 @@
         "itinerary": "Itinerario",
         "inclusions": "Incluye / No incluye",
         "tagsMedia": "Tags, Highlights & Media",
-        "visibility": "Visibilidad"
+        "visibility": "Visibilidad",
+        "policies": "Políticas & Comunicación"
       },
       "fields": {
         "title": "Título",
@@ -3083,8 +3071,8 @@
         "maxNightsHint": "Este nivel admite máx. {n} noches",
         "minPax": "Viajeros mínimos",
         "maxPax": "Viajeros máximos",
-        "basePriceUsd": "Precio base por persona (USD)",
-        "basePriceUsdHint": "Precio por persona, en dólares",
+        "basePrice": "Precio base por persona",
+        "basePriceHint": "Precio por persona, en la moneda configurada",
         "displayPrice": "Precio de visualización",
         "displayPriceHint": "Texto libre que aparece en la tarjeta pública. Ej: Desde USD 450",
         "accommodationType": "Tipo de alojamiento",
@@ -3123,7 +3111,26 @@
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",
-        "isFeaturedHint": "Aparece en la sección destacada"
+        "isFeaturedHint": "Aparece en la sección destacada",
+        "titleInternal": "Título interno",
+        "slug": "Slug (URL)",
+        "slugHint": "Se usa en la URL pública. Solo letras, números y guiones.",
+        "tripDate": "Fecha del drop",
+        "revealAt": "Fecha de reveal",
+        "currency": "Moneda",
+        "currencyHint": "Ej: USD, ARS, EUR",
+        "minSpots": "Cupos mínimos",
+        "maxSpots": "Cupos máximos",
+        "cancellationPolicy": "Política de cancelación",
+        "weatherPolicy": "Política clima/condiciones",
+        "accessibilityNotes": "Notas de accesibilidad",
+        "safetyNotes": "Notas de seguridad",
+        "revealCopy": "Texto post-reveal",
+        "preRevealCopy": "Texto pre-reveal",
+        "packingHints": "Qué llevar",
+        "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
+        "adminNotes": "Notas admin",
+        "supplierNotes": "Notas proveedor"
       }
     }
   },

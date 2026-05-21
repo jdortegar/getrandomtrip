@@ -44,7 +44,7 @@ export const useStore = create<RootState>()(
           activeTab: state.activeTab,
           // Persist hidden state for tripper context
           _originLocked: state._originLocked,
-          _tripperPackageDestinations: state._tripperPackageDestinations,
+          _tripperExperienceDestinations: state._tripperExperienceDestinations,
         }),
       },
     ),

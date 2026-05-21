@@ -8,7 +8,7 @@ import Section from '@/components/layout/Section';
 import { XSED_TESTIMONIALS } from '@/lib/data/xsed-testimonials';
 import { hasLocale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/dictionaries';
-import { findActiveXsedExperienceBySlug } from '@/lib/data/xsed';
+import { findActiveXsedExperienceBySlug, parseDropBenefits } from '@/lib/data/xsed';
 import { getXsedDropTestimonials } from '@/lib/xsed/get-xsed-drop-testimonials';
 
 type Props = {
@@ -29,27 +29,32 @@ export default async function XsedInternalPage({ params }: Props) {
     getXsedDropTestimonials(drop.id),
     getDictionary(normalizedLocale),
   ]);
-  const title = drop.titlePublicTeaser ?? drop.titleInternal;
+  const title = drop.teaser ?? drop.titleInternal ?? '';
   const heroImage = drop.heroImage ?? '/images/drops/drops-mendoza.jpg';
 
   const dropNumber = Number(drop.slug);
 
+  const dateLocale = normalizedLocale === 'en' ? 'en-US' : 'es-AR';
   const date = drop.tripDate
-    ? drop.tripDate.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    }).toUpperCase()
+    ? drop.tripDate
+        .toLocaleDateString(dateLocale, {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        })
+        .toUpperCase()
     : '';
 
-  const article = drop.benefits.map((b) => ({
+  const benefits = parseDropBenefits(drop.hotels, drop.activities);
+
+  const article = benefits.map((b) => ({
     id: b.type.toLowerCase(),
     title: b.name ?? b.type,
     content: b.customerVisibleNotes ?? '',
     images: b.photos.map((p) => ({ url: p.url, caption: p.altText ?? undefined })),
   }));
 
-  const galleryImages = drop.benefits
+  const galleryImages = benefits
     .flatMap((b) => b.photos)
     .filter((p) => p.type === 'gallery')
     .map((p) => ({ url: p.url, caption: p.altText ?? undefined }));
@@ -66,7 +71,10 @@ export default async function XsedInternalPage({ params }: Props) {
 
   return (
     <>
-      <XsedInternalHero content={heroContent} />
+      <XsedInternalHero
+        content={heroContent}
+        hero={dict.xsedPage.hero}
+      />
       <Section className="md:px-20 px-4">
         <Breadcrumb
           items={[

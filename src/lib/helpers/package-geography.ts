@@ -1,11 +1,11 @@
 import { getAvoidCities } from './avoid-cities';
 
 /**
- * Determine if a package matches geographic criteria based on level and origin
- * Uses simplified logic for international packages
+ * Determine if an experience matches geographic criteria based on level and origin
+ * Uses simplified logic for international experiences
  */
-export function isPackageGeographicallyValid(
-  packageData: {
+export function isExperienceGeographicallyValid(
+  experienceData: {
     destinationCountry: string;
     destinationCity: string;
   },
@@ -13,8 +13,8 @@ export function isPackageGeographicallyValid(
   originCity: string,
   level: string,
 ): boolean {
-  const packageCountry = packageData.destinationCountry;
-  const packageCity = packageData.destinationCity;
+  const packageCountry = experienceData.destinationCountry;
+  const packageCity = experienceData.destinationCity;
 
   // For now, use a simplified approach since getAvoidCities is designed for American countries only
   // but our packages include international destinations

@@ -172,11 +172,11 @@ export function CountDown({ copy: copyProp, locale, number, soldCount, targetDat
         {useForm ? (
           <XsedNotifyForm variant="light"/>
         ) : (
-        <Button asChild size="lg" variant="tertiary">
-          <Link href={copy.ctaHref} scroll={true}>
-            {copy.ctaLabel}
-          </Link>
-        </Button>
+          <Button asChild size="lg" variant="tertiary">
+            <Link href={`/${locale}/xsed/book`} scroll={true}>
+              {copy.ctaLabel}
+            </Link>
+          </Button>
         )}
       </motion.div>  
     </Section>

@@ -80,8 +80,9 @@ export default function JourneyContentNavigation({
             )}
           </div>
 
-          {/* Right Section: Navigation Tabs */}
-          <div className="flex items-center justify-start md:justify-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar">
+          {tabs.length > 1 && (
+            <div className="flex items-center justify-start md:justify-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar">
+            {/* Right Section: Navigation Tabs */}
             {tabs.map((tab, index) => {
               const isActive = tab.id === activeTab;
               const isClickable = index <= activeTabIndex;
@@ -141,9 +142,10 @@ export default function JourneyContentNavigation({
                     {tab.label}
                   </button>
                 </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </nav>

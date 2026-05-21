@@ -8,11 +8,9 @@ import Section from "@/components/layout/Section";
 import ExperienceFormClient from "@/components/app/dashboard/tripper/experiences/ExperienceFormClient";
 import type { ExperienceFormData } from "@/types/tripper";
 
-export default async function EditPackagePage(
-  props: {
-    params: Promise<{ locale: string; id: string }>;
-  }
-) {
+export default async function EditExperiencePage(props: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
   const params = await props.params;
   const session = await getServerSession(authOptions);
 
@@ -29,7 +27,7 @@ export default async function EditPackagePage(
     redirect(`/${params.locale}/dashboard`);
   }
 
-  const pkg = await prisma.package.findFirst({
+  const pkg = await prisma.experience.findFirst({
     where: { id: params.id, ownerId: user.id },
   });
 
@@ -37,9 +35,11 @@ export default async function EditPackagePage(
     notFound();
   }
 
+  const isXsed = pkg.type === "XSED";
+
   const initialData: ExperienceFormData = {
     type: pkg.type,
-    level: pkg.level,
+    level: pkg.level ?? "",
     title: pkg.title,
     status: pkg.status as string,
     teaser: pkg.teaser,
@@ -52,7 +52,7 @@ export default async function EditPackagePage(
     maxNights: pkg.maxNights,
     minPax: pkg.minPax,
     maxPax: pkg.maxPax,
-    basePriceUsd: pkg.basePriceUsd,
+    basePrice: pkg.basePrice,
     displayPrice: pkg.displayPrice,
     accommodationType: pkg.accommodationType,
     transport: pkg.transport,
@@ -63,16 +63,32 @@ export default async function EditPackagePage(
     hotels: Array.isArray(pkg.hotels) ? (pkg.hotels as any[]) : [],
     activities: Array.isArray(pkg.activities) ? (pkg.activities as any[]) : [],
     itinerary: Array.isArray(pkg.itinerary) ? (pkg.itinerary as any[]) : [],
-    inclusions: Array.isArray(pkg.inclusions)
-      ? (pkg.inclusions as string[])
-      : [],
-    exclusions: Array.isArray(pkg.exclusions)
-      ? (pkg.exclusions as string[])
-      : [],
+    inclusions: Array.isArray(pkg.inclusions) ? (pkg.inclusions as string[]) : [],
+    exclusions: Array.isArray(pkg.exclusions) ? (pkg.exclusions as string[]) : [],
     tags: pkg.tags,
     highlights: pkg.highlights,
     isActive: pkg.isActive,
     isFeatured: pkg.isFeatured,
+    // XSED fields
+    ...(isXsed && {
+      titleInternal: pkg.titleInternal,
+      slug: pkg.slug,
+      tripDate: pkg.tripDate ? pkg.tripDate.toISOString().slice(0, 16) : null,
+      revealAt: pkg.revealAt ? pkg.revealAt.toISOString().slice(0, 16) : null,
+      minSpots: pkg.minSpots,
+      maxSpots: pkg.maxSpots,
+      currency: pkg.currency,
+      cancellationPolicy: pkg.cancellationPolicy,
+      weatherPolicy: pkg.weatherPolicy,
+      accessibilityNotes: pkg.accessibilityNotes,
+      safetyNotes: pkg.safetyNotes,
+      revealCopy: pkg.revealCopy,
+      preRevealCopy: pkg.preRevealCopy,
+      packingHints: pkg.packingHints,
+      whatsappMessageTemplate: pkg.whatsappMessageTemplate,
+      adminNotes: pkg.adminNotes,
+      supplierNotes: pkg.supplierNotes,
+    }),
   };
 
   const dict = await getDictionary(params.locale);
@@ -80,10 +96,10 @@ export default async function EditPackagePage(
   return (
     <Section>
       <ExperienceFormClient
-        dict={dict.packages.form}
+        dict={dict.tripperExperiences.form}
         mode="edit"
         initialData={initialData}
-        packageId={pkg.id}
+        experienceId={pkg.id}
         locale={params.locale}
       />
     </Section>

@@ -60,9 +60,10 @@ export function SecondaryHero({
                 style={{ minHeight: 40 }}
               />
               <div className="flex flex-col justify-end">
-                <p className="font-barlow text-lg uppercase leading-tight tracking-wide text-white">
-                  X SUERTE<br />ES DOMINGO
-                </p>
+                <p
+                  className="font-barlow text-lg uppercase leading-tight tracking-wide text-white"
+                  dangerouslySetInnerHTML={{ __html: content.subtitle }}
+                />
               </div>
             </div>
           </motion.div>

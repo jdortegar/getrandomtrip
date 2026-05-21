@@ -12,7 +12,7 @@ import {
   EXPERIENCE_STATUSES,
 } from "@/lib/constants/packages";
 import type { ExperienceListItem } from "@/types/tripper";
-import type { PackagesDict } from "@/lib/types/dictionary";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
@@ -25,7 +25,7 @@ const selectClassName = "";
 
 interface ExperiencesPageClientProps {
   experiences: ExperienceListItem[];
-  dict: PackagesDict;
+  dict: TripperExperiencesDict;
   locale: string;
 }
 
@@ -117,7 +117,7 @@ export default function ExperiencesPageClient({
         <Button asChild>
           <Link href={`${basePath}/new`}>
             <Plus className="h-4 w-4 mr-2" />
-            {copy.newPackage}
+            {copy.newExperience}
           </Link>
         </Button>
       </div>
@@ -128,7 +128,7 @@ export default function ExperiencesPageClient({
           <div className="text-center py-16">
             <p className="text-sm text-neutral-500 mb-4">
               {experiences.length === 0
-                ? copy.emptyState.noPackages
+                ? copy.emptyState.noExperiences
                 : copy.emptyState.noMatch}
             </p>
             {experiences.length === 0 && (
@@ -206,7 +206,7 @@ export default function ExperiencesPageClient({
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {experience.displayPrice ||
-                        `USD ${experience.basePriceUsd.toLocaleString()}`}
+                        `USD ${experience.basePrice.toLocaleString()}`}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-500">
                       {new Date(experience.updatedAt).toLocaleDateString(

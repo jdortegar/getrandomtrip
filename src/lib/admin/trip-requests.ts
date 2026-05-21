@@ -1,18 +1,18 @@
-import type { AdminTripPackage, AdminTripPayment, AdminTripUser } from './types';
+import type { AdminTripExperience, AdminTripPayment, AdminTripUser } from './types';
 
 interface TripRequestWithRelationIds {
   id: string;
-  packageId: string | null;
+  experienceId: string | null;
   userId: string;
 }
 
 export function attachAdminTripRequestRelations<T extends TripRequestWithRelationIds>(
   tripRequests: T[],
   usersById: Record<string, AdminTripUser>,
-  packagesById: Record<string, AdminTripPackage>,
+  experiencesById: Record<string, AdminTripExperience>,
   paymentsByTripRequestId: Record<string, AdminTripPayment>,
 ) {
-  return tripRequests.map(({ packageId, userId, ...tripRequest }) => {
+  return tripRequests.map(({ experienceId, userId, ...tripRequest }) => {
     const user = usersById[userId];
 
     if (!user) {
@@ -21,7 +21,7 @@ export function attachAdminTripRequestRelations<T extends TripRequestWithRelatio
 
     return {
       ...tripRequest,
-      package: packageId ? packagesById[packageId] ?? null : null,
+      experience: experienceId ? experiencesById[experienceId] ?? null : null,
       payment: paymentsByTripRequestId[tripRequest.id] ?? null,
       user,
     };

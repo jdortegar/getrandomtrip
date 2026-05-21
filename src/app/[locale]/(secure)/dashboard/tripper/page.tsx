@@ -20,7 +20,7 @@ const EMPTY_STATS: TripperDashboardStats = {
   totalBookings: 0,
   monthlyRevenue: 0,
   averageRating: 0,
-  activePackages: 0,
+  activeExperiences: 0,
   totalClients: 0,
   conversionRate: 0,
 };
@@ -95,8 +95,8 @@ function TripperContent() {
               </div>
 
               <TripperPackagesSummary
-                activePackages={stats.activePackages}
-                copy={copy.packages}
+                activeExperiences={stats.activeExperiences}
+                copy={copy.experiences}
               />
             </div>
           )}

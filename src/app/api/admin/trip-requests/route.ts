@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { hasRoleAccess } from '@/lib/auth/roleAccess';
 import { attachAdminTripRequestRelations } from '@/lib/admin/trip-requests';
 import type {
-  AdminTripPackage,
+  AdminTripExperience,
   AdminTripPayment,
   AdminTripUser,
 } from '@/lib/admin/types';
@@ -33,10 +33,10 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    const packageIds = Array.from(
+    const experienceIds = Array.from(
       new Set(
         tripRequests.flatMap((tripRequest) =>
-          tripRequest.packageId ? [tripRequest.packageId] : [],
+          tripRequest.experienceId ? [tripRequest.experienceId] : [],
         ),
       ),
     );
@@ -44,10 +44,10 @@ export async function GET(request: NextRequest) {
       new Set(tripRequests.map((tripRequest) => tripRequest.userId)),
     );
 
-    const [packageEntries, paymentEntries, userEntries] = await Promise.all([
+    const [experienceEntries, paymentEntries, userEntries] = await Promise.all([
       Promise.all(
-        packageIds.map(async (packageId) => {
-          const pkg = await prisma.package.findUnique({
+        experienceIds.map(async (experienceId) => {
+          const exp = await prisma.experience.findUnique({
             select: {
               excuseKey: true,
               id: true,
@@ -55,10 +55,10 @@ export async function GET(request: NextRequest) {
               title: true,
               type: true,
             },
-            where: { id: packageId },
+            where: { id: experienceId },
           });
 
-          return pkg ? { packageId, pkg } : null;
+          return exp ? { experienceId, exp } : null;
         }),
       ),
       Promise.all(
@@ -91,10 +91,10 @@ export async function GET(request: NextRequest) {
       ),
     ]);
 
-    const packagesById: Record<string, AdminTripPackage> = {};
-    for (const entry of packageEntries) {
+    const experiencesById: Record<string, AdminTripExperience> = {};
+    for (const entry of experienceEntries) {
       if (!entry) continue;
-      packagesById[entry.packageId] = entry.pkg;
+      experiencesById[entry.experienceId] = entry.exp;
     }
 
     const paymentsByTripRequestId: Record<string, AdminTripPayment> = {};
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
     const hydratedTripRequests = attachAdminTripRequestRelations(
       tripRequests,
       usersById,
-      packagesById,
+      experiencesById,
       paymentsByTripRequestId,
     );
 

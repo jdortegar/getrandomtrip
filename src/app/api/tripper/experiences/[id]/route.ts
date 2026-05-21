@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
 
     const experienceId = params.id;
 
-    const experienceData = await prisma.package.findFirst({
+    const experienceData = await prisma.experience.findFirst({
       where: {
         id: experienceId,
         ownerId: user.id,
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         maxNights: true,
         minPax: true,
         maxPax: true,
-        basePriceUsd: true,
+        basePrice: true,
         displayPrice: true,
         heroImage: true,
         tags: true,
@@ -73,6 +73,24 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         maxTravelTime: true,
         departPref: true,
         arrivePref: true,
+        // XSED fields
+        titleInternal: true,
+        slug: true,
+        tripDate: true,
+        revealAt: true,
+        minSpots: true,
+        maxSpots: true,
+        currency: true,
+        cancellationPolicy: true,
+        weatherPolicy: true,
+        accessibilityNotes: true,
+        safetyNotes: true,
+        revealCopy: true,
+        preRevealCopy: true,
+        packingHints: true,
+        whatsappMessageTemplate: true,
+        adminNotes: true,
+        supplierNotes: true,
       },
     });
 
@@ -113,7 +131,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
     const experienceId = params.id;
 
-    const existingExperience = await prisma.package.findFirst({
+    const existingExperience = await prisma.experience.findFirst({
       where: {
         id: experienceId,
         ownerId: user.id,
@@ -144,7 +162,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       maxNights,
       minPax,
       maxPax,
-      basePriceUsd,
+      basePrice,
       displayPrice,
       isActive,
       isFeatured,
@@ -160,23 +178,38 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       maxTravelTime,
       departPref,
       arrivePref,
+      // XSED fields
+      titleInternal,
+      slug,
+      tripDate,
+      revealAt,
+      minSpots,
+      maxSpots,
+      currency,
+      cancellationPolicy,
+      weatherPolicy,
+      accessibilityNotes,
+      safetyNotes,
+      revealCopy,
+      preRevealCopy,
+      packingHints,
+      whatsappMessageTemplate,
+      adminNotes,
+      supplierNotes,
     } = body;
 
-    if (!type || !level || !title || !destinationCountry || !destinationCity) {
+    if (!type || !title || !destinationCountry || !destinationCity) {
       return NextResponse.json(
-        {
-          error:
-            "Missing required fields: type, level, title, destinationCountry, destinationCity",
-        },
+        { error: "Missing required fields: type, title, destinationCountry, destinationCity" },
         { status: 400 },
       );
     }
 
-    const updatedExperience = await prisma.package.update({
+    const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
       data: {
         type,
-        level,
+        level: level ?? null,
         title,
         teaser: teaser ?? "",
         description: description ?? "",
@@ -190,7 +223,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
         maxNights: maxNights ?? 7,
         minPax: minPax ?? 1,
         maxPax: maxPax ?? 8,
-        basePriceUsd: basePriceUsd ?? 0,
+        basePrice: basePrice ?? 0,
         displayPrice: displayPrice ?? "",
         isActive: isActive ?? true,
         isFeatured: isFeatured ?? false,
@@ -206,6 +239,23 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
         maxTravelTime: maxTravelTime ?? "no-limit",
         departPref: departPref ?? "any",
         arrivePref: arrivePref ?? "any",
+        titleInternal: titleInternal || null,
+        slug: slug || null,
+        tripDate: tripDate ? new Date(tripDate as string) : null,
+        revealAt: revealAt ? new Date(revealAt as string) : null,
+        minSpots: minSpots != null ? Number(minSpots) : null,
+        maxSpots: maxSpots != null ? Number(maxSpots) : null,
+        currency: (currency as string) || "USD",
+        cancellationPolicy: cancellationPolicy || null,
+        weatherPolicy: weatherPolicy || null,
+        accessibilityNotes: accessibilityNotes || null,
+        safetyNotes: safetyNotes || null,
+        revealCopy: revealCopy || null,
+        preRevealCopy: preRevealCopy || null,
+        packingHints: packingHints || null,
+        whatsappMessageTemplate: whatsappMessageTemplate || null,
+        adminNotes: adminNotes || null,
+        supplierNotes: supplierNotes || null,
       },
     });
 

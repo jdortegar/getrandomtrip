@@ -110,6 +110,9 @@ export default function JourneyProgressSidebar({
       if (substepId === "transport") {
         return !!transportOrder;
       }
+      if (substepId === "pax") {
+        return true;
+      }
     }
 
     if (tabId === "preferences") {
@@ -166,18 +169,23 @@ export default function JourneyProgressSidebar({
                 )}
 
                 {/* Vertical line for last step: from circle down to last substep */}
-                {tabIndex === lastTabIndex && hasSubsteps && isActive && (
-                  <>
-                    <div
-                      className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
-                      style={{ height: "calc(100% - 11.3rem)" }}
-                    />
-                    <div
-                      className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
-                      style={{ height: "calc(100% - 4.75rem)" }}
-                    />
-                  </>
-                )}
+                {tabIndex === lastTabIndex && hasSubsteps && isActive && (() => {
+                  const incompleteCount = tab.substeps.filter(
+                    (s) => !isSubstepComplete(tab.id, s.id),
+                  ).length;
+                  return (
+                    <>
+                      <div
+                        className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
+                        style={{ height: `calc(100% - ${4.75 + incompleteCount * 6.55}rem)` }}
+                      />
+                      <div
+                        className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
+                        style={{ height: "calc(100% - 4.75rem)" }}
+                      />
+                    </>
+                  );
+                })()}
 
                 {/* Main Step Circle */}
                 <div className="flex items-start gap-4">

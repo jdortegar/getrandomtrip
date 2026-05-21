@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     if (type) where.type = type;
     if (level) where.level = level;
 
-    const experiences = await prisma.package.findMany({
+    const experiences = await prisma.experience.findMany({
       where,
       orderBy: { createdAt: "desc" },
       include: {
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       itinerary,
       inclusions,
       exclusions,
-      basePriceUsd,
+      basePrice,
       displayPrice,
       accommodationType,
       transport,
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       itinerary: itinerary || null,
       inclusions: inclusions || null,
       exclusions: exclusions || null,
-      basePriceUsd: basePriceUsd || 0,
+      basePrice: basePrice || 0,
       displayPrice: displayPrice || "",
       excuseKey: excuseKey || null,
       isActive: isActive ?? true,
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       status: "DRAFT" as const,
     };
 
-    const newExperience = await prisma.package.create({
+    const newExperience = await prisma.experience.create({
       data: experienceData,
     });
 

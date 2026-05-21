@@ -140,7 +140,7 @@ export interface TripperDashboardDict {
     totalBookings: string;
     monthlyRevenue: string;
     averageRating: string;
-    activePackages: string;
+    activeExperiences: string;
   };
   recentBookings: {
     title: string;
@@ -168,9 +168,9 @@ export interface TripperDashboardDict {
     conversionRate: string;
     growth: string;
   };
-  packages: {
+  experiences: {
     title: string;
-    newPackage: string;
+    newExperience: string;
     empty: string;
     emptyCta: string;
     viewAll: string;
@@ -256,10 +256,10 @@ export interface DashboardDict {
   };
 }
 
-export interface PackagesDict {
+export interface TripperExperiencesDict {
   title: string;
   description: string;
-  newPackage: string;
+  newExperience: string;
   back: string;
   filters: {
     allTypes: string;
@@ -276,7 +276,7 @@ export interface PackagesDict {
     edit: string;
   };
   emptyState: {
-    noPackages: string;
+    noExperiences: string;
     noMatch: string;
     createFirst: string;
   };
@@ -307,6 +307,7 @@ export interface PackagesDict {
       inclusions: string;
       tagsMedia: string;
       visibility: string;
+      policies: string;
     };
     fields: {
       title: string;
@@ -325,8 +326,8 @@ export interface PackagesDict {
       maxNightsHint: string;
       minPax: string;
       maxPax: string;
-      basePriceUsd: string;
-      basePriceUsdHint: string;
+      basePrice: string;
+      basePriceHint: string;
       displayPrice: string;
       displayPriceHint: string;
       accommodationType: string;
@@ -366,6 +367,26 @@ export interface PackagesDict {
       isActiveHint: string;
       isFeatured: string;
       isFeaturedHint: string;
+      // XSED fields
+      titleInternal: string;
+      slug: string;
+      slugHint: string;
+      tripDate: string;
+      revealAt: string;
+      currency: string;
+      currencyHint: string;
+      minSpots: string;
+      maxSpots: string;
+      cancellationPolicy: string;
+      weatherPolicy: string;
+      accessibilityNotes: string;
+      safetyNotes: string;
+      revealCopy: string;
+      preRevealCopy: string;
+      packingHints: string;
+      whatsappMessageTemplate: string;
+      adminNotes: string;
+      supplierNotes: string;
     };
   };
 }
@@ -505,6 +526,7 @@ export interface XsedPageDict {
     titleHighlight: string;
   };
   hero: {
+    dropNumberLabel: string;
     errorMessage: string;
     primaryCta?: { ariaLabel: string; href: string; text: string };
     invalidEmailMessage: string;
@@ -598,18 +620,11 @@ export interface AdminXsedDict {
       slug: string;
       status: string;
       destination: string;
-      origin: string;
-      distKm: string;
       tripDate: string;
       revealAt: string;
-      pricePerPerson: string;
+      basePrice: string;
       spots: string;
       sold: string;
-      costTotal: string;
-      marginPct: string;
-      included: string;
-      notIncluded: string;
-      conditions: string;
       cancellation: string;
       weather: string;
       accessibility: string;
@@ -657,28 +672,22 @@ export interface AdminXsedDict {
     };
     fields: {
       titleInternal: string;
-      titlePublicTeaser: string;
+      teaser: string;
       slug: string;
       slugHint: string;
       status: string;
       heroImage: string;
       destinationCity: string;
-      destinationState: string;
-      originCity: string;
-      originCountry: string;
-      distanceKm: string;
+      destinationCountry: string;
       tripDate: string;
       revealAt: string;
-      pricePerPerson: string;
+      basePrice: string;
       currency: string;
       currencyHint: string;
       minSpots: string;
       maxSpots: string;
-      costEstimateTotal: string;
-      targetMarginPercent: string;
-      included: string;
-      notIncluded: string;
-      generalConditions: string;
+      inclusions: string;
+      exclusions: string;
       cancellationPolicy: string;
       weatherPolicy: string;
       accessibilityNotes: string;
@@ -808,7 +817,6 @@ export interface MarketingDictionary {
     editProfile: string;
     signOut: string;
     tripperOs: string;
-    xsedDrops: string;
   };
   common: {
     siteName: string;
@@ -1663,6 +1671,6 @@ export interface MarketingDictionary {
   dashboard: DashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
-  packages: PackagesDict;
+  tripperExperiences: TripperExperiencesDict;
   unauthorized: UnauthorizedPageDict;
 }

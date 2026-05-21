@@ -2,7 +2,7 @@ import 'dotenv/config';
 import {
   PrismaClient,
   TripRequestStatus,
-  PackageStatus,
+  ExperienceStatus,
   UserRole,
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
