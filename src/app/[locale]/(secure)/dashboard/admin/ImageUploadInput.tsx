@@ -52,7 +52,7 @@ export function ImageUploadInput({
         >
           <Img
             alt=""
-            className="object-cover"
+            className="object-cover w-full h-full"
             height={96}
             src={url}
             unoptimized

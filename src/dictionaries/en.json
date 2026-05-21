@@ -6,14 +6,14 @@
     "labelTripbuddy": "North IA",
     "labelBitacoras": "Off the Record",
     "labelExperiences": "Experiences",
-    "labelXsed": "XSED",
+    "labelXsed": "TGIS",
     "ariaLabelTrippers": "Go to Trippers page",
     "ariaLabelInspiration": "Go to inspiration section",
     "ariaLabelExperiences": "Go to Experiences",
     "ariaLabelNosotros": "Go to about us page",
     "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
     "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
-    "ariaLabelXsed": "Go to XSED",
+    "ariaLabelXsed": "Go to TGIS",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Open navigation menu",
     "search": "Search",
@@ -28,7 +28,7 @@
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
     "adminDashboard": "Admin Dashboard",
-    "xsedDrops": "XSED Drops"
+    "xsedDrops": "TGIS Drops"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -41,18 +41,18 @@
       "payments": "Payments",
       "reviews": "Reviews",
       "waitlist": "Waitlist",
-      "xsed": "XSED Drops",
-      "xsedNotifications": "XSED Notifications"
+      "xsed": "TGIS Drops",
+      "xsedNotifications": "TGIS Notifications"
     }
   },
   "adminXsed": {
     "list": {
-      "dropsCount": "{n} XSED drops",
+      "dropsCount": "{n} TGIS drops",
       "newDrop": "New drop",
       "filterAllStatuses": "All statuses",
-      "empty": "No XSED drops found.",
-      "errorLoad": "Failed to load XSED drops",
-      "confirmDelete": "Delete this XSED drop? This cannot be undone.",
+      "empty": "No TGIS drops found.",
+      "errorLoad": "Failed to load TGIS drops",
+      "confirmDelete": "Delete this TGIS drop? This cannot be undone.",
       "columns": {
         "title": "Title",
         "slug": "Slug",
@@ -95,12 +95,12 @@
     },
     "form": {
       "eyebrow": "Admin",
-      "title": "New XSED Drop",
+      "title": "New TGIS Drop",
       "back": "Back",
       "submit": "Create drop",
       "saving": "Saving…",
       "cancel": "Cancel",
-      "titleEdit": "Edit XSED Drop",
+      "titleEdit": "Edit TGIS Drop",
       "submitEdit": "Save changes",
       "toastCreated": "Drop created",
       "toastUpdated": "Drop updated",
@@ -265,9 +265,9 @@
       }
     },
     "xsedNotifications": {
-      "count": "{n} XSED notification entries",
-      "errorLoad": "Failed to load XSED notifications",
-      "empty": "No XSED notification entries found.",
+      "count": "{n} TGIS notification entries",
+      "errorLoad": "Failed to load TGIS notifications",
+      "empty": "No TGIS notification entries found.",
       "columns": {
         "email": "Email",
         "locale": "Locale",
@@ -282,7 +282,7 @@
   },
   "xsedDropsPage": {
     "title": "ESCAPE LOG",
-    "titleHighlight": "XSED",
+    "titleHighlight": "TGIS",
     "description": "What others lived. What you could live.",
     "filterDate": "Date",
     "filterOrderBy": "Order by",
@@ -290,14 +290,14 @@
   },
   "xsedPage": {
     "meta": {
-      "title": "XSED | Randomtrip",
-      "description": "X Luck is Sunday: one night, one dinner, and one surprise local experience close to home.",
-      "openGraphTitle": "XSED | Randomtrip",
-      "openGraphDescription": "Join the XSED waitlist and get notified before checkout opens every Sunday."
+      "title": "TGIS | Randomtrip",
+      "description": "Thank God It's Sunday: one night, one dinner, and one surprise local experience close to home.",
+      "openGraphTitle": "TGIS | Randomtrip",
+      "openGraphDescription": "Join the TGIS waitlist and get notified before checkout opens every Sunday."
     },
     "hero": {
-      "title": "XSED",
-      "subtitle": "X LUCK<br/>IS SUNDAY",
+      "title": "TGIS",
+      "subtitle": "THANK GOD<br/>IT'S SUNDAY",
       "tagline": "<strong>1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE</strong> less than 300km from home.",
       "availabilityNote": "Only 10 spots released every Sunday per country.",
       "errorMessage": "We could not add you to the list. Please try again.",
@@ -305,7 +305,7 @@
       "inputLabel": "Email Address",
       "inputPlaceholder": "Email Address",
       "submitLabel": "JOIN THE WAITLIST",
-      "submitAriaLabel": "Join the XSED waitlist",
+      "submitAriaLabel": "Join the TGIS waitlist",
       "submittingLabel": "JOINING...",
       "successMessage": "You are on the list. We will notify you before the next opening.",
       "helper": "We will notify you 10 minutes before checkout opens every Sunday. Blink, and you are out.",
@@ -333,26 +333,26 @@
     },
     "countdown": {
       "title": "BUY YOUR",
-      "titleHighlight": "XSED Nº{number}",
+      "titleHighlight": "TGIS Nº{number}",
       "subtitle": "You have 10 minutes before we open the payment gateway.",
       "nextDropLabel": "NEXT DROP",
       "daysLabel": "DAYS",
       "minLabel": "MIN",
       "secLabel": "SEC",
       "soldLabel": "{sold}/{total} sold",
-      "ctaLabel": "BUY XSED",
+      "ctaLabel": "BUY TGIS",
       "ctaHref": "/journey"
     },
     "testimonials": {
       "eyebrow": "Traveler reviews",
       "title": "THE VERDICT",
-      "subtitle": "Your next XSED is just one click away. Stop overthinking it.",
+      "subtitle": "Your next TGIS is just one click away. Stop overthinking it.",
       "viewFullReviewLabel": "View full review"
     },
     "dropGrid": {
       "eyebrow": "PREVIOUS DROPS",
       "title": "ESCAPE LOG BY",
-      "titleHighlight": "XSED",
+      "titleHighlight": "TGIS",
       "description": "What others lived. What you could live.",
       "ctaLabel": "VIEW ALL",
       "ctaHref": "/xsed/drops"
@@ -364,7 +364,7 @@
       "inputLabel": "Email Address",
       "inputPlaceholder": "Email Address",
       "submitLabel": "NOTIFY ME OF THE NEXT DROP",
-      "submitAriaLabel": "Notify me of the next XSED drop",
+      "submitAriaLabel": "Notify me of the next TGIS drop",
       "submittingLabel": "JOINING...",
       "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
       "errorMessage": "We couldn't add you. Please try again.",
@@ -377,7 +377,7 @@
       "items": [
         {
           "question": "What day does my escape start?",
-          "answer": "Your XSED escape starts on Saturday. You'll receive instructions on Thursday, 48 hours in advance."
+          "answer": "Your TGIS escape starts on Saturday. You'll receive instructions on Thursday, 48 hours in advance."
         },
         {
           "question": "Can I choose the type of place? (Beach, Hotel, Cabin)",
@@ -385,7 +385,7 @@
         },
         {
           "question": "What if I need to change the date?",
-          "answer": "You can reschedule up to 7 days before your XSED. Contact support and we'll move your spot to the next available drop."
+          "answer": "You can reschedule up to 7 days before your TGIS. Contact support and we'll move your spot to the next available drop."
         },
         {
           "question": "What's included?",
@@ -502,7 +502,7 @@
         },
         {
           "id": "xsed",
-          "label": "XSED"
+          "label": "TGIS"
         }
       ],
       "title": "Starting Points",
@@ -540,7 +540,7 @@
       ],
       "trippersHref": "/en/trippers",
       "xsedIntro": {
-        "eyebrow": "XSED | X LUCK IS SUNDAY",
+        "eyebrow": "TGIS | THANK GOD IT'S SUNDAY",
         "title": "A new experience every Sunday",
         "description": "1 night, every Sunday, a new place, a meal and a unique local experience per country.",
         "ctaLabel": "LEARN MORE",
@@ -567,13 +567,13 @@
     },
     "xsedHero": {
       "backgroundImage": "/images/xsed-hero.jpg",
-      "eyebrow": "XSED",
+      "eyebrow": "TGIS",
       "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
       "helper": "We'll notify you 10 minutes before the gateway opens every Sunday.\nBlink and you're out.",
       "inputLabel": "Email",
       "inputPlaceholder": "Email",
       "submitLabel": "NOTIFY ME OF THE NEXT DROP",
-      "submitAriaLabel": "Notify me of the next XSED drop",
+      "submitAriaLabel": "Notify me of the next TGIS drop",
       "submittingLabel": "JOINING...",
       "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
       "errorMessage": "We couldn't add you. Please try again.",
