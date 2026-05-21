@@ -19,7 +19,7 @@ import type {
 type Hotel = ExperienceHotel;
 type Activity = ExperienceActivity;
 type ItineraryDay = ExperienceItineraryDay;
-import type { PackagesDict } from "@/lib/types/dictionary";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import {
   EXPERIENCE_TYPES,
   EXPERIENCE_LEVELS,
@@ -67,11 +67,11 @@ const EMPTY_FORM: ExperienceFormData = {
   isFeatured: false,
 };
 
-interface PackageFormClientProps {
+interface ExperienceFormClientProps {
   mode: "create" | "edit";
   initialData?: ExperienceFormData;
-  packageId?: string;
-  dict: PackagesDict["form"];
+  experienceId?: string;
+  dict: TripperExperiencesDict["form"];
   locale: string;
 }
 
@@ -147,13 +147,13 @@ function TokenInput({
   );
 }
 
-export default function PackageFormClient({
+export default function ExperienceFormClient({
   mode,
   initialData,
-  packageId,
+  experienceId,
   dict: copy,
   locale,
-}: PackageFormClientProps) {
+}: ExperienceFormClientProps) {
   const router = useRouter();
   const [form, setForm] = useState<ExperienceFormData>(
     initialData ?? EMPTY_FORM,
@@ -209,7 +209,7 @@ export default function PackageFormClient({
       const url =
         mode === "create"
           ? "/api/experiences"
-          : `/api/tripper/experiences/${packageId}`;
+          : `/api/tripper/experiences/${experienceId}`;
       const method = mode === "create" ? "POST" : "PATCH";
 
       const res = await fetch(url, {

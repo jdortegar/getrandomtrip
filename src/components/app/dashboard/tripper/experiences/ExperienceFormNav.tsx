@@ -8,7 +8,7 @@ interface NavSection {
   label: string;
 }
 
-interface PackageFormNavProps {
+interface ExperienceFormNavProps {
   sections: NavSection[];
   activeSection: string;
   onSectionClick: (id: string) => void;
@@ -19,7 +19,7 @@ interface PackageFormNavProps {
   cancelLabel: string;
 }
 
-export default function PackageFormNav({
+export default function ExperienceFormNav({
   sections,
   activeSection,
   onSectionClick,
@@ -28,7 +28,7 @@ export default function PackageFormNav({
   onCancel,
   submitLabel,
   cancelLabel,
-}: PackageFormNavProps) {
+}: ExperienceFormNavProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 space-y-1">
       {sections.map((section) => {

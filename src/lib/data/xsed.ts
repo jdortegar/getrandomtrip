@@ -1,9 +1,9 @@
-import type { PackageStatus, Prisma, TripRequestStatus } from '@prisma/client';
+import type { ExperienceStatus, Prisma, TripRequestStatus } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import type { DropEntry } from '@/types/core';
 
-export const PUBLIC_XSED_GRID_STATUSES: PackageStatus[] = [
+export const PUBLIC_XSED_GRID_STATUSES: ExperienceStatus[] = [
   'ACTIVE',
   'INACTIVE',
   'ARCHIVED',

@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import type { PackageStatus, XsedBenefitType } from '@prisma/client';
+import type { ExperienceStatus, XsedBenefitType } from '@prisma/client';
 import { prisma } from '../../src/lib/prisma';
 
 const HERO = '/images/drops/drops-mendoza.jpg';
 
 interface MockDrop {
   slug: string;
-  status: PackageStatus;
+  status: ExperienceStatus;
   titleInternal: string;
   titlePublicTeaser: string;
   destinationCity: string;

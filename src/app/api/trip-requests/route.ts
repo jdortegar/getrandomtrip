@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
       include: {
         payment: true,
-        package: true,
+        experience: true,
       },
     });
     console.log('Trip requests found:', tripRequests.length);

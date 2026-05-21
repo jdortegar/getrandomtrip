@@ -5,7 +5,7 @@ import type { BlogPost } from '@/lib/data/shared/blog-types';
 import {
   getTripperBySlug,
   getTripperFeaturedTrips,
-  getTripperPackagesByTypeAndLevel,
+  getTripperExperiencesByTypeAndLevel,
   getTripperPublishedBlogs,
 } from '@/lib/db/tripper-queries';
 import TripperHero from '@/components/tripper/TripperHero';
@@ -102,7 +102,7 @@ export default async function Page(
   // Must have database tripper data
   if (!tripperData) return notFound();
 
-  const tripperPackagesByType = await getTripperPackagesByTypeAndLevel(
+  const tripperPackagesByType = await getTripperExperiencesByTypeAndLevel(
     tripperData.id,
   );
   // availableTypesFromPackages = distinct types from this tripper's packages (from getTripperBySlug)

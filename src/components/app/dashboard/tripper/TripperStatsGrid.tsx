@@ -36,8 +36,8 @@ export function TripperStatsGrid({ stats, copy }: TripperStatsGridProps) {
     {
       icon: MapPin,
       key: 'active-packages',
-      label: copy.activePackages,
-      value: stats.activePackages,
+      label: copy.activeExperiences,
+      value: stats.activeExperiences,
     },
   ];
 

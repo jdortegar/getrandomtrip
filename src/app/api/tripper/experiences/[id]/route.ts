@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
 
     const experienceId = params.id;
 
-    const experienceData = await prisma.package.findFirst({
+    const experienceData = await prisma.experience.findFirst({
       where: {
         id: experienceId,
         ownerId: user.id,
@@ -113,7 +113,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
     const experienceId = params.id;
 
-    const existingExperience = await prisma.package.findFirst({
+    const existingExperience = await prisma.experience.findFirst({
       where: {
         id: experienceId,
         ownerId: user.id,
@@ -172,7 +172,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       );
     }
 
-    const updatedExperience = await prisma.package.update({
+    const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
       data: {
         type,

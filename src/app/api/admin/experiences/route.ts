@@ -21,7 +21,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const experiences = await prisma.package.findMany({
+    const experiences = await prisma.experience.findMany({
       orderBy: { updatedAt: 'desc' },
       select: {
         createdAt: true,

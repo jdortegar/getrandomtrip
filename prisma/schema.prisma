@@ -2,7 +2,7 @@
 // RANDOMTRIP - New Schema with TripRequest and Package Models
 // ============================================================================
 // TripRequest: User planning data (what user wants)
-// Package: Tripper-created content (what tripper offers)
+// Experience: Tripper-created content (what tripper offers)
 // ============================================================================
 
 generator client {
@@ -58,10 +58,10 @@ model User {
 
   // Relations
   tripRequests  TripRequest[] @relation("CustomerTripRequests")
-  ownedPackages Package[]     @relation("OwnedPackages")
-  payments      Payment[]
-  reviews       Review[]
-  likedPackages PackageLike[]
+  ownedExperiences Experience[]  @relation("OwnedExperiences")
+  payments         Payment[]
+  reviews          Review[]
+  likedExperiences ExperienceLike[]
   blogPosts     BlogPost[]    @relation("BlogAuthor")
   xsedExperiencesCreated XsedExperience[] @relation("XsedExperienceCreatedBy")
   xsedExperiencesUpdated XsedExperience[] @relation("XsedExperienceUpdatedBy")
@@ -101,10 +101,10 @@ model TripRequest {
   // Addons (JSON for flexibility)
   addons Json? // Array of { id: string, qty: number, optionId?: string }
 
-  // Package Assignment
-  packageId String? // Assigned package when user selects one
+  // Experience Assignment
+  experienceId String? // Assigned experience when user selects one
 
-  /** When set, this trip request is an XSED drop purchase (see `XsedExperience`). Use existing `Payment` (1:1) for checkout; `packageId` is usually null. */
+  /** When set, this trip request is an XSED drop purchase (see `XsedExperience`). Use existing `Payment` (1:1) for checkout; `experienceId` is usually null. */
   xsedExperienceId String?
   xsedExperience   XsedExperience? @relation(fields: [xsedExperienceId], references: [id], onDelete: SetNull)
 
@@ -121,20 +121,20 @@ model TripRequest {
   updatedAt DateTime @updatedAt
 
   // Relations
-  user    User     @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
-  package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
-  payment Payment?
+  user       User        @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience? @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  payment    Payment?
 
   @@index([xsedExperienceId])
   @@map("trip_requests")
 }
 
-model Package {
-  id      String        @id @default(cuid())
-  ownerId String // Tripper who created this package
-  status  PackageStatus @default(DRAFT)
+model Experience {
+  id      String           @id @default(cuid())
+  ownerId String // Tripper who created this experience
+  status  ExperienceStatus @default(DRAFT)
 
-  // Package metadata
+  // Experience metadata
   type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
   level String // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
 
@@ -159,7 +159,7 @@ model Package {
   destinationCountry String
   destinationCity    String
 
-  // Package content (JSON for flexibility)
+  // Experience content (JSON for flexibility)
   hotels     Json? // Array of hotel objects
   activities Json? // Array of activity objects
   itinerary  Json? // Detailed itinerary
@@ -188,11 +188,11 @@ model Package {
   updatedAt DateTime @updatedAt
 
   // Relations
-  owner        User          @relation("OwnedPackages", fields: [ownerId], references: [id], onDelete: Cascade)
-  tripRequests TripRequest[] @relation
-  packageLikes PackageLike[]
+  owner           User          @relation("OwnedExperiences", fields: [ownerId], references: [id], onDelete: Cascade)
+  tripRequests    TripRequest[] @relation
+  experienceLikes ExperienceLike[]
 
-  @@map("packages")
+  @@map("experiences")
 }
 
 model Payment {
@@ -274,18 +274,18 @@ model Review {
   @@map("reviews")
 }
 
-model PackageLike {
-  id        String   @id @default(cuid())
-  packageId String
-  userId    String
-  createdAt DateTime @default(now())
+model ExperienceLike {
+  id           String   @id @default(cuid())
+  experienceId String
+  userId       String
+  createdAt    DateTime @default(now())
 
   // Relations
-  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([packageId, userId])
-  @@map("package_likes")
+  @@unique([experienceId, userId])
+  @@map("experience_likes")
 }
 
 model BlogPost {
@@ -355,7 +355,7 @@ enum TripRequestStatus {
   CANCELLED
 }
 
-enum PackageStatus {
+enum ExperienceStatus {
   DRAFT
   ACTIVE
   INACTIVE
@@ -437,8 +437,8 @@ enum XsedConfirmationStatus {
 model XsedExperience {
   id     String        @id @default(cuid())
   slug   String?       @unique
-  /** Same lifecycle vocabulary as `Package.status`. */
-  status PackageStatus @default(DRAFT)
+  /** Same lifecycle vocabulary as `Experience.status`. */
+  status ExperienceStatus @default(DRAFT)
 
   titleInternal       String
   titlePublicTeaser   String?

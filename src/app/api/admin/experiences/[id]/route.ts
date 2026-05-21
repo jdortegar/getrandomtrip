@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    const experience = await prisma.package.update({
+    const experience = await prisma.experience.update({
       data,
       select: {
         id: true,

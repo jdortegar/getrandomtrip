@@ -8,7 +8,7 @@ import Section from "@/components/layout/Section";
 import ExperienceFormClient from "@/components/app/dashboard/tripper/experiences/ExperienceFormClient";
 import type { ExperienceFormData } from "@/types/tripper";
 
-export default async function EditPackagePage(
+export default async function EditExperiencePage(
   props: {
     params: Promise<{ locale: string; id: string }>;
   }
@@ -29,7 +29,7 @@ export default async function EditPackagePage(
     redirect(`/${params.locale}/dashboard`);
   }
 
-  const pkg = await prisma.package.findFirst({
+  const pkg = await prisma.experience.findFirst({
     where: { id: params.id, ownerId: user.id },
   });
 
@@ -80,10 +80,10 @@ export default async function EditPackagePage(
   return (
     <Section>
       <ExperienceFormClient
-        dict={dict.packages.form}
+        dict={dict.tripperExperiences.form}
         mode="edit"
         initialData={initialData}
-        packageId={pkg.id}
+        experienceId={pkg.id}
         locale={params.locale}
       />
     </Section>

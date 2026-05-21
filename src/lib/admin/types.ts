@@ -4,7 +4,7 @@ export type { TripRequestStatus };
 
 export type StatusFilterValue = TripRequestStatus | 'ALL';
 
-export interface AdminTripPackage {
+export interface AdminTripExperience {
   excuseKey: string | null;
   id: string;
   level: string;
@@ -45,7 +45,7 @@ export interface AdminTripRequest {
   nights: number;
   originCity: string;
   originCountry: string;
-  package: AdminTripPackage | null;
+  experience: AdminTripExperience | null;
   pax: number;
   paxDetails: unknown;
   payment: AdminTripPayment | null;

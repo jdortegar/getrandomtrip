@@ -47,7 +47,7 @@ interface PreferencesTabProps {
 
 export default function PreferencesTab({ avoidGridLabels }: PreferencesTabProps) {
   const searchParams = useSearchParams();
-  const { filters, setPartial, _tripperPackageDestinations } = useStore();
+  const { filters, setPartial, _tripperExperienceDestinations } = useStore();
   const originCity = searchParams.get('originCity') ?? '';
   const originCountry = searchParams.get('originCountry') ?? '';
   const experience = searchParams.get('experience') ?? undefined;
@@ -137,7 +137,7 @@ export default function PreferencesTab({ avoidGridLabels }: PreferencesTabProps)
               labels={avoidGridLabels}
               originCity={originCity}
               originCountry={originCountry}
-              tripperPackageDestinations={_tripperPackageDestinations}
+              tripperExperienceDestinations={_tripperExperienceDestinations}
             />
           </div>
         </div>

@@ -7,7 +7,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import Section from "@/components/layout/Section";
 import ExperienceFormClient from "@/components/app/dashboard/tripper/experiences/ExperienceFormClient";
 
-export default async function NewPackagePage(
+export default async function NewExperiencePage(
   props: {
     params: Promise<{ locale: string }>;
   }
@@ -34,7 +34,7 @@ export default async function NewPackagePage(
   return (
     <Section>
       <ExperienceFormClient
-        dict={dict.packages.form}
+        dict={dict.tripperExperiences.form}
         mode="create"
         locale={params.locale}
       />

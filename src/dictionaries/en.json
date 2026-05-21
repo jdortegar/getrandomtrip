@@ -2884,7 +2884,7 @@
       "totalBookings": "Total Bookings",
       "monthlyRevenue": "Monthly Revenue",
       "averageRating": "Average Rating",
-      "activePackages": "Active Packages"
+      "activeExperiences": "Active Packages"
     },
     "recentBookings": {
       "title": "Recent Bookings",
@@ -2912,9 +2912,9 @@
       "conversionRate": "Conversion Rate",
       "growth": "Growth"
     },
-    "packages": {
+    "experiences": {
       "title": "My Packages",
-      "newPackage": "New Package",
+      "newExperience": "New Package",
       "empty": "You have no active packages yet",
       "emptyCta": "Create your first package",
       "viewAll": "View all →"
@@ -3014,10 +3014,10 @@
       "viewDetails": "View Details"
     }
   },
-  "packages": {
+  "tripperExperiences": {
     "title": "MY EXPERIENCES",
     "description": "Manage your travel offers and keep your catalog up to date.",
-    "newPackage": "New Experience",
+    "newExperience": "New Experience",
     "back": "Back to My Experiences",
     "filters": {
       "allTypes": "All types",
@@ -3034,7 +3034,7 @@
       "edit": "Edit"
     },
     "emptyState": {
-      "noPackages": "You don't have any experiences yet.",
+      "noExperiences": "You don't have any experiences yet.",
       "noMatch": "No experiences match the current filters.",
       "createFirst": "Create my first experience"
     },

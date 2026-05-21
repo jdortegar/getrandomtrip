@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/Button";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface TripperPackagesSummaryProps {
-  activePackages: number;
-  copy: TripperDashboardDict["packages"];
+  activeExperiences: number;
+  copy: TripperDashboardDict["experiences"];
 }
 
 export function TripperPackagesSummary({
-  activePackages,
+  activeExperiences,
   copy,
 }: TripperPackagesSummaryProps) {
   return (
@@ -19,12 +19,12 @@ export function TripperPackagesSummary({
         <Button asChild size="sm">
           <Link href="/dashboard/tripper/experiences">
             <Plus className="h-4 w-4" />
-            {copy.newPackage}
+            {copy.newExperience}
           </Link>
         </Button>
       </div>
 
-      {activePackages === 0 ? (
+      {activeExperiences === 0 ? (
         <div className="text-center py-8">
           <p className="text-neutral-500 mb-4">{copy.empty}</p>
           <Button asChild variant="outline">
@@ -36,8 +36,8 @@ export function TripperPackagesSummary({
         </div>
       ) : (
         <p className="text-sm text-neutral-600">
-          {activePackages} paquete{activePackages !== 1 ? "s" : ""} activo
-          {activePackages !== 1 ? "s" : ""}.{" "}
+          {activeExperiences} paquete{activeExperiences !== 1 ? "s" : ""} activo
+          {activeExperiences !== 1 ? "s" : ""}.{" "}
           <Link
             href="/dashboard/tripper/experiences"
             className="text-sky-600 hover:underline"

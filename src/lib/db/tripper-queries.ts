@@ -46,7 +46,7 @@ export async function getTripperBySlug(
     if (!tripper || !tripper.tripperSlug) return null;
 
     // Dynamically calculate availableTypes based on actual packages
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripper.id,
         isActive: true,
@@ -89,7 +89,7 @@ export async function getTripperFeaturedTrips(
 
     if (!tripper) return [];
 
-    const trips = await prisma.package.findMany({
+    const trips = await prisma.experience.findMany({
       where: {
         ownerId: tripper.id,
         isActive: true,
@@ -179,19 +179,19 @@ export async function toggleTripLike(
   userId: string,
 ): Promise<{ liked: boolean; likes: number }> {
   try {
-    const existing = await prisma.packageLike.findUnique({
+    const existing = await prisma.experienceLike.findUnique({
       where: {
-        packageId_userId: { packageId: tripId, userId },
+        experienceId_userId: { experienceId: tripId, userId },
       },
     });
 
     if (existing) {
       // Unlike
-      await prisma.packageLike.delete({
+      await prisma.experienceLike.delete({
         where: { id: existing.id },
       });
 
-      const trip = await prisma.package.update({
+      const trip = await prisma.experience.update({
         where: { id: tripId },
         data: { likes: { decrement: 1 } },
         select: { likes: true },
@@ -200,11 +200,11 @@ export async function toggleTripLike(
       return { liked: false, likes: trip.likes };
     } else {
       // Like
-      await prisma.packageLike.create({
-        data: { packageId: tripId, userId },
+      await prisma.experienceLike.create({
+        data: { experienceId: tripId, userId },
       });
 
-      const trip = await prisma.package.update({
+      const trip = await prisma.experience.update({
         where: { id: tripId },
         data: { likes: { increment: 1 } },
         select: { likes: true },
@@ -226,9 +226,9 @@ export async function hasUserLikedTrip(
   userId: string,
 ): Promise<boolean> {
   try {
-    const like = await prisma.packageLike.findUnique({
+    const like = await prisma.experienceLike.findUnique({
       where: {
-        packageId_userId: { packageId: tripId, userId },
+        experienceId_userId: { experienceId: tripId, userId },
       },
     });
 
@@ -246,7 +246,7 @@ export async function getTripById(
   tripId: string,
 ): Promise<FeaturedTrip | null> {
   try {
-    const trip = await prisma.package.findUnique({
+    const trip = await prisma.experience.findUnique({
       where: { id: tripId },
       include: {
         owner: {
@@ -272,9 +272,9 @@ export async function getTripById(
  * Get tripper packages organized by type and level
  * Returns packages directly without transformation - components handle the data structure
  */
-export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
+export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -331,7 +331,7 @@ export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
 export async function getTripperDashboardStats(tripperId: string) {
   try {
     // Get all packages owned by tripper
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: { ownerId: tripperId },
       select: { id: true, status: true, isActive: true },
     });
@@ -339,7 +339,7 @@ export async function getTripperDashboardStats(tripperId: string) {
     // Get all trip requests that have packages owned by this tripper
     const tripRequests = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
       },
@@ -347,7 +347,7 @@ export async function getTripperDashboardStats(tripperId: string) {
         user: {
           select: { id: true, name: true },
         },
-        package: {
+        experience: {
           select: { id: true, title: true, basePriceUsd: true },
         },
         payment: {
@@ -403,8 +403,8 @@ export async function getTripperDashboardStats(tripperId: string) {
         ) / completedTrips.length
         : 0;
 
-    // Active packages
-    const activePackages = packages.filter(
+    // Active experiences
+    const activeExperiences = packages.filter(
       (pkg) => pkg.isActive && pkg.status === 'ACTIVE',
     ).length;
 
@@ -425,7 +425,7 @@ export async function getTripperDashboardStats(tripperId: string) {
       totalBookings,
       monthlyRevenue,
       averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
-      activePackages,
+      activeExperiences,
       totalClients: uniqueClients,
       conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal
     };
@@ -435,7 +435,7 @@ export async function getTripperDashboardStats(tripperId: string) {
       totalBookings: 0,
       monthlyRevenue: 0,
       averageRating: 0,
-      activePackages: 0,
+      activeExperiences: 0,
       totalClients: 0,
       conversionRate: 0,
     };
@@ -452,7 +452,7 @@ export async function getTripperRecentBookings(
   try {
     const bookings = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
         status: {
@@ -463,7 +463,7 @@ export async function getTripperRecentBookings(
         user: {
           select: { id: true, name: true, email: true },
         },
-        package: {
+        experience: {
           select: { id: true, title: true, basePriceUsd: true },
         },
         payment: {
@@ -478,10 +478,10 @@ export async function getTripperRecentBookings(
       id: booking.id,
       clientName: booking.user.name,
       clientEmail: booking.user.email,
-      package: booking.package?.title || 'Paquete eliminado',
-      packageId: booking.package?.id,
+      experienceName: booking.experience?.title || 'Experiencia eliminada',
+      experienceId: booking.experience?.id,
       date: booking.createdAt.toISOString(),
-      amount: booking.payment?.amount || booking.package?.basePriceUsd || 0,
+      amount: booking.payment?.amount || booking.experience?.basePriceUsd || 0,
       status: booking.status.toLowerCase(),
       paymentStatus: booking.payment?.status?.toLowerCase() || 'pending',
     }));
@@ -502,7 +502,7 @@ export async function getTripperEarnings(
     // Get all trip requests with payments for this tripper's packages
     const tripRequests = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
         payment: {
@@ -521,7 +521,7 @@ export async function getTripperEarnings(
             paidAt: true,
           },
         },
-        package: {
+        experience: {
           select: {
             id: true,
             basePriceUsd: true,
@@ -554,7 +554,7 @@ export async function getTripperEarnings(
     > = {};
 
     tripRequests.forEach((tr) => {
-      if (!tr.payment || !tr.package) return;
+      if (!tr.payment || !tr.experience) return;
 
       const paymentDate =
         tr.payment.paidAt || new Date(tr.payment.createdAt || Date.now());
@@ -578,7 +578,7 @@ export async function getTripperEarnings(
         };
       }
 
-      const commission = tr.package.owner.commission || 0;
+      const commission = tr.experience.owner.commission || 0;
       const baseCommission = tr.payment.amount * commission;
       // Bonus calculation could be added based on tier level or performance
       const bonus = 0;
@@ -624,7 +624,7 @@ export async function getTripperReviews(tripperId: string) {
     // Get reviews from completed trips that used this tripper's packages
     const completedTrips = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
         status: 'COMPLETED',
@@ -636,7 +636,7 @@ export async function getTripperReviews(tripperId: string) {
         user: {
           select: { id: true, name: true, avatarUrl: true },
         },
-        package: {
+        experience: {
           select: { id: true, title: true },
         },
       },
@@ -679,7 +679,7 @@ export async function getTripperReviews(tripperId: string) {
         content: trip.customerFeedback || '',
         tripType: trip.type,
         destination: trip.actualDestination || '',
-        packageTitle: trip.package?.title || '',
+        packageTitle: trip.experience?.title || '',
         createdAt: trip.completedAt || trip.updatedAt,
       })),
       averageRating:
@@ -707,9 +707,9 @@ export async function getTripperReviews(tripperId: string) {
 /**
  * Get all packages for tripper (for routes page)
  */
-export async function getTripperPackages(tripperId: string) {
+export async function getTripperExperiences(tripperId: string) {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: { ownerId: tripperId },
       select: {
         id: true,

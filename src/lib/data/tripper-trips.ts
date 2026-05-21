@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  */
 export async function getTripperAvailableTypesAndLevels(tripperId: string) {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId, // Packages are owned by trippers
         isActive: true, // Only get active packages
@@ -36,13 +36,13 @@ export async function getTripperAvailableTypesAndLevels(tripperId: string) {
  * @param level - The experience level (essenza, explora, exploraPlus, etc.)
  * @returns Boolean indicating if the tripper has packages for this combination
  */
-export async function tripperHasPackagesForTypeAndLevel(
+export async function tripperHasExperiencesForTypeAndLevel(
   tripperId: string,
   type: string,
   level: string,
 ): Promise<boolean> {
   try {
-    const pkg = await prisma.package.findFirst({
+    const pkg = await prisma.experience.findFirst({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -67,7 +67,7 @@ export async function getTripperAvailableTypes(
   tripperId: string,
 ): Promise<string[]> {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -96,7 +96,7 @@ export async function getTripperAvailableLevelsForType(
   type: string,
 ): Promise<string[]> {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
         isActive: true,

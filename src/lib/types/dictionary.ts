@@ -140,7 +140,7 @@ export interface TripperDashboardDict {
     totalBookings: string;
     monthlyRevenue: string;
     averageRating: string;
-    activePackages: string;
+    activeExperiences: string;
   };
   recentBookings: {
     title: string;
@@ -168,9 +168,9 @@ export interface TripperDashboardDict {
     conversionRate: string;
     growth: string;
   };
-  packages: {
+  experiences: {
     title: string;
-    newPackage: string;
+    newExperience: string;
     empty: string;
     emptyCta: string;
     viewAll: string;
@@ -256,10 +256,10 @@ export interface DashboardDict {
   };
 }
 
-export interface PackagesDict {
+export interface TripperExperiencesDict {
   title: string;
   description: string;
-  newPackage: string;
+  newExperience: string;
   back: string;
   filters: {
     allTypes: string;
@@ -276,7 +276,7 @@ export interface PackagesDict {
     edit: string;
   };
   emptyState: {
-    noPackages: string;
+    noExperiences: string;
     noMatch: string;
     createFirst: string;
   };
@@ -1663,6 +1663,6 @@ export interface MarketingDictionary {
   dashboard: DashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
-  packages: PackagesDict;
+  tripperExperiences: TripperExperiencesDict;
   unauthorized: UnauthorizedPageDict;
 }

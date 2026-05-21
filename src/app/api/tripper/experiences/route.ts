@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
-import { getTripperPackages } from "@/lib/db/tripper-queries";
+import { getTripperExperiences } from "@/lib/db/tripper-queries";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const experiences = await getTripperPackages(user.id);
+    const experiences = await getTripperExperiences(user.id);
 
     return NextResponse.json({ experiences });
   } catch (error) {
