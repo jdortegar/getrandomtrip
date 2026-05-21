@@ -28,7 +28,7 @@ export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
             <TripperCard
               bio={tripper.bio || ''}
               href={tripper.tripperSlug ?? tripper.name.toLowerCase().replace(/\s+/g, '-')}
-              imageUrl={tripper.avatarUrl ?? '/images/fallback.jpg'}
+              imageUrl={tripper.avatarUrl ?? ''}
               instagramUrl={tripper.tripperSlug ?? tripper.name.toLowerCase().replace(/\s+/g, '-')}
               name={tripper.name}
             />

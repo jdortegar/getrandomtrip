@@ -2,8 +2,6 @@
 import Image, { ImageProps } from 'next/image';
 import { useState } from 'react';
 
-const PLACEHOLDER = '/images/placeholder/placeholder.jpg';
-
 type ImgProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'width' | 'height'> & {
   src: string;
   alt?: string;
@@ -25,12 +23,31 @@ export default function Img({
   unoptimized,
   ...rest
 }: ImgProps) {
-  const [current, setCurrent] = useState(src);
+  const [errored, setErrored] = useState(false);
   const w = width ?? 1200;
   const h = height ?? 675;
+
+  if (errored) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-neutral-200 ${className ?? ''}`}
+        style={{ width: w, height: h }}
+        role="img"
+        aria-label={alt}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/logos/iso-randomtrip.svg"
+          alt=""
+          style={{ maxHeight: 100, width: 'auto', filter: 'brightness(0) saturate(0) invert(40%)' }}
+        />
+      </div>
+    );
+  }
+
   return (
     <Image
-      src={current}
+      src={src}
       alt={alt}
       width={w}
       height={h}
@@ -38,7 +55,7 @@ export default function Img({
       priority={priority}
       sizes={sizes}
       unoptimized={unoptimized}
-      onError={() => { if (current !== PLACEHOLDER) setCurrent(PLACEHOLDER); }}
+      onError={() => setErrored(true)}
       {...rest}
     />
   );

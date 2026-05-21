@@ -52,7 +52,7 @@ function normalizeUnsplash(u: string) {
 export default function SafeImage({
   src,
   alt,
-  fallbackSrc = '/images/placeholder/placeholder.jpg',
+  fallbackSrc,
   fill,
   width,
   height,
@@ -61,13 +61,15 @@ export default function SafeImage({
   priority,
   ...rest
 }: Props) {
+  const hasSource = !!src;
   const initialRaw = src || fallbackSrc;
   const initial =
     initialRaw && initialRaw.startsWith('http')
       ? normalizeUnsplash(initialRaw)
       : initialRaw;
 
-  const [current, setCurrent] = useState(initial);
+  const [current, setCurrent] = useState(initial ?? '');
+  const [finalError, setFinalError] = useState(!hasSource);
 
   const host = useMemo(() => getHost(current), [current]);
   const isRemote = /^https?:\/\//i.test(current);
@@ -78,8 +80,30 @@ export default function SafeImage({
     (!isRemote || (host && ALLOWED_HOSTS.has(host)));
 
   const handleError = () => {
-    if (current !== fallbackSrc) setCurrent(fallbackSrc);
+    if (fallbackSrc && current !== fallbackSrc) {
+      setCurrent(fallbackSrc);
+    } else {
+      setFinalError(true);
+    }
   };
+
+  if (finalError) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-neutral-200 ${className ?? ''}`}
+        style={fill ? { width: '100%', height: '100%' } : { width: width ?? 800, height: height ?? 600 }}
+        role="img"
+        aria-label={alt}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/logos/iso-randomtrip.svg"
+          alt=""
+          style={{ maxHeight: 100, width: 'auto', filter: 'brightness(0) saturate(0) invert(40%)' }}
+        />
+      </div>
+    );
+  }
 
   if (canUseNextImage) {
     return fill ? (
