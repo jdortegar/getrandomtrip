@@ -1372,8 +1372,10 @@ export interface MarketingDictionary {
       title: string;
     };
     curators: {
-      items: Array<{ bio: string; img: string; name: string; role: string }>;
+      eyebrow: string;
+      items: Array<{ bio: string; img: string; linkedin: string; name: string; role: string }>;
       sectionTitle: string;
+      subtitle: string;
     };
     faq: {
       items: Array<{ a: string; q: string }>;

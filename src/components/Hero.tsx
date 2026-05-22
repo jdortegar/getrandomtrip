@@ -20,6 +20,7 @@ export interface HeroContent {
   videoSrc: string;
   secondaryCta?: { ariaLabel: string; href: string; text: string };
   tags?: unknown;
+  eyebrow?: string;
 }
 
 interface HeroProps {
@@ -55,7 +56,14 @@ const Hero: React.FC<HeroProps> = ({
       <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">
         {/* Top Left Branding */}
 
-        <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+        {content.eyebrow ? (
+          <span
+            className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base text-white"
+          >
+            {content.eyebrow}
+          </span>
+        ):(
+        <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />)}
 
         <div className="max-w-3xl flex flex-col justify-center text-center lg:text-left">
           <motion.h2
@@ -72,7 +80,7 @@ const Hero: React.FC<HeroProps> = ({
           />
 
           <motion.p
-            className="text-center md:text-left font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            className="whitespace-pre-line text-center md:text-left font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

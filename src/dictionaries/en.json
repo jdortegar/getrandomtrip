@@ -2431,27 +2431,39 @@
       "title": "Ready to let go of control and gain freedom?"
     },
     "curators": {
+      "eyebrow": "Multidisciplinary team",
       "items": [
         {
-          "bio": "Designs itineraries that connect with the local: workshops, shared tables and authentic rituals.",
-          "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Ana García",
-          "role": "Cultural Immersion"
+          "bio": "Founder and visionary behind GetRandomTrip. Designs every experience with the obsession of someone who knows the perfect trip isn't chosen — it's discovered.",
+          "img": "/images/about-us-santiago.png",
+          "linkedin": "#",
+          "name": "Santiago Senega",
+          "role": "Founder"
         },
         {
-          "bio": "Finds the sweet spot between adrenaline and safety. Trekking, open skies and controlled micro-challenges.",
-          "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Carlos Mendoza",
-          "role": "Adventure & Outdoors"
+          "bio": "Technology and product. Builds the systems that make serendipity possible at scale without losing the soul of the detail.",
+          "img": "/images/about-us-david.png",
+          "linkedin": "#",
+          "name": "David Ortega",
+          "role": "Tech & Product"
         },
         {
-          "bio": "Curates spaces with design, calm and mindfulness. Silence, spa, low music, impeccable service.",
-          "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Sofía Rossi",
-          "role": "Luxury & Wellness"
+          "bio": "Operations and logistics. Turns every itinerary into a flawless choreography that happens behind the scenes.",
+          "img": "/images/about-us-rodrigo.png",
+          "linkedin": "#",
+          "name": "Rodrigo S. Benítez",
+          "role": "Operations"
+        },
+        {
+          "bio": "Design and brand. Shapes the visual world of GetRandomTrip, tending to every pixel as if it were part of the landscape.",
+          "img": "/images/about-us-carla.png",
+          "linkedin": "#",
+          "name": "Carla C. J Vázquez",
+          "role": "Design"
         }
       ],
-      "sectionTitle": "Meet the curators"
+      "sectionTitle": "Who we are",
+      "subtitle": "We're a team that blends creativity, logistics and obsession for detail to craft trips you didn't know you needed."
     },
     "faq": {
       "items": [
@@ -2481,15 +2493,15 @@
       "sectionTitle": "Founder story"
     },
     "hero": {
-      "ctaPhilosophy": "Our philosophy",
-      "ctaPrimary": "GETRANDOMTRIP!",
-      "ctaPrimaryAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
-      "description": "Luxury isn't choosing among 500 options. It's not having to choose. We design safe serendipity so you live what matters.",
-      "eyebrow": "About us",
-      "eyebrowColor": "#F2C53D",
+      "primaryCta": {
+        "ariaLabel": "Go to 'Our philosophy' section",
+        "href": "#philosophy",
+        "text": "Our philosophy"
+      },
+      "subtitle": "Luxury isn't choosing from 500 options. It's not having to choose.\n We design safe serendipity so you live what matters.",
+      "eyebrow": "Architecture of trust",
       "fallbackImage": "/images/about-us.png",
-      "subtitle": "Architecture of trust",
-      "title": "Architecture of trust"
+      "title": "About Us"
     },
     "meta": {
       "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
@@ -2501,11 +2513,7 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": [
-        "Emotional brief",
-        "Invisible design",
-        "Surprise with a net"
-      ],
+      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
