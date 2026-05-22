@@ -345,7 +345,8 @@
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-image-1.jpeg",
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
       "inputLabel": "Email",
@@ -553,7 +554,8 @@
       "viewFullReviewLabel": "Ver opinión completa"
     },
     "xsedHero": {
-      "backgroundImage": "/images/xsed-hero.jpg",
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
@@ -2484,6 +2486,8 @@
       "ctaPrimaryAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
       "description": "El lujo no es elegir entre 500 opciones. Es no tener que elegir. Diseñamos serendipia segura para que vivas lo que importa.",
       "eyebrow": "Nosotros",
+      "eyebrowColor": "#F2C53D",
+      "fallbackImage": "/images/about-us.png",
       "subtitle": "Arquitectura de la confianza",
       "title": "Arquitectura de la confianza"
     },

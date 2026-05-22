@@ -577,6 +577,7 @@ export interface XsedPageDict {
     submittingLabel: string;
     successMessage: string;
     title: string;
+    videoSrc: string;
   };
   dropGrid: {
     ctaHref: string;
@@ -928,6 +929,7 @@ export interface MarketingDictionary {
       submittingLabel: string;
       successMessage: string;
       title: string;
+      videoSrc: string;
     };
   };
   experiences: {
@@ -1389,8 +1391,11 @@ export interface MarketingDictionary {
       ctaPrimaryAriaLabel: string;
       description: string;
       eyebrow: string;
+      eyebrowColor: string;
+      fallbackImage: string;
       subtitle: string;
       title: string;
+      videoSrc: string;
     };
     meta: {
       description: string;

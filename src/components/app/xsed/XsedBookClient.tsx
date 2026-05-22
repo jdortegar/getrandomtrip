@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
+import { getNextWeekend, toISODate } from '@/lib/helpers/xsed-dates';
 import { Minus, Plus } from 'lucide-react';
 import { Accordion } from '@/components/ui/accordion';
 import HeaderHero from '@/components/journey/HeaderHero';
@@ -70,6 +71,8 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
   const [activeTab, setActiveTab] = useState('details');
   const [openSection, setOpenSection] = useState('origin');
   const [isSaving, setIsSaving] = useState(false);
+
+  const { saturday, sunday } = useMemo(() => getNextWeekend(), []);
 
   const handleTabChange = (tabId: string) => setActiveTab(tabId);
 
@@ -144,6 +147,9 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
           originCountry,
           originCity,
           pax,
+          startDate: toISODate(saturday),
+          endDate: toISODate(sunday),
+          nights: 1,
           status: 'SAVED',
         }),
       });

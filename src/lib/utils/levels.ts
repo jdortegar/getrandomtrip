@@ -20,6 +20,7 @@ import {
   type ExperienceLevelId,
 } from '@/lib/data/experience-levels';
 import { getExcusesByType } from '@/lib/helpers/excuse-helper';
+import { getXsedLevel } from '@/lib/data/xsed-catalog';
 
 /** Map experience level id to URL/store LevelSlug. */
 function toLevelSlug(levelId: string): LevelSlug {
@@ -37,6 +38,7 @@ const MAX_NIGHTS_BY_SLUG: Record<LevelSlug, number> = {
   'explora-plus': 4,
   bivouac: 5,
   'atelier-getaway': 14,
+  xsed: 1,
 };
 
 /** Static display names (fallback when type not available). */
@@ -46,6 +48,7 @@ const NAME_BY_SLUG: Record<LevelSlug, string> = {
   'explora-plus': 'Explora+',
   bivouac: 'Bivouac',
   'atelier-getaway': 'Atelier Getaway',
+  xsed: 'XSED Drop',
 };
 
 /** Level shape for forms and display (compatible with previous shared/levels). */
@@ -69,6 +72,7 @@ const COLOR_BY_SLUG: Record<LevelSlug, string> = {
   'explora-plus': 'bg-purple-500',
   bivouac: 'bg-amber-500',
   'atelier-getaway': 'bg-rose-500',
+  xsed: 'bg-orange-500',
 };
 
 const ICON_BY_SLUG: Record<LevelSlug, string> = {
@@ -77,6 +81,7 @@ const ICON_BY_SLUG: Record<LevelSlug, string> = {
   'explora-plus': '⭐',
   bivouac: '🏕️',
   'atelier-getaway': '🎨',
+  xsed: '⚡',
 };
 
 /**
@@ -117,6 +122,7 @@ export function getLevelById(
   levelId: string,
   locale?: string,
 ): Level | undefined {
+  if ((type ?? '').toLowerCase() === 'xsed') return getXsedLevel(locale);
   const t = type ?? 'solo';
   const levels = getLevelsForType(t, locale);
   const normalized = levelId.toLowerCase().replace(/\s+/g, '-');

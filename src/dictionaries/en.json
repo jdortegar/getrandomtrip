@@ -296,8 +296,8 @@
       "submittingLabel": "JOINING...",
       "successMessage": "You are on the list. We will notify you before the next opening.",
       "helper": "We will notify you 10 minutes before checkout opens every Sunday. Blink, and you are out.",
-      "fallbackImage": "/images/hero-image-1.jpeg",
-      "videoSrc": "/videos/hero-video-1.mp4"
+      "fallbackImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4"
     },
     "iconText": {
       "items": [
@@ -345,7 +345,8 @@
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-image-1.jpeg",
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
       "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE. WILL YOU BE ONE OF THEM?",
       "helper": "We'll notify you 10 minutes before the gateway opens every Sunday. Blink and you're out.",
       "inputLabel": "Email Address",
@@ -553,7 +554,8 @@
       "viewFullReviewLabel": "View full review"
     },
     "xsedHero": {
-      "backgroundImage": "/images/xsed-hero.jpg",
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "TGIS",
       "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
       "helper": "We'll notify you 10 minutes before the gateway opens every Sunday.\nBlink and you're out.",
@@ -2484,6 +2486,8 @@
       "ctaPrimaryAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
       "description": "Luxury isn't choosing among 500 options. It's not having to choose. We design safe serendipity so you live what matters.",
       "eyebrow": "About us",
+      "eyebrowColor": "#F2C53D",
+      "fallbackImage": "/images/about-us.png",
       "subtitle": "Architecture of trust",
       "title": "Architecture of trust"
     },

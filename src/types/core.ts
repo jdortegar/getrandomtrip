@@ -75,7 +75,8 @@ export type LevelSlug =
   | 'modo-explora'
   | 'explora-plus'
   | 'bivouac'
-  | 'atelier-getaway';
+  | 'atelier-getaway'
+  | 'xsed';
 export type TransportMode = 'bus' | 'plane' | 'ship' | 'train';
 export type ClimatePreference = 'any' | 'cold' | 'mild' | 'warm';
 export type TimePreference = 'no-limit' | '3h' | '5h' | '8h';

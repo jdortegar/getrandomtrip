@@ -53,13 +53,18 @@ export function normalizePriceLevelId(levelId: string | null | undefined): Price
   return null;
 }
 
+/** Flat price per person (USD) for XSED Sunday drops. */
+export const XSED_PRICE_PER_PERSON = 250;
+
 /**
  * Base price per person (USD) for the given type and level. Returns 0 if type/level not in catalog.
+ * XSED is a flat-rate product — levelId is ignored and XSED_PRICE_PER_PERSON is returned.
  */
 export function getBasePricePerPerson(
   type: TravelerTypeSlug | string,
   levelId: string | null | undefined,
 ): number {
+  if ((type as string).toLowerCase() === 'xsed') return XSED_PRICE_PER_PERSON;
   const slug = type as TravelerTypeSlug;
   if (!TRAVELER_TYPE_SLUGS.includes(slug)) return 0;
   const level = normalizePriceLevelId(levelId);

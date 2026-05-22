@@ -6,6 +6,7 @@ export const MAX_NIGHTS: Record<LevelSlug, number | 'custom'> = {
   'explora-plus': 4,
   bivouac: 5,
   'atelier-getaway': 'custom',
+  xsed: 1,
 };
 
 export const getMaxNights = (level: string) =>
