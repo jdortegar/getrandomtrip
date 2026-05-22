@@ -2501,7 +2501,8 @@
       "subtitle": "El lujo no es elegir entre 500 opciones. Es no tener que elegir.\n Diseñamos serendipia segura para que vivas lo que importa.",
       "eyebrow": "Arquitectura de la confianza",
       "fallbackImage": "/images/about-us.png",
-      "title": "Nosotros"
+      "title": "Nosotros",
+      "videoSrc": "/videos/hero-video-1.mp4"
     },
     "meta": {
       "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",

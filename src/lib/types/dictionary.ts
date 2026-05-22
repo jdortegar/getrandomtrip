@@ -1388,13 +1388,9 @@ export interface MarketingDictionary {
       sectionTitle: string;
     };
     hero: {
-      ctaPhilosophy: string;
-      ctaPrimary: string;
-      ctaPrimaryAriaLabel: string;
-      description: string;
       eyebrow: string;
-      eyebrowColor: string;
       fallbackImage: string;
+      primaryCta: { ariaLabel: string; href: string; text: string };
       subtitle: string;
       title: string;
       videoSrc: string;

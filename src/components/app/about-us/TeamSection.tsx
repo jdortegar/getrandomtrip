@@ -24,15 +24,6 @@ interface TeamSectionProps {
   content: TeamSectionContent;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function splitName(fullName: string): [string, string] {
-  const parts = fullName.trim().split(' ');
-  const first = parts[0];
-  const rest = parts.slice(1).join(' ');
-  return [first.toUpperCase(), rest.toUpperCase()];
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function TeamSection({ content }: TeamSectionProps) {
@@ -44,7 +35,6 @@ export function TeamSection({ content }: TeamSectionProps) {
     >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
         {content.items.map((member) => {
-          const [firstName, lastName] = splitName(member.name);
           return (
             <div key={member.name} className="flex flex-col gap-3">
               {/* Photo card */}
