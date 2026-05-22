@@ -8,6 +8,7 @@ import {
   getTravelerType,
   type TravelerTypeSlug,
 } from '@/lib/data/traveler-types';
+import { getXsedCard } from '@/lib/data/xsed-catalog';
 
 export type { TravelerTypeSlug };
 
@@ -32,6 +33,7 @@ export function getCardForType(
   slugOrAlias: string,
   locale?: string,
 ): TravelerTypeCardData | null {
+  if (slugOrAlias.toLowerCase() === 'xsed') return getXsedCard(locale);
   const data = getTravelerType(slugOrAlias, locale);
   if (!data) return null;
   const options = getTravelerTypeOptions(locale);

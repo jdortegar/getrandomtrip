@@ -345,7 +345,8 @@
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-image-1.jpeg",
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
       "inputLabel": "Email",
@@ -553,7 +554,8 @@
       "viewFullReviewLabel": "Ver opinión completa"
     },
     "xsedHero": {
-      "backgroundImage": "/images/xsed-hero.jpg",
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
@@ -2429,27 +2431,39 @@
       "title": "¿Listo para soltar el control y ganar libertad?"
     },
     "curators": {
+      "eyebrow": "Equipo multidisciplinario",
       "items": [
         {
-          "bio": "Diseña itinerarios que conectan con lo local: talleres, mesas compartidas y rituales auténticos.",
-          "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Ana García",
-          "role": "Inmersión Cultural"
+          "bio": "Fundador y visionario detrás de GetRandomTrip. Diseña cada experiencia con la obsesión de quien sabe que el viaje perfecto no se elige, se descubre.",
+          "img": "/images/about-us-santiago.png",
+          "linkedin": "#",
+          "name": "Santiago Senega",
+          "role": "Founder"
         },
         {
-          "bio": "Busca el punto justo entre adrenalina y seguridad. Trekking, cielos abiertos y micro-retos controlados.",
-          "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Carlos Mendoza",
-          "role": "Aventura & Aire Libre"
+          "bio": "Tecnología y producto. Construye los sistemas que hacen posible la serendipia a escala sin perder el alma del detalle.",
+          "img": "/images/about-us-david.png",
+          "linkedin": "#",
+          "name": "David Ortega",
+          "role": "Tech & Product"
         },
         {
-          "bio": "Cura spaces con diseño, calma y atención plena. Silencio, spa, música baja, servicio impecable.",
-          "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Sofía Rossi",
-          "role": "Lujo & Bienestar"
+          "bio": "Operaciones y logística. Convierte cada itinerario en una coreografía impecable que sucede entre bambalinas.",
+          "img": "/images/about-us-rodrigo.png",
+          "linkedin": "#",
+          "name": "Rodrigo S. Benítez",
+          "role": "Operations"
+        },
+        {
+          "bio": "Diseño y marca. Da forma visual al mundo de GetRandomTrip, cuidando cada píxel como si fuera parte del paisaje.",
+          "img": "/images/about-us-carla.png",
+          "linkedin": "#",
+          "name": "Carla C. J Vázquez",
+          "role": "Design"
         }
       ],
-      "sectionTitle": "Conocé a los curadores"
+      "sectionTitle": "Quiénes somos",
+      "subtitle": "Somos un equipo que mezcla creatividad, logística y obsesión por el detalle para crear viajes que no sabías que necesitabas."
     },
     "faq": {
       "items": [
@@ -2479,13 +2493,16 @@
       "sectionTitle": "Historia del fundador"
     },
     "hero": {
-      "ctaPhilosophy": "Nuestra filosofía",
-      "ctaPrimary": "GETRANDOMTRIP!",
-      "ctaPrimaryAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
-      "description": "El lujo no es elegir entre 500 opciones. Es no tener que elegir. Diseñamos serendipia segura para que vivas lo que importa.",
-      "eyebrow": "Nosotros",
-      "subtitle": "Arquitectura de la confianza",
-      "title": "Arquitectura de la confianza"
+      "primaryCta": {
+        "ariaLabel": "Ir a la sección 'Nuestra filosofía'",
+        "href": "#philosophy",
+        "text": "Nuestra filosofía"
+      },
+      "subtitle": "El lujo no es elegir entre 500 opciones. Es no tener que elegir.\n Diseñamos serendipia segura para que vivas lo que importa.",
+      "eyebrow": "Arquitectura de la confianza",
+      "fallbackImage": "/images/about-us.png",
+      "title": "Nosotros",
+      "videoSrc": "/videos/hero-video-1.mp4"
     },
     "meta": {
       "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
@@ -2497,11 +2514,7 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos un destino; vendemos un resultado emocional. Nuestra misión es liberar tu mente de la parálisis por análisis y guiarte hacia estados como asombro, calma o conexión.",
       "p2": "Lo llamamos Serendipia Diseñada: entornos seguros y meticulosamente planificados que se sienten espontáneos y transformadores. Renunciás al control logístico para ganar libertad verdadera.",
-      "pills": [
-        "Brief emocional",
-        "Diseño invisible",
-        "Sorpresa con red"
-      ],
+      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {

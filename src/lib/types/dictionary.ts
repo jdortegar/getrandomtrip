@@ -577,6 +577,7 @@ export interface XsedPageDict {
     submittingLabel: string;
     successMessage: string;
     title: string;
+    videoSrc: string;
   };
   dropGrid: {
     ctaHref: string;
@@ -928,6 +929,7 @@ export interface MarketingDictionary {
       submittingLabel: string;
       successMessage: string;
       title: string;
+      videoSrc: string;
     };
   };
   experiences: {
@@ -1370,8 +1372,10 @@ export interface MarketingDictionary {
       title: string;
     };
     curators: {
-      items: Array<{ bio: string; img: string; name: string; role: string }>;
+      eyebrow: string;
+      items: Array<{ bio: string; img: string; linkedin: string; name: string; role: string }>;
       sectionTitle: string;
+      subtitle: string;
     };
     faq: {
       items: Array<{ a: string; q: string }>;
@@ -1384,13 +1388,12 @@ export interface MarketingDictionary {
       sectionTitle: string;
     };
     hero: {
-      ctaPhilosophy: string;
-      ctaPrimary: string;
-      ctaPrimaryAriaLabel: string;
-      description: string;
       eyebrow: string;
+      fallbackImage: string;
+      primaryCta: { ariaLabel: string; href: string; text: string };
       subtitle: string;
       title: string;
+      videoSrc: string;
     };
     meta: {
       description: string;

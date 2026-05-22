@@ -1,11 +1,18 @@
 'use client';
 
-import { MapPin, Sparkle } from 'lucide-react';
+import { CalendarDays, MapPin, Sparkle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { XSED_PRICE_PER_PERSON } from '@/lib/data/traveler-types';
+import { getNextWeekend } from '@/lib/helpers/xsed-dates';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Date helpers ─────────────────────────────────────────────────────────────
 
-const PRICE_PER_PERSON = 250;
+const MONTHS_ES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const DAYS_ES = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+
+function formatDay(date: Date): string {
+  return `${DAYS_ES[date.getDay()]} ${date.getDate()} ${MONTHS_ES[date.getMonth()]}`;
+}
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -24,7 +31,8 @@ export function XsedSummary({
   originCountry,
   pax,
 }: XsedSummaryProps) {
-  const total = PRICE_PER_PERSON * pax;
+  const total = XSED_PRICE_PER_PERSON * pax;
+  const { saturday, sunday } = getNextWeekend();
 
   const sectionTitleClass = 'text-base font-bold text-gray-900';
   const detailClass = 'text-sm font-normal text-gray-900';
@@ -42,6 +50,17 @@ export function XsedSummary({
           <p className={cn('font-bold', detailClass)}>XSED</p>
           <p className="text-sm font-normal text-gray-500 mt-0.5">
             1 noche · cena · experiencia local sorpresa
+          </p>
+        </div>
+      </div>
+
+      {/* Fecha */}
+      <div className="border-b border-gray-200 pb-4">
+        <p className={sectionTitleClass}>Fecha</p>
+        <div className="mt-2 flex items-center gap-2">
+          <CalendarDays className="h-4 w-4 shrink-0 text-gray-900" />
+          <p className={detailClass}>
+            {formatDay(saturday)} · {formatDay(sunday)}
           </p>
         </div>
       </div>
@@ -104,7 +123,7 @@ export function XsedSummary({
             Precio por persona
           </p>
           <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
-            USD {PRICE_PER_PERSON}
+            USD {XSED_PRICE_PER_PERSON}
           </p>
         </div>
 

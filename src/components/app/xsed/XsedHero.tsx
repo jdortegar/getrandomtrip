@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { parseXsedNotificationBody } from '@/lib/xsed/notifications';
 import type { XsedPageDict } from '@/lib/types/dictionary';
 import Section from '@/components/layout/Section';
+import VideoBackground from '@/components/media/VideoBackground';
+import { cn } from '@/lib/utils';
 
 interface XsedHeroProps {
   className?: string;
@@ -61,8 +63,14 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
   }
 
   return (
-    <Section backgroundImage={content.backgroundImage} backgroundOpacity={0.4} className="min-h-screen" data-component="xsed-hero">
-      <div className="relative z-10 flex justify-center items-center">
+    <section
+      className='relative h-screen flex flex-col overflow-hidden'
+    >
+      <VideoBackground
+        fallbackImage={content.backgroundImage}
+        videoSrc={content.videoSrc}
+      />
+      <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
             <motion.h2
@@ -127,6 +135,6 @@ export function XsedHero({ className, content, locale }: XsedHeroProps) {
           )}
         </AnimatePresence>
       </div>
-    </Section>
+    </section>
   );
 }

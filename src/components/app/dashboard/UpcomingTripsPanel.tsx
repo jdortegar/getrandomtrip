@@ -22,7 +22,7 @@ export function UpcomingTripsPanel({
   trips,
 }: UpcomingTripsPanelProps) {
   return (
-    <div className="lg:col-span-2">
+    <div className="lg:col-span-2" data-component="upcoming-trips-panel">
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-neutral-900">
@@ -57,10 +57,9 @@ export function UpcomingTripsPanel({
                     <div className="w-[100px] h-[120px] rounded-lg overflow-hidden">
                       <Img
                         alt={travelerTypeTitle}
-                        height={120}
                         sizes="(max-width: 640px) 34vw, 160px"
                         src={typeImageSrc!}
-                        width={100}
+                        className="object-cover h-full w-full"
                       />
                     </div>
 
