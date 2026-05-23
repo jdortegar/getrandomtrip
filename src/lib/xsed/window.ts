@@ -138,7 +138,7 @@ function getLocalInfo(
  * Returns the UTC offset of `tz` at `date` in fractional hours (positive = ahead of UTC).
  * Uses the sv-SE locale trick: format local time, parse as UTC, diff against real UTC.
  */
-function getUtcOffsetHours(tz: string, date: Date): number {
+export function getUtcOffsetHours(tz: string, date: Date): number {
   const s = new Intl.DateTimeFormat("sv-SE", {
     timeZone: tz,
     year: "numeric",

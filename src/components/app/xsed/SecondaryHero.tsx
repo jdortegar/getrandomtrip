@@ -25,6 +25,8 @@ export function SecondaryHero({
   scrollIndicator = false,
   titleClassName,
 }: SecondaryHeroProps) {
+
+  console.log(content.videoSrc);
   return (
     <section
       className={cn(
