@@ -1,21 +1,30 @@
 import Link from "next/link";
 import Img from "@/components/common/Img";
+import { cn } from "@/lib/utils";
 import type { DropEntry } from "@/types/core";
 
 interface DropCardProps {
   drop: DropEntry;
+  featured?: boolean;
 }
 
-export function DropCard({ drop }: DropCardProps) {
+export function DropCard({ drop, featured = false }: DropCardProps) {
   return (
     <Link
-      className="flex h-full flex-col text-left group"
+      className={cn("flex flex-col text-left group", featured && "md:h-full")}
       href={`/xsed/drops/${drop.slug}`}
     >
-      <div className="relative mb-2 flex-1 min-h-0 overflow-hidden rounded-xl">
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-xl",
+          featured
+            ? "aspect-square md:aspect-auto md:flex-1 md:min-h-0 mb-2"
+            : "aspect-square mb-2",
+        )}
+      >
         <Img
           alt={drop.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           height={600}
           src={drop.image}
           width={800}
@@ -38,7 +47,9 @@ export function DropCard({ drop }: DropCardProps) {
         <p className="font-barlow mb-1 text-xs font-bold uppercase tracking-widest text-xsed">
           {drop.date}
         </p>
-        <p className="font-barlow-condensed text-3xl text-neutral-600 font-extralight">{drop.title}</p>
+        <p className="font-barlow-condensed text-3xl text-neutral-600 font-extralight">
+          {drop.title}
+        </p>
         <hr className="mt-2 border-xsed" />
       </div>
     </Link>

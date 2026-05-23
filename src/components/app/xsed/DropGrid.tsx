@@ -30,15 +30,13 @@ export function DropGrid({ content, drops }: DropGridProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 md:grid-rows-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {drops.map((drop, index) => (
             <div
               key={drop.number}
-              className={
-                index === 0 ? 'md:col-span-2 md:row-span-2 md:flex md:flex-col' : ''
-              }
+              className={index === 0 ? 'md:col-span-2 md:row-span-2' : ''}
             >
-              <DropCard drop={drop} />
+              <DropCard drop={drop} featured={index === 0} />
             </div>
           ))}
         </div>

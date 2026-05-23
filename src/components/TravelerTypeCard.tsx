@@ -103,8 +103,8 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
         <ReviewBadge rating="4.6" />
 
-        <div className="absolute bottom-0 left-0 z-20 w-full p-5 pb-20 text-left text-white">
-          <h3 className="font-barlow-condensed text-3xl @[200px]:text-5xl font-extrabold uppercase leading-tight">
+        <div className="absolute bottom-0 left-0 z-20 w-full p-5 @[200px]:pb-20 text-left text-white">
+          <h3 className="font-barlow-condensed text-2xl @[200px]:text-5xl font-extrabold uppercase leading-tight">
             {title}
           </h3>
           <p className="font-barlow text-base @[200px]:text-lg text-white/90">
@@ -113,8 +113,8 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         </div>
 
         {comingSoonLabel && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-black/50 cursor-not-allowed">
-            <span className="font-barlow-condensed text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-lg">
+          <div className="absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-black/70 cursor-not-allowed">
+            <span className="font-barlow-condensed text-base @[200px]:text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-lg">
               {comingSoonLabel}
             </span>
           </div>
