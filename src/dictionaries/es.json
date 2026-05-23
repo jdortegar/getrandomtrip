@@ -332,8 +332,8 @@
       "submittingLabel": "SUMANDO...",
       "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.<br/>Si parpadeás, te quedás fuera.",
-      "fallbackImage": "/images/hero-image-1.jpeg",
-      "videoSrc": "/videos/hero-video-1.mp4"
+      "fallbackImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4"
     },
     "iconText": {
       "items": [
@@ -357,7 +357,7 @@
     "countdown": {
       "title": "COMPRÁ TU",
       "titleHighlight": "XSED Nº{number}",
-      "subtitle": "Tenés 10 minutos antes de que activemos la pasarela.",
+      "subtitle": "Unite a la lista de espera — no te quedes sin el tuyo.",
       "openSubtitle": "La pasarela está abierta. Quedan pocos lugares.",
       "nextDropLabel": "NEXT DROP",
       "windowOpenLabel": "ABIERTO AHORA",
@@ -2541,8 +2541,7 @@
       "subtitle": "El lujo no es elegir entre 500 opciones. Es no tener que elegir.\n Diseñamos serendipia segura para que vivas lo que importa.",
       "eyebrow": "Arquitectura de la confianza",
       "fallbackImage": "/images/about-us.png",
-      "title": "Nosotros",
-      "videoSrc": "/videos/hero-video-1.mp4"
+      "title": "Nosotros"
     },
     "meta": {
       "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",

@@ -33,7 +33,8 @@ export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const parsed = parseXsedNotificationBody({ email, locale });
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const parsed = parseXsedNotificationBody({ email, locale, timezone });
     if (!parsed) {
       setStatus("invalid");
       return;

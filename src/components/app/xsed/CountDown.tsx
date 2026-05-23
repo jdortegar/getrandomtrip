@@ -169,8 +169,13 @@ export function CountDown({
     }
 
     poll();
-    const id = setInterval(() => { if (!stopped) poll(); }, 30_000);
-    return () => { stopped = true; clearInterval(id); };
+    const id = setInterval(() => {
+      if (!stopped) poll();
+    }, 30_000);
+    return () => {
+      stopped = true;
+      clearInterval(id);
+    };
   }, [phase, dropSlug]);
 
   const pct =
@@ -203,7 +208,7 @@ export function CountDown({
       fullWidth={true}
       id="xsed"
       title={`${copy.title} <span class="text-xsed">${titleHighlight}</span>`}
-      subtitle={phase === 'open' ? copy.openSubtitle : copy.subtitle}
+      subtitle={phase === "open" ? copy.openSubtitle : copy.subtitle}
     >
       {/* Drop status row */}
       <motion.div
@@ -264,30 +269,32 @@ export function CountDown({
       </motion.div>
 
       {/* Progress bar */}
-      <motion.div
-        className="mx-auto mt-8 max-w-xs"
-        initial={{ opacity: 0 }}
-        viewport={{ once: true }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-      >
-        <div
-          aria-label={soldText}
-          aria-valuemax={totalSlots}
-          aria-valuemin={0}
-          aria-valuenow={soldCount}
-          className="h-2 w-full overflow-hidden rounded-full bg-orange-100"
-          role="progressbar"
+      {phase === "open" && (
+        <motion.div
+          className="mx-auto mt-8 max-w-xs"
+          initial={{ opacity: 0 }}
+          viewport={{ once: true }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
         >
           <div
-            className="h-full rounded-full transition-[width] duration-700"
-            style={{ backgroundColor: ORANGE, width: `${pct}%` }}
-          />
-        </div>
-        <p className="mt-2 text-lg font-semibold text-neutral-700">
-          {soldText}
-        </p>
-      </motion.div>
+            aria-label={soldText}
+            aria-valuemax={totalSlots}
+            aria-valuemin={0}
+            aria-valuenow={soldCount}
+            className="h-2 w-full overflow-hidden rounded-full bg-orange-100"
+            role="progressbar"
+          >
+            <div
+              className="h-full rounded-full transition-[width] duration-700"
+              style={{ backgroundColor: ORANGE, width: `${pct}%` }}
+            />
+          </div>
+          <p className="mt-2 text-lg font-semibold text-neutral-700">
+            {soldText}
+          </p>
+        </motion.div>
+      )}
 
       {/* CTA */}
       <motion.div
@@ -298,7 +305,7 @@ export function CountDown({
       >
         {showForm ? (
           <div className="rt-container mx-auto flex justify-center text-center">
-          <XsedNotifyForm variant="light" />
+            <XsedNotifyForm variant="light" />
           </div>
         ) : (
           <Button asChild size="lg" variant="tertiary">

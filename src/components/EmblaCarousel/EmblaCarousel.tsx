@@ -109,9 +109,9 @@ const EmblaCarousel = ({
                 key={index}
                 className={cn(
                   "min-w-0 shrink-0",
-                  "flex-[0_0_80%] @sm:flex-[0_0_50%]",{
+                  "flex-[0_0_80%]",{
                   "@md:flex-[0_0_33.3333%]": slidesPerView === 3, 
-                  "@lg:flex-[0_0_25%]": slidesPerView === 4
+                  "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]": slidesPerView === 4
                   },
                   slideClassName,
                 )}

@@ -435,13 +435,16 @@ model WaitlistEntry {
 }
 
 model XsedNotificationSignup {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  locale    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String    @id @default(cuid())
+  email          String    @unique
+  locale         String?
+  timezone       String?
+  lastNotifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([email])
   @@index([createdAt])
+  @@index([lastNotifiedAt])
   @@map("xsed_notification_signups")
 }

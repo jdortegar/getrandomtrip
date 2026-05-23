@@ -30,6 +30,7 @@
     "@auth/prisma-adapter": "^2.10.0",
     "@formatjs/intl-localematcher": "^0.8.1",
     "@netlify/blobs": "^10.7.4",
+    "@netlify/functions": "^5.2.2",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/adapter-pg": "^7.4.1",
     "@radix-ui/react-accordion": "^1.2.12",

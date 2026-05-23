@@ -25,6 +25,8 @@ export function SecondaryHero({
   scrollIndicator = false,
   titleClassName,
 }: SecondaryHeroProps) {
+
+  console.log(content.videoSrc);
   return (
     <section
       className={cn(
@@ -50,7 +52,7 @@ export function SecondaryHero({
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h2 className="font-barlow-condensed font-extrabold text-[52px] sm:text-[80px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
+            <h2 className="font-barlow-condensed font-extrabold text-[100px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
               {formatTitleWithCopyright(content.title)}
             </h2>
             <div className="flex justify-end gap-2">
