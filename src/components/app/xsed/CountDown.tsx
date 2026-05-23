@@ -207,7 +207,7 @@ export function CountDown({
     >
       {/* Drop status row */}
       <motion.div
-        className="flex items-center justify-center gap-2 text-lg uppercase tracking-wide text-neutral-700"
+        className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm sm:text-lg uppercase tracking-wide text-neutral-700"
         initial={{ opacity: 0 }}
         viewport={{ once: true }}
         whileInView={{ opacity: 1 }}
@@ -251,11 +251,11 @@ export function CountDown({
             key={unit.label}
           >
             <div className="inline-flex items-end">
-              <span className="leading-none tabular-nums text-neutral-800 text-[80px] md:text-[140px]">
+              <span className="leading-none tabular-nums text-neutral-800 text-[52px] sm:text-[80px] md:text-[140px]">
                 {i > 0 && ":"}
                 {unit.value}
               </span>
-              <span className="mb-[0.45rem] ml-0.5 whitespace-nowrap uppercase tracking-[0.18em] text-neutral-400 md:mb-[0.6rem] text-base md:text-xl font-normal">
+              <span className="mb-[0.3rem] ml-0.5 whitespace-nowrap uppercase tracking-[0.18em] text-neutral-400 sm:mb-[0.45rem] md:mb-[0.6rem] text-xs sm:text-base md:text-xl font-normal">
                 {unit.label}
               </span>
             </div>
@@ -297,7 +297,9 @@ export function CountDown({
         transition={{ duration: 0.6, delay: 1 }}
       >
         {showForm ? (
+          <div className="rt-container mx-auto flex justify-center text-center">
           <XsedNotifyForm variant="light" />
+          </div>
         ) : (
           <Button asChild size="lg" variant="tertiary">
             <Link href={`/${locale}/xsed/book`} scroll={true}>

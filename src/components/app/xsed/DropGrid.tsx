@@ -20,12 +20,12 @@ export function DropGrid({ content, drops }: DropGridProps) {
           <p className="text-xl font-light uppercase tracking-widest text-xsed">
                 {content.eyebrow}
             </p>
-            <h2 className="text-5xl font-bold uppercase leading-none md:text-7xl whitespace-wrap">
+            <h2 className="text-5xl font-bold uppercase leading-none md:text-7xl">
               {content.title}{' '}
               <span className="text-xsed">{content.titleHighlight}</span>
             </h2>
           </div>
-          <p className="max-w-sm text-sm leading-relaxed text-neutral-500 text-right">
+          <p className="max-w-sm text-sm leading-relaxed text-neutral-500 md:text-right">
             {content.description}
           </p>
         </div>

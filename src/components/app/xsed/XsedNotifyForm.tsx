@@ -64,30 +64,29 @@ export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
 
   const isDark = variant === "dark";
 
+  const inputColorClasses = isDark
+    ? "border-white bg-transparent text-white placeholder:text-white focus-visible:ring-white/40"
+    : "border-neutral-300 bg-white text-neutral-800 placeholder:text-neutral-400 focus-visible:ring-xsed/40";
+
+  const helperColorClasses = isDark ? "text-white" : "text-neutral-500";
+
   return (
     <motion.div
-      initial={{ y: 40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, delay: 1.2 }}
-      className={cn(isDark ? "" : "flex flex-col items-center text-center")}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-2xl"
+      initial={{ opacity: 0, y: 40 }}
+      transition={{ delay: 1.2, duration: 0.6 }}
     >
       <form
-        className={cn(
-          "flex gap-4 mb-4",
-          isDark
-            ? "flex-col md:flex-row justify-start"
-            : "flex-col sm:flex-row justify-center w-full max-w-2xl",
-        )}
+        className="mb-4 flex w-full flex-col justify-center gap-4 md:flex-row md:items-center"
         noValidate
         onSubmit={handleSubmit}
       >
         <Input
           aria-label={content.inputLabel}
           className={cn(
-            "h-14 rounded-md px-4 font-barlow text-lg font-semibold shadow-none",
-            isDark
-              ? "w-full md:w-[300px] border-2 border-white bg-transparent text-white placeholder:text-white focus-visible:ring-2 focus-visible:ring-white/40"
-              : "flex-1 border border-neutral-300 bg-white text-neutral-800 placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-xsed/40",
+            "h-14 w-full rounded-md border-2 px-4 font-barlow text-lg font-semibold shadow-none focus-visible:ring-2 md:w-[300px]",
+            inputColorClasses,
           )}
           disabled={isSubmitting}
           id="xsed-email-input"
@@ -102,6 +101,7 @@ export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
         />
         <Button
           aria-label={content.submitAriaLabel}
+          className="w-full md:w-auto"
           disabled={isSubmitting}
           size="lg"
           type="submit"
@@ -111,7 +111,7 @@ export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
         </Button>
       </form>
 
-      {statusMessage && (
+      {statusMessage ? (
         <p
           className={cn(
             "mb-4 font-barlow text-lg font-semibold",
@@ -120,12 +120,12 @@ export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
         >
           {statusMessage}
         </p>
-      )}
+      ) : null}
 
       <p
         className={cn(
           "font-barlow text-base leading-relaxed [&_strong]:font-bold",
-          isDark ? "text-white" : "text-neutral-500",
+          helperColorClasses,
         )}
         dangerouslySetInnerHTML={{ __html: content.helper }}
       />

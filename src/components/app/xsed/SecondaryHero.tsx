@@ -45,12 +45,12 @@ export function SecondaryHero({
       <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
         <div className="max-w-3xl flex flex-col justify-center text-left">
           <motion.div
-            className={cn("flex gap-5 items-end mb-8 text-white justify-center md:justify-start")}
+            className={cn("flex flex-wrap gap-x-5 gap-y-3 items-end mb-8 text-white justify-center md:justify-start")}
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h2 className="font-barlow-condensed font-extrabold text-[80px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
+            <h2 className="font-barlow-condensed font-extrabold text-[52px] sm:text-[80px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
               {formatTitleWithCopyright(content.title)}
             </h2>
             <div className="flex justify-end gap-2">
@@ -61,7 +61,7 @@ export function SecondaryHero({
               />
               <div className="flex flex-col justify-end">
                 <p
-                  className="font-barlow text-lg uppercase leading-tight tracking-wide text-white"
+                  className="font-barlow text-sm sm:text-lg uppercase leading-tight tracking-wide text-white"
                   dangerouslySetInnerHTML={{ __html: content.subtitle }}
                 />
               </div>
@@ -69,7 +69,7 @@ export function SecondaryHero({
           </motion.div>
 
           <motion.p
-            className="font-barlow text-lg leading-relaxed text-white mb-8 [&_strong]:font-bold"
+            className="font-barlow text-base sm:text-lg leading-relaxed text-white mb-8 [&_strong]:font-bold"
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.8 }}
