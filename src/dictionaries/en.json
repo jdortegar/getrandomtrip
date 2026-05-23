@@ -266,6 +266,42 @@
       }
     }
   },
+  "xsedUnavailable": {
+    "heading": "This DROP is sold out",
+    "subheading": "XSED drops open every Sunday from 4pm to 8pm.",
+    "notifyLabel": "Notify me about the next one",
+    "backLabel": "Browse past drops"
+  },
+  "xsedBook": {
+    "actionBar": {
+      "clearAll": "Clear all",
+      "next": "Next",
+      "viewCheckout": "BUY TGIS"
+    },
+    "contentTabs": [
+      {
+        "id": "details",
+        "label": "Origin",
+        "substeps": [
+          {
+            "id": "origin",
+            "title": "Departure country and city",
+            "description": "Where your escape starts"
+          },
+          {
+            "id": "pax",
+            "title": "Travelers",
+            "description": "Number of people"
+          }
+        ]
+      }
+    ],
+    "pax": {
+      "label": "Travelers",
+      "countOne": "{count} traveler",
+      "countOther": "{count} travelers"
+    }
+  },
   "xsedDropsPage": {
     "title": "ESCAPE LOG",
     "titleHighlight": "TGIS",
@@ -322,8 +358,12 @@
       "title": "BUY YOUR",
       "titleHighlight": "TGIS Nº{number}",
       "subtitle": "You have 10 minutes before we open the payment gateway.",
+      "openSubtitle": "The gateway is open. Only a few spots left.",
       "nextDropLabel": "NEXT DROP",
+      "windowOpenLabel": "OPEN NOW",
+      "windowClosingLabel": "UNTIL",
       "daysLabel": "DAYS",
+      "hoursLabel": "HRS",
       "minLabel": "MIN",
       "secLabel": "SEC",
       "soldLabel": "{sold}/{total} sold",

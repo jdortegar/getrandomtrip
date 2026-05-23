@@ -26,7 +26,7 @@ export function HomePageClient({ trippers }: HomePageClientProps) {
       <HomeInfo content={home.homeInfo} />
       <ExplorationSection content={home.exploration} trippers={trippers} />
       <Blog eyebrow={home.blog.eyebrow} subtitle={home.blog.subtitle} title={home.blog.title} posts={BLOG_CONSTANTS.posts} viewAll={home.blog.viewAll} />
-      <XsedHero content={home.xsedHero} locale={locale} />
+      <XsedHero content={home.xsedHero} />
       <Testimonials 
         eyebrow={home.testimonials.eyebrow} 
         subtitle={home.testimonials.subtitle} 

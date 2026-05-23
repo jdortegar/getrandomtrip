@@ -59,10 +59,10 @@ export default async function XsedPage(props: LocaleParams) {
       {currentDrop ? (
         <CountDown
           copy={dict.xsedPage.countdown}
+          dropSlug={currentDrop.slug}
           locale={normalizedLocale}
           number={currentDrop.number}
           soldCount={currentDrop.soldCount}
-          targetDate={currentDrop.targetDate}
           totalSlots={currentDrop.totalSlots}
         />
       ) : null}
@@ -70,7 +70,7 @@ export default async function XsedPage(props: LocaleParams) {
       <DropGrid content={dict.xsedPage.dropGrid} drops={gridDrops} />
       <FaqBlock copy={dict.xsedPage.faq} />
 
-      <XsedHero content={dict.xsedPage.xsedHero} locale={normalizedLocale} />
+      <XsedHero content={dict.xsedPage.xsedHero} />
       <Testimonials
         title={dict.xsedPage.testimonials.title}
         subtitle={dict.xsedPage.testimonials.subtitle}

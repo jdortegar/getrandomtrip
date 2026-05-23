@@ -1,139 +1,58 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
-import { parseXsedNotificationBody } from '@/lib/xsed/notifications';
-import type { XsedPageDict } from '@/lib/types/dictionary';
-import Section from '@/components/layout/Section';
 import VideoBackground from '@/components/media/VideoBackground';
+import { XsedNotifyForm } from '@/components/app/xsed/XsedNotifyForm';
+import type { XsedPageDict } from '@/lib/types/dictionary';
 import { cn } from '@/lib/utils';
 
 interface XsedHeroProps {
+  backHref?: string;
+  backLabel?: string;
   className?: string;
   content: XsedPageDict['xsedHero'];
-  locale: string;
 }
 
-type SubmitStatus = 'idle' | 'error' | 'invalid' | 'success';
-
-export function XsedHero({ className, content, locale }: XsedHeroProps) {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState<SubmitStatus>('idle');
-
-  const errorMessage =
-    status === 'invalid'
-      ? content.invalidEmailMessage
-      : status === 'error'
-        ? content.errorMessage
-        : null;
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const parsed = parseXsedNotificationBody({ email, locale });
-    if (!parsed) {
-      setStatus('invalid');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setStatus('idle');
-    try {
-      const response = await fetch('/api/xsed/notifications', {
-        body: JSON.stringify(parsed),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        setStatus('error');
-        return;
-      }
-
-      setEmail('');
-      setStatus('success');
-    } catch {
-      setStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
+export function XsedHero({ backHref, backLabel, className, content }: XsedHeroProps) {
   return (
-    <section
-      className='relative h-screen flex flex-col overflow-hidden'
-    >
+    <section className={cn('relative flex h-screen flex-col overflow-hidden', className)}>
       <VideoBackground
         fallbackImage={content.backgroundImage}
         videoSrc={content.videoSrc}
       />
       <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">
-        <AnimatePresence mode="wait">
-          {status === 'success' ? (
-            <motion.h2
-              key="success"
-              animate={{ opacity: 1, y: 0 }}
-              className="mx-auto max-w-3xl text-center font-barlow-condensed text-5xl font-bold uppercase leading-tight text-white md:text-6xl lg:text-7xl"
-              exit={{ opacity: 0, y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-            >
-              {content.successMessage}
-            </motion.h2>
-          ) : (
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="whitespace-pre-line text-center mb-10 font-barlow-condensed font-bold uppercase leading-tight text-white text-[50px] md:text-[70px]">
+            {content.title}
+          </h2>
+
+          <div className="flex justify-center mb-8 text-center">
+            <XsedNotifyForm variant="dark" />
+          </div>
+          {backHref && backLabel ? (
             <motion.div
-              key="default"
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
+              className="mt-8 flex justify-center"
+              initial={{ opacity: 0, y: 10 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
             >
-              <h2 className="whitespace-pre-line text-center mb-10 font-barlow-condensed font-bold uppercase leading-tight text-white text-[50px] md:text-[70px]">
-                {content.title}
-              </h2>
-              <p className="whitespace-pre-line text-center mb-10 text-lg leading-relaxed text-white">
-                {content.helper}
-              </p>
-              <form
-                className="flex flex-col gap-4 md:flex-row md:items-center justify-center flex-wrap"
-                noValidate
-                onSubmit={handleSubmit}
+              <Button
+                asChild
+                className="text-white hover:bg-white/10 hover:text-white"
+                size="sm"
+                variant="ghost"
               >
-                <Input
-                  aria-label={content.inputLabel}
-                  className="h-14 w-full lg:w-1/3 rounded-md border-2 border-white/40 bg-black/40 px-4 font-barlow text-base font-medium text-white shadow-none placeholder:text-white/60 focus-visible:ring-2 focus-visible:ring-white/30"
-                  disabled={isSubmitting}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (status !== 'idle') setStatus('idle');
-                  }}
-                  placeholder={content.inputPlaceholder}
-                  required
-                  type="email"
-                  value={email}
-                />
-                <Button
-                  aria-label={content.submitAriaLabel}
-                  disabled={isSubmitting}
-                  size="lg"
-                  type="submit"
-                  variant="tertiary"
-                  className="w-full lg:w-auto"
-                >
-                  {isSubmitting ? content.submittingLabel : content.submitLabel}
-                </Button>
-              </form>
-              {errorMessage && (
-                <p className="text-center mt-4 font-barlow text-sm font-semibold text-red-400">
-                  {errorMessage}
-                </p>
-              )}
+                <Link href={backHref}>{backLabel}</Link>
+              </Button>
             </motion.div>
-          )}
-        </AnimatePresence>
+          ) : null}
+        </motion.div>
       </div>
     </section>
   );

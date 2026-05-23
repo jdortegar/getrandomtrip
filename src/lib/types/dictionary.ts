@@ -512,16 +512,42 @@ export interface UnauthorizedPageDict {
   title: string;
 }
 
+export interface XsedBookDict {
+  actionBar: {
+    clearAll: string;
+    next: string;
+    viewCheckout: string;
+  };
+  contentTabs: Array<{
+    id: string;
+    label: string;
+    substeps: Array<{
+      description: string;
+      id: string;
+      title: string;
+    }>;
+  }>;
+  pax: {
+    countOne: string;
+    countOther: string;
+    label: string;
+  };
+}
+
 export interface XsedPageDict {
   countdown: {
     ctaHref: string;
     ctaLabel: string;
     daysLabel: string;
+    hoursLabel: string;
     minLabel: string;
     nextDropLabel: string;
+    windowOpenLabel: string;
+    windowClosingLabel: string;
     secLabel: string;
     soldLabel: string;
     subtitle: string;
+    openSubtitle: string;
     title: string;
     titleHighlight: string;
   };
@@ -826,6 +852,13 @@ export interface MarketingDictionary {
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
   xsedPage: XsedPageDict;
+  xsedUnavailable: {
+    heading: string;
+    subheading: string;
+    notifyLabel: string;
+    backLabel: string;
+  };
+  xsedBook: XsedBookDict;
   xsedDropsPage: {
     description: string;
     filterDate: string;

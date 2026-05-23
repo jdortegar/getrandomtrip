@@ -15,23 +15,22 @@ interface DropGridProps {
 export function DropGrid({ content, drops }: DropGridProps) {
   return (
     <Section>
-      
         <div className="mb-12 flex flex-col gap-6 text-left md:flex-row md:items-end md:justify-between">
-          <div className="font-barlow-condensed lg:whitespace-nowrap">
+          <div className="font-barlow-condensed">
           <p className="text-xl font-light uppercase tracking-widest text-xsed">
                 {content.eyebrow}
             </p>
-            <h2 className="text-5xl font-bold uppercase leading-none md:text-7xl">
+            <h2 className="text-5xl font-bold uppercase leading-none md:text-7xl whitespace-wrap">
               {content.title}{' '}
               <span className="text-xsed">{content.titleHighlight}</span>
             </h2>
           </div>
-          <p className="max-w-sm text-sm leading-relaxed text-neutral-500">
+          <p className="max-w-sm text-sm leading-relaxed text-neutral-500 text-right">
             {content.description}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-4 md:grid-rows-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 md:grid-rows-2">
           {drops.map((drop, index) => (
             <div
               key={drop.number}
