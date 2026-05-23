@@ -79,7 +79,7 @@ export function SecondaryHero({
           />
         </div>
 
-        <XsedNotifyForm variant="dark" />
+        <XsedNotifyForm variant="dark" className="md:justify-start" />
       </div>
 
       {scrollIndicator && (

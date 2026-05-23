@@ -10,11 +10,12 @@ import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface XsedNotifyFormProps {
   variant?: "dark" | "light";
+  className?: string;
 }
 
 type SubmitStatus = "idle" | "error" | "invalid" | "success";
 
-export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
+export function XsedNotifyForm({ variant = "dark", className }: XsedNotifyFormProps) {
   const content = useDictionary((d) => d.xsedPage.hero);
   const locale = useLocale();
   const [email, setEmail] = useState("");
@@ -79,7 +80,7 @@ export function XsedNotifyForm({ variant = "dark" }: XsedNotifyFormProps) {
       transition={{ delay: 1.2, duration: 0.6 }}
     >
       <form
-        className="mb-4 flex w-full flex-col justify-center gap-4 md:flex-row md:items-center"
+        className={cn("mb-4 flex w-full flex-col justify-center gap-4 md:flex-row md:items-center", className)}
         noValidate
         onSubmit={handleSubmit}
       >
