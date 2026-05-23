@@ -1426,7 +1426,7 @@ export interface MarketingDictionary {
       primaryCta: { ariaLabel: string; href: string; text: string };
       subtitle: string;
       title: string;
-      videoSrc: string;
+      videoSrc?: string;
     };
     meta: {
       description: string;

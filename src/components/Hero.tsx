@@ -17,7 +17,7 @@ export interface HeroContent {
   subtitle: string;
   tagline?: string;
   title: string;
-  videoSrc: string;
+  videoSrc?: string;
   secondaryCta?: { ariaLabel: string; href: string; text: string };
   tags?: unknown;
   eyebrow?: string;
