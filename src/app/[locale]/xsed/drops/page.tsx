@@ -34,10 +34,10 @@ export default async function XsedDropsPage(props: LocaleParams) {
       <AllDropsGrid excludeId={currentDrop?.id} initialDrops={drops} initialHasMore={hasMore} />
       {currentDrop ? (
         <CountDown
+          dropSlug={currentDrop.slug}
           locale={normalizedLocale}
           number={currentDrop.number}
           soldCount={currentDrop.soldCount}
-          targetDate={currentDrop.targetDate}
           totalSlots={currentDrop.totalSlots}
           useForm={true}
         />

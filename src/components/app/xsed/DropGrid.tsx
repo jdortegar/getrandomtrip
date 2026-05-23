@@ -15,9 +15,8 @@ interface DropGridProps {
 export function DropGrid({ content, drops }: DropGridProps) {
   return (
     <Section>
-      
         <div className="mb-12 flex flex-col gap-6 text-left md:flex-row md:items-end md:justify-between">
-          <div className="font-barlow-condensed lg:whitespace-nowrap">
+          <div className="font-barlow-condensed">
           <p className="text-xl font-light uppercase tracking-widest text-xsed">
                 {content.eyebrow}
             </p>
@@ -26,12 +25,12 @@ export function DropGrid({ content, drops }: DropGridProps) {
               <span className="text-xsed">{content.titleHighlight}</span>
             </h2>
           </div>
-          <p className="max-w-sm text-sm leading-relaxed text-neutral-500">
+          <p className="max-w-sm text-sm leading-relaxed text-neutral-500 md:text-right">
             {content.description}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-4 md:grid-rows-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 md:grid-rows-2">
           {drops.map((drop, index) => (
             <div
               key={drop.number}

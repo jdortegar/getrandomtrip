@@ -18,45 +18,27 @@ import { XsedSummary } from '@/components/app/xsed/XsedSummary';
 import { useUserStore } from '@/store/slices/userStore';
 import type { JourneyDetailsStepLabels } from '@/components/journey/JourneyDetailsStep';
 import type { JourneyUserBadgeLabels } from '@/components/journey/JourneyUserBadge';
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const XSED_ACTION_BAR_LABELS = {
-  clearAll: 'Limpiar todo',
-  next: 'Siguiente',
-  viewCheckout: 'COMPRAR XSED',
-};
-
-const XSED_SIDEBAR_TABS = [
-  {
-    id: 'details',
-    label: 'Origen',
-    substeps: [
-      {
-        id: 'origin',
-        title: 'País y ciudad de salida',
-        description: 'Desde dónde arrancás tu escape',
-      },
-      {
-        id: 'pax',
-        title: 'Pasajeros',
-        description: 'Cantidad de personas',
-      },
-    ],
-  },
-];
+import type { XsedBookDict } from '@/lib/types/dictionary';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface XsedBookClientProps {
+  book: XsedBookDict;
   detailsStepLabels?: JourneyDetailsStepLabels;
+  experienceId?: string;
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: XsedBookClientProps) {
+export function XsedBookClient({
+  book,
+  detailsStepLabels,
+  experienceId,
+  locale,
+  userBadgeLabels,
+}: XsedBookClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status: sessionStatus } = useSession();
@@ -151,6 +133,7 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
           endDate: toISODate(sunday),
           nights: 1,
           status: 'SAVED',
+          ...(experienceId ? { experienceId } : {}),
         }),
       });
       const data = await res.json();
@@ -186,7 +169,7 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
       <JourneyContentNavigation
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        tabs={XSED_SIDEBAR_TABS.map((tab) => ({ id: tab.id, label: tab.label }))}
+        tabs={book.contentTabs.map((tab) => ({ id: tab.id, label: tab.label }))}
         userBadgeLabels={userBadgeLabels}
       />
 
@@ -198,7 +181,7 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
               activeTab={activeTab}
               addonsComingSoonLabel=""
               onStepClick={handleStepClick}
-              tabs={XSED_SIDEBAR_TABS}
+              tabs={book.contentTabs}
             />
           </div>
 
@@ -250,8 +233,12 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
                 </JourneyDropdown>
 
                 <JourneyDropdown
-                  content={`${pax} persona${pax !== 1 ? 's' : ''}`}
-                  label="Personas"
+                  content={
+                    pax === 1
+                      ? book.pax.countOne.replace('{count}', String(pax))
+                      : book.pax.countOther.replace('{count}', String(pax))
+                  }
+                  label={book.pax.label}
                   value="pax"
                 >
                   <div className="flex items-center gap-2 justify-center">
@@ -281,7 +268,7 @@ export function XsedBookClient({ detailsStepLabels, locale, userBadgeLabels }: X
               canContinue={canContinue}
               isAllStepsComplete={isAllStepsComplete}
               isSavingAndRedirecting={isSaving}
-              labels={XSED_ACTION_BAR_LABELS}
+              labels={book.actionBar}
               onClearAll={handleClearAll}
               onContinue={handleContinue}
               onGoToCheckout={handleBook}

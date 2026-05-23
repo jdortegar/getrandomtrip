@@ -266,6 +266,42 @@
       }
     }
   },
+  "xsedUnavailable": {
+    "heading": "Este DROP está agotado",
+    "subheading": "Los drops de XSED se abren los domingos de 16 a 20hs.",
+    "notifyLabel": "Avisame del próximo",
+    "backLabel": "Ver escapadas anteriores"
+  },
+  "xsedBook": {
+    "actionBar": {
+      "clearAll": "Limpiar todo",
+      "next": "Siguiente",
+      "viewCheckout": "COMPRAR XSED"
+    },
+    "contentTabs": [
+      {
+        "id": "details",
+        "label": "Origen",
+        "substeps": [
+          {
+            "id": "origin",
+            "title": "País y ciudad de salida",
+            "description": "Desde dónde arrancás tu escape"
+          },
+          {
+            "id": "pax",
+            "title": "Pasajeros",
+            "description": "Cantidad de personas"
+          }
+        ]
+      }
+    ],
+    "pax": {
+      "label": "Personas",
+      "countOne": "{count} persona",
+      "countOther": "{count} personas"
+    }
+  },
   "xsedDropsPage": {
     "title": "BITÁCORA DE ESCAPADAS",
     "titleHighlight": "XSED",
@@ -322,8 +358,12 @@
       "title": "COMPRÁ TU",
       "titleHighlight": "XSED Nº{number}",
       "subtitle": "Tenés 10 minutos antes de que activemos la pasarela.",
+      "openSubtitle": "La pasarela está abierta. Quedan pocos lugares.",
       "nextDropLabel": "NEXT DROP",
+      "windowOpenLabel": "ABIERTO AHORA",
+      "windowClosingLabel": "HASTA LAS",
       "daysLabel": "DÍAS",
+      "hoursLabel": "HRS",
       "minLabel": "MIN",
       "secLabel": "SEG",
       "soldLabel": "Vendidos {sold}/{total}",

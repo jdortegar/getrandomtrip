@@ -10,6 +10,8 @@ export const PUBLIC_XSED_GRID_STATUSES: ExperienceStatus[] = [
 ];
 
 const SOLD_TRIP_REQUEST_STATUSES: TripRequestStatus[] = [
+  'SAVED',
+  'PENDING_PAYMENT',
   'CONFIRMED',
   'REVEALED',
   'COMPLETED',
@@ -200,8 +202,8 @@ function toDropEntry(drop: XsedListRow, locale: string): DropEntry {
 export interface CurrentXsedDrop {
   id: string;
   number: number;
+  slug: string;
   soldCount: number;
-  targetDate: string;
   totalSlots: number;
 }
 
@@ -211,14 +213,11 @@ export async function getCurrentXsedDrop(): Promise<CurrentXsedDrop | null> {
 
   if (!current) return null;
 
-  const countdownDate = current.revealAt ?? current.tripDate;
-  if (!countdownDate) return null;
-
   return {
     id: current.id,
     number: parseDropNumber(current.slug),
+    slug: current.slug ?? '',
     soldCount: current._count.tripRequests,
-    targetDate: countdownDate.toISOString(),
     totalSlots: current.maxSpots ?? 10,
   };
 }

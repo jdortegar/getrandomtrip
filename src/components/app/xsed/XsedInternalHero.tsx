@@ -45,9 +45,9 @@ export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroP
       <div className="relative z-10 flex h-full flex-col justify-center container mx-auto px-4 md:px-20">
         <div className="flex flex-col gap-6">
           <div>
-            <div className="mb-3 flex items-end gap-3">
+            <div className="mb-3 flex flex-wrap items-end gap-x-3 gap-y-2">
               <h2
-                className="font-barlow-condensed text-[80px] font-extrabold leading-[0.8] z-10 md:text-[130px] [&_sup]:text-[0.6em]"
+                className="font-barlow-condensed text-[52px] font-extrabold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]"
               >
                 {formatTitleWithCopyright(hero.title)}
               </h2>
@@ -60,7 +60,7 @@ export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroP
                 />
                 <div className="flex flex-col justify-end">
                   <p
-                    className="font-barlow text-lg uppercase leading-tight tracking-wide text-white"
+                    className="font-barlow text-sm sm:text-lg uppercase leading-tight tracking-wide text-white"
                     dangerouslySetInnerHTML={{ __html: hero.subtitle }}
                   />
                   {dropNumberText ? (
@@ -78,12 +78,12 @@ export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroP
             </div>
 
             {title ? (
-              <h1 className="font-barlow-condensed text-[60px] font-extrabold leading-[0.8] z-10 md:text-[80px] lg:text-[100px] [&_sup]:text-[0.6em]">
+              <h1 className="font-barlow-condensed text-[38px] font-extrabold leading-[0.85] z-10 md:text-[60px] lg:text-[100px] [&_sup]:text-[0.6em]">
                 {title}
               </h1>
             ) : null}
             {description ? (
-              <p className="font-barlow mt-4 max-w-sm text-base text-white/70">
+              <p className="font-barlow mt-4 max-w-sm text-sm sm:text-base text-white/70">
                 {description}
               </p>
             ) : null}

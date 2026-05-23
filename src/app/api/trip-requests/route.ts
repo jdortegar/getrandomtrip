@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -197,6 +198,7 @@ export async function POST(request: NextRequest) {
       avoidDestinations,
       addons,
       status,
+      experienceId,
     } = body;
 
     let paxDetailsValue:
@@ -270,6 +272,7 @@ export async function POST(request: NextRequest) {
         addons: (addons ?? []) as Prisma.InputJsonValue,
         status: (status as TripRequestStatus) || TripRequestStatus.DRAFT,
         ...(paxDetailsValue !== undefined ? { paxDetails: paxDetailsValue } : {}),
+        ...(experienceId ? { experienceId: String(experienceId) } : {}),
       };
 
       console.log('Creating new trip request for user:', user.id);
@@ -277,6 +280,14 @@ export async function POST(request: NextRequest) {
         data: { userId: user.id, ...tripFields },
       });
       console.log('Trip request created:', tripRequest.id);
+
+      // Revalidate XSED pages so soldCount reflects the new booking immediately.
+      if (tripRequest.type === 'xsed') {
+        revalidatePath('/es/xsed');
+        revalidatePath('/en/xsed');
+        revalidatePath('/es/xsed/drops');
+        revalidatePath('/en/xsed/drops');
+      }
     }
 
     return NextResponse.json({ tripRequest }, { status: id ? 200 : 201 });
