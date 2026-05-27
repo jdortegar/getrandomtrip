@@ -29,10 +29,10 @@ export function AboutUsPhilosophy({
   imageClassName,
 }: AboutUsPhilosophyProps) {
   return (
-    <Section>
-      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
+    <Section className="py-0">
+      <div className="rt-container grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
         {/* Image */}
-        <div className={`relative min-h-72 md:min-h-full rounded-xl overflow-hidden ${inverted ? 'md:order-first' : 'md:order-last'}`}>
+        <div className={`relative min-h-72 md:min-h-full rounded-xl overflow-hidden order-last ${inverted ? 'md:order-first' : 'md:order-last'}`}>
           <Img
             alt={content.imageAlt}
             className={`absolute inset-0 h-full w-full object-cover ${imageClassName ?? ''}`}
@@ -55,7 +55,7 @@ export function AboutUsPhilosophy({
         </div>
 
         {/* Text */}
-        <div className="text-left flex flex-col justify-center gap-6 px-10 py-16 lg:px-16">
+        <div className="text-left flex flex-col justify-center gap-6 md:px-10 py-16 lg:px-16 order-first md:order-0">
           <h2 className="font-barlow-condensed font-bold text-[70px] uppercase leading-tight text-gray-900">
             {content.sectionTitle}
           </h2>

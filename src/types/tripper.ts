@@ -90,6 +90,7 @@ export interface TripperListItem {
   bio: string | null;
   location: string | null;
   commission: number | null;
+  travelerType: string | null;
 }
 
 // Tripper Profile from Database

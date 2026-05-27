@@ -58,7 +58,7 @@ const Hero: React.FC<HeroProps> = ({
 
         {content.eyebrow ? (
           <span
-            className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base text-white"
+            className="text-center md:text-left mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base text-white"
           >
             {content.eyebrow}
           </span>

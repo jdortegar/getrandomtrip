@@ -5,6 +5,11 @@ import Hero from "@/components/Hero";
 import { AboutUsValues } from "@/components/app/about-us/AboutUsValues";
 import { AboutUsPhilosophy } from "@/components/app/about-us/AboutUsPhilosophy";
 import { TeamSection } from "@/components/app/about-us/TeamSection";
+import { AboutUsTrust } from "@/components/app/about-us/AboutUsTrust";
+import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
+import { getAllTrippers } from "@/lib/db/tripper-queries";
+import { getTravelerTypeLabel } from "@/lib/helpers/traveler-types";
+import { FaqBlock } from "@/components/display/FaqBlock";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -31,7 +36,21 @@ export default async function AboutUsPage(props: LocaleParams) {
   const raw = params?.locale;
   const localeStr = typeof raw === "string" ? raw : raw?.[0];
   const locale = hasLocale(localeStr) ? localeStr : "es";
-  const aboutUs = (await getDictionary(locale)).aboutUs;
+  const [aboutUs, rawTrippers] = await Promise.all([
+    getDictionary(locale).then((d) => d.aboutUs),
+    getAllTrippers(),
+  ]);
+
+  const trippers = rawTrippers
+    .filter((t) => t.tripperSlug)
+    .map((t) => ({
+      id: t.id,
+      avatarUrl: t.avatarUrl,
+      bio: t.bio,
+      name: t.name,
+      specialty: t.travelerType ? getTravelerTypeLabel(t.travelerType, locale) : null,
+      tripperSlug: t.tripperSlug!,
+    }));
 
   return (
     <div className="bg-white font-barlow text-neutral-900">
@@ -45,6 +64,9 @@ export default async function AboutUsPage(props: LocaleParams) {
         imageClassName="object-top"
       />
       <TeamSection content={aboutUs.curators} />
+      <AboutUsTrust content={aboutUs.trust} />
+      <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
+      <FaqBlock copy={aboutUs.faq} />
     </div>
   );
 }

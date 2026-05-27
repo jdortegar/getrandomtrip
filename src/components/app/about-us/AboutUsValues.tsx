@@ -26,7 +26,7 @@ export function AboutUsValues({ items }: AboutUsValuesProps) {
   return (
     <Section>
       <div className="rt-container">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 md:gap-12 md:grid-cols-3">
           {items.map((item, i) => {
             const icon = ICONS[i];
             return (
