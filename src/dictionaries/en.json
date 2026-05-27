@@ -2506,25 +2506,31 @@
       "subtitle": "We're a team that blends creativity, logistics and obsession for detail to craft trips you didn't know you needed."
     },
     "faq": {
+      "description": "Everything you need to know before taking the leap.",
+      "eyebrow": "FAQ's",
       "items": [
         {
-          "q": "What exactly am I buying if the destination is a surprise?",
-          "a": "You're buying an emotional outcome: relief from choice and guided discovery. Destination and logistics stay in our hands (with your limits clear)."
+          "question": "How do I take the first step for my surprise trip?",
+          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
         },
         {
-          "q": "How do you handle safety?",
-          "a": "Risk assessment per destination, verified partners, coverage and 24/7 communication protocols."
+          "question": "What can I choose?",
+          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
         },
         {
-          "q": "Can I decline activities?",
-          "a": "Yes. The brief defines no-go's. At destination, we keep flexibility without breaking the trip narrative."
+          "question": "What happens if I need to change the date?",
+          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
         },
         {
-          "q": "What if I don't like the surprise?",
-          "a": "We iterate. We take your feedback and adjust for the next one. Our NPS and repeat rate guide improvement."
+          "question": "What's included?",
+          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+        },
+        {
+          "question": "How do you design my trip?",
+          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
         }
       ],
-      "sectionTitle": "Frequently asked questions"
+      "title": "Featured questions"
     },
     "founder": {
       "imageAlt": "Randomtrip founder",
@@ -2553,7 +2559,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -2581,16 +2591,19 @@
       "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
       "items": [
         {
-          "value": "NPS 65+*",
-          "label": "Public goal and ongoing tracking."
+          "value": "+*",
+          "label": "Public goal and ongoing tracking.",
+          "prefix": "NPS 65"
         },
         {
-          "value": "55%+",
-          "label": "Upsell adoption (wellness, experiences)."
+          "value": "%+",
+          "label": "Upsell adoption (wellness, experiences).",
+          "prefix": "55"
         },
         {
-          "value": "20%+",
-          "label": "Target repeat rate."
+          "value": "%+",
+          "label": "Target repeat rate.",
+          "prefix": "20"
         }
       ],
       "sectionTitle": "Trust in numbers"
@@ -2611,6 +2624,13 @@
         }
       ],
       "sectionTitle": "Why trust Randomtrip"
+    },
+    "presentTrippers": {
+      "ctaHref": "/trippers",
+      "ctaLabel": "Explore Trippers",
+      "eyebrow": "Shape your adventure",
+      "subtitle": "Curated by —",
+      "title": "Meet the Trippers"
     }
   },
   "notFound": {

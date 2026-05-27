@@ -152,6 +152,7 @@ export async function getAllTrippers(): Promise<TripperListItem[]> {
         bio: true,
         location: true,
         commission: true,
+        travelerType: true,
       },
       orderBy: { name: 'asc' },
     });
@@ -164,6 +165,7 @@ export async function getAllTrippers(): Promise<TripperListItem[]> {
       bio: tripper.bio,
       location: tripper.location,
       commission: tripper.commission,
+      travelerType: tripper.travelerType,
     }));
   } catch (error) {
     console.error('Error fetching all trippers:', error);

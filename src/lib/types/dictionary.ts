@@ -1411,8 +1411,10 @@ export interface MarketingDictionary {
       subtitle: string;
     };
     faq: {
-      items: Array<{ a: string; q: string }>;
-      sectionTitle: string;
+      description: string;
+      eyebrow: string;
+      items: Array<{ answer: string; question: string }>;
+      title: string;
     };
     founder: {
       imageAlt: string;
@@ -1448,8 +1450,15 @@ export interface MarketingDictionary {
     };
     trust: {
       footnote: string;
-      items: Array<{ label: string; value: string }>;
+      items: Array<{ label: string; prefix?: string; value: string }>;
       sectionTitle: string;
+    };
+    presentTrippers: {
+      ctaHref: string;
+      ctaLabel: string;
+      eyebrow: string;
+      subtitle: string;
+      title: string;
     };
     valueProps: {
       items: Array<{ copy: string; title: string }>;

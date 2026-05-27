@@ -19,15 +19,6 @@ function isAuthorized(request: Request): boolean {
 
 // ─── Timezone matching ────────────────────────────────────────────────────────
 
-/**
- * Returns the integer UTC offset we should target for this invocation.
- * The cron fires at X:30 UTC. The window opens at LOCAL_WINDOW_START_HOUR local.
- * "30 min before" in a timezone with offset O means:
- *   notify UTC = (LOCAL_WINDOW_START_HOUR - 0.5) - O
- *   O = LOCAL_WINDOW_START_HOUR - 0.5 - notify_UTC_time
- * Since we fire at X:30, notify_UTC_time = X + 0.5, so:
- *   O = LOCAL_WINDOW_START_HOUR - 1 - X
- */
 function targetUtcOffset(now: Date): number {
   return LOCAL_WINDOW_START_HOUR - 1 - now.getUTCHours();
 }
@@ -112,18 +103,19 @@ export async function POST(request: Request) {
 
   const target = targetUtcOffset(now);
 
-  // Users whose timezone matches the current target offset, not notified this week
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  // Use start-of-today (Sunday) UTC — not a rolling 7-day window — so manual/test
+  // runs earlier in the week don't block the production Sunday send.
+  const todayUtcMidnight = new Date(now);
+  todayUtcMidnight.setUTCHours(0, 0, 0, 0);
 
   const candidates = await prisma.xsedNotificationSignup.findMany({
     where: {
-      OR: [{ lastNotifiedAt: null }, { lastNotifiedAt: { lt: oneWeekAgo } }],
+      OR: [{ lastNotifiedAt: null }, { lastNotifiedAt: { lt: todayUtcMidnight } }],
     },
     select: { id: true, email: true, locale: true, timezone: true },
   });
 
-  // Filter by timezone offset match; null timezone defaults to UTC-3 (Argentina)
-  // When forcing, skip timezone filter and send to all eligible candidates
+  // Match by timezone offset. Null timezone defaults to Argentina (UTC-3).
   const targets = force
     ? candidates
     : candidates.filter((u) => {
@@ -158,9 +150,7 @@ export async function POST(request: Request) {
     });
   }
 
-  console.log(
-    `[xsed/notify] offset=${target} sent=${sent}/${targets.length}`,
-  );
+  console.log(`[xsed/notify] offset=${target} sent=${sent}/${targets.length}`);
 
   return NextResponse.json({ sent, total: targets.length, targetOffset: target });
   } catch (err) {
