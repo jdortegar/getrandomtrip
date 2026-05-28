@@ -149,6 +149,7 @@ export interface TripperDashboardDict {
   };
   quickActions: {
     title: string;
+    dashboard: string;
     experiences: string;
     experiencesSub: string;
     createExperience: string;

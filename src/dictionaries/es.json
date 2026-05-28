@@ -2963,7 +2963,8 @@
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
       "settings": "Configuración",
-      "settingsSub": "Ajustes del perfil"
+      "settingsSub": "Ajustes del perfil",
+      "dashboard": "Mi Dashboard"
     },
     "keyMetrics": {
       "title": "Métricas Clave",

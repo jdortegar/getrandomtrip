@@ -28,15 +28,15 @@ function formatDate(dateString: string): string {
 
 export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) {
   return (
-    <div className="lg:col-span-2">
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+    <div>
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm font-barlow">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-neutral-900">
+          <h2 className="text-sm font-semibold text-neutral-500">
             {copy.title}
           </h2>
           <Link
             href="/dashboard/tripper/bookings"
-            className="text-sm font-medium text-sky-600 hover:text-sky-700"
+            className="text-xs font-medium text-light-blue hover:text-sky-700"
           >
             {copy.viewAll}
           </Link>

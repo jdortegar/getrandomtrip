@@ -13,11 +13,11 @@ export function PageHeading({
 }: PageHeadingProps) {
   return (
     <div className={cn("mb-8", className)}>
-      <h1 className="mb-6 font-barlow-condensed text-6xl font-bold leading-none text-neutral-900">
+      <h1 className="mb-2 font-barlow-condensed text-7xl font-bold leading-none text-neutral-900">
         {title}
       </h1>
       {description ? (
-        <p className="mt-2 text-sm text-neutral-600">{description}</p>
+        <p className="text-lg text-neutral-600">{description}</p>
       ) : null}
     </div>
   );

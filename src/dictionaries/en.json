@@ -2963,7 +2963,8 @@
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
       "settings": "Settings",
-      "settingsSub": "Profile settings"
+      "settingsSub": "Profile settings",
+      "dashboard": "My Dashboard"
     },
     "keyMetrics": {
       "title": "Key Metrics",
