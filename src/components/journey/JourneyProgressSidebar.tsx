@@ -21,6 +21,9 @@ interface ContentTab {
 
 interface JourneyProgressSidebarProps {
   activeTab: string;
+  activeSubstepId?: string;
+  /** Tab IDs considered fully complete (used instead of search-param checks when provided). */
+  completedTabIds?: string[];
   /** Shown as a badge when add-ons substep exists but is disabled (journey flag). */
   addonsComingSoonLabel: string;
   className?: string;
@@ -30,6 +33,8 @@ interface JourneyProgressSidebarProps {
 
 export default function JourneyProgressSidebar({
   activeTab,
+  activeSubstepId,
+  completedTabIds,
   addonsComingSoonLabel,
   className,
   onStepClick,
@@ -137,7 +142,9 @@ export default function JourneyProgressSidebar({
         <div className="space-y-8">
           {tabs.map((tab, tabIndex) => {
             const isActive = tab.id === activeTab;
-            const isCompleted = isTabComplete(tab.id);
+            const isCompleted = completedTabIds
+              ? completedTabIds.includes(tab.id)
+              : isTabComplete(tab.id);
             const isUpcoming = tabIndex > activeIndex;
             const stepNumber = tabIndex + 1;
             const hasSubsteps = tab.substeps.length > 0;
@@ -170,9 +177,11 @@ export default function JourneyProgressSidebar({
 
                 {/* Vertical line for last step: from circle down to last substep */}
                 {tabIndex === lastTabIndex && hasSubsteps && isActive && (() => {
-                  const incompleteCount = tab.substeps.filter(
-                    (s) => !isSubstepComplete(tab.id, s.id),
-                  ).length;
+                  const incompleteCount = activeSubstepId
+                    ? 0
+                    : tab.substeps.filter(
+                        (s) => !isSubstepComplete(tab.id, s.id),
+                      ).length;
                   return (
                     <>
                       <div
@@ -231,11 +240,13 @@ export default function JourneyProgressSidebar({
                             substep.id === "addons" &&
                             !JOURNEY_ADDONS_ENABLED;
                           const isSubstepActive =
-                            isActive && substepIndex === 0;
-                          const isSubstepCompleted = isSubstepComplete(
-                            tab.id,
-                            substep.id,
-                          );
+                            isActive &&
+                            (activeSubstepId
+                              ? substep.id === activeSubstepId
+                              : substepIndex === 0);
+                          const isSubstepCompleted = activeSubstepId
+                            ? substepIndex < tab.substeps.findIndex((s) => s.id === activeSubstepId)
+                            : isSubstepComplete(tab.id, substep.id);
                           const isLastSubstep =
                             substepIndex === tab.substeps.length - 1;
 

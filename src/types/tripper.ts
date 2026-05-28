@@ -289,6 +289,25 @@ export interface ExperienceFormData {
 
 // ─── New experience form draft ────────────────────────────────────────────────
 
+export interface ItineraryDayEntry {
+  title: string;
+  description: string;
+}
+
+export interface ActivityEntry {
+  name: string;
+  durationRhythm: string;
+  description: string;
+  risks: string;
+}
+
+export interface AccommodationEntry {
+  hotelName: string;
+  hotelStars: string;
+  hotelLocation: string;
+  hotelDays: string;
+}
+
 export interface ExperienceFormDraft {
   title: string;
   type: string;
@@ -303,6 +322,11 @@ export interface ExperienceFormDraft {
   maxNights: number;
   estimatedCost: string;
   season: string;
+  transport: string;
+  travelTime: string;
+  accommodations: AccommodationEntry[];
+  activities: ActivityEntry[];
+  itinerary: ItineraryDayEntry[];
 }
 
 export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(

@@ -8,8 +8,13 @@ import { AboutExperienceStep } from './steps/AboutExperienceStep';
 import { AboutDestinationStep } from './steps/AboutDestinationStep';
 import { CapacityDurationStep } from './steps/CapacityDurationStep';
 import { CapacityPricingStep } from './steps/CapacityPricingStep';
+import { LogisticsTransportStep } from './steps/LogisticsTransportStep';
+import { LogisticsAccommodationStep } from './steps/LogisticsAccommodationStep';
+import { ActivitiesListStep } from './steps/ActivitiesListStep';
+import { ItineraryStep } from './steps/ItineraryStep';
 import type { TripperExperiencesDict } from '@/lib/types/dictionary';
 import type { ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
+import { isExperienceTabComplete } from '@/lib/helpers/experience-form';
 
 interface ExperienceFormContentProps {
   activeTab: string;
@@ -34,6 +39,14 @@ function resolveStepContent(
     if (substepId === 'experience') return <AboutExperienceStep copy={copy} form={form} onChange={onChange} />;
     if (substepId === 'destination') return <AboutDestinationStep copy={copy} form={form} onChange={onChange} />;
   }
+  if (activeTab === 'logistics') {
+    if (substepId === 'transport') return <LogisticsTransportStep copy={copy} form={form} onChange={onChange} />;
+    if (substepId === 'accommodation') return <LogisticsAccommodationStep copy={copy} form={form} onChange={onChange} />;
+  }
+  if (activeTab === 'activities') {
+    if (substepId === 'activities-list') return <ActivitiesListStep copy={copy} form={form} onChange={onChange} />;
+    if (substepId === 'itinerary') return <ItineraryStep copy={copy} form={form} onChange={onChange} />;
+  }
   if (activeTab === 'capacity') {
     if (substepId === 'capacity-duration') return <CapacityDurationStep copy={copy} form={form} onChange={onChange} />;
     if (substepId === 'pricing') return <CapacityPricingStep copy={copy} form={form} onChange={onChange} />;
@@ -57,6 +70,7 @@ export function ExperienceFormContent({
 
   const isLastTab = tabs[tabs.length - 1]?.id === activeTab;
   const hasValues = !!(form.title || form.teaser || form.description);
+  const canContinue = isExperienceTabComplete(activeTab, form);
 
   return (
     <div className="flex flex-col gap-4">
@@ -80,7 +94,7 @@ export function ExperienceFormContent({
       </Accordion>
 
       <JourneyActionBar
-        canContinue
+        canContinue={canContinue}
         isAllStepsComplete={isLastTab}
         isSavingAndRedirecting={false}
         labels={{
