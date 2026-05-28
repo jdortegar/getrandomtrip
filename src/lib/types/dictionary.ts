@@ -136,6 +136,15 @@ export interface TripperDashboardDict {
     title: string;
     description: string;
   };
+  pageHeadings: {
+    dashboard:       { title: string; description: string };
+    experiences:     { title: string; description: string };
+    experiencesNew:  { title: string; description: string };
+    experiencesEdit: { title: string; description: string };
+    earnings:        { title: string; description: string };
+    reviews:         { title: string; description: string };
+    blogs:           { title: string; description: string };
+  };
   stats: {
     totalBookings: string;
     monthlyRevenue: string;
@@ -294,9 +303,23 @@ export interface TripperExperiencesDict {
     editSubmit: string;
     cancel: string;
     saving: string;
+    actionBar: {
+      clearAll: string;
+      next: string;
+      submit: string;
+    };
     nav: {
       sections: string;
     };
+    contentTabs: Array<{
+      id: string;
+      label: string;
+      substeps: Array<{
+        description: string;
+        id: string;
+        title: string;
+      }>;
+    }>;
     sections: {
       basic: string;
       destination: string;
@@ -331,6 +354,9 @@ export interface TripperExperiencesDict {
       basePriceHint: string;
       displayPrice: string;
       displayPriceHint: string;
+      estimatedCost: string;
+      season: string;
+      pricingDescription: string;
       accommodationType: string;
       transport: string;
       climate: string;

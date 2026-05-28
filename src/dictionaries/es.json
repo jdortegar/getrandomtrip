@@ -2939,6 +2939,15 @@
       "title": "Tripper OS",
       "description": "Gestiona tus paquetes de viaje y clientes"
     },
+    "pageHeadings": {
+      "dashboard":        { "title": "Tripper OS",          "description": "Gestiona tus paquetes de viaje y clientes" },
+      "experiences":      { "title": "Experiencias",        "description": "Tus paquetes de viaje" },
+      "experiencesNew":   { "title": "Crear experiencia",   "description": "Tripper OS" },
+      "experiencesEdit":  { "title": "Editar experiencia",  "description": "Tripper OS" },
+      "earnings":         { "title": "Ganancias",           "description": "Tu historial de ingresos" },
+      "reviews":          { "title": "Reseñas",             "description": "Lo que dicen tus viajeros" },
+      "blogs":            { "title": "Blog",                "description": "Tus artículos y contenido" }
+    },
     "stats": {
       "totalBookings": "Reservas Totales",
       "monthlyRevenue": "Ingresos Mensuales",
@@ -3108,12 +3117,51 @@
       "createTitle": "CREAR EXPERIENCIA",
       "editTitle": "EDITAR EXPERIENCIA",
       "createSubmit": "Crear Experiencia",
+      "actionBar": {
+        "clearAll": "Borrar todo",
+        "next": "Siguiente",
+        "submit": "Crear experiencia"
+      },
       "editSubmit": "Guardar Cambios",
       "cancel": "Cancelar",
       "saving": "Guardando...",
       "nav": {
         "sections": "Secciones"
       },
+      "contentTabs": [
+        {
+          "id": "about",
+          "label": "Sobre la experiencia",
+          "substeps": [
+            { "id": "experience", "title": "Experiencia", "description": "Información del nombre, tipo de experiencia, nivel y con quién puede realizarse." },
+            { "id": "destination", "title": "Destino", "description": "Cuál es el país y la excusa." }
+          ]
+        },
+        {
+          "id": "capacity",
+          "label": "Capacidad y Precio",
+          "substeps": [
+            { "id": "capacity-duration", "title": "Capacidad y duración", "description": "Cantidad de viajeros y duración recomendada" },
+            { "id": "pricing", "title": "Precio y supply estimado", "description": "Precio base y precio público" }
+          ]
+        },
+        {
+          "id": "logistics",
+          "label": "Logística y alojamiento",
+          "substeps": [
+            { "id": "transport", "title": "Transporte", "description": "Sugerencia de transporte para el viajero." },
+            { "id": "accommodation", "title": "Alojamiento", "description": "Hoteles y tipo de alojamiento sugerido." }
+          ]
+        },
+        {
+          "id": "activities",
+          "label": "Actividades e itinerario",
+          "substeps": [
+            { "id": "activities-list", "title": "Actividades", "description": "Actividades sugeridas para la experiencia." },
+            { "id": "itinerary", "title": "Itinerario", "description": "Dividido por día." }
+          ]
+        }
+      ],
       "sections": {
         "basic": "Básico",
         "destination": "Destino",
@@ -3148,6 +3196,9 @@
         "basePriceHint": "Precio por persona, en la moneda configurada",
         "displayPrice": "Precio de visualización",
         "displayPriceHint": "Texto libre que aparece en la tarjeta pública. Ej: Desde USD 450",
+        "estimatedCost": "Costo estimado por persona",
+        "season": "Temporada",
+        "pricingDescription": "Proveedores sugeridos, costos y sugerencia de temporada.",
         "accommodationType": "Tipo de alojamiento",
         "transport": "Transporte principal",
         "climate": "Clima del destino",

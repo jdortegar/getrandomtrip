@@ -68,19 +68,12 @@ function TripperContent() {
   }, [currentUser?.id]);
 
   return (
-    <>
-      <Section>
+      <Section className="py-10!">
         <div className="rt-container">
-          <PageHeading
-            className="text-center"
-            description={copy.header.description}
-            title={copy.header.title}
-          />
           {loading ? (
             <TripperDashboardSkeleton />
           ) : (
             <div className="space-y-6">
-              <TripperNavTabs copy={copy.quickActions} />
               <TripperStatsGrid stats={stats} copy={copy.stats} />
               <RecentBookingsList
                 bookings={recentBookings}
@@ -90,7 +83,6 @@ function TripperContent() {
           )}
         </div>
       </Section>
-    </>
   );
 }
 

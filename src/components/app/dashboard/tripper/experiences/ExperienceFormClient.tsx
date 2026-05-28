@@ -1,7 +1,7 @@
 // src/components/app/dashboard/tripper/experiences/ExperienceFormClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -73,6 +73,8 @@ interface ExperienceFormClientProps {
   experienceId?: string;
   dict: TripperExperiencesDict["form"];
   locale: string;
+  hideHeader?: boolean;
+  sectionOverride?: string;
 }
 
 // ─── helper: pill token list ──────────────────────────────────────────────────
@@ -153,6 +155,8 @@ export default function ExperienceFormClient({
   experienceId,
   dict: copy,
   locale,
+  hideHeader = false,
+  sectionOverride,
 }: ExperienceFormClientProps) {
   const router = useRouter();
   const [form, setForm] = useState<ExperienceFormData>(
@@ -160,6 +164,10 @@ export default function ExperienceFormClient({
   );
   const [loading, setLoading] = useState(false);
   const [activeSection, setActiveSection] = useState("basic");
+
+  useEffect(() => {
+    if (sectionOverride) setActiveSection(sectionOverride);
+  }, [sectionOverride]);
 
   const basePath = `/${locale}/dashboard/tripper/experiences`;
 
@@ -247,22 +255,24 @@ export default function ExperienceFormClient({
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div className="text-center mb-10">
-        <Button asChild variant="ghost" className="-ml-2 mb-4">
-          <a href={basePath}>
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            {copy.cancel}
-          </a>
-        </Button>
-        <p className="text-xs uppercase tracking-[0.18em] font-semibold text-neutral-500 mb-2">
-          Tripper OS
-        </p>
-        <h1 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase">
-          {mode === "create"
-            ? copy.createTitle
-            : (initialData?.title?.toUpperCase() ?? copy.editTitle)}
-        </h1>
-      </div>
+      {!hideHeader && (
+        <div className="text-center mb-10">
+          <Button asChild variant="ghost" className="-ml-2 mb-4">
+            <a href={basePath}>
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              {copy.cancel}
+            </a>
+          </Button>
+          <p className="text-xs uppercase tracking-[0.18em] font-semibold text-neutral-500 mb-2">
+            Tripper OS
+          </p>
+          <h1 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase">
+            {mode === "create"
+              ? copy.createTitle
+              : (initialData?.title?.toUpperCase() ?? copy.editTitle)}
+          </h1>
+        </div>
+      )}
 
       {/* Layout: sidebar nav + scrollable form */}
       <div className="flex w-full flex-col gap-8 lg:flex-row">

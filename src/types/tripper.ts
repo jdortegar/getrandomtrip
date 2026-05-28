@@ -287,6 +287,29 @@ export interface ExperienceFormData {
   supplierNotes?: string | null;
 }
 
+// ─── New experience form draft ────────────────────────────────────────────────
+
+export interface ExperienceFormDraft {
+  title: string;
+  type: string;
+  level: string;
+  teaser: string;
+  description: string;
+  destinationCountry: string;
+  destinationCity: string;
+  excuseKey: string;
+  minPax: number;
+  maxPax: number;
+  maxNights: number;
+  estimatedCost: string;
+  season: string;
+}
+
+export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
+  key: K,
+  value: ExperienceFormDraft[K],
+) => void;
+
 export interface ExperienceListItem {
   id: string;
   title: string;

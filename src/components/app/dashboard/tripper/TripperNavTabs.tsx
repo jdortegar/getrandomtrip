@@ -12,16 +12,12 @@ import {
   Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLocale } from '@/hooks/useDictionary';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import { useDictionary, useLocale } from '@/hooks/useDictionary';
 
-interface TripperNavTabsProps {
-  copy: TripperDashboardDict['quickActions'];
-}
-
-export function TripperNavTabs({ copy }: TripperNavTabsProps) {
+export function TripperNavTabs() {
   const pathname = usePathname();
   const locale = useLocale();
+  const copy = useDictionary((d) => d.tripperDashboard.quickActions);
 
   function base(path: string) {
     return `/${locale}/dashboard/tripper${path}`;

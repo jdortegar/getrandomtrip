@@ -4,8 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import Section from "@/components/layout/Section";
-import ExperienceFormClient from "@/components/app/dashboard/tripper/experiences/ExperienceFormClient";
+import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
 
 export default async function NewExperiencePage(
   props: {
@@ -30,14 +29,11 @@ export default async function NewExperiencePage(
 
   const dict = await getDictionary(params.locale);
 
-
   return (
-    <Section>
-      <ExperienceFormClient
-        dict={dict.tripperExperiences.form}
-        mode="create"
-        locale={params.locale}
-      />
-    </Section>
+    <NewExperienceShell
+      dict={dict.tripperExperiences.form}
+      locale={params.locale}
+      userBadgeLabels={dict.journey.userBadge}
+    />
   );
 }

@@ -130,7 +130,7 @@ export default function JourneyProgressSidebar({
 
   return (
     <aside
-      className={cn("w-full md:w-80 shrink-0 bg-white p-6", className)}
+      className={cn("w-full md:w-80 shrink-0 bg-white p-6 rounded-lg shadow-md", className)}
     >
       <div className="relative pl-5">
         {/* Steps */}
