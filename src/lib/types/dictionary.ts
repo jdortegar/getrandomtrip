@@ -136,6 +136,15 @@ export interface TripperDashboardDict {
     title: string;
     description: string;
   };
+  pageHeadings: {
+    dashboard:       { title: string; description: string };
+    experiences:     { title: string; description: string };
+    experiencesNew:  { title: string; description: string };
+    experiencesEdit: { title: string; description: string };
+    earnings:        { title: string; description: string };
+    reviews:         { title: string; description: string };
+    blogs:           { title: string; description: string };
+  };
   stats: {
     totalBookings: string;
     monthlyRevenue: string;
@@ -149,6 +158,7 @@ export interface TripperDashboardDict {
   };
   quickActions: {
     title: string;
+    dashboard: string;
     experiences: string;
     experiencesSub: string;
     createExperience: string;
@@ -293,9 +303,25 @@ export interface TripperExperiencesDict {
     editSubmit: string;
     cancel: string;
     saving: string;
+    actionBar: {
+      clearAll: string;
+      next: string;
+      saveDraft: string;
+      submit: string;
+    };
     nav: {
       sections: string;
+      progress: string;
     };
+    contentTabs: Array<{
+      id: string;
+      label: string;
+      substeps: Array<{
+        description: string;
+        id: string;
+        title: string;
+      }>;
+    }>;
     sections: {
       basic: string;
       destination: string;
@@ -330,8 +356,13 @@ export interface TripperExperiencesDict {
       basePriceHint: string;
       displayPrice: string;
       displayPriceHint: string;
+      estimatedCost: string;
+      season: string;
+      pricingDescription: string;
       accommodationType: string;
       transport: string;
+      suggestedTransport: string;
+      estimatedTravelTime: string;
       climate: string;
       maxTravelTime: string;
       departPref: string;
@@ -340,18 +371,31 @@ export interface TripperExperiencesDict {
       hotelName: string;
       hotelStars: string;
       hotelLocation: string;
+      hotelDays: string;
+      starsHint: string;
+      addAccommodation: string;
+      removeAccommodation: string;
+      starsPlaceholder: string;
+      starSingular: string;
+      starPlural: string;
       hotelCheckIn: string;
       hotelCheckOut: string;
       addHotel: string;
       noHotels: string;
       activityName: string;
       activityDuration: string;
+      activityDurationRhythm: string;
       activityDesc: string;
+      activityRisks: string;
       addActivity: string;
+      addAnotherActivity: string;
+      removeActivity: string;
       noActivities: string;
       itineraryTitle: string;
       itineraryDesc: string;
       addDay: string;
+      addAnotherDay: string;
+      removeDay: string;
       noItinerary: string;
       inclusions: string;
       addInclusion: string;
@@ -367,6 +411,9 @@ export interface TripperExperiencesDict {
       isActiveHint: string;
       isFeatured: string;
       isFeaturedHint: string;
+      statusLabel: string;
+      statusDraft: string;
+      statusActive: string;
       // XSED fields
       titleInternal: string;
       slug: string;

@@ -10,9 +10,7 @@ import { PageHeading } from "@/components/layout/PageHeading";
 import { TripperDashboardSkeleton } from "@/components/app/dashboard/tripper/TripperDashboardSkeleton";
 import { TripperStatsGrid } from "@/components/app/dashboard/tripper/TripperStatsGrid";
 import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBookingsList";
-import { TripperQuickActions } from "@/components/app/dashboard/tripper/TripperQuickActions";
-import { TripperKeyMetrics } from "@/components/app/dashboard/tripper/TripperKeyMetrics";
-import { TripperPackagesSummary } from "@/components/app/dashboard/tripper/TripperPackagesSummary";
+import { TripperNavTabs } from "@/components/app/dashboard/tripper/TripperNavTabs";
 import type { TripperDashboardStats, RecentBooking } from "@/types/tripper";
 import { useDictionary } from "@/hooks/useDictionary";
 
@@ -70,39 +68,21 @@ function TripperContent() {
   }, [currentUser?.id]);
 
   return (
-    <>
-      <Section>
+      <Section className="py-10!">
         <div className="rt-container">
-          <PageHeading
-            description={copy.header.description}
-            title={copy.header.title}
-          />
           {loading ? (
             <TripperDashboardSkeleton />
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-6">
               <TripperStatsGrid stats={stats} copy={copy.stats} />
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <RecentBookingsList
-                  bookings={recentBookings}
-                  copy={{ ...copy.recentBookings, ...copy.status }}
-                />
-                <div className="space-y-6">
-                  <TripperQuickActions copy={copy.quickActions} />
-                  <TripperKeyMetrics stats={stats} copy={copy.keyMetrics} />
-                </div>
-              </div>
-
-              <TripperPackagesSummary
-                activeExperiences={stats.activeExperiences}
-                copy={copy.experiences}
+              <RecentBookingsList
+                bookings={recentBookings}
+                copy={{ ...copy.recentBookings, ...copy.status }}
               />
             </div>
           )}
         </div>
       </Section>
-    </>
   );
 }
 

@@ -17,6 +17,7 @@ interface Tab {
 interface JourneyContentNavigationProps {
   activeTab: string;
   className?: string;
+  hideProfile?: boolean;
   onBack?: () => void;
   onTabChange: (tabId: string) => void;
   tabs: Tab[];
@@ -26,6 +27,7 @@ interface JourneyContentNavigationProps {
 export default function JourneyContentNavigation({
   activeTab,
   className,
+  hideProfile = false,
   onBack,
   onTabChange,
   tabs,
@@ -63,25 +65,35 @@ export default function JourneyContentNavigation({
       className={cn("w-full bg-white border-b border-gray-200 py-4", className)}
     >
       <div className="container mx-auto md:px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-center justify-center md:justify-start">
+        <div className={cn(
+          "gap-4 items-center",
+          hideProfile
+            ? "flex justify-center"
+            : "grid grid-cols-1 lg:grid-cols-[320px_1fr] justify-center md:justify-start",
+        )}>
           {/* Left Section: User Profile & Back Button */}
-          <div className="flex items-center gap-4 justify-center lg:justify-start">
-            <JourneyUserBadge labels={userBadgeLabels} />
+          {!hideProfile && (
+            <div className="flex items-center gap-4 justify-center lg:justify-start">
+              <JourneyUserBadge labels={userBadgeLabels} />
 
-            {/* Back Button */}
-            {onBack && (
-              <button
-                className="p-2 rounded-md hover:bg-gray-100 transition-colors shrink-0"
-                onClick={onBack}
-                type="button"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
-              </button>
-            )}
-          </div>
+              {/* Back Button */}
+              {onBack && (
+                <button
+                  className="p-2 rounded-md hover:bg-gray-100 transition-colors shrink-0"
+                  onClick={onBack}
+                  type="button"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-600" />
+                </button>
+              )}
+            </div>
+          )}
 
           {tabs.length > 1 && (
-            <div className="flex items-center justify-start md:justify-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar">
+            <div className={cn(
+              "flex items-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar",
+              hideProfile ? "justify-center" : "justify-start md:justify-center",
+            )}>
             {/* Right Section: Navigation Tabs */}
             {tabs.map((tab, index) => {
               const isActive = tab.id === activeTab;

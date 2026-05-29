@@ -196,6 +196,9 @@ model Experience {
   adminNotes              String?   @db.Text
   supplierNotes           String?   @db.Text
 
+  // Season hint (e.g. 'Alta', 'Baja', 'any')
+  season String @default("any")
+
   // Visibility
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)

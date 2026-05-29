@@ -2939,6 +2939,36 @@
       "title": "Tripper OS",
       "description": "Manage your travel packages and clients"
     },
+    "pageHeadings": {
+      "dashboard": {
+        "title": "Tripper OS",
+        "description": "Manage your travel packages and clients"
+      },
+      "experiences": {
+        "title": "Experiences",
+        "description": "Your travel packages"
+      },
+      "experiencesNew": {
+        "title": "Create experience",
+        "description": "Tripper OS"
+      },
+      "experiencesEdit": {
+        "title": "Edit experience",
+        "description": "Tripper OS"
+      },
+      "earnings": {
+        "title": "Earnings",
+        "description": "Your income history"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "description": "What your travelers say"
+      },
+      "blogs": {
+        "title": "Blog",
+        "description": "Your articles and content"
+      }
+    },
     "stats": {
       "totalBookings": "Total Bookings",
       "monthlyRevenue": "Monthly Revenue",
@@ -2963,7 +2993,8 @@
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
       "settings": "Settings",
-      "settingsSub": "Profile settings"
+      "settingsSub": "Profile settings",
+      "dashboard": "My Dashboard"
     },
     "keyMetrics": {
       "title": "Key Metrics",
@@ -3107,12 +3138,90 @@
       "createTitle": "CREATE EXPERIENCE",
       "editTitle": "EDIT EXPERIENCE",
       "createSubmit": "Create Experience",
+      "actionBar": {
+        "clearAll": "Clear all",
+        "next": "Next",
+        "submit": "Create experience",
+        "saveDraft": "Save draft"
+      },
       "editSubmit": "Save Changes",
       "cancel": "Cancel",
       "saving": "Saving...",
       "nav": {
-        "sections": "Sections"
+        "sections": "Sections",
+        "progress": "Progress"
       },
+      "contentTabs": [
+        {
+          "id": "about",
+          "label": "About the experience",
+          "substeps": [
+            {
+              "id": "experience",
+              "title": "Experience",
+              "description": "Name, type, level and who can take part."
+            },
+            {
+              "id": "destination",
+              "title": "Destination",
+              "description": "Country and excuse."
+            }
+          ]
+        },
+        {
+          "id": "capacity",
+          "label": "Capacity & Price",
+          "substeps": [
+            {
+              "id": "capacity-duration",
+              "title": "Capacity & duration",
+              "description": "Number of travelers and recommended duration"
+            },
+            {
+              "id": "pricing",
+              "title": "Price & estimated supply",
+              "description": "Base price and public display price"
+            }
+          ]
+        },
+        {
+          "id": "logistics",
+          "label": "Logistics & accommodation",
+          "substeps": [
+            {
+              "id": "transport",
+              "title": "Transport",
+              "description": "Trip logistics"
+            },
+            {
+              "id": "accommodation",
+              "title": "Accommodation",
+              "description": "Hotels and suggested accommodation type."
+            }
+          ]
+        },
+        {
+          "id": "activities",
+          "label": "Activities & itinerary",
+          "substeps": [
+            {
+              "id": "activities-list",
+              "title": "Activities",
+              "description": "Suggested activities for the experience."
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerary",
+              "description": "Broken down by day."
+            },
+            {
+              "id": "inclusions",
+              "title": "Inclusions / Exclusions",
+              "description": "What is and isn't included in the experience."
+            }
+          ]
+        }
+      ],
       "sections": {
         "basic": "Basic",
         "destination": "Destination",
@@ -3147,8 +3256,13 @@
         "basePriceHint": "Price per person, in the configured currency",
         "displayPrice": "Display price",
         "displayPriceHint": "Free text shown on the public card. E.g.: From USD 450",
+        "estimatedCost": "Estimated cost per person",
+        "season": "Season",
+        "pricingDescription": "Suggested providers, costs and season recommendation.",
         "accommodationType": "Accommodation type",
         "transport": "Main transport",
+        "suggestedTransport": "Suggested transport",
+        "estimatedTravelTime": "Estimated travel time",
         "climate": "Destination climate",
         "maxTravelTime": "Max travel time",
         "departPref": "Departure preference",
@@ -3157,18 +3271,31 @@
         "hotelName": "Hotel name",
         "hotelStars": "Stars",
         "hotelLocation": "Location",
+        "hotelDays": "Suggested days at accommodation",
+        "starsHint": "Up to 5 stars.",
+        "addAccommodation": "Add another accommodation",
+        "removeAccommodation": "Remove",
+        "starsPlaceholder": "Choose number of stars",
+        "starSingular": "star",
+        "starPlural": "stars",
         "hotelCheckIn": "Check-in",
         "hotelCheckOut": "Check-out",
         "addHotel": "Add Hotel",
         "noHotels": "No hotels added yet.",
         "activityName": "Activity name",
         "activityDuration": "Duration",
-        "activityDesc": "Description",
+        "activityDurationRhythm": "Estimated duration and pace",
+        "activityDesc": "Activity description",
+        "activityRisks": "Risks or Warnings",
         "addActivity": "Add Activity",
+        "addAnotherActivity": "Add another activity",
+        "removeActivity": "Remove",
         "noActivities": "No activities added yet.",
         "itineraryTitle": "Day title",
         "itineraryDesc": "Day description",
         "addDay": "Add Day",
+        "addAnotherDay": "Add another day",
+        "removeDay": "Remove",
         "noItinerary": "No itinerary days added yet.",
         "inclusions": "What's included?",
         "addInclusion": "Add inclusion",
@@ -3202,7 +3329,10 @@
         "packingHints": "What to pack",
         "whatsappMessageTemplate": "WhatsApp message template",
         "adminNotes": "Admin notes",
-        "supplierNotes": "Supplier notes"
+        "supplierNotes": "Supplier notes",
+        "statusLabel": "Status",
+        "statusDraft": "Draft",
+        "statusActive": "Active"
       }
     }
   },

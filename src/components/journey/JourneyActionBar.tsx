@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 interface JourneyActionBarLabels {
   clearAll: string;
   next: string;
+  saveDraft?: string;
   viewCheckout: string;
 }
 
@@ -12,10 +13,12 @@ interface JourneyActionBarProps {
   canContinue: boolean;
   isAllStepsComplete: boolean;
   isSavingAndRedirecting: boolean;
+  isSavingDraft?: boolean;
   labels: JourneyActionBarLabels;
   onClearAll: () => void;
   onContinue: () => void;
   onGoToCheckout: () => void;
+  onSaveDraft?: () => void;
   /** When false, hides Clear all (nothing to reset yet). */
   showClearAll: boolean;
 }
@@ -24,10 +27,12 @@ export function JourneyActionBar({
   canContinue,
   isAllStepsComplete,
   isSavingAndRedirecting,
+  isSavingDraft,
   labels,
   onClearAll,
   onContinue,
   onGoToCheckout,
+  onSaveDraft,
   showClearAll,
 }: JourneyActionBarProps) {
   return (
@@ -42,13 +47,23 @@ export function JourneyActionBar({
         </button>
       ) : null}
 
-      
+      {onSaveDraft && labels.saveDraft ? (
+        <Button
+          disabled={isSavingDraft || isSavingAndRedirecting}
+          onClick={onSaveDraft}
+          size="sm"
+          variant="outline"
+          type="button"
+        >
+          {isSavingDraft ? "Guardando..." : labels.saveDraft}
+        </Button>
+      ) : null}
+
       {!isAllStepsComplete && (
         <Button onClick={onContinue} size="sm" variant="default" disabled={!canContinue}>
           {labels.next}
         </Button>
       )}
-      
 
       {isAllStepsComplete && (
         <Button
