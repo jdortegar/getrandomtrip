@@ -2,6 +2,7 @@
 
 import { MapPin, Search, X } from 'lucide-react';
 import { FormField, FormSelectField } from '@/components/ui/FormField';
+import { ACCOMMODATION_TYPES } from '@/lib/constants/packages';
 import type { TripperExperiencesDict } from '@/lib/types/dictionary';
 import type { AccommodationEntry, ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
 
@@ -37,6 +38,19 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
       <p className="text-sm text-neutral-500 -mt-1">
         {copy.contentTabs[2]?.substeps[1]?.description}
       </p>
+
+      <div className="grid grid-cols-2 gap-4 mb-2">
+        <FormSelectField
+          id="acc-type"
+          label={fields.accommodationType}
+          value={form.accommodationType}
+          onChange={(e) => onChange('accommodationType', e.target.value)}
+        >
+          {ACCOMMODATION_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>{t.label}</option>
+          ))}
+        </FormSelectField>
+      </div>
 
       <div className="space-y-4">
         {form.accommodations.map((entry, index) => (
@@ -106,10 +120,10 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
                 id={`acc-hotel-days-${index}`}
                 label={fields.hotelDays}
                 placeholder="Ej: 1"
-                type="number"
-                min={1}
+                type="text"
+                inputMode="numeric"
                 value={entry.hotelDays}
-                onChange={(e) => updateEntry(index, 'hotelDays', e.target.value)}
+                onChange={(e) => updateEntry(index, 'hotelDays', e.target.value.replace(/[^0-9]/g, ''))}
               />
             </div>
           </div>

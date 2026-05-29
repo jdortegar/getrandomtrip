@@ -27,6 +27,8 @@ interface JourneyProgressSidebarProps {
   /** Shown as a badge when add-ons substep exists but is disabled (journey flag). */
   addonsComingSoonLabel: string;
   className?: string;
+  /** When provided, renders a "Label  XX%" header at the top of the sidebar. */
+  progressLabel?: string;
   onStepClick?: (tabId: string, substepId?: string) => void;
   tabs: ContentTab[];
 }
@@ -37,6 +39,7 @@ export default function JourneyProgressSidebar({
   completedTabIds,
   addonsComingSoonLabel,
   className,
+  progressLabel,
   onStepClick,
   tabs,
 }: JourneyProgressSidebarProps) {
@@ -133,10 +136,20 @@ export default function JourneyProgressSidebar({
     return false;
   };
 
+  const pct = completedTabIds != null
+    ? Math.round((completedTabIds.length / tabs.length) * 100)
+    : null;
+
   return (
     <aside
       className={cn("w-full md:w-80 shrink-0 bg-white p-6 rounded-lg shadow-md", className)}
     >
+      {progressLabel && (
+        <div className="flex items-center justify-between mb-6">
+          <span className="text-lg font-bold text-gray-900">{progressLabel}</span>
+          <span className="text-lg font-bold text-light-blue">{pct ?? 0}%</span>
+        </div>
+      )}
       <div className="relative pl-5">
         {/* Steps */}
         <div className="space-y-8">
@@ -186,11 +199,11 @@ export default function JourneyProgressSidebar({
                     <>
                       <div
                         className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
-                        style={{ height: `calc(100% - ${4.75 + incompleteCount * 6.55}rem)` }}
+                        style={{ height: `calc(100% - ${5.85 + incompleteCount * 6.55}rem)` }}
                       />
                       <div
                         className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
-                        style={{ height: "calc(100% - 4.75rem)" }}
+                        style={{ height: "calc(100% - 5.85rem)" }}
                       />
                     </>
                   );

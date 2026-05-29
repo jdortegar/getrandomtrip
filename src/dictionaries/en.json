@@ -2940,13 +2940,34 @@
       "description": "Manage your travel packages and clients"
     },
     "pageHeadings": {
-      "dashboard":        { "title": "Tripper OS",           "description": "Manage your travel packages and clients" },
-      "experiences":      { "title": "Experiences",          "description": "Your travel packages" },
-      "experiencesNew":   { "title": "Create experience",    "description": "Tripper OS" },
-      "experiencesEdit":  { "title": "Edit experience",      "description": "Tripper OS" },
-      "earnings":         { "title": "Earnings",             "description": "Your income history" },
-      "reviews":          { "title": "Reviews",              "description": "What your travelers say" },
-      "blogs":            { "title": "Blog",                 "description": "Your articles and content" }
+      "dashboard": {
+        "title": "Tripper OS",
+        "description": "Manage your travel packages and clients"
+      },
+      "experiences": {
+        "title": "Experiences",
+        "description": "Your travel packages"
+      },
+      "experiencesNew": {
+        "title": "Create experience",
+        "description": "Tripper OS"
+      },
+      "experiencesEdit": {
+        "title": "Edit experience",
+        "description": "Tripper OS"
+      },
+      "earnings": {
+        "title": "Earnings",
+        "description": "Your income history"
+      },
+      "reviews": {
+        "title": "Reviews",
+        "description": "What your travelers say"
+      },
+      "blogs": {
+        "title": "Blog",
+        "description": "Your articles and content"
+      }
     },
     "stats": {
       "totalBookings": "Total Bookings",
@@ -3120,45 +3141,84 @@
       "actionBar": {
         "clearAll": "Clear all",
         "next": "Next",
-        "submit": "Create experience"
+        "submit": "Create experience",
+        "saveDraft": "Save draft"
       },
       "editSubmit": "Save Changes",
       "cancel": "Cancel",
       "saving": "Saving...",
       "nav": {
-        "sections": "Sections"
+        "sections": "Sections",
+        "progress": "Progress"
       },
       "contentTabs": [
         {
           "id": "about",
           "label": "About the experience",
           "substeps": [
-            { "id": "experience", "title": "Experience", "description": "Name, type, level and who can take part." },
-            { "id": "destination", "title": "Destination", "description": "Country and excuse." }
+            {
+              "id": "experience",
+              "title": "Experience",
+              "description": "Name, type, level and who can take part."
+            },
+            {
+              "id": "destination",
+              "title": "Destination",
+              "description": "Country and excuse."
+            }
           ]
         },
         {
           "id": "capacity",
           "label": "Capacity & Price",
           "substeps": [
-            { "id": "capacity-duration", "title": "Capacity & duration", "description": "Number of travelers and recommended duration" },
-            { "id": "pricing", "title": "Price & estimated supply", "description": "Base price and public display price" }
+            {
+              "id": "capacity-duration",
+              "title": "Capacity & duration",
+              "description": "Number of travelers and recommended duration"
+            },
+            {
+              "id": "pricing",
+              "title": "Price & estimated supply",
+              "description": "Base price and public display price"
+            }
           ]
         },
         {
           "id": "logistics",
           "label": "Logistics & accommodation",
           "substeps": [
-            { "id": "transport", "title": "Transport", "description": "Trip logistics" },
-            { "id": "accommodation", "title": "Accommodation", "description": "Hotels and suggested accommodation type." }
+            {
+              "id": "transport",
+              "title": "Transport",
+              "description": "Trip logistics"
+            },
+            {
+              "id": "accommodation",
+              "title": "Accommodation",
+              "description": "Hotels and suggested accommodation type."
+            }
           ]
         },
         {
           "id": "activities",
           "label": "Activities & itinerary",
           "substeps": [
-            { "id": "activities-list", "title": "Activities", "description": "Suggested activities for the experience." },
-            { "id": "itinerary", "title": "Itinerary", "description": "Broken down by day." }
+            {
+              "id": "activities-list",
+              "title": "Activities",
+              "description": "Suggested activities for the experience."
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerary",
+              "description": "Broken down by day."
+            },
+            {
+              "id": "inclusions",
+              "title": "Inclusions / Exclusions",
+              "description": "What is and isn't included in the experience."
+            }
           ]
         }
       ],
@@ -3269,7 +3329,10 @@
         "packingHints": "What to pack",
         "whatsappMessageTemplate": "WhatsApp message template",
         "adminNotes": "Admin notes",
-        "supplierNotes": "Supplier notes"
+        "supplierNotes": "Supplier notes",
+        "statusLabel": "Status",
+        "statusDraft": "Draft",
+        "statusActive": "Active"
       }
     }
   },

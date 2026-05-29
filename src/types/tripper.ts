@@ -309,24 +309,44 @@ export interface AccommodationEntry {
 }
 
 export interface ExperienceFormDraft {
+  // About
+  status: string;
   title: string;
   type: string;
   level: string;
   teaser: string;
   description: string;
+  heroImage: string;
+  tags: string[];
+  highlights: string[];
+  // Destination
   destinationCountry: string;
   destinationCity: string;
   excuseKey: string;
+  climate: string;
+  // Capacity
   minPax: number;
   maxPax: number;
+  minNights: number;
   maxNights: number;
+  // Pricing
+  basePrice: number;
+  displayPrice: string;
   estimatedCost: string;
   season: string;
+  // Logistics
   transport: string;
   travelTime: string;
+  maxTravelTime: string;
+  departPref: string;
+  arrivePref: string;
+  accommodationType: string;
   accommodations: AccommodationEntry[];
+  // Activities & itinerary
   activities: ActivityEntry[];
   itinerary: ItineraryDayEntry[];
+  inclusions: string[];
+  exclusions: string[];
 }
 
 export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(

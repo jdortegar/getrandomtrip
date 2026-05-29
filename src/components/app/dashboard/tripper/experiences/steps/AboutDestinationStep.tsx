@@ -1,7 +1,7 @@
 'use client';
 
 import { FormField, FormSelectField } from '@/components/ui/FormField';
-import { EXPERIENCE_LEVELS, getExcuseOptionsForType } from '@/lib/constants/packages';
+import { CLIMATE_OPTIONS, getExcuseOptionsForType } from '@/lib/constants/packages';
 import type { TripperExperiencesDict } from '@/lib/types/dictionary';
 import type { ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
 
@@ -39,28 +39,27 @@ export function AboutDestinationStep({ copy, form, onChange }: Props) {
         />
       </div>
 
+      <FormSelectField
+        id="dest-excuse"
+        label={<>{copy.fields.excuseKey}{req}</>}
+        value={form.excuseKey}
+        onChange={(e) => onChange('excuseKey', e.target.value)}
+      >
+        <option value="" disabled>{copy.fields.excuseKey}</option>
+        {excuseOptions.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </FormSelectField>
+
       <div className="grid grid-cols-2 gap-4">
         <FormSelectField
-          id="dest-excuse"
-          label={copy.fields.excuseKey}
-          value={form.excuseKey}
-          onChange={(e) => onChange('excuseKey', e.target.value)}
+          id="dest-climate"
+          label={copy.fields.climate}
+          value={form.climate}
+          onChange={(e) => onChange('climate', e.target.value)}
         >
-          <option value="" disabled>{copy.fields.excuseKey}</option>
-          {excuseOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </FormSelectField>
-
-        <FormSelectField
-          id="dest-level"
-          label={<>{copy.fields.level}{req}</>}
-          value={form.level}
-          onChange={(e) => onChange('level', e.target.value)}
-        >
-          <option value="" disabled>Elegir la experiencia</option>
-          {EXPERIENCE_LEVELS.map((l) => (
-            <option key={l.value} value={l.value}>{l.label}</option>
+          {CLIMATE_OPTIONS.map((c) => (
+            <option key={c.value} value={c.value}>{c.label}</option>
           ))}
         </FormSelectField>
       </div>

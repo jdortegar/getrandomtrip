@@ -167,7 +167,9 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       isActive,
       isFeatured,
       status,
-      hotels,
+      // accept both hotels (admin form) and accommodations (tripper form)
+      hotels: hotelsField,
+      accommodations,
       activities,
       itinerary,
       inclusions,
@@ -178,6 +180,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       maxTravelTime,
       departPref,
       arrivePref,
+      season,
       // XSED fields
       titleInternal,
       slug,
@@ -198,26 +201,21 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       supplierNotes,
     } = body;
 
-    if (!type || !title || !destinationCountry || !destinationCity) {
-      return NextResponse.json(
-        { error: "Missing required fields: type, title, destinationCountry, destinationCity" },
-        { status: 400 },
-      );
-    }
+    const hotels = hotelsField ?? accommodations;
 
     const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
       data: {
-        type,
+        ...(type && { type }),
         level: level ?? null,
-        title,
+        ...(title && { title }),
         teaser: teaser ?? "",
         description: description ?? "",
         heroImage: heroImage ?? "",
         tags: tags ?? [],
         highlights: highlights ?? [],
-        destinationCountry,
-        destinationCity,
+        ...(destinationCountry && { destinationCountry }),
+        ...(destinationCity && { destinationCity }),
         excuseKey: excuseKey || null,
         minNights: minNights ?? 1,
         maxNights: maxNights ?? 7,
@@ -225,8 +223,8 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
         maxPax: maxPax ?? 8,
         basePrice: basePrice ?? 0,
         displayPrice: displayPrice ?? "",
-        isActive: isActive ?? true,
-        isFeatured: isFeatured ?? false,
+        ...(isActive !== undefined && { isActive }),
+        ...(isFeatured !== undefined && { isFeatured }),
         ...(status && { status }),
         ...(hotels !== undefined && { hotels }),
         ...(activities !== undefined && { activities }),
@@ -239,6 +237,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
         maxTravelTime: maxTravelTime ?? "no-limit",
         departPref: departPref ?? "any",
         arrivePref: arrivePref ?? "any",
+        season: season ?? "any",
         titleInternal: titleInternal || null,
         slug: slug || null,
         tripDate: tripDate ? new Date(tripDate as string) : null,

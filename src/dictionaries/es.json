@@ -2940,13 +2940,34 @@
       "description": "Gestiona tus paquetes de viaje y clientes"
     },
     "pageHeadings": {
-      "dashboard":        { "title": "Tripper OS",          "description": "Gestiona tus paquetes de viaje y clientes" },
-      "experiences":      { "title": "Experiencias",        "description": "Tus paquetes de viaje" },
-      "experiencesNew":   { "title": "Crear experiencia",   "description": "Tripper OS" },
-      "experiencesEdit":  { "title": "Editar experiencia",  "description": "Tripper OS" },
-      "earnings":         { "title": "Ganancias",           "description": "Tu historial de ingresos" },
-      "reviews":          { "title": "Reseñas",             "description": "Lo que dicen tus viajeros" },
-      "blogs":            { "title": "Blog",                "description": "Tus artículos y contenido" }
+      "dashboard": {
+        "title": "Tripper OS",
+        "description": "Gestiona tus paquetes de viaje y clientes"
+      },
+      "experiences": {
+        "title": "Experiencias",
+        "description": "Tus paquetes de viaje"
+      },
+      "experiencesNew": {
+        "title": "Crear experiencia",
+        "description": "Tripper OS"
+      },
+      "experiencesEdit": {
+        "title": "Editar experiencia",
+        "description": "Tripper OS"
+      },
+      "earnings": {
+        "title": "Ganancias",
+        "description": "Tu historial de ingresos"
+      },
+      "reviews": {
+        "title": "Reseñas",
+        "description": "Lo que dicen tus viajeros"
+      },
+      "blogs": {
+        "title": "Blog",
+        "description": "Tus artículos y contenido"
+      }
     },
     "stats": {
       "totalBookings": "Reservas Totales",
@@ -3120,45 +3141,84 @@
       "actionBar": {
         "clearAll": "Borrar todo",
         "next": "Siguiente",
-        "submit": "Crear experiencia"
+        "submit": "Crear experiencia",
+        "saveDraft": "Guardar borrador"
       },
       "editSubmit": "Guardar Cambios",
       "cancel": "Cancelar",
       "saving": "Guardando...",
       "nav": {
-        "sections": "Secciones"
+        "sections": "Secciones",
+        "progress": "Progreso"
       },
       "contentTabs": [
         {
           "id": "about",
           "label": "Sobre la experiencia",
           "substeps": [
-            { "id": "experience", "title": "Experiencia", "description": "Información del nombre, tipo de experiencia, nivel y con quién puede realizarse." },
-            { "id": "destination", "title": "Destino", "description": "Cuál es el país y la excusa." }
+            {
+              "id": "experience",
+              "title": "Experiencia",
+              "description": "Información del nombre, tipo de experiencia, nivel y con quién puede realizarse."
+            },
+            {
+              "id": "destination",
+              "title": "Destino",
+              "description": "Cuál es el país y la excusa."
+            }
           ]
         },
         {
           "id": "capacity",
           "label": "Capacidad y Precio",
           "substeps": [
-            { "id": "capacity-duration", "title": "Capacidad y duración", "description": "Cantidad de viajeros y duración recomendada" },
-            { "id": "pricing", "title": "Precio y supply estimado", "description": "Precio base y precio público" }
+            {
+              "id": "capacity-duration",
+              "title": "Capacidad y duración",
+              "description": "Cantidad de viajeros y duración recomendada"
+            },
+            {
+              "id": "pricing",
+              "title": "Precio y supply estimado",
+              "description": "Precio base y precio público"
+            }
           ]
         },
         {
           "id": "logistics",
           "label": "Logística y alojamiento",
           "substeps": [
-            { "id": "transport", "title": "Transporte", "description": "Logística del viaje" },
-            { "id": "accommodation", "title": "Alojamiento", "description": "Hoteles y tipo de alojamiento sugerido." }
+            {
+              "id": "transport",
+              "title": "Transporte",
+              "description": "Logística del viaje"
+            },
+            {
+              "id": "accommodation",
+              "title": "Alojamiento",
+              "description": "Hoteles y tipo de alojamiento sugerido."
+            }
           ]
         },
         {
           "id": "activities",
           "label": "Actividades e itinerario",
           "substeps": [
-            { "id": "activities-list", "title": "Actividades", "description": "Actividades sugeridas para la experiencia." },
-            { "id": "itinerary", "title": "Itinerario", "description": "Dividido por día." }
+            {
+              "id": "activities-list",
+              "title": "Actividades",
+              "description": "Actividades sugeridas para la experiencia."
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerario",
+              "description": "Dividido por día."
+            },
+            {
+              "id": "inclusions",
+              "title": "Incluye / No incluye",
+              "description": "Qué está incluido y qué no en la experiencia."
+            }
           ]
         }
       ],
@@ -3269,7 +3329,10 @@
         "packingHints": "Qué llevar",
         "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
         "adminNotes": "Notas admin",
-        "supplierNotes": "Notas proveedor"
+        "supplierNotes": "Notas proveedor",
+        "statusLabel": "Estado",
+        "statusDraft": "Borrador",
+        "statusActive": "Activo"
       }
     }
   },

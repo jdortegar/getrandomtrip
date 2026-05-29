@@ -306,10 +306,12 @@ export interface TripperExperiencesDict {
     actionBar: {
       clearAll: string;
       next: string;
+      saveDraft: string;
       submit: string;
     };
     nav: {
       sections: string;
+      progress: string;
     };
     contentTabs: Array<{
       id: string;
@@ -409,6 +411,9 @@ export interface TripperExperiencesDict {
       isActiveHint: string;
       isFeatured: string;
       isFeaturedHint: string;
+      statusLabel: string;
+      statusDraft: string;
+      statusActive: string;
       // XSED fields
       titleInternal: string;
       slug: string;
