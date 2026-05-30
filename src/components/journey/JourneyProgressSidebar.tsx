@@ -190,6 +190,8 @@ export default function JourneyProgressSidebar({
 
                 {/* Vertical line for last step: from circle down to last substep */}
                 {tabIndex === lastTabIndex && hasSubsteps && isActive && (() => {
+                  const substepCount = tab.substeps.length;
+                  const bottomOffset = 2.55 + substepCount * 1.10;
                   const incompleteCount = activeSubstepId
                     ? 0
                     : tab.substeps.filter(
@@ -199,11 +201,11 @@ export default function JourneyProgressSidebar({
                     <>
                       <div
                         className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
-                        style={{ height: `calc(100% - ${5.85 + incompleteCount * 6.55}rem)` }}
+                        style={{ height: `calc(100% - ${bottomOffset + incompleteCount * 6.55}rem)` }}
                       />
                       <div
                         className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
-                        style={{ height: "calc(100% - 5.85rem)" }}
+                        style={{ height: `calc(100% - ${bottomOffset}rem)` }}
                       />
                     </>
                   );
