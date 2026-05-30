@@ -46,6 +46,7 @@ export function XsedBookClient({
   const [originCountry, setOriginCountry] = useState(
     searchParams.get('originCountry') ?? '',
   );
+  const [originCountryCode, setOriginCountryCode] = useState('');
   const [originCity, setOriginCity] = useState(
     searchParams.get('originCity') ?? '',
   );
@@ -68,11 +69,12 @@ export function XsedBookClient({
     setOpenSection(sectionId);
   };
 
-  const handleOriginCountryChange = (value: string) => {
-    setOriginCountry(value);
+  const handleOriginCountryChange = (name: string, code: string) => {
+    setOriginCountry(name);
+    setOriginCountryCode(code);
     setOriginCity('');
     const next = new URLSearchParams(searchParams.toString());
-    if (value) next.set('originCountry', value);
+    if (name) next.set('originCountry', name);
     else next.delete('originCountry');
     next.delete('originCity');
     router.replace(`?${next.toString()}`, { scroll: false });
@@ -222,7 +224,7 @@ export function XsedBookClient({
                         {detailsStepLabels?.cityLabel ?? 'Ciudad de salida'}
                       </label>
                       <CitySelector
-                        countryValue={originCountry}
+                        countryCode={originCountryCode}
                         onChange={handleOriginCityChange}
                         placeholder={detailsStepLabels?.cityPlaceholder ?? 'Escribir ciudad de salida'}
                         size="lg"

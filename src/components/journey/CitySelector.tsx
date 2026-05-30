@@ -1,19 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Loader2, Search } from 'lucide-react';
-import { getCitiesByCountry } from '@/lib/data/shared/countries';
 import { cn } from '@/lib/utils';
-
-interface City {
-  name: string;
-  country: string;
-}
+import type { CityResult } from '@/lib/geo/types';
 
 interface CitySelectorProps {
   className?: string;
-  countryValue: string;
+  /** ISO alpha-2 country code used to scope city search via /api/geo/cities */
+  countryCode: string;
   disabled?: boolean;
   onChange: (value: string) => void;
   onOptionSelect?: () => void;
@@ -24,7 +21,7 @@ interface CitySelectorProps {
 
 export default function CitySelector({
   className = '',
-  countryValue,
+  countryCode,
   disabled = false,
   onChange,
   onOptionSelect,
@@ -32,36 +29,42 @@ export default function CitySelector({
   size = 'md',
   value,
 }: CitySelectorProps) {
-  const [cities, setCities] = useState<City[]>([]);
+  const params = useParams();
+  const lang = (params?.locale as string)?.startsWith('en') ? 'en' : 'es';
+
+  const [cities, setCities] = useState<CityResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Search cities from local data
+  const hasCountry = Boolean(countryCode);
+
   const fetchCities = useCallback(
-    (query: string) => {
+    async (query: string) => {
       if (query.length < 2) {
         setCities([]);
         return;
       }
 
-      if (!countryValue) {
-        setCities([{ name: 'Selecciona un país primero', country: '' }]);
+      if (!countryCode) {
+        setCities([]);
         return;
       }
 
       setLoading(true);
       try {
-        const countryCities = getCitiesByCountry(countryValue);
-        const filteredCities = countryCities
-          .filter((city) => city.toLowerCase().includes(query.toLowerCase()))
-          .slice(0, 10)
-          .map((city) => ({
-            name: city,
-            country: countryValue,
-          }));
-
-        setCities(filteredCities);
+        const params = new URLSearchParams({
+          q: query,
+          countryCode,
+          lang,
+        });
+        const res = await fetch(`/api/geo/cities?${params.toString()}`);
+        if (!res.ok) {
+          setCities([]);
+          return;
+        }
+        const data = (await res.json()) as { results: CityResult[] };
+        setCities(data.results ?? []);
       } catch (error) {
         console.error('Error searching cities:', error);
         setCities([]);
@@ -69,10 +72,10 @@ export default function CitySelector({
         setLoading(false);
       }
     },
-    [countryValue],
+    [countryCode, lang],
   );
 
-  // Debounced search for cities
+  // Debounced search — 100ms
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchCities(value);
@@ -93,11 +96,7 @@ export default function CitySelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle city selection
-  const handleCitySelect = (city: City) => {
-    if (city.name === 'Selecciona un país primero') {
-      return;
-    }
+  const handleCitySelect = (city: CityResult) => {
     onChange(city.name);
     setOpen(false);
     onOptionSelect?.();
@@ -119,21 +118,19 @@ export default function CitySelector({
             className,
             open && 'rounded-b-none',
           )}
-          disabled={disabled || !countryValue}
+          disabled={disabled || !hasCountry}
           onFocus={() => setOpen(true)}
           onChange={(e) => {
             onChange(e.target.value);
             setOpen(true);
           }}
-          placeholder={
-            countryValue ? placeholder : 'Selecciona un país primero'
-          }
+          placeholder={hasCountry ? placeholder : 'Selecciona un país primero'}
           type="text"
           value={value}
         />
       </div>
 
-      {open && countryValue && (
+      {open && hasCountry && (
         <div className="absolute z-50 w-full -mt-px border border-gray-300 border-t-0 rounded-b-md bg-white shadow-lg max-h-60 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-2">
@@ -148,13 +145,15 @@ export default function CitySelector({
           ) : (
             cities.map((city) => (
               <button
-                key={`${city.name}-${city.country}`}
+                key={`${city.name}-${city.countryCode}`}
                 type="button"
                 className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                 onClick={() => handleCitySelect(city)}
-                disabled={city.name === 'Selecciona un país primero'}
               >
                 <div className="font-medium">{city.name}</div>
+                {city.placeName !== city.name && (
+                  <div className="text-xs text-gray-400">{city.placeName}</div>
+                )}
               </button>
             ))
           )}

@@ -1,19 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Loader2, Search } from 'lucide-react';
-import { searchCountries } from '@/lib/data/shared/countries';
 import { cn } from '@/lib/utils';
-
-interface Country {
-  name: string;
-  code: string;
-}
+import type { CountryResult } from '@/lib/geo/types';
 
 interface CountrySelectorProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (name: string, code: string) => void;
   placeholder?: string;
   className?: string;
   disabled?: boolean;
@@ -30,13 +26,15 @@ export default function CountrySelector({
   onKeyDown,
   size = 'md',
 }: CountrySelectorProps) {
-  const [countries, setCountries] = useState<Country[]>([]);
+  const params = useParams();
+  const lang = (params?.locale as string)?.startsWith('en') ? 'en' : 'es';
+
+  const [countries, setCountries] = useState<CountryResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Search countries from local data
-  const fetchCountries = useCallback((query: string) => {
+  const fetchCountries = useCallback(async (query: string) => {
     if (query.length < 2) {
       setCountries([]);
       return;
@@ -44,17 +42,22 @@ export default function CountrySelector({
 
     setLoading(true);
     try {
-      const results = searchCountries(query);
-      setCountries(results.slice(0, 10));
+      const res = await fetch(`/api/geo/countries?q=${encodeURIComponent(query)}&lang=${lang}`);
+      if (!res.ok) {
+        setCountries([]);
+        return;
+      }
+      const data = (await res.json()) as { results: CountryResult[] };
+      setCountries(data.results ?? []);
     } catch (error) {
       console.error('Error searching countries:', error);
       setCountries([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lang]);
 
-  // Debounced search for countries
+  // Debounced search — 100ms matches existing UX
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchCountries(value);
@@ -75,9 +78,8 @@ export default function CountrySelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle country selection
-  const handleCountrySelect = (country: Country) => {
-    onChange(country.name);
+  const handleCountrySelect = (country: CountryResult) => {
+    onChange(country.name, country.code);
     setOpen(false);
   };
 
@@ -101,7 +103,7 @@ export default function CountrySelector({
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           onChange={(e) => {
-            onChange(e.target.value);
+            onChange(e.target.value, '');
             setOpen(true);
           }}
           placeholder={placeholder}

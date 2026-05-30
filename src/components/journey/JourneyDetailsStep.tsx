@@ -12,8 +12,6 @@ import TransportSelector, {
 } from '@/components/journey/TransportSelector';
 import type { TransportSelectorLabels } from '@/components/journey/TransportSelector';
 import { getLevelById } from '@/lib/utils/experiencesData';
-import { getCountryByCode } from '@/lib/data/shared/countries';
-import { reverseGeocodeGoogle } from '@/lib/geocode';
 
 const DEFAULT_MAX_NIGHTS = 2;
 
@@ -96,7 +94,9 @@ export function JourneyDetailsStep({
   transportOrder,
   travelType,
 }: JourneyDetailsStepProps) {
-  const [isLocating, setIsLocating] = useState(false);
+  // Tracks the ISO alpha-2 code for the selected origin country.
+  // This is separate from originCountry (display name) and scopes city search.
+  const [originCountryCode, setOriginCountryCode] = useState('');
 
   const labels = useMemo(
     () => ({
@@ -120,32 +120,6 @@ export function JourneyDetailsStep({
     const level = getLevelById(travelType, experience);
     return level?.maxNights ?? DEFAULT_MAX_NIGHTS;
   }, [experience, travelType]);
-
-  const handleLocateMe = async () => {
-    if (!navigator.geolocation) return;
-    setIsLocating(true);
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { country, label } = await reverseGeocodeGoogle(
-            pos.coords.latitude,
-            pos.coords.longitude,
-          );
-
-          const countryName = country ? getCountryByCode(country)?.name : null;
-          if (countryName) onOriginCountryChange(countryName);
-
-          const maybeCity = label?.split(',')?.[0]?.trim();
-          if (maybeCity) onOriginCityChange(maybeCity);
-        } finally {
-          setIsLocating(false);
-        }
-      },
-      () => setIsLocating(false),
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  };
 
   const originSummary =
     originCountry && originCity
@@ -181,8 +155,9 @@ export function JourneyDetailsStep({
                 {labels.countryLabel}
               </label>
               <CountrySelector
-                onChange={(value) => {
-                  onOriginCountryChange(value);
+                onChange={(name, code) => {
+                  onOriginCountryChange(name);
+                  setOriginCountryCode(code);
                   if (originCity) onOriginCityChange('');
                 }}
                 placeholder={labels.countryPlaceholder}
@@ -196,7 +171,7 @@ export function JourneyDetailsStep({
                 {labels.cityLabel}
               </label>
               <CitySelector
-                countryValue={originCountry}
+                countryCode={originCountryCode}
                 onChange={onOriginCityChange}
                 placeholder={labels.cityPlaceholder}
                 size="lg"

@@ -29,6 +29,7 @@ export default function TripperPlanner({
 }: Props) {
   const router = useRouter();
   const [country, setCountry] = useState('');
+  const [countryCode, setCountryCode] = useState('');
   const [city, setCity] = useState('');
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -66,8 +67,9 @@ export default function TripperPlanner({
     router.push(`/journey?${params.toString()}`);
   };
 
-  const handleCountryChange = (value: string) => {
-    setCountry(value);
+  const handleCountryChange = (name: string, code: string) => {
+    setCountry(name);
+    setCountryCode(code);
     setCity('');
   };
 
@@ -163,7 +165,7 @@ export default function TripperPlanner({
                 Ciudad de salida
               </label>
               <CitySelector
-                countryValue={country}
+                countryCode={countryCode}
                 onChange={setCity}
                 placeholder="Selecciona una ciudad"
                 size="lg"
