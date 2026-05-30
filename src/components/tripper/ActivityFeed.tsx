@@ -14,7 +14,8 @@ const mockActivities: ActivityItem[] = [
   {
     id: "1",
     type: "message",
-    message: "Nuevo mensaje de soporte de un viajero: '¿Puedo cambiar la fecha?'",
+    message:
+      "Nuevo mensaje de soporte de un viajero: '¿Puedo cambiar la fecha?'",
     timestamp: "Hace 5 minutos",
   },
   {
@@ -62,7 +63,9 @@ export default function ActivityFeed() {
               </div>
               <div className="flex-1">
                 <p className="text-sm text-neutral-300">{activity.message}</p>
-                <p className="text-xs text-neutral-400 mt-1">{activity.timestamp}</p>
+                <p className="text-xs text-neutral-400 mt-1">
+                  {activity.timestamp}
+                </p>
               </div>
             </li>
           );

@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { createUserSlice, type UserStore } from './slices/userStore';
-import { createJourneySlice, type JourneyState } from './slices/journeyStore';
-import { createTripperSlice, type TripperState } from './slices/tripperStore';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import { createUserSlice, type UserStore } from "./slices/userStore";
+import { createJourneySlice, type JourneyState } from "./slices/journeyStore";
+import { createTripperSlice, type TripperState } from "./slices/tripperStore";
 import {
   createJourneyStore,
   type JourneyStoreState,
-} from './slices/useJourneyStore';
-import { createPlannerSlice, type PlannerState } from './slices/planner';
+} from "./slices/useJourneyStore";
+import { createPlannerSlice, type PlannerState } from "./slices/planner";
 
 export type RootState = UserStore &
   JourneyState &
@@ -26,7 +26,7 @@ export const useStore = create<RootState>()(
         ...createPlannerSlice(...args),
       }),
       {
-        name: 'getrandomtrip-storage',
+        name: "getrandomtrip-storage",
         partialize: (state) => ({
           // Only persist journey-related data
           from: state.from,
@@ -49,7 +49,7 @@ export const useStore = create<RootState>()(
       },
     ),
     {
-      name: 'getrandomtrip-store',
+      name: "getrandomtrip-store",
     },
   ),
 );

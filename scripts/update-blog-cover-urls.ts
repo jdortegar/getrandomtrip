@@ -3,49 +3,56 @@
  * Run: npx tsx scripts/update-blog-cover-urls.ts
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 const UNSPLASH_COVER_URLS = [
-  'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=80',
-  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=80',
-  'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&q=80',
-  'https://images.unsplash.com/photo-1488459716781-31db59582ba4?w=1200&q=80',
-  'https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1200&q=80',
-  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
-  'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80',
-  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80',
+  "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=80",
+  "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=80",
+  "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&q=80",
+  "https://images.unsplash.com/photo-1488459716781-31db59582ba4?w=1200&q=80",
+  "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1200&q=80",
+  "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80",
+  "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80",
+  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80",
 ];
 
 /** travelType, excuseKey per post index (matches seed order). */
 const TRAVEL_EXCUSE_BY_INDEX: { excuseKey: string; travelType: string }[] = [
-  { excuseKey: 'solo-adventure', travelType: 'solo' },
-  { excuseKey: 'cultural-immersion', travelType: 'solo' },
-  { excuseKey: 'solo-adventure', travelType: 'solo' },
-  { excuseKey: 'cultural-immersion', travelType: 'couple' },
-  { excuseKey: 'solo-adventure', travelType: 'solo' },
-  { excuseKey: 'family-adventure', travelType: 'family' },
-  { excuseKey: 'romantic-getaway', travelType: 'honeymoon' },
-  { excuseKey: 'solo-adventure', travelType: 'solo' },
+  { excuseKey: "solo-adventure", travelType: "solo" },
+  { excuseKey: "cultural-immersion", travelType: "solo" },
+  { excuseKey: "solo-adventure", travelType: "solo" },
+  { excuseKey: "cultural-immersion", travelType: "couple" },
+  { excuseKey: "solo-adventure", travelType: "solo" },
+  { excuseKey: "family-adventure", travelType: "family" },
+  { excuseKey: "romantic-getaway", travelType: "honeymoon" },
+  { excuseKey: "solo-adventure", travelType: "solo" },
 ];
 
 async function main() {
   const posts = await prisma.blogPost.findMany({
-    orderBy: [{ publishedAt: 'asc' }, { createdAt: 'asc' }],
-    select: { id: true, title: true, coverUrl: true, travelType: true, excuseKey: true },
+    orderBy: [{ publishedAt: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      title: true,
+      coverUrl: true,
+      travelType: true,
+      excuseKey: true,
+    },
   });
 
   const needsCover = posts.filter(
-    (p) =>
-      !p.coverUrl || !p.coverUrl.startsWith('https://images.unsplash.com'),
+    (p) => !p.coverUrl || !p.coverUrl.startsWith("https://images.unsplash.com"),
   );
   const needsTravelExcuse = posts.filter(
     (p) => p.travelType == null || p.excuseKey == null,
   );
 
   if (needsCover.length === 0 && needsTravelExcuse.length === 0) {
-    console.log('All blog posts already have cover URLs, travelType and excuseKey.');
+    console.log(
+      "All blog posts already have cover URLs, travelType and excuseKey.",
+    );
     return;
   }
 
@@ -53,7 +60,7 @@ async function main() {
     const post = posts[i];
     const meta = TRAVEL_EXCUSE_BY_INDEX[i % TRAVEL_EXCUSE_BY_INDEX.length];
     const coverUrl =
-      !post.coverUrl || !post.coverUrl.startsWith('https://images.unsplash.com')
+      !post.coverUrl || !post.coverUrl.startsWith("https://images.unsplash.com")
         ? UNSPLASH_COVER_URLS[i % UNSPLASH_COVER_URLS.length]
         : undefined;
     const travelType = post.travelType == null ? meta.travelType : undefined;
@@ -69,15 +76,15 @@ async function main() {
         },
       });
       const parts = [
-        coverUrl && 'cover',
-        travelType && 'travelType',
-        excuseKey && 'excuseKey',
+        coverUrl && "cover",
+        travelType && "travelType",
+        excuseKey && "excuseKey",
       ].filter(Boolean);
-      console.log(`  ✅ ${post.title} → ${parts.join(', ')}`);
+      console.log(`  ✅ ${post.title} → ${parts.join(", ")}`);
     }
   }
 
-  console.log('Done.');
+  console.log("Done.");
 }
 
 main()

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Img from '@/components/common/Img';
-import { Button } from '@/components/ui/Button';
-import type { BlogPost } from '@/lib/data/shared/blog-types';
-import Link from 'next/link';
+import Img from "@/components/common/Img";
+import { Button } from "@/components/ui/Button";
+import type { BlogPost } from "@/lib/data/shared/blog-types";
+import Link from "next/link";
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export default function BlogCard({ post }: BlogCardProps) {
-  const href = post.href ?? '/blog';
+  const href = post.href ?? "/blog";
 
   return (
     <div className="group relative block aspect-3/4 w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">

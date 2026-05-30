@@ -56,7 +56,7 @@ export default function LevelCard({
   selected = false,
   travelerType,
   variant = "light",
-  className
+  className,
 }: LevelCardProps) {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -110,7 +110,7 @@ export default function LevelCard({
         borderColor,
         featured && "shadow-lg",
         (onSelect || navigateOnCardClick) && "cursor-pointer hover:shadow-xl",
-        className
+        className,
       )}
       onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
       style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
@@ -155,30 +155,27 @@ export default function LevelCard({
           {level.name}
         </h3>
         <div className="flex gap-3 flex-1 items-stretch">
-        <div
-          className={cn(
-            " w-px shrink-0 self-stretch",
-            priceDividerColor,
-          )}
-        />
-        <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[250px]:text-lg">
-          {level.priceLabel ? (
+          <div
+            className={cn(" w-px shrink-0 self-stretch", priceDividerColor)}
+          />
+          <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[250px]:text-lg">
+            {level.priceLabel ? (
+              <span className={cn("leading-none whitespace-nowrap", textColor)}>
+                {level.priceLabel}
+              </span>
+            ) : null}
             <span className={cn("leading-none whitespace-nowrap", textColor)}>
-              {level.priceLabel}
+              {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
             </span>
-          ) : null}
-          <span className={cn("leading-none whitespace-nowrap", textColor)}>
-            {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
-          </span>
-          <span
-            className={cn(
-              "whitespace-pre-line text-left leading-tight text-[0.525rem] @[250px]:text-xs",
-              textColor,
-            )}
-          >
-            {level.priceFootnote}
-          </span>
-        </div>
+            <span
+              className={cn(
+                "whitespace-pre-line text-left leading-tight text-[0.525rem] @[250px]:text-xs",
+                textColor,
+              )}
+            >
+              {level.priceFootnote}
+            </span>
+          </div>
         </div>
       </div>
 

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { XsedHero } from '@/components/app/xsed/XsedHero';
-import { useDictionary, useLocale } from '@/hooks/useDictionary';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Locale } from '@/lib/i18n/config';
+import { XsedHero } from "@/components/app/xsed/XsedHero";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 export function XsedUnavailablePage() {
   const unavailable = useDictionary((d) => d.xsedUnavailable);
@@ -12,7 +12,7 @@ export function XsedUnavailablePage() {
 
   return (
     <XsedHero
-      backHref={pathForLocale(locale, '/xsed/drops')}
+      backHref={pathForLocale(locale, "/xsed/drops")}
       backLabel={unavailable.backLabel}
       content={{
         ...xsedHero,

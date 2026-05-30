@@ -3,7 +3,11 @@
 import TripperMap from "./TripperMap.client";
 import type { Tripper } from "@/content/trippers";
 
-export default function TripperPlacesVisited({ tripper }: { tripper: Tripper }) {
+export default function TripperPlacesVisited({
+  tripper,
+}: {
+  tripper: Tripper;
+}) {
   const places = tripper.visitedPlaces;
   if (!places?.length) return null;
 
@@ -22,7 +26,7 @@ export default function TripperPlacesVisited({ tripper }: { tripper: Tripper }) 
           {places.map((p) => (
             <li key={p.label} className="text-sm">
               <span className="font-medium">{p.label}</span>
-              {(p.lastTrip || p.trips) ? (
+              {p.lastTrip || p.trips ? (
                 <span className="text-neutral-500">
                   {" "}
                   ({p.lastTrip ? `Last Trip: ${p.lastTrip}` : ""}

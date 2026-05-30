@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 export default function TripperTopbar() {
   return (
     <div
       className="sticky z-20 bg-white/80 backdrop-blur border-b"
-      style={{ top: 'var(--rt-header-h, 64px)' }}
+      style={{ top: "var(--rt-header-h, 64px)" }}
     >
       <div className="rt-container px-6 py-3 flex items-center gap-4">
         <input

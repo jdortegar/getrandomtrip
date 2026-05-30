@@ -1,11 +1,11 @@
-import RevealDestinationClient from './RevealDestinationClient';
-import ProgressBar from '@/components/ProgressBar';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { Suspense } from 'react';
+import RevealDestinationClient from "./RevealDestinationClient";
+import ProgressBar from "@/components/ProgressBar";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Suspense } from "react";
 
 export const metadata = {
-  description: 'Discover your surprise Randomtrip destination.',
-  title: 'Your Destination Revealed!',
+  description: "Discover your surprise Randomtrip destination.",
+  title: "Your Destination Revealed!",
 };
 
 export default function RevealDestinationPage() {

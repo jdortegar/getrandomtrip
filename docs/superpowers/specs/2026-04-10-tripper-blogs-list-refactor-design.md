@@ -14,6 +14,7 @@ Replace the current monolithic client-component page (GlassCard + Hero + grid of
 ## Files Changed
 
 ### New files
+
 ```
 src/components/app/dashboard/tripper/BlogPostRow.tsx
 src/components/app/dashboard/tripper/BlogPostsList.tsx
@@ -21,6 +22,7 @@ src/components/app/dashboard/tripper/BlogsPageClient.tsx
 ```
 
 ### Modified files
+
 ```
 src/app/[locale]/dashboard/tripper/blogs/page.tsx   # server component, auth + data
 src/lib/types/dictionary.ts                          # add TripperBlogsDict
@@ -42,6 +44,7 @@ page.tsx (server component)
 ```
 
 **`page.tsx`** — server component:
+
 - `getServerSession(authOptions)` — redirect to `/login` if no session
 - `hasRoleAccess(user.role, 'tripper')` — redirect if wrong role (use `src/lib/auth/roleAccess.ts`)
 - `prisma.blogPost.findMany({ where: { authorId }, orderBy: { createdAt: 'desc' } })` — import `prisma` from `@/lib/prisma`
@@ -49,6 +52,7 @@ page.tsx (server component)
 - No `"use client"`, no `SecureRoute`, no `useEffect`
 
 **`BlogsPageClient.tsx`** — client shell:
+
 - `"use client"`
 - `useParams()` for locale
 - Imports dict statically, selects `tripperBlogs` slice by locale
@@ -61,6 +65,7 @@ page.tsx (server component)
 **Header:** `<HeaderHero>` with `copy.header.title` + `copy.header.description`, same video/fallback as rest of tripper dashboard.
 
 **Panel:** `<BlogPostsList>` wraps a `bg-white p-6 rounded-xl border border-gray-200 shadow-sm` panel with:
+
 - Header row: title left + `<Button asChild size="sm">` "Nuevo Post" right (links to `/dashboard/tripper/blogs/new`)
 - List of `<BlogPostRow>` with `space-y-3`
 - Empty state: `BookOpen` icon + message + CTA button
@@ -73,6 +78,7 @@ transition-all duration-300 hover:shadow-md p-3
 ```
 
 Layout left to right:
+
 1. **Thumbnail** `w-[80px] h-[90px] rounded-lg overflow-hidden` — `<Img>` if `post.coverUrl`, else neutral placeholder `bg-gray-100` with `BookOpen` icon centered
 2. **Content** `flex-1 px-4 py-3 space-y-1`:
    - Title: `font-bold text-base text-neutral-900`
@@ -120,22 +126,26 @@ Added to both `src/dictionaries/es.json` and `src/dictionaries/en.json` under ke
 ## Component Details
 
 ### `BlogPostRow`
+
 - Props: `post: BlogPost`, `copy: TripperBlogsDict['row']`
 - Named export
 - Pure presentational — no state, no data fetching
 - Uses `<Img>` for cover, `<Button asChild>` for actions
 
 ### `BlogPostsList`
+
 - Props: `posts: BlogPost[]`, `copy: TripperBlogsDict`
 - Named export
 - Renders panel wrapper, header with CTA, empty state or list of `BlogPostRow`
 
 ### `BlogsPageClient`
+
 - Props: `posts: BlogPost[]`
 - `"use client"` — only client concern is `useParams()` for locale
 - Renders `<HeaderHero>` + `<Section><div className="rt-container">` + `<BlogPostsList>`
 
 ### `page.tsx`
+
 - Server component (no `"use client"`)
 - Auth via `getServerSession` + `hasRoleAccess`
 - Data via `prisma.blogPost.findMany`

@@ -6,16 +6,16 @@ Reusable plan to add internationalization to a Next.js App Router project. Adjus
 
 ## Phase 0: Decisions (before coding)
 
-| # | Decision | Options | Example |
-|---|----------|---------|---------|
-| 1 | **Locales** | Which language codes | `en`, `es` |
-| 2 | **Default locale** | Primary market | `es` |
-| 3 | **URL strategy** | Sub-path for all vs default without prefix | Default without prefix: `/` = es, `/en/...` = en |
-| 4 | **Approach** | Built-in dictionaries vs next-intl | Built-in (no extra deps) |
-| 5 | **Scope (Phase 1)** | What to translate first | Marketing / public pages |
-| 6 | **Locale detection** | First visit | `Accept-Language` header |
-| 7 | **Persistence** | User choice | Cookie `NEXT_LOCALE` |
-| 8 | **Switcher** | UI to change language | World icon + dropdown in nav |
+| #   | Decision             | Options                                    | Example                                          |
+| --- | -------------------- | ------------------------------------------ | ------------------------------------------------ |
+| 1   | **Locales**          | Which language codes                       | `en`, `es`                                       |
+| 2   | **Default locale**   | Primary market                             | `es`                                             |
+| 3   | **URL strategy**     | Sub-path for all vs default without prefix | Default without prefix: `/` = es, `/en/...` = en |
+| 4   | **Approach**         | Built-in dictionaries vs next-intl         | Built-in (no extra deps)                         |
+| 5   | **Scope (Phase 1)**  | What to translate first                    | Marketing / public pages                         |
+| 6   | **Locale detection** | First visit                                | `Accept-Language` header                         |
+| 7   | **Persistence**      | User choice                                | Cookie `NEXT_LOCALE`                             |
+| 8   | **Switcher**         | UI to change language                      | World icon + dropdown in nav                     |
 
 ---
 

@@ -26,7 +26,10 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     setError(null);
     try {
       const res = await fetch("/api/admin/users");
-      const data = (await res.json()) as { users?: AdminUser[]; error?: string };
+      const data = (await res.json()) as {
+        users?: AdminUser[];
+        error?: string;
+      };
       if (res.ok && data.users) {
         setUsers(data.users);
       } else {
@@ -39,7 +42,9 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     }
   }
 
-  useEffect(() => { void fetchUsers(); }, []);
+  useEffect(() => {
+    void fetchUsers();
+  }, []);
 
   const selectedUser = selectedUserId
     ? users.find((u) => u.id === selectedUserId)
@@ -54,7 +59,9 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="shrink-0 border-b border-gray-200 px-5 py-4">
-        <p className="text-xs text-neutral-500">{withCount(copy.usersCount, users.length)}</p>
+        <p className="text-xs text-neutral-500">
+          {withCount(copy.usersCount, users.length)}
+        </p>
       </div>
       <div className="flex-1 overflow-y-auto">
         <UsersTable

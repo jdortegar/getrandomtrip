@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import clsx from 'clsx';
+import clsx from "clsx";
 
 type Props = {
   src: string;
@@ -16,7 +16,9 @@ export default function BackgroundVideo({
   className,
 }: Props) {
   return (
-    <div className={clsx("absolute inset-0 overflow-hidden isolate", className)}>
+    <div
+      className={clsx("absolute inset-0 overflow-hidden isolate", className)}
+    >
       <video
         className="h-full w-full object-cover pointer-events-none"
         autoPlay

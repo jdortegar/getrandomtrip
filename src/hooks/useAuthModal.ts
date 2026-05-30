@@ -1,8 +1,8 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface AuthModalStore {
   isOpen: boolean;
-  mode: 'login' | 'register';
+  mode: "login" | "register";
   openLogin: () => void;
   openRegister: () => void;
   close: () => void;
@@ -10,8 +10,8 @@ interface AuthModalStore {
 
 export const useAuthModal = create<AuthModalStore>((set) => ({
   isOpen: false,
-  mode: 'login',
-  openLogin: () => set({ isOpen: true, mode: 'login' }),
-  openRegister: () => set({ isOpen: true, mode: 'register' }),
+  mode: "login",
+  openLogin: () => set({ isOpen: true, mode: "login" }),
+  openRegister: () => set({ isOpen: true, mode: "register" }),
   close: () => set({ isOpen: false }),
 }));

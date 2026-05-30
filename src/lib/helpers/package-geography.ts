@@ -1,4 +1,4 @@
-import { getAvoidCities } from './avoid-cities';
+import { getAvoidCities } from "./avoid-cities";
 
 /**
  * Determine if an experience matches geographic criteria based on level and origin
@@ -20,47 +20,47 @@ export function isExperienceGeographicallyValid(
   // but our packages include international destinations
 
   switch (level) {
-    case 'essenza':
+    case "essenza":
       // Only national packages (same country as origin)
       return packageCountry === originCountry;
 
-    case 'modo-explora':
+    case "modo-explora":
       // National + neighboring countries (simplified - allow some international)
       return (
         packageCountry === originCountry ||
         [
-          'United States',
-          'Canada',
-          'Mexico',
-          'Brazil',
-          'Chile',
-          'Uruguay',
+          "United States",
+          "Canada",
+          "Mexico",
+          "Brazil",
+          "Chile",
+          "Uruguay",
         ].includes(packageCountry)
       );
 
-    case 'exploraPlus':
+    case "exploraPlus":
       // National + regional + some international destinations
       return (
         packageCountry === originCountry ||
         [
-          'United States',
-          'Canada',
-          'Mexico',
-          'Brazil',
-          'Chile',
-          'Uruguay',
-          'Francia',
-          'Japón',
-          'Nepal',
-          'España',
-          'Italia',
-          'Alemania',
-          'Reino Unido',
+          "United States",
+          "Canada",
+          "Mexico",
+          "Brazil",
+          "Chile",
+          "Uruguay",
+          "Francia",
+          "Japón",
+          "Nepal",
+          "España",
+          "Italia",
+          "Alemania",
+          "Reino Unido",
         ].includes(packageCountry)
       );
 
-    case 'bivouac':
-    case 'atelier-getaway':
+    case "bivouac":
+    case "atelier-getaway":
       // All countries available (international)
       return true;
 

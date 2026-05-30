@@ -27,6 +27,7 @@ onAvatarChange?: (file: File) => void
 ```
 
 Behaviour when the prop is present:
+
 - Wrap the avatar content in a `<button type="button">` that triggers a hidden `<input type="file" accept="image/*">`.
 - On hover, render a dark semi-transparent circular overlay with a `Camera` icon (lucide-react, `h-5 w-5`, white) centered over the avatar.
 - Add `cursor-pointer` to the button.
@@ -123,16 +124,16 @@ Add to `src/dictionaries/es.json` and `src/dictionaries/en.json` under `profile`
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `src/components/ui/UserAvatar.tsx` | Add `onAvatarChange` prop + hover overlay |
-| `src/app/api/user/avatar/route.ts` | New — POST upload + GET serve |
-| `src/lib/auth.ts` | Add `avatarUrl` to session DB select |
-| `src/app/api/user/me/route.ts` | Add `avatarUrl` to select + response |
-| `src/lib/types/UserProfileMe.ts` | Add `avatarUrl?: string \| null` |
-| `src/app/[locale]/(secure)/profile/page.tsx` | Wire up upload handler + pass prop |
-| `src/dictionaries/es.json` | Add avatar toast strings |
-| `src/dictionaries/en.json` | Add avatar toast strings |
+| File                                         | Change                                    |
+| -------------------------------------------- | ----------------------------------------- |
+| `src/components/ui/UserAvatar.tsx`           | Add `onAvatarChange` prop + hover overlay |
+| `src/app/api/user/avatar/route.ts`           | New — POST upload + GET serve             |
+| `src/lib/auth.ts`                            | Add `avatarUrl` to session DB select      |
+| `src/app/api/user/me/route.ts`               | Add `avatarUrl` to select + response      |
+| `src/lib/types/UserProfileMe.ts`             | Add `avatarUrl?: string \| null`          |
+| `src/app/[locale]/(secure)/profile/page.tsx` | Wire up upload handler + pass prop        |
+| `src/dictionaries/es.json`                   | Add avatar toast strings                  |
+| `src/dictionaries/en.json`                   | Add avatar toast strings                  |
 
 ---
 

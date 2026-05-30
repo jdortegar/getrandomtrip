@@ -131,8 +131,12 @@ function AccountContent() {
     }
   }, [currentUser?.email]);
 
-  useEffect(() => { loadProfile(); }, [loadProfile]);
-  useEffect(() => { getDictionary(resolvedLocale).then(setDict); }, [resolvedLocale]);
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+  useEffect(() => {
+    getDictionary(resolvedLocale).then(setDict);
+  }, [resolvedLocale]);
 
   useEffect(() => {
     if (!profileMe || isDetailsEditing) return;
@@ -148,9 +152,13 @@ function AccountContent() {
         if (data.error) return;
         const trips = data.trips ?? [];
         const rated = trips.filter((t: any) => t.customerRating);
-        const avg = rated.length > 0
-          ? rated.reduce((s: number, t: any) => s + (t.customerRating || 0), 0) / rated.length
-          : 0;
+        const avg =
+          rated.length > 0
+            ? rated.reduce(
+                (s: number, t: any) => s + (t.customerRating || 0),
+                0,
+              ) / rated.length
+            : 0;
         setStats({ totalTrips: trips.length, averageRating: avg });
       } catch {}
     }
@@ -159,8 +167,10 @@ function AccountContent() {
 
   // Strict role check — hasRoleAccess promotes admin to all roles,
   // so we check the roles array directly to avoid showing tripper UI to admins.
-  const userRoles: string[] = profileMe?.roles ??
-    (currentUser as { roles?: string[] } | null | undefined)?.roles ?? [];
+  const userRoles: string[] =
+    profileMe?.roles ??
+    (currentUser as { roles?: string[] } | null | undefined)?.roles ??
+    [];
   const isTripper = userRoles.some((r) => r?.toLowerCase() === "tripper");
 
   const handleStartDetailsEdit = () => {
@@ -177,7 +187,10 @@ function AccountContent() {
   const handleSaveDetails = async () => {
     if (!dict || !profileMe) return;
     const t = dict.profile.toasts;
-    if (!detailsForm.name.trim()) { toast.error(t.nameRequired); return; }
+    if (!detailsForm.name.trim()) {
+      toast.error(t.nameRequired);
+      return;
+    }
     try {
       const [resUpdate, resPrefs] = await Promise.all([
         fetch("/api/user/update", {
@@ -206,8 +219,14 @@ function AccountContent() {
           }),
         }),
       ]);
-      if (!resUpdate.ok || !resPrefs.ok) { toast.error(t.saveError); return; }
-      const [updateData, prefsData] = await Promise.all([resUpdate.json(), resPrefs.json()]);
+      if (!resUpdate.ok || !resPrefs.ok) {
+        toast.error(t.saveError);
+        return;
+      }
+      const [updateData, prefsData] = await Promise.all([
+        resUpdate.json(),
+        resPrefs.json(),
+      ]);
       await updateSession({
         ...session,
         user: {
@@ -232,25 +251,45 @@ function AccountContent() {
   const handleAvatarChange = async (file: File) => {
     if (!dict) return;
     const t = dict.profile.toasts;
-    if (file.size > 5 * 1024 * 1024) { toast.error(t.avatarFileTooLarge); return; }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t.avatarFileTooLarge);
+      return;
+    }
     setAvatarUploading(true);
     try {
       const oldAvatarUrl = user?.avatar;
       const formData = new FormData();
       formData.append("file", file);
       formData.append("feature", "avatar");
-      const uploadRes = await fetch("/api/upload", { body: formData, method: "POST" });
-      if (!uploadRes.ok) { toast.error(t.avatarUploadError); return; }
+      const uploadRes = await fetch("/api/upload", {
+        body: formData,
+        method: "POST",
+      });
+      if (!uploadRes.ok) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
       const { url } = (await uploadRes.json()) as { url?: string };
-      if (!url) { toast.error(t.avatarUploadError); return; }
+      if (!url) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
       const updateRes = await fetch("/api/user/update", {
         body: JSON.stringify({ avatarUrl: url }),
         headers: { "Content-Type": "application/json" },
         method: "PATCH",
       });
-      if (!updateRes.ok) { toast.error(t.avatarUploadError); return; }
-      await updateSession({ ...session, user: { ...session?.user, image: url } });
-      useUserStore.setState((s) => ({ user: s.user ? { ...s.user, avatar: url } : s.user }));
+      if (!updateRes.ok) {
+        toast.error(t.avatarUploadError);
+        return;
+      }
+      await updateSession({
+        ...session,
+        user: { ...session?.user, image: url },
+      });
+      useUserStore.setState((s) => ({
+        user: s.user ? { ...s.user, avatar: url } : s.user,
+      }));
       if (oldAvatarUrl?.includes("/api/upload")) {
         void fetch(oldAvatarUrl, { method: "DELETE" }).catch(() => null);
       }
@@ -265,20 +304,35 @@ function AccountContent() {
   const handleChangePassword = async () => {
     if (!dict) return;
     const t = dict.profile.toasts;
-    if (securityForm.newPassword !== securityForm.confirmPassword) { toast.error(t.passwordsMismatch); return; }
-    if (securityForm.newPassword.length < 6) { toast.error(t.passwordMinLength); return; }
+    if (securityForm.newPassword !== securityForm.confirmPassword) {
+      toast.error(t.passwordsMismatch);
+      return;
+    }
+    if (securityForm.newPassword.length < 6) {
+      toast.error(t.passwordMinLength);
+      return;
+    }
     try {
       const res = await fetch("/api/user/password", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword: securityForm.currentPassword, newPassword: securityForm.newPassword }),
+        body: JSON.stringify({
+          currentPassword: securityForm.currentPassword,
+          newPassword: securityForm.newPassword,
+        }),
       });
       if (res.ok) {
         toast.success(t.passwordUpdated);
-        setSecurityForm({ confirmPassword: "", currentPassword: "", newPassword: "" });
+        setSecurityForm({
+          confirmPassword: "",
+          currentPassword: "",
+          newPassword: "",
+        });
       } else {
         const data = await res.json();
-        toast.error(typeof data.error === "string" ? data.error : t.passwordError);
+        toast.error(
+          typeof data.error === "string" ? data.error : t.passwordError,
+        );
       }
     } catch {
       toast.error(t.passwordError);
@@ -298,22 +352,33 @@ function AccountContent() {
   const fieldCn = cn(!isDetailsEditing && "cursor-not-allowed opacity-80");
 
   const memberSince = profileMe
-    ? new Date(profileMe.createdAt).toLocaleDateString(dateLocaleTag, { month: "long", year: "numeric" })
+    ? new Date(profileMe.createdAt).toLocaleDateString(dateLocaleTag, {
+        month: "long",
+        year: "numeric",
+      })
     : "";
 
   const navItems: { id: TabId; label: string; Icon: React.ElementType }[] = [
-    { id: "resumen",      label: p.nav.summary,      Icon: User },
-    { id: "personal",     label: p.nav.personal,     Icon: Edit },
-    { id: "documentos",   label: p.nav.travelDocs,   Icon: FileText },
-    { id: "preferencias", label: p.nav.preferences,  Icon: MapPin },
-    { id: "pagos",        label: p.nav.payments,     Icon: CreditCard },
-    { id: "seguridad",    label: p.nav.security,     Icon: Lock },
+    { id: "resumen", label: p.nav.summary, Icon: User },
+    { id: "personal", label: p.nav.personal, Icon: Edit },
+    { id: "documentos", label: p.nav.travelDocs, Icon: FileText },
+    { id: "preferencias", label: p.nav.preferences, Icon: MapPin },
+    { id: "pagos", label: p.nav.payments, Icon: CreditCard },
+    { id: "seguridad", label: p.nav.security, Icon: Lock },
   ];
 
   const tripperNavLinks = isTripper
     ? [
-        { href: pathForLocale(resolvedLocale, "/trippers/profile"), label: p.nav.tripperProfile, Icon: Briefcase },
-        { href: pathForLocale(resolvedLocale, "/dashboard/tripper"),          label: p.nav.tripperOs,      Icon: Settings },
+        {
+          href: pathForLocale(resolvedLocale, "/trippers/profile"),
+          label: p.nav.tripperProfile,
+          Icon: Briefcase,
+        },
+        {
+          href: pathForLocale(resolvedLocale, "/dashboard/tripper"),
+          label: p.nav.tripperOs,
+          Icon: Settings,
+        },
       ]
     : [];
 
@@ -329,9 +394,7 @@ function AccountContent() {
 
       <section className="bg-neutral-50 py-10">
         <div className="mx-auto max-w-6xl px-4">
-
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-
             {/* ── Sidebar (left, desktop only, sticky) ── */}
             <aside className="hidden lg:block w-56 shrink-0">
               <div className="sticky top-24 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
@@ -378,7 +441,6 @@ function AccountContent() {
 
             {/* ── Main content ── */}
             <div className="min-w-0 flex-1">
-
               {/* 1. Resumen */}
               {activeTab === "resumen" && (
                 <div className="space-y-6">
@@ -400,9 +462,20 @@ function AccountContent() {
                           {currentUser?.email || p.header.emailFallback}
                         </p>
                         <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-                          <Badge color="primary" item={{ key: "badge-active", value: p.header.badgeActiveTraveler }} size="md" />
+                          <Badge
+                            color="primary"
+                            item={{
+                              key: "badge-active",
+                              value: p.header.badgeActiveTraveler,
+                            }}
+                            size="md"
+                          />
                           {isTripper && (
-                            <Badge color="secondary" item={{ key: "badge-tripper", value: "Tripper" }} size="md" />
+                            <Badge
+                              color="secondary"
+                              item={{ key: "badge-tripper", value: "Tripper" }}
+                              size="md"
+                            />
                           )}
                         </div>
                       </div>
@@ -416,12 +489,16 @@ function AccountContent() {
                         <Calendar className="h-4 w-4 text-light-blue" />
                         {p.labels.memberSince}
                       </div>
-                      <span className="font-semibold text-neutral-900">{memberSince || "—"}</span>
+                      <span className="font-semibold text-neutral-900">
+                        {memberSince || "—"}
+                      </span>
                     </div>
                     <div className="flex flex-col gap-1 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
                       <div className="flex items-center gap-2 text-sm text-neutral-500 mb-1">
                         <Globe className="h-4 w-4 text-light-blue" />
-                        {resolvedLocale === "en" ? "Total trips" : "Viajes totales"}
+                        {resolvedLocale === "en"
+                          ? "Total trips"
+                          : "Viajes totales"}
                       </div>
                       <span className="font-barlow-condensed font-bold text-4xl text-gray-900">
                         {stats.totalTrips}
@@ -430,19 +507,27 @@ function AccountContent() {
                     <div className="flex flex-col gap-1 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
                       <div className="flex items-center gap-2 text-sm text-neutral-500 mb-1">
                         <Star className="h-4 w-4 text-light-blue" />
-                        {resolvedLocale === "en" ? "Avg. rating" : "Calificación prom."}
+                        {resolvedLocale === "en"
+                          ? "Avg. rating"
+                          : "Calificación prom."}
                       </div>
                       <span className="font-barlow-condensed font-bold text-4xl text-gray-900">
-                        {stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—"}
+                        {stats.averageRating > 0
+                          ? stats.averageRating.toFixed(1)
+                          : "—"}
                       </span>
                     </div>
                   </div>
 
                   {/* Preferences summary */}
-                  {(detailsForm.travelerType || detailsForm.interests.length > 0 || detailsForm.dislikes.length > 0) && (
+                  {(detailsForm.travelerType ||
+                    detailsForm.interests.length > 0 ||
+                    detailsForm.dislikes.length > 0) && (
                     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-neutral-900">{p.preferencesSectionTitle}</h3>
+                        <h3 className="text-lg font-semibold text-neutral-900">
+                          {p.preferencesSectionTitle}
+                        </h3>
                         <button
                           onClick={() => setActiveTab("preferencias")}
                           className="text-sm text-blue-600 hover:underline"
@@ -453,26 +538,46 @@ function AccountContent() {
                       <div className="space-y-3">
                         {detailsForm.travelerType && (
                           <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-neutral-500 w-32 shrink-0">{p.labels.travelerType}</span>
-                            <span className="text-sm text-neutral-800 capitalize">{detailsForm.travelerType}</span>
+                            <span className="text-sm font-medium text-neutral-500 w-32 shrink-0">
+                              {p.labels.travelerType}
+                            </span>
+                            <span className="text-sm text-neutral-800 capitalize">
+                              {detailsForm.travelerType}
+                            </span>
                           </div>
                         )}
                         {detailsForm.interests.length > 0 && (
                           <div className="flex items-start gap-3">
-                            <span className="text-sm font-medium text-neutral-500 w-32 shrink-0">{resolvedLocale === "en" ? "Interests" : "Intereses"}</span>
+                            <span className="text-sm font-medium text-neutral-500 w-32 shrink-0">
+                              {resolvedLocale === "en"
+                                ? "Interests"
+                                : "Intereses"}
+                            </span>
                             <div className="flex flex-wrap gap-1.5">
                               {detailsForm.interests.map((i) => (
-                                <span key={i} className="px-2 py-0.5 text-xs rounded-full bg-blue-50 text-blue-700 border border-blue-100">{i}</span>
+                                <span
+                                  key={i}
+                                  className="px-2 py-0.5 text-xs rounded-full bg-blue-50 text-blue-700 border border-blue-100"
+                                >
+                                  {i}
+                                </span>
                               ))}
                             </div>
                           </div>
                         )}
                         {detailsForm.dislikes.length > 0 && (
                           <div className="flex items-start gap-3">
-                            <span className="text-sm font-medium text-neutral-500 w-32 shrink-0">{resolvedLocale === "en" ? "Avoid" : "Evitar"}</span>
+                            <span className="text-sm font-medium text-neutral-500 w-32 shrink-0">
+                              {resolvedLocale === "en" ? "Avoid" : "Evitar"}
+                            </span>
                             <div className="flex flex-wrap gap-1.5">
                               {detailsForm.dislikes.map((d) => (
-                                <span key={d} className="px-2 py-0.5 text-xs rounded-full bg-red-50 text-red-700 border border-red-100">{d}</span>
+                                <span
+                                  key={d}
+                                  className="px-2 py-0.5 text-xs rounded-full bg-red-50 text-red-700 border border-red-100"
+                                >
+                                  {d}
+                                </span>
                               ))}
                             </div>
                           </div>
@@ -487,48 +592,149 @@ function AccountContent() {
               {activeTab === "personal" && (
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-neutral-900">{p.personalSectionTitle}</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900">
+                      {p.personalSectionTitle}
+                    </h2>
                     {!isDetailsEditing ? (
-                      <Button disabled={profileLoading || !profileMe} onClick={handleStartDetailsEdit} size="sm" variant="secondary">
-                        <Edit className="mr-2 h-4 w-4" />{p.buttons.editDetails}
+                      <Button
+                        disabled={profileLoading || !profileMe}
+                        onClick={handleStartDetailsEdit}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        {p.buttons.editDetails}
                       </Button>
                     ) : (
                       <div className="flex gap-2">
-                        <Button onClick={handleCancelDetailsEdit} size="sm" variant="secondary">{p.buttons.cancel}</Button>
-                        <Button onClick={handleSaveDetails} size="sm">{p.buttons.saveChanges}</Button>
+                        <Button
+                          onClick={handleCancelDetailsEdit}
+                          size="sm"
+                          variant="secondary"
+                        >
+                          {p.buttons.cancel}
+                        </Button>
+                        <Button onClick={handleSaveDetails} size="sm">
+                          {p.buttons.saveChanges}
+                        </Button>
                       </div>
                     )}
                   </div>
                   <div className="space-y-4">
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <FormField className={fieldCn} id="acc-name" label={p.labels.name}
-                        onChange={(e) => setDetailsForm((p) => ({ ...p, name: e.target.value }))}
-                        readOnly={!isDetailsEditing} type="text" value={detailsForm.name} />
-                      <FormField className={fieldCn} id="acc-phone" label={p.labels.phone}
-                        onChange={(e) => setDetailsForm((p) => ({ ...p, phone: e.target.value }))}
-                        readOnly={!isDetailsEditing} type="tel" value={detailsForm.phone} />
+                      <FormField
+                        className={fieldCn}
+                        id="acc-name"
+                        label={p.labels.name}
+                        onChange={(e) =>
+                          setDetailsForm((p) => ({
+                            ...p,
+                            name: e.target.value,
+                          }))
+                        }
+                        readOnly={!isDetailsEditing}
+                        type="text"
+                        value={detailsForm.name}
+                      />
+                      <FormField
+                        className={fieldCn}
+                        id="acc-phone"
+                        label={p.labels.phone}
+                        onChange={(e) =>
+                          setDetailsForm((p) => ({
+                            ...p,
+                            phone: e.target.value,
+                          }))
+                        }
+                        readOnly={!isDetailsEditing}
+                        type="tel"
+                        value={detailsForm.phone}
+                      />
                     </div>
-                    <FormField className={fieldCn} id="acc-email" label={p.labels.email}
-                      onChange={(e) => setDetailsForm((p) => ({ ...p, email: e.target.value }))}
-                      readOnly={!isDetailsEditing} type="email" value={detailsForm.email} />
-                    <FormField className={fieldCn} id="acc-street" label={p.labels.street}
-                      onChange={(e) => setDetailsForm((p) => ({ ...p, street: e.target.value }))}
-                      readOnly={!isDetailsEditing} type="text" value={detailsForm.street} />
+                    <FormField
+                      className={fieldCn}
+                      id="acc-email"
+                      label={p.labels.email}
+                      onChange={(e) =>
+                        setDetailsForm((p) => ({ ...p, email: e.target.value }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="email"
+                      value={detailsForm.email}
+                    />
+                    <FormField
+                      className={fieldCn}
+                      id="acc-street"
+                      label={p.labels.street}
+                      onChange={(e) =>
+                        setDetailsForm((p) => ({
+                          ...p,
+                          street: e.target.value,
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.street}
+                    />
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <FormField className={fieldCn} id="acc-city" label={p.labels.city}
-                        onChange={(e) => setDetailsForm((p) => ({ ...p, city: e.target.value }))}
-                        readOnly={!isDetailsEditing} type="text" value={detailsForm.city} />
-                      <FormField className={fieldCn} id="acc-state" label={p.labels.state}
-                        onChange={(e) => setDetailsForm((p) => ({ ...p, state: e.target.value }))}
-                        readOnly={!isDetailsEditing} type="text" value={detailsForm.state} />
+                      <FormField
+                        className={fieldCn}
+                        id="acc-city"
+                        label={p.labels.city}
+                        onChange={(e) =>
+                          setDetailsForm((p) => ({
+                            ...p,
+                            city: e.target.value,
+                          }))
+                        }
+                        readOnly={!isDetailsEditing}
+                        type="text"
+                        value={detailsForm.city}
+                      />
+                      <FormField
+                        className={fieldCn}
+                        id="acc-state"
+                        label={p.labels.state}
+                        onChange={(e) =>
+                          setDetailsForm((p) => ({
+                            ...p,
+                            state: e.target.value,
+                          }))
+                        }
+                        readOnly={!isDetailsEditing}
+                        type="text"
+                        value={detailsForm.state}
+                      />
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <FormField className={fieldCn} id="acc-zip" label={p.labels.zipCode}
-                        onChange={(e) => setDetailsForm((p) => ({ ...p, zipCode: e.target.value }))}
-                        readOnly={!isDetailsEditing} type="text" value={detailsForm.zipCode} />
-                      <FormField className={fieldCn} id="acc-country" label={p.labels.country}
-                        onChange={(e) => setDetailsForm((p) => ({ ...p, country: e.target.value }))}
-                        readOnly={!isDetailsEditing} type="text" value={detailsForm.country} />
+                      <FormField
+                        className={fieldCn}
+                        id="acc-zip"
+                        label={p.labels.zipCode}
+                        onChange={(e) =>
+                          setDetailsForm((p) => ({
+                            ...p,
+                            zipCode: e.target.value,
+                          }))
+                        }
+                        readOnly={!isDetailsEditing}
+                        type="text"
+                        value={detailsForm.zipCode}
+                      />
+                      <FormField
+                        className={fieldCn}
+                        id="acc-country"
+                        label={p.labels.country}
+                        onChange={(e) =>
+                          setDetailsForm((p) => ({
+                            ...p,
+                            country: e.target.value,
+                          }))
+                        }
+                        readOnly={!isDetailsEditing}
+                        type="text"
+                        value={detailsForm.country}
+                      />
                     </div>
                   </div>
                 </div>
@@ -537,11 +743,17 @@ function AccountContent() {
               {/* 3. Documentos de viaje */}
               {activeTab === "documentos" && (
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                  <h2 className="text-xl font-semibold text-neutral-900 mb-2">{p.sections.travelDocs}</h2>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+                    {p.sections.travelDocs}
+                  </h2>
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <FileText className="h-14 w-14 text-neutral-200 mb-4" />
-                    <p className="text-base font-medium text-neutral-500">{p.comingSoon}</p>
-                    <p className="mt-1 text-sm text-neutral-400">{p.comingSoonDescription}</p>
+                    <p className="text-base font-medium text-neutral-500">
+                      {p.comingSoon}
+                    </p>
+                    <p className="mt-1 text-sm text-neutral-400">
+                      {p.comingSoonDescription}
+                    </p>
                   </div>
                 </div>
               )}
@@ -550,23 +762,48 @@ function AccountContent() {
               {activeTab === "preferencias" && (
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-neutral-900">{p.preferencesSectionTitle}</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900">
+                      {p.preferencesSectionTitle}
+                    </h2>
                     {!isDetailsEditing ? (
-                      <Button disabled={profileLoading || !profileMe} onClick={handleStartDetailsEdit} size="sm" variant="secondary">
-                        <Edit className="mr-2 h-4 w-4" />{p.buttons.editDetails}
+                      <Button
+                        disabled={profileLoading || !profileMe}
+                        onClick={handleStartDetailsEdit}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        {p.buttons.editDetails}
                       </Button>
                     ) : (
                       <div className="flex gap-2">
-                        <Button onClick={handleCancelDetailsEdit} size="sm" variant="secondary">{p.buttons.cancel}</Button>
-                        <Button onClick={handleSaveDetails} size="sm">{p.buttons.saveChanges}</Button>
+                        <Button
+                          onClick={handleCancelDetailsEdit}
+                          size="sm"
+                          variant="secondary"
+                        >
+                          {p.buttons.cancel}
+                        </Button>
+                        <Button onClick={handleSaveDetails} size="sm">
+                          {p.buttons.saveChanges}
+                        </Button>
                       </div>
                     )}
                   </div>
                   <div className="space-y-4">
-                    <FormSelectField className={fieldCn} disabled={!isDetailsEditing} id="acc-traveler-type"
+                    <FormSelectField
+                      className={fieldCn}
+                      disabled={!isDetailsEditing}
+                      id="acc-traveler-type"
                       label={p.labels.travelerType}
-                      onChange={(e) => setDetailsForm((p) => ({ ...p, travelerType: e.target.value }))}
-                      value={detailsForm.travelerType}>
+                      onChange={(e) =>
+                        setDetailsForm((p) => ({
+                          ...p,
+                          travelerType: e.target.value,
+                        }))
+                      }
+                      value={detailsForm.travelerType}
+                    >
                       <option value="">{tt.selectPlaceholder}</option>
                       <option value="solo">{tt.solo}</option>
                       <option value="couple">{tt.couple}</option>
@@ -575,18 +812,40 @@ function AccountContent() {
                       <option value="honeymoon">{tt.honeymoon}</option>
                       <option value="paws">{tt.paws}</option>
                     </FormSelectField>
-                    <FormField className={fieldCn} id="acc-interests" label={p.labels.interests}
-                      onChange={(e) => setDetailsForm((p) => ({
-                        ...p, interests: e.target.value.split(",").map((i) => i.trim()).filter((i) => i !== ""),
-                      }))}
-                      readOnly={!isDetailsEditing} type="text"
-                      value={detailsForm.interests.filter((i) => i).join(", ")} />
-                    <FormField className={fieldCn} id="acc-dislikes" label={p.labels.dislikes}
-                      onChange={(e) => setDetailsForm((p) => ({
-                        ...p, dislikes: e.target.value.split(",").map((i) => i.trim()).filter((i) => i !== ""),
-                      }))}
-                      readOnly={!isDetailsEditing} type="text"
-                      value={detailsForm.dislikes.filter((d) => d).join(", ")} />
+                    <FormField
+                      className={fieldCn}
+                      id="acc-interests"
+                      label={p.labels.interests}
+                      onChange={(e) =>
+                        setDetailsForm((p) => ({
+                          ...p,
+                          interests: e.target.value
+                            .split(",")
+                            .map((i) => i.trim())
+                            .filter((i) => i !== ""),
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.interests.filter((i) => i).join(", ")}
+                    />
+                    <FormField
+                      className={fieldCn}
+                      id="acc-dislikes"
+                      label={p.labels.dislikes}
+                      onChange={(e) =>
+                        setDetailsForm((p) => ({
+                          ...p,
+                          dislikes: e.target.value
+                            .split(",")
+                            .map((i) => i.trim())
+                            .filter((i) => i !== ""),
+                        }))
+                      }
+                      readOnly={!isDetailsEditing}
+                      type="text"
+                      value={detailsForm.dislikes.filter((d) => d).join(", ")}
+                    />
                   </div>
                 </div>
               )}
@@ -594,11 +853,17 @@ function AccountContent() {
               {/* 5. Métodos de pago */}
               {activeTab === "pagos" && (
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                  <h2 className="text-xl font-semibold text-neutral-900 mb-2">{p.sections.payments}</h2>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+                    {p.sections.payments}
+                  </h2>
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <CreditCard className="h-14 w-14 text-neutral-200 mb-4" />
-                    <p className="text-base font-medium text-neutral-500">{p.comingSoon}</p>
-                    <p className="mt-1 text-sm text-neutral-400">{p.comingSoonDescription}</p>
+                    <p className="text-base font-medium text-neutral-500">
+                      {p.comingSoon}
+                    </p>
+                    <p className="mt-1 text-sm text-neutral-400">
+                      {p.comingSoonDescription}
+                    </p>
                   </div>
                 </div>
               )}
@@ -607,31 +872,61 @@ function AccountContent() {
               {activeTab === "seguridad" && (
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-neutral-900">{p.sections.security}</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900">
+                      {p.sections.security}
+                    </h2>
                     <Button onClick={handleChangePassword} size="sm">
-                      <Lock className="mr-2 h-4 w-4" />{p.buttons.saveChanges}
+                      <Lock className="mr-2 h-4 w-4" />
+                      {p.buttons.saveChanges}
                     </Button>
                   </div>
                   <div className="max-w-md space-y-4">
-                    <FormField autoComplete="current-password" id="acc-current-password"
+                    <FormField
+                      autoComplete="current-password"
+                      id="acc-current-password"
                       label={p.modal.currentPassword}
-                      onChange={(e) => setSecurityForm((p) => ({ ...p, currentPassword: e.target.value }))}
-                      placeholder={p.modal.passwordPlaceholder} type="password" value={securityForm.currentPassword} />
-                    <FormField autoComplete="new-password" id="acc-new-password"
+                      onChange={(e) =>
+                        setSecurityForm((p) => ({
+                          ...p,
+                          currentPassword: e.target.value,
+                        }))
+                      }
+                      placeholder={p.modal.passwordPlaceholder}
+                      type="password"
+                      value={securityForm.currentPassword}
+                    />
+                    <FormField
+                      autoComplete="new-password"
+                      id="acc-new-password"
                       label={p.modal.newPassword}
-                      onChange={(e) => setSecurityForm((p) => ({ ...p, newPassword: e.target.value }))}
-                      placeholder={p.modal.passwordPlaceholder} type="password" value={securityForm.newPassword} />
-                    <FormField autoComplete="new-password" id="acc-confirm-password"
+                      onChange={(e) =>
+                        setSecurityForm((p) => ({
+                          ...p,
+                          newPassword: e.target.value,
+                        }))
+                      }
+                      placeholder={p.modal.passwordPlaceholder}
+                      type="password"
+                      value={securityForm.newPassword}
+                    />
+                    <FormField
+                      autoComplete="new-password"
+                      id="acc-confirm-password"
                       label={p.modal.confirmPassword}
-                      onChange={(e) => setSecurityForm((p) => ({ ...p, confirmPassword: e.target.value }))}
-                      placeholder={p.modal.passwordPlaceholder} type="password" value={securityForm.confirmPassword} />
+                      onChange={(e) =>
+                        setSecurityForm((p) => ({
+                          ...p,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
+                      placeholder={p.modal.passwordPlaceholder}
+                      type="password"
+                      value={securityForm.confirmPassword}
+                    />
                   </div>
                 </div>
               )}
-
-
             </div>
-
           </div>
         </div>
       </section>

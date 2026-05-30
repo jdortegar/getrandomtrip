@@ -1,16 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 // GET /api/trips/[id] - Get a specific trip
-export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Find user by email
@@ -19,7 +22,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Get trip
@@ -31,32 +34,35 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
     });
 
     if (!trip) {
-      return NextResponse.json({ error: 'Trip not found' }, { status: 404 });
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
 
     // Verify ownership
     if (trip.userId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json({ trip }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching trip:', error);
+    console.error("Error fetching trip:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
 }
 
 // DELETE /api/trips/[id] - Delete a trip
-export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Find user by email
@@ -65,7 +71,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Get trip
@@ -74,12 +80,12 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
     });
 
     if (!trip) {
-      return NextResponse.json({ error: 'Trip not found' }, { status: 404 });
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
 
     // Verify ownership
     if (trip.userId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Delete trip
@@ -88,13 +94,13 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
     });
 
     return NextResponse.json(
-      { message: 'Trip deleted successfully' },
+      { message: "Trip deleted successfully" },
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error deleting trip:', error);
+    console.error("Error deleting trip:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

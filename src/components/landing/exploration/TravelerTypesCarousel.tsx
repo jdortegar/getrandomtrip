@@ -39,7 +39,7 @@ export function TravelerTypesCarousel({
   overflow = "both",
 }: TravelerTypesCarouselProps) {
   const locale = useLocale();
-  const comingSoonLabel = useDictionary(d => d.profile.comingSoon);
+  const comingSoonLabel = useDictionary((d) => d.profile.comingSoon);
 
   const cards = getCarouselCardOptions(locale, {
     localizedTravelerTypes,
@@ -73,9 +73,15 @@ export function TravelerTypesCarousel({
               fill
               className="aspect-3/4"
               comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
-              href={isComingSoon ? undefined : `/experiences/by-type/${slugify(type.key)}`}
+              href={
+                isComingSoon
+                  ? undefined
+                  : `/experiences/by-type/${slugify(type.key)}`
+              }
               item={cardDataToCardItem(type)}
-              onClick={onSelect && !isComingSoon ? () => onSelect(slug) : undefined}
+              onClick={
+                onSelect && !isComingSoon ? () => onSelect(slug) : undefined
+              }
               selected={selectedTravelType === slug}
             />
           );

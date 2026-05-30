@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { ADDONS, type Addon } from '@/lib/data/shared/addons-catalog';
-import { cn } from '@/lib/utils';
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { ADDONS, type Addon } from "@/lib/data/shared/addons-catalog";
+import { cn } from "@/lib/utils";
 
 function formatAddonPrice(addon: Addon): string {
-  return addon.priceType === 'currency'
+  return addon.priceType === "currency"
     ? `USD ${addon.price}`
     : `${addon.price}%`;
 }
@@ -15,23 +15,25 @@ function toggleCsv(
   value: string | undefined,
   item: string,
 ): string | undefined {
-  const cur = (value || '')
-    .split(',')
+  const cur = (value || "")
+    .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   const has = cur.includes(item);
   const next = has ? cur.filter((x) => x !== item) : [...cur, item];
-  return next.length ? next.join(',') : undefined;
+  return next.length ? next.join(",") : undefined;
 }
 
 /** Normalize experience from URL/traveler-type id (e.g. exploraPlus) to catalog level id (e.g. explora-plus). */
-function normalizeExperienceForCatalog(experience: string | undefined): string | undefined {
+function normalizeExperienceForCatalog(
+  experience: string | undefined,
+): string | undefined {
   if (!experience) return undefined;
   const normalized = experience
     .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace('explora+', 'explora-plus');
-  if (normalized === 'exploraplus') return 'explora-plus';
+    .replace(/\s+/g, "-")
+    .replace("explora+", "explora-plus");
+  if (normalized === "exploraplus") return "explora-plus";
   return normalized || undefined;
 }
 
@@ -68,18 +70,18 @@ export function AddonsSelector({
 }: AddonsSelectorProps) {
   const labels = {
     addonLabels: labelsProp?.addonLabels,
-    addonsClearButton: labelsProp?.addonsClearButton ?? 'Borrar',
+    addonsClearButton: labelsProp?.addonsClearButton ?? "Borrar",
     addonsEmptyMessage:
       labelsProp?.addonsEmptyMessage ??
-      'Completá tipo de viaje y experiencia para ver add-ons disponibles.',
+      "Completá tipo de viaje y experiencia para ver add-ons disponibles.",
     addonsHint:
       labelsProp?.addonsHint ??
-      'Opcional. Sumá seguros, asientos o equipaje según tu nivel.',
-    addonsSaveButton: labelsProp?.addonsSaveButton ?? 'Guardar Add-ons',
+      "Opcional. Sumá seguros, asientos o equipaje según tu nivel.",
+    addonsSaveButton: labelsProp?.addonsSaveButton ?? "Guardar Add-ons",
   };
 
   const groupedAddons = useMemo(() => {
-    const list = ADDONS.filter((a) => a.purchaseType === 'prePurchase');
+    const list = ADDONS.filter((a) => a.purchaseType === "prePurchase");
     const levelForCatalog = normalizeExperienceForCatalog(experience);
     const byLevel = levelForCatalog
       ? list.filter((a) => a.applyToLevel.includes(levelForCatalog))
@@ -95,7 +97,9 @@ export function AddonsSelector({
   const categories = Object.keys(groupedAddons);
 
   // Local state for immediate UI updates; sync from prop when URL/external value changes
-  const [localValue, setLocalValue] = useState<string | undefined>(() => value ?? undefined);
+  const [localValue, setLocalValue] = useState<string | undefined>(
+    () => value ?? undefined,
+  );
   useEffect(() => {
     setLocalValue(value ?? undefined);
   }, [value]);
@@ -137,8 +141,8 @@ export function AddonsSelector({
               </div>
               <div className="flex flex-wrap gap-2 p-4">
                 {groupedAddons[cat].map((addon) => {
-                  const isSelected = (displayValue || '')
-                    .split(',')
+                  const isSelected = (displayValue || "")
+                    .split(",")
                     .map((s) => s.trim())
                     .filter(Boolean)
                     .includes(addon.id);
@@ -147,10 +151,10 @@ export function AddonsSelector({
                   return (
                     <button
                       className={cn(
-                        'rounded-full border px-3 py-1.5 text-sm transition',
+                        "rounded-full border px-3 py-1.5 text-sm transition",
                         isSelected
-                          ? 'border-gray-800 bg-gray-800 text-white'
-                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100',
+                          ? "border-gray-800 bg-gray-800 text-white"
+                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
                       )}
                       key={addon.id}
                       onClick={() => handleToggle(addon.id)}
@@ -159,8 +163,8 @@ export function AddonsSelector({
                       <span>{title}</span>
                       <span
                         className={cn(
-                          'ml-1.5 opacity-90',
-                          !isSelected && 'text-gray-500',
+                          "ml-1.5 opacity-90",
+                          !isSelected && "text-gray-500",
                         )}
                       >
                         ({formatAddonPrice(addon)})

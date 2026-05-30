@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import { FormField } from '@/components/ui/FormField';
-import type { TripperExperiencesDict } from '@/lib/types/dictionary';
-import type { ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
+import { FormField } from "@/components/ui/FormField";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
+import type {
+  ExperienceFormDraft,
+  ExperienceFormDraftOnChange,
+} from "@/types/tripper";
 
 interface Props {
-  copy: TripperExperiencesDict['form'];
+  copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
 }
@@ -25,14 +28,16 @@ export function CapacityPricingStep({ copy, form, onChange }: Props) {
             type="text"
             inputMode="numeric"
             placeholder="0"
-            value={form.basePrice === 0 ? '' : String(form.basePrice)}
+            value={form.basePrice === 0 ? "" : String(form.basePrice)}
             onChange={(e) => {
-              const stripped = e.target.value.replace(/[^0-9]/g, '');
-              onChange('basePrice', stripped === '' ? 0 : Number(stripped));
+              const stripped = e.target.value.replace(/[^0-9]/g, "");
+              onChange("basePrice", stripped === "" ? 0 : Number(stripped));
             }}
           />
           {copy.fields.basePriceHint && (
-            <p className="text-xs text-neutral-400">{copy.fields.basePriceHint}</p>
+            <p className="text-xs text-neutral-400">
+              {copy.fields.basePriceHint}
+            </p>
           )}
         </div>
 
@@ -42,10 +47,12 @@ export function CapacityPricingStep({ copy, form, onChange }: Props) {
             label={copy.fields.displayPrice}
             placeholder="Ej: Desde USD 450"
             value={form.displayPrice}
-            onChange={(e) => onChange('displayPrice', e.target.value)}
+            onChange={(e) => onChange("displayPrice", e.target.value)}
           />
           {copy.fields.displayPriceHint && (
-            <p className="text-xs text-neutral-400">{copy.fields.displayPriceHint}</p>
+            <p className="text-xs text-neutral-400">
+              {copy.fields.displayPriceHint}
+            </p>
           )}
         </div>
       </div>
@@ -56,14 +63,14 @@ export function CapacityPricingStep({ copy, form, onChange }: Props) {
           label={copy.fields.estimatedCost}
           placeholder="Ej: USD 2000"
           value={form.estimatedCost}
-          onChange={(e) => onChange('estimatedCost', e.target.value)}
+          onChange={(e) => onChange("estimatedCost", e.target.value)}
         />
         <FormField
           id="price-season"
           label={copy.fields.season}
           placeholder="Alta o Baja, según experiencia"
           value={form.season}
-          onChange={(e) => onChange('season', e.target.value)}
+          onChange={(e) => onChange("season", e.target.value)}
         />
       </div>
     </div>

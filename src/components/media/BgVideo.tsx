@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 type Props = {
   webm: string;
@@ -10,7 +10,13 @@ type Props = {
   blur?: boolean;
 };
 
-export default function BgVideo({ webm, mp4, poster, overlay = 0.22, blur = false }: Props) {
+export default function BgVideo({
+  webm,
+  mp4,
+  poster,
+  overlay = 0.22,
+  blur = false,
+}: Props) {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10">
       <video
@@ -20,7 +26,7 @@ export default function BgVideo({ webm, mp4, poster, overlay = 0.22, blur = fals
         playsInline
         preload="metadata"
         poster={poster}
-        className={`h-full w-full object-cover ${blur ? 'blur-[1px]' : ''}`}
+        className={`h-full w-full object-cover ${blur ? "blur-[1px]" : ""}`}
       >
         <source src={webm} type="video/webm" />
         <source src={mp4} type="video/mp4" />
@@ -35,7 +41,7 @@ export default function BgVideo({ webm, mp4, poster, overlay = 0.22, blur = fals
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(75% 55% at 50% 38%, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.20) 100%)',
+            "radial-gradient(75% 55% at 50% 38%, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.20) 100%)",
         }}
         aria-hidden
       />

@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from "@prisma/client";
 
 // ========================================
 // ENHANCED TYPES WITH RELATIONS
@@ -113,7 +113,7 @@ export interface SearchParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 // ========================================

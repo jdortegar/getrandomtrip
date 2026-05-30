@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 export default function TextPagesLayout({
   children,
@@ -6,6 +6,8 @@ export default function TextPagesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn('bg-white font-barlow text-neutral-900')}>{children}</div>
+    <div className={cn("bg-white font-barlow text-neutral-900")}>
+      {children}
+    </div>
   );
 }

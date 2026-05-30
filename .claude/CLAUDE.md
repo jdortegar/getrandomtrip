@@ -165,7 +165,7 @@ MERCADOPAGO_TEST_ACCESS_TOKEN / TEST_PUBLIC_KEY
 
 Project-specific skills live in `.claude/skills/`. Invoke them with the `Skill` tool before starting the corresponding work.
 
-| Skill                | When to use                                                                 |
-| -------------------- | --------------------------------------------------------------------------- |
-| `create-component`   | Scaffolding any new component, page, or UI under `src/components/`          |
+| Skill                | When to use                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `create-component`   | Scaffolding any new component, page, or UI under `src/components/`                 |
 | `refactor-component` | Refactoring or restyling an existing component — extract, migrate copy, fix layout |

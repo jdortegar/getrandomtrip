@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 
 /**
  * Fetches packages for a specific tripper and extracts unique type/level combinations
@@ -16,7 +16,7 @@ export async function getTripperAvailableTypesAndLevels(tripperId: string) {
         type: true,
         level: true,
       },
-      distinct: ['type', 'level'],
+      distinct: ["type", "level"],
     });
 
     return packages.map((pkg) => ({
@@ -24,7 +24,7 @@ export async function getTripperAvailableTypesAndLevels(tripperId: string) {
       level: pkg.level,
     }));
   } catch (error) {
-    console.error('Error fetching tripper packages:', error);
+    console.error("Error fetching tripper packages:", error);
     return [];
   }
 }
@@ -53,7 +53,7 @@ export async function tripperHasExperiencesForTypeAndLevel(
 
     return !!pkg;
   } catch (error) {
-    console.error('Error checking tripper packages:', error);
+    console.error("Error checking tripper packages:", error);
     return false;
   }
 }
@@ -75,12 +75,12 @@ export async function getTripperAvailableTypes(
       select: {
         type: true,
       },
-      distinct: ['type'],
+      distinct: ["type"],
     });
 
     return packages.map((pkg) => pkg.type);
   } catch (error) {
-    console.error('Error fetching tripper types:', error);
+    console.error("Error fetching tripper types:", error);
     return [];
   }
 }
@@ -105,12 +105,14 @@ export async function getTripperAvailableLevelsForType(
       select: {
         level: true,
       },
-      distinct: ['level'],
+      distinct: ["level"],
     });
 
-    return packages.map((pkg) => pkg.level).filter((l): l is string => l !== null);
+    return packages
+      .map((pkg) => pkg.level)
+      .filter((l): l is string => l !== null);
   } catch (error) {
-    console.error('Error fetching tripper levels for type:', error);
+    console.error("Error fetching tripper levels for type:", error);
     return [];
   }
 }

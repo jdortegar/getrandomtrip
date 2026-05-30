@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useSession } from 'next-auth/react';
-import { usePathname, useRouter } from 'next/navigation';
-import AuthModal from '@/components/auth/AuthModal';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import { shouldRedirectHomeWhenLeavingAuthModal } from '@/lib/helpers/secureClientPaths';
-import { useUserStore } from '@/store/slices/userStore';
+import { useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
+import AuthModal from "@/components/auth/AuthModal";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { shouldRedirectHomeWhenLeavingAuthModal } from "@/lib/helpers/secureClientPaths";
+import { useUserStore } from "@/store/slices/userStore";
 
 interface GlobalAuthModalProps {
   dict: Dictionary;
@@ -26,12 +26,14 @@ export function GlobalAuthModal({ dict }: GlobalAuthModalProps) {
 
   const handleClose = useCallback(() => {
     closeAuth();
-    if (status === 'loading') return;
+    if (status === "loading") return;
     if (session?.user || isAuthed) return;
     if (!shouldRedirectHomeWhenLeavingAuthModal(pathname)) return;
-    const firstSegment = pathname.split('/').filter(Boolean)[0];
-    const locale: Locale = hasLocale(firstSegment) ? firstSegment : DEFAULT_LOCALE;
-    router.replace(pathForLocale(locale, '/'));
+    const firstSegment = pathname.split("/").filter(Boolean)[0];
+    const locale: Locale = hasLocale(firstSegment)
+      ? firstSegment
+      : DEFAULT_LOCALE;
+    router.replace(pathForLocale(locale, "/"));
   }, [closeAuth, isAuthed, pathname, router, session?.user, status]);
 
   return (

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Package } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import type { TripperProfilePageDict } from '@/lib/types/dictionary';
-import type { TripperOwnExperienceListItem } from '@/types/tripper';
+import Link from "next/link";
+import { Package } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import type { TripperProfilePageDict } from "@/lib/types/dictionary";
+import type { TripperOwnExperienceListItem } from "@/types/tripper";
 
 interface TripperProfileExperiencesPanelProps {
   copy: TripperProfilePageDict;
@@ -45,22 +45,30 @@ export function TripperProfileExperiencesPanel({
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="font-semibold text-neutral-900">{experience.title}</h3>
-                    <p className="mt-1 text-sm text-neutral-600">{experience.teaser}</p>
+                    <h3 className="font-semibold text-neutral-900">
+                      {experience.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-neutral-600">
+                      {experience.teaser}
+                    </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
                       <span>
                         {experience.type} • {experience.level}
                       </span>
                       <span>
-                        {experience.minNights}-{experience.maxNights} {copy.experiences.nightsLabel}
+                        {experience.minNights}-{experience.maxNights}{" "}
+                        {copy.experiences.nightsLabel}
                       </span>
                       <span>
-                        {experience.minPax}-{experience.maxPax} {copy.experiences.peopleLabel}
+                        {experience.minPax}-{experience.maxPax}{" "}
+                        {copy.experiences.peopleLabel}
                       </span>
                     </div>
                   </div>
                   <div className="text-left sm:text-right">
-                    <p className="font-semibold text-neutral-900">{experience.displayPrice}</p>
+                    <p className="font-semibold text-neutral-900">
+                      {experience.displayPrice}
+                    </p>
                     <p className="text-sm text-neutral-500">
                       {experience.isActive
                         ? copy.experiences.active
@@ -84,7 +92,9 @@ export function TripperProfileExperiencesPanel({
       ) : (
         <div className="py-8 text-center">
           <Package className="mx-auto mb-4 h-12 w-12 text-neutral-400" />
-          <p className="mb-4 text-base text-neutral-600">{copy.experiences.emptyTitle}</p>
+          <p className="mb-4 text-base text-neutral-600">
+            {copy.experiences.emptyTitle}
+          </p>
           <Button asChild variant="default">
             <Link href={experiencesPath}>
               <Package className="mr-2 h-4 w-4" />

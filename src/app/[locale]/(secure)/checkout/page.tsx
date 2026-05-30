@@ -51,7 +51,10 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
-import { pickCheckoutTrip, CHECKOUT_TRIP_STATUSES } from "@/lib/helpers/checkout-trip";
+import {
+  pickCheckoutTrip,
+  CHECKOUT_TRIP_STATUSES,
+} from "@/lib/helpers/checkout-trip";
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
@@ -236,7 +239,10 @@ function CheckoutContent() {
       const res = await fetch("/api/stripe/apply-promo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tripId: trip.id, promoCode: normalizedPromocode }),
+        body: JSON.stringify({
+          tripId: trip.id,
+          promoCode: normalizedPromocode,
+        }),
       });
       const data = (await res.json()) as {
         discountAmount?: number;
@@ -252,7 +258,10 @@ function CheckoutContent() {
       setPromocode("");
       setShowPromocodeInput(false);
     } catch {
-      setPromoError(dict?.journey?.checkout?.errors?.connectionTryAgain ?? "Connection error");
+      setPromoError(
+        dict?.journey?.checkout?.errors?.connectionTryAgain ??
+          "Connection error",
+      );
     } finally {
       setPromoLoading(false);
     }
@@ -311,7 +320,10 @@ function CheckoutContent() {
         // If the requested trip exists but is already paid, redirect to dashboard
         if (preferredId) {
           const requestedTrip = trips.find((t) => t.id === preferredId);
-          if (requestedTrip && !CHECKOUT_TRIP_STATUSES.has(requestedTrip.status)) {
+          if (
+            requestedTrip &&
+            !CHECKOUT_TRIP_STATUSES.has(requestedTrip.status)
+          ) {
             router.replace(pathForLocale(resolvedLocale, "/dashboard"));
             return;
           }
@@ -319,7 +331,8 @@ function CheckoutContent() {
 
         const byPreferredId = preferredId
           ? trips.find(
-              (t) => t.id === preferredId && CHECKOUT_TRIP_STATUSES.has(t.status),
+              (t) =>
+                t.id === preferredId && CHECKOUT_TRIP_STATUSES.has(t.status),
             )
           : undefined;
         const picked = byPreferredId ?? pickCheckoutTrip(trips);

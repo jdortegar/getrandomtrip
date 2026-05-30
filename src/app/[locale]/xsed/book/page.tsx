@@ -1,11 +1,11 @@
-import { headers } from 'next/headers';
-import { hasLocale } from '@/lib/i18n/config';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { countryToTimezone } from '@/lib/xsed/country-tz';
-import { isLocalWindowOpen } from '@/lib/xsed/window';
-import { getCurrentXsedDrop } from '@/lib/data/xsed';
-import { XsedUnavailablePage } from '@/components/app/xsed/XsedUnavailablePage';
-import { XsedBookClient } from '@/components/app/xsed/XsedBookClient';
+import { headers } from "next/headers";
+import { hasLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { countryToTimezone } from "@/lib/xsed/country-tz";
+import { isLocalWindowOpen } from "@/lib/xsed/window";
+import { getCurrentXsedDrop } from "@/lib/data/xsed";
+import { XsedUnavailablePage } from "@/components/app/xsed/XsedUnavailablePage";
+import { XsedBookClient } from "@/components/app/xsed/XsedBookClient";
 
 type Props = {
   params: Promise<{ locale?: string }>;
@@ -13,7 +13,7 @@ type Props = {
 
 export default async function XsedBookPage({ params }: Props) {
   const { locale: rawLocale } = await params;
-  const normalizedLocale = hasLocale(rawLocale) ? rawLocale : 'es';
+  const normalizedLocale = hasLocale(rawLocale) ? rawLocale : "es";
   const dict = await getDictionary(normalizedLocale);
 
   // ── Server gate ────────────────────────────────────────────────────────────
@@ -22,8 +22,8 @@ export default async function XsedBookPage({ params }: Props) {
   // local time. If not, we render the unavailable page — same URL, no redirect,
   // nothing to bypass via URL manipulation.
   const reqHeaders = await headers();
-  const country = reqHeaders.get('x-country') ?? '';
-  const tz = countryToTimezone(country) ?? 'America/Argentina/Buenos_Aires';
+  const country = reqHeaders.get("x-country") ?? "";
+  const tz = countryToTimezone(country) ?? "America/Argentina/Buenos_Aires";
   const windowOpen = isLocalWindowOpen(tz);
 
   if (!windowOpen) {

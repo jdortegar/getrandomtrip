@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
+import { useState, useEffect, useRef } from "react";
+import { DEFAULT_TRANSPORT_ORDER } from "@/components/journey/TransportSelector";
 
-type UpdateQuery = (patch: Record<string, string | string[] | undefined>) => void;
+type UpdateQuery = (
+  patch: Record<string, string | string[] | undefined>,
+) => void;
 
 interface DraftDetailsUrlValues {
   originCountry: string;
@@ -44,11 +46,15 @@ export function useJourneyDraftDetails(
   urlValues: DraftDetailsUrlValues,
   updateQuery: UpdateQuery,
 ): JourneyDraftDetailsResult {
-  const [draftOriginCountry, setDraftOriginCountry] = useState('');
-  const [draftOriginCity, setDraftOriginCity] = useState('');
-  const [draftStartDate, setDraftStartDate] = useState<string | undefined>(undefined);
+  const [draftOriginCountry, setDraftOriginCountry] = useState("");
+  const [draftOriginCity, setDraftOriginCity] = useState("");
+  const [draftStartDate, setDraftStartDate] = useState<string | undefined>(
+    undefined,
+  );
   const [draftNights, setDraftNights] = useState(1);
-  const [draftTransportOrder, setDraftTransportOrder] = useState<string[]>(DEFAULT_TRANSPORT_ORDER);
+  const [draftTransportOrder, setDraftTransportOrder] = useState<string[]>(
+    DEFAULT_TRANSPORT_ORDER,
+  );
 
   // Stable ref so the flush effect can call updateQuery without it being a dep.
   // useQuerySync returns a new function every render; listing it as a dep would
@@ -62,7 +68,7 @@ export function useJourneyDraftDetails(
 
   // Sync URL -> draft when entering details step
   useEffect(() => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       setDraftOriginCountry(urlValues.originCountry);
       setDraftOriginCity(urlValues.originCity);
       setDraftStartDate(urlValues.startDate);
@@ -81,7 +87,7 @@ export function useJourneyDraftDetails(
 
   // Flush draft -> URL when leaving details step
   useEffect(() => {
-    if (prevActiveTabRef.current === 'details' && activeTab !== 'details') {
+    if (prevActiveTabRef.current === "details" && activeTab !== "details") {
       updateQueryRef.current({
         nights: String(draftNights),
         originCity: draftOriginCity || undefined,
@@ -89,7 +95,7 @@ export function useJourneyDraftDetails(
         startDate: draftStartDate ?? undefined,
         transportOrder:
           draftTransportOrder.length === 4
-            ? draftTransportOrder.join(',')
+            ? draftTransportOrder.join(",")
             : undefined,
       });
     }
@@ -104,15 +110,15 @@ export function useJourneyDraftDetails(
   ]);
 
   const effectiveOriginCountry =
-    activeTab === 'details' ? draftOriginCountry : urlValues.originCountry;
+    activeTab === "details" ? draftOriginCountry : urlValues.originCountry;
   const effectiveOriginCity =
-    activeTab === 'details' ? draftOriginCity : urlValues.originCity;
+    activeTab === "details" ? draftOriginCity : urlValues.originCity;
   const effectiveStartDate =
-    activeTab === 'details' ? draftStartDate : urlValues.startDate;
+    activeTab === "details" ? draftStartDate : urlValues.startDate;
   const effectiveNights =
-    activeTab === 'details' ? draftNights : urlValues.nights;
+    activeTab === "details" ? draftNights : urlValues.nights;
   const effectiveTransportOrder =
-    activeTab === 'details' ? draftTransportOrder : urlValues.transportOrder;
+    activeTab === "details" ? draftTransportOrder : urlValues.transportOrder;
 
   return {
     draftOriginCountry,

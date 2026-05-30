@@ -6,7 +6,7 @@ import type { AdminWaitlistEntry } from "@/lib/admin/types";
 import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminWaitlistPageClient() {
-  const copy = useDictionary(d => d.adminPages.waitlist);
+  const copy = useDictionary((d) => d.adminPages.waitlist);
 
   const [entries, setEntries] = useState<AdminWaitlistEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,9 @@ export function AdminWaitlistPageClient() {
   async function removeEntry(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/waitlist/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/waitlist/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) return;
       setEntries((prev) => prev.filter((x) => x.id !== id));
     } finally {
@@ -50,7 +52,8 @@ export function AdminWaitlistPageClient() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
 
@@ -67,7 +70,10 @@ export function AdminWaitlistPageClient() {
             <thead>
               <tr className="border-b border-gray-200">
                 {[cols.name, cols.email, cols.joined, cols.actions].map((h) => (
-                  <th className="px-4 py-3 text-left text-sm font-medium text-neutral-600" key={h}>
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
+                    key={h}
+                  >
                     {h}
                   </th>
                 ))}
@@ -75,13 +81,18 @@ export function AdminWaitlistPageClient() {
             </thead>
             <tbody>
               {entries.map((entry) => (
-                <tr className="border-b border-gray-100 last:border-0" key={entry.id}>
+                <tr
+                  className="border-b border-gray-100 last:border-0"
+                  key={entry.id}
+                >
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     {entry.name || entry.lastName
                       ? `${entry.name ?? ""} ${entry.lastName ?? ""}`.trim()
                       : "—"}
                   </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">{entry.email}</td>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">
+                    {entry.email}
+                  </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-400">
                     {new Date(entry.createdAt).toLocaleDateString()}
                   </td>
@@ -92,7 +103,9 @@ export function AdminWaitlistPageClient() {
                       onClick={() => void removeEntry(entry.id)}
                       type="button"
                     >
-                      {deletingId === entry.id ? copy.actions.deleting : copy.actions.delete}
+                      {deletingId === entry.id
+                        ? copy.actions.deleting
+                        : copy.actions.delete}
                     </button>
                   </td>
                 </tr>
@@ -100,7 +113,9 @@ export function AdminWaitlistPageClient() {
             </tbody>
           </table>
           {entries.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+            <p className="py-10 text-center text-sm text-gray-400">
+              {copy.empty}
+            </p>
           )}
         </div>
       </div>

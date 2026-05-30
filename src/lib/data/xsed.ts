@@ -1,20 +1,24 @@
-import type { ExperienceStatus, Prisma, TripRequestStatus } from '@prisma/client';
+import type {
+  ExperienceStatus,
+  Prisma,
+  TripRequestStatus,
+} from "@prisma/client";
 
-import { prisma } from '@/lib/prisma';
-import type { DropEntry } from '@/types/core';
+import { prisma } from "@/lib/prisma";
+import type { DropEntry } from "@/types/core";
 
 export const PUBLIC_XSED_GRID_STATUSES: ExperienceStatus[] = [
-  'ACTIVE',
-  'INACTIVE',
-  'ARCHIVED',
+  "ACTIVE",
+  "INACTIVE",
+  "ARCHIVED",
 ];
 
 const SOLD_TRIP_REQUEST_STATUSES: TripRequestStatus[] = [
-  'SAVED',
-  'PENDING_PAYMENT',
-  'CONFIRMED',
-  'REVEALED',
-  'COMPLETED',
+  "SAVED",
+  "PENDING_PAYMENT",
+  "CONFIRMED",
+  "REVEALED",
+  "COMPLETED",
 ];
 
 const xsedListSelect = {
@@ -74,7 +78,7 @@ export type XsedExperienceDetail = Prisma.ExperienceGetPayload<{
 
 export interface XsedDropBenefit {
   id: string;
-  type: 'ACCOMMODATION' | 'DINNER' | 'ACTIVITY';
+  type: "ACCOMMODATION" | "DINNER" | "ACTIVITY";
   sortOrder: number;
   name: string | null;
   providerName: string | null;
@@ -84,18 +88,30 @@ export interface XsedDropBenefit {
   googleMapsUrl: string | null;
   customerVisibleNotes: string | null;
   internalNotes: string | null;
-  confirmationStatus: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+  confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
   reservationCode: string | null;
-  photos: { id: string; url: string; altText: string | null; type: string; sortOrder: number }[];
+  photos: {
+    id: string;
+    url: string;
+    altText: string | null;
+    type: string;
+    sortOrder: number;
+  }[];
 }
 
 export function parseDropBenefits(
   hotels: Prisma.JsonValue | null,
   activities: Prisma.JsonValue | null,
 ): XsedDropBenefit[] {
-  const hotelItems = Array.isArray(hotels) ? (hotels as unknown as XsedDropBenefit[]) : [];
-  const activityItems = Array.isArray(activities) ? (activities as unknown as XsedDropBenefit[]) : [];
-  return [...hotelItems, ...activityItems].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  const hotelItems = Array.isArray(hotels)
+    ? (hotels as unknown as XsedDropBenefit[])
+    : [];
+  const activityItems = Array.isArray(activities)
+    ? (activities as unknown as XsedDropBenefit[])
+    : [];
+  return [...hotelItems, ...activityItems].sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+  );
 }
 
 export async function findUpcomingActiveXsedExperiences(
@@ -103,27 +119,27 @@ export async function findUpcomingActiveXsedExperiences(
 ): Promise<XsedListRow[]> {
   return prisma.experience.findMany({
     where: {
-      type: 'XSED',
-      status: 'ACTIVE',
+      type: "XSED",
+      status: "ACTIVE",
       OR: [{ tripDate: { gte: now } }, { tripDate: null }],
     },
-    orderBy: [{ tripDate: 'asc' }, { createdAt: 'desc' }],
+    orderBy: [{ tripDate: "asc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
 }
 
 export async function findLatestActiveXsedExperience(): Promise<XsedListRow | null> {
   return prisma.experience.findFirst({
-    where: { type: 'XSED', status: 'ACTIVE' },
-    orderBy: [{ tripDate: 'desc' }, { createdAt: 'desc' }],
+    where: { type: "XSED", status: "ACTIVE" },
+    orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
 }
 
 export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
   return prisma.experience.findMany({
-    where: { type: 'XSED', status: { in: PUBLIC_XSED_GRID_STATUSES } },
-    orderBy: [{ tripDate: 'desc' }, { createdAt: 'desc' }],
+    where: { type: "XSED", status: { in: PUBLIC_XSED_GRID_STATUSES } },
+    orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
 }
@@ -143,10 +159,10 @@ export async function findCompletedXsedTripRequestsForTestimonials(
   return prisma.tripRequest.findMany({
     where: {
       experienceId,
-      status: 'COMPLETED',
+      status: "COMPLETED",
       customerFeedback: { not: null },
     },
-    orderBy: { completedAt: 'desc' },
+    orderBy: { completedAt: "desc" },
     take: 24,
     include: {
       user: { select: { name: true, avatarUrl: true } },
@@ -161,21 +177,21 @@ function parseDropNumber(slug: string | null): number {
 }
 
 function formatDropGridDate(date: Date | null, locale: string): string {
-  if (!date) return '';
-  const tag = locale === 'en' ? 'en-US' : 'es-AR';
+  if (!date) return "";
+  const tag = locale === "en" ? "en-US" : "es-AR";
   return date
-    .toLocaleDateString(tag, { day: 'numeric', month: 'long', year: 'numeric' })
+    .toLocaleDateString(tag, { day: "numeric", month: "long", year: "numeric" })
     .toUpperCase();
 }
 
 function getPassDate(
-  drop: Pick<XsedListRow, 'revealAt' | 'tripDate'>,
+  drop: Pick<XsedListRow, "revealAt" | "tripDate">,
 ): Date | null {
   return drop.revealAt ?? drop.tripDate;
 }
 
 function hasDropPassed(
-  drop: Pick<XsedListRow, 'revealAt' | 'tripDate'>,
+  drop: Pick<XsedListRow, "revealAt" | "tripDate">,
   now: Date,
 ): boolean {
   const passDate = getPassDate(drop);
@@ -187,15 +203,16 @@ function toDropEntry(drop: XsedListRow, locale: string): DropEntry {
   const maxSpots = drop.maxSpots;
   const isCapacitySoldOut =
     maxSpots != null && maxSpots > 0 && soldCount >= maxSpots;
-  const isStatusSoldOut = drop.status === 'INACTIVE' || drop.status === 'ARCHIVED';
+  const isStatusSoldOut =
+    drop.status === "INACTIVE" || drop.status === "ARCHIVED";
 
   return {
     date: formatDropGridDate(drop.tripDate, locale),
-    image: drop.heroImage ?? '/images/drops/drops-mendoza.jpg',
+    image: drop.heroImage ?? "/images/drops/drops-mendoza.jpg",
     number: parseDropNumber(drop.slug),
-    slug: drop.slug ?? '',
+    slug: drop.slug ?? "",
     soldOut: isCapacitySoldOut || isStatusSoldOut,
-    title: drop.teaser ?? drop.titleInternal ?? '',
+    title: drop.teaser ?? drop.titleInternal ?? "",
   };
 }
 
@@ -216,7 +233,7 @@ export async function getCurrentXsedDrop(): Promise<CurrentXsedDrop | null> {
   return {
     id: current.id,
     number: parseDropNumber(current.slug),
-    slug: current.slug ?? '',
+    slug: current.slug ?? "",
     soldCount: current._count.tripRequests,
     totalSlots: current.maxSpots ?? 10,
   };
@@ -249,6 +266,8 @@ export async function getPublicDropEntries(
   const filtered = excludeId
     ? experiences.filter((e) => e.id !== excludeId)
     : experiences;
-  const drops = filtered.slice(offset, offset + limit).map((drop) => toDropEntry(drop, locale));
+  const drops = filtered
+    .slice(offset, offset + limit)
+    .map((drop) => toDropEntry(drop, locale));
   return { drops, hasMore: offset + limit < filtered.length };
 }

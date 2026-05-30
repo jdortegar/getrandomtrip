@@ -11,7 +11,9 @@ export default function NewsletterBar() {
 
   useEffect(() => {
     try {
-      const dismissed = typeof window !== "undefined" && localStorage.getItem(LS_KEY) === "true";
+      const dismissed =
+        typeof window !== "undefined" &&
+        localStorage.getItem(LS_KEY) === "true";
       setOpen(!dismissed);
     } catch {
       setOpen(true);
@@ -71,14 +73,20 @@ export default function NewsletterBar() {
           {/* Copy */}
           <div className="flex-1">
             <p className="text-sm md:text-base">
-              <span className="font-semibold">Newsletter mensual</span> — historias, destinos y serendipia curada.
+              <span className="font-semibold">Newsletter mensual</span> —
+              historias, destinos y serendipia curada.
             </p>
             {msg && <p className="mt-1 text-xs text-neutral-300">{msg}</p>}
           </div>
 
           {/* Form */}
-          <form onSubmit={onSubmit} className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
-            <label htmlFor="newsletter-email" className="sr-only">Email</label>
+          <form
+            onSubmit={onSubmit}
+            className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center"
+          >
+            <label htmlFor="newsletter-email" className="sr-only">
+              Email
+            </label>
             <input
               id="newsletter-email"
               type="email"

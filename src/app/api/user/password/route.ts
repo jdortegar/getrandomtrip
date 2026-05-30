@@ -1,22 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { currentPassword, newPassword } = await request.json();
 
     if (!currentPassword || !newPassword) {
       return NextResponse.json(
-        { error: 'Current password and new password are required' },
+        { error: "Current password and new password are required" },
         { status: 400 },
       );
     }
@@ -28,7 +28,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!user || !user.password) {
       return NextResponse.json(
-        { error: 'User not found or using OAuth' },
+        { error: "User not found or using OAuth" },
         { status: 400 },
       );
     }
@@ -41,7 +41,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!isValidPassword) {
       return NextResponse.json(
-        { error: 'Current password is incorrect' },
+        { error: "Current password is incorrect" },
         { status: 400 },
       );
     }
@@ -57,12 +57,12 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Password updated successfully',
+      message: "Password updated successfully",
     });
   } catch (error) {
-    console.error('Error updating password:', error);
+    console.error("Error updating password:", error);
     return NextResponse.json(
-      { error: 'Failed to update password' },
+      { error: "Failed to update password" },
       { status: 500 },
     );
   }

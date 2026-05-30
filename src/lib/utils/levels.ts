@@ -3,52 +3,52 @@
  * lib/data/traveler-types (price). Level metadata and canonical price per type/level.
  */
 
-import type { LevelSlug } from '@/types/core';
+import type { LevelSlug } from "@/types/core";
 import type {
   Level as PlannerLevel,
   TypePlannerContent,
-} from '@/types/planner';
+} from "@/types/planner";
 import {
   getBasePricePerPerson,
   getTravelerType,
   normalizePriceLevelId,
-} from '@/lib/data/traveler-types';
+} from "@/lib/data/traveler-types";
 import {
   getLevelContent,
   getLevelIdsForType,
   getPlannerHeader,
   type ExperienceLevelId,
-} from '@/lib/data/experience-levels';
-import { getExcusesByType } from '@/lib/helpers/excuse-helper';
-import { getXsedLevel } from '@/lib/data/xsed-catalog';
+} from "@/lib/data/experience-levels";
+import { getExcusesByType } from "@/lib/helpers/excuse-helper";
+import { getXsedLevel } from "@/lib/data/xsed-catalog";
 
 /** Map experience level id to URL/store LevelSlug. */
 function toLevelSlug(levelId: string): LevelSlug {
-  const n = levelId.toLowerCase().replace('exploraplus', 'explora-plus');
-  if (n === 'explora') return 'modo-explora';
-  if (n === 'explora-plus') return 'explora-plus';
-  if (n === 'atelier') return 'atelier-getaway';
+  const n = levelId.toLowerCase().replace("exploraplus", "explora-plus");
+  if (n === "explora") return "modo-explora";
+  if (n === "explora-plus") return "explora-plus";
+  if (n === "atelier") return "atelier-getaway";
   return n as LevelSlug;
 }
 
 /** Static max nights by level (docs). */
 const MAX_NIGHTS_BY_SLUG: Record<LevelSlug, number> = {
   essenza: 2,
-  'modo-explora': 3,
-  'explora-plus': 4,
+  "modo-explora": 3,
+  "explora-plus": 4,
   bivouac: 5,
-  'atelier-getaway': 14,
+  "atelier-getaway": 14,
   xsed: 1,
 };
 
 /** Static display names (fallback when type not available). */
 const NAME_BY_SLUG: Record<LevelSlug, string> = {
-  essenza: 'Essenza',
-  'modo-explora': 'Modo Explora',
-  'explora-plus': 'Explora+',
-  bivouac: 'Bivouac',
-  'atelier-getaway': 'Atelier Getaway',
-  xsed: 'XSED Drop',
+  essenza: "Essenza",
+  "modo-explora": "Modo Explora",
+  "explora-plus": "Explora+",
+  bivouac: "Bivouac",
+  "atelier-getaway": "Atelier Getaway",
+  xsed: "XSED Drop",
 };
 
 /** Level shape for forms and display (compatible with previous shared/levels). */
@@ -67,21 +67,21 @@ export interface Level {
 }
 
 const COLOR_BY_SLUG: Record<LevelSlug, string> = {
-  essenza: 'bg-emerald-500',
-  'modo-explora': 'bg-blue-500',
-  'explora-plus': 'bg-purple-500',
-  bivouac: 'bg-amber-500',
-  'atelier-getaway': 'bg-rose-500',
-  xsed: 'bg-orange-500',
+  essenza: "bg-emerald-500",
+  "modo-explora": "bg-blue-500",
+  "explora-plus": "bg-purple-500",
+  bivouac: "bg-amber-500",
+  "atelier-getaway": "bg-rose-500",
+  xsed: "bg-orange-500",
 };
 
 const ICON_BY_SLUG: Record<LevelSlug, string> = {
-  essenza: '🌱',
-  'modo-explora': '🚀',
-  'explora-plus': '⭐',
-  bivouac: '🏕️',
-  'atelier-getaway': '🎨',
-  xsed: '⚡',
+  essenza: "🌱",
+  "modo-explora": "🚀",
+  "explora-plus": "⭐",
+  bivouac: "🏕️",
+  "atelier-getaway": "🎨",
+  xsed: "⚡",
 };
 
 /**
@@ -95,20 +95,20 @@ export function getLevelsForType(type: string, locale?: string): Level[] {
     if (!content) continue;
     const slug = toLevelSlug(content.id);
     const price = getBasePricePerPerson(type, content.id);
-    const isLast = slug === 'atelier-getaway';
+    const isLast = slug === "atelier-getaway";
     const features = content.features.map((f) => f.description ?? f.title);
     levels.push({
       id: slug,
       name: content.name,
       description: content.subtitle ?? content.name,
-      color: COLOR_BY_SLUG[slug] ?? 'bg-gray-500',
+      color: COLOR_BY_SLUG[slug] ?? "bg-gray-500",
       maxNights: MAX_NIGHTS_BY_SLUG[slug] ?? content.maxNights ?? 2,
       price,
       priceLabel: isLast ? `Desde ${price} USD` : `${price} USD`,
       minBudget: 0,
       maxBudget: 9999,
       features,
-      icon: ICON_BY_SLUG[slug] ?? '✨',
+      icon: ICON_BY_SLUG[slug] ?? "✨",
     });
   }
   return levels;
@@ -122,17 +122,17 @@ export function getLevelById(
   levelId: string,
   locale?: string,
 ): Level | undefined {
-  if ((type ?? '').toLowerCase() === 'xsed') return getXsedLevel(locale);
-  const t = type ?? 'solo';
+  if ((type ?? "").toLowerCase() === "xsed") return getXsedLevel(locale);
+  const t = type ?? "solo";
   const levels = getLevelsForType(t, locale);
-  const normalized = levelId.toLowerCase().replace(/\s+/g, '-');
+  const normalized = levelId.toLowerCase().replace(/\s+/g, "-");
   const slug =
-    normalized === 'modo-explora' || normalized === 'explora'
-      ? 'modo-explora'
-      : normalized === 'exploraplus' || normalized === 'explora-plus'
-        ? 'explora-plus'
-        : normalized === 'atelier-getaway' || normalized === 'atelier'
-          ? 'atelier-getaway'
+    normalized === "modo-explora" || normalized === "explora"
+      ? "modo-explora"
+      : normalized === "exploraplus" || normalized === "explora-plus"
+        ? "explora-plus"
+        : normalized === "atelier-getaway" || normalized === "atelier"
+          ? "atelier-getaway"
           : (normalized as LevelSlug);
   return levels.find((l) => l.id === slug);
 }
@@ -146,9 +146,7 @@ function getPlannerPriceCopy(
   const traveler = getTravelerType(type, locale);
   const rows = traveler?.planner?.levels;
   if (rows?.length) {
-    const match = rows.find(
-      (row) => normalizePriceLevelId(row.id) === levelId,
-    );
+    const match = rows.find((row) => normalizePriceLevelId(row.id) === levelId);
     if (match) {
       return {
         priceFootnote: match.priceFootnote,
@@ -156,10 +154,10 @@ function getPlannerPriceCopy(
       };
     }
   }
-  const isEn = locale === 'en';
+  const isEn = locale === "en";
   return {
-    priceFootnote: isEn ? 'per person' : 'por persona',
-    priceLabel: isAtelierTier ? (isEn ? 'From' : 'Desde') : '',
+    priceFootnote: isEn ? "per person" : "por persona",
+    priceLabel: isAtelierTier ? (isEn ? "From" : "Desde") : "",
   };
 }
 
@@ -178,13 +176,8 @@ export function getPlannerLevelsForType(
     if (!content) continue;
     const slug = toLevelSlug(content.id);
     const price = getBasePricePerPerson(type, content.id);
-    const isLast = slug === 'atelier-getaway';
-    const priceCopy = getPlannerPriceCopy(
-      type,
-      content.id,
-      locale,
-      isLast,
-    );
+    const isLast = slug === "atelier-getaway";
+    const priceCopy = getPlannerPriceCopy(type, content.id, locale, isLast);
     plannerLevels.push({
       id: slug,
       name: content.name,
@@ -196,7 +189,7 @@ export function getPlannerLevelsForType(
       features: content.features,
       closingLine: content.closingLine,
       ctaLabel: content.ctaLabel,
-      excuses: excuses as PlannerLevel['excuses'],
+      excuses: excuses as PlannerLevel["excuses"],
     });
   }
   return plannerLevels;
@@ -252,7 +245,7 @@ export function getTiersForDisplay(
       ...level.features,
       ...(content?.closingLine ? [`📝 ${content.closingLine}`] : []),
     ];
-    const isLast = level.id === 'atelier-getaway';
+    const isLast = level.id === "atelier-getaway";
     result.push({
       key: level.id,
       title: level.name,
@@ -262,7 +255,7 @@ export function getTiersForDisplay(
         : `${level.price} USD · por persona`,
       bullets,
       cta: content?.ctaLabel ?? `Elige ${level.name} →`,
-      testid: level.id ? `cta-tier-${level.id.replace(/-/g, '')}` : undefined,
+      testid: level.id ? `cta-tier-${level.id.replace(/-/g, "")}` : undefined,
     });
   }
   return result;
@@ -285,10 +278,13 @@ export function getLevelName(levelId: string): string {
 }
 
 function normalizeLevelIdToSlug(levelId: string): LevelSlug {
-  const n = levelId.toLowerCase().replace(/\s+/g, '-').replace('exploraplus', 'explora-plus');
-  if (n === 'explora' || n === 'modo-explora') return 'modo-explora';
-  if (n === 'explora-plus') return 'explora-plus';
-  if (n === 'atelier' || n === 'atelier-getaway') return 'atelier-getaway';
-  if (n === 'essenza' || n === 'bivouac') return n as LevelSlug;
-  return 'essenza';
+  const n = levelId
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace("exploraplus", "explora-plus");
+  if (n === "explora" || n === "modo-explora") return "modo-explora";
+  if (n === "explora-plus") return "explora-plus";
+  if (n === "atelier" || n === "atelier-getaway") return "atelier-getaway";
+  if (n === "essenza" || n === "bivouac") return n as LevelSlug;
+  return "essenza";
 }

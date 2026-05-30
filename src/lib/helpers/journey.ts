@@ -1,12 +1,12 @@
-import { paxDetailsFromTotalPax } from '@/lib/helpers/pax-details';
-import type { PaxDetails } from '@/lib/types/PaxDetails';
-import type { Filters } from '@/store/slices/journeyStore';
+import { paxDetailsFromTotalPax } from "@/lib/helpers/pax-details";
+import type { PaxDetails } from "@/lib/types/PaxDetails";
+import type { Filters } from "@/store/slices/journeyStore";
 import {
   getPrimaryTransportIdFromOrderParam,
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
-} from '@/lib/helpers/transport';
-import { getLevelById } from '@/lib/utils/experiencesData';
+} from "@/lib/helpers/transport";
+import { getLevelById } from "@/lib/utils/experiencesData";
 
 /** Payload shape for POST /api/trip-requests when creating from journey URL params. */
 export interface TripRequestPayloadFromJourney {
@@ -17,7 +17,7 @@ export interface TripRequestPayloadFromJourney {
   climate: string;
   departPref: string;
   endDate: string | null;
-  from: 'journey';
+  from: "journey";
   /** When set (from `tripRequestId` query on /journey), POST updates that draft instead of creating another. */
   id?: string;
   level: string;
@@ -28,7 +28,7 @@ export interface TripRequestPayloadFromJourney {
   pax: number;
   paxDetails: PaxDetails;
   startDate: string | null;
-  status: 'DRAFT';
+  status: "DRAFT";
   transport: string;
   type: string;
 }
@@ -40,14 +40,14 @@ export interface TripRequestPayloadFromJourney {
 export function normalizeExperienceLevel(
   raw: string | null | undefined,
 ): string {
-  if (!raw) return 'explora-plus';
+  if (!raw) return "explora-plus";
   const n = raw
     .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace('explora+', 'explora-plus');
-  if (n === 'exploraplus') return 'explora-plus';
-  if (n === 'modoexplora' || n === 'explora') return 'modo-explora';
-  return n || 'explora-plus';
+    .replace(/\s+/g, "-")
+    .replace("explora+", "explora-plus");
+  if (n === "exploraplus") return "explora-plus";
+  if (n === "modoexplora" || n === "explora") return "modo-explora";
+  return n || "explora-plus";
 }
 
 /**
@@ -56,18 +56,18 @@ export function normalizeExperienceLevel(
  */
 export function buildTripRequestPayloadFromSearchParams(
   searchParams: URLSearchParams,
-  options?: { from?: 'journey' },
+  options?: { from?: "journey" },
 ): TripRequestPayloadFromJourney {
-  const experience = searchParams.get('experience');
+  const experience = searchParams.get("experience");
   const level = normalizeExperienceLevel(experience);
-  const travelTypeRaw = searchParams.get('travelType') || 'couple';
+  const travelTypeRaw = searchParams.get("travelType") || "couple";
   const travelType = travelTypeRaw.trim().toLowerCase();
-  const originCountry = searchParams.get('originCountry')?.trim() ?? '';
-  const originCity = searchParams.get('originCity')?.trim() ?? '';
-  const startDateRaw = searchParams.get('startDate');
+  const originCountry = searchParams.get("originCountry")?.trim() ?? "";
+  const originCity = searchParams.get("originCity")?.trim() ?? "";
+  const startDateRaw = searchParams.get("startDate");
   const nightsNum = Math.max(
     1,
-    parseInt(searchParams.get('nights') ?? '1', 10) || 1,
+    parseInt(searchParams.get("nights") ?? "1", 10) || 1,
   );
   let startDate: string | null = null;
   let endDate: string | null = null;
@@ -80,19 +80,19 @@ export function buildTripRequestPayloadFromSearchParams(
   }
   const pax = Math.max(
     1,
-    Math.min(20, parseInt(searchParams.get('pax') ?? '2', 10) || 2),
+    Math.min(20, parseInt(searchParams.get("pax") ?? "2", 10) || 2),
   );
-  const avoidRaw = searchParams.get('avoidDestinations');
+  const avoidRaw = searchParams.get("avoidDestinations");
   const avoidDestinations = avoidRaw
     ? avoidRaw
-        .split(',')
+        .split(",")
         .map((s) => s.trim())
         .filter(Boolean)
     : [];
-  const addonsRaw = searchParams.get('addons');
+  const addonsRaw = searchParams.get("addons");
   const addonsSelected = addonsRaw
     ? addonsRaw
-        .split(',')
+        .split(",")
         .map((s) => s.trim())
         .filter(Boolean)
         .map((id) => ({ id, qty: 1 }))
@@ -100,11 +100,14 @@ export function buildTripRequestPayloadFromSearchParams(
 
   const paxDetails = paxDetailsFromTotalPax(pax);
 
-  const tripRequestIdRaw = searchParams.get('tripRequestId')?.trim();
-  const id = tripRequestIdRaw && tripRequestIdRaw.length > 0 ? tripRequestIdRaw : undefined;
+  const tripRequestIdRaw = searchParams.get("tripRequestId")?.trim();
+  const id =
+    tripRequestIdRaw && tripRequestIdRaw.length > 0
+      ? tripRequestIdRaw
+      : undefined;
 
   return {
-    from: options?.from ?? 'journey',
+    from: options?.from ?? "journey",
     ...(id != null ? { id } : {}),
     type: travelType,
     level,
@@ -116,22 +119,22 @@ export function buildTripRequestPayloadFromSearchParams(
     pax,
     paxDetails,
     transport: getPrimaryTransportIdFromOrderParam(
-      searchParams.get('transportOrder'),
+      searchParams.get("transportOrder"),
     ),
     accommodationType:
-      normalizeJourneyFilterValue(searchParams.get('accommodationType')) ??
-      'any',
-    climate:
-      normalizeJourneyFilterValue(searchParams.get('climate')) ?? 'any',
+      normalizeJourneyFilterValue(searchParams.get("accommodationType")) ??
+      "any",
+    climate: normalizeJourneyFilterValue(searchParams.get("climate")) ?? "any",
     maxTravelTime:
-      normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) ?? 'no-limit',
+      normalizeMaxTravelTimeKey(searchParams.get("maxTravelTime")) ??
+      "no-limit",
     departPref:
-      normalizeJourneyFilterValue(searchParams.get('departPref')) ?? 'any',
+      normalizeJourneyFilterValue(searchParams.get("departPref")) ?? "any",
     arrivePref:
-      normalizeJourneyFilterValue(searchParams.get('arrivePref')) ?? 'any',
+      normalizeJourneyFilterValue(searchParams.get("arrivePref")) ?? "any",
     avoidDestinations,
     addons: addonsSelected,
-    status: 'DRAFT',
+    status: "DRAFT",
   };
 }
 
@@ -142,11 +145,11 @@ export function buildTripRequestPayloadFromSearchParams(
  */
 export function countOptionalFilters(f: Filters, avoidCount = 0): number {
   let n = 0;
-  if (f.accommodationType !== 'any') n++;
-  if (f.climate !== 'any') n++;
-  if (f.maxTravelTime !== 'no-limit') n++;
-  if (f.departPref !== 'any') n++;
-  if (f.arrivePref !== 'any') n++;
+  if (f.accommodationType !== "any") n++;
+  if (f.climate !== "any") n++;
+  if (f.maxTravelTime !== "no-limit") n++;
+  if (f.departPref !== "any") n++;
+  if (f.arrivePref !== "any") n++;
   n += avoidCount;
   return n;
 }
@@ -198,14 +201,17 @@ export function getRefineDetailsLabel(
     const option = options.find((o) => o.key === refineDetails[0]);
     return option?.label || oneSelectedStr;
   }
-  return countSelectedStr.replace('{count}', String(refineDetails.length));
+  return countSelectedStr.replace("{count}", String(refineDetails.length));
 }
 
 // ---------------------------------------------------------------------------
 // Reset-param constants
 // ---------------------------------------------------------------------------
 
-export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<string, string | undefined> = {
+export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<
+  string,
+  string | undefined
+> = {
   accommodationType: undefined,
   addons: undefined,
   arrivePref: undefined,
@@ -224,7 +230,10 @@ export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<string, string | undefine
   tripRequestId: undefined,
 };
 
-export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<string, string | undefined> = {
+export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<
+  string,
+  string | undefined
+> = {
   accommodationType: undefined,
   addons: undefined,
   arrivePref: undefined,
@@ -264,8 +273,8 @@ export function getNextTab(
   hasExcuseStep: boolean,
 ): string | null {
   const tabs = hasExcuseStep
-    ? ['budget', 'excuse', 'details', 'preferences']
-    : ['budget', 'details', 'preferences'];
+    ? ["budget", "excuse", "details", "preferences"]
+    : ["budget", "details", "preferences"];
   const currentIndex = tabs.indexOf(activeTab);
   return currentIndex < tabs.length - 1 ? tabs[currentIndex + 1] : null;
 }
@@ -275,23 +284,23 @@ export function isStepComplete(
   v: JourneyStepValues,
 ): boolean {
   switch (activeTab) {
-    case 'budget':
+    case "budget":
       return Boolean(v.travelType && v.experience);
-    case 'excuse':
+    case "excuse":
       return Boolean(
         v.travelType &&
-          v.experience &&
-          (v.excuse || !v.hasExcuseStep) &&
-          (!v.hasExcuseStep || v.refineDetails.length > 0),
+        v.experience &&
+        (v.excuse || !v.hasExcuseStep) &&
+        (!v.hasExcuseStep || v.refineDetails.length > 0),
       );
-    case 'details':
+    case "details":
       return Boolean(
         v.effectiveOriginCountry &&
-          v.effectiveOriginCity &&
-          v.effectiveStartDate &&
-          v.effectiveNights,
+        v.effectiveOriginCity &&
+        v.effectiveStartDate &&
+        v.effectiveNights,
       );
-    case 'preferences':
+    case "preferences":
       return Boolean(v.transport);
     default:
       return true;
@@ -301,13 +310,13 @@ export function isStepComplete(
 export function checkAllComplete(v: JourneyStepValues): boolean {
   return Boolean(
     v.travelType &&
-      v.experience &&
-      (v.excuse || !v.hasExcuseStep) &&
-      (!v.hasExcuseStep || v.refineDetails.length > 0) &&
-      v.effectiveOriginCountry &&
-      v.effectiveOriginCity &&
-      v.effectiveStartDate &&
-      v.effectiveNights &&
-      v.transport,
+    v.experience &&
+    (v.excuse || !v.hasExcuseStep) &&
+    (!v.hasExcuseStep || v.refineDetails.length > 0) &&
+    v.effectiveOriginCountry &&
+    v.effectiveOriginCity &&
+    v.effectiveStartDate &&
+    v.effectiveNights &&
+    v.transport,
   );
 }

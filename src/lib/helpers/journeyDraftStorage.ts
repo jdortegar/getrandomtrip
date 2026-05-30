@@ -19,7 +19,9 @@ export function saveJourneyDraftQueryString(
   }
 }
 
-export function clearJourneyDraftStorage(draftId: string | null | undefined): void {
+export function clearJourneyDraftStorage(
+  draftId: string | null | undefined,
+): void {
   if (typeof window === "undefined" || !draftId) return;
   try {
     localStorage.removeItem(journeyDraftLocalStorageKey(draftId));

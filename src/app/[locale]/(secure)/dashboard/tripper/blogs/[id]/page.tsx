@@ -15,7 +15,7 @@ import { useDictionary } from "@/hooks/useDictionary";
 
 function EditBlogContent() {
   const params = useParams();
-  const blogsCopy = useDictionary(d => d.tripperBlogs);
+  const blogsCopy = useDictionary((d) => d.tripperBlogs);
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<Partial<BlogPost> | null>(null);

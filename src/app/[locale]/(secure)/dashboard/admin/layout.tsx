@@ -1,6 +1,6 @@
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import SecureRouteWrapper from '@/components/auth/SecureRouteWrapper';
+import SecureRouteWrapper from "@/components/auth/SecureRouteWrapper";
 
 export default function AdminLayout({
   children,

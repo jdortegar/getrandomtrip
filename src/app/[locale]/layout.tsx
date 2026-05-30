@@ -1,32 +1,28 @@
-import React, { Suspense } from 'react';
-import { notFound } from 'next/navigation';
-import { GlobalAuthModal } from '@/components/providers/GlobalAuthModal';
-import SessionProvider from '@/components/providers/SessionProvider';
-import SetLocaleLang from '@/components/providers/SetLocaleLang';
-import AppTracking from '@/components/tracking/AppTracking';
-import { Toaster } from '@/components/ui/toaster';
-import { GateAwareChrome } from '@/components/waitlist/GateAwareChrome';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale, type Locale } from '@/lib/i18n/config';
+import React, { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { GlobalAuthModal } from "@/components/providers/GlobalAuthModal";
+import SessionProvider from "@/components/providers/SessionProvider";
+import SetLocaleLang from "@/components/providers/SetLocaleLang";
+import AppTracking from "@/components/tracking/AppTracking";
+import { Toaster } from "@/components/ui/toaster";
+import { GateAwareChrome } from "@/components/waitlist/GateAwareChrome";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
 
 /** Avoid SSG so SessionProvider/useSession have request context (no "auth" destructure error during prerender). */
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
-  return [{ locale: 'es' }, { locale: 'en' }];
+  return [{ locale: "es" }, { locale: "en" }];
 }
 
-export default async function LocaleLayout(
-  props: {
-    children: React.ReactNode;
-    params: Promise<{ locale: string }>;
-  }
-) {
+export default async function LocaleLayout(props: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
   const params = await props.params;
 
-  const {
-    children
-  } = props;
+  const { children } = props;
 
   const locale = params.locale;
   if (!hasLocale(locale)) {

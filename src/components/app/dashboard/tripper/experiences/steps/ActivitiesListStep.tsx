@@ -1,20 +1,29 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import { FormField } from '@/components/ui/FormField';
-import type { TripperExperiencesDict } from '@/lib/types/dictionary';
-import type { ActivityEntry, ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
+import { X } from "lucide-react";
+import { FormField } from "@/components/ui/FormField";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
+import type {
+  ActivityEntry,
+  ExperienceFormDraft,
+  ExperienceFormDraftOnChange,
+} from "@/types/tripper";
 
 interface Props {
-  copy: TripperExperiencesDict['form'];
+  copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
 }
 
-const EMPTY_ENTRY: ActivityEntry = { name: '', durationRhythm: '', description: '', risks: '' };
+const EMPTY_ENTRY: ActivityEntry = {
+  name: "",
+  durationRhythm: "",
+  description: "",
+  risks: "",
+};
 
 const textareaClass =
-  'bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[100px]';
+  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[100px]";
 
 export function ActivitiesListStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
@@ -23,15 +32,18 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
     const updated = form.activities.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
     );
-    onChange('activities', updated);
+    onChange("activities", updated);
   }
 
   function addEntry() {
-    onChange('activities', [...form.activities, { ...EMPTY_ENTRY }]);
+    onChange("activities", [...form.activities, { ...EMPTY_ENTRY }]);
   }
 
   function removeEntry(index: number) {
-    onChange('activities', form.activities.filter((_, i) => i !== index));
+    onChange(
+      "activities",
+      form.activities.filter((_, i) => i !== index),
+    );
   }
 
   return (
@@ -45,7 +57,9 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
           <div key={index} className="space-y-4">
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <span className="text-sm text-neutral-500">Actividad {index + 1}</span>
+                <span className="text-sm text-neutral-500">
+                  Actividad {index + 1}
+                </span>
                 <button
                   type="button"
                   onClick={() => removeEntry(index)}
@@ -60,23 +74,39 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 id={`act-name-${index}`}
-                label={<><span className="font-semibold text-gray-800">{fields.activityName}</span> <span className="text-red-500">*</span></>}
+                label={
+                  <>
+                    <span className="font-semibold text-gray-800">
+                      {fields.activityName}
+                    </span>{" "}
+                    <span className="text-red-500">*</span>
+                  </>
+                }
                 placeholder="Ej: Boutique...."
                 value={entry.name}
-                onChange={(e) => updateEntry(index, 'name', e.target.value)}
+                onChange={(e) => updateEntry(index, "name", e.target.value)}
               />
 
               <FormField
                 id={`act-duration-${index}`}
-                label={<span className="font-semibold text-gray-800">{fields.activityDurationRhythm}</span>}
+                label={
+                  <span className="font-semibold text-gray-800">
+                    {fields.activityDurationRhythm}
+                  </span>
+                }
                 placeholder="Ej: 3 hs. con ritmo tranquilo"
                 value={entry.durationRhythm}
-                onChange={(e) => updateEntry(index, 'durationRhythm', e.target.value)}
+                onChange={(e) =>
+                  updateEntry(index, "durationRhythm", e.target.value)
+                }
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="block font-semibold text-gray-800 text-base" htmlFor={`act-desc-${index}`}>
+              <label
+                className="block font-semibold text-gray-800 text-base"
+                htmlFor={`act-desc-${index}`}
+              >
                 {fields.activityDesc}
               </label>
               <textarea
@@ -84,12 +114,17 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
                 className={textareaClass}
                 placeholder="Ej: en la actividad podrás montar a caballo....."
                 value={entry.description}
-                onChange={(e) => updateEntry(index, 'description', e.target.value)}
+                onChange={(e) =>
+                  updateEntry(index, "description", e.target.value)
+                }
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="block font-semibold text-gray-800 text-base" htmlFor={`act-risks-${index}`}>
+              <label
+                className="block font-semibold text-gray-800 text-base"
+                htmlFor={`act-risks-${index}`}
+              >
                 {fields.activityRisks}
               </label>
               <textarea
@@ -97,7 +132,7 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
                 className={textareaClass}
                 placeholder="Ej: cuidados que deberian tener...."
                 value={entry.risks}
-                onChange={(e) => updateEntry(index, 'risks', e.target.value)}
+                onChange={(e) => updateEntry(index, "risks", e.target.value)}
               />
             </div>
           </div>

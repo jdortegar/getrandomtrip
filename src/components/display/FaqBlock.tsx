@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Container from '@/components/layout/Container';
-import FaqSection, { type FaqItem } from '@/components/display/FaqSection';
-import Section from '../layout/Section';
+import Container from "@/components/layout/Container";
+import FaqSection, { type FaqItem } from "@/components/display/FaqSection";
+import Section from "../layout/Section";
 
 export interface FaqBlockDict {
   description: string;
@@ -24,22 +24,20 @@ export function FaqBlock({ copy }: FaqBlockProps) {
 
   return (
     <Section className="pt-0!">
-      
-        <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between text-left w-full flex-wrap">
-          <div className="max-w-2xl font-barlow-condensed lg:whitespace-nowrap">
+      <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between text-left w-full flex-wrap">
+        <div className="max-w-2xl font-barlow-condensed lg:whitespace-nowrap">
           <p className=" text-xl font-light uppercase tracking-widest text-xsed">
-              {copy.eyebrow}
-            </p>
-            <h2 className="text-[50px] md:text-[70px] uppercase font-bold leading-none">
-              {copy.title}
-            </h2>
-          </div>
-          <p className="max-w-sm text-sm leading-relaxed text-neutral-500">
-            {copy.description}
+            {copy.eyebrow}
           </p>
+          <h2 className="text-[50px] md:text-[70px] uppercase font-bold leading-none">
+            {copy.title}
+          </h2>
         </div>
-        <FaqSection items={items} />
-
+        <p className="max-w-sm text-sm leading-relaxed text-neutral-500">
+          {copy.description}
+        </p>
+      </div>
+      <FaqSection items={items} />
     </Section>
   );
 }

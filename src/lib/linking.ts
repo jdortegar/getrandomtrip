@@ -1,14 +1,14 @@
 // frontend/src/lib/linking.ts
 
-import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 export function normalizeTierId(rawId: string) {
-  let id = (rawId || '').toLowerCase();
-  id = id.replace(/\s+/g, '-'); // "Modo Explora" -> "modo-explora"
-  if (id === 'explora') id = 'modo-explora';
-  if (id === 'exploraplus' || id === 'exploraPlus' || id === 'explora-plus')
-    id = 'explora-plus';
-  if (id === 'atelier-getaway') id = 'atelier';
+  let id = (rawId || "").toLowerCase();
+  id = id.replace(/\s+/g, "-"); // "Modo Explora" -> "modo-explora"
+  if (id === "explora") id = "modo-explora";
+  if (id === "exploraplus" || id === "exploraPlus" || id === "explora-plus")
+    id = "explora-plus";
+  if (id === "atelier-getaway") id = "atelier";
   return id;
 }
 
@@ -16,7 +16,7 @@ export function normalizeTierId(rawId: string) {
 export function parsePriceLabelToNumber(label: string): number {
   if (!label) return 0;
   // Quita palabras y símbolos, deja números y punto
-  const cleaned = label.replace(/[^\d.,]/g, '').replace(',', '.');
+  const cleaned = label.replace(/[^\d.,]/g, "").replace(",", ".");
   const num = parseFloat(cleaned);
   return Number.isFinite(num) ? Math.round(num) : 0;
 }

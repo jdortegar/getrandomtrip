@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   calculatePaymentTotals,
   type PaymentTotalsInput,
   type PaymentTotalsResult,
-} from '@/lib/helpers/payment-totals';
+} from "@/lib/helpers/payment-totals";
 
 /**
  * Hook for payment calculations and Stripe PaymentIntent creation.
@@ -24,18 +24,20 @@ export function usePayment(paymentData: PaymentTotalsInput) {
   ): Promise<{ clientSecret: string }> => {
     setIsProcessing(true);
     try {
-      const response = await fetch('/api/stripe/payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/stripe/payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tripId }),
       });
 
       if (!response.ok) {
         const errorData = (await response.json()) as { error?: string };
-        throw new Error(errorData.error ?? 'Failed to create payment intent');
+        throw new Error(errorData.error ?? "Failed to create payment intent");
       }
 
-      const { clientSecret } = (await response.json()) as { clientSecret: string };
+      const { clientSecret } = (await response.json()) as {
+        clientSecret: string;
+      };
       return { clientSecret };
     } finally {
       setIsProcessing(false);

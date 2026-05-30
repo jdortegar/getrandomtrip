@@ -60,7 +60,12 @@ export function JourneyActionBar({
       ) : null}
 
       {!isAllStepsComplete && (
-        <Button onClick={onContinue} size="sm" variant="default" disabled={!canContinue}>
+        <Button
+          onClick={onContinue}
+          size="sm"
+          variant="default"
+          disabled={!canContinue}
+        >
           {labels.next}
         </Button>
       )}

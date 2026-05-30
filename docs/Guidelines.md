@@ -39,7 +39,7 @@ frontend/
 
 ## 3) Estado y Tipos
 
-- **`userStore` (Zustand)**  
+- **`userStore` (Zustand)**
   - Types:
     - `TravelerType = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa'`
     - `BudgetLevel = 'low' | 'mid' | 'high'`
@@ -65,8 +65,8 @@ frontend/
 
 ## 5) UI/UX
 
-- **Contraste y tema**:  
-  - `<body class="bg-neutral-50 text-neutral-900 antialiased">`  
+- **Contraste y tema**:
+  - `<body class="bg-neutral-50 text-neutral-900 antialiased">`
   - `<meta name="color-scheme" content="light">`
 - **Header sticky** con `data-site-header` + `SiteHeaderOffset` (CSS var `--rt-header-h`).
 - **Botones y Badges**: clases `rt-btn`, `rt-badge` (mantener semántica/consistencia).

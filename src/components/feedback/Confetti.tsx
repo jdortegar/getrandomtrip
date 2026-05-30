@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Realistic from 'react-canvas-confetti/dist/presets/realistic';
+import Realistic from "react-canvas-confetti/dist/presets/realistic";
 
 interface ConfettiProps {
   delay?: number;
@@ -8,14 +8,8 @@ interface ConfettiProps {
   speed?: number;
 }
 
-function Confetti({
-  delay,
-  duration = 250,
-  speed = 3,
-}: ConfettiProps) {
-  return (
-    <Realistic autorun={{ delay, duration, speed }} />
-  );
+function Confetti({ delay, duration = 250, speed = 3 }: ConfettiProps) {
+  return <Realistic autorun={{ delay, duration, speed }} />;
 }
 
 export default Confetti;

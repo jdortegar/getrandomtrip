@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
-import Img from '@/components/common/Img';
-import Section from '@/components/layout/Section';
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import Img from "@/components/common/Img";
+import Section from "@/components/layout/Section";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 

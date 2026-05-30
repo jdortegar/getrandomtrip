@@ -2,15 +2,15 @@
 // Tripper Database Queries
 // ============================================================================
 
-import { prisma } from '@/lib/prisma';
-import { primaryRoleFromMembership } from '@/lib/auth/prismaUserRoles';
-import { normalizeUploadUrl } from '@/lib/media/upload-url';
+import { prisma } from "@/lib/prisma";
+import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
+import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import type {
   FeaturedTrip,
   FeaturedTripCard,
   TripperListItem,
   TripperProfile,
-} from '@/types/tripper';
+} from "@/types/tripper";
 
 /**
  * Get tripper profile by slug
@@ -22,7 +22,7 @@ export async function getTripperBySlug(
     const tripper = await prisma.user.findUnique({
       where: {
         tripperSlug: slug,
-        roles: { has: 'TRIPPER' },
+        roles: { has: "TRIPPER" },
       },
       select: {
         id: true,
@@ -54,7 +54,7 @@ export async function getTripperBySlug(
       select: {
         type: true,
       },
-      distinct: ['type'],
+      distinct: ["type"],
     });
 
     const availableTypes = packages.map((pkg) => pkg.type);
@@ -70,7 +70,7 @@ export async function getTripperBySlug(
       availableTypes,
     } as TripperProfile;
   } catch (error) {
-    console.error('Error fetching tripper by slug:', error);
+    console.error("Error fetching tripper by slug:", error);
     return null;
   }
 }
@@ -84,7 +84,7 @@ export async function getTripperFeaturedTrips(
 ): Promise<FeaturedTripCard[]> {
   try {
     const tripper = await prisma.user.findUnique({
-      where: { tripperSlug, roles: { has: 'TRIPPER' } },
+      where: { tripperSlug, roles: { has: "TRIPPER" } },
     });
 
     if (!tripper) return [];
@@ -94,9 +94,9 @@ export async function getTripperFeaturedTrips(
         ownerId: tripper.id,
         isActive: true,
         isFeatured: true,
-        status: 'ACTIVE', // Only show active packages
+        status: "ACTIVE", // Only show active packages
       },
-      orderBy: { likes: 'desc' },
+      orderBy: { likes: "desc" },
       take: limit,
       select: {
         id: true,
@@ -119,9 +119,9 @@ export async function getTripperFeaturedTrips(
     // Map to FeaturedTripCard with defaults
     return trips.map((trip) => ({
       id: trip.id,
-      title: trip.title || 'Aventura Sorpresa',
-      teaser: trip.teaser || 'Una experiencia única diseñada por tu tripper.',
-      heroImage: trip.heroImage || '/images/fallback.jpg',
+      title: trip.title || "Aventura Sorpresa",
+      teaser: trip.teaser || "Una experiencia única diseñada por tu tripper.",
+      heroImage: trip.heroImage || "/images/fallback.jpg",
       type: trip.type as any,
       level: trip.level as any,
       highlights: trip.highlights,
@@ -132,7 +132,7 @@ export async function getTripperFeaturedTrips(
       displayPrice: trip.displayPrice,
     }));
   } catch (error) {
-    console.error('Error fetching tripper featured trips:', error);
+    console.error("Error fetching tripper featured trips:", error);
     return [];
   }
 }
@@ -143,7 +143,7 @@ export async function getTripperFeaturedTrips(
 export async function getAllTrippers(): Promise<TripperListItem[]> {
   try {
     const trippers = await prisma.user.findMany({
-      where: { roles: { has: 'TRIPPER' } },
+      where: { roles: { has: "TRIPPER" } },
       select: {
         id: true,
         name: true,
@@ -154,7 +154,7 @@ export async function getAllTrippers(): Promise<TripperListItem[]> {
         commission: true,
         travelerType: true,
       },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
 
     return trippers.map((tripper) => ({
@@ -168,7 +168,7 @@ export async function getAllTrippers(): Promise<TripperListItem[]> {
       travelerType: tripper.travelerType,
     }));
   } catch (error) {
-    console.error('Error fetching all trippers:', error);
+    console.error("Error fetching all trippers:", error);
     return [];
   }
 }
@@ -215,7 +215,7 @@ export async function toggleTripLike(
       return { liked: true, likes: trip.likes };
     }
   } catch (error) {
-    console.error('Error toggling trip like:', error);
+    console.error("Error toggling trip like:", error);
     throw error;
   }
 }
@@ -236,7 +236,7 @@ export async function hasUserLikedTrip(
 
     return !!like;
   } catch (error) {
-    console.error('Error checking trip like:', error);
+    console.error("Error checking trip like:", error);
     return false;
   }
 }
@@ -265,7 +265,7 @@ export async function getTripById(
 
     return trip as any;
   } catch (error) {
-    console.error('Error fetching trip by ID:', error);
+    console.error("Error fetching trip by ID:", error);
     return null;
   }
 }
@@ -296,7 +296,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         basePrice: true,
         displayPrice: true,
       },
-      orderBy: [{ type: 'asc' }, { level: 'asc' }, { title: 'asc' }],
+      orderBy: [{ type: "asc" }, { level: "asc" }, { title: "asc" }],
     });
 
     // Group packages by type and level
@@ -309,7 +309,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         packagesByType[type] = {};
       }
 
-      const levelKey = level ?? 'unknown';
+      const levelKey = level ?? "unknown";
       if (!packagesByType[type][levelKey]) {
         packagesByType[type][levelKey] = [];
       }
@@ -319,7 +319,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
 
     return packagesByType;
   } catch (error) {
-    console.error('Error fetching tripper packages:', error);
+    console.error("Error fetching tripper packages:", error);
     return {};
   }
 }
@@ -368,9 +368,9 @@ export async function getTripperDashboardStats(tripperId: string) {
     // Calculate stats
     const totalBookings = tripRequests.filter(
       (tr) =>
-        tr.status === 'CONFIRMED' ||
-        tr.status === 'REVEALED' ||
-        tr.status === 'COMPLETED',
+        tr.status === "CONFIRMED" ||
+        tr.status === "REVEALED" ||
+        tr.status === "COMPLETED",
     ).length;
 
     // Monthly revenue (from completed payments in current month)
@@ -383,8 +383,8 @@ export async function getTripperDashboardStats(tripperId: string) {
       const paymentDate =
         tr.payment.paidAt || new Date(tr.payment.createdAt || Date.now());
       return (
-        (tr.payment.status === 'APPROVED' ||
-          tr.payment.status === 'COMPLETED') &&
+        (tr.payment.status === "APPROVED" ||
+          tr.payment.status === "COMPLETED") &&
         paymentDate >= currentMonth
       );
     });
@@ -396,19 +396,19 @@ export async function getTripperDashboardStats(tripperId: string) {
 
     // Average rating from completed trips
     const completedTrips = tripRequests.filter(
-      (tr) => tr.status === 'COMPLETED' && tr.customerRating,
+      (tr) => tr.status === "COMPLETED" && tr.customerRating,
     );
     const averageRating =
       completedTrips.length > 0
         ? completedTrips.reduce(
-          (sum, tr) => sum + (tr.customerRating || 0),
-          0,
-        ) / completedTrips.length
+            (sum, tr) => sum + (tr.customerRating || 0),
+            0,
+          ) / completedTrips.length
         : 0;
 
     // Active experiences
     const activeExperiences = packages.filter(
-      (pkg) => pkg.isActive && pkg.status === 'ACTIVE',
+      (pkg) => pkg.isActive && pkg.status === "ACTIVE",
     ).length;
 
     // Total unique clients
@@ -433,7 +433,7 @@ export async function getTripperDashboardStats(tripperId: string) {
       conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal
     };
   } catch (error) {
-    console.error('Error fetching tripper dashboard stats:', error);
+    console.error("Error fetching tripper dashboard stats:", error);
     return {
       totalBookings: 0,
       monthlyRevenue: 0,
@@ -459,7 +459,7 @@ export async function getTripperRecentBookings(
           ownerId: tripperId,
         },
         status: {
-          in: ['CONFIRMED', 'REVEALED', 'COMPLETED'],
+          in: ["CONFIRMED", "REVEALED", "COMPLETED"],
         },
       },
       include: {
@@ -473,7 +473,7 @@ export async function getTripperRecentBookings(
           select: { id: true, amount: true, status: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: limit,
     });
 
@@ -481,15 +481,15 @@ export async function getTripperRecentBookings(
       id: booking.id,
       clientName: booking.user.name,
       clientEmail: booking.user.email,
-      experienceName: booking.experience?.title || 'Experiencia eliminada',
+      experienceName: booking.experience?.title || "Experiencia eliminada",
       experienceId: booking.experience?.id,
       date: booking.createdAt.toISOString(),
       amount: booking.payment?.amount || booking.experience?.basePrice || 0,
       status: booking.status.toLowerCase(),
-      paymentStatus: booking.payment?.status?.toLowerCase() || 'pending',
+      paymentStatus: booking.payment?.status?.toLowerCase() || "pending",
     }));
   } catch (error) {
-    console.error('Error fetching recent bookings:', error);
+    console.error("Error fetching recent bookings:", error);
     return [];
   }
 }
@@ -510,7 +510,7 @@ export async function getTripperEarnings(
         },
         payment: {
           status: {
-            in: ['APPROVED', 'COMPLETED'],
+            in: ["APPROVED", "COMPLETED"],
           },
         },
       },
@@ -565,10 +565,10 @@ export async function getTripperEarnings(
 
       const monthKey = `${paymentDate.getFullYear()}-${String(
         paymentDate.getMonth() + 1,
-      ).padStart(2, '0')}`;
-      const monthName = paymentDate.toLocaleDateString('es-ES', {
-        month: 'long',
-        year: 'numeric',
+      ).padStart(2, "0")}`;
+      const monthName = paymentDate.toLocaleDateString("es-ES", {
+        month: "long",
+        year: "numeric",
       });
 
       if (!earningsByMonth[monthKey]) {
@@ -601,20 +601,20 @@ export async function getTripperEarnings(
     return Object.entries(earningsByMonth)
       .map(([monthKey, data]) => ({
         id: monthKey,
-        month: new Date(monthKey + '-01').toLocaleDateString('es-ES', {
-          month: 'long',
-          year: 'numeric',
+        month: new Date(monthKey + "-01").toLocaleDateString("es-ES", {
+          month: "long",
+          year: "numeric",
         }),
         bookings: data.bookings,
         baseCommissionUSD: data.baseCommissionUSD,
         bonusUSD: data.bonusUSD,
         totalUSD: data.totalUSD,
-        status: 'pending' as const, // TODO: Calculate actual payout status
+        status: "pending" as const, // TODO: Calculate actual payout status
         payoutDate: undefined, // TODO: Add payout tracking
       }))
       .sort((a, b) => b.id.localeCompare(a.id));
   } catch (error) {
-    console.error('Error fetching tripper earnings:', error);
+    console.error("Error fetching tripper earnings:", error);
     return [];
   }
 }
@@ -630,7 +630,7 @@ export async function getTripperReviews(tripperId: string) {
         experience: {
           ownerId: tripperId,
         },
-        status: 'COMPLETED',
+        status: "COMPLETED",
         customerRating: {
           not: null,
         },
@@ -643,7 +643,7 @@ export async function getTripperReviews(tripperId: string) {
           select: { id: true, title: true },
         },
       },
-      orderBy: { completedAt: 'desc' },
+      orderBy: { completedAt: "desc" },
     });
 
     // Also get general reviews (from Review model) if they reference this tripper
@@ -657,7 +657,7 @@ export async function getTripperReviews(tripperId: string) {
           select: { id: true, name: true, avatarUrl: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Calculate NPS (Net Promoter Score)
@@ -678,11 +678,11 @@ export async function getTripperReviews(tripperId: string) {
         userName: trip.user.name,
         userAvatar: trip.user.avatarUrl,
         rating: trip.customerRating || 0,
-        title: `Viaje a ${trip.actualDestination || 'Destino'}`,
-        content: trip.customerFeedback || '',
+        title: `Viaje a ${trip.actualDestination || "Destino"}`,
+        content: trip.customerFeedback || "",
         tripType: trip.type,
-        destination: trip.actualDestination || '',
-        packageTitle: trip.experience?.title || '',
+        destination: trip.actualDestination || "",
+        packageTitle: trip.experience?.title || "",
         createdAt: trip.completedAt || trip.updatedAt,
       })),
       averageRating:
@@ -695,7 +695,7 @@ export async function getTripperReviews(tripperId: string) {
       detractors,
     };
   } catch (error) {
-    console.error('Error fetching tripper reviews:', error);
+    console.error("Error fetching tripper reviews:", error);
     return {
       reviews: [],
       averageRating: 0,
@@ -727,7 +727,7 @@ export async function getTripperExperiences(tripperId: string) {
         createdAt: true,
         updatedAt: true,
       },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
     });
 
     return packages.map((pkg) => ({
@@ -744,7 +744,7 @@ export async function getTripperExperiences(tripperId: string) {
       updatedAt: pkg.updatedAt.toISOString(),
     }));
   } catch (error) {
-    console.error('Error fetching tripper packages:', error);
+    console.error("Error fetching tripper packages:", error);
     return [];
   }
 }
@@ -760,7 +760,7 @@ export async function getTripperPublishedBlogs(
     const blogs = await prisma.blogPost.findMany({
       where: {
         authorId: tripperId,
-        status: 'PUBLISHED',
+        status: "PUBLISHED",
       },
       select: {
         id: true,
@@ -771,21 +771,24 @@ export async function getTripperPublishedBlogs(
         tags: true,
         publishedAt: true,
       },
-      orderBy: { publishedAt: 'desc' },
+      orderBy: { publishedAt: "desc" },
       take: limit,
     });
 
     // Transform to match Blog component format; only include posts with a cover
     return blogs
-      .filter((blog): blog is typeof blog & { coverUrl: string } => blog.coverUrl != null)
+      .filter(
+        (blog): blog is typeof blog & { coverUrl: string } =>
+          blog.coverUrl != null,
+      )
       .map((blog) => ({
-        category: blog.tags[0] ?? 'Viajes',
+        category: blog.tags[0] ?? "Viajes",
         href: `/blog/${blog.slug ?? blog.id}`,
         image: blog.coverUrl,
         title: blog.title,
       }));
   } catch (error) {
-    console.error('Error fetching tripper published blogs:', error);
+    console.error("Error fetching tripper published blogs:", error);
     return [];
   }
 }

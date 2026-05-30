@@ -1,7 +1,7 @@
 // frontend/src/lib/usePricingCatalog.ts
-'use client';
+"use client";
 
-import { getPricingCatalog } from '@/lib/helpers/pricing';
+import { getPricingCatalog } from "@/lib/helpers/pricing";
 
 export type PricingCatalog = {
   currency: string;
@@ -12,7 +12,7 @@ export type PricingCatalog = {
 /** Returns catalog derived from single source of truth (traveler-types). Use getBasePricePerPerson when possible. */
 export function usePricingCatalog(): PricingCatalog {
   return {
-    currency: 'USD',
+    currency: "USD",
     byTraveller: getPricingCatalog(),
   };
 }

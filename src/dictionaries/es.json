@@ -14,6 +14,8 @@
     "ariaLabelTripbuddy": "Ir a North IA (TripBuddy)",
     "ariaLabelBitacoras": "Ir a Off the Record: Bitácoras del Continente",
     "ariaLabelXsed": "Ir a XSED",
+    "ariaLabelContact": "Ir a la página de contacto",
+    "labelContact": "Contacto",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Abrir menú de navegación",
     "search": "Buscar",
@@ -418,6 +420,46 @@
         {
           "question": "¿Qué incluye?",
           "answer": "Incluye 1 noche de alojamiento, cena del sábado, desayuno del domingo y una experiencia local curada. El transporte hasta el destino corre por tu cuenta."
+        }
+      ]
+    }
+  },
+  "faqPage": {
+    "hero": {
+      "eyebrow": "FAQ's",
+      "title": "PREGUNTAS FRECUENTES",
+      "description": "Todo lo que necesitás saber antes de dar el salto."
+    },
+    "meta": {
+      "title": "Preguntas Frecuentes | Randomtrip",
+      "description": "Todo lo que necesitás saber antes de dar el salto: cómo funciona, qué incluye y cómo reagendar tu viaje sorpresa.",
+      "openGraphTitle": "FAQ | Randomtrip — Preguntas Frecuentes",
+      "openGraphDescription": "Respondemos todo: cómo funciona el viaje sorpresa, qué podés elegir y cómo reagendar."
+    },
+    "block": {
+      "eyebrow": "FAQ's",
+      "title": "Preguntas destacadas",
+      "description": "Todo lo que necesitás saber antes de dar el salto.",
+      "items": [
+        {
+          "question": "¿Cómo doy el primer paso para mi viaje sorpresa?",
+          "answer": "Completás un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
+        },
+        {
+          "question": "¿Qué es lo que puedo elegir?",
+          "answer": "Elegís el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
+        },
+        {
+          "question": "¿Qué pasa si tengo que cambiar la fecha?",
+          "answer": "Podés reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
+        },
+        {
+          "question": "¿Qué incluye?",
+          "answer": "Alojamiento, actividades curadas y acompañamiento logístico. Los vuelos o traslados desde tu origen se gestionan por separado."
+        },
+        {
+          "question": "¿Cómo diseñamos tu viaje?",
+          "answer": "Tu Tripper cruza tu brief con su conocimiento del destino y arma un itinerario con ritmo, sorpresa y coherencia emocional."
         }
       ]
     }
@@ -2559,11 +2601,7 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos un destino; vendemos un resultado emocional. Nuestra misión es liberar tu mente de la parálisis por análisis y guiarte hacia estados como asombro, calma o conexión.",
       "p2": "Lo llamamos Serendipia Diseñada: entornos seguros y meticulosamente planificados que se sienten espontáneos y transformadores. Renunciás al control logístico para ganar libertad verdadera.",
-      "pills": [
-        "Brief emocional",
-        "Diseño invisible",
-        "Sorpresa con red"
-      ],
+      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {

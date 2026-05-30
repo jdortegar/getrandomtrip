@@ -10,24 +10,24 @@
  * - Horario salida/llegada sin costo para Explora+ y Bivouac.
  */
 
-import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 /** Traveler type slugs = product identifiers (BOND=couple, SOLUM=solo, etc.). */
 export const PRODUCT_TYPES: TravelerTypeSlug[] = [
-  'solo',
-  'couple',
-  'family',
-  'group',
-  'honeymoon',
-  'paws',
+  "solo",
+  "couple",
+  "family",
+  "group",
+  "honeymoon",
+  "paws",
 ];
 
 /** Level ids that can show the excuse step (when the product allows it). */
 export const LEVEL_IDS_WITH_EXCUSE = [
-  'essenza',
-  'modo-explora',
-  'explora-plus',
-  'bivouac',
+  "essenza",
+  "modo-explora",
+  "explora-plus",
+  "bivouac",
 ] as const;
 
 export type LevelIdWithExcuse = (typeof LEVEL_IDS_WITH_EXCUSE)[number];
@@ -39,22 +39,25 @@ export type LevelIdWithExcuse = (typeof LEVEL_IDS_WITH_EXCUSE)[number];
  * - 'all-levels': Essenza through Bivouac show excuse (not used currently; Atelier never).
  * - 'none': no excuse step (NUPTIA / honeymoon).
  */
-export type ExcuseRule = 'all-levels' | 'explora-plus-and-bivouac' | 'none';
+export type ExcuseRule = "all-levels" | "explora-plus-and-bivouac" | "none";
 
 export const EXCUSE_RULE_BY_TYPE: Record<TravelerTypeSlug, ExcuseRule> = {
-  couple: 'explora-plus-and-bivouac', // BOND
-  solo: 'explora-plus-and-bivouac', // SOLUM — steps 3–4 only Explora+ & Bivouac
-  family: 'explora-plus-and-bivouac', // KIN
-  group: 'explora-plus-and-bivouac', // CREW
-  honeymoon: 'none', // NUPTIA
-  paws: 'explora-plus-and-bivouac', // PAWS — steps 3–4 only Explora+ & Bivouac
+  couple: "explora-plus-and-bivouac", // BOND
+  solo: "explora-plus-and-bivouac", // SOLUM — steps 3–4 only Explora+ & Bivouac
+  family: "explora-plus-and-bivouac", // KIN
+  group: "explora-plus-and-bivouac", // CREW
+  honeymoon: "none", // NUPTIA
+  paws: "explora-plus-and-bivouac", // PAWS — steps 3–4 only Explora+ & Bivouac
 };
 
 /** Normalize level id for comparison (e.g. explora-plus, modo-explora). */
 function normalizeLevelId(level: string): string {
-  const n = level.toLowerCase().replace(/\s+/g, '-').replace('explora+', 'explora-plus');
-  if (n === 'exploraplus') return 'explora-plus';
-  if (n === 'modoexplora' || n === 'explora') return 'modo-explora';
+  const n = level
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace("explora+", "explora-plus");
+  if (n === "exploraplus") return "explora-plus";
+  if (n === "modoexplora" || n === "explora") return "modo-explora";
   return n;
 }
 
@@ -67,12 +70,14 @@ export function hasExcuseStep(
 ): boolean {
   if (!levelId) return false;
   const rule = EXCUSE_RULE_BY_TYPE[travelerType as TravelerTypeSlug];
-  if (!rule || rule === 'none') return false;
+  if (!rule || rule === "none") return false;
   const normalized = normalizeLevelId(levelId);
-  if (normalized === 'atelier-getaway' || normalized === 'atelier') return false;
-  if (rule === 'all-levels') return LEVEL_IDS_WITH_EXCUSE.includes(normalized as LevelIdWithExcuse);
-  if (rule === 'explora-plus-and-bivouac') {
-    return normalized === 'explora-plus' || normalized === 'bivouac';
+  if (normalized === "atelier-getaway" || normalized === "atelier")
+    return false;
+  if (rule === "all-levels")
+    return LEVEL_IDS_WITH_EXCUSE.includes(normalized as LevelIdWithExcuse);
+  if (rule === "explora-plus-and-bivouac") {
+    return normalized === "explora-plus" || normalized === "bivouac";
   }
   return false;
 }

@@ -9,7 +9,12 @@ type KpiCardProps = {
   color: string; // Tailwind color class, e.g., "text-blue-500"
 };
 
-export default function KpiCard({ title, value, icon: Icon, color }: KpiCardProps) {
+export default function KpiCard({
+  title,
+  value,
+  icon: Icon,
+  color,
+}: KpiCardProps) {
   return (
     <motion.div
       className="bg-neutral-800 p-6 rounded-2xl shadow-sm border border-neutral-700 flex items-center space-x-4"

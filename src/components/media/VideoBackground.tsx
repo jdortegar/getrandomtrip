@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
 export interface VideoBackgroundProps {
   fallbackImage?: string;
@@ -19,7 +19,7 @@ export default function VideoBackground({
   if (!videoSrc && !fallbackImage) return null;
   return (
     <div
-      className={cn('absolute inset-0 w-full h-full', className)}
+      className={cn("absolute inset-0 w-full h-full", className)}
       aria-hidden
     >
       {fallbackImage && (
@@ -40,13 +40,13 @@ export default function VideoBackground({
           preload="auto"
           src={videoSrc}
         >
-          <source src={videoSrc.replace('.mp4', '.webm')} type="video/webm" />
+          <source src={videoSrc.replace(".mp4", ".webm")} type="video/webm" />
           <source src={videoSrc} type="video/mp4" />
         </video>
       )}
 
       <div
-        className={cn('absolute inset-0 z-10 bg-black/40', overlayClassName)}
+        className={cn("absolute inset-0 z-10 bg-black/40", overlayClassName)}
         aria-hidden
       />
     </div>

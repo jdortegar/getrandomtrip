@@ -1,24 +1,24 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
-import { handleI18n } from '@/lib/i18n/middleware';
-import { pathWithoutLocale } from '@/lib/i18n/pathForLocale';
-import { LOCALES } from '@/lib/i18n/config';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { handleI18n } from "@/lib/i18n/middleware";
+import { pathWithoutLocale } from "@/lib/i18n/pathForLocale";
+import { LOCALES } from "@/lib/i18n/config";
 
 // Variantes -> canónico (solo para path sin locale o con locale)
 const CANON_MAP: Record<string, string> = {
-  families: 'family',
-  familia: 'family',
+  families: "family",
+  familia: "family",
 };
 
 function applyCanonRedirect(req: NextRequest): NextResponse | null {
   const pathname = pathWithoutLocale(req.nextUrl.pathname);
-  if (!pathname.startsWith('/experiences/by-type/')) return null;
+  if (!pathname.startsWith("/experiences/by-type/")) return null;
 
   const url = req.nextUrl.clone();
   const { search, hash } = url;
-  const parts = pathname.split('/').filter(Boolean);
+  const parts = pathname.split("/").filter(Boolean);
   // pathname can be /experiences/by-type/X or /en/experiences/by-type/X - pathWithoutLocale gives /experiences/by-type/X
-  const typeIndex = parts.indexOf('by-type') + 1;
+  const typeIndex = parts.indexOf("by-type") + 1;
   const type = parts[typeIndex];
   if (!type) return null;
 
@@ -26,10 +26,10 @@ function applyCanonRedirect(req: NextRequest): NextResponse | null {
   if (!target || target === type) return null;
 
   parts[typeIndex] = target;
-  const newPath = '/' + parts.join('/');
+  const newPath = "/" + parts.join("/");
   // If request had locale prefix, preserve it
-  const first = req.nextUrl.pathname.split('/').filter(Boolean)[0];
-  const hasLocale = first && LOCALES.includes(first as 'es' | 'en');
+  const first = req.nextUrl.pathname.split("/").filter(Boolean)[0];
+  const hasLocale = first && LOCALES.includes(first as "es" | "en");
   url.pathname = hasLocale ? `/${first}${newPath}` : newPath;
   url.search = search;
   url.hash = hash;
@@ -47,5 +47,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|favicon\\.png|.*\\..*).*)'],
+  matcher: ["/((?!_next|api|favicon\\.png|.*\\..*).*)"],
 };

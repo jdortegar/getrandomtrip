@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 
 const FEATURE_STORE: Record<string, string> = {
   avatar: "user-avatars",
-  blog:   "blog-media",
+  blog: "blog-media",
 };
 const DEFAULT_STORE = "user-media";
 
@@ -17,7 +17,10 @@ function getBlobStore(feature?: string) {
   return getStore(storeName, {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? { siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_AUTH_TOKEN }
+      ? {
+          siteID: process.env.NETLIFY_SITE_ID,
+          token: process.env.NETLIFY_AUTH_TOKEN,
+        }
       : {}),
   });
 }
@@ -37,9 +40,13 @@ function isSafePath(segments: string[]): boolean {
 
 type Params = { path: string[] };
 
-export async function GET(_: NextRequest, { params }: { params: Promise<Params> }) {
+export async function GET(
+  _: NextRequest,
+  { params }: { params: Promise<Params> },
+) {
   const { path } = await params;
-  if (!isSafePath(path)) return new NextResponse("Bad Request", { status: 400 });
+  if (!isSafePath(path))
+    return new NextResponse("Bad Request", { status: 400 });
 
   const key = path.join("/");
   const feature = path[1];
@@ -49,7 +56,9 @@ export async function GET(_: NextRequest, { params }: { params: Promise<Params> 
     let result = await store.getWithMetadata(key, { type: "blob" });
 
     if (!result && feature !== DEFAULT_STORE) {
-      result = await getBlobStore(undefined).getWithMetadata(key, { type: "blob" });
+      result = await getBlobStore(undefined).getWithMetadata(key, {
+        type: "blob",
+      });
     }
 
     if (!result) return new NextResponse("Not Found", { status: 404 });
@@ -72,9 +81,13 @@ export async function GET(_: NextRequest, { params }: { params: Promise<Params> 
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<Params> }) {
+export async function DELETE(
+  _: NextRequest,
+  { params }: { params: Promise<Params> },
+) {
   const { path } = await params;
-  if (!isSafePath(path)) return new NextResponse("Bad Request", { status: 400 });
+  if (!isSafePath(path))
+    return new NextResponse("Bad Request", { status: 400 });
 
   const key = path.join("/");
 
@@ -92,6 +105,9 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<Param
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[upload/path] DELETE", error);
-    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Blob storage unavailable" },
+      { status: 503 },
+    );
   }
 }

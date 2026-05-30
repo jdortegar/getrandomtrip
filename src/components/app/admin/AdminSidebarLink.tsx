@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import type { LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AdminSidebarLinkProps {
   badge?: number;
@@ -20,10 +20,10 @@ export function AdminSidebarLink({
   return (
     <Link
       className={cn(
-        'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
+        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
         isActive
-          ? 'bg-gray-100 font-bold text-gray-900'
-          : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700',
+          ? "bg-gray-100 font-bold text-gray-900"
+          : "text-gray-500 hover:bg-gray-50 hover:text-gray-700",
       )}
       href={href}
     >

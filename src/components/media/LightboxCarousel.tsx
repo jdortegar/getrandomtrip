@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { X } from 'lucide-react';
-import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
-import Section from '@/components/layout/Section';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
+import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
+import Section from "@/components/layout/Section";
+import { cn } from "@/lib/utils";
 
 interface LightboxImage {
   url: string;
@@ -21,19 +21,21 @@ interface LightboxCarouselProps {
 
 export default function LightboxCarousel({
   className,
-  ariaCloseLabel = 'Cerrar',
-  ariaViewLargeLabel = 'Ver imagen en grande',
+  ariaCloseLabel = "Cerrar",
+  ariaViewLargeLabel = "Ver imagen en grande",
   images,
 }: LightboxCarouselProps) {
-  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!lightboxImage) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightboxImage(null);
+      if (e.key === "Escape") setLightboxImage(null);
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [lightboxImage]);
 
   if (images.length === 0) return null;
@@ -51,7 +53,7 @@ export default function LightboxCarousel({
                 type="button"
               >
                 <Image
-                  alt={image.caption ?? ''}
+                  alt={image.caption ?? ""}
                   className="object-cover aspect-video"
                   fill
                   sizes="(max-width: 768px) 85vw, (max-width: 1024px) 70vw, 55vw"
@@ -85,11 +87,17 @@ export default function LightboxCarousel({
               <X className="h-5 w-5" />
             </button>
             <Image
-              alt={lightboxImage.caption ?? ''}
+              alt={lightboxImage.caption ?? ""}
               height={0}
               sizes="85vw"
               src={lightboxImage.url}
-              style={{ display: 'block', height: 'auto', maxHeight: '80vh', maxWidth: '85vw', width: 'auto' }}
+              style={{
+                display: "block",
+                height: "auto",
+                maxHeight: "80vh",
+                maxWidth: "85vw",
+                width: "auto",
+              }}
               unoptimized
               width={0}
             />

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import CountryFlag from '@/components/common/CountryFlag';
-import Section from '@/components/layout/Section';
-import { Button } from '@/components/ui/Button';
-import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from '@/components/tripper/TripperTravelerTypesSection';
-import { getTypeLabel } from '@/lib/data/traveler-types';
-import CountrySelector from '@/components/journey/CountrySelector';
-import CitySelector from '@/components/journey/CitySelector';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import CountryFlag from "@/components/common/CountryFlag";
+import Section from "@/components/layout/Section";
+import { Button } from "@/components/ui/Button";
+import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from "@/components/tripper/TripperTravelerTypesSection";
+import { getTypeLabel } from "@/lib/data/traveler-types";
+import CountrySelector from "@/components/journey/CountrySelector";
+import CitySelector from "@/components/journey/CitySelector";
 
 type Props = {
   tripperData: {
@@ -28,12 +28,13 @@ export default function TripperPlanner({
   tripperPackagesByType = {},
 }: Props) {
   const router = useRouter();
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
+  const [country, setCountry] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [city, setCity] = useState("");
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const firstName =
-    tripperData.name?.split(' ')[0] || tripperData.name || 'este tripper';
+    tripperData.name?.split(" ")[0] || tripperData.name || "este tripper";
   const availableTypes = tripperData.availableTypes || [];
 
   const visitedCountries = useMemo(() => {
@@ -66,21 +67,25 @@ export default function TripperPlanner({
     router.push(`/journey?${params.toString()}`);
   };
 
-  const handleCountryChange = (value: string) => {
-    setCountry(value);
-    setCity('');
+  const handleCountryChange = (name: string, code: string) => {
+    setCountry(name);
+    setCountryCode(code);
+    setCity("");
   };
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     const h = window.location.hash;
-    if (h === '#planner' || h === '#start-your-journey-anchor') {
-      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (h === "#planner" || h === "#start-your-journey-anchor") {
+      sectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
     if (h === `#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`) {
       document
         .getElementById(TRIPPER_TRAVELER_TYPES_ANCHOR_ID)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, []);
 
@@ -163,7 +168,7 @@ export default function TripperPlanner({
                 Ciudad de salida
               </label>
               <CitySelector
-                countryValue={country}
+                countryCode={countryCode}
                 onChange={setCity}
                 placeholder="Selecciona una ciudad"
                 size="lg"

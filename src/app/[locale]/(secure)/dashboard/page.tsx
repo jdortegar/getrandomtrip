@@ -30,10 +30,8 @@ function computeDashboardStats(
   const ratingsTrips = mappedTrips.filter((t) => t.customerRating);
   const avgRating =
     ratingsTrips.length > 0
-      ? ratingsTrips.reduce(
-          (sum, t) => sum + (t.customerRating || 0),
-          0,
-        ) / ratingsTrips.length
+      ? ratingsTrips.reduce((sum, t) => sum + (t.customerRating || 0), 0) /
+        ratingsTrips.length
       : 0;
   return {
     totalTrips: mappedTrips.length,
@@ -61,7 +59,7 @@ function DashboardContent() {
   const { user } = useUserStore();
   const router = useRouter();
   const locale = useLocale();
-  const copy = useDictionary(d => d.dashboard);
+  const copy = useDictionary((d) => d.dashboard);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useStore } from '@/store/store';
-import { countOptionalFilters } from '@/lib/helpers/journey';
-import { useRouter } from 'next/navigation';
-import AvoidGrid, { type AvoidGridLabels } from './avoid/AvoidGrid';
+import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useStore } from "@/store/store";
+import { countOptionalFilters } from "@/lib/helpers/journey";
+import { useRouter } from "next/navigation";
+import AvoidGrid, { type AvoidGridLabels } from "./avoid/AvoidGrid";
 
 const calculateFilterCost = (filterCount: number): number => {
   if (filterCount <= 1) return 0;
   if (filterCount <= 3) return (filterCount - 1) * 18;
-  return (1 * 0) + (2 * 18) + (filterCount - 3) * 25;
+  return 1 * 0 + 2 * 18 + (filterCount - 3) * 25;
 };
 
 interface FiltersTabProps {
@@ -20,22 +20,36 @@ interface FiltersTabProps {
 export default function FiltersTab({ avoidGridLabels }: FiltersTabProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { filters, setPartial, basePriceUsd, logistics, _tripperExperienceDestinations } = useStore();
-  const originCity = searchParams.get('originCity') ?? '';
-  const originCountry = searchParams.get('originCountry') ?? '';
-  const experience = searchParams.get('experience') ?? undefined;
+  const {
+    filters,
+    setPartial,
+    basePriceUsd,
+    logistics,
+    _tripperExperienceDestinations,
+  } = useStore();
+  const originCity = searchParams.get("originCity") ?? "";
+  const originCountry = searchParams.get("originCountry") ?? "";
+  const experience = searchParams.get("experience") ?? undefined;
 
   const avoidCount = useMemo(() => {
-    const raw = searchParams.get('avoidDestinations');
-    return raw ? raw.split(',').map((s) => s.trim()).filter(Boolean).length : 0;
+    const raw = searchParams.get("avoidDestinations");
+    return raw
+      ? raw
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean).length
+      : 0;
   }, [searchParams]);
 
-  const handleFilterChange = <K extends keyof typeof filters>(key: K, value: (typeof filters)[K]) => {
+  const handleFilterChange = <K extends keyof typeof filters>(
+    key: K,
+    value: (typeof filters)[K],
+  ) => {
     const newFilters = { ...filters, [key]: value };
 
     const optionalFilterCount = countOptionalFilters(newFilters, avoidCount);
     const newFilterCost = calculateFilterCost(optionalFilterCount);
-    const newTotalPerPax = basePriceUsd + (newFilterCost / logistics.pax);
+    const newTotalPerPax = basePriceUsd + newFilterCost / logistics.pax;
 
     setPartial({
       filters: newFilters,
@@ -54,8 +68,14 @@ export default function FiltersTab({ avoidGridLabels }: FiltersTabProps) {
       <div>
         <h2 className="text-2xl font-bold">Filtros Premium (Opcional)</h2>
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-2 text-sm text-blue-800">
-          <p>Tu primer filtro opcional es gratis. 2–3 filtros: USD 18 c/u. 4+ filtros: USD 25 c/u.</p>
-          <p className="font-semibold mt-1">Transporte no suma costo (es obligatorio). ‘Destinos a evitar’ cuenta como un filtro total.</p>
+          <p>
+            Tu primer filtro opcional es gratis. 2–3 filtros: USD 18 c/u. 4+
+            filtros: USD 25 c/u.
+          </p>
+          <p className="font-semibold mt-1">
+            Transporte no suma costo (es obligatorio). ‘Destinos a evitar’
+            cuenta como un filtro total.
+          </p>
         </div>
       </div>
 

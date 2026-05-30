@@ -10,7 +10,10 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
@@ -104,11 +107,17 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
     return NextResponse.json({ experience: experienceData });
   } catch (error) {
     console.error("Error fetching experience:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
-export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
@@ -261,6 +270,9 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     return NextResponse.json({ experience: updatedExperience });
   } catch (error) {
     console.error("Error updating experience:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

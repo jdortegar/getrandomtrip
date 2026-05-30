@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import CountryFlag from '@/components/common/CountryFlag';
-import VideoBackground from '@/components/media/VideoBackground';
-import { getCountryFromLocation } from '@/lib/helpers/flags';
-import { formatTitleWithCopyright } from '@/lib/helpers/stringHelpers';
-import type { MarketingDictionary, XsedPageDict } from '@/lib/types/dictionary';
+import Image from "next/image";
+import CountryFlag from "@/components/common/CountryFlag";
+import VideoBackground from "@/components/media/VideoBackground";
+import { getCountryFromLocation } from "@/lib/helpers/flags";
+import { formatTitleWithCopyright } from "@/lib/helpers/stringHelpers";
+import type { MarketingDictionary, XsedPageDict } from "@/lib/types/dictionary";
 
 export interface XsedInternalHeroContent {
   author?: {
@@ -22,20 +22,26 @@ export interface XsedInternalHeroContent {
 
 interface XsedInternalHeroProps {
   content: XsedInternalHeroContent;
-  dropsPage?: MarketingDictionary['xsedDropsPage'];
-  hero: XsedPageDict['hero'];
+  dropsPage?: MarketingDictionary["xsedDropsPage"];
+  hero: XsedPageDict["hero"];
 }
 
-export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroProps) {
+export function XsedInternalHero({
+  content,
+  dropsPage,
+  hero,
+}: XsedInternalHeroProps) {
   const { author, date, dropNumber } = content;
-  const title = content.title ?? dropsPage?.title ?? '';
-  const description = content.description ?? dropsPage?.description ?? '';
+  const title = content.title ?? dropsPage?.title ?? "";
+  const description = content.description ?? dropsPage?.description ?? "";
   const backgroundImage = content.backgroundImage ?? hero.fallbackImage;
 
-  const countryForFlag = author ? getCountryFromLocation(author.location) : null;
+  const countryForFlag = author
+    ? getCountryFromLocation(author.location)
+    : null;
   const dropNumberText =
     dropNumber != null && !Number.isNaN(dropNumber)
-      ? hero.dropNumberLabel.replace('{number}', String(dropNumber))
+      ? hero.dropNumberLabel.replace("{number}", String(dropNumber))
       : null;
 
   return (
@@ -46,9 +52,7 @@ export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroP
         <div className="flex flex-col gap-6">
           <div>
             <div className="mb-3 flex flex-wrap items-end gap-x-3 gap-y-2">
-              <h2
-                className="font-barlow-condensed text-[52px] font-extrabold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]"
-              >
+              <h2 className="font-barlow-condensed text-[52px] font-extrabold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]">
                 {formatTitleWithCopyright(hero.title)}
               </h2>
 
@@ -94,7 +98,7 @@ export function XsedInternalHero({ content, dropsPage, hero }: XsedInternalHeroP
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
                 {author.avatarUrl ? (
                   <Image
-                    alt={author.name ?? ''}
+                    alt={author.name ?? ""}
                     className="object-cover"
                     fill
                     sizes="64px"

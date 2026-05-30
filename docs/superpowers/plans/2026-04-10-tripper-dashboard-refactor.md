@@ -12,25 +12,26 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Modify | `src/types/tripper.ts` | Add `TripperDashboardStats` + `RecentBooking` interfaces |
-| Modify | `src/lib/types/dictionary.ts` | Add `TripperDashboardDict` interface + `tripperDashboard` field to `MarketingDictionary` |
-| Modify | `src/dictionaries/es.json` | Add `tripperDashboard` key with ES strings |
-| Modify | `src/dictionaries/en.json` | Add `tripperDashboard` key with EN strings |
-| Create | `src/components/app/dashboard/tripper/TripperDashboardSkeleton.tsx` | Loading skeleton matching layout |
-| Create | `src/components/app/dashboard/tripper/TripperStatsGrid.tsx` | 4 stat cards row |
-| Create | `src/components/app/dashboard/tripper/RecentBookingsList.tsx` | Recent bookings panel |
-| Create | `src/components/app/dashboard/tripper/TripperQuickActions.tsx` | Quick action links panel |
-| Create | `src/components/app/dashboard/tripper/TripperKeyMetrics.tsx` | Key metrics panel |
-| Create | `src/components/app/dashboard/tripper/TripperPackagesSummary.tsx` | Packages summary panel |
-| Modify | `src/app/[locale]/dashboard/tripper/page.tsx` | Thin orchestrator using all above |
+| Action | Path                                                                | Purpose                                                                                  |
+| ------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Modify | `src/types/tripper.ts`                                              | Add `TripperDashboardStats` + `RecentBooking` interfaces                                 |
+| Modify | `src/lib/types/dictionary.ts`                                       | Add `TripperDashboardDict` interface + `tripperDashboard` field to `MarketingDictionary` |
+| Modify | `src/dictionaries/es.json`                                          | Add `tripperDashboard` key with ES strings                                               |
+| Modify | `src/dictionaries/en.json`                                          | Add `tripperDashboard` key with EN strings                                               |
+| Create | `src/components/app/dashboard/tripper/TripperDashboardSkeleton.tsx` | Loading skeleton matching layout                                                         |
+| Create | `src/components/app/dashboard/tripper/TripperStatsGrid.tsx`         | 4 stat cards row                                                                         |
+| Create | `src/components/app/dashboard/tripper/RecentBookingsList.tsx`       | Recent bookings panel                                                                    |
+| Create | `src/components/app/dashboard/tripper/TripperQuickActions.tsx`      | Quick action links panel                                                                 |
+| Create | `src/components/app/dashboard/tripper/TripperKeyMetrics.tsx`        | Key metrics panel                                                                        |
+| Create | `src/components/app/dashboard/tripper/TripperPackagesSummary.tsx`   | Packages summary panel                                                                   |
+| Modify | `src/app/[locale]/dashboard/tripper/page.tsx`                       | Thin orchestrator using all above                                                        |
 
 ---
 
 ## Task 1: Add types to `src/types/tripper.ts`
 
 **Files:**
+
 - Modify: `src/types/tripper.ts`
 
 - [ ] **Step 1: Add the two new interfaces at the end of the file**
@@ -71,6 +72,7 @@ Expected: No errors.
 ## Task 2: Add `TripperDashboardDict` to `src/lib/types/dictionary.ts`
 
 **Files:**
+
 - Modify: `src/lib/types/dictionary.ts`
 
 - [ ] **Step 1: Add the `TripperDashboardDict` interface**
@@ -134,7 +136,7 @@ export interface TripperDashboardDict {
 The `MarketingDictionary` interface is in the same file. Find the closing `}` of `MarketingDictionary` (it is the outermost closing brace of the interface, at line 781). Add this field before that closing brace:
 
 ```ts
-  tripperDashboard: TripperDashboardDict;
+tripperDashboard: TripperDashboardDict;
 ```
 
 - [ ] **Step 3: Verify typecheck passes**
@@ -147,6 +149,7 @@ Expected: Errors about missing `tripperDashboard` key in the JSON files — that
 ## Task 3: Add `tripperDashboard` key to dictionaries
 
 **Files:**
+
 - Modify: `src/dictionaries/es.json`
 - Modify: `src/dictionaries/en.json`
 
@@ -272,12 +275,13 @@ Expected: No errors.
 ## Task 4: Create `TripperDashboardSkeleton`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/TripperDashboardSkeleton.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from "@/components/ui/Skeleton";
 
 function StatCardSkeleton() {
   return (
@@ -349,19 +353,20 @@ Expected: No errors.
 ## Task 5: Create `TripperStatsGrid`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/TripperStatsGrid.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import { Users, DollarSign, Star, MapPin } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import type { TripperDashboardStats } from '@/types/tripper';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import { Users, DollarSign, Star, MapPin } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { TripperDashboardStats } from "@/types/tripper";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface TripperStatsGridProps {
   stats: TripperDashboardStats;
-  copy: TripperDashboardDict['stats'];
+  copy: TripperDashboardDict["stats"];
 }
 
 export function TripperStatsGrid({ stats, copy }: TripperStatsGridProps) {
@@ -373,25 +378,25 @@ export function TripperStatsGrid({ stats, copy }: TripperStatsGridProps) {
   }> = [
     {
       icon: Users,
-      key: 'total-bookings',
+      key: "total-bookings",
       label: copy.totalBookings,
       value: stats.totalBookings,
     },
     {
       icon: DollarSign,
-      key: 'monthly-revenue',
+      key: "monthly-revenue",
       label: copy.monthlyRevenue,
-      value: `$${stats.monthlyRevenue.toLocaleString('es-AR')}`,
+      value: `$${stats.monthlyRevenue.toLocaleString("es-AR")}`,
     },
     {
       icon: Star,
-      key: 'average-rating',
+      key: "average-rating",
       label: copy.averageRating,
-      value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : '—',
+      value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—",
     },
     {
       icon: MapPin,
-      key: 'active-packages',
+      key: "active-packages",
       label: copy.activePackages,
       value: stats.activePackages,
     },
@@ -435,40 +440,44 @@ Expected: No errors.
 ## Task 6: Create `RecentBookingsList`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/RecentBookingsList.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import { Calendar } from 'lucide-react';
-import Link from 'next/link';
-import type { RecentBooking } from '@/types/tripper';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import { Calendar } from "lucide-react";
+import Link from "next/link";
+import type { RecentBooking } from "@/types/tripper";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface RecentBookingsListProps {
   bookings: RecentBooking[];
-  copy: TripperDashboardDict['recentBookings'] & TripperDashboardDict['status'];
+  copy: TripperDashboardDict["recentBookings"] & TripperDashboardDict["status"];
 }
 
 function getStatusColor(status: string): string {
-  if (status === 'confirmed' || status === 'completed') {
-    return 'bg-green-100 text-green-800 border-green-200';
+  if (status === "confirmed" || status === "completed") {
+    return "bg-green-100 text-green-800 border-green-200";
   }
-  if (status === 'revealed') {
-    return 'bg-purple-100 text-purple-800 border-purple-200';
+  if (status === "revealed") {
+    return "bg-purple-100 text-purple-800 border-purple-200";
   }
-  return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+  return "bg-yellow-100 text-yellow-800 border-yellow-200";
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return new Date(dateString).toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 
-export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) {
+export function RecentBookingsList({
+  bookings,
+  copy,
+}: RecentBookingsListProps) {
   return (
     <div className="lg:col-span-2">
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
@@ -501,7 +510,9 @@ export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) 
                     <p className="font-medium text-neutral-900">
                       {booking.clientName}
                     </p>
-                    <p className="text-sm text-neutral-600">{booking.package}</p>
+                    <p className="text-sm text-neutral-600">
+                      {booking.package}
+                    </p>
                     <p className="text-xs text-neutral-500 flex items-center gap-1 mt-0.5">
                       <Calendar className="h-3 w-3" />
                       {formatDate(booking.date)}
@@ -510,12 +521,14 @@ export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) 
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-semibold text-neutral-900">
-                    ${booking.amount.toLocaleString('es-AR')}
+                    ${booking.amount.toLocaleString("es-AR")}
                   </p>
                   <span
                     className={`mt-1 inline-block px-2 py-0.5 text-xs rounded-full border ${getStatusColor(booking.status)}`}
                   >
-                    {copy[booking.status as keyof TripperDashboardDict['status']] ?? booking.status}
+                    {copy[
+                      booking.status as keyof TripperDashboardDict["status"]
+                    ] ?? booking.status}
                   </span>
                 </div>
               </div>
@@ -538,54 +551,55 @@ Expected: No errors.
 ## Task 7: Create `TripperQuickActions`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/TripperQuickActions.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import Link from 'next/link';
-import { Plus, BarChart3, Star, BookOpen, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import Link from "next/link";
+import { Plus, BarChart3, Star, BookOpen, Settings } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface TripperQuickActionsProps {
-  copy: TripperDashboardDict['quickActions'];
+  copy: TripperDashboardDict["quickActions"];
 }
 
 export function TripperQuickActions({ copy }: TripperQuickActionsProps) {
   const actions = [
     {
-      href: '/dashboard/tripper/packages',
+      href: "/dashboard/tripper/packages",
       icon: Plus,
-      key: 'packages',
+      key: "packages",
       label: copy.createPackage,
       sub: copy.createPackageSub,
     },
     {
-      href: '/dashboard/tripper/earnings',
+      href: "/dashboard/tripper/earnings",
       icon: BarChart3,
-      key: 'earnings',
+      key: "earnings",
       label: copy.earnings,
       sub: copy.earningsSub,
     },
     {
-      href: '/dashboard/tripper/reviews',
+      href: "/dashboard/tripper/reviews",
       icon: Star,
-      key: 'reviews',
+      key: "reviews",
       label: copy.reviews,
       sub: copy.reviewsSub,
     },
     {
-      href: '/dashboard/tripper/blogs',
+      href: "/dashboard/tripper/blogs",
       icon: BookOpen,
-      key: 'blogs',
+      key: "blogs",
       label: copy.blogs,
       sub: copy.blogsSub,
     },
     {
-      href: '/trippers/profile',
+      href: "/trippers/profile",
       icon: Settings,
-      key: 'settings',
+      key: "settings",
       label: copy.settings,
       sub: copy.settingsSub,
     },
@@ -632,18 +646,19 @@ Expected: No errors.
 ## Task 8: Create `TripperKeyMetrics`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/TripperKeyMetrics.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import { TrendingUp } from 'lucide-react';
-import type { TripperDashboardStats } from '@/types/tripper';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import { TrendingUp } from "lucide-react";
+import type { TripperDashboardStats } from "@/types/tripper";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface TripperKeyMetricsProps {
   stats: TripperDashboardStats;
-  copy: TripperDashboardDict['keyMetrics'];
+  copy: TripperDashboardDict["keyMetrics"];
 }
 
 export function TripperKeyMetrics({ stats, copy }: TripperKeyMetricsProps) {
@@ -655,11 +670,17 @@ export function TripperKeyMetrics({ stats, copy }: TripperKeyMetricsProps) {
       <div className="space-y-3">
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
           <span className="text-sm text-neutral-600">{copy.totalClients}</span>
-          <span className="font-bold text-neutral-900">{stats.totalClients}</span>
+          <span className="font-bold text-neutral-900">
+            {stats.totalClients}
+          </span>
         </div>
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-          <span className="text-sm text-neutral-600">{copy.conversionRate}</span>
-          <span className="font-bold text-neutral-900">{stats.conversionRate}%</span>
+          <span className="text-sm text-neutral-600">
+            {copy.conversionRate}
+          </span>
+          <span className="font-bold text-neutral-900">
+            {stats.conversionRate}%
+          </span>
         </div>
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
           <span className="text-sm text-neutral-600">{copy.growth}</span>
@@ -684,22 +705,26 @@ Expected: No errors.
 ## Task 9: Create `TripperPackagesSummary`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/TripperPackagesSummary.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface TripperPackagesSummaryProps {
   activePackages: number;
-  copy: TripperDashboardDict['packages'];
+  copy: TripperDashboardDict["packages"];
 }
 
-export function TripperPackagesSummary({ activePackages, copy }: TripperPackagesSummaryProps) {
+export function TripperPackagesSummary({
+  activePackages,
+  copy,
+}: TripperPackagesSummaryProps) {
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between mb-4">
@@ -724,7 +749,8 @@ export function TripperPackagesSummary({ activePackages, copy }: TripperPackages
         </div>
       ) : (
         <p className="text-sm text-neutral-600">
-          {activePackages} paquete{activePackages !== 1 ? 's' : ''} activo{activePackages !== 1 ? 's' : ''}.{' '}
+          {activePackages} paquete{activePackages !== 1 ? "s" : ""} activo
+          {activePackages !== 1 ? "s" : ""}.{" "}
           <Link
             href="/dashboard/tripper/packages"
             className="text-sky-600 hover:underline"
@@ -748,6 +774,7 @@ Expected: No errors.
 ## Task 10: Refactor `page.tsx`
 
 **Files:**
+
 - Modify: `src/app/[locale]/dashboard/tripper/page.tsx`
 
 - [ ] **Step 1: Replace the entire file contents**
@@ -899,6 +926,7 @@ Expected: No errors.
 Run: `npm run dev`
 
 Check:
+
 - Navigate to `/es/dashboard/tripper` as a tripper user
 - Stats cards render with white-card style (no glass morphism)
 - Header uses `HeaderHero` (not the old `Hero`)

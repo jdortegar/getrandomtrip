@@ -10,6 +10,7 @@ alwaysApply: true
 ## Dictionary Files
 
 Main dictionaries:
+
 - `src/dictionaries/es.json` (default)
 - `src/dictionaries/en.json`
 
@@ -46,6 +47,7 @@ function getCopy(locale: string) {
 ```
 
 Locale comes from `useParams()`:
+
 ```ts
 const params = useParams();
 const locale = (params?.locale as string) ?? "es";
@@ -65,6 +67,7 @@ Use this pattern consistently in server routes under `src/app/[locale]/`. Do not
 ## Domain Types
 
 All domain types live in `src/types/`:
+
 - `src/types/core.ts` — base types, User, Journey, Addons
 - `src/types/tripper.ts` — Tripper-specific types, dashboard stats, booking types
 

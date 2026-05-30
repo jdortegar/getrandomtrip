@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useCallback, useMemo, useState } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import BudgetStep from '@/components/journey/BudgetStep';
-import ExcuseStep from '@/components/journey/ExcuseStep';
-import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
-import type { JourneyDetailsStepLabels } from '@/components/journey/JourneyDetailsStep';
-import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
-import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
-import type { JourneyPreferencesStepLabels } from '@/components/journey/JourneyPreferencesStep';
-import { JourneyActionBar } from '@/components/journey/JourneyActionBar';
+import BudgetStep from "@/components/journey/BudgetStep";
+import ExcuseStep from "@/components/journey/ExcuseStep";
+import { JourneyDetailsStep } from "@/components/journey/JourneyDetailsStep";
+import type { JourneyDetailsStepLabels } from "@/components/journey/JourneyDetailsStep";
+import { DEFAULT_TRANSPORT_ORDER } from "@/components/journey/TransportSelector";
+import { JourneyPreferencesStep } from "@/components/journey/JourneyPreferencesStep";
+import type { JourneyPreferencesStepLabels } from "@/components/journey/JourneyPreferencesStep";
+import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
 import {
   getExcusesByTypeAndLevel,
   getExcuseOptions,
   getHasExcuseStep,
-} from '@/lib/helpers/excuse-helper';
-import { clearJourneyDraftStorage } from '@/lib/helpers/journeyDraftStorage';
+} from "@/lib/helpers/excuse-helper";
+import { clearJourneyDraftStorage } from "@/lib/helpers/journeyDraftStorage";
 import {
   buildTripRequestPayloadFromSearchParams,
   checkAllComplete,
@@ -29,16 +29,16 @@ import {
   isStepComplete,
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
   PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
-} from '@/lib/helpers/journey';
-import { useJourneyAccordion } from '@/hooks/useJourneyAccordion';
-import { useJourneyDraftDetails } from '@/hooks/useJourneyDraftDetails';
-import { useJourneyDraftPreferences } from '@/hooks/useJourneyDraftPreferences';
-import { useJourneySearchParams } from '@/hooks/useJourneySearchParams';
-import { useQuerySync } from '@/hooks/useQuerySync';
-import { useStore } from '@/store/store';
-import { useUserStore } from '@/store/slices/userStore';
-import { cn } from '@/lib/utils';
-import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
+} from "@/lib/helpers/journey";
+import { useJourneyAccordion } from "@/hooks/useJourneyAccordion";
+import { useJourneyDraftDetails } from "@/hooks/useJourneyDraftDetails";
+import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
+import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
+import { useQuerySync } from "@/hooks/useQuerySync";
+import { useStore } from "@/store/store";
+import { useUserStore } from "@/store/slices/userStore";
+import { cn } from "@/lib/utils";
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 interface JourneyMainContentLabels {
   clearAll: string;
@@ -123,7 +123,7 @@ export default function JourneyMainContent({
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const { data: session, status: sessionStatus } = useSession();
   const [isSavingAndRedirecting, setIsSavingAndRedirecting] = useState(false);
   const updateQuery = useQuerySync();
@@ -155,7 +155,7 @@ export default function JourneyMainContent({
   );
 
   const hasExcuseStep = useMemo(
-    () => getHasExcuseStep(url.travelType ?? '', url.experience),
+    () => getHasExcuseStep(url.travelType ?? "", url.experience),
     [url.travelType, url.experience],
   );
 
@@ -167,7 +167,7 @@ export default function JourneyMainContent({
   const refineDetailsOptions = useMemo(() => {
     if (!url.excuse) return [];
     const options = getExcuseOptions(url.excuse);
-    const byType = localizedRefineOptions?.[url.travelType ?? ''];
+    const byType = localizedRefineOptions?.[url.travelType ?? ""];
     const localized = byType?.[url.excuse];
     if (!localized?.length) return options;
     return options.map((opt) => {
@@ -192,59 +192,71 @@ export default function JourneyMainContent({
   const scrollToActions = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        document.getElementById('journey-actions')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
+        document.getElementById("journey-actions")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
         });
       });
     });
   };
 
   const handleGoToCheckout = useCallback(async () => {
-    const tripPayload = { ...buildTripRequestPayloadFromSearchParams(searchParams), status: 'SAVED' };
+    const tripPayload = {
+      ...buildTripRequestPayloadFromSearchParams(searchParams),
+      status: "SAVED",
+    };
     const { originCountry, originCity } = tripPayload;
     if (!originCountry || !originCity) {
-      toast.error('Completá ciudad y país de origen para continuar.');
+      toast.error("Completá ciudad y país de origen para continuar.");
       return;
     }
-    if (sessionStatus === 'loading') {
-      toast.info('Cargando sesión…');
+    if (sessionStatus === "loading") {
+      toast.info("Cargando sesión…");
       return;
     }
     if (!session?.user?.email) {
       const { openAuth } = useUserStore.getState();
-      openAuth('signin');
-      toast.info('Iniciá sesión para continuar al checkout.');
+      openAuth("signin");
+      toast.info("Iniciá sesión para continuar al checkout.");
       return;
     }
     setIsSavingAndRedirecting(true);
     try {
-      const res = await fetch('/api/trip-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/trip-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tripPayload),
       });
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 401) {
           const { openAuth } = useUserStore.getState();
-          openAuth('signin');
-          toast.info('Iniciá sesión para continuar al checkout.');
+          openAuth("signin");
+          toast.info("Iniciá sesión para continuar al checkout.");
         } else {
-          toast.error(data.error ?? 'No se pudo guardar el viaje. Intentá de nuevo.');
+          toast.error(
+            data.error ?? "No se pudo guardar el viaje. Intentá de nuevo.",
+          );
         }
         return;
       }
-      clearJourneyDraftStorage(searchParams.get('draftId'));
+      clearJourneyDraftStorage(searchParams.get("draftId"));
       updateQuery({ tripRequestId: data.tripRequest.id });
       router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
     } catch (err) {
-      console.error('Error saving trip:', err);
-      toast.error('Error de conexión. Intentá de nuevo.');
+      console.error("Error saving trip:", err);
+      toast.error("Error de conexión. Intentá de nuevo.");
     } finally {
       setIsSavingAndRedirecting(false);
     }
-  }, [locale, router, searchParams, session?.user?.email, sessionStatus, updateQuery]);
+  }, [
+    locale,
+    router,
+    searchParams,
+    session?.user?.email,
+    sessionStatus,
+    updateQuery,
+  ]);
 
   const handleTravelTypeSelect = (slug: string) => {
     updateQuery({ ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, travelType: slug });
@@ -268,14 +280,14 @@ export default function JourneyMainContent({
     }
     updateQuery({
       refineDetails:
-        currentDetails.length > 0 ? currentDetails.join(',') : undefined,
+        currentDetails.length > 0 ? currentDetails.join(",") : undefined,
     });
   };
 
   const handleOriginCountryChange = (value: string) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftOriginCountry(value);
-      draftDetails.setDraftOriginCity('');
+      draftDetails.setDraftOriginCity("");
       draftDetails.setDraftStartDate(undefined);
       draftDetails.setDraftNights(1);
       draftDetails.setDraftTransportOrder(DEFAULT_TRANSPORT_ORDER);
@@ -295,7 +307,7 @@ export default function JourneyMainContent({
   };
 
   const handleOriginCityChange = (value: string) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftOriginCity(value);
       draftDetails.setDraftStartDate(undefined);
       draftDetails.setDraftNights(1);
@@ -315,7 +327,7 @@ export default function JourneyMainContent({
   };
 
   const handleStartDateChange = (value: string | undefined) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftStartDate(value);
     } else {
       updateQuery({ startDate: value });
@@ -323,7 +335,7 @@ export default function JourneyMainContent({
   };
 
   const handleNightsChange = (value: number) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftNights(value);
     } else {
       updateQuery({ nights: String(value) });
@@ -331,21 +343,24 @@ export default function JourneyMainContent({
   };
 
   const handleRangeChange = (startDate: string | undefined, nights: number) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftStartDate(startDate);
       draftDetails.setDraftNights(nights);
     } else {
-      updateQuery({ nights: String(nights), startDate: startDate ?? undefined });
+      updateQuery({
+        nights: String(nights),
+        startDate: startDate ?? undefined,
+      });
     }
   };
 
   const handleTransportOrderChange = (orderedIds: string[]) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftTransportOrder(orderedIds);
     } else {
       updateQuery({
         transportOrder:
-          orderedIds.length === 4 ? orderedIds.join(',') : undefined,
+          orderedIds.length === 4 ? orderedIds.join(",") : undefined,
       });
     }
   };
@@ -398,17 +413,17 @@ export default function JourneyMainContent({
       travelType: undefined,
       tripRequestId: undefined,
     });
-    setAccordionValue('');
-    if (onTabChange) onTabChange('budget');
+    setAccordionValue("");
+    if (onTabChange) onTabChange("budget");
   };
 
   const handleContinue = () => {
     const nextTab = getNextTab(activeTab, hasExcuseStep);
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
-      if (nextTab === 'excuse') setAccordionValue('excuse');
-      if (nextTab === 'details') setAccordionValue('origin');
-      if (nextTab === 'preferences') setAccordionValue('filters');
+      if (nextTab === "excuse") setAccordionValue("excuse");
+      if (nextTab === "details") setAccordionValue("origin");
+      if (nextTab === "preferences") setAccordionValue("filters");
       scrollToActions();
     }
   };
@@ -419,7 +434,7 @@ export default function JourneyMainContent({
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'budget':
+      case "budget":
         return (
           <BudgetStep
             accordionValue={accordionValue}
@@ -451,7 +466,7 @@ export default function JourneyMainContent({
             )}
           />
         );
-      case 'excuse':
+      case "excuse":
         if (!hasExcuseStep) return null;
         return (
           <ExcuseStep
@@ -495,8 +510,12 @@ export default function JourneyMainContent({
             }}
           />
         );
-      case 'details':
-        if (!url.travelType || !url.experience || (hasExcuseStep && !url.excuse)) {
+      case "details":
+        if (
+          !url.travelType ||
+          !url.experience ||
+          (hasExcuseStep && !url.excuse)
+        ) {
           return (
             <div className="py-12 text-center">
               <p className="text-gray-500">{labels.completeBudgetAndExcuse}</p>
@@ -515,7 +534,7 @@ export default function JourneyMainContent({
             onRangeChange={handleRangeChange}
             onStartDateChange={handleStartDateChange}
             onTransportOrderChange={handleTransportOrderChange}
-            openSectionId={accordionValue || 'origin'}
+            openSectionId={accordionValue || "origin"}
             originCity={draftDetails.effectiveOriginCity}
             originCountry={draftDetails.effectiveOriginCountry}
             startDate={draftDetails.effectiveStartDate}
@@ -523,7 +542,7 @@ export default function JourneyMainContent({
             travelType={url.travelType}
           />
         );
-      case 'preferences':
+      case "preferences":
         if (!url.originCountry || !url.originCity || !url.startDate) {
           return (
             <div className="py-12 text-center">
@@ -556,7 +575,7 @@ export default function JourneyMainContent({
             transport={url.transport}
           />
         );
-      case 'extras':
+      case "extras":
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900">
@@ -573,7 +592,7 @@ export default function JourneyMainContent({
   };
 
   return (
-    <div className={cn('flex-1 min-h-0 flex flex-col', className)}>
+    <div className={cn("flex-1 min-h-0 flex flex-col", className)}>
       <div className="flex-1" id="journey-actions">
         {renderContent()}
       </div>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 const DEBOUNCE_MS = 300;
 
@@ -20,7 +20,10 @@ interface TripperSearchModalProps {
   trippers: TripperSearchItem[];
 }
 
-function filterTrippers(trippers: TripperSearchItem[], query: string): TripperSearchItem[] {
+function filterTrippers(
+  trippers: TripperSearchItem[],
+  query: string,
+): TripperSearchItem[] {
   const q = query.trim().toLowerCase();
   if (!q) return trippers;
   return trippers.filter(
@@ -35,8 +38,8 @@ export default function TripperSearchModal({
   open,
   trippers,
 }: TripperSearchModalProps) {
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -48,18 +51,18 @@ export default function TripperSearchModal({
 
   useEffect(() => {
     if (!open) {
-      setQuery('');
-      setDebouncedQuery('');
+      setQuery("");
+      setDebouncedQuery("");
     }
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [open, onClose]);
 
   const matches = useMemo(
@@ -105,15 +108,15 @@ export default function TripperSearchModal({
           {matches.length === 0 ? (
             <p className="p-4 text-center text-sm text-gray-500">
               {debouncedQuery.trim()
-                ? 'Ningún tripper coincide con la búsqueda.'
-                : 'Escribí para buscar.'}
+                ? "Ningún tripper coincide con la búsqueda."
+                : "Escribí para buscar."}
             </p>
           ) : (
             <ul className="divide-y divide-gray-100">
               {matches.map((tripper) => {
                 const slug =
                   tripper.tripperSlug ||
-                  tripper.name.toLowerCase().replace(/\s+/g, '-');
+                  tripper.name.toLowerCase().replace(/\s+/g, "-");
                 return (
                   <li key={tripper.id}>
                     <Link
@@ -127,9 +130,10 @@ export default function TripperSearchModal({
                           fill
                           sizes="48px"
                           src={
-                            tripper.avatarUrl ?? '/images/fallbacks/tripper-avatar.jpg'
+                            tripper.avatarUrl ??
+                            "/images/fallbacks/tripper-avatar.jpg"
                           }
-                          style={{ objectFit: 'cover' }}
+                          style={{ objectFit: "cover" }}
                         />
                       </div>
                       <div className="min-w-0 flex-1">

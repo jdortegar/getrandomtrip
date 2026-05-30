@@ -5,9 +5,9 @@ export const CHECKOUT_TRIP_STATUSES = new Set([
   "PENDING_PAYMENT",
 ]);
 
-export function pickCheckoutTrip<T extends { status: string; updatedAt: string }>(
-  trips: T[],
-): T | null {
+export function pickCheckoutTrip<
+  T extends { status: string; updatedAt: string },
+>(trips: T[]): T | null {
   if (trips.length === 0) return null;
   const sorted = [...trips].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),

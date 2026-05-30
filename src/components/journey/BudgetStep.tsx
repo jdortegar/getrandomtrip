@@ -57,7 +57,9 @@ export default function BudgetStep({
     : null;
 
   // Force travel-type open until the user has made a selection
-  const effectiveAccordionValue = !selectedTravelType ? 'travel-type' : accordionValue;
+  const effectiveAccordionValue = !selectedTravelType
+    ? "travel-type"
+    : accordionValue;
 
   return (
     <div>
@@ -78,20 +80,18 @@ export default function BudgetStep({
             localizedTravelerTypes={localizedTravelerTypes}
             onSelect={(slug) => {
               handleTravelTypeSelect(slug);
-              onAccordionValueChange('travel-type');
+              onAccordionValueChange("travel-type");
             }}
             selectedTravelType={selectedTravelType}
           />
         </JourneyDropdown>
 
-        
-          <JourneyDropdown
-            content={experienceContent}
-            label={labels.experienceLabel}
-            value="experience"
-          >
-            {hasTravelType && plannerContent ? (
-
+        <JourneyDropdown
+          content={experienceContent}
+          label={labels.experienceLabel}
+          value="experience"
+        >
+          {hasTravelType && plannerContent ? (
             <div className="space-y-4">
               <p className="text-gray-600">
                 {labels.experienceStepDescription}
@@ -107,11 +107,12 @@ export default function BudgetStep({
                 cardClassName="min-h-[450px]!"
               />
             </div>
-          ): <div className="py-8 text-center">
+          ) : (
+            <div className="py-8 text-center">
               <p className="text-gray-500">{labels.selectTravelTypeFirst}</p>
-            </div>}
-          </JourneyDropdown>
-        
+            </div>
+          )}
+        </JourneyDropdown>
       </Accordion>
     </div>
   );

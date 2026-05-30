@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { Plus, LayoutList, BarChart3, Star, BookOpen, Settings } from "lucide-react";
+import {
+  Plus,
+  LayoutList,
+  BarChart3,
+  Star,
+  BookOpen,
+  Settings,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 

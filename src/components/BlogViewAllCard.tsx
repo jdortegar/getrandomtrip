@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import type { BlogViewAll } from '@/lib/data/shared/blog-types';
-import { Button } from './ui/Button';
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import type { BlogViewAll } from "@/lib/data/shared/blog-types";
+import { Button } from "./ui/Button";
 
 interface BlogViewAllCardProps {
   viewAll: BlogViewAll;
@@ -36,7 +36,10 @@ export default function BlogViewAllCard({ viewAll }: BlogViewAllCardProps) {
         <p className="mt-2 text-sm text-white/70 leading-snug">
           {viewAll.subtitle}
         </p>
-        <Button variant="outline" className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit">
+        <Button
+          variant="outline"
+          className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit"
+        >
           Ver todos
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
         </Button>

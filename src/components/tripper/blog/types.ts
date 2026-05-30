@@ -2,10 +2,20 @@ export type ParagraphBlock = { type: "paragraph"; text: string };
 export type ImageBlock = { type: "image"; url: string; caption?: string };
 export type VideoBlock = { type: "video"; url: string; caption?: string };
 export type EmbedProvider = "youtube" | "vimeo" | "map" | "other";
-export type EmbedBlock = { type: "embed"; provider: EmbedProvider; url: string; title?: string };
+export type EmbedBlock = {
+  type: "embed";
+  provider: EmbedProvider;
+  url: string;
+  title?: string;
+};
 export type QuoteBlock = { type: "quote"; text: string; cite?: string };
 
-export type BlogBlock = ParagraphBlock | ImageBlock | VideoBlock | EmbedBlock | QuoteBlock;
+export type BlogBlock =
+  | ParagraphBlock
+  | ImageBlock
+  | VideoBlock
+  | EmbedBlock
+  | QuoteBlock;
 
 export interface BlogPost {
   id: string;

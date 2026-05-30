@@ -6,7 +6,7 @@ import type { AdminPayment } from "@/lib/admin/types";
 import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminPaymentsPageClient() {
-  const copy = useDictionary(d => d.adminPages.payments);
+  const copy = useDictionary((d) => d.adminPages.payments);
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,10 @@ export function AdminPaymentsPageClient() {
       setError(null);
       try {
         const res = await fetch("/api/admin/payments");
-        const data = (await res.json()) as { error?: string; payments?: AdminPayment[] };
+        const data = (await res.json()) as {
+          error?: string;
+          payments?: AdminPayment[];
+        };
         if (!res.ok || !data.payments) {
           setError(data.error ?? copy.errorLoad);
           return;
@@ -33,7 +36,8 @@ export function AdminPaymentsPageClient() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
 
@@ -49,8 +53,18 @@ export function AdminPaymentsPageClient() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200">
-                {[cols.paymentId, cols.traveler, cols.amount, cols.status, cols.provider, cols.created].map((h) => (
-                  <th className="px-4 py-3 text-left text-sm font-medium text-neutral-600" key={h}>
+                {[
+                  cols.paymentId,
+                  cols.traveler,
+                  cols.amount,
+                  cols.status,
+                  cols.provider,
+                  cols.created,
+                ].map((h) => (
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
+                    key={h}
+                  >
                     {h}
                   </th>
                 ))}
@@ -58,17 +72,28 @@ export function AdminPaymentsPageClient() {
             </thead>
             <tbody>
               {payments.map((payment) => (
-                <tr className="border-b border-gray-100 last:border-0" key={payment.id}>
-                  <td className="px-4 py-3.5 text-xs text-neutral-500">{payment.id}</td>
+                <tr
+                  className="border-b border-gray-100 last:border-0"
+                  key={payment.id}
+                >
+                  <td className="px-4 py-3.5 text-xs text-neutral-500">
+                    {payment.id}
+                  </td>
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     <p>{payment.user.name}</p>
-                    <p className="text-xs text-neutral-500">{payment.user.email}</p>
+                    <p className="text-xs text-neutral-500">
+                      {payment.user.email}
+                    </p>
                   </td>
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     {payment.amount} {payment.currency}
                   </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">{payment.status}</td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">{payment.provider}</td>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">
+                    {payment.status}
+                  </td>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">
+                    {payment.provider}
+                  </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-400">
                     {new Date(payment.createdAt).toLocaleDateString()}
                   </td>
@@ -77,7 +102,9 @@ export function AdminPaymentsPageClient() {
             </tbody>
           </table>
           {payments.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+            <p className="py-10 text-center text-sm text-gray-400">
+              {copy.empty}
+            </p>
           )}
         </div>
       </div>

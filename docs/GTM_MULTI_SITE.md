@@ -17,7 +17,7 @@ Use one Google Tag Manager container for **getrandomtrip.com** and **investors.g
 2. **Root layout** (e.g. `app/layout.tsx`): import and render `<AppTracking />` inside your `SessionProvider` (or equivalent), e.g.:
 
    ```tsx
-   import AppTracking from '@/components/tracking/AppTracking';
+   import AppTracking from "@/components/tracking/AppTracking";
    // ...
    <SessionProvider>
      <AppTracking />

@@ -1,8 +1,8 @@
-import type { TripRequestStatus } from './trip-status';
+import type { TripRequestStatus } from "./trip-status";
 
 export type { TripRequestStatus };
 
-export type StatusFilterValue = TripRequestStatus | 'ALL';
+export type StatusFilterValue = TripRequestStatus | "ALL";
 
 export interface AdminTripExperience {
   excuseKey: string | null;
@@ -127,7 +127,12 @@ export interface AdminXsedBenefit {
   internalNotes: string | null;
   confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
   reservationCode: string | null;
-  photos: { id: string; url: string; altText: string | null; sortOrder: number }[];
+  photos: {
+    id: string;
+    url: string;
+    altText: string | null;
+    sortOrder: number;
+  }[];
 }
 
 export interface AdminXsedExperience {

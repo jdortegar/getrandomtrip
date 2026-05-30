@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
+import { useState, useEffect } from "react";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 
 export interface JourneyAccordionResult {
   accordionValue: string;
@@ -22,46 +22,51 @@ export function useJourneyAccordion(
   openSectionId: string | undefined,
   onOpenSection: ((sectionId: string) => void) | undefined,
 ): JourneyAccordionResult {
-  const [internalAccordion, setInternalAccordion] = useState<string>('');
-  const isControlled = openSectionId !== undefined && onOpenSection !== undefined;
-  const accordionValue = isControlled ? (openSectionId ?? '') : internalAccordion;
-  const setAccordionValue = isControlled ? onOpenSection! : setInternalAccordion;
+  const [internalAccordion, setInternalAccordion] = useState<string>("");
+  const isControlled =
+    openSectionId !== undefined && onOpenSection !== undefined;
+  const accordionValue = isControlled
+    ? (openSectionId ?? "")
+    : internalAccordion;
+  const setAccordionValue = isControlled
+    ? onOpenSection!
+    : setInternalAccordion;
 
   // When the step (tab) changes, or the open substep id is invalid for this step,
   // align to a default substep. '' is valid: user may keep all substeps closed.
   useEffect(() => {
-    if (activeTab === 'budget') {
+    if (activeTab === "budget") {
       const valid =
-        accordionValue === 'travel-type' ||
-        accordionValue === 'experience' ||
-        accordionValue === '';
+        accordionValue === "travel-type" ||
+        accordionValue === "experience" ||
+        accordionValue === "";
       if (!valid) {
-        setAccordionValue('travel-type');
+        setAccordionValue("travel-type");
       }
-    } else if (activeTab === 'excuse') {
+    } else if (activeTab === "excuse") {
       const valid =
-        accordionValue === 'excuse' ||
-        accordionValue === 'refine-details' ||
-        accordionValue === '';
+        accordionValue === "excuse" ||
+        accordionValue === "refine-details" ||
+        accordionValue === "";
       if (!valid) {
-        setAccordionValue('excuse');
+        setAccordionValue("excuse");
       }
-    } else if (activeTab === 'details') {
+    } else if (activeTab === "details") {
       const valid =
-        accordionValue === 'origin' ||
-        accordionValue === 'dates' ||
-        accordionValue === 'transport' ||
-        accordionValue === '';
+        accordionValue === "origin" ||
+        accordionValue === "dates" ||
+        accordionValue === "transport" ||
+        accordionValue === "";
       if (!valid) {
-        setAccordionValue('origin');
+        setAccordionValue("origin");
       }
-    } else if (activeTab === 'preferences') {
+    } else if (activeTab === "preferences") {
       const valid =
-        accordionValue === '' ||
-        accordionValue === 'filters' ||
-        (JOURNEY_ADDONS_ENABLED && accordionValue === 'addons');
+        accordionValue === "" ||
+        accordionValue === "filters" ||
+        (JOURNEY_ADDONS_ENABLED && accordionValue === "addons");
       if (!valid) {
-        setAccordionValue('filters');
+        setAccordionValue("filters");
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

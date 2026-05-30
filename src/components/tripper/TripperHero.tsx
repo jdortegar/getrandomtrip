@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import type { TripperProfile } from '@/types/tripper';
-import CountryFlag from '@/components/common/CountryFlag';
-import SafeImage from '@/components/common/SafeImage';
-import { Button } from '@/components/ui/Button';
-import { useMemo } from 'react';
-import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from '@/components/tripper/TripperTravelerTypesSection';
-import Link from 'next/link';
+import type { TripperProfile } from "@/types/tripper";
+import CountryFlag from "@/components/common/CountryFlag";
+import SafeImage from "@/components/common/SafeImage";
+import { Button } from "@/components/ui/Button";
+import { useMemo } from "react";
+import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from "@/components/tripper/TripperTravelerTypesSection";
+import Link from "next/link";
 
 interface TripperHeroProps {
   tripper: TripperProfile;
@@ -24,35 +24,33 @@ function getCountryFromLocation(
 ): string | null {
   if (!location?.trim()) return null;
   const parts = location
-    .split(',')
+    .split(",")
     .map((p) => p.trim())
     .filter(Boolean);
   return parts.length > 0 ? parts[parts.length - 1]! : location;
 }
 
 export default function TripperHero({ tripper }: TripperHeroProps) {
-  const firstName = tripper.name?.split(' ')[0] ?? tripper.name ?? ''
+  const firstName = tripper.name?.split(" ")[0] ?? tripper.name ?? "";
   const tripperName = tripper.name;
   const tripperAvatar = tripper.avatarUrl || null;
   const tripperHeroImage = tripper.heroImage || tripper.avatarUrl || null;
   const tripperBio = tripper.bio;
   const tripperLocation = tripper.location;
 
-  const tagline = truncateTagline(tripperBio, 50)
-  const countryForFlag = getCountryFromLocation(tripperLocation)
+  const tagline = truncateTagline(tripperBio, 50);
+  const countryForFlag = getCountryFromLocation(tripperLocation);
 
   const bannerAlt = useMemo(
-    () => [tripperName, tripperBio].filter(Boolean).join('. ') || 'Tripper banner',
+    () =>
+      [tripperName, tripperBio].filter(Boolean).join(". ") || "Tripper banner",
     [tripperName, tripperBio],
   );
   const bannerSrc = tripperHeroImage ?? tripperAvatar ?? undefined;
   const avatarSrc = tripperAvatar ?? tripperHeroImage ?? undefined;
 
   return (
-    <section
-      className="relative bg-slate-950  text-white"
-      id="tripper-hero"
-    >
+    <section className="relative bg-slate-950  text-white" id="tripper-hero">
       <div
         id="hero-sentinel"
         aria-hidden
@@ -77,7 +75,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
             {/* Circular profile image with white border */}
             <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl md:h-52 md:w-52">
               <SafeImage
-                alt={`Retrato de ${tripperName || 'tripper'}`}
+                alt={`Retrato de ${tripperName || "tripper"}`}
                 className="object-cover"
                 fill
                 priority

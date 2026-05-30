@@ -1,36 +1,52 @@
-'use client';
+"use client";
 
-import { MapPin, Search, X } from 'lucide-react';
-import { FormField, FormSelectField } from '@/components/ui/FormField';
-import { ACCOMMODATION_TYPES } from '@/lib/constants/packages';
-import type { TripperExperiencesDict } from '@/lib/types/dictionary';
-import type { AccommodationEntry, ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
+import { MapPin, Search, X } from "lucide-react";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { ACCOMMODATION_TYPES } from "@/lib/constants/packages";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
+import type {
+  AccommodationEntry,
+  ExperienceFormDraft,
+  ExperienceFormDraftOnChange,
+} from "@/types/tripper";
 
 interface Props {
-  copy: TripperExperiencesDict['form'];
+  copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
 }
 
 const STAR_OPTIONS = [1, 2, 3, 4, 5];
-const EMPTY_ENTRY: AccommodationEntry = { hotelName: '', hotelStars: '', hotelLocation: '', hotelDays: '' };
+const EMPTY_ENTRY: AccommodationEntry = {
+  hotelName: "",
+  hotelStars: "",
+  hotelLocation: "",
+  hotelDays: "",
+};
 
 export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
 
-  function updateEntry(index: number, key: keyof AccommodationEntry, value: string) {
+  function updateEntry(
+    index: number,
+    key: keyof AccommodationEntry,
+    value: string,
+  ) {
     const updated = form.accommodations.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
     );
-    onChange('accommodations', updated);
+    onChange("accommodations", updated);
   }
 
   function addEntry() {
-    onChange('accommodations', [...form.accommodations, { ...EMPTY_ENTRY }]);
+    onChange("accommodations", [...form.accommodations, { ...EMPTY_ENTRY }]);
   }
 
   function removeEntry(index: number) {
-    onChange('accommodations', form.accommodations.filter((_, i) => i !== index));
+    onChange(
+      "accommodations",
+      form.accommodations.filter((_, i) => i !== index),
+    );
   }
 
   return (
@@ -44,10 +60,12 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
           id="acc-type"
           label={fields.accommodationType}
           value={form.accommodationType}
-          onChange={(e) => onChange('accommodationType', e.target.value)}
+          onChange={(e) => onChange("accommodationType", e.target.value)}
         >
           {ACCOMMODATION_TYPES.map((t) => (
-            <option key={t.value} value={t.value}>{t.label}</option>
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
           ))}
         </FormSelectField>
       </div>
@@ -57,7 +75,9 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
           <div key={index} className="space-y-4">
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <span className="text-sm text-neutral-500">Alojamiento {index + 1}</span>
+                <span className="text-sm text-neutral-500">
+                  Alojamiento {index + 1}
+                </span>
                 <button
                   type="button"
                   onClick={() => removeEntry(index)}
@@ -75,7 +95,9 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
                 label={`${fields.hotelName} *`}
                 placeholder="Ej: Boutique..."
                 value={entry.hotelName}
-                onChange={(e) => updateEntry(index, 'hotelName', e.target.value)}
+                onChange={(e) =>
+                  updateEntry(index, "hotelName", e.target.value)
+                }
               />
 
               <div className="flex flex-col gap-2">
@@ -83,7 +105,9 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
                   id={`acc-hotel-stars-${index}`}
                   label={`${fields.hotelStars} *`}
                   value={entry.hotelStars}
-                  onChange={(e) => updateEntry(index, 'hotelStars', e.target.value)}
+                  onChange={(e) =>
+                    updateEntry(index, "hotelStars", e.target.value)
+                  }
                 >
                   <option value="">{fields.starsPlaceholder}</option>
                   {STAR_OPTIONS.map((n) => (
@@ -98,7 +122,10 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <label className="block font-normal text-gray-600 text-base" htmlFor={`acc-hotel-location-${index}`}>
+                <label
+                  className="block font-normal text-gray-600 text-base"
+                  htmlFor={`acc-hotel-location-${index}`}
+                >
                   {fields.hotelLocation} *
                 </label>
                 <div className="relative">
@@ -107,7 +134,9 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
                     className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 pr-16 rounded-xl text-gray-900 w-full text-base"
                     placeholder="Buscar location..."
                     value={entry.hotelLocation}
-                    onChange={(e) => updateEntry(index, 'hotelLocation', e.target.value)}
+                    onChange={(e) =>
+                      updateEntry(index, "hotelLocation", e.target.value)
+                    }
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
                     <Search className="h-4 w-4 text-gray-400" />
@@ -123,7 +152,13 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
                 type="text"
                 inputMode="numeric"
                 value={entry.hotelDays}
-                onChange={(e) => updateEntry(index, 'hotelDays', e.target.value.replace(/[^0-9]/g, ''))}
+                onChange={(e) =>
+                  updateEntry(
+                    index,
+                    "hotelDays",
+                    e.target.value.replace(/[^0-9]/g, ""),
+                  )
+                }
               />
             </div>
           </div>

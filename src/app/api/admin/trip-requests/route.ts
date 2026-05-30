@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
-import { attachAdminTripRequestRelations } from '@/lib/admin/trip-requests';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import type {
   AdminTripExperience,
   AdminTripPayment,
   AdminTripUser,
-} from '@/lib/admin/types';
-import { prisma } from '@/lib/prisma';
+} from "@/lib/admin/types";
+import { prisma } from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -25,12 +25,15 @@ export async function GET(request: NextRequest) {
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'admin')) {
-      return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
+    if (!user || !hasRoleAccess(user, "admin")) {
+      return NextResponse.json(
+        { error: "Forbidden - Admin access only" },
+        { status: 403 },
+      );
     }
 
     const tripRequests = await prisma.tripRequest.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     const experienceIds = Array.from(
@@ -117,7 +120,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ tripRequests: hydratedTripRequests });
   } catch (error) {
-    console.error('Error fetching admin trip requests:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error fetching admin trip requests:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

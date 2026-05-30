@@ -303,7 +303,10 @@ export default function ExperienceFormClient({
           className="min-w-0 flex-1 space-y-6"
         >
           {/* Section 1: Básico */}
-          <div id="section-basic" className={activeSection === "basic" ? sectionClassName : "hidden"}>
+          <div
+            id="section-basic"
+            className={activeSection === "basic" ? sectionClassName : "hidden"}
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.basic}
             </h2>
@@ -398,10 +401,14 @@ export default function ExperienceFormClient({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>{copy.fields.titleInternal}</label>
+                  <label className={labelClass}>
+                    {copy.fields.titleInternal}
+                  </label>
                   <Input
                     value={form.titleInternal ?? ""}
-                    onChange={(e) => set("titleInternal", e.target.value || null)}
+                    onChange={(e) =>
+                      set("titleInternal", e.target.value || null)
+                    }
                   />
                 </div>
                 <div>
@@ -418,7 +425,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 2: Destino */}
-          <div id="section-destination" className={activeSection === "destination" ? sectionClassName : "hidden"}>
+          <div
+            id="section-destination"
+            className={
+              activeSection === "destination" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.destination}
             </h2>
@@ -471,7 +483,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 3: Capacidad & Precio */}
-          <div id="section-capacity" className={activeSection === "capacity" ? sectionClassName : "hidden"}>
+          <div
+            id="section-capacity"
+            className={
+              activeSection === "capacity" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.capacityPricing}
             </h2>
@@ -534,9 +551,7 @@ export default function ExperienceFormClient({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>
-                    {copy.fields.basePrice}
-                  </label>
+                  <label className={labelClass}>{copy.fields.basePrice}</label>
                   <Input
                     type="number"
                     min={0}
@@ -579,7 +594,12 @@ export default function ExperienceFormClient({
                     type="number"
                     min={1}
                     value={form.minSpots ?? ""}
-                    onChange={(e) => set("minSpots", e.target.value ? parseInt(e.target.value) : null)}
+                    onChange={(e) =>
+                      set(
+                        "minSpots",
+                        e.target.value ? parseInt(e.target.value) : null,
+                      )
+                    }
                   />
                 </div>
                 <div>
@@ -588,7 +608,12 @@ export default function ExperienceFormClient({
                     type="number"
                     min={1}
                     value={form.maxSpots ?? ""}
-                    onChange={(e) => set("maxSpots", e.target.value ? parseInt(e.target.value) : null)}
+                    onChange={(e) =>
+                      set(
+                        "maxSpots",
+                        e.target.value ? parseInt(e.target.value) : null,
+                      )
+                    }
                   />
                 </div>
                 <div>
@@ -612,7 +637,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 4: Compatibilidad */}
-          <div id="section-compatibility" className={activeSection === "compatibility" ? sectionClassName : "hidden"}>
+          <div
+            id="section-compatibility"
+            className={
+              activeSection === "compatibility" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-1">
               {copy.sections.compatibility}
             </h2>
@@ -671,7 +701,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 5: Alojamiento */}
-          <div id="section-accommodation" className={activeSection === "accommodation" ? sectionClassName : "hidden"}>
+          <div
+            id="section-accommodation"
+            className={
+              activeSection === "accommodation" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.accommodation}
             </h2>
@@ -806,7 +841,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 6: Actividades */}
-          <div id="section-activities" className={activeSection === "activities" ? sectionClassName : "hidden"}>
+          <div
+            id="section-activities"
+            className={
+              activeSection === "activities" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.activities}
             </h2>
@@ -906,7 +946,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 7: Itinerario */}
-          <div id="section-itinerary" className={activeSection === "itinerary" ? sectionClassName : "hidden"}>
+          <div
+            id="section-itinerary"
+            className={
+              activeSection === "itinerary" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.itinerary}
             </h2>
@@ -996,7 +1041,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 8: Incluye / No Incluye */}
-          <div id="section-inclusions" className={activeSection === "inclusions" ? sectionClassName : "hidden"}>
+          <div
+            id="section-inclusions"
+            className={
+              activeSection === "inclusions" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.inclusions}
             </h2>
@@ -1043,23 +1093,33 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 9: Policies & Communication */}
-          <div id="section-policies" className={activeSection === "policies" ? sectionClassName : "hidden"}>
+          <div
+            id="section-policies"
+            className={
+              activeSection === "policies" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.policies}
             </h2>
             <div className="space-y-4">
-              {([
-                ["cancellationPolicy", copy.fields.cancellationPolicy],
-                ["weatherPolicy", copy.fields.weatherPolicy],
-                ["accessibilityNotes", copy.fields.accessibilityNotes],
-                ["safetyNotes", copy.fields.safetyNotes],
-                ["revealCopy", copy.fields.revealCopy],
-                ["preRevealCopy", copy.fields.preRevealCopy],
-                ["packingHints", copy.fields.packingHints],
-                ["whatsappMessageTemplate", copy.fields.whatsappMessageTemplate],
-                ["adminNotes", copy.fields.adminNotes],
-                ["supplierNotes", copy.fields.supplierNotes],
-              ] as [keyof ExperienceFormData, string][]).map(([key, label]) => (
+              {(
+                [
+                  ["cancellationPolicy", copy.fields.cancellationPolicy],
+                  ["weatherPolicy", copy.fields.weatherPolicy],
+                  ["accessibilityNotes", copy.fields.accessibilityNotes],
+                  ["safetyNotes", copy.fields.safetyNotes],
+                  ["revealCopy", copy.fields.revealCopy],
+                  ["preRevealCopy", copy.fields.preRevealCopy],
+                  ["packingHints", copy.fields.packingHints],
+                  [
+                    "whatsappMessageTemplate",
+                    copy.fields.whatsappMessageTemplate,
+                  ],
+                  ["adminNotes", copy.fields.adminNotes],
+                  ["supplierNotes", copy.fields.supplierNotes],
+                ] as [keyof ExperienceFormData, string][]
+              ).map(([key, label]) => (
                 <div key={key}>
                   <label className={labelClass}>{label}</label>
                   <textarea
@@ -1074,7 +1134,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 10: Tags, Highlights & Media */}
-          <div id="section-tags-media" className={activeSection === "tags-media" ? sectionClassName : "hidden"}>
+          <div
+            id="section-tags-media"
+            className={
+              activeSection === "tags-media" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.tagsMedia}
             </h2>
@@ -1133,7 +1198,12 @@ export default function ExperienceFormClient({
           </div>
 
           {/* Section 10: Visibilidad */}
-          <div id="section-visibility" className={activeSection === "visibility" ? sectionClassName : "hidden"}>
+          <div
+            id="section-visibility"
+            className={
+              activeSection === "visibility" ? sectionClassName : "hidden"
+            }
+          >
             <h2 className="text-lg font-semibold text-neutral-900 mb-4">
               {copy.sections.visibility}
             </h2>

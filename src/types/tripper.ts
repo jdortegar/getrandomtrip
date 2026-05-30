@@ -3,28 +3,28 @@
 // ============================================================================
 
 export type TravellerType =
-  | 'solo'
-  | 'couple'
-  | 'family'
-  | 'group'
-  | 'honeymoon'
-  | 'paws';
+  | "solo"
+  | "couple"
+  | "family"
+  | "group"
+  | "honeymoon"
+  | "paws";
 export type TierLevel =
-  | 'essenza'
-  | 'modo-explora'
-  | 'explora-plus'
-  | 'bivouac'
-  | 'atelier-getaway';
-export type UserRole = 'CLIENT' | 'TRIPPER' | 'ADMIN';
-export type OwnerType = 'CUSTOMER' | 'TRIPPER' | 'ADMIN';
+  | "essenza"
+  | "modo-explora"
+  | "explora-plus"
+  | "bivouac"
+  | "atelier-getaway";
+export type UserRole = "CLIENT" | "TRIPPER" | "ADMIN";
+export type OwnerType = "CUSTOMER" | "TRIPPER" | "ADMIN";
 export type RouteStatus =
-  | 'draft'
-  | 'in_review'
-  | 'needs_changes'
-  | 'approved'
-  | 'published'
-  | 'archived';
-export type TripperLevel = 'rookie' | 'pro' | 'elite';
+  | "draft"
+  | "in_review"
+  | "needs_changes"
+  | "approved"
+  | "published"
+  | "archived";
+export type TripperLevel = "rookie" | "pro" | "elite";
 
 // Tripper Route
 export interface TripperRoute {
@@ -51,7 +51,7 @@ export interface Earning {
   baseCommissionUSD: number;
   bonusUSD: number;
   totalUSD: number;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   payoutDate?: string;
 }
 
@@ -191,8 +191,14 @@ export interface RecentBooking {
   experienceId?: string;
   date: string;
   amount: number;
-  status: 'confirmed' | 'revealed' | 'completed' | 'pending' | 'cancelled';
-  paymentStatus: 'APPROVED' | 'COMPLETED' | 'PENDING' | 'FAILED' | 'REJECTED' | 'CANCELLED';
+  status: "confirmed" | "revealed" | "completed" | "pending" | "cancelled";
+  paymentStatus:
+    | "APPROVED"
+    | "COMPLETED"
+    | "PENDING"
+    | "FAILED"
+    | "REJECTED"
+    | "CANCELLED";
 }
 
 // ─── Experience Types ─────────────────────────────────────────────────────────

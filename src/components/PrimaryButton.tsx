@@ -1,10 +1,14 @@
-import React from 'react';
+import React from "react";
 
 interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({ children, className = '', ...props }) => {
+const PrimaryButton: React.FC<PrimaryButtonProps> = ({
+  children,
+  className = "",
+  ...props
+}) => {
   return (
     <button
       {...props}

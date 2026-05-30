@@ -1,37 +1,48 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import { FormField } from '@/components/ui/FormField';
-import type { TripperExperiencesDict } from '@/lib/types/dictionary';
-import type { ItineraryDayEntry, ExperienceFormDraft, ExperienceFormDraftOnChange } from '@/types/tripper';
+import { X } from "lucide-react";
+import { FormField } from "@/components/ui/FormField";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
+import type {
+  ItineraryDayEntry,
+  ExperienceFormDraft,
+  ExperienceFormDraftOnChange,
+} from "@/types/tripper";
 
 interface Props {
-  copy: TripperExperiencesDict['form'];
+  copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
 }
 
-const EMPTY_DAY: ItineraryDayEntry = { title: '', description: '' };
+const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "" };
 
 const textareaClass =
-  'bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[120px]';
+  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[120px]";
 
 export function ItineraryStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
 
-  function updateDay(index: number, key: keyof ItineraryDayEntry, value: string) {
+  function updateDay(
+    index: number,
+    key: keyof ItineraryDayEntry,
+    value: string,
+  ) {
     const updated = form.itinerary.map((day, i) =>
       i === index ? { ...day, [key]: value } : day,
     );
-    onChange('itinerary', updated);
+    onChange("itinerary", updated);
   }
 
   function addDay() {
-    onChange('itinerary', [...form.itinerary, { ...EMPTY_DAY }]);
+    onChange("itinerary", [...form.itinerary, { ...EMPTY_DAY }]);
   }
 
   function removeDay(index: number) {
-    onChange('itinerary', form.itinerary.filter((_, i) => i !== index));
+    onChange(
+      "itinerary",
+      form.itinerary.filter((_, i) => i !== index),
+    );
   }
 
   return (
@@ -45,7 +56,9 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
           <div key={index} className="space-y-4">
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <span className="text-sm text-neutral-500">Día {index + 1}</span>
+                <span className="text-sm text-neutral-500">
+                  Día {index + 1}
+                </span>
                 <button
                   type="button"
                   onClick={() => removeDay(index)}
@@ -64,18 +77,21 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
                   <>
                     <span className="font-semibold text-gray-800">
                       {fields.itineraryTitle} {index + 1}
-                    </span>{' '}
+                    </span>{" "}
                     <span className="text-red-500">*</span>
                   </>
                 }
                 placeholder="Ej: primer día en la colina"
                 value={day.title}
-                onChange={(e) => updateDay(index, 'title', e.target.value)}
+                onChange={(e) => updateDay(index, "title", e.target.value)}
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="block font-semibold text-gray-800 text-base" htmlFor={`itin-desc-${index}`}>
+              <label
+                className="block font-semibold text-gray-800 text-base"
+                htmlFor={`itin-desc-${index}`}
+              >
                 {fields.itineraryDesc}
               </label>
               <textarea
@@ -83,7 +99,9 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
                 className={textareaClass}
                 placeholder='Ej: el primer día fuimos a la colina llamada "Viva lava"'
                 value={day.description}
-                onChange={(e) => updateDay(index, 'description', e.target.value)}
+                onChange={(e) =>
+                  updateDay(index, "description", e.target.value)
+                }
               />
             </div>
           </div>

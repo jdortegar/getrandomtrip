@@ -1,10 +1,10 @@
-'use client';
-import { useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useStore } from '@/store/store';
-import { useQuerySync } from '@/hooks/useQuerySync';
-import { FILTER_OPTIONS, Filters } from '@/store/slices/journeyStore';
-import Chip from '@/components/badge';
+"use client";
+import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useStore } from "@/store/store";
+import { useQuerySync } from "@/hooks/useQuerySync";
+import { FILTER_OPTIONS, Filters } from "@/store/slices/journeyStore";
+import Chip from "@/components/badge";
 
 type Item = {
   key: string;
@@ -20,10 +20,10 @@ export default function SelectedFiltersChips() {
   const updateQuery = useQuerySync();
 
   const avoidDestinations = useMemo(() => {
-    const raw = searchParams.get('avoidDestinations');
+    const raw = searchParams.get("avoidDestinations");
     return raw
       ? raw
-          .split(',')
+          .split(",")
           .map((s) => s.trim())
           .filter(Boolean)
       : [];
@@ -39,17 +39,17 @@ export default function SelectedFiltersChips() {
     const found = filterConfig.options.find((opt) => opt.key === value);
     const valueLabel = found ? found.key : value;
 
-    if (value !== 'any' && value !== 'no-limit') {
+    if (value !== "any" && value !== "no-limit") {
       items.push({
         key,
         value: valueLabel,
         label: key,
-        locked: key === 'transport',
+        locked: key === "transport",
         onRemove: () =>
           setPartial({
             filters: {
               ...filters,
-              [key]: key === 'maxTravelTime' ? 'no-limit' : 'any',
+              [key]: key === "maxTravelTime" ? "no-limit" : "any",
             },
           }),
       });
@@ -61,7 +61,7 @@ export default function SelectedFiltersChips() {
     items.push({
       key: `avoid-${destination.toLowerCase()}`,
       value: destination,
-      label: 'Evitar',
+      label: "Evitar",
       onRemove: () => {
         const next = avoidDestinations.filter(
           (d) => d.toLowerCase() !== destination.toLowerCase(),

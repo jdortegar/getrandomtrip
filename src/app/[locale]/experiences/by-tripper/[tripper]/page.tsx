@@ -1,68 +1,66 @@
-import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import {
   getTripperBySlug,
   getTripperExperiencesByTypeAndLevel,
-} from '@/lib/db/tripper-queries';
-import { getTripperAvailableTypesAndLevels } from '@/lib/data/tripper-trips';
-import TripperCard from '@/components/TripperCard';
-import PackageCard from '@/components/PackageCard';
-import { Button } from '@/components/ui/Button';
-import { ArrowLeft, MapPin, Star, Users, EyeOff } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { getExcuseTitle, getExcuseImage } from '@/lib/helpers/excuse-helper';
-import { getLevelById } from '@/lib/utils/experiencesData';
+} from "@/lib/db/tripper-queries";
+import { getTripperAvailableTypesAndLevels } from "@/lib/data/tripper-trips";
+import TripperCard from "@/components/TripperCard";
+import PackageCard from "@/components/PackageCard";
+import { Button } from "@/components/ui/Button";
+import { ArrowLeft, MapPin, Star, Users, EyeOff } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { getExcuseTitle, getExcuseImage } from "@/lib/helpers/excuse-helper";
+import { getLevelById } from "@/lib/utils/experiencesData";
 
 // Helper function to get duration and activity ranges based on level
 function getLevelInfo(level: string) {
   const levelData = getLevelById(undefined, level);
   if (!levelData) {
-    return { duration: '2-3 días', activities: '1-2 actividades' };
+    return { duration: "2-3 días", activities: "1-2 actividades" };
   }
 
   // Duration based on maxNights
-  let duration = '';
+  let duration = "";
   if (levelData.maxNights <= 2) {
-    duration = '1-2 días';
+    duration = "1-2 días";
   } else if (levelData.maxNights <= 3) {
-    duration = '2-3 días';
+    duration = "2-3 días";
   } else if (levelData.maxNights <= 4) {
-    duration = '3-4 días';
+    duration = "3-4 días";
   } else if (levelData.maxNights <= 5) {
-    duration = '4-5 días';
+    duration = "4-5 días";
   } else {
-    duration = '5+ días';
+    duration = "5+ días";
   }
 
   // Activities based on level complexity
-  let activities = '';
-  if (level === 'essenza') {
-    activities = '1-2 actividades';
-  } else if (level === 'modo-explora') {
-    activities = '2-3 actividades';
-  } else if (level === 'explora-plus') {
-    activities = '3-4 actividades';
-  } else if (level === 'bivouac') {
-    activities = '4-5 actividades';
-  } else if (level === 'atelier-getaway') {
-    activities = '5+ actividades';
+  let activities = "";
+  if (level === "essenza") {
+    activities = "1-2 actividades";
+  } else if (level === "modo-explora") {
+    activities = "2-3 actividades";
+  } else if (level === "explora-plus") {
+    activities = "3-4 actividades";
+  } else if (level === "bivouac") {
+    activities = "4-5 actividades";
+  } else if (level === "atelier-getaway") {
+    activities = "5+ actividades";
   } else {
-    activities = '2-3 actividades';
+    activities = "2-3 actividades";
   }
 
   return { duration, activities };
 }
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ tripper: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ tripper: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   const dbTripper = await getTripperBySlug(params.tripper);
 
-  if (!dbTripper) return { title: 'Randomtrip' };
+  if (!dbTripper) return { title: "Randomtrip" };
 
   return {
     title: `Paquetes de ${dbTripper.name} | Randomtrip`,
@@ -72,7 +70,7 @@ export async function generateMetadata(
       description: `Explora los paquetes de viaje únicos creados por ${dbTripper.name}.`,
       images: [
         {
-          url: dbTripper.avatarUrl || '/images/fallback-profile.jpg',
+          url: dbTripper.avatarUrl || "/images/fallback-profile.jpg",
           width: 1200,
           height: 630,
         },
@@ -81,15 +79,13 @@ export async function generateMetadata(
   };
 }
 
-export default async function Page(
-  props: {
-    params: Promise<{ tripper: string }>;
-  }
-) {
+export default async function Page(props: {
+  params: Promise<{ tripper: string }>;
+}) {
   const params = await props.params;
   // Guard si viene vacío o 'undefined'
-  if (!params?.tripper || params.tripper === 'undefined') {
-    redirect('/experiences/by-type/group');
+  if (!params?.tripper || params.tripper === "undefined") {
+    redirect("/experiences/by-type/group");
   }
 
   // Fetch from database
@@ -135,7 +131,7 @@ export default async function Page(
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
             <div className="relative">
               <Image
-                src={dbTripper.avatarUrl || '/images/fallback-profile.jpg'}
+                src={dbTripper.avatarUrl || "/images/fallback-profile.jpg"}
                 alt={dbTripper.name}
                 width={120}
                 height={120}
@@ -148,7 +144,7 @@ export default async function Page(
               </h1>
               <p className="text-gray-600 text-lg mb-4">
                 {dbTripper.bio ||
-                  'Experto en crear experiencias de viaje únicas y memorables.'}
+                  "Experto en crear experiencias de viaje únicas y memorables."}
               </p>
               <div className="flex flex-wrap gap-4 text-sm text-gray-500">
                 {dbTripper.location && (
@@ -194,85 +190,87 @@ export default async function Page(
           </div>
         ) : (
           <div className="space-y-12">
-            {experiencesByType.map(({ type, experiences, totalExperiences }) => (
-              <div key={type}>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 capitalize">
-                    {type.replace(/-/g, ' ')} Experiences
-                  </h2>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {totalExperiences} experiencias
-                  </span>
-                </div>
+            {experiencesByType.map(
+              ({ type, experiences, totalExperiences }) => (
+                <div key={type}>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 capitalize">
+                      {type.replace(/-/g, " ")} Experiences
+                    </h2>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {totalExperiences} experiencias
+                    </span>
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {experiences.map((pkg) => {
-                    const levelInfo = getLevelInfo(pkg.level);
-                    return (
-                      <div
-                        key={pkg.id}
-                        className="bg-white rounded-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:border-primary group relative"
-                      >
-                        {/* Mystery overlay */}
-                        <div className="absolute inset-0 bg-linear-to-br from-black/20 to-black/40 z-10" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {experiences.map((pkg) => {
+                      const levelInfo = getLevelInfo(pkg.level);
+                      return (
+                        <div
+                          key={pkg.id}
+                          className="bg-white rounded-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:border-primary group relative"
+                        >
+                          {/* Mystery overlay */}
+                          <div className="absolute inset-0 bg-linear-to-br from-black/20 to-black/40 z-10" />
 
-                        <div className="relative h-56 w-full">
-                          <Image
-                            src={
-                              pkg.excuseKey
-                                ? getExcuseImage(pkg.excuseKey)
-                                : pkg.heroImage ||
-                                  '/images/fallback-package.jpg'
-                            }
-                            alt="Paquete sorpresa"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-
-                        <div className="p-6 relative z-20">
-                          {/* Destination hint */}
-                          <div className="mb-4">
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <MapPin className="w-4 h-4" />
-                              <span className="text-sm font-medium">
-                                {pkg.destinationCountry}
-                              </span>
-                            </div>
+                          <div className="relative h-56 w-full">
+                            <Image
+                              src={
+                                pkg.excuseKey
+                                  ? getExcuseImage(pkg.excuseKey)
+                                  : pkg.heroImage ||
+                                    "/images/fallback-package.jpg"
+                              }
+                              alt="Paquete sorpresa"
+                              fill
+                              className="object-cover"
+                            />
                           </div>
 
-                          {/* Excuse as title */}
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">
-                            {pkg.excuseKey
-                              ? getExcuseTitle(pkg.excuseKey)
-                              : 'Paquete Sorpresa'}
-                          </h3>
-
-                          {/* Mystery description */}
-                          <p className="text-gray-600 text-sm mb-4">
-                            Una experiencia única te espera. El destino y las
-                            actividades se revelarán cuando estés listo para la
-                            aventura.
-                          </p>
-
-                          {/* Level-based info */}
-                          <div className="flex items-center gap-2 mb-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 bg-primary/60 rounded-full" />
-                              <span>Duración: {levelInfo.duration}</span>
+                          <div className="p-6 relative z-20">
+                            {/* Destination hint */}
+                            <div className="mb-4">
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <MapPin className="w-4 h-4" />
+                                <span className="text-sm font-medium">
+                                  {pkg.destinationCountry}
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 bg-primary/60 rounded-full" />
-                              <span>Actividades: {levelInfo.activities}</span>
+
+                            {/* Excuse as title */}
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              {pkg.excuseKey
+                                ? getExcuseTitle(pkg.excuseKey)
+                                : "Paquete Sorpresa"}
+                            </h3>
+
+                            {/* Mystery description */}
+                            <p className="text-gray-600 text-sm mb-4">
+                              Una experiencia única te espera. El destino y las
+                              actividades se revelarán cuando estés listo para
+                              la aventura.
+                            </p>
+
+                            {/* Level-based info */}
+                            <div className="flex items-center gap-2 mb-4 text-xs text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-primary/60 rounded-full" />
+                                <span>Duración: {levelInfo.duration}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-primary/60 rounded-full" />
+                                <span>Actividades: {levelInfo.activities}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         )}
       </div>

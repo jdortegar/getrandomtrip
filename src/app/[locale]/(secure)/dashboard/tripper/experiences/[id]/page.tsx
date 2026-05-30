@@ -5,7 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
-import type { ExperienceFormDraft, AccommodationEntry, ActivityEntry, ItineraryDayEntry } from "@/types/tripper";
+import type {
+  ExperienceFormDraft,
+  AccommodationEntry,
+  ActivityEntry,
+  ItineraryDayEntry,
+} from "@/types/tripper";
 
 export default async function EditExperiencePage(props: {
   params: Promise<{ locale: string; id: string }>;
@@ -64,18 +69,23 @@ export default async function EditExperiencePage(props: {
     accommodationType: pkg.accommodationType,
     accommodations: (Array.isArray(pkg.hotels) && pkg.hotels.length > 0
       ? pkg.hotels
-      : [{ hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "" }]
-    ) as AccommodationEntry[],
+      : [
+          { hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "" },
+        ]) as AccommodationEntry[],
     activities: (Array.isArray(pkg.activities) && pkg.activities.length > 0
       ? pkg.activities
-      : [{ name: "", durationRhythm: "", description: "", risks: "" }]
-    ) as ActivityEntry[],
+      : [
+          { name: "", durationRhythm: "", description: "", risks: "" },
+        ]) as ActivityEntry[],
     itinerary: (Array.isArray(pkg.itinerary) && pkg.itinerary.length > 0
       ? pkg.itinerary
-      : [{ title: "", description: "" }]
-    ) as ItineraryDayEntry[],
-    inclusions: Array.isArray(pkg.inclusions) ? (pkg.inclusions as string[]) : [],
-    exclusions: Array.isArray(pkg.exclusions) ? (pkg.exclusions as string[]) : [],
+      : [{ title: "", description: "" }]) as ItineraryDayEntry[],
+    inclusions: Array.isArray(pkg.inclusions)
+      ? (pkg.inclusions as string[])
+      : [],
+    exclusions: Array.isArray(pkg.exclusions)
+      ? (pkg.exclusions as string[])
+      : [],
   };
 
   const dict = await getDictionary(params.locale);

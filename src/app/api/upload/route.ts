@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 
 const FEATURE_STORE: Record<string, string> = {
   avatar: "user-avatars",
-  blog:   "blog-media",
+  blog: "blog-media",
 };
 const DEFAULT_STORE = "user-media";
 
@@ -17,7 +17,10 @@ function getBlobStore(feature?: string) {
   return getStore(storeName, {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? { siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_AUTH_TOKEN }
+      ? {
+          siteID: process.env.NETLIFY_SITE_ID,
+          token: process.env.NETLIFY_AUTH_TOKEN,
+        }
       : {}),
   });
 }
@@ -95,7 +98,10 @@ export async function DELETE(request: NextRequest) {
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[upload] DELETE", error);
-    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Blob storage unavailable" },
+      { status: 503 },
+    );
   }
 }
 
@@ -113,18 +119,22 @@ export async function POST(request: NextRequest) {
     }
 
     const rawFeature = formData.get("feature");
-    if (typeof rawFeature !== "string" || !/^[a-zA-Z0-9_-]{1,64}$/.test(rawFeature)) {
+    if (
+      typeof rawFeature !== "string" ||
+      !/^[a-zA-Z0-9_-]{1,64}$/.test(rawFeature)
+    ) {
       return NextResponse.json({ error: "Invalid feature" }, { status: 400 });
     }
 
     const rawExt = file.name.split(".").pop() ?? "bin";
     const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8) || "bin";
-    const baseName = file.name
-      .replace(/\.[^.]+$/, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 60) || "file";
+    const baseName =
+      file.name
+        .replace(/\.[^.]+$/, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60) || "file";
     const filename = `${baseName}-${Date.now()}.${ext}`;
     const key = `${session.user.id}/${rawFeature}/${filename}`;
 
@@ -143,7 +153,10 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (!ALLOWED_MIME_TYPES.has(file.type)) {
-      return NextResponse.json({ error: "Unsupported file type" }, { status: 415 });
+      return NextResponse.json(
+        { error: "Unsupported file type" },
+        { status: 415 },
+      );
     }
 
     const arrayBuffer = await file.arrayBuffer();
@@ -156,6 +169,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url });
   } catch (error) {
     console.error("[upload] POST", error);
-    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Blob storage unavailable" },
+      { status: 503 },
+    );
   }
 }

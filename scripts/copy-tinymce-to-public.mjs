@@ -13,7 +13,9 @@ const source = path.join(repoRoot, "node_modules", "tinymce");
 const dest = path.join(repoRoot, "public", "tinymce");
 
 if (!fs.existsSync(source)) {
-  console.warn("[copy-tinymce] node_modules/tinymce missing; skip (run npm install).");
+  console.warn(
+    "[copy-tinymce] node_modules/tinymce missing; skip (run npm install).",
+  );
   process.exit(0);
 }
 

@@ -8,8 +8,10 @@ interface TripperBlogEditDemoClientProps {
   post: Partial<BlogPost>;
 }
 
-export function TripperBlogEditDemoClient({ post }: TripperBlogEditDemoClientProps) {
-  const blogsCopy = useDictionary(d => d.tripperBlogs);
+export function TripperBlogEditDemoClient({
+  post,
+}: TripperBlogEditDemoClientProps) {
+  const blogsCopy = useDictionary((d) => d.tripperBlogs);
 
   return (
     <div className="p-8">

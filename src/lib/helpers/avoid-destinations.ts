@@ -5,8 +5,8 @@
  */
 export function canonicalAvoidCityLabel(raw: string): string {
   const t = raw.trim();
-  if (!t) return '';
-  return t.split(',')[0]?.trim() ?? t;
+  if (!t) return "";
+  return t.split(",")[0]?.trim() ?? t;
 }
 
 export function avoidCityLabelsEqual(a: string, b: string): boolean {

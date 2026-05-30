@@ -13,7 +13,11 @@ interface AllDropsGridProps {
   initialHasMore: boolean;
 }
 
-export function AllDropsGrid({ excludeId, initialDrops, initialHasMore }: AllDropsGridProps) {
+export function AllDropsGrid({
+  excludeId,
+  initialDrops,
+  initialHasMore,
+}: AllDropsGridProps) {
   const locale = useLocale();
   const copy = useDictionary((d) => d.xsedDropsPage);
   const [drops, setDrops] = useState<DropEntry[]>(initialDrops);
@@ -23,7 +27,11 @@ export function AllDropsGrid({ excludeId, initialDrops, initialHasMore }: AllDro
 
   async function loadMore() {
     setLoading(true);
-    const params = new URLSearchParams({ locale, offset: String(drops.length), limit: "6" });
+    const params = new URLSearchParams({
+      locale,
+      offset: String(drops.length),
+      limit: "6",
+    });
     if (excludeId) params.set("excludeId", excludeId);
     const res = await fetch(`/api/xsed/drops?${params}`);
     const data: { drops: DropEntry[]; hasMore: boolean } = await res.json();
@@ -67,7 +75,12 @@ export function AllDropsGrid({ excludeId, initialDrops, initialHasMore }: AllDro
 
       {hasMore && (
         <div className="mt-12 flex justify-center">
-          <Button disabled={loading} onClick={loadMore} size="lg" variant="tertiary">
+          <Button
+            disabled={loading}
+            onClick={loadMore}
+            size="lg"
+            variant="tertiary"
+          >
             {loading ? "..." : copy.loadMore}
           </Button>
         </div>

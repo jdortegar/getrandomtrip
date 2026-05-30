@@ -6,7 +6,7 @@ import type { AdminExperience } from "@/lib/admin/types";
 import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminExperiencesPageClient() {
-  const copy = useDictionary(d => d.adminPages.experiences);
+  const copy = useDictionary((d) => d.adminPages.experiences);
 
   const [experiences, setExperiences] = useState<AdminExperience[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,10 @@ export function AdminExperiencesPageClient() {
     setError(null);
     try {
       const res = await fetch("/api/admin/experiences");
-      const data = (await res.json()) as { error?: string; experiences?: AdminExperience[] };
+      const data = (await res.json()) as {
+        error?: string;
+        experiences?: AdminExperience[];
+      };
       if (!res.ok || !data.experiences) {
         setError(data.error ?? copy.errorLoad);
         return;
@@ -54,7 +57,8 @@ export function AdminExperiencesPageClient() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
   const st = copy.status;
@@ -72,7 +76,13 @@ export function AdminExperiencesPageClient() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200">
-                {[cols.experience, cols.tripper, cols.status, cols.updated, cols.actions].map((h) => (
+                {[
+                  cols.experience,
+                  cols.tripper,
+                  cols.status,
+                  cols.updated,
+                  cols.actions,
+                ].map((h) => (
                   <th
                     className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
                     key={h}
@@ -84,14 +94,23 @@ export function AdminExperiencesPageClient() {
             </thead>
             <tbody>
               {experiences.map((item) => (
-                <tr className="border-b border-gray-100 last:border-0" key={item.id}>
+                <tr
+                  className="border-b border-gray-100 last:border-0"
+                  key={item.id}
+                >
                   <td className="px-4 py-3.5">
-                    <p className="text-sm font-semibold text-neutral-900">{item.title}</p>
-                    <p className="text-xs text-neutral-500">{item.displayPrice || "—"}</p>
+                    <p className="text-sm font-semibold text-neutral-900">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-neutral-500">
+                      {item.displayPrice || "—"}
+                    </p>
                   </td>
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     <p>{item.owner.name}</p>
-                    <p className="text-xs text-neutral-500">{item.owner.email}</p>
+                    <p className="text-xs text-neutral-500">
+                      {item.owner.email}
+                    </p>
                   </td>
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     <p>{item.status}</p>
@@ -109,7 +128,9 @@ export function AdminExperiencesPageClient() {
                         className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
                         disabled={savingId === item.id}
                         onClick={() =>
-                          void updateExperience(item.id, { isActive: !item.isActive })
+                          void updateExperience(item.id, {
+                            isActive: !item.isActive,
+                          })
                         }
                         type="button"
                       >
@@ -119,7 +140,9 @@ export function AdminExperiencesPageClient() {
                         className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
                         disabled={savingId === item.id}
                         onClick={() =>
-                          void updateExperience(item.id, { isFeatured: !item.isFeatured })
+                          void updateExperience(item.id, {
+                            isFeatured: !item.isFeatured,
+                          })
                         }
                         type="button"
                       >
@@ -132,7 +155,9 @@ export function AdminExperiencesPageClient() {
             </tbody>
           </table>
           {experiences.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+            <p className="py-10 text-center text-sm text-gray-400">
+              {copy.empty}
+            </p>
           )}
         </div>
       </div>

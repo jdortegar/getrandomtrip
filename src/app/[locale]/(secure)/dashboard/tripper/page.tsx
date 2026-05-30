@@ -26,7 +26,7 @@ const EMPTY_STATS: TripperDashboardStats = {
 function TripperContent() {
   const { data: session } = useSession();
   const { user } = useUserStore();
-  const copy = useDictionary(d => d.tripperDashboard);
+  const copy = useDictionary((d) => d.tripperDashboard);
 
   const currentUser = session?.user || user;
 
@@ -68,21 +68,21 @@ function TripperContent() {
   }, [currentUser?.id]);
 
   return (
-      <Section className="py-10!">
-        <div className="rt-container">
-          {loading ? (
-            <TripperDashboardSkeleton />
-          ) : (
-            <div className="space-y-6">
-              <TripperStatsGrid stats={stats} copy={copy.stats} />
-              <RecentBookingsList
-                bookings={recentBookings}
-                copy={{ ...copy.recentBookings, ...copy.status }}
-              />
-            </div>
-          )}
-        </div>
-      </Section>
+    <Section className="py-10!">
+      <div className="rt-container">
+        {loading ? (
+          <TripperDashboardSkeleton />
+        ) : (
+          <div className="space-y-6">
+            <TripperStatsGrid stats={stats} copy={copy.stats} />
+            <RecentBookingsList
+              bookings={recentBookings}
+              copy={{ ...copy.recentBookings, ...copy.status }}
+            />
+          </div>
+        )}
+      </div>
+    </Section>
   );
 }
 

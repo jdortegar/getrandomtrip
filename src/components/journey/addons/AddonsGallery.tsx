@@ -1,12 +1,12 @@
 // frontend/src/components/journey/addons/AddonsGallery.tsx
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { ADDONS, Addon } from '@/lib/data/shared/addons-catalog';
-import AnimatedDeckCard from './AnimatedDeckCard';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
-import { useStore } from '@/store/store';
+import { useMemo, useState } from "react";
+import { ADDONS, Addon } from "@/lib/data/shared/addons-catalog";
+import AnimatedDeckCard from "./AnimatedDeckCard";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import { useStore } from "@/store/store";
 
 export default function AddonsGallery() {
   const { level } = useStore();
@@ -19,7 +19,7 @@ export default function AddonsGallery() {
     const availableAddons = ADDONS.filter(
       (addon) =>
         addon.applyToLevel.includes(level) &&
-        addon.purchaseType === 'prePurchase',
+        addon.purchaseType === "prePurchase",
     );
 
     // shuffle estable por seed
@@ -89,9 +89,9 @@ export default function AddonsGallery() {
                 {isOpen && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
+                    animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
                     <div className="p-4 space-y-3 border-t border-gray-100">

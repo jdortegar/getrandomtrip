@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { StateCreator } from 'zustand';
+import { StateCreator } from "zustand";
 
 export type FromGate =
-  | 'couple'
-  | 'solo'
-  | 'family'
-  | 'group'
-  | 'honeymoon'
-  | 'paws'
-  | 'tripper';
+  | "couple"
+  | "solo"
+  | "family"
+  | "group"
+  | "honeymoon"
+  | "paws"
+  | "tripper";
 export type Tier =
-  | 'essenza'
-  | 'modo-explora'
-  | 'explora-plus'
-  | 'bivouac'
-  | 'atelier';
+  | "essenza"
+  | "modo-explora"
+  | "explora-plus"
+  | "bivouac"
+  | "atelier";
 
 export interface JourneyStoreState {
   from?: string;
@@ -35,17 +35,17 @@ export interface JourneyStoreState {
 }
 
 export const createJourneyStore: StateCreator<JourneyStoreState> = (set) => ({
-  currency: 'USD',
+  currency: "USD",
   basePricePerPerson: 0,
 
   seedFromParams: (p) => {
-    const from = (p.get('from') as FromGate | null) || undefined;
-    const type = (p.get('type') as FromGate | null) || undefined;
-    const tier = (p.get('tier') as Tier | null) || undefined;
-    const level = (p.get('level') as Tier | null) || undefined;
-    const tripperId = p.get('tripperId') || undefined;
-    const priceKey = p.get('priceKey') || undefined;
-    const pbpStr = p.get('pbp');
+    const from = (p.get("from") as FromGate | null) || undefined;
+    const type = (p.get("type") as FromGate | null) || undefined;
+    const tier = (p.get("tier") as Tier | null) || undefined;
+    const level = (p.get("level") as Tier | null) || undefined;
+    const tripperId = p.get("tripperId") || undefined;
+    const priceKey = p.get("priceKey") || undefined;
+    const pbpStr = p.get("pbp");
     const pbp = pbpStr ? Number(pbpStr) : undefined;
 
     set((prev) => ({

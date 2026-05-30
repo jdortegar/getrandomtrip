@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
-import ExcuseCard from '@/components/journey/ExcuseCard';
-import type { ExcuseData } from '@/lib/data/shared/excuses';
+import React from "react";
+import { motion } from "framer-motion";
+import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
+import ExcuseCard from "@/components/journey/ExcuseCard";
+import type { ExcuseData } from "@/lib/data/shared/excuses";
 
 interface ExcusesCarouselProps {
   ctaLabel?: string;
@@ -42,7 +42,11 @@ export function ExcusesCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel slidesPerView={itemsPerView} overflow="right" wrapperClassName="px-0!">
+      <EmblaCarousel
+        slidesPerView={itemsPerView}
+        overflow="right"
+        wrapperClassName="px-0!"
+      >
         {excuses.map((excuse) => {
           const isSelected = selectedExcuse === excuse.key;
 

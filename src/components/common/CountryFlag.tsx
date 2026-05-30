@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { hasFlag } from 'country-flag-icons';
-import getUnicodeFlagIcon from 'country-flag-icons/unicode';
-import { cn } from '@/lib/utils';
-import { getCountryCode } from '@/lib/helpers/flags';
+import React from "react";
+import { hasFlag } from "country-flag-icons";
+import getUnicodeFlagIcon from "country-flag-icons/unicode";
+import { cn } from "@/lib/utils";
+import { getCountryCode } from "@/lib/helpers/flags";
 
 export interface CountryFlagProps {
   className?: string;
@@ -30,7 +30,7 @@ export function CountryFlag({
   title,
 }: CountryFlagProps) {
   const code =
-    countryCode?.toUpperCase().trim() || getCountryCode(country ?? '') || null;
+    countryCode?.toUpperCase().trim() || getCountryCode(country ?? "") || null;
   if (!code || code.length !== 2 || !hasFlag(code)) return null;
 
   const emoji = getUnicodeFlagIcon(code);
@@ -39,7 +39,7 @@ export function CountryFlag({
   return (
     <span
       aria-hidden
-      className={cn('inline-block leading-none', className)}
+      className={cn("inline-block leading-none", className)}
       role="img"
       title={title ?? country ?? code}
     >

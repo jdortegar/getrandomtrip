@@ -39,7 +39,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ experiences });
   } catch (error) {
     console.error("Error fetching tripper experiences:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -64,7 +67,9 @@ export async function POST(request: NextRequest) {
       data: {
         ownerId: user.id,
         createdById: user.id,
-        status: (body.status as "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED") || "DRAFT",
+        status:
+          (body.status as "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED") ||
+          "DRAFT",
         type: body.type,
         level: body.level || null,
         excuseKey: body.excuseKey || null,
@@ -101,6 +106,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ id: experience.id }, { status: 201 });
   } catch (error) {
     console.error("[tripper/experiences] POST", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

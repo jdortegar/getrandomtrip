@@ -1,29 +1,29 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import {
   primaryRoleFromMembership,
   prismaUserRoleToAppRole,
   prismaUserRolesToAppRoles,
-} from '@/lib/auth/prismaUserRoles';
-import type { UserProfileAddress } from '@/lib/types/UserProfileAddress';
-import type { UserProfileMe } from '@/lib/types/UserProfileMe';
+} from "@/lib/auth/prismaUserRoles";
+import type { UserProfileAddress } from "@/lib/types/UserProfileAddress";
+import type { UserProfileMe } from "@/lib/types/UserProfileMe";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 function toAddress(val: unknown): UserProfileAddress | null {
-  if (!val || typeof val !== 'object' || Array.isArray(val)) {
+  if (!val || typeof val !== "object" || Array.isArray(val)) {
     return null;
   }
   const o = val as Record<string, unknown>;
-  const street = typeof o.street === 'string' ? o.street : '';
-  const city = typeof o.city === 'string' ? o.city : '';
-  const state = typeof o.state === 'string' ? o.state : '';
-  const zipCode = typeof o.zipCode === 'string' ? o.zipCode : '';
-  const country = typeof o.country === 'string' ? o.country : '';
+  const street = typeof o.street === "string" ? o.street : "";
+  const city = typeof o.city === "string" ? o.city : "";
+  const state = typeof o.state === "string" ? o.state : "";
+  const zipCode = typeof o.zipCode === "string" ? o.zipCode : "";
+  const country = typeof o.country === "string" ? o.country : "";
   const idDocument =
-    typeof o.idDocument === 'string' && o.idDocument.trim()
+    typeof o.idDocument === "string" && o.idDocument.trim()
       ? o.idDocument.trim()
       : undefined;
   const hasAny = street || city || state || zipCode || country || idDocument;
@@ -43,7 +43,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const u = await prisma.user.findUnique({
@@ -64,7 +64,7 @@ export async function GET() {
     });
 
     if (!u) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const roles = prismaUserRolesToAppRoles(u.roles);
@@ -85,9 +85,9 @@ export async function GET() {
 
     return NextResponse.json({ user });
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    console.error("Error fetching user profile:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch profile' },
+      { error: "Failed to fetch profile" },
       { status: 500 },
     );
   }

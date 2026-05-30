@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from "lucide-react";
 import {
   BLOG_EXCUSE_OPTIONS,
   BLOG_TRAVEL_TYPE_OPTIONS,
   type ExcuseFilterOption,
   type TripperFilterOption,
-} from '@/lib/constants/blog-filters';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
-import { cn } from '@/lib/utils';
+} from "@/lib/constants/blog-filters";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
+import { cn } from "@/lib/utils";
 
 export interface BlogFilterState {
   excuseKey: string | null;
@@ -16,7 +16,7 @@ export interface BlogFilterState {
   travelTypeKey: string;
 }
 
-export type BlogFilterLabels = MarketingDictionary['blogPage']['filters'];
+export type BlogFilterLabels = MarketingDictionary["blogPage"]["filters"];
 
 interface BlogFilterHeaderProps {
   className?: string;
@@ -42,7 +42,7 @@ function FilterDropdownCard({
   return (
     <div
       className={cn(
-        'relative min-w-[220px] rounded-lg border border-neutral-200 bg-white py-2 px-4 shadow-sm text-left',
+        "relative min-w-[220px] rounded-lg border border-neutral-200 bg-white py-2 px-4 shadow-sm text-left",
         className,
       )}
     >
@@ -80,7 +80,7 @@ export function BlogFilterHeader({
     : null;
 
   const travelTypeTitle =
-    value.travelTypeKey === ''
+    value.travelTypeKey === ""
       ? labels.travelTypeLabel
       : (BLOG_TRAVEL_TYPE_OPTIONS.find((o) => o.key === value.travelTypeKey)
           ?.label ?? labels.travelTypeLabel);
@@ -106,7 +106,7 @@ export function BlogFilterHeader({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-3 border-b border-neutral-200 pb-4 justify-between',
+        "flex flex-wrap items-center gap-3 border-b border-neutral-200 pb-4 justify-between",
         className,
       )}
     >
@@ -129,14 +129,17 @@ export function BlogFilterHeader({
           </select>
         </FilterDropdownCard>
 
-        <FilterDropdownCard subtitle={labels.excuseSubtitle} title={excuseTitle}>
+        <FilterDropdownCard
+          subtitle={labels.excuseSubtitle}
+          title={excuseTitle}
+        >
           <select
             className="absolute inset-0 cursor-pointer opacity-0"
             onChange={(e) => {
               const key = e.target.value;
               onChange({ ...value, excuseKey: key || null });
             }}
-            value={value.excuseKey ?? ''}
+            value={value.excuseKey ?? ""}
           >
             <option value="">{labels.excuseLabel}</option>
             {BLOG_EXCUSE_OPTIONS.slice(0, 8).map((opt) => (
@@ -147,11 +150,14 @@ export function BlogFilterHeader({
           </select>
         </FilterDropdownCard>
       </div>
-      <FilterDropdownCard subtitle={labels.tripperSubtitle} title={tripperTitle}>
+      <FilterDropdownCard
+        subtitle={labels.tripperSubtitle}
+        title={tripperTitle}
+      >
         <select
           className="absolute inset-0 cursor-pointer opacity-0"
           onChange={handleTripperChange}
-          value={value.tripperId ?? ''}
+          value={value.tripperId ?? ""}
         >
           <option value="">{labels.tripperLabel}</option>
           {trippers.map((opt) => (

@@ -12,18 +12,19 @@
 
 ## Files
 
-| File | Action | What changes |
-|------|--------|-------------|
-| `src/lib/types/dictionary.ts` | Modify | Add `gallery` sub-interface to `TripperBlogComposerDict` |
-| `src/dictionaries/es.json` | Modify | Add `gallery` strings in Spanish |
-| `src/dictionaries/en.json` | Modify | Add `gallery` strings in English |
-| `src/components/tripper/blog/BlogComposer.tsx` | Modify | Refactor + gallery block |
+| File                                           | Action | What changes                                             |
+| ---------------------------------------------- | ------ | -------------------------------------------------------- |
+| `src/lib/types/dictionary.ts`                  | Modify | Add `gallery` sub-interface to `TripperBlogComposerDict` |
+| `src/dictionaries/es.json`                     | Modify | Add `gallery` strings in Spanish                         |
+| `src/dictionaries/en.json`                     | Modify | Add `gallery` strings in English                         |
+| `src/components/tripper/blog/BlogComposer.tsx` | Modify | Refactor + gallery block                                 |
 
 ---
 
 ## Task 1: Add `gallery` type to `TripperBlogComposerDict`
 
 **Files:**
+
 - Modify: `src/lib/types/dictionary.ts` (around line 44 — after the existing `cover` block)
 
 - [ ] **Step 1: Add the `gallery` field**
@@ -32,23 +33,23 @@ In `src/lib/types/dictionary.ts`, the `TripperBlogComposerDict` interface curren
 
 ```ts
 // Before (existing):
-  cover: {
-    hint: string;
-    previewAlt: string;
-    remove: string;
-    title: string;
-    upload: string;
-    uploading: string;
-  };
+cover: {
+  hint: string;
+  previewAlt: string;
+  remove: string;
+  title: string;
+  upload: string;
+  uploading: string;
+}
 // After — add this block immediately below:
-  gallery: {
-    captionPlaceholder: string;
-    hint: string;
-    removeAria: string;
-    title: string;
-    upload: string;
-    uploading: string;
-  };
+gallery: {
+  captionPlaceholder: string;
+  hint: string;
+  removeAria: string;
+  title: string;
+  upload: string;
+  uploading: string;
+}
 ```
 
 - [ ] **Step 2: Verify typecheck passes**
@@ -64,6 +65,7 @@ Expected: no errors (dict objects will fail until Task 2 adds the keys).
 ## Task 2: Add gallery strings to dictionaries
 
 **Files:**
+
 - Modify: `src/dictionaries/es.json` (around line 2384 — right after the `cover` block)
 - Modify: `src/dictionaries/en.json` (around line 2384 — right after the `cover` block)
 
@@ -126,6 +128,7 @@ Expected: no errors.
 ## Task 3: Refactor `BlogComposer.tsx` — deduplicate logic and fix blocks bug
 
 **Files:**
+
 - Modify: `src/components/tripper/blog/BlogComposer.tsx`
 
 This task replaces `handleSave` and `handlePublish` with a single `submitPost` function and fixes the `blocks: []` data-loss bug. No UI changes yet.
@@ -170,9 +173,7 @@ const submitPost = async (status: "draft" | "published") => {
       if (response.ok) {
         const data = (await response.json()) as { blog: { id: string } };
         toast.success(
-          isSaving
-            ? copy.toasts.saveSuccessCreate
-            : copy.toasts.publishSuccess,
+          isSaving ? copy.toasts.saveSuccessCreate : copy.toasts.publishSuccess,
         );
         router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
       } else {
@@ -214,6 +215,7 @@ const submitPost = async (status: "draft" | "published") => {
 - [ ] **Step 2: Update call sites**
 
 In the JSX, replace:
+
 - `onClick={handleSave}` → `onClick={() => submitPost("draft")}`
 - `onPublish={handlePublish}` → `onPublish={() => submitPost("published")}`
 
@@ -237,6 +239,7 @@ git commit -m "refactor(blog): extract submitPost, fix blocks data-loss bug"
 ## Task 4: Split the single panel card into two cards
 
 **Files:**
+
 - Modify: `src/components/tripper/blog/BlogComposer.tsx` (JSX section, around line 270)
 
 Currently the cover section and body editor share one `<div className="bg-white border border-gray-200 p-6 relative rounded-xl shadow-sm space-y-6">`. Split them into two separate cards.
@@ -246,7 +249,9 @@ Currently the cover section and body editor share one `<div className="bg-white 
 Replace the single wrapping div with two separate panel cards:
 
 ```tsx
-{/* Cover card */}
+{
+  /* Cover card */
+}
 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
   <h3 className="mb-2 text-lg font-semibold text-neutral-900">
     {copy.cover.title}
@@ -303,9 +308,11 @@ Replace the single wrapping div with two separate panel cards:
       </div>
     )}
   </div>
-</div>
+</div>;
 
-{/* Body card */}
+{
+  /* Body card */
+}
 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
   <label
     className="mb-2 block text-sm font-medium text-neutral-500"
@@ -321,7 +328,7 @@ Replace the single wrapping div with two separate panel cards:
     placeholder={copy.bodyPlaceholder}
     value={contentHtml}
   />
-</div>
+</div>;
 ```
 
 - [ ] **Step 2: Verify typecheck and lint**
@@ -344,6 +351,7 @@ git commit -m "refactor(blog): split cover and body into separate panel cards"
 ## Task 5: Add gallery image upload block
 
 **Files:**
+
 - Modify: `src/components/tripper/blog/BlogComposer.tsx`
 
 Add state, handlers, and JSX for the gallery block. Gallery images are stored as `{ type: 'image', url, caption }` entries in `post.blocks`.
@@ -418,7 +426,9 @@ After `const contentHtml = ...` line, add:
 const galleryImages = (post.blocks ?? [])
   .map((b, i) => ({ ...b, _index: i }))
   .filter(
-    (b): b is { type: "image"; url: string; caption?: string; _index: number } =>
+    (
+      b,
+    ): b is { type: "image"; url: string; caption?: string; _index: number } =>
       b.type === "image",
   );
 ```
@@ -428,7 +438,9 @@ const galleryImages = (post.blocks ?? [])
 After the body card closing `</div>`, add:
 
 ```tsx
-{/* Gallery card */}
+{
+  /* Gallery card */
+}
 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
   <h3 className="mb-2 text-lg font-semibold text-neutral-900">
     {copy.gallery.title}
@@ -486,7 +498,7 @@ After the body card closing `</div>`, add:
       ))}
     </div>
   )}
-</div>
+</div>;
 ```
 
 - [ ] **Step 6: Verify typecheck and lint**

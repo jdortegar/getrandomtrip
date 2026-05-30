@@ -1,8 +1,8 @@
-import { TravelerTypesCarousel } from '@/components/landing/exploration';
-import Section from '@/components/layout/Section';
+import { TravelerTypesCarousel } from "@/components/landing/exploration";
+import Section from "@/components/layout/Section";
 
 /** Anchor id for scroll targets (Hero, Planner, HomeInfo CTAs). Use hash: `#tripper-traveler-types`. */
-export const TRIPPER_TRAVELER_TYPES_ANCHOR_ID = 'tripper-traveler-types';
+export const TRIPPER_TRAVELER_TYPES_ANCHOR_ID = "tripper-traveler-types";
 
 interface TripperTravelerTypesSectionProps {
   availableTypes: string[];

@@ -6,7 +6,7 @@ import type { AdminReview } from "@/lib/admin/types";
 import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminReviewsPageClient() {
-  const copy = useDictionary(d => d.adminPages.reviews);
+  const copy = useDictionary((d) => d.adminPages.reviews);
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,10 @@ export function AdminReviewsPageClient() {
     setError(null);
     try {
       const res = await fetch("/api/admin/reviews");
-      const data = (await res.json()) as { error?: string; reviews?: AdminReview[] };
+      const data = (await res.json()) as {
+        error?: string;
+        reviews?: AdminReview[];
+      };
       if (!res.ok || !data.reviews) {
         setError(data.error ?? copy.errorLoad);
         return;
@@ -54,7 +57,8 @@ export function AdminReviewsPageClient() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
   const st = copy.status;
@@ -72,8 +76,18 @@ export function AdminReviewsPageClient() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200">
-                {[cols.traveler, cols.review, cols.rating, cols.status, cols.created, cols.actions].map((h) => (
-                  <th className="px-4 py-3 text-left text-sm font-medium text-neutral-600" key={h}>
+                {[
+                  cols.traveler,
+                  cols.review,
+                  cols.rating,
+                  cols.status,
+                  cols.created,
+                  cols.actions,
+                ].map((h) => (
+                  <th
+                    className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
+                    key={h}
+                  >
                     {h}
                   </th>
                 ))}
@@ -81,16 +95,25 @@ export function AdminReviewsPageClient() {
             </thead>
             <tbody>
               {reviews.map((review) => (
-                <tr className="border-b border-gray-100 last:border-0" key={review.id}>
+                <tr
+                  className="border-b border-gray-100 last:border-0"
+                  key={review.id}
+                >
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     <p>{review.user.name}</p>
-                    <p className="text-xs text-neutral-500">{review.user.email}</p>
+                    <p className="text-xs text-neutral-500">
+                      {review.user.email}
+                    </p>
                   </td>
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     <p>{review.title}</p>
-                    <p className="text-xs text-neutral-500">{review.destination}</p>
+                    <p className="text-xs text-neutral-500">
+                      {review.destination}
+                    </p>
                   </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">{review.rating}/5</td>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">
+                    {review.rating}/5
+                  </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-500">
                     {review.isApproved ? st.approved : st.pending} ·{" "}
                     {review.isPublic ? st.public : st.private}
@@ -104,7 +127,9 @@ export function AdminReviewsPageClient() {
                         className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
                         disabled={savingId === review.id}
                         onClick={() =>
-                          void updateReview(review.id, { isApproved: !review.isApproved })
+                          void updateReview(review.id, {
+                            isApproved: !review.isApproved,
+                          })
                         }
                         type="button"
                       >
@@ -114,7 +139,9 @@ export function AdminReviewsPageClient() {
                         className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
                         disabled={savingId === review.id}
                         onClick={() =>
-                          void updateReview(review.id, { isPublic: !review.isPublic })
+                          void updateReview(review.id, {
+                            isPublic: !review.isPublic,
+                          })
                         }
                         type="button"
                       >
@@ -127,7 +154,9 @@ export function AdminReviewsPageClient() {
             </tbody>
           </table>
           {reviews.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+            <p className="py-10 text-center text-sm text-gray-400">
+              {copy.empty}
+            </p>
           )}
         </div>
       </div>

@@ -1,25 +1,28 @@
-'use client';
-import Image, { ImageProps } from 'next/image';
-import { useState } from 'react';
+"use client";
+import Image, { ImageProps } from "next/image";
+import { useState } from "react";
 
-type ImgProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'width' | 'height'> & {
+type ImgProps = Omit<
+  React.ImgHTMLAttributes<HTMLImageElement>,
+  "src" | "alt" | "width" | "height"
+> & {
   src: string;
   alt?: string;
   width?: number;
   height?: number;
   priority?: boolean;
-  sizes?: ImageProps['sizes'];
+  sizes?: ImageProps["sizes"];
   unoptimized?: boolean;
 };
 
 export default function Img({
   src,
-  alt = '',
+  alt = "",
   width,
   height,
   className,
   priority,
-  sizes = '100vw',
+  sizes = "100vw",
   unoptimized,
   ...rest
 }: ImgProps) {
@@ -30,7 +33,7 @@ export default function Img({
   if (errored) {
     return (
       <div
-        className={`flex items-center justify-center bg-neutral-200 ${className ?? ''}`}
+        className={`flex items-center justify-center bg-neutral-200 ${className ?? ""}`}
         style={{ width: w, height: h }}
         role="img"
         aria-label={alt}
@@ -39,7 +42,11 @@ export default function Img({
         <img
           src="/assets/logos/iso-randomtrip.svg"
           alt=""
-          style={{ maxHeight: 100, width: 'auto', filter: 'brightness(0) saturate(0) invert(40%)' }}
+          style={{
+            maxHeight: 100,
+            width: "auto",
+            filter: "brightness(0) saturate(0) invert(40%)",
+          }}
         />
       </div>
     );

@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Route, DollarSign, Users, Settings, Calendar, Book, PlusCircle } from "lucide-react";
+import {
+  Home,
+  Route,
+  DollarSign,
+  Users,
+  Settings,
+  Calendar,
+  Book,
+  PlusCircle,
+} from "lucide-react";
 import Image from "next/image";
 
 const navGroups = [
@@ -10,18 +19,35 @@ const navGroups = [
     name: "General",
     items: [
       { name: "Tripper OS", href: "/dashboard/tripper", icon: Home },
-      { name: "Mis Paquetes", href: "/dashboard/tripper/packages", icon: Route },
+      {
+        name: "Mis Paquetes",
+        href: "/dashboard/tripper/packages",
+        icon: Route,
+      },
       { name: "Reservas", href: "/dashboard/tripper/bookings", icon: Calendar },
-      { name: "Ingresos", href: "/dashboard/tripper/earnings", icon: DollarSign },
+      {
+        name: "Ingresos",
+        href: "/dashboard/tripper/earnings",
+        icon: DollarSign,
+      },
       { name: "Comunidad", href: "/dashboard/tripper/community", icon: Users },
-      { name: "Configuración", href: "/dashboard/tripper/settings", icon: Settings },
+      {
+        name: "Configuración",
+        href: "/dashboard/tripper/settings",
+        icon: Settings,
+      },
     ],
   },
   {
     name: "Contenido",
     items: [
       { name: "Mis Posts", href: "/dashboard/tripper/blogs", icon: Book },
-      { name: "Crear Post", href: "/dashboard/tripper/blogs/new", icon: PlusCircle, isButton: true },
+      {
+        name: "Crear Post",
+        href: "/dashboard/tripper/blogs/new",
+        icon: PlusCircle,
+        isButton: true,
+      },
     ],
   },
 ];
@@ -33,7 +59,12 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-0 h-full w-64 bg-neutral-900 text-white p-4 flex flex-col shadow-lg">
       {/* Logo */}
       <div className="flex items-center justify-center h-16 mb-6">
-        <Image src="/logo-randomtrip-white.svg" alt="Randomtrip Logo" width={150} height={40} />
+        <Image
+          src="/logo-randomtrip-white.svg"
+          alt="Randomtrip Logo"
+          width={150}
+          height={40}
+        />
       </div>
 
       {/* Navigation */}
@@ -41,7 +72,9 @@ export default function Sidebar() {
         {navGroups.map((group) => (
           <div key={group.name} className="mb-6">
             {group.name !== "General" && (
-              <h3 className="text-xs font-semibold text-neutral-500 uppercase mb-2 px-3">{group.name}</h3>
+              <h3 className="text-xs font-semibold text-neutral-500 uppercase mb-2 px-3">
+                {group.name}
+              </h3>
             )}
             <ul className="space-y-2">
               {group.items.map((item) => (
@@ -49,9 +82,11 @@ export default function Sidebar() {
                   <Link
                     href={item.href}
                     className={`flex items-center p-3 rounded-lg transition-colors
-                      ${pathname === item.href
-                        ? "bg-neutral-700 text-white"
-                        : "hover:bg-neutral-800 text-neutral-300 hover:text-white"}
+                      ${
+                        pathname === item.href
+                          ? "bg-neutral-700 text-white"
+                          : "hover:bg-neutral-800 text-neutral-300 hover:text-white"
+                      }
                       ${item.isButton ? "bg-blue-600 hover:bg-blue-700 text-white font-bold" : ""}
                     `}
                   >

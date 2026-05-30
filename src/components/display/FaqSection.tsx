@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Img from '@/components/common/Img';
+import React from "react";
+import Img from "@/components/common/Img";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 
 export interface FaqItem {
   answer: string;
@@ -23,7 +23,7 @@ interface FaqSectionProps {
 
 export default function FaqSection({
   className,
-  headingId = 'faq-heading',
+  headingId = "faq-heading",
   items,
 }: FaqSectionProps) {
   if (items.length === 0) return null;
@@ -31,7 +31,7 @@ export default function FaqSection({
   return (
     <section
       aria-labelledby={headingId}
-      className={cn('mt-10 text-left', className)}
+      className={cn("mt-10 text-left", className)}
     >
       <Accordion collapsible type="single">
         {items.map((item, index) => (

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import Img from '@/components/common/Img';
+import React from "react";
+import { motion } from "framer-motion";
+import Img from "@/components/common/Img";
 
 export interface ThreeColumnsItem {
   title: string;
@@ -30,9 +30,7 @@ const cardVariants = {
 
 export default function ThreeColumns({ items }: ThreeColumnsProps) {
   return (
-    <div
-      className={`grid gap-4 md:grid-cols-3 w-full`}
-    >
+    <div className={`grid gap-4 md:grid-cols-3 w-full`}>
       {items.map((item, index) => (
         <motion.div
           key={item.title}

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { Star } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Star } from "lucide-react";
 
 interface Review {
   id: string;
@@ -46,16 +46,16 @@ export default function TripperReviewsPage() {
 
       try {
         setLoading(true);
-        const response = await fetch('/api/tripper/reviews');
+        const response = await fetch("/api/tripper/reviews");
         const data = await response.json();
 
         if (response.ok) {
           setReviewsData(data);
         } else {
-          console.error('Error fetching reviews:', data.error);
+          console.error("Error fetching reviews:", data.error);
         }
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
       } finally {
         setLoading(false);
       }
@@ -73,18 +73,18 @@ export default function TripperReviewsPage() {
   }
 
   const formatDate = (date: Date | string) => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return d.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    const d = typeof date === "string" ? new Date(date) : date;
+    return d.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const getNpsColor = (nps: number) => {
-    if (nps >= 50) return 'text-green-600';
-    if (nps >= 0) return 'text-yellow-600';
-    return 'text-red-600';
+    if (nps >= 50) return "text-green-600";
+    if (nps >= 0) return "text-yellow-600";
+    return "text-red-600";
   };
 
   return (
@@ -114,10 +114,8 @@ export default function TripperReviewsPage() {
 
         <div className="bg-white p-6 rounded-2xl shadow">
           <p className="text-sm text-neutral-600 mb-2">NPS</p>
-          <p
-            className={`text-2xl font-bold ${getNpsColor(reviewsData.nps)}`}
-          >
-            {reviewsData.nps > 0 ? '+' : ''}
+          <p className={`text-2xl font-bold ${getNpsColor(reviewsData.nps)}`}>
+            {reviewsData.nps > 0 ? "+" : ""}
             {reviewsData.nps.toFixed(0)}
           </p>
         </div>
@@ -171,8 +169,8 @@ export default function TripperReviewsPage() {
                             key={i}
                             className={`h-5 w-5 ${
                               i < review.rating
-                                ? 'text-yellow-500 fill-current'
-                                : 'text-neutral-300'
+                                ? "text-yellow-500 fill-current"
+                                : "text-neutral-300"
                             }`}
                           />
                         ))}

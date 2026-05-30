@@ -5,7 +5,7 @@ import type { BlogPost } from "@/types/blog";
 import { useDictionary } from "@/hooks/useDictionary";
 
 export function TripperBlogNewClient() {
-  const blogsCopy = useDictionary(d => d.tripperBlogs);
+  const blogsCopy = useDictionary((d) => d.tripperBlogs);
 
   const initialPost: Partial<BlogPost> = {
     blocks: [],

@@ -14,6 +14,8 @@
     "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
     "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
     "ariaLabelXsed": "Go to TGIS",
+    "ariaLabelContact": "Go to contact page",
+    "labelContact": "Contact",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Open navigation menu",
     "search": "Search",
@@ -418,6 +420,46 @@
         {
           "question": "What's included?",
           "answer": "Includes 1 night accommodation, Saturday dinner, Sunday breakfast, and a curated local experience. Transportation to the destination is not included."
+        }
+      ]
+    }
+  },
+  "faqPage": {
+    "hero": {
+      "eyebrow": "FAQ's",
+      "title": "FREQUENTLY ASKED QUESTIONS",
+      "description": "Everything you need to know before taking the leap."
+    },
+    "meta": {
+      "title": "FAQ | Randomtrip",
+      "description": "Everything you need to know before taking the leap: how it works, what's included and how to reschedule your surprise trip.",
+      "openGraphTitle": "FAQ | Randomtrip — Frequently Asked Questions",
+      "openGraphDescription": "We answer everything: how the surprise trip works, what you can choose and how to reschedule."
+    },
+    "block": {
+      "eyebrow": "FAQ's",
+      "title": "Featured questions",
+      "description": "Everything you need to know before taking the leap.",
+      "items": [
+        {
+          "question": "How do I take the first step for my surprise trip?",
+          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
+        },
+        {
+          "question": "What can I choose?",
+          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
+        },
+        {
+          "question": "What happens if I need to change the date?",
+          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
+        },
+        {
+          "question": "What's included?",
+          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+        },
+        {
+          "question": "How do you design my trip?",
+          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
         }
       ]
     }
@@ -2559,11 +2601,7 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": [
-        "Emotional brief",
-        "Invisible design",
-        "Surprise with a net"
-      ],
+      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
       "sectionTitle": "Our philosophy"
     },
     "steps": {

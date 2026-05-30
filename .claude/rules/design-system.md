@@ -12,13 +12,17 @@ alwaysApply: true
 Two canonical card styles — use nothing else:
 
 **Stat card** (large value + icon):
+
 ```html
-<div class="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
+<div
+  class="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100"
+></div>
 ```
 
 **Panel card** (section with heading + content):
+
 ```html
-<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"></div>
 ```
 
 Do NOT use `GlassCard` for dashboard pages. It belongs to the marketing/public pages only.
@@ -44,6 +48,7 @@ All icons from `lucide-react`.
 ```
 
 Status color map:
+
 - confirmed / completed → `bg-green-100 text-green-800 border-green-200`
 - revealed → `bg-purple-100 text-purple-800 border-purple-200`
 - pending / default → `bg-yellow-100 text-yellow-800 border-yellow-200`
@@ -58,6 +63,7 @@ Never use raw styled `<a>` or `<Link>` for actions — always go through `Button
 ## Page Header
 
 Dashboard pages use `<HeaderHero>` (not `<Hero>`):
+
 ```tsx
 <HeaderHero
   title={copy.header.title}

@@ -13,7 +13,7 @@ interface BlogPostsListProps {
 
 export function BlogPostsList({ posts }: BlogPostsListProps) {
   const locale = useLocale();
-  const tripperBlogs = useDictionary(d => d.tripperBlogs);
+  const tripperBlogs = useDictionary((d) => d.tripperBlogs);
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
 
   return (

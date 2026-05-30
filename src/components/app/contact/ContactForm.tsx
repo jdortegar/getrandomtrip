@@ -54,7 +54,10 @@ export function ContactForm({ copy, onSuccess }: ContactFormProps) {
   }
 
   return (
-    <form className="space-y-5 rounded-xl bg-transparent" onSubmit={handleSubmit}>
+    <form
+      className="space-y-5 rounded-xl bg-transparent"
+      onSubmit={handleSubmit}
+    >
       <FormField
         id="contact-name"
         label={copy.name}
@@ -82,8 +85,12 @@ export function ContactForm({ copy, onSuccess }: ContactFormProps) {
         value={interest}
       >
         <option value="trips">{copy.interestOptions.trips}</option>
-        <option value="collaboration">{copy.interestOptions.collaboration}</option>
-        <option value="partnerships">{copy.interestOptions.partnerships}</option>
+        <option value="collaboration">
+          {copy.interestOptions.collaboration}
+        </option>
+        <option value="partnerships">
+          {copy.interestOptions.partnerships}
+        </option>
         <option value="other">{copy.interestOptions.other}</option>
       </FormSelectField>
       <div>
