@@ -1,5 +1,5 @@
-'use client';
-import { useStore } from '@/store/store';
+"use client";
+import { useStore } from "@/store/store";
 
 export default function SelectionsBar() {
   const { displayPrice } = useStore();

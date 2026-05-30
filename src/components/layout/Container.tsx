@@ -1,7 +1,7 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
-export type ContainerSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+export type ContainerSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "full";
 
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: ContainerSize;
@@ -10,19 +10,19 @@ export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const SIZE_CLASS_MAP: Record<ContainerSize, string> = {
-  xs: 'max-w-xl',
-  sm: 'max-w-2xl',
-  md: 'max-w-4xl',
-  lg: 'max-w-5xl',
-  xl: '',
-  '2xl': 'max-w-(--breakpoint-2xl)',
-  full: 'max-w-full',
+  xs: "max-w-xl",
+  sm: "max-w-2xl",
+  md: "max-w-4xl",
+  lg: "max-w-5xl",
+  xl: "",
+  "2xl": "max-w-(--breakpoint-2xl)",
+  full: "max-w-full",
 };
 
 export function Container({
   children,
   className,
-  size = 'xl',
+  size = "xl",
   centered = true,
   horizontalPadding = true,
   ...props
@@ -30,10 +30,10 @@ export function Container({
   return (
     <div
       className={cn(
-        'w-full',
+        "w-full",
         SIZE_CLASS_MAP[size],
-        centered && 'mx-auto',
-        horizontalPadding && 'px-4 sm:px-6 lg:px-8',
+        centered && "mx-auto",
+        horizontalPadding && "px-4 sm:px-6 lg:px-8",
         className,
       )}
       {...props}

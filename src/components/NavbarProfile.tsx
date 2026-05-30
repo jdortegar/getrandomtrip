@@ -62,9 +62,9 @@ export function NavbarProfile({
   const isAdmin = hasRoleAccess(adminSubject, "admin");
 
   // Strict check — does not promote admin to tripper.
-  const userRoles: string[] = (
-    sessionUser?.roles ?? user?.roles ?? []
-  ) as string[];
+  const userRoles: string[] = (sessionUser?.roles ??
+    user?.roles ??
+    []) as string[];
   const isTripper = userRoles.some((r) => r?.toLowerCase() === "tripper");
 
   const handleSignOut = () => {

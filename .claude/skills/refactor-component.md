@@ -28,6 +28,7 @@ Follow this when refactoring or restyling any existing component.
 ## Style Migration
 
 When updating visual style to match the dashboard design system:
+
 - Replace `GlassCard` with the white-card pattern (see `.claude/rules/design-system.md`)
 - Replace `<Hero>` with `<HeaderHero>` for dashboard pages
 - Replace `LoadingSpinner` with a proper skeleton component that matches the layout
@@ -36,6 +37,7 @@ When updating visual style to match the dashboard design system:
 ## Copy Migration
 
 When moving hardcoded strings to dictionaries:
+
 1. Add the interface to `src/lib/types/dictionary.ts`
 2. Add both ES and EN strings to `src/dictionaries/es.json` + `en.json`
 3. Pass the dict slice as a `copy` prop — never the full dictionary
@@ -43,12 +45,14 @@ When moving hardcoded strings to dictionaries:
 ## Verification
 
 After refactoring:
+
 ```bash
 npm run typecheck   # must pass clean
 npm run lint        # must pass clean
 ```
 
 Also verify:
+
 - The component still renders correctly with real data
 - Empty/error states are handled
 - The loading state matches the final layout

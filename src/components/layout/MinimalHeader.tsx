@@ -6,7 +6,12 @@ export default function MinimalHeader() {
       <div className="rt-container px-4 h-14 flex items-center justify-between">
         <Link href="/" className="text-white font-semibold tracking-wide">
           <span className="sr-only">Randomtrip Home</span>
-          <Image src="/logo-white.svg" alt="Randomtrip" width={120} height={24} />
+          <Image
+            src="/logo-white.svg"
+            alt="Randomtrip"
+            width={120}
+            height={24}
+          />
         </Link>
         <Link
           href="/login"

@@ -6,11 +6,9 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
 
-export default async function NewExperiencePage(
-  props: {
-    params: Promise<{ locale: string }>;
-  }
-) {
+export default async function NewExperiencePage(props: {
+  params: Promise<{ locale: string }>;
+}) {
   const params = await props.params;
   const session = await getServerSession(authOptions);
 

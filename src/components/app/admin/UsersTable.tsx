@@ -9,7 +9,12 @@ interface UsersTableProps {
   users: AdminUser[];
 }
 
-export function UsersTable({ copy, onEdit, selectedId, users }: UsersTableProps) {
+export function UsersTable({
+  copy,
+  onEdit,
+  selectedId,
+  users,
+}: UsersTableProps) {
   const headers = [
     copy.headers.user,
     copy.headers.roles,
@@ -45,9 +50,7 @@ export function UsersTable({ copy, onEdit, selectedId, users }: UsersTableProps)
         </tbody>
       </table>
       {users.length === 0 && (
-        <p className="py-10 text-center text-sm text-gray-400">
-          {copy.empty}
-        </p>
+        <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
       )}
     </div>
   );

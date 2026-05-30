@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useStore } from '@/store/store';
-import { computeFiltersCost } from '@/lib/pricing';
+import { useStore } from "@/store/store";
+import { computeFiltersCost } from "@/lib/pricing";
 
 export default function FiltersPanel() {
   const { filters, logistics, setPartial, basePriceUsd } = useStore();
@@ -38,11 +38,11 @@ export default function FiltersPanel() {
           Transporte preferencia (obligatorio, sin cargo)
         </label>
         <div className="flex space-x-2 mt-1">
-          {(['bus', 'plane', 'ship', 'train'] as const).map((transport) => (
+          {(["bus", "plane", "ship", "train"] as const).map((transport) => (
             <button
               key={transport}
-              onClick={() => handleFilterChange('transport', transport)}
-              className={`px-4 py-2 text-sm rounded-md ${filters.transport === transport ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+              onClick={() => handleFilterChange("transport", transport)}
+              className={`px-4 py-2 text-sm rounded-md ${filters.transport === transport ? "bg-indigo-600 text-white" : "bg-white text-gray-700 border border-gray-300"}`}
             >
               {transport.charAt(0).toUpperCase() + transport.slice(1)}
             </button>
@@ -55,17 +55,15 @@ export default function FiltersPanel() {
           Clima preferencial
         </label>
         <div className="flex space-x-2 mt-1">
-          {(['any', 'cold', 'mild', 'warm'] as const).map(
-            (climate) => (
-              <button
-                key={climate}
-                onClick={() => handleFilterChange('climate', climate)}
-                className={`px-4 py-2 text-sm rounded-md ${filters.climate === climate ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
-              >
-                {climate.charAt(0).toUpperCase() + climate.slice(1)}
-              </button>
-            ),
-          )}
+          {(["any", "cold", "mild", "warm"] as const).map((climate) => (
+            <button
+              key={climate}
+              onClick={() => handleFilterChange("climate", climate)}
+              className={`px-4 py-2 text-sm rounded-md ${filters.climate === climate ? "bg-indigo-600 text-white" : "bg-white text-gray-700 border border-gray-300"}`}
+            >
+              {climate.charAt(0).toUpperCase() + climate.slice(1)}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -74,11 +72,11 @@ export default function FiltersPanel() {
           Tiempo máximo de viaje
         </label>
         <div className="flex space-x-2 mt-1">
-          {(['no-limit', '3h', '5h', '8h'] as const).map((time) => (
+          {(["no-limit", "3h", "5h", "8h"] as const).map((time) => (
             <button
               key={time}
-              onClick={() => handleFilterChange('maxTravelTime', time)}
-              className={`px-4 py-2 text-sm rounded-md ${filters.maxTravelTime === time ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+              onClick={() => handleFilterChange("maxTravelTime", time)}
+              className={`px-4 py-2 text-sm rounded-md ${filters.maxTravelTime === time ? "bg-indigo-600 text-white" : "bg-white text-gray-700 border border-gray-300"}`}
             >
               {time}
             </button>

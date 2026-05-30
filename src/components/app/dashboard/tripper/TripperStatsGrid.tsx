@@ -1,11 +1,16 @@
-import { ShieldCheck, BadgeDollarSign, Star, ClipboardList } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import type { TripperDashboardStats } from '@/types/tripper';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import {
+  ShieldCheck,
+  BadgeDollarSign,
+  Star,
+  ClipboardList,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { TripperDashboardStats } from "@/types/tripper";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface TripperStatsGridProps {
   stats: TripperDashboardStats;
-  copy: TripperDashboardDict['stats'];
+  copy: TripperDashboardDict["stats"];
 }
 
 export function TripperStatsGrid({ stats, copy }: TripperStatsGridProps) {
@@ -17,25 +22,25 @@ export function TripperStatsGrid({ stats, copy }: TripperStatsGridProps) {
   }> = [
     {
       icon: ShieldCheck,
-      key: 'total-bookings',
+      key: "total-bookings",
       label: copy.totalBookings,
       value: stats.totalBookings,
     },
     {
       icon: BadgeDollarSign,
-      key: 'monthly-revenue',
+      key: "monthly-revenue",
       label: copy.monthlyRevenue,
-      value: `$${stats.monthlyRevenue.toLocaleString('es-AR')}`,
+      value: `$${stats.monthlyRevenue.toLocaleString("es-AR")}`,
     },
     {
       icon: Star,
-      key: 'average-rating',
+      key: "average-rating",
       label: copy.averageRating,
-      value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : '—',
+      value: stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—",
     },
     {
       icon: ClipboardList,
-      key: 'active-packages',
+      key: "active-packages",
       label: copy.activeExperiences,
       value: stats.activeExperiences,
     },
@@ -54,7 +59,10 @@ export function TripperStatsGrid({ stats, copy }: TripperStatsGridProps) {
               <p className="text-sm font-medium leading-snug text-neutral-500">
                 {card.label}
               </p>
-              <Icon className="h-9 w-9 shrink-0 text-light-blue" strokeWidth={1.5} />
+              <Icon
+                className="h-9 w-9 shrink-0 text-light-blue"
+                strokeWidth={1.5}
+              />
             </div>
             <p className="font-barlow font-bold text-4xl text-gray-900 text-left">
               {card.value}

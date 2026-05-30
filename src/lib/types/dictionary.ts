@@ -137,13 +137,13 @@ export interface TripperDashboardDict {
     description: string;
   };
   pageHeadings: {
-    dashboard:       { title: string; description: string };
-    experiences:     { title: string; description: string };
-    experiencesNew:  { title: string; description: string };
+    dashboard: { title: string; description: string };
+    experiences: { title: string; description: string };
+    experiencesNew: { title: string; description: string };
     experiencesEdit: { title: string; description: string };
-    earnings:        { title: string; description: string };
-    reviews:         { title: string; description: string };
-    blogs:           { title: string; description: string };
+    earnings: { title: string; description: string };
+    reviews: { title: string; description: string };
+    blogs: { title: string; description: string };
   };
   stats: {
     totalBookings: string;
@@ -783,7 +783,11 @@ export interface AdminXsedDict {
     delete: string;
     unnamed: string;
     types: { ACCOMMODATION: string; DINNER: string; ACTIVITY: string };
-    confirmationStatus: { PENDING: string; CONFIRMED: string; CANCELLED: string };
+    confirmationStatus: {
+      PENDING: string;
+      CONFIRMED: string;
+      CANCELLED: string;
+    };
     fields: {
       type: string;
       name: string;
@@ -827,8 +831,18 @@ export interface AdminPagesDict {
       updated: string;
       actions: string;
     };
-    status: { active: string; inactive: string; featured: string; normal: string };
-    actions: { disable: string; enable: string; unfeature: string; feature: string };
+    status: {
+      active: string;
+      inactive: string;
+      featured: string;
+      normal: string;
+    };
+    actions: {
+      disable: string;
+      enable: string;
+      unfeature: string;
+      feature: string;
+    };
   };
   reviews: {
     count: string;
@@ -842,8 +856,18 @@ export interface AdminPagesDict {
       created: string;
       actions: string;
     };
-    status: { approved: string; pending: string; public: string; private: string };
-    actions: { unapprove: string; approve: string; hide: string; publish: string };
+    status: {
+      approved: string;
+      pending: string;
+      public: string;
+      private: string;
+    };
+    actions: {
+      unapprove: string;
+      approve: string;
+      hide: string;
+      publish: string;
+    };
   };
   waitlist: {
     count: string;
@@ -950,11 +974,21 @@ export interface MarketingDictionary {
       videoSrc: string;
     };
     homeInfo: {
-      benefitsSteps: Array<{ description: string; imageAlt: string; imageSrc: string; title: string }>;
+      benefitsSteps: Array<{
+        description: string;
+        imageAlt: string;
+        imageSrc: string;
+        title: string;
+      }>;
       ctaScrollTarget: string;
       ctaText: string;
       eyebrow: string;
-      howItWorksSteps: Array<{ description: string; imageAlt: string; imageSrc: string; title: string }>;
+      howItWorksSteps: Array<{
+        description: string;
+        imageAlt: string;
+        imageSrc: string;
+        title: string;
+      }>;
       sectionAriaLabel: string;
       tabBenefitsLabel: string;
       tabHowLabel: string;
@@ -1076,7 +1110,7 @@ export interface MarketingDictionary {
         shortDescription: string;
         title: string;
       }
-   >;
+    >;
     contentTabs: Array<{
       id: string;
       label: string;
@@ -1157,11 +1191,26 @@ export interface MarketingDictionary {
           label: string;
           options: Array<{ key: string; label: string; tooltip?: string }>;
         };
-        arrivePref: { label: string; options: Array<{ key: string; label: string }> };
-        climate: { label: string; options: Array<{ key: string; label: string }> };
-        departPref: { label: string; options: Array<{ key: string; label: string }> };
-        maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
-        transport: { label: string; options: Array<{ key: string; label: string }> };
+        arrivePref: {
+          label: string;
+          options: Array<{ key: string; label: string }>;
+        };
+        climate: {
+          label: string;
+          options: Array<{ key: string; label: string }>;
+        };
+        departPref: {
+          label: string;
+          options: Array<{ key: string; label: string }>;
+        };
+        maxTravelTime: {
+          label: string;
+          options: Array<{ key: string; label: string }>;
+        };
+        transport: {
+          label: string;
+          options: Array<{ key: string; label: string }>;
+        };
       };
       filtersLabel: string;
       filtersForm: {
@@ -1186,11 +1235,26 @@ export interface MarketingDictionary {
             label: string;
             options: Array<{ key: string; label: string; tooltip?: string }>;
           };
-          arrivePref: { label: string; options: Array<{ key: string; label: string }> };
-          climate: { label: string; options: Array<{ key: string; label: string }> };
-          departPref: { label: string; options: Array<{ key: string; label: string }> };
-          maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
-          transport: { label: string; options: Array<{ key: string; label: string }> };
+          arrivePref: {
+            label: string;
+            options: Array<{ key: string; label: string }>;
+          };
+          climate: {
+            label: string;
+            options: Array<{ key: string; label: string }>;
+          };
+          departPref: {
+            label: string;
+            options: Array<{ key: string; label: string }>;
+          };
+          maxTravelTime: {
+            label: string;
+            options: Array<{ key: string; label: string }>;
+          };
+          transport: {
+            label: string;
+            options: Array<{ key: string; label: string }>;
+          };
         };
         importantNote1: string;
         importantNote2: string;
@@ -1472,7 +1536,13 @@ export interface MarketingDictionary {
     };
     curators: {
       eyebrow: string;
-      items: Array<{ bio: string; img: string; linkedin: string; name: string; role: string }>;
+      items: Array<{
+        bio: string;
+        img: string;
+        linkedin: string;
+        name: string;
+        role: string;
+      }>;
       sectionTitle: string;
       subtitle: string;
     };

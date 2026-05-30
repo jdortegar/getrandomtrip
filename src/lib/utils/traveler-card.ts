@@ -7,8 +7,8 @@ import {
   getTravelerTypeOptions,
   getTravelerType,
   type TravelerTypeSlug,
-} from '@/lib/data/traveler-types';
-import { getXsedCard } from '@/lib/data/xsed-catalog';
+} from "@/lib/data/traveler-types";
+import { getXsedCard } from "@/lib/data/xsed-catalog";
 
 export type { TravelerTypeSlug };
 
@@ -33,7 +33,7 @@ export function getCardForType(
   slugOrAlias: string,
   locale?: string,
 ): TravelerTypeCardData | null {
-  if (slugOrAlias.toLowerCase() === 'xsed') return getXsedCard(locale);
+  if (slugOrAlias.toLowerCase() === "xsed") return getXsedCard(locale);
   const data = getTravelerType(slugOrAlias, locale);
   if (!data) return null;
   const options = getTravelerTypeOptions(locale);
@@ -116,7 +116,7 @@ export function cardDataToCardItem(
     description: t.subtitle,
     enabled: true,
     imageUrl: t.img,
-    query: '',
+    query: "",
     title: t.title,
     travelType: t.key,
   };
@@ -141,7 +141,7 @@ export function getTravelerTypesLegacy(locale?: string): TravelerTypeLegacy[] {
     description: opt.subtitle,
     enabled: true,
     imageUrl: opt.img,
-    query: '',
+    query: "",
     title: opt.title,
     travelType: opt.key,
   }));

@@ -3,8 +3,8 @@
  * Source of truth: lib/data/traveler-types and related (product-config, excuse-helper).
  */
 
-export * from './traveler-card';
-export * from './pricing';
+export * from "./traveler-card";
+export * from "./pricing";
 export {
   getLevelById,
   getLevelName,
@@ -15,5 +15,5 @@ export {
   getTiersForDisplay,
   type Level,
   type TierForDisplay,
-} from './levels';
-export * from './excuses';
+} from "./levels";
+export * from "./excuses";

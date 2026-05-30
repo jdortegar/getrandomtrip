@@ -1,14 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { addMembershipRole, buildUserRoleUpdate } from '@/lib/auth/prismaUserRoles';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import {
+  addMembershipRole,
+  buildUserRoleUpdate,
+} from "@/lib/auth/prismaUserRoles";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -26,14 +29,14 @@ export async function GET() {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     return NextResponse.json({ user });
   } catch (error) {
-    console.error('Error fetching tripper profile:', error);
+    console.error("Error fetching tripper profile:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
@@ -44,7 +47,7 @@ export async function PATCH(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -62,7 +65,7 @@ export async function PATCH(request: NextRequest) {
     // Validate required fields for trippers
     if (!tripperSlug || !commission || !availableTypes?.length) {
       return NextResponse.json(
-        { error: 'Missing required tripper fields' },
+        { error: "Missing required tripper fields" },
         { status: 400 },
       );
     }
@@ -77,7 +80,7 @@ export async function PATCH(request: NextRequest) {
 
     if (existingTripper) {
       return NextResponse.json(
-        { error: 'Tripper slug already taken' },
+        { error: "Tripper slug already taken" },
         { status: 400 },
       );
     }
@@ -88,11 +91,11 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!existing) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const { roles } = buildUserRoleUpdate(
-      addMembershipRole(existing.roles, 'TRIPPER'),
+      addMembershipRole(existing.roles, "TRIPPER"),
     );
 
     // Update user with tripper data
@@ -131,9 +134,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ user: updatedUser });
   } catch (error) {
-    console.error('Error updating tripper profile:', error);
+    console.error("Error updating tripper profile:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

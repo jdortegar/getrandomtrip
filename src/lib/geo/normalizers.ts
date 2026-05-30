@@ -1,4 +1,4 @@
-import type { CountryResult, CityResult } from './types';
+import type { CountryResult, CityResult } from "./types";
 
 export interface MapboxCountryFeature {
   text: string;
@@ -37,7 +37,7 @@ export function normalizeCityFeature(
   feature: MapboxCityFeature,
   countryCode: string,
 ): CityResult {
-  const name = feature.place_name.split(',')[0]?.trim() ?? feature.text;
+  const name = feature.place_name.split(",")[0]?.trim() ?? feature.text;
   return {
     name,
     placeName: feature.place_name,

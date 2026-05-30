@@ -28,10 +28,10 @@ Refactor the three tripper packages pages to match the dashboard design system a
 
 ## Pages in Scope
 
-| File | Current state | After refactor |
-|------|--------------|----------------|
-| `packages/page.tsx` | "use client", `useEffect` fetch, `Hero` + `GlassCard` | Server component, passes data to `PackagesPageClient` |
-| `packages/new/page.tsx` | "use client" monolith | Server component shell, renders `PackageFormClient` in create mode |
+| File                     | Current state                                         | After refactor                                                                           |
+| ------------------------ | ----------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `packages/page.tsx`      | "use client", `useEffect` fetch, `Hero` + `GlassCard` | Server component, passes data to `PackagesPageClient`                                    |
+| `packages/new/page.tsx`  | "use client" monolith                                 | Server component shell, renders `PackageFormClient` in create mode                       |
 | `packages/[id]/page.tsx` | "use client", `useEffect` fetch, `Hero` + `GlassCard` | Server component, fetches package via Prisma, passes to `PackageFormClient` in edit mode |
 
 ---
@@ -102,15 +102,18 @@ PackageFormNav.tsx         # sticky sidebar nav with section links + save/cancel
 ### Server page shells
 
 **`packages/page.tsx`** (server):
+
 - `getServerSession(authOptions)` → redirect to `/login` if no session, 403 if not TRIPPER
 - `prisma.package.findMany({ where: { ownerId: user.id }, orderBy: { updatedAt: 'desc' } })`
 - Pass typed `Package[]` + dict slice to `PackagesPageClient`
 
 **`packages/new/page.tsx`** (server):
+
 - Auth check only — no data fetch
 - Render `PackageFormClient` with `mode="create"` and no `initialData`
 
 **`packages/[id]/page.tsx`** (server):
+
 - Auth check + `prisma.package.findFirst({ where: { id, ownerId: user.id } })`
 - 404 if not found or not owned by this tripper
 - Pass full package (all fields including JSON) as `initialData` to `PackageFormClient` with `mode="edit"`
@@ -118,11 +121,12 @@ PackageFormNav.tsx         # sticky sidebar nav with section links + save/cancel
 ### PackageFormClient
 
 Props:
+
 ```ts
 interface PackageFormClientProps {
   mode: "create" | "edit";
   initialData?: PackageFormData;
-  packageId?: string;        // required when mode="edit"
+  packageId?: string; // required when mode="edit"
   copy: PackagesDict["form"];
   locale: string;
 }
@@ -135,6 +139,7 @@ interface PackageFormClientProps {
 ### PackageFormNav
 
 Props:
+
 ```ts
 interface PackageFormNavProps {
   sections: Array<{ id: string; label: string }>;
@@ -154,6 +159,7 @@ interface PackageFormNavProps {
 ## List Page Design
 
 **Page header** — matches tripper dashboard pattern (no Hero):
+
 ```tsx
 <div className="mb-8">
   <p className="text-xs uppercase tracking-[0.18em] font-semibold text-neutral-500 mb-3">
@@ -167,6 +173,7 @@ interface PackageFormNavProps {
 ```
 
 **Action bar** — filters left, CTA right:
+
 ```tsx
 <Button asChild>
   <Link href="/dashboard/tripper/packages/new">{copy.newPackage}</Link>
@@ -174,6 +181,7 @@ interface PackageFormNavProps {
 ```
 
 **Table panel** — `rounded-xl border border-gray-200 shadow-sm bg-white`:
+
 - Columns: Paquete (title + city/country subtitle), Tipo/Nivel (stacked), Estado (badge), Precio/persona, Actualizado, Edit button
 - Status badges: `ACTIVE`→green, `DRAFT`→yellow, `INACTIVE`→red, `ARCHIVED`→neutral
 - Edit: `<Button asChild variant="ghost" size="sm"><Link href={...}>Editar</Link></Button>`
@@ -185,6 +193,7 @@ interface PackageFormNavProps {
 ## Form Page Design
 
 **Page header** — dashboard style, no Hero:
+
 - Create: "CREAR PAQUETE"
 - Edit: package title uppercased
 
@@ -217,7 +226,7 @@ Section heading: `<h2 className="text-lg font-semibold text-neutral-900 mb-4">`
 
 ### Section 1 — Básico
 
-Fields: `title`*, `type`*, `level`*, `status` (edit only), `teaser` (maxLength 150), `description`
+Fields: `title`_, `type`_, `level`\*, `status` (edit only), `teaser` (maxLength 150), `description`
 
 **type** — `<select>`: couple, family, group, solo, honeymoon, paws
 
@@ -231,36 +240,62 @@ Fields: `title`*, `type`*, `level`*, `status` (edit only), `teaser` (maxLength 1
 
 ### Section 2 — Destino
 
-Fields: `destinationCountry`*, `destinationCity`*, `excuseKey` (conditional)
+Fields: `destinationCountry`_, `destinationCity`_, `excuseKey` (conditional)
 
 **excuseKey** — only rendered when `level === 'explora-plus' || level === 'bivouac'`. Rendered as a `<select>` with options filtered by `type`:
 
 ```ts
 const EXCUSE_KEYS_BY_TYPE: Record<string, string[]> = {
   couple: [
-    'Escapada Romántica', 'Dúo de Aventura', 'Foodie Lovers',
-    'Cultura & Tradición', 'Wellness Retreat', 'Celebraciones',
-    'Playa & Dunas', 'Escapada Urbana',
+    "Escapada Romántica",
+    "Dúo de Aventura",
+    "Foodie Lovers",
+    "Cultura & Tradición",
+    "Wellness Retreat",
+    "Celebraciones",
+    "Playa & Dunas",
+    "Escapada Urbana",
   ],
   solo: [
-    'Get Lost', 'Búsqueda Interior', 'Aventura & Desafío',
-    'Exploración Cultural', 'Fotografía & Narrativa Visual',
-    'Literatura Arte & Talleres Locales', 'Música & Sonidos', 'Tribe Encounters',
+    "Get Lost",
+    "Búsqueda Interior",
+    "Aventura & Desafío",
+    "Exploración Cultural",
+    "Fotografía & Narrativa Visual",
+    "Literatura Arte & Talleres Locales",
+    "Música & Sonidos",
+    "Tribe Encounters",
   ],
   family: [
-    'Aventura en familia', 'Naturaleza & fauna', 'Cultura & tradiciones',
-    'Playas & dunas', 'Graduaciones & celebraciones', 'Escapadas Madre-hij@ / Padre-hij@',
+    "Aventura en familia",
+    "Naturaleza & fauna",
+    "Cultura & tradiciones",
+    "Playas & dunas",
+    "Graduaciones & celebraciones",
+    "Escapadas Madre-hij@ / Padre-hij@",
   ],
   honeymoon: [], // NUPTIA is Atelier-only, no standard excuses
   paws: [
-    'Senderos & Naturaleza', 'Playas Dog-Friendly', 'Ciudades Pet Lovers',
-    'Aventura Outdoor', 'Relax & Bienestar', 'Escapadas Gastronómicas',
-    'Trips Rurales & Granja', 'Dog Events & Comunidades',
+    "Senderos & Naturaleza",
+    "Playas Dog-Friendly",
+    "Ciudades Pet Lovers",
+    "Aventura Outdoor",
+    "Relax & Bienestar",
+    "Escapadas Gastronómicas",
+    "Trips Rurales & Granja",
+    "Dog Events & Comunidades",
   ],
   group: [
-    'Narradores Visuales', 'Yoga & Bienestar', 'Religioso o Espiritual',
-    'Gastronómico', 'Historias & Fantasía', 'Naturaleza & Aventura',
-    'Amigos', 'Negocios', 'Estudiantes', 'Música & Festivales',
+    "Narradores Visuales",
+    "Yoga & Bienestar",
+    "Religioso o Espiritual",
+    "Gastronómico",
+    "Historias & Fantasía",
+    "Naturaleza & Aventura",
+    "Amigos",
+    "Negocios",
+    "Estudiantes",
+    "Música & Festivales",
   ],
 };
 ```
@@ -275,11 +310,11 @@ Level-aware max nights hint shown below the `maxNights` input:
 
 ```ts
 const MAX_NIGHTS_BY_LEVEL: Record<string, number | null> = {
-  'essenza': 2,
-  'modo-explora': 3,
-  'explora-plus': 4,
-  'bivouac': 5,
-  'atelier-getaway': null, // flexible
+  essenza: 2,
+  "modo-explora": 3,
+  "explora-plus": 4,
+  bivouac: 5,
+  "atelier-getaway": null, // flexible
 };
 ```
 
@@ -302,14 +337,14 @@ Show reference as: `"Referencia {product}: USD {amount} por persona"` — inform
 
 These 6 fields mirror the client's TripRequest filter fields. The tripper declares the package's characteristics so the matching algorithm can use them. All are `<select>` with an "Indistinto / Sin preferencia" default option (`any` / `no-limit`).
 
-| Field | Options |
-|---|---|
+| Field               | Options                                                           |
+| ------------------- | ----------------------------------------------------------------- |
 | `accommodationType` | any, hotel-style, home-style, nature-escape, hybrid-hub, glamping |
-| `transport` | any, plane, bus, train, ship |
-| `climate` | any, warm, cold, mild |
-| `maxTravelTime` | no-limit, 3h, 5h, 8h |
-| `departPref` | any, morning, afternoon, night |
-| `arrivePref` | any, morning, afternoon, night |
+| `transport`         | any, plane, bus, train, ship                                      |
+| `climate`           | any, warm, cold, mild                                             |
+| `maxTravelTime`     | no-limit, 3h, 5h, 8h                                              |
+| `departPref`        | any, morning, afternoon, night                                    |
+| `arrivePref`        | any, morning, afternoon, night                                    |
 
 Labels and option text are defined in the `packages` dictionary section (do not cross-reference `journeyFilters` — those belong to the client-facing flow). The values (e.g. `hotel-style`, `plane`) are the same canonical keys used in TripRequest.
 
@@ -320,6 +355,7 @@ Labels and option text are defined in the `packages` dictionary section (do not 
 `hotels` JSON field — array of hotel objects: `{ name: string; stars?: number; location?: string; checkIn?: string; checkOut?: string }[]`
 
 UI: add/remove hotel cards. Each card has:
+
 - Name (text input, required)
 - Stars (number input 1–5, optional)
 - Location (text input, optional)
@@ -334,6 +370,7 @@ Empty state: "No has agregado hoteles aún." + "Agregar Hotel" dashed button.
 `activities` JSON field — array: `{ name: string; duration?: string; description?: string }[]`
 
 UI: add/remove activity cards. Each card has:
+
 - Name (text input, required)
 - Duration (text input, optional, e.g. "3h")
 - Description (textarea, optional)
@@ -345,6 +382,7 @@ UI: add/remove activity cards. Each card has:
 `itinerary` JSON field — array: `{ day: number; title: string; description: string }[]`
 
 UI: numbered day cards (day number auto-increments). Each card has:
+
 - Title (text input, required)
 - Description (textarea, required)
 
@@ -382,6 +420,7 @@ Add Day button appends a new card. Days are always ordered 1..n.
 ## excuseKey Constant Location
 
 Define `EXCUSE_KEYS_BY_TYPE` and `MAX_NIGHTS_BY_LEVEL` as constants in:
+
 ```
 src/lib/constants/packages.ts
 ```
@@ -404,8 +443,12 @@ export interface PackagesDict {
   back: string;
   filters: { allStatuses: string; allLevels: string };
   table: {
-    package: string; typeLevel: string; status: string;
-    price: string; updated: string; edit: string;
+    package: string;
+    typeLevel: string;
+    status: string;
+    price: string;
+    updated: string;
+    edit: string;
   };
   emptyState: { noPackages: string; noMatch: string; createFirst: string };
   status: { ACTIVE: string; DRAFT: string; INACTIVE: string; ARCHIVED: string };
@@ -418,34 +461,72 @@ export interface PackagesDict {
     saving: string;
     nav: { sections: string };
     sections: {
-      basic: string; destination: string; capacityPricing: string;
-      compatibility: string; accommodation: string; activities: string;
-      itinerary: string; inclusions: string; tagsMedia: string;
+      basic: string;
+      destination: string;
+      capacityPricing: string;
+      compatibility: string;
+      accommodation: string;
+      activities: string;
+      itinerary: string;
+      inclusions: string;
+      tagsMedia: string;
     };
     fields: {
-      title: string; type: string; level: string; status: string;
-      teaser: string; teaserHint: string; description: string;
-      country: string; city: string;
-      excuseKey: string; excuseKeyHint: string;
-      minNights: string; maxNights: string; maxNightsHint: string;
-      minPax: string; maxPax: string;
-      basePriceUsd: string; basePriceUsdHint: string; priceReference: string;
-      displayPrice: string; displayPriceHint: string;
-      accommodationType: string; transport: string; climate: string;
-      maxTravelTime: string; departPref: string; arrivePref: string;
+      title: string;
+      type: string;
+      level: string;
+      status: string;
+      teaser: string;
+      teaserHint: string;
+      description: string;
+      country: string;
+      city: string;
+      excuseKey: string;
+      excuseKeyHint: string;
+      minNights: string;
+      maxNights: string;
+      maxNightsHint: string;
+      minPax: string;
+      maxPax: string;
+      basePriceUsd: string;
+      basePriceUsdHint: string;
+      priceReference: string;
+      displayPrice: string;
+      displayPriceHint: string;
+      accommodationType: string;
+      transport: string;
+      climate: string;
+      maxTravelTime: string;
+      departPref: string;
+      arrivePref: string;
       compatibilityHint: string;
-      hotelName: string; hotelStars: string; hotelLocation: string;
-      hotelCheckIn: string; hotelCheckOut: string; addHotel: string;
-      activityName: string; activityDuration: string; activityDesc: string;
+      hotelName: string;
+      hotelStars: string;
+      hotelLocation: string;
+      hotelCheckIn: string;
+      hotelCheckOut: string;
+      addHotel: string;
+      activityName: string;
+      activityDuration: string;
+      activityDesc: string;
       addActivity: string;
-      itineraryTitle: string; itineraryDesc: string; addDay: string;
-      inclusions: string; addInclusion: string;
-      exclusions: string; addExclusion: string;
-      tags: string; tagInput: string;
-      highlights: string; highlightInput: string;
-      heroImage: string; heroImageHint: string;
-      isActive: string; isActiveHint: string;
-      isFeatured: string; isFeaturedHint: string;
+      itineraryTitle: string;
+      itineraryDesc: string;
+      addDay: string;
+      inclusions: string;
+      addInclusion: string;
+      exclusions: string;
+      addExclusion: string;
+      tags: string;
+      tagInput: string;
+      highlights: string;
+      highlightInput: string;
+      heroImage: string;
+      heroImageHint: string;
+      isActive: string;
+      isActiveHint: string;
+      isFeatured: string;
+      isFeaturedHint: string;
     };
   };
 }
@@ -550,25 +631,30 @@ export interface PackageListItem {
 ## Affected Files
 
 **Schema:**
+
 - `prisma/schema.prisma` — add 6 matching fields to Package model
 - Run `npm run db:migrate`
 
 **API:**
+
 - `src/app/api/packages/route.ts` — accept 6 new fields on POST
 - `src/app/api/tripper/packages/[id]/route.ts` — fix GET select; accept 6 new fields on PATCH
 
 **App pages:**
+
 - `src/app/[locale]/dashboard/tripper/packages/page.tsx`
 - `src/app/[locale]/dashboard/tripper/packages/new/page.tsx`
 - `src/app/[locale]/dashboard/tripper/packages/[id]/page.tsx`
 
 **Dictionary + types:**
+
 - `src/dictionaries/es.json`
 - `src/dictionaries/en.json`
 - `src/lib/types/dictionary.ts`
 - `src/types/tripper.ts`
 
 **New files:**
+
 - `src/components/app/dashboard/tripper/packages/PackagesPageClient.tsx`
 - `src/components/app/dashboard/tripper/packages/PackageFormClient.tsx`
 - `src/components/app/dashboard/tripper/packages/PackageFormNav.tsx`

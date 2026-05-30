@@ -4,11 +4,13 @@ const argentina: CountryCopy = {
   slug: "/argentina",
   name: "Argentina",
   seoTitle: "Viajes a Argentina a medida | Patagonia, Vinos y Cultura",
-  seoDescription: "Diseña tu viaje a Argentina con Randomtrip. Explora la Patagonia, degusta vinos en Mendoza y vive la cultura de Buenos Aires. Viajes de lujo personalizados.",
+  seoDescription:
+    "Diseña tu viaje a Argentina con Randomtrip. Explora la Patagonia, degusta vinos en Mendoza y vive la cultura de Buenos Aires. Viajes de lujo personalizados.",
   h1: "Argentina, a tu manera",
   heroKicker: "Off the Record",
   heroHeadline: "Entre glaciares, ciudades creativas y valles de altura.",
-  heroSub: "Desde estancias silenciosas hasta bodegas de autor y trekkings sobre hielo azul: armamos una ruta que respira tu forma de viajar.",
+  heroSub:
+    "Desde estancias silenciosas hasta bodegas de autor y trekkings sobre hielo azul: armamos una ruta que respira tu forma de viajar.",
   ctaLabel: "Diseñar mi viaje",
   reasonsToGo: [
     "Patagonia indómita sin multitudes",
@@ -32,14 +34,32 @@ const argentina: CountryCopy = {
     "Navegación por el Canal Beagle en Ushuaia",
   ],
   ideas: [
-    { title: "Patagonia Esencial", blurb: "El Calafate, El Chaltén y los fiordos australes en 8–10 días." },
-    { title: "Ruta del Vino y Volcanes", blurb: "Salta y Catamarca: bodegas de altura y paisajes lunares." },
-    { title: "Cultura y Naturaleza", blurb: "Buenos Aires, Iguazú y las sierras de Córdoba." },
+    {
+      title: "Patagonia Esencial",
+      blurb: "El Calafate, El Chaltén y los fiordos australes en 8–10 días.",
+    },
+    {
+      title: "Ruta del Vino y Volcanes",
+      blurb: "Salta y Catamarca: bodegas de altura y paisajes lunares.",
+    },
+    {
+      title: "Cultura y Naturaleza",
+      blurb: "Buenos Aires, Iguazú y las sierras de Córdoba.",
+    },
   ],
   faqs: [
-    { q: "¿Cuánto tiempo necesito para visitar Argentina?", a: "Recomendamos un mínimo de 10 días. Para una experiencia completa que incluya Patagonia y el noroeste, lo ideal son 14-20 días." },
-    { q: "¿Es Argentina un destino seguro?", a: "Sí, es un destino seguro para turistas. Como en cualquier gran país, se recomienda tomar precauciones en las grandes ciudades." },
-    { q: "¿Necesito visa para viajar a Argentina?", a: "La mayoría de los ciudadanos de países de América y Europa no necesitan visa para estadías turísticas de hasta 90 días." },
+    {
+      q: "¿Cuánto tiempo necesito para visitar Argentina?",
+      a: "Recomendamos un mínimo de 10 días. Para una experiencia completa que incluya Patagonia y el noroeste, lo ideal son 14-20 días.",
+    },
+    {
+      q: "¿Es Argentina un destino seguro?",
+      a: "Sí, es un destino seguro para turistas. Como en cualquier gran país, se recomienda tomar precauciones en las grandes ciudades.",
+    },
+    {
+      q: "¿Necesito visa para viajar a Argentina?",
+      a: "La mayoría de los ciudadanos de países de América y Europa no necesitan visa para estadías turísticas de hasta 90 días.",
+    },
   ],
   heroVideo: "/videos/argentina.mp4",
   heroImage: "/images/bitacoras/argentina.jpg",
@@ -48,7 +68,7 @@ const argentina: CountryCopy = {
     "/images/bitacoras/argentina-gallery-2.jpg",
     "/images/bitacoras/argentina-gallery-3.jpg",
     "/images/bitacoras/argentina-gallery-4.jpg",
-  ]
+  ],
 };
 
 export default argentina;

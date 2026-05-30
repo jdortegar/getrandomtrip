@@ -14,7 +14,16 @@ type Props = {
   socials?: { ig?: string; yt?: string; web?: string };
 };
 
-export default function ProfileHeader({ name, handle, country, avatar, cover, verified, bio, socials }: Props) {
+export default function ProfileHeader({
+  name,
+  handle,
+  country,
+  avatar,
+  cover,
+  verified,
+  bio,
+  socials,
+}: Props) {
   return (
     <header className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-white/10 dark:bg-neutral-900">
       {/* Cover */}
@@ -40,7 +49,9 @@ export default function ProfileHeader({ name, handle, country, avatar, cover, ve
         />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-semibold text-white md:text-3xl">{name}</h1>
+            <h1 className="text-2xl font-semibold text-white md:text-3xl">
+              {name}
+            </h1>
             {verified && (
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2 py-0.5 text-xs font-semibold text-white">
                 <ShieldCheck size={14} /> Verificado
@@ -48,13 +59,42 @@ export default function ProfileHeader({ name, handle, country, avatar, cover, ve
             )}
           </div>
           <div className="mt-1 text-sm text-white/90">
-            @{handle} {country && <>· <MapPin className="inline -mt-1" size={14}/> {country}</>}
+            @{handle}{" "}
+            {country && (
+              <>
+                · <MapPin className="inline -mt-1" size={14} /> {country}
+              </>
+            )}
           </div>
           {bio && <p className="mt-3 max-w-2xl text-white/95">{bio}</p>}
           <div className="mt-3 flex flex-wrap gap-2">
-            {socials?.ig && <Link target="_blank" href={`https://instagram.com/${socials.ig}`} className="rt-btn rt-btn--ghost text-white border-white/40"><LinkIcon size={16}/> Instagram</Link>}
-            {socials?.yt && <Link target="_blank" href={`https://youtube.com/${socials.yt}`} className="rt-btn rt-btn--ghost text-white border-white/40"><LinkIcon size={16}/> YouTube</Link>}
-            {socials?.web && <Link target="_blank" href={`https://${socials.web}`} className="rt-btn rt-btn--ghost text-white border-white/40"><LinkIcon size={16}/> Web</Link>}
+            {socials?.ig && (
+              <Link
+                target="_blank"
+                href={`https://instagram.com/${socials.ig}`}
+                className="rt-btn rt-btn--ghost text-white border-white/40"
+              >
+                <LinkIcon size={16} /> Instagram
+              </Link>
+            )}
+            {socials?.yt && (
+              <Link
+                target="_blank"
+                href={`https://youtube.com/${socials.yt}`}
+                className="rt-btn rt-btn--ghost text-white border-white/40"
+              >
+                <LinkIcon size={16} /> YouTube
+              </Link>
+            )}
+            {socials?.web && (
+              <Link
+                target="_blank"
+                href={`https://${socials.web}`}
+                className="rt-btn rt-btn--ghost text-white border-white/40"
+              >
+                <LinkIcon size={16} /> Web
+              </Link>
+            )}
           </div>
         </div>
       </div>

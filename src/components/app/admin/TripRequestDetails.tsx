@@ -1,8 +1,8 @@
-import { formatAdminDate, formatAdminAmount } from '@/lib/admin/format';
-import type { AdminTripRequest } from '@/lib/admin/types';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
+import { formatAdminDate, formatAdminAmount } from "@/lib/admin/format";
+import type { AdminTripRequest } from "@/lib/admin/types";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 
-type DetailLabels = MarketingDictionary['adminTripEditModal']['details'];
+type DetailLabels = MarketingDictionary["adminTripEditModal"]["details"];
 
 interface DetailRowProps {
   label: string;

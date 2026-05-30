@@ -7,5 +7,5 @@ export {
   getPricePerPerson,
   type TravelerTypeSlug,
   type PriceLevelId,
-} from '@/lib/data/traveler-types';
-export { getPricingCatalog } from '@/lib/helpers/pricing';
+} from "@/lib/data/traveler-types";
+export { getPricingCatalog } from "@/lib/helpers/pricing";

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import SecureRoute from '@/components/auth/SecureRoute';
+import SecureRoute from "@/components/auth/SecureRoute";
 
 interface Props {
   children: React.ReactNode;
-  requiredRole?: 'client' | 'tripper' | 'admin';
+  requiredRole?: "client" | "tripper" | "admin";
 }
 
 export default function SecureRouteWrapper({ children, requiredRole }: Props) {

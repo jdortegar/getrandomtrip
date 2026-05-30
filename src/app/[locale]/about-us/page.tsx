@@ -48,7 +48,9 @@ export default async function AboutUsPage(props: LocaleParams) {
       avatarUrl: t.avatarUrl,
       bio: t.bio,
       name: t.name,
-      specialty: t.travelerType ? getTravelerTypeLabel(t.travelerType, locale) : null,
+      specialty: t.travelerType
+        ? getTravelerTypeLabel(t.travelerType, locale)
+        : null,
       tripperSlug: t.tripperSlug!,
     }));
 

@@ -1,32 +1,32 @@
-import { NextAuthOptions } from 'next-auth';
-import { getServerSession } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
-import { redirect } from 'next/navigation';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
+import { NextAuthOptions } from "next-auth";
+import { getServerSession } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import {
   primaryRoleFromMembership,
   prismaUserRoleToAppRole,
   prismaUserRolesToAppRoles,
-} from '@/lib/auth/prismaUserRoles';
+} from "@/lib/auth/prismaUserRoles";
 
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password required');
+          throw new Error("Email and password required");
         }
 
         const user = await prisma.user.findUnique({
@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          throw new Error('Invalid credentials');
+          throw new Error("Invalid credentials");
         }
 
         const isValid = await bcrypt.compare(
@@ -54,7 +54,7 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isValid) {
-          throw new Error('Invalid credentials');
+          throw new Error("Invalid credentials");
         }
 
         return {
@@ -67,10 +67,10 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async signIn({ user, account }) {
@@ -82,23 +82,23 @@ export const authOptions: NextAuthOptions = {
       });
 
       // For OAuth (Google), create user if doesn't exist
-      if (account?.provider === 'google' && !dbUser) {
+      if (account?.provider === "google" && !dbUser) {
         dbUser = await prisma.user.create({
           data: {
             email: user.email,
-            name: user.name || 'Usuario',
+            name: user.name || "Usuario",
             avatarUrl: user.image || null,
             travelerType: null,
             interests: [],
             dislikes: [],
           },
         });
-        console.log('✅ Created new user from Google OAuth:', dbUser.id);
+        console.log("✅ Created new user from Google OAuth:", dbUser.id);
       }
 
       // For credentials, user should already exist (created during registration)
-      if (account?.provider === 'credentials' && !dbUser) {
-        console.error('❌ User not found for credentials login:', user.email);
+      if (account?.provider === "credentials" && !dbUser) {
+        console.error("❌ User not found for credentials login:", user.email);
         return false;
       }
 
@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
 
         // If signing in with OAuth, ensure we have the DB user ID
-        if (account?.provider === 'google' && user.email) {
+        if (account?.provider === "google" && user.email) {
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email },
           });
@@ -125,7 +125,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Handle session updates from client
-      if (trigger === 'update' && clientSession) {
+      if (trigger === "update" && clientSession) {
         return { ...token, ...clientSession };
       }
 
@@ -189,15 +189,15 @@ export async function assertTripper() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    redirect('/login');
+    redirect("/login");
   }
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email! },
   });
 
-  if (!user || !hasRoleAccess(user, 'tripper')) {
-    redirect('/');
+  if (!user || !hasRoleAccess(user, "tripper")) {
+    redirect("/");
   }
 
   return user;
@@ -208,16 +208,16 @@ export async function assertTripper() {
  * This is a placeholder - in production, use session data
  */
 export function getUserRole(): string | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   try {
-    const stored = localStorage.getItem('user-storage');
+    const stored = localStorage.getItem("user-storage");
     if (stored) {
       const parsed = JSON.parse(stored);
       return parsed.state?.user?.role || null;
     }
   } catch (error) {
-    console.error('Error getting user role:', error);
+    console.error("Error getting user role:", error);
   }
 
   return null;

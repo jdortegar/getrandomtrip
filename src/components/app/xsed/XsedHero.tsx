@@ -1,23 +1,33 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
-import VideoBackground from '@/components/media/VideoBackground';
-import { XsedNotifyForm } from '@/components/app/xsed/XsedNotifyForm';
-import type { XsedPageDict } from '@/lib/types/dictionary';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
+import VideoBackground from "@/components/media/VideoBackground";
+import { XsedNotifyForm } from "@/components/app/xsed/XsedNotifyForm";
+import type { XsedPageDict } from "@/lib/types/dictionary";
+import { cn } from "@/lib/utils";
 
 interface XsedHeroProps {
   backHref?: string;
   backLabel?: string;
   className?: string;
-  content: XsedPageDict['xsedHero'];
+  content: XsedPageDict["xsedHero"];
 }
 
-export function XsedHero({ backHref, backLabel, className, content }: XsedHeroProps) {
+export function XsedHero({
+  backHref,
+  backLabel,
+  className,
+  content,
+}: XsedHeroProps) {
   return (
-    <section className={cn('relative flex h-screen flex-col overflow-hidden', className)}>
+    <section
+      className={cn(
+        "relative flex h-screen flex-col overflow-hidden",
+        className,
+      )}
+    >
       <VideoBackground
         fallbackImage={content.backgroundImage}
         videoSrc={content.videoSrc}

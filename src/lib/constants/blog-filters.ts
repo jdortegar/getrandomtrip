@@ -2,8 +2,8 @@
 // Aligns with journey/tripper domain: Package has type + excuseKey; User is tripper.
 // Travel type labels from lib/data/traveler-types.
 
-import { getTravelerTypeOptions } from '@/lib/data/traveler-types';
-import { allExcuses, type ExcuseData } from '@/lib/data/shared/excuses';
+import { getTravelerTypeOptions } from "@/lib/data/traveler-types";
+import { allExcuses, type ExcuseData } from "@/lib/data/shared/excuses";
 
 // -----------------------------------------------------------------------------
 // Travel type (Tipo de viaje) – keys and labels from traveler-types

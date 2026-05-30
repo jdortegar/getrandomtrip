@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams } from 'next/navigation';
-import { Input } from '@/components/ui/input';
-import { Loader2, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { CityResult } from '@/lib/geo/types';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Loader2, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { CityResult } from "@/lib/geo/types";
 
 interface CitySelectorProps {
   className?: string;
@@ -15,22 +15,22 @@ interface CitySelectorProps {
   onChange: (value: string) => void;
   onOptionSelect?: () => void;
   placeholder?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   value: string;
 }
 
 export default function CitySelector({
-  className = '',
+  className = "",
   countryCode,
   disabled = false,
   onChange,
   onOptionSelect,
-  placeholder = 'Ciudad de salida',
-  size = 'md',
+  placeholder = "Ciudad de salida",
+  size = "md",
   value,
 }: CitySelectorProps) {
   const params = useParams();
-  const lang = (params?.locale as string)?.startsWith('en') ? 'en' : 'es';
+  const lang = (params?.locale as string)?.startsWith("en") ? "en" : "es";
 
   const [cities, setCities] = useState<CityResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ export default function CitySelector({
         const data = (await res.json()) as { results: CityResult[] };
         setCities(data.results ?? []);
       } catch (error) {
-        console.error('Error searching cities:', error);
+        console.error("Error searching cities:", error);
         setCities([]);
       } finally {
         setLoading(false);
@@ -92,8 +92,8 @@ export default function CitySelector({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleCitySelect = (city: CityResult) => {
@@ -109,14 +109,14 @@ export default function CitySelector({
         <Input
           autoComplete="off"
           className={cn(
-            'border-gray-300 bg-white pl-11 ring-0 focus-visible:ring-0',
-            size === 'lg'
-              ? 'h-12 text-base'
-              : size === 'sm'
-                ? 'h-8 text-sm'
-                : 'h-10',
+            "border-gray-300 bg-white pl-11 ring-0 focus-visible:ring-0",
+            size === "lg"
+              ? "h-12 text-base"
+              : size === "sm"
+                ? "h-8 text-sm"
+                : "h-10",
             className,
-            open && 'rounded-b-none',
+            open && "rounded-b-none",
           )}
           disabled={disabled || !hasCountry}
           onFocus={() => setOpen(true)}
@@ -124,7 +124,7 @@ export default function CitySelector({
             onChange(e.target.value);
             setOpen(true);
           }}
-          placeholder={hasCountry ? placeholder : 'Selecciona un país primero'}
+          placeholder={hasCountry ? placeholder : "Selecciona un país primero"}
           type="text"
           value={value}
         />
@@ -139,8 +139,8 @@ export default function CitySelector({
           ) : cities.length === 0 ? (
             <div className="px-4 py-2 text-sm text-gray-500">
               {value.length < 2
-                ? 'Escribe al menos 2 caracteres...'
-                : 'No se encontraron ciudades.'}
+                ? "Escribe al menos 2 caracteres..."
+                : "No se encontraron ciudades."}
             </div>
           ) : (
             cities.map((city) => (

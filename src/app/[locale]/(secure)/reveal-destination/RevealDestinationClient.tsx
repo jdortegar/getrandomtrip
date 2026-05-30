@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
-import PrimaryButton from '@/components/PrimaryButton';
-import SkeletonLoader from '@/components/SkeletonLoader';
+import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
+import PrimaryButton from "@/components/PrimaryButton";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 interface DestinationData {
   name: string;
@@ -14,7 +14,7 @@ interface DestinationData {
 
 export default function RevealDestinationClient() {
   const searchParams = useSearchParams();
-  const bookingId = searchParams.get('bookingId');
+  const bookingId = searchParams.get("bookingId");
 
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
@@ -28,16 +28,16 @@ export default function RevealDestinationClient() {
   const fetchDestination = useCallback(async () => {
     setLoading(true);
     if (!bookingId) {
-      setError('Booking ID not found.');
+      setError("Booking ID not found.");
       setLoading(false);
       return;
     }
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || '';
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || "";
       const response = await fetch(`${backendUrl}/api/reveal`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           bookingId: bookingId,
@@ -49,18 +49,18 @@ export default function RevealDestinationClient() {
       if (response.ok && data.success) {
         setDestination({
           name: data.destination.name,
-          image: data.destination.image || '/images/placeholder.jpg',
+          image: data.destination.image || "/images/placeholder.jpg",
           description: data.destination.description,
           itinerary: data.destination.itinerary,
         });
       } else {
-        setError(data.message || 'Failed to fetch destination.');
+        setError(data.message || "Failed to fetch destination.");
       }
     } catch (e: unknown) {
       if (e instanceof Error) {
-        setError('Network error or server issue: ' + e.message);
+        setError("Network error or server issue: " + e.message);
       } else {
-        setError('An unknown error occurred');
+        setError("An unknown error occurred");
       }
     } finally {
       setLoading(false);
@@ -69,7 +69,7 @@ export default function RevealDestinationClient() {
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      const mockTripDate = new Date(Date.now() + (5 * 60 * 1000));
+      const mockTripDate = new Date(Date.now() + 5 * 60 * 1000);
       setTripDate(mockTripDate);
       setLoading(false);
     };
@@ -77,7 +77,7 @@ export default function RevealDestinationClient() {
     if (bookingId) {
       fetchBookingDetails();
     } else {
-      setError('Booking ID not found.');
+      setError("Booking ID not found.");
       setLoading(false);
     }
   }, [bookingId]);
@@ -87,7 +87,7 @@ export default function RevealDestinationClient() {
 
     const calculateTimeRemaining = () => {
       const now = new Date().getTime();
-      const revealTime = tripDate.getTime() - (48 * 60 * 60 * 1000);
+      const revealTime = tripDate.getTime() - 48 * 60 * 60 * 1000;
       const remaining = revealTime - now;
       setTimeRemaining(remaining > 0 ? remaining : 0);
 
@@ -118,7 +118,9 @@ export default function RevealDestinationClient() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">Preparing Your Reveal...</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#0A2240]">
+          Preparing Your Reveal...
+        </h1>
         <div className="bg-white p-8 rounded-lg shadow-md mb-8">
           <SkeletonLoader />
         </div>
@@ -136,53 +138,89 @@ export default function RevealDestinationClient() {
   }
 
   return (
-    <div data-testid="reveal-root" className="container mx-auto px-4 py-8 text-center">
+    <div
+      data-testid="reveal-root"
+      className="container mx-auto px-4 py-8 text-center"
+    >
       {!isRevealed ? (
         <>
-          <h1 data-testid="reveal-title" className="text-4xl font-bold mb-4 text-[#0A2240]">Your Adventure Awaits!</h1>
-          <p className="text-xl text-gray-700 mb-8">Your destination will be revealed in:</p>
-          <div data-testid="reveal-countdown" className="text-6xl font-bold text-[#D97E4A] mb-8">
+          <h1
+            data-testid="reveal-title"
+            className="text-4xl font-bold mb-4 text-[#0A2240]"
+          >
+            Your Adventure Awaits!
+          </h1>
+          <p className="text-xl text-gray-700 mb-8">
+            Your destination will be revealed in:
+          </p>
+          <div
+            data-testid="reveal-countdown"
+            className="text-6xl font-bold text-[#D97E4A] mb-8"
+          >
             {formatTime(timeRemaining)}
           </div>
-          <p className="text-lg text-gray-600">Stay tuned for an unforgettable experience!</p>
+          <p className="text-lg text-gray-600">
+            Stay tuned for an unforgettable experience!
+          </p>
+        </>
+      ) : destination ? (
+        <>
+          <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">
+            Your Destination Revealed!
+          </h1>
+          <h2
+            data-testid="reveal-destination"
+            className="text-3xl font-semibold mb-6 text-[#D97E4A]"
+          >
+            {destination.name}
+          </h2>
+
+          <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden shadow-lg">
+            <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 text-lg">
+              Map Integration Placeholder
+            </div>
+          </div>
+
+          <div className="bg-white p-8 rounded-lg shadow-md mb-8 text-left">
+            <h3 className="text-2xl font-semibold mb-4 text-[#0A2240]">
+              About Your Trip:
+            </h3>
+            <p className="text-gray-700 mb-6">{destination.description}</p>
+
+            <h3 className="text-2xl font-semibold mb-4 text-[#0A2240]">
+              Your Itinerary:
+            </h3>
+            <ul className="list-disc list-inside text-gray-700 ml-4">
+              {destination.itinerary.map((item: string, index: number) => (
+                <li key={index} className="mb-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p className="text-xl text-gray-700 mb-8">
+            Thank you for choosing Randomtrip for your next adventure!
+          </p>
+
+          <div className="flex justify-center space-x-4">
+            <PrimaryButton onClick={() => console.log("Share experience")}>
+              Share Your Experience
+            </PrimaryButton>
+            <PrimaryButton onClick={() => console.log("Book another trip")}>
+              Book Another Trip
+            </PrimaryButton>
+          </div>
         </>
       ) : (
-        destination ? (
-          <>
-            <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">Your Destination Revealed!</h1>
-            <h2 data-testid="reveal-destination" className="text-3xl font-semibold mb-6 text-[#D97E4A]">{destination.name}</h2>
-
-            <div className="relative w-full h-96 mb-8 rounded-lg overflow-hidden shadow-lg">
-              <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 text-lg">
-                Map Integration Placeholder
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-md mb-8 text-left">
-              <h3 className="text-2xl font-semibold mb-4 text-[#0A2240]">About Your Trip:</h3>
-              <p className="text-gray-700 mb-6">{destination.description}</p>
-
-              <h3 className="text-2xl font-semibold mb-4 text-[#0A2240]">Your Itinerary:</h3>
-              <ul className="list-disc list-inside text-gray-700 ml-4">
-                {destination.itinerary.map((item: string, index: number) => (
-                  <li key={index} className="mb-2">{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            <p className="text-xl text-gray-700 mb-8">Thank you for choosing Randomtrip for your next adventure!</p>
-
-            <div className="flex justify-center space-x-4">
-              <PrimaryButton onClick={() => console.log('Share experience')}>Share Your Experience</PrimaryButton>
-              <PrimaryButton onClick={() => console.log('Book another trip')}>Book Another Trip</PrimaryButton>
-            </div>
-          </>
-        ) : (
-          <div className="container mx-auto px-4 py-8 text-center">
-            <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">Fetching Destination...</h1>
-            <p className="text-xl text-gray-700">Please wait while we reveal your surprise!</p>
-          </div>
-        )
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-4xl font-bold mb-4 text-[#0A2240]">
+            Fetching Destination...
+          </h1>
+          <p className="text-xl text-gray-700">
+            Please wait while we reveal your surprise!
+          </p>
+        </div>
       )}
     </div>
   );

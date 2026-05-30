@@ -1,4 +1,8 @@
-import type { AdminTripExperience, AdminTripPayment, AdminTripUser } from './types';
+import type {
+  AdminTripExperience,
+  AdminTripPayment,
+  AdminTripUser,
+} from "./types";
 
 interface TripRequestWithRelationIds {
   id: string;
@@ -6,7 +10,9 @@ interface TripRequestWithRelationIds {
   userId: string;
 }
 
-export function attachAdminTripRequestRelations<T extends TripRequestWithRelationIds>(
+export function attachAdminTripRequestRelations<
+  T extends TripRequestWithRelationIds,
+>(
   tripRequests: T[],
   usersById: Record<string, AdminTripUser>,
   experiencesById: Record<string, AdminTripExperience>,
@@ -16,12 +22,14 @@ export function attachAdminTripRequestRelations<T extends TripRequestWithRelatio
     const user = usersById[userId];
 
     if (!user) {
-      throw new Error(`Missing user relation for trip request ${tripRequest.id}`);
+      throw new Error(
+        `Missing user relation for trip request ${tripRequest.id}`,
+      );
     }
 
     return {
       ...tripRequest,
-      experience: experienceId ? experiencesById[experienceId] ?? null : null,
+      experience: experienceId ? (experiencesById[experienceId] ?? null) : null,
       payment: paymentsByTripRequestId[tripRequest.id] ?? null,
       user,
     };

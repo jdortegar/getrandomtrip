@@ -5,11 +5,16 @@ import Image, { ImageProps } from "next/image";
 import { getFallbackHeroImage } from "@/lib/assets";
 
 type Props = Omit<ImageProps, "src"> & {
-  srcPrimary: string;         // p.ej. /images/bitacoras/argentina.jpg
-  countryName: string;        // "Argentina"
+  srcPrimary: string; // p.ej. /images/bitacoras/argentina.jpg
+  countryName: string; // "Argentina"
 };
 
-export default function AssetImage({ srcPrimary, countryName, alt, ...rest }: Props) {
+export default function AssetImage({
+  srcPrimary,
+  countryName,
+  alt,
+  ...rest
+}: Props) {
   const [failed, setFailed] = useState(false);
 
   const src = useMemo(() => {
@@ -17,11 +22,6 @@ export default function AssetImage({ srcPrimary, countryName, alt, ...rest }: Pr
   }, [failed, countryName, srcPrimary]);
 
   return (
-    <Image
-      {...rest}
-      alt={alt}
-      src={src}
-      onError={() => setFailed(true)}
-    />
+    <Image {...rest} alt={alt} src={src} onError={() => setFailed(true)} />
   );
 }

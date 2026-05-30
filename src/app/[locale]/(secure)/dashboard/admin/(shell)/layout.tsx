@@ -1,4 +1,4 @@
-import AdminShell from '../AdminLayoutClient';
+import AdminShell from "../AdminLayoutClient";
 
 export default function AdminShellLayout({
   children,

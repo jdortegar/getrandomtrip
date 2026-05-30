@@ -1,18 +1,16 @@
-import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
-import CheckoutResultPending from '../CheckoutResultPending';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale } from '@/lib/i18n/config';
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import CheckoutResultPending from "../CheckoutResultPending";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: string }>;
-  }
-) {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}) {
   const params = await props.params;
   if (!hasLocale(params.locale)) {
-    return { title: 'Payment' };
+    return { title: "Payment" };
   }
   const dict = await getDictionary(params.locale);
   return {
@@ -21,11 +19,9 @@ export async function generateMetadata(
   };
 }
 
-export default async function CheckoutPendingPage(
-  props: {
-    params: Promise<{ locale: string }>;
-  }
-) {
+export default async function CheckoutPendingPage(props: {
+  params: Promise<{ locale: string }>;
+}) {
   const params = await props.params;
   if (!hasLocale(params.locale)) {
     notFound();

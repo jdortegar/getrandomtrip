@@ -1,6 +1,6 @@
 // frontend/src/lib/pricing.ts
-import { ADDONS, Addon } from '@/lib/data/shared/addons-catalog';
-import { countOptionalFilters } from '@/lib/helpers/journey';
+import { ADDONS, Addon } from "@/lib/data/shared/addons-catalog";
+import { countOptionalFilters } from "@/lib/helpers/journey";
 
 export function computeFiltersCostPerTrip(
   filters: any,
@@ -53,7 +53,7 @@ export function computeAddonsCostPerTrip(
   pax: number,
 ) {
   const paxN = pax || 1;
-  const others = selections.filter((s) => s.id !== 'cancel-ins');
+  const others = selections.filter((s) => s.id !== "cancel-ins");
   let otherTotal = 0;
 
   for (const sel of others) {
@@ -69,7 +69,7 @@ export function computeAddonsCostPerTrip(
   const subtotalPerPax = basePerPax + filtersPerPax + otherTotal / paxN;
 
   // cancel-ins = 15% del subtotal (por pax), luego multiplicar por pax
-  const hasCancel = selections.find((s) => s.id === 'cancel-ins');
+  const hasCancel = selections.find((s) => s.id === "cancel-ins");
   const cancelCost = hasCancel ? Math.round(subtotalPerPax * 0.15 * paxN) : 0;
 
   const totalTrip = otherTotal + cancelCost;
@@ -83,5 +83,5 @@ export function computeFiltersCost(
   basePriceUsd: number | undefined,
 ): number {
   // Si no hay base, 0; si hay base, devolverla (no rompe UI).
-  return typeof basePriceUsd === 'number' ? basePriceUsd : 0;
+  return typeof basePriceUsd === "number" ? basePriceUsd : 0;
 }

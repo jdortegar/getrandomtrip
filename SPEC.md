@@ -14,11 +14,11 @@ GetRandomTrip is a mystery travel platform. Clients configure a trip budget, dat
 
 ## 2. User Roles
 
-| Role | Description |
-|------|-------------|
-| `CLIENT` | Books trips, manages bookings, receives destination reveal |
-| `TRIPPER` | Creates and manages experience packages, earns commissions |
-| `ADMIN` | Full system access — manages users, content, payments, and platform |
+| Role      | Description                                                         |
+| --------- | ------------------------------------------------------------------- |
+| `CLIENT`  | Books trips, manages bookings, receives destination reveal          |
+| `TRIPPER` | Creates and manages experience packages, earns commissions          |
+| `ADMIN`   | Full system access — manages users, content, payments, and platform |
 
 All roles are stored as an array on the `User` model, allowing multi-role assignments.
 
@@ -31,22 +31,26 @@ All roles are stored as an array on the `User` model, allowing multi-role assign
 The primary booking flow. Clients build a trip request across four steps:
 
 **Step 1 — Budget (required)**
+
 - Select traveler type: `couple`, `solo`, `family`, `group`, `honeymoon`, `paws`
 - Select experience level: `essenza`, `modo-explora`, `explora-plus`, `bivouac`, `atelier-getaway`
 - Real-time base price calculated and displayed
 
 **Step 2 — Excuse (optional, type-dependent)**
+
 - Lifestyle/motivation refinement via carousel
 - Narrows matching preferences without restricting destination pool
 - Skipped for types that don't support it
 
 **Step 3 — Details (required)**
+
 - Origin country and city (Google Places autocomplete)
 - Trip start date and number of nights (calendar picker)
 - Traveler count (pax)
 - Transport preference (plane, bus, train, ship)
 
 **Step 4 — Preferences (optional, paid)**
+
 - Accommodation type
 - Climate preference
 - Max travel time
@@ -62,16 +66,17 @@ All changes update a live pricing summary in the sidebar.
 
 #### Base Price (USD per person)
 
-| Level | Standard | Solo (+30%) | Paws (+40%) | Honeymoon |
-|-------|----------|-------------|-------------|-----------|
-| Essenza | $350 | $450 | $490 | — |
-| Modo Explora | $550 | $650 | $700 | — |
-| Explora+ | $850 | $1,100 | $1,190 | — |
-| Bivouac | $1,200 | $1,550 | $1,680 | — |
-| Atelier | $1,200 | $1,550 | $1,680 | $1,800 |
-| XSED | $250 (flat) | — | — | — |
+| Level        | Standard    | Solo (+30%) | Paws (+40%) | Honeymoon |
+| ------------ | ----------- | ----------- | ----------- | --------- |
+| Essenza      | $350        | $450        | $490        | —         |
+| Modo Explora | $550        | $650        | $700        | —         |
+| Explora+     | $850        | $1,100      | $1,190      | —         |
+| Bivouac      | $1,200      | $1,550      | $1,680      | —         |
+| Atelier      | $1,200      | $1,550      | $1,680      | $1,800    |
+| XSED         | $250 (flat) | —           | —           | —         |
 
 #### Filters
+
 - $25 USD per filter selected
 - Power Pack: 3 filters for $60 (vs $75 à la carte)
 - Free inclusions by level:
@@ -81,12 +86,14 @@ All changes update a live pricing summary in the sidebar.
   - Depart/arrive prefs: free at Explora+ and above
 
 #### Add-ons
+
 - Cancellation Insurance: 15% of subtotal (per trip)
 - Travel Insurance: $35 per person
 - Seat Selection: $18 per person
 - Extra Luggage: variable pricing
 
 #### Currency
+
 - Checkout is in USD
 - Payments stored in ARS with exchange rate at time of booking
 
@@ -103,6 +110,7 @@ All changes update a live pricing summary in the sidebar.
 - Payment status tracked via Stripe webhooks
 
 **Post-checkout states:**
+
 - `/checkout/success` — booking confirmed
 - `/checkout/pending` — payment processing
 - `/checkout/failure` — payment failed
@@ -116,15 +124,15 @@ DRAFT → SAVED → PENDING_PAYMENT → CONFIRMED → REVEALED → COMPLETED
                                                         ↘ CANCELLED
 ```
 
-| Status | Description |
-|--------|-------------|
-| `DRAFT` | Journey builder in progress, not yet submitted |
-| `SAVED` | Submitted, awaiting payment |
-| `PENDING_PAYMENT` | Payment initiated but not confirmed |
-| `CONFIRMED` | Payment successful, trip booked |
-| `REVEALED` | Destination revealed (48h before departure) |
-| `COMPLETED` | Trip completed; customer rating/feedback collected |
-| `CANCELLED` | Booking cancelled |
+| Status            | Description                                        |
+| ----------------- | -------------------------------------------------- |
+| `DRAFT`           | Journey builder in progress, not yet submitted     |
+| `SAVED`           | Submitted, awaiting payment                        |
+| `PENDING_PAYMENT` | Payment initiated but not confirmed                |
+| `CONFIRMED`       | Payment successful, trip booked                    |
+| `REVEALED`        | Destination revealed (48h before departure)        |
+| `COMPLETED`       | Trip completed; customer rating/feedback collected |
+| `CANCELLED`       | Booking cancelled                                  |
 
 ---
 
@@ -171,11 +179,13 @@ Tripper-created packages discoverable before booking:
 Full management suite for tripper users:
 
 **Dashboard**
+
 - KPI overview: total earnings, bookings, reviews, likes
 - Revenue chart (earnings over time)
 - Recent activity feed
 
 **Experience Management**
+
 - Create/edit experience packages with:
   - Title, teaser, description, hero image
   - Destination (country, city)
@@ -193,6 +203,7 @@ Full management suite for tripper users:
 - Set status (draft / active / inactive)
 
 **Blog / Content Publishing**
+
 - Rich HTML editor (TinyMCE)
 - Support for formats: `ARTICLE`, `PHOTO`, `VIDEO`, `MIXED`
 - Tags, travel type, excuse key
@@ -201,13 +212,16 @@ Full management suite for tripper users:
 - Preview mode before publishing
 
 **Earnings**
+
 - Revenue breakdown and history
 - Commission rate set by admin
 
 **Reviews**
+
 - View customer reviews and ratings for their experiences
 
 **Profile**
+
 - Bio, hero image, motto, location
 - Specialization, tier level
 - Visited destinations (shown on map)
@@ -234,14 +248,14 @@ Public-facing page at `/trippers/[slug]`:
 
 Authenticated clients at `/dashboard` or `/(secure)/account`:
 
-| Tab | Content |
-|-----|---------|
-| Summary | Recent bookings, high-level stats |
-| Personal | Name, email, phone, address |
+| Tab         | Content                            |
+| ----------- | ---------------------------------- |
+| Summary     | Recent bookings, high-level stats  |
+| Personal    | Name, email, phone, address        |
 | Preferences | Traveler type, interests, dislikes |
-| Payments | Payment history and card details |
-| Documents | Billing records |
-| Security | Change password |
+| Payments    | Payment history and card details   |
+| Documents   | Billing records                    |
+| Security    | Change password                    |
 
 ---
 
@@ -250,35 +264,43 @@ Authenticated clients at `/dashboard` or `/(secure)/account`:
 Full platform management at `/(secure)/dashboard/admin/`:
 
 **Trip Requests**
+
 - List all bookings with search/filter
 - Detailed modal: trip details, payment status, customer feedback, status timeline
 - Update trip status, assign experiences, manage reveals
 
 **Payments**
+
 - Full payment history across all users
 - Payment details: provider, amount, method, card, status, refunds, chargebacks
 
 **Users**
+
 - User directory with role indicators
 - Role assignment modal (CLIENT → TRIPPER or ADMIN)
 - View user profile details
 
 **Experiences**
+
 - Manage all tripper experiences
 - Feature, activate, archive experiences
 
 **Reviews**
+
 - Approve and publish customer reviews
 - Moderate review content
 
 **Blogs**
+
 - Manage all blog posts across trippers
 
 **XSED Notifications**
+
 - Manage drop notification subscriber list
 - Send/manage email notifications
 
 **Waitlist**
+
 - Early access signup management
 
 ---
@@ -322,95 +344,95 @@ All user-visible strings must use dictionary keys. No hardcoded copy in componen
 
 ## 7. Third-Party Integrations
 
-| Integration | Purpose |
-|------------|---------|
-| **Stripe** | Payment processing, webhooks, promo codes |
-| **NextAuth** | Authentication sessions |
-| **Google OAuth** | Social sign-in |
-| **Google Places API** | Address and city autocomplete |
-| **Google Maps** | Destination map display |
-| **Leaflet** | Interactive map with clustering |
-| **Resend** | Transactional email (contact form, confirmations) |
-| **Netlify Blobs** | File/image upload and storage |
-| **TinyMCE** | Rich HTML editor for blogs and experience descriptions |
-| **Discord.js** | Internal notifications (admin scripts) |
-| **Prisma** | ORM for PostgreSQL |
-| **Framer Motion** | Page and component animations |
+| Integration           | Purpose                                                |
+| --------------------- | ------------------------------------------------------ |
+| **Stripe**            | Payment processing, webhooks, promo codes              |
+| **NextAuth**          | Authentication sessions                                |
+| **Google OAuth**      | Social sign-in                                         |
+| **Google Places API** | Address and city autocomplete                          |
+| **Google Maps**       | Destination map display                                |
+| **Leaflet**           | Interactive map with clustering                        |
+| **Resend**            | Transactional email (contact form, confirmations)      |
+| **Netlify Blobs**     | File/image upload and storage                          |
+| **TinyMCE**           | Rich HTML editor for blogs and experience descriptions |
+| **Discord.js**        | Internal notifications (admin scripts)                 |
+| **Prisma**            | ORM for PostgreSQL                                     |
+| **Framer Motion**     | Page and component animations                          |
 
 ---
 
 ## 8. Key Pages Reference
 
-| Route | Auth | Role | Description |
-|-------|------|------|-------------|
-| `/` | No | Any | Landing page |
-| `/about-us` | No | Any | About page |
-| `/blog` | No | Any | Blog listing |
-| `/blog/[slug]` | No | Any | Blog post |
-| `/contact` | No | Any | Contact form |
-| `/trippers` | No | Any | Tripper directory |
-| `/trippers/[slug]` | No | Any | Tripper public profile |
-| `/experiences` | No | Any | Experience marketplace |
-| `/xsed` | No | Any | XSED landing |
-| `/xsed/drops` | No | Any | XSED drop listing |
-| `/xsed/drops/[slug]` | No | Any | XSED drop detail |
-| `/journey` | No | Any | Trip builder |
-| `/(secure)/checkout` | Yes | CLIENT | Checkout |
-| `/(secure)/reveal-destination` | Yes | CLIENT | Destination reveal |
-| `/(secure)/account` | Yes | CLIENT | Account dashboard |
-| `/(secure)/dashboard/tripper/*` | Yes | TRIPPER | Tripper OS |
-| `/(secure)/dashboard/admin/*` | Yes | ADMIN | Admin dashboard |
-| `/login` | No | — | Auth modal |
+| Route                           | Auth | Role    | Description            |
+| ------------------------------- | ---- | ------- | ---------------------- |
+| `/`                             | No   | Any     | Landing page           |
+| `/about-us`                     | No   | Any     | About page             |
+| `/blog`                         | No   | Any     | Blog listing           |
+| `/blog/[slug]`                  | No   | Any     | Blog post              |
+| `/contact`                      | No   | Any     | Contact form           |
+| `/trippers`                     | No   | Any     | Tripper directory      |
+| `/trippers/[slug]`              | No   | Any     | Tripper public profile |
+| `/experiences`                  | No   | Any     | Experience marketplace |
+| `/xsed`                         | No   | Any     | XSED landing           |
+| `/xsed/drops`                   | No   | Any     | XSED drop listing      |
+| `/xsed/drops/[slug]`            | No   | Any     | XSED drop detail       |
+| `/journey`                      | No   | Any     | Trip builder           |
+| `/(secure)/checkout`            | Yes  | CLIENT  | Checkout               |
+| `/(secure)/reveal-destination`  | Yes  | CLIENT  | Destination reveal     |
+| `/(secure)/account`             | Yes  | CLIENT  | Account dashboard      |
+| `/(secure)/dashboard/tripper/*` | Yes  | TRIPPER | Tripper OS             |
+| `/(secure)/dashboard/admin/*`   | Yes  | ADMIN   | Admin dashboard        |
+| `/login`                        | No   | —       | Auth modal             |
 
 ---
 
 ## 9. API Surface Reference
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/auth/[...nextauth]` | GET/POST | NextAuth routes |
-| `/api/auth/register` | POST | Create account |
-| `/api/trip-requests` | GET/POST | Client trips CRUD |
-| `/api/stripe/payment-intent` | POST | Create PaymentIntent |
-| `/api/stripe/confirm-payment` | POST | Confirm payment |
-| `/api/stripe/webhook` | POST | Stripe webhook handler |
-| `/api/stripe/apply-promo` | POST | Apply promo code |
-| `/api/stripe/remove-promo` | POST | Remove promo code |
-| `/api/experiences` | GET | Public experience listing |
-| `/api/tripper/experiences` | GET/POST | Tripper experience CRUD |
-| `/api/tripper/experiences/[id]` | PUT/DELETE | Edit/delete experience |
-| `/api/tripper/dashboard` | GET | Tripper KPIs |
-| `/api/tripper/earnings` | GET | Earnings data |
-| `/api/tripper/reviews` | GET | Tripper reviews |
-| `/api/tripper/blogs` | GET/POST | Blog CRUD |
-| `/api/trippers` | GET | Public tripper listing |
-| `/api/xsed/drops` | GET | Paginated drops list |
-| `/api/xsed/notifications` | POST | Subscribe to drop notifications |
-| `/api/user/me` | GET | Current user profile |
-| `/api/user/update` | POST | Update profile |
-| `/api/user/preferences` | POST | Update traveler preferences |
-| `/api/user/password` | POST | Change password |
-| `/api/user/tripper` | POST | Configure tripper profile |
-| `/api/blogs` | GET/POST | Blog listing/create |
-| `/api/upload` | POST | File upload |
-| `/api/contact` | GET | Contact form handler |
-| `/api/admin/*` | various | Admin management endpoints |
+| Endpoint                        | Method     | Purpose                         |
+| ------------------------------- | ---------- | ------------------------------- |
+| `/api/auth/[...nextauth]`       | GET/POST   | NextAuth routes                 |
+| `/api/auth/register`            | POST       | Create account                  |
+| `/api/trip-requests`            | GET/POST   | Client trips CRUD               |
+| `/api/stripe/payment-intent`    | POST       | Create PaymentIntent            |
+| `/api/stripe/confirm-payment`   | POST       | Confirm payment                 |
+| `/api/stripe/webhook`           | POST       | Stripe webhook handler          |
+| `/api/stripe/apply-promo`       | POST       | Apply promo code                |
+| `/api/stripe/remove-promo`      | POST       | Remove promo code               |
+| `/api/experiences`              | GET        | Public experience listing       |
+| `/api/tripper/experiences`      | GET/POST   | Tripper experience CRUD         |
+| `/api/tripper/experiences/[id]` | PUT/DELETE | Edit/delete experience          |
+| `/api/tripper/dashboard`        | GET        | Tripper KPIs                    |
+| `/api/tripper/earnings`         | GET        | Earnings data                   |
+| `/api/tripper/reviews`          | GET        | Tripper reviews                 |
+| `/api/tripper/blogs`            | GET/POST   | Blog CRUD                       |
+| `/api/trippers`                 | GET        | Public tripper listing          |
+| `/api/xsed/drops`               | GET        | Paginated drops list            |
+| `/api/xsed/notifications`       | POST       | Subscribe to drop notifications |
+| `/api/user/me`                  | GET        | Current user profile            |
+| `/api/user/update`              | POST       | Update profile                  |
+| `/api/user/preferences`         | POST       | Update traveler preferences     |
+| `/api/user/password`            | POST       | Change password                 |
+| `/api/user/tripper`             | POST       | Configure tripper profile       |
+| `/api/blogs`                    | GET/POST   | Blog listing/create             |
+| `/api/upload`                   | POST       | File upload                     |
+| `/api/contact`                  | GET        | Contact form handler            |
+| `/api/admin/*`                  | various    | Admin management endpoints      |
 
 ---
 
 ## 10. Data Model Summary
 
-| Model | Key Fields |
-|-------|-----------|
-| `User` | id, email, roles[], tripperSlug, commission, travelerType, interests[], prefs |
-| `TripRequest` | id, userId, status, type, level, startDate, nights, pax, filters, addons, actualDestination |
-| `Experience` | id, ownerId, status, type, level, basePrice, destination, hotels, activities, itinerary |
-| `Payment` | id, userId, tripRequestId, provider, amount, status, cardLast4 |
-| `Review` | id, userId, rating, title, content, isApproved |
-| `BlogPost` | id, authorId, status, format, title, slug, content, tags[] |
-| `ExperienceLike` | experienceId, userId |
-| `WaitlistEntry` | email, createdAt |
-| `XsedNotificationSignup` | email, createdAt |
+| Model                    | Key Fields                                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| `User`                   | id, email, roles[], tripperSlug, commission, travelerType, interests[], prefs               |
+| `TripRequest`            | id, userId, status, type, level, startDate, nights, pax, filters, addons, actualDestination |
+| `Experience`             | id, ownerId, status, type, level, basePrice, destination, hotels, activities, itinerary     |
+| `Payment`                | id, userId, tripRequestId, provider, amount, status, cardLast4                              |
+| `Review`                 | id, userId, rating, title, content, isApproved                                              |
+| `BlogPost`               | id, authorId, status, format, title, slug, content, tags[]                                  |
+| `ExperienceLike`         | experienceId, userId                                                                        |
+| `WaitlistEntry`          | email, createdAt                                                                            |
+| `XsedNotificationSignup` | email, createdAt                                                                            |
 
 ---
 

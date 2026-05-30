@@ -1,27 +1,32 @@
-import { countryToAlpha2 } from 'country-to-iso';
+import { countryToAlpha2 } from "country-to-iso";
 
 /**
  * Flag utilities from country-flag-icons (lightweight, 0 deps).
  * Use CountryFlag component for UI; use these for logic (e.g. validation, labels).
  */
-export { hasFlag } from 'country-flag-icons';
-export { default as getUnicodeFlagIcon } from 'country-flag-icons/unicode';
+export { hasFlag } from "country-flag-icons";
+export { default as getUnicodeFlagIcon } from "country-flag-icons/unicode";
 
 /** Overrides for names not in country-to-iso (e.g. Spanish). Prefer storing countryCode in data when possible. */
 const COUNTRY_NAME_OVERRIDES: Record<string, string> = {
-  españa: 'ES',
-  méxico: 'MX',
-  mexico: 'MX',
-  perú: 'PE',
+  españa: "ES",
+  méxico: "MX",
+  mexico: "MX",
+  perú: "PE",
 };
 
 /**
  * Derives the country portion from a "City, Country" location string.
  * e.g. "México City, México" → "México"
  */
-export function getCountryFromLocation(location: string | null | undefined): string | null {
+export function getCountryFromLocation(
+  location: string | null | undefined,
+): string | null {
   if (!location?.trim()) return null;
-  const parts = location.split(',').map((p) => p.trim()).filter(Boolean);
+  const parts = location
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
   return parts.length > 0 ? parts[parts.length - 1]! : location;
 }
 

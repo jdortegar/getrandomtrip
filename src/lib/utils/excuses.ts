@@ -3,7 +3,7 @@
  * excuse content (titles, options) from lib/data/shared/excuses.
  */
 
-export { hasExcuseStep } from '@/lib/constants/product-config';
+export { hasExcuseStep } from "@/lib/constants/product-config";
 export {
   getExcuseByKey,
   getExcuseDescription,
@@ -12,4 +12,4 @@ export {
   getExcusesByType,
   getHasExcuseStep,
   type ExcuseData,
-} from '@/lib/helpers/excuse-helper';
+} from "@/lib/helpers/excuse-helper";

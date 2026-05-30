@@ -17,7 +17,10 @@ export default function TripperGallery({ tripper }: Props) {
       <h2 className="text-2xl md:text-3xl font-semibold mb-6">Gallery</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {tripper.gallery.map((imageSrc, index) => (
-          <div key={index} className="relative w-full h-60 rounded-lg overflow-hidden shadow-md group">
+          <div
+            key={index}
+            className="relative w-full h-60 rounded-lg overflow-hidden shadow-md group"
+          >
             <Image
               src={imageSrc.src}
               alt={imageSrc.alt || `Gallery image ${index + 1}`}

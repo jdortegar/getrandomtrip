@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useParams } from 'next/navigation';
-import { getTiersForDisplay } from '@/lib/utils/experiencesData';
+import React from "react";
+import { useParams } from "next/navigation";
+import { getTiersForDisplay } from "@/lib/utils/experiencesData";
 
 interface ExperienceLevelGridProps {
   className?: string;
@@ -14,15 +14,15 @@ interface ExperienceLevelGridProps {
 export default function ExperienceLevelGrid({
   className,
   onSelect,
-  type = 'couple',
+  type = "couple",
 }: ExperienceLevelGridProps) {
   const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const tiers = getTiersForDisplay(type, locale);
 
   return (
     <div
-      className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ''}`}
+      className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ""}`}
     >
       {tiers.map((level) => (
         <div
@@ -33,9 +33,9 @@ export default function ExperienceLevelGrid({
             <h3 className="mb-2 text-2xl font-bold text-gray-900">
               {level.title}
             </h3>
-            <p className="mb-4 text-sm text-gray-600">{level.tagline ?? ''}</p>
+            <p className="mb-4 text-sm text-gray-600">{level.tagline ?? ""}</p>
             <p className="mb-4 text-2xl font-extrabold text-[#D4AF37]">
-              {level.price ?? ''}
+              {level.price ?? ""}
             </p>
             <ul className="text-gray-700 text-sm space-y-2">
               {level.bullets.map((bullet, index) => (

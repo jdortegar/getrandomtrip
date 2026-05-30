@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
+import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 
-import { TabSelector } from './ui/TabSelector';
-import { Button } from '@/components/ui/Button';
-import ThreeColumns from './ThreeColumns';
-import Section from './layout/Section';
-import type { ThreeColumnsItem } from './ThreeColumns';
+import { TabSelector } from "./ui/TabSelector";
+import { Button } from "@/components/ui/Button";
+import ThreeColumns from "./ThreeColumns";
+import Section from "./layout/Section";
+import type { ThreeColumnsItem } from "./ThreeColumns";
 
 const TABS = [
-  { id: 'how', labelKey: 'tabHowLabel' },
-  { id: 'benefits', labelKey: 'tabBenefitsLabel' },
+  { id: "how", labelKey: "tabHowLabel" },
+  { id: "benefits", labelKey: "tabBenefitsLabel" },
 ] as const;
 
 export interface HomeInfoContent {
@@ -32,14 +32,18 @@ interface HomeInfoProps {
 }
 
 export default function HomeInfo({ content }: HomeInfoProps) {
-  const { benefitsSteps, ctaScrollTarget, ctaText, eyebrow, howItWorksSteps, title } = content;
+  const {
+    benefitsSteps,
+    ctaScrollTarget,
+    ctaText,
+    eyebrow,
+    howItWorksSteps,
+    title,
+  } = content;
   const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
 
   return (
-    <Section
-      eyebrow={eyebrow}
-      title={title}
-    >
+    <Section eyebrow={eyebrow} title={title}>
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -49,14 +53,17 @@ export default function HomeInfo({ content }: HomeInfoProps) {
           activeTab={activeTab}
           layoutId="activeTabHomeInfo"
           onTabChange={setActiveTab}
-          tabs={TABS.map(({ id, labelKey }) => ({ id, label: content[labelKey] }))}
+          tabs={TABS.map(({ id, labelKey }) => ({
+            id,
+            label: content[labelKey],
+          }))}
         />
       </motion.div>
 
       <AnimatePresence mode="wait">
         <div key={activeTab}>
-          {activeTab === 'how' && <ThreeColumns items={howItWorksSteps} />}
-          {activeTab === 'benefits' && <ThreeColumns items={benefitsSteps} />}
+          {activeTab === "how" && <ThreeColumns items={howItWorksSteps} />}
+          {activeTab === "benefits" && <ThreeColumns items={benefitsSteps} />}
         </div>
       </AnimatePresence>
       <motion.div

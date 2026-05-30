@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import CountryFlag from '@/components/common/CountryFlag';
-import Img from '@/components/common/Img';
-import { getInitial } from '@/lib/helpers/stringHelpers';
-import type { TestimonialData } from './types';
+import React from "react";
+import CountryFlag from "@/components/common/CountryFlag";
+import Img from "@/components/common/Img";
+import { getInitial } from "@/lib/helpers/stringHelpers";
+import type { TestimonialData } from "./types";
 
 interface TestimonialCardProps {
   accentColor?: string;

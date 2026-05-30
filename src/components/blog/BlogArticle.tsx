@@ -1,5 +1,5 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
 interface BlogArticleProps {
   className?: string;
@@ -13,12 +13,12 @@ interface BlogArticleProps {
 export default function BlogArticle({
   className,
   content,
-  emptyMessage = 'Este post aún no tiene contenido.',
+  emptyMessage = "Este post aún no tiene contenido.",
   showTitle = true,
   title,
 }: BlogArticleProps) {
   return (
-    <article className={cn('text-left', className)}>
+    <article className={cn("text-left", className)}>
       {showTitle ? (
         <h1 className="mb-8 font-barlow-condensed text-4xl font-bold uppercase leading-tight text-neutral-900 md:text-5xl">
           {title}
@@ -29,8 +29,8 @@ export default function BlogArticle({
       {content ? (
         <div
           className={cn(
-            'max-w-none prose prose-a:text-light-blue prose-img:rounded-xl prose-lg prose-neutral prose-p:mb-6 text-left',
-            'hover:prose-a:text-light-blue-600',
+            "max-w-none prose prose-a:text-light-blue prose-img:rounded-xl prose-lg prose-neutral prose-p:mb-6 text-left",
+            "hover:prose-a:text-light-blue-600",
           )}
           dangerouslySetInnerHTML={{ __html: content }}
         />

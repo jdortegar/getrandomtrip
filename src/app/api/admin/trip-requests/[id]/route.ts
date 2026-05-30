@@ -1,27 +1,32 @@
-import { TripRequestStatus } from '@prisma/client';
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
-import { attachAdminTripRequestRelations } from '@/lib/admin/trip-requests';
-import { prisma } from '@/lib/prisma';
+import { TripRequestStatus } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
+import { prisma } from "@/lib/prisma";
 
 function parseStatus(status: unknown): TripRequestStatus | null {
-  if (typeof status !== 'string') return null;
+  if (typeof status !== "string") return null;
   const normalized = status.toUpperCase();
-  if (Object.values(TripRequestStatus).includes(normalized as TripRequestStatus)) {
+  if (
+    Object.values(TripRequestStatus).includes(normalized as TripRequestStatus)
+  ) {
     return normalized as TripRequestStatus;
   }
   return null;
 }
 
-export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -29,18 +34,23 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'admin')) {
-      return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
+    if (!user || !hasRoleAccess(user, "admin")) {
+      return NextResponse.json(
+        { error: "Forbidden - Admin access only" },
+        { status: 403 },
+      );
     }
 
     const body = await request.json();
     const nextStatus = parseStatus(body?.status);
     const actualDestination =
-      typeof body?.actualDestination === 'string' ? body.actualDestination.trim() : undefined;
+      typeof body?.actualDestination === "string"
+        ? body.actualDestination.trim()
+        : undefined;
 
     if (!nextStatus && actualDestination === undefined) {
       return NextResponse.json(
-        { error: 'Nothing to update. Provide status or actualDestination.' },
+        { error: "Nothing to update. Provide status or actualDestination." },
         { status: 400 },
       );
     }
@@ -54,10 +64,10 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
     if (nextStatus) {
       data.status = nextStatus;
-      if (nextStatus === 'COMPLETED') {
+      if (nextStatus === "COMPLETED") {
         data.completedAt = new Date();
       }
-      if (nextStatus === 'REVEALED') {
+      if (nextStatus === "REVEALED") {
         data.destinationRevealedAt = new Date();
       }
     }
@@ -123,18 +133,24 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
     return NextResponse.json({ tripRequest: hydratedTripRequest });
   } catch (error) {
-    console.error('Error updating admin trip request:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error updating admin trip request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
-export async function DELETE(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  _request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -142,8 +158,11 @@ export async function DELETE(_request: NextRequest, props: { params: Promise<{ i
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'admin')) {
-      return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
+    if (!user || !hasRoleAccess(user, "admin")) {
+      return NextResponse.json(
+        { error: "Forbidden - Admin access only" },
+        { status: 403 },
+      );
     }
 
     await prisma.tripRequest.delete({
@@ -152,7 +171,10 @@ export async function DELETE(_request: NextRequest, props: { params: Promise<{ i
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error('Error deleting admin trip request:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error deleting admin trip request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

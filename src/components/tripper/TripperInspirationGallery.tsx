@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { ArrowRight, Calendar, Heart, MapPin, Users } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import Section from '@/components/layout/Section';
-import { getTypeLabel } from '@/lib/data/traveler-types';
-import type { FeaturedTripCard } from '@/types/tripper';
+import Image from "next/image";
+import { ArrowRight, Calendar, Heart, MapPin, Users } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import Section from "@/components/layout/Section";
+import { getTypeLabel } from "@/lib/data/traveler-types";
+import type { FeaturedTripCard } from "@/types/tripper";
 
 /** Badge config for trip level chip (tripper gallery only). */
 const TIER_BADGES: Record<string, { color: string; label: string }> = {
-  atelier: { color: 'bg-rose-500', label: 'Atelier Getaway' },
-  bivouac: { color: 'bg-green-500', label: 'Bivouac' },
-  essenza: { color: 'bg-amber-500', label: 'Essenza' },
-  'explora-plus': { color: 'bg-purple-500', label: 'Explora+' },
-  'modo-explora': { color: 'bg-blue-500', label: 'Modo Explora' },
+  atelier: { color: "bg-rose-500", label: "Atelier Getaway" },
+  bivouac: { color: "bg-green-500", label: "Bivouac" },
+  essenza: { color: "bg-amber-500", label: "Essenza" },
+  "explora-plus": { color: "bg-purple-500", label: "Explora+" },
+  "modo-explora": { color: "bg-blue-500", label: "Modo Explora" },
 };
 
 function getTierBadge(level: string) {
-  return TIER_BADGES[level] ?? { color: 'bg-gray-500', label: level };
+  return TIER_BADGES[level] ?? { color: "bg-gray-500", label: level };
 }
 
 interface TripperInspirationGalleryProps {
@@ -29,7 +29,7 @@ export default function TripperInspirationGallery({
   trips,
   tripperName,
 }: TripperInspirationGalleryProps) {
-  const firstName = tripperName.split(' ')[0] || tripperName;
+  const firstName = tripperName.split(" ")[0] || tripperName;
 
   if (!trips.length) return null;
 

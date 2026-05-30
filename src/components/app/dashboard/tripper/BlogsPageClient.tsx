@@ -11,7 +11,7 @@ interface BlogsPageClientProps {
 }
 
 export function BlogsPageClient({ posts }: BlogsPageClientProps) {
-  const tripperBlogs = useDictionary(d => d.tripperBlogs);
+  const tripperBlogs = useDictionary((d) => d.tripperBlogs);
 
   return (
     <Section>

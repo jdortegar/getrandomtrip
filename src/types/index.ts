@@ -1,6 +1,6 @@
 export interface Booking {
   id: string;
-  status: 'PENDING' | 'CONFIRMED' | 'REVEALED' | 'CANCELLED';
+  status: "PENDING" | "CONFIRMED" | "REVEALED" | "CANCELLED";
   userId: string;
   travelType: string;
   experienceLevel: string;

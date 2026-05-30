@@ -28,11 +28,11 @@ The system cycles through three states continuously based on the client's **loca
 WAITING ──── Sunday 4:00 PM ────► OPEN (4 hrs) ──── Sunday 8:00 PM ────► WAITING (next Sunday)
 ```
 
-| State | Condition | Duration |
-|-------|-----------|----------|
-| `WAITING` | `now < nextSunday4pm` | Variable (~7 days) |
-| `OPEN` | `nextSunday4pm <= now < nextSunday4pm + 4h` | 4 hours |
-| `WAITING` (reset) | `now >= nextSunday4pm + 4h` | Targets the *following* Sunday 4pm |
+| State             | Condition                                   | Duration                           |
+| ----------------- | ------------------------------------------- | ---------------------------------- |
+| `WAITING`         | `now < nextSunday4pm`                       | Variable (~7 days)                 |
+| `OPEN`            | `nextSunday4pm <= now < nextSunday4pm + 4h` | 4 hours                            |
+| `WAITING` (reset) | `now >= nextSunday4pm + 4h`                 | Targets the _following_ Sunday 4pm |
 
 ### State: WAITING
 
@@ -58,10 +58,10 @@ WAITING ──── Sunday 4:00 PM ────► OPEN (4 hrs) ──── Su
 
 The app serves LATAM only. Each user gets exactly a **4-hour window** on Sunday, based on their own timezone. The system supports two regions:
 
-| Region | IANA Timezone | UTC offset | Local window |
-|--------|--------------|-----------|--------------|
-| Argentina | `America/Argentina/Buenos_Aires` | UTC-3 (no DST) | Sunday 16:00–20:00 ART |
-| Mexico | `America/Mexico_City` | UTC-6 (no DST since 2023) | Sunday 16:00–20:00 CST |
+| Region    | IANA Timezone                    | UTC offset                | Local window           |
+| --------- | -------------------------------- | ------------------------- | ---------------------- |
+| Argentina | `America/Argentina/Buenos_Aires` | UTC-3 (no DST)            | Sunday 16:00–20:00 ART |
+| Mexico    | `America/Mexico_City`            | UTC-6 (no DST since 2023) | Sunday 16:00–20:00 CST |
 
 These overlap in UTC, forming a 7-hour outer boundary:
 
@@ -91,97 +91,98 @@ Server:  isWithinOuterBoundary()    →  early-exit before computing displayedSo
 // Server-side outer boundary only (not used for client validation)
 // Wide enough to cover UTC-7 (Hermosillo, MX) on the close side
 // and UTC-2 (Noronha, BR) is accepted as an edge case (tiny population)
-export const SERVER_OUTER_OPEN_UTC_HOUR  = 19; // Sunday 19:00 UTC = 4pm ART (UTC-3)
-export const SERVER_OUTER_CLOSE_UTC_HOUR = 3;  // Monday 03:00 UTC = 8pm Hermosillo (UTC-7)
+export const SERVER_OUTER_OPEN_UTC_HOUR = 19; // Sunday 19:00 UTC = 4pm ART (UTC-3)
+export const SERVER_OUTER_CLOSE_UTC_HOUR = 3; // Monday 03:00 UTC = 8pm Hermosillo (UTC-7)
 
 // User-facing window — same in every supported timezone
 export const LOCAL_WINDOW_START_HOUR = 16; // 4pm local
-export const LOCAL_WINDOW_END_HOUR   = 20; // 8pm local
+export const LOCAL_WINDOW_END_HOUR = 20; // 8pm local
 
 // All supported LATAM IANA timezones
 export const SUPPORTED_TIMEZONES = [
   // Argentina (all UTC-3, no DST)
-  'America/Argentina/Buenos_Aires',
-  'America/Argentina/Cordoba',
-  'America/Argentina/Salta',
-  'America/Argentina/Jujuy',
-  'America/Argentina/Tucuman',
-  'America/Argentina/Catamarca',
-  'America/Argentina/La_Rioja',
-  'America/Argentina/San_Juan',
-  'America/Argentina/Mendoza',
-  'America/Argentina/San_Luis',
-  'America/Argentina/Rio_Gallegos',
-  'America/Argentina/Ushuaia',
+  "America/Argentina/Buenos_Aires",
+  "America/Argentina/Cordoba",
+  "America/Argentina/Salta",
+  "America/Argentina/Jujuy",
+  "America/Argentina/Tucuman",
+  "America/Argentina/Catamarca",
+  "America/Argentina/La_Rioja",
+  "America/Argentina/San_Juan",
+  "America/Argentina/Mendoza",
+  "America/Argentina/San_Luis",
+  "America/Argentina/Rio_Gallegos",
+  "America/Argentina/Ushuaia",
   // Bolivia (UTC-4)
-  'America/La_Paz',
+  "America/La_Paz",
   // Brazil (UTC-2 to UTC-5; Intl handles DST)
-  'America/Sao_Paulo',
-  'America/Belem',
-  'America/Fortaleza',
-  'America/Recife',
-  'America/Araguaina',
-  'America/Maceio',
-  'America/Bahia',
-  'America/Cuiaba',
-  'America/Porto_Velho',
-  'America/Boa_Vista',
-  'America/Manaus',
-  'America/Eirunepe',
-  'America/Rio_Branco',
-  'America/Noronha',       // UTC-2 — 4pm = 18:00 UTC, before server outer boundary; accepted edge case
+  "America/Sao_Paulo",
+  "America/Belem",
+  "America/Fortaleza",
+  "America/Recife",
+  "America/Araguaina",
+  "America/Maceio",
+  "America/Bahia",
+  "America/Cuiaba",
+  "America/Porto_Velho",
+  "America/Boa_Vista",
+  "America/Manaus",
+  "America/Eirunepe",
+  "America/Rio_Branco",
+  "America/Noronha", // UTC-2 — 4pm = 18:00 UTC, before server outer boundary; accepted edge case
   // Chile (UTC-3/-4 with DST; Intl handles it)
-  'America/Santiago',
-  'America/Punta_Arenas',
+  "America/Santiago",
+  "America/Punta_Arenas",
   // Colombia (UTC-5)
-  'America/Bogota',
+  "America/Bogota",
   // Costa Rica (UTC-6)
-  'America/Costa_Rica',
+  "America/Costa_Rica",
   // Cuba (UTC-5/-4 with DST)
-  'America/Havana',
+  "America/Havana",
   // Dominican Republic (UTC-4)
-  'America/Santo_Domingo',
+  "America/Santo_Domingo",
   // Ecuador (UTC-5)
-  'America/Guayaquil',
+  "America/Guayaquil",
   // El Salvador (UTC-6)
-  'America/El_Salvador',
+  "America/El_Salvador",
   // Guatemala (UTC-6)
-  'America/Guatemala',
+  "America/Guatemala",
   // Haiti (UTC-5/-4 with DST)
-  'America/Port-au-Prince',
+  "America/Port-au-Prince",
   // Honduras (UTC-6)
-  'America/Tegucigalpa',
+  "America/Tegucigalpa",
   // Jamaica (UTC-5)
-  'America/Jamaica',
+  "America/Jamaica",
   // Mexico (UTC-5 to UTC-7; Intl handles border DST)
-  'America/Mexico_City',
-  'America/Cancun',
-  'America/Monterrey',
-  'America/Merida',
-  'America/Bahia_Banderas',
-  'America/Mazatlan',
-  'America/Hermosillo',    // UTC-7 — 8pm = 03:00 UTC; covered by server outer boundary
-  'America/Chihuahua',
-  'America/Ojinaga',
-  'America/Tijuana',       // UTC-8 in winter — 8pm = 04:00 UTC, outside server boundary; accepted edge case
+  "America/Mexico_City",
+  "America/Cancun",
+  "America/Monterrey",
+  "America/Merida",
+  "America/Bahia_Banderas",
+  "America/Mazatlan",
+  "America/Hermosillo", // UTC-7 — 8pm = 03:00 UTC; covered by server outer boundary
+  "America/Chihuahua",
+  "America/Ojinaga",
+  "America/Tijuana", // UTC-8 in winter — 8pm = 04:00 UTC, outside server boundary; accepted edge case
   // Nicaragua (UTC-6)
-  'America/Managua',
+  "America/Managua",
   // Panama (UTC-5)
-  'America/Panama',
+  "America/Panama",
   // Paraguay (UTC-3/-4 with DST)
-  'America/Asuncion',
+  "America/Asuncion",
   // Peru (UTC-5)
-  'America/Lima',
+  "America/Lima",
   // Puerto Rico (UTC-4)
-  'America/Puerto_Rico',
+  "America/Puerto_Rico",
   // Uruguay (UTC-3)
-  'America/Montevideo',
+  "America/Montevideo",
   // Venezuela (UTC-4)
-  'America/Caracas',
+  "America/Caracas",
 ] as const;
 ```
 
 **Accepted edge cases (no code change needed):**
+
 - `America/Noronha` (UTC-2): 4pm = 18:00 UTC — 1 hour before server outer boundary. The server auto-decrement computation uses Sunday 19:00 UTC as `windowOpenAt`; users here get a slightly shorter reference but their client-side validation is correct.
 - `America/Tijuana` (UTC-8 in winter): 8pm = 04:00 UTC — outside server outer boundary. These users see the correct 4-hour local window on the client; the server just won't run auto-decrement logic past 03:00 UTC.
 
@@ -208,31 +209,35 @@ export function detectSupportedTimezone(): string | null {
 /** Client + server: returns true if it is Sunday 16:00–20:00 in the given IANA timezone. */
 export function isLocalWindowOpen(tz: string): boolean {
   const now = new Date();
-  const parts = new Intl.DateTimeFormat('en-US', {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: tz,
-    weekday: 'short',
-    hour: 'numeric',
+    weekday: "short",
+    hour: "numeric",
     hour12: false,
   }).formatToParts(now);
-  const weekday = parts.find(p => p.type === 'weekday')?.value; // 'Sun'
-  const hour    = Number(parts.find(p => p.type === 'hour')?.value ?? -1);
-  return weekday === 'Sun' && hour >= LOCAL_WINDOW_START_HOUR && hour < LOCAL_WINDOW_END_HOUR;
+  const weekday = parts.find((p) => p.type === "weekday")?.value; // 'Sun'
+  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? -1);
+  return (
+    weekday === "Sun" &&
+    hour >= LOCAL_WINDOW_START_HOUR &&
+    hour < LOCAL_WINDOW_END_HOUR
+  );
 }
 
 /** Client: main phase resolver. */
-export function getPhase(): 'waiting' | 'open' {
+export function getPhase(): "waiting" | "open" {
   const tz = detectSupportedTimezone();
-  if (!tz) return 'waiting';
-  return isLocalWindowOpen(tz) ? 'open' : 'waiting';
+  if (!tz) return "waiting";
+  return isLocalWindowOpen(tz) ? "open" : "waiting";
 }
 
 /** Server only: cheap guard before running auto-decrement computation. */
 export function isWithinServerOuterBoundary(): boolean {
   const now = new Date();
-  const day  = now.getUTCDay();
+  const day = now.getUTCDay();
   const hour = now.getUTCHours();
-  if (day === 0 && hour >= SERVER_OUTER_OPEN_UTC_HOUR) return true;  // Sunday ≥ 19:00 UTC
-  if (day === 1 && hour < SERVER_OUTER_CLOSE_UTC_HOUR) return true;  // Monday < 03:00 UTC
+  if (day === 0 && hour >= SERVER_OUTER_OPEN_UTC_HOUR) return true; // Sunday ≥ 19:00 UTC
+  if (day === 1 && hour < SERVER_OUTER_CLOSE_UTC_HOUR) return true; // Monday < 03:00 UTC
   return false;
 }
 
@@ -251,10 +256,10 @@ During the `OPEN` window, the displayed sold count increases automatically to cr
 
 #### Two sources drive `displayedSold`
 
-| Source | Trigger | Effect on `displayedSold` |
-|--------|---------|--------------------------|
-| Real purchase | User completes checkout for this drop | Raises the real purchase count; resets the auto-decrement reference point |
-| Auto-decrement | 20 minutes elapsed since last purchase (or since window open) with no new purchase | Server adds 1 per elapsed 20-min period |
+| Source         | Trigger                                                                            | Effect on `displayedSold`                                                 |
+| -------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Real purchase  | User completes checkout for this drop                                              | Raises the real purchase count; resets the auto-decrement reference point |
+| Auto-decrement | 20 minutes elapsed since last purchase (or since window open) with no new purchase | Server adds 1 per elapsed 20-min period                                   |
 
 #### Server computation (on every poll)
 
@@ -267,14 +272,15 @@ The endpoint `GET /api/xsed/drops/[slug]/sold-count` computes `displayedSold` on
 function computeDisplayedSold(
   realCount: number,
   totalSlots: number,
-  windowOpenAt: Date,      // Sunday 4pm (computed from current date, server-side)
+  windowOpenAt: Date, // Sunday 4pm (computed from current date, server-side)
   lastPurchaseAt: Date | null,
 ): number {
   const now = new Date();
   // Auto-decrements count from the later of: window open OR last purchase
-  const referenceTime = lastPurchaseAt && lastPurchaseAt > windowOpenAt
-    ? lastPurchaseAt
-    : windowOpenAt;
+  const referenceTime =
+    lastPurchaseAt && lastPurchaseAt > windowOpenAt
+      ? lastPurchaseAt
+      : windowOpenAt;
   const elapsedMs = Math.max(0, now.getTime() - referenceTime.getTime());
   const autoDecrements = Math.floor(elapsedMs / (20 * 60 * 1000));
   return Math.min(totalSlots, realCount + autoDecrements);
@@ -372,28 +378,28 @@ export default async function XsedBookPage() {
 // the Intl check on the server uses server clock in that zone.
 
 export const COUNTRY_TZ: Record<string, string> = {
-  AR: 'America/Argentina/Buenos_Aires',
-  BO: 'America/La_Paz',
-  BR: 'America/Sao_Paulo',
-  CL: 'America/Santiago',
-  CO: 'America/Bogota',
-  CR: 'America/Costa_Rica',
-  CU: 'America/Havana',
-  DO: 'America/Santo_Domingo',
-  EC: 'America/Guayaquil',
-  SV: 'America/El_Salvador',
-  GT: 'America/Guatemala',
-  HT: 'America/Port-au-Prince',
-  HN: 'America/Tegucigalpa',
-  JM: 'America/Jamaica',
-  MX: 'America/Mexico_City',
-  NI: 'America/Managua',
-  PA: 'America/Panama',
-  PY: 'America/Asuncion',
-  PE: 'America/Lima',
-  PR: 'America/Puerto_Rico',
-  UY: 'America/Montevideo',
-  VE: 'America/Caracas',
+  AR: "America/Argentina/Buenos_Aires",
+  BO: "America/La_Paz",
+  BR: "America/Sao_Paulo",
+  CL: "America/Santiago",
+  CO: "America/Bogota",
+  CR: "America/Costa_Rica",
+  CU: "America/Havana",
+  DO: "America/Santo_Domingo",
+  EC: "America/Guayaquil",
+  SV: "America/El_Salvador",
+  GT: "America/Guatemala",
+  HT: "America/Port-au-Prince",
+  HN: "America/Tegucigalpa",
+  JM: "America/Jamaica",
+  MX: "America/Mexico_City",
+  NI: "America/Managua",
+  PA: "America/Panama",
+  PY: "America/Asuncion",
+  PE: "America/Lima",
+  PR: "America/Puerto_Rico",
+  UY: "America/Montevideo",
+  VE: "America/Caracas",
 };
 
 export function countryToTimezone(country: string): string | null {
@@ -408,6 +414,7 @@ export function countryToTimezone(country: string): string | null {
 Shown when the server gate blocks access. Renders in place of the booking form — same URL, no redirect.
 
 Content:
+
 - Hero image (same as `/xsed/book`)
 - Heading: "Este DROP está agotado" / "This DROP is sold out"
 - Subtext: "Los drops de XSED se abren los domingos de 16 a 20hs." / "XSED drops open every Sunday from 4pm to 8pm."
@@ -421,6 +428,7 @@ This page does **not** reveal whether the real reason is "window closed" or "act
 ## 2. Current State
 
 ### Already built
+
 - Public landing page (`/xsed`) with countdown and email signup
 - Drop catalog page (`/xsed/drops`) with pagination
 - Drop detail pages (`/xsed/drops/[slug]`)
@@ -432,6 +440,7 @@ This page does **not** reveal whether the real reason is "window closed" or "act
 - Full i18n (ES/EN)
 
 ### Not yet built (this spec)
+
 - Admin drop management (create / edit / publish drops)
 - Drop selection UI — user picks which drop to book
 - Drop assignment to trip request
@@ -448,38 +457,39 @@ All drops are stored as `Experience` records with `type = 'XSED'`. No new model 
 
 ### Relevant fields
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `slug` | `String?` @unique | URL-safe ID, e.g. `xsed-baires-001`. Required for XSED. |
-| `titleInternal` | `String?` | Internal label for admin UI only |
-| `teaser` | `String` | Public short description shown on cards |
-| `heroImage` | `String` | Cloudinary or Netlify Blobs URL |
-| `destinationCity` | `String` | Hidden until reveal |
-| `destinationCountry` | `String` | Hidden until reveal |
-| `tripDate` | `DateTime?` | Saturday departure date |
-| `revealAt` | `DateTime?` | Must be 48h before `tripDate` |
-| `basePrice` | `Float` | Always `250` USD |
-| `currency` | `String` | Always `"USD"` |
-| `maxSpots` | `Int?` | Max bookings allowed |
-| `minSpots` | `Int?` | Min bookings for drop to run |
-| `status` | `ExperienceStatus` | `DRAFT \| ACTIVE \| INACTIVE \| ARCHIVED` |
-| `hotels` | `Json?` | Array of `{ type: 'ACCOMMODATION', title, description, images[] }` |
-| `activities` | `Json?` | Array of `{ type: 'ACTIVITY'\|'DINNER', title, description, images[] }` |
-| `revealCopy` | `String?` | Text shown at reveal (destination + instructions) |
-| `preRevealCopy` | `String?` | Text shown before reveal ("trust the process" etc.) |
-| `packingHints` | `String?` | Packing list shown at reveal |
-| `accessibilityNotes` | `String?` | Public pre-reveal info |
-| `safetyNotes` | `String?` | Public pre-reveal info |
-| `cancellationPolicy` | `String?` | Shown on detail page |
-| `weatherPolicy` | `String?` | Shown on detail page |
-| `whatsappMessageTemplate` | `String?` | Template with `{{name}}`, `{{destination}}`, `{{date}}` placeholders |
-| `adminNotes` | `String?` | Internal only |
-| `supplierNotes` | `String?` | Internal only |
-| `isFeatured` | `Boolean` | Surface on landing page grid |
+| Field                     | Type               | Notes                                                                   |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------- |
+| `slug`                    | `String?` @unique  | URL-safe ID, e.g. `xsed-baires-001`. Required for XSED.                 |
+| `titleInternal`           | `String?`          | Internal label for admin UI only                                        |
+| `teaser`                  | `String`           | Public short description shown on cards                                 |
+| `heroImage`               | `String`           | Cloudinary or Netlify Blobs URL                                         |
+| `destinationCity`         | `String`           | Hidden until reveal                                                     |
+| `destinationCountry`      | `String`           | Hidden until reveal                                                     |
+| `tripDate`                | `DateTime?`        | Saturday departure date                                                 |
+| `revealAt`                | `DateTime?`        | Must be 48h before `tripDate`                                           |
+| `basePrice`               | `Float`            | Always `250` USD                                                        |
+| `currency`                | `String`           | Always `"USD"`                                                          |
+| `maxSpots`                | `Int?`             | Max bookings allowed                                                    |
+| `minSpots`                | `Int?`             | Min bookings for drop to run                                            |
+| `status`                  | `ExperienceStatus` | `DRAFT \| ACTIVE \| INACTIVE \| ARCHIVED`                               |
+| `hotels`                  | `Json?`            | Array of `{ type: 'ACCOMMODATION', title, description, images[] }`      |
+| `activities`              | `Json?`            | Array of `{ type: 'ACTIVITY'\|'DINNER', title, description, images[] }` |
+| `revealCopy`              | `String?`          | Text shown at reveal (destination + instructions)                       |
+| `preRevealCopy`           | `String?`          | Text shown before reveal ("trust the process" etc.)                     |
+| `packingHints`            | `String?`          | Packing list shown at reveal                                            |
+| `accessibilityNotes`      | `String?`          | Public pre-reveal info                                                  |
+| `safetyNotes`             | `String?`          | Public pre-reveal info                                                  |
+| `cancellationPolicy`      | `String?`          | Shown on detail page                                                    |
+| `weatherPolicy`           | `String?`          | Shown on detail page                                                    |
+| `whatsappMessageTemplate` | `String?`          | Template with `{{name}}`, `{{destination}}`, `{{date}}` placeholders    |
+| `adminNotes`              | `String?`          | Internal only                                                           |
+| `supplierNotes`           | `String?`          | Internal only                                                           |
+| `isFeatured`              | `Boolean`          | Surface on landing page grid                                            |
 
 ### TripRequest linkage
 
 A `TripRequest` for a drop must store:
+
 - `type = 'xsed'`, `level = 'xsed'`
 - `experienceId` = the `Experience.id` of the booked drop
 - `startDate` = drop's `tripDate`
@@ -499,6 +509,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **As a client**, I want to choose which drop I'm booking so I know the date and price before paying.
 
 **User journey:**
+
 1. Client visits `/xsed/book`
 2. Page shows upcoming ACTIVE drops (those with `tripDate` in the future and `status = ACTIVE` and available spots)
 3. Client selects a drop (date, teaser visible; destination hidden)
@@ -506,6 +517,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 5. Client clicks "Book" → trip request created with `experienceId` → redirected to checkout
 
 **Acceptance criteria:**
+
 - [ ] Drop selector shows: trip date (formatted), teaser, spots remaining, price
 - [ ] Drops sorted ascending by `tripDate`
 - [ ] Sold-out drops (booked count ≥ `maxSpots`) shown but disabled with "Sold out" badge
@@ -516,6 +528,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 - [ ] If no upcoming drops exist, show empty state: "No drops scheduled — sign up to be notified"
 
 **Edge cases:**
+
 - Drop sells out between page load and form submission → API returns 409; UI shows "This drop just sold out" and refreshes the list
 - User submits without selecting a drop → inline validation "Please select a drop"
 - Pax = 0 → not allowed; minimum 1
@@ -527,6 +540,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **As the platform**, I want each drop to enforce its max spot limit so we don't overbook.
 
 **Acceptance criteria:**
+
 - [ ] `POST /api/trip-requests` (when `type = 'xsed'`) checks current confirmed booking count for `experienceId`
 - [ ] Confirmed = TripRequests with `status IN (PENDING_PAYMENT, CONFIRMED, REVEALED, COMPLETED)` for that experienceId
 - [ ] If `confirmedCount >= maxSpots` → return `{ error: 'DROP_SOLD_OUT' }` with HTTP 409
@@ -540,12 +554,14 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **As a client who has booked a drop**, I want to see the destination and itinerary exactly 48 hours before my trip so I can prepare.
 
 **User journey:**
+
 1. Client visits their booking at `/dashboard` or via reveal link in email
 2. Before `revealAt`: countdown is shown + `preRevealCopy` + packing hints teaser
 3. At `revealAt`: destination city/country + `revealCopy` + full `packingHints` are shown
 4. `TripRequest.status` is updated to `REVEALED` by a scheduled job
 
 **Acceptance criteria:**
+
 - [ ] Reveal is controlled by comparing `now()` with `Experience.revealAt`
 - [ ] If `now() < revealAt`: show countdown, `preRevealCopy`, access/safety notes, and "Packing list coming soon"
 - [ ] If `now() >= revealAt`: show destination city+country, `revealCopy`, `packingHints`, and WhatsApp contact link
@@ -562,6 +578,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **Trigger:** Scheduled job or webhook fires when `now() >= Experience.revealAt` for each confirmed booking of that drop.
 
 **Acceptance criteria:**
+
 - [ ] Email sent to each client with `TripRequest.status = CONFIRMED` for the drop
 - [ ] Email contains: destination city/country, `revealCopy`, `packingHints`, trip date, tripper contact
 - [ ] `TripRequest.status` updated to `REVEALED` after email is sent
@@ -570,6 +587,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 - [ ] Sent via Resend; uses locale-appropriate template (ES or EN based on user locale preference)
 
 **Edge cases:**
+
 - Reveal fails to send → log error, do NOT mark as REVEALED; retry next job run
 - Client has no email → skip reveal email; still mark status via WhatsApp path
 
@@ -580,6 +598,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **As an admin/tripper**, I want to send the WhatsApp reveal message to clients in bulk using a template.
 
 **Acceptance criteria:**
+
 - [ ] Admin panel shows all bookings for a drop with a "Send WhatsApp" action per booking
 - [ ] "Send All WhatsApp" bulk action triggers the template for all CONFIRMED bookings of that drop
 - [ ] Template substitutes `{{name}}`, `{{destination}}`, `{{date}}`, `{{packingHints}}`
@@ -597,6 +616,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **Trigger:** `TripRequest.status = COMPLETED` (manually set by admin after trip date passes).
 
 **Acceptance criteria:**
+
 - [ ] Feedback form available from client dashboard for COMPLETED XSED trips
 - [ ] Fields: overall rating (1–5 stars), title (optional), written feedback (optional), trip photos upload (optional)
 - [ ] Submission writes to `TripRequest.customerRating`, `TripRequest.customerFeedback`, `TripRequest.tripPhotos`
@@ -610,6 +630,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **As a client**, I want to cancel my drop booking up to N days before the trip and receive a refund per the cancellation policy.
 
 **Acceptance criteria:**
+
 - [ ] Cancel action available in client dashboard for XSED trips with `status = CONFIRMED`
 - [ ] Cancel button disabled and policy text shown if within non-refundable window
 - [ ] Cancellation policy defined per drop (`Experience.cancellationPolicy`) and shown before confirming
@@ -619,6 +640,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 - [ ] Cancelled spot is freed: confirmed count for that drop decreases, making it bookable again
 
 **Cancellation windows (default policy):**
+
 - > 7 days before trip: full refund
 - 3–7 days: 50% refund
 - < 3 days: no refund
@@ -637,35 +659,36 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 
 **Form fields:**
 
-| Field | Input type | Notes |
-|-------|-----------|-------|
-| Internal title | Text | Not shown publicly |
-| Public teaser | Textarea | 1–2 sentences |
-| Hero image | File upload | Via Netlify Blobs |
-| Destination city | Text | Hidden until reveal |
-| Destination country | Text | Hidden until reveal |
-| Trip date | Date picker | Saturday only enforced |
-| Reveal at | DateTime | Auto-calculated as tripDate − 48h; editable |
-| Max spots | Number | Default: 10 |
-| Min spots | Number | Default: 2 |
-| Base price | Number | Default: 250, currency USD |
-| Slug | Text | Auto-generated from date + city; editable |
-| Status | Select | DRAFT / ACTIVE / INACTIVE / ARCHIVED |
-| Pre-reveal copy | Rich text | Shown before reveal |
-| Reveal copy | Rich text | Shown at reveal |
-| Packing hints | Rich text | Shown at reveal |
-| Accessibility notes | Textarea | Public, shown pre-reveal |
-| Safety notes | Textarea | Public, shown pre-reveal |
-| Cancellation policy | Textarea | Public |
-| Weather policy | Textarea | Public |
-| WhatsApp template | Textarea | `{{name}}`, `{{destination}}`, `{{date}}` placeholders |
-| Benefits (hotels) | JSON editor or structured input | Array of benefit objects |
-| Benefits (activities) | JSON editor or structured input | Array of benefit objects |
-| Featured | Toggle | Surface on landing grid |
-| Admin notes | Textarea | Internal only |
-| Supplier notes | Textarea | Internal only |
+| Field                 | Input type                      | Notes                                                  |
+| --------------------- | ------------------------------- | ------------------------------------------------------ |
+| Internal title        | Text                            | Not shown publicly                                     |
+| Public teaser         | Textarea                        | 1–2 sentences                                          |
+| Hero image            | File upload                     | Via Netlify Blobs                                      |
+| Destination city      | Text                            | Hidden until reveal                                    |
+| Destination country   | Text                            | Hidden until reveal                                    |
+| Trip date             | Date picker                     | Saturday only enforced                                 |
+| Reveal at             | DateTime                        | Auto-calculated as tripDate − 48h; editable            |
+| Max spots             | Number                          | Default: 10                                            |
+| Min spots             | Number                          | Default: 2                                             |
+| Base price            | Number                          | Default: 250, currency USD                             |
+| Slug                  | Text                            | Auto-generated from date + city; editable              |
+| Status                | Select                          | DRAFT / ACTIVE / INACTIVE / ARCHIVED                   |
+| Pre-reveal copy       | Rich text                       | Shown before reveal                                    |
+| Reveal copy           | Rich text                       | Shown at reveal                                        |
+| Packing hints         | Rich text                       | Shown at reveal                                        |
+| Accessibility notes   | Textarea                        | Public, shown pre-reveal                               |
+| Safety notes          | Textarea                        | Public, shown pre-reveal                               |
+| Cancellation policy   | Textarea                        | Public                                                 |
+| Weather policy        | Textarea                        | Public                                                 |
+| WhatsApp template     | Textarea                        | `{{name}}`, `{{destination}}`, `{{date}}` placeholders |
+| Benefits (hotels)     | JSON editor or structured input | Array of benefit objects                               |
+| Benefits (activities) | JSON editor or structured input | Array of benefit objects                               |
+| Featured              | Toggle                          | Surface on landing grid                                |
+| Admin notes           | Textarea                        | Internal only                                          |
+| Supplier notes        | Textarea                        | Internal only                                          |
 
 **Acceptance criteria:**
+
 - [ ] `POST /api/admin/xsed` creates a new Experience record with `type = 'XSED'`
 - [ ] `PUT /api/admin/xsed/[id]` updates all editable fields
 - [ ] Slug is validated as unique and URL-safe (lowercase, hyphens only)
@@ -684,6 +707,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **Route:** `/dashboard/admin/xsed`
 
 **Table columns:**
+
 - Drop date (tripDate)
 - Internal title
 - Status badge
@@ -692,6 +716,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 - Actions: Edit, View Public, Archive
 
 **Acceptance criteria:**
+
 - [ ] `GET /api/admin/xsed` returns all drops with booking count and revenue
 - [ ] Table sorted by `tripDate` descending by default
 - [ ] Filter by status (All / DRAFT / ACTIVE / INACTIVE / ARCHIVED)
@@ -708,6 +733,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **Trigger:** Manual button in admin, OR automatic when drop status changes to `ACTIVE`.
 
 **Acceptance criteria:**
+
 - [ ] "Notify subscribers" button on the drop detail in admin
 - [ ] Button is disabled after first send (idempotent — one campaign per drop)
 - [ ] Email contains: teaser, trip date, price, CTA link to `/xsed/book?drop=[slug]`
@@ -724,12 +750,14 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **Route:** `/dashboard/admin/xsed/[id]/bookings`
 
 **Panel content:**
+
 - Drop summary (date, destination, spots used/total)
 - Bookings table: client name, email, pax, origin, payment status, booking status
 - Per-booking actions: View trip request, Send WhatsApp, Mark COMPLETED
 - Bulk actions: Send all WhatsApp, Mark all COMPLETED, Export CSV
 
 **Acceptance criteria:**
+
 - [ ] `GET /api/admin/xsed/[id]/bookings` returns all TripRequests for that experienceId
 - [ ] Table filterable by status (CONFIRMED / REVEALED / COMPLETED / CANCELLED)
 - [ ] "Mark COMPLETED" sets `TripRequest.status = COMPLETED`
@@ -744,6 +772,7 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 **As an admin**, I want to increase or decrease a drop's max spots after publishing.
 
 **Acceptance criteria:**
+
 - [ ] Max spots field editable on the edit form at any status
 - [ ] If new max < current confirmed count → show warning: "You have {n} confirmed bookings. Setting max to {m} will not cancel existing bookings but will block new ones."
 - [ ] Confirm required before saving
@@ -755,29 +784,29 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 
 ### Public
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/xsed/drops` | Already built. Add `?upcoming=true` filter |
+| Method | Path                 | Description                                                        |
+| ------ | -------------------- | ------------------------------------------------------------------ |
+| `GET`  | `/api/xsed/drops`    | Already built. Add `?upcoming=true` filter                         |
 | `POST` | `/api/trip-requests` | Already built. Needs `experienceId` + capacity check for XSED type |
 
 ### Admin
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/admin/xsed` | List all drops with booking counts |
-| `POST` | `/api/admin/xsed` | Create a new XSED drop |
-| `GET` | `/api/admin/xsed/[id]` | Get single drop with full fields |
-| `PUT` | `/api/admin/xsed/[id]` | Update drop |
-| `DELETE` | `/api/admin/xsed/[id]` | Delete drop (DRAFT/ARCHIVED only) |
-| `GET` | `/api/admin/xsed/[id]/bookings` | List bookings for a drop |
-| `POST` | `/api/admin/xsed/[id]/notify` | Send notification campaign |
-| `POST` | `/api/admin/xsed/[id]/reveal` | Trigger reveal for all CONFIRMED bookings |
-| `POST` | `/api/admin/xsed/[id]/complete` | Mark all REVEALED bookings as COMPLETED |
+| Method   | Path                            | Description                               |
+| -------- | ------------------------------- | ----------------------------------------- |
+| `GET`    | `/api/admin/xsed`               | List all drops with booking counts        |
+| `POST`   | `/api/admin/xsed`               | Create a new XSED drop                    |
+| `GET`    | `/api/admin/xsed/[id]`          | Get single drop with full fields          |
+| `PUT`    | `/api/admin/xsed/[id]`          | Update drop                               |
+| `DELETE` | `/api/admin/xsed/[id]`          | Delete drop (DRAFT/ARCHIVED only)         |
+| `GET`    | `/api/admin/xsed/[id]/bookings` | List bookings for a drop                  |
+| `POST`   | `/api/admin/xsed/[id]/notify`   | Send notification campaign                |
+| `POST`   | `/api/admin/xsed/[id]/reveal`   | Trigger reveal for all CONFIRMED bookings |
+| `POST`   | `/api/admin/xsed/[id]/complete` | Mark all REVEALED bookings as COMPLETED   |
 
 ### Internal (job/webhook, no UI)
 
-| Method | Path | Description |
-|--------|------|-------------|
+| Method | Path                        | Description                                               |
+| ------ | --------------------------- | --------------------------------------------------------- |
 | `POST` | `/api/internal/xsed/reveal` | Scheduled job: reveal all drops whose `revealAt <= now()` |
 
 ---
@@ -786,25 +815,25 @@ The existing `experienceId` FK on `TripRequest` handles this — no schema chang
 
 ### New components to build
 
-| Component | Route | Purpose |
-|-----------|-------|---------|
-| `DropSelector` | `/xsed/book` | Card list of upcoming drops; selectable |
-| `DropSelectorCard` | `/xsed/book` | Single drop card with date, teaser, spots, price |
-| `AdminXsedList` | `/dashboard/admin/xsed` | Drops table with status badges and actions |
-| `AdminXsedForm` | `/dashboard/admin/xsed/new` and `edit` | Create/edit form |
-| `AdminXsedBookingsTable` | `/dashboard/admin/xsed/[id]/bookings` | Bookings panel |
-| `AdminXsedWhatsAppPanel` | `/dashboard/admin/xsed/[id]/bookings` | WhatsApp send interface |
-| `XsedRevealCard` | Client dashboard / reveal page | Pre/post reveal UI with countdown |
-| `XsedFeedbackForm` | Client dashboard | Post-trip feedback form |
-| `XsedCancelModal` | Client dashboard | Cancellation confirmation with policy display |
+| Component                | Route                                  | Purpose                                          |
+| ------------------------ | -------------------------------------- | ------------------------------------------------ |
+| `DropSelector`           | `/xsed/book`                           | Card list of upcoming drops; selectable          |
+| `DropSelectorCard`       | `/xsed/book`                           | Single drop card with date, teaser, spots, price |
+| `AdminXsedList`          | `/dashboard/admin/xsed`                | Drops table with status badges and actions       |
+| `AdminXsedForm`          | `/dashboard/admin/xsed/new` and `edit` | Create/edit form                                 |
+| `AdminXsedBookingsTable` | `/dashboard/admin/xsed/[id]/bookings`  | Bookings panel                                   |
+| `AdminXsedWhatsAppPanel` | `/dashboard/admin/xsed/[id]/bookings`  | WhatsApp send interface                          |
+| `XsedRevealCard`         | Client dashboard / reveal page         | Pre/post reveal UI with countdown                |
+| `XsedFeedbackForm`       | Client dashboard                       | Post-trip feedback form                          |
+| `XsedCancelModal`        | Client dashboard                       | Cancellation confirmation with policy display    |
 
 ### Components to update
 
-| Component | Change |
-|-----------|--------|
-| `XsedBookClient` | Add drop selector step before origin/pax |
-| `CountDown` | Accept `revealAt` prop instead of hardcoded next weekend |
-| `DropCard` | Add "Sold out" badge state |
+| Component        | Change                                                   |
+| ---------------- | -------------------------------------------------------- |
+| `XsedBookClient` | Add drop selector step before origin/pax                 |
+| `CountDown`      | Accept `revealAt` prop instead of hardcoded next weekend |
+| `DropCard`       | Add "Sold out" badge state                               |
 
 ---
 

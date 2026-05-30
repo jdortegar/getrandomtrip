@@ -28,7 +28,7 @@ export default function TypePlanner({
   selectedLevel: externalSelectedLevel,
   type,
   itemsPerView = 4,
-  cardClassName
+  cardClassName,
 }: TypePlannerProps) {
   const [internalSelectedLevel, setInternalSelectedLevel] = useState<
     string | null

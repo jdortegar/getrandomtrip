@@ -38,12 +38,11 @@ const Section = ({
 }: SectionProps) => {
   return (
     <section
-      className={cn("relative ",
-        {
-          "bg-white text-gray-900": variant === "default",
-          "bg-gray-50 text-gray-900": variant === "light",
-          "bg-primary text-white": variant === "dark",
-        })}
+      className={cn("relative ", {
+        "bg-white text-gray-900": variant === "default",
+        "bg-gray-50 text-gray-900": variant === "light",
+        "bg-primary text-white": variant === "dark",
+      })}
     >
       {backgroundImage && (
         <div className="absolute inset-0 z-0">
@@ -53,16 +52,21 @@ const Section = ({
             src={backgroundImage}
             width={1920}
           />
-          <div className="absolute inset-0 bg-black/60" style={{ opacity: backgroundOpacity }} />
+          <div
+            className="absolute inset-0 bg-black/60"
+            style={{ opacity: backgroundOpacity }}
+          />
         </div>
       )}
-      <div className={cn(
-        "text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32",
-        !fullWidth && "rt-container",
-        className,
-      )}
+      <div
+        className={cn(
+          "text-center relative flex flex-col items-center justify-center w-full py-24 md:py-32",
+          !fullWidth && "rt-container",
+          className,
+        )}
         id={id}
-        style={style}>
+        style={style}
+      >
         {(eyebrow || title || subtitle) && (
           <div className={cn("mb-14 ", fullWidth && "rt-container")}>
             {eyebrow && (
@@ -82,7 +86,8 @@ const Section = ({
                 className={cn(
                   "font-barlow-condensed text-[50px] md:text-[70px] uppercase font-bold mt-4 leading-none",
                   {
-                    "text-gray-900": variant === "default" || variant === "light",
+                    "text-gray-900":
+                      variant === "default" || variant === "light",
                     "text-white": variant === "dark",
                   },
                 )}

@@ -25,7 +25,6 @@ export function SecondaryHero({
   scrollIndicator = false,
   titleClassName,
 }: SecondaryHeroProps) {
-
   console.log(content.videoSrc);
   return (
     <section
@@ -47,7 +46,9 @@ export function SecondaryHero({
       <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
         <div className="max-w-3xl flex flex-col justify-center text-left">
           <motion.div
-            className={cn("flex flex-wrap gap-x-5 gap-y-3 items-end mb-8 text-white justify-center md:justify-start")}
+            className={cn(
+              "flex flex-wrap gap-x-5 gap-y-3 items-end mb-8 text-white justify-center md:justify-start",
+            )}
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}

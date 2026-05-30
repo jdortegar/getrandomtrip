@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Section from '@/components/layout/Section';
-import { Button } from '@/components/ui/Button';
-import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
+import { useEffect } from "react";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Section from "@/components/layout/Section";
+import { Button } from "@/components/ui/Button";
+import { AlertTriangle, Home, RotateCcw } from "lucide-react";
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -15,7 +15,7 @@ interface ErrorPageProps {
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('Application error:', error);
+    console.error("Application error:", error);
   }, [error]);
 
   return (
@@ -53,7 +53,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           </div>
 
           {/* Development Error Details */}
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === "development" && (
             <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
               <details>
                 <summary className="cursor-pointer text-sm font-medium text-neutral-700 hover:text-neutral-900 mb-4">

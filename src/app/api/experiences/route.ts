@@ -9,7 +9,8 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const tripperId = searchParams.get("tripperId") || searchParams.get("ownerId");
+    const tripperId =
+      searchParams.get("tripperId") || searchParams.get("ownerId");
     const type = searchParams.get("type");
     const level = searchParams.get("level");
 
@@ -45,7 +46,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ experiences }, { status: 200 });
   } catch (error) {
     console.error("Error fetching experiences:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -159,6 +163,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ experience: newExperience }, { status: 201 });
   } catch (error) {
     console.error("Error creating experience:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -18,17 +18,17 @@ import {
   GatewayIntentBits,
   Guild,
   PermissionFlagsBits,
-} from 'discord.js';
-import * as dotenv from 'dotenv';
-import { existsSync } from 'fs';
+} from "discord.js";
+import * as dotenv from "dotenv";
+import { existsSync } from "fs";
 
 // Load environment variables from .env.local or .env
-if (existsSync('.env.local')) {
-  dotenv.config({ path: '.env.local' });
-} else if (existsSync('.env')) {
-  dotenv.config({ path: '.env' });
+if (existsSync(".env.local")) {
+  dotenv.config({ path: ".env.local" });
+} else if (existsSync(".env")) {
+  dotenv.config({ path: ".env" });
 } else {
-  console.error('❌ No .env or .env.local file found');
+  console.error("❌ No .env or .env.local file found");
   process.exit(1);
 }
 
@@ -41,11 +41,11 @@ const config = {
 // Validate environment variables
 function validateConfig() {
   if (!config.botToken) {
-    console.error('❌ DISCORD_BOT_TOKEN is not set in .env or .env.local');
+    console.error("❌ DISCORD_BOT_TOKEN is not set in .env or .env.local");
     process.exit(1);
   }
   if (!config.guildId) {
-    console.error('❌ DISCORD_GUILD_ID is not set in .env or .env.local');
+    console.error("❌ DISCORD_GUILD_ID is not set in .env or .env.local");
     process.exit(1);
   }
 }
@@ -73,297 +73,297 @@ interface WorkChannelDefinition {
 const workChannels: WorkChannelDefinition[] = [
   // INTERNAL TEAM Category
   {
-    name: '🔒 INTERNAL TEAM',
+    name: "🔒 INTERNAL TEAM",
     type: ChannelType.GuildCategory,
     allowedRoles: [],
   },
   {
-    name: 'team-general',
+    name: "team-general",
     type: ChannelType.GuildText,
-    category: '🔒 INTERNAL TEAM',
-    topic: '💼 General team discussions and daily standups',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🔒 INTERNAL TEAM",
+    topic: "💼 General team discussions and daily standups",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
   },
   {
-    name: 'team-announcements',
+    name: "team-announcements",
     type: ChannelType.GuildText,
-    category: '🔒 INTERNAL TEAM',
-    topic: '📢 Internal company announcements and updates',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🔒 INTERNAL TEAM",
+    topic: "📢 Internal company announcements and updates",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'team-meetings',
+    name: "team-meetings",
     type: ChannelType.GuildText,
-    category: '🔒 INTERNAL TEAM',
-    topic: '📅 Meeting notes, agendas, and schedules',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🔒 INTERNAL TEAM",
+    topic: "📅 Meeting notes, agendas, and schedules",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
   },
   {
-    name: 'team-resources',
+    name: "team-resources",
     type: ChannelType.GuildText,
-    category: '🔒 INTERNAL TEAM',
-    topic: '📚 Company docs, guidelines, passwords, and resources (use pins!)',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🔒 INTERNAL TEAM",
+    topic: "📚 Company docs, guidelines, passwords, and resources (use pins!)",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
   },
 
   // ENGINEERING Category
-  { name: '⚙️ ENGINEERING', type: ChannelType.GuildCategory, allowedRoles: [] },
+  { name: "⚙️ ENGINEERING", type: ChannelType.GuildCategory, allowedRoles: [] },
   {
-    name: 'eng-general',
+    name: "eng-general",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '💻 Engineering discussions and technical chat',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "💻 Engineering discussions and technical chat",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'eng-backend',
+    name: "eng-backend",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '🔧 Backend development: API, database, server-side',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "🔧 Backend development: API, database, server-side",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'eng-frontend',
+    name: "eng-frontend",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '🎨 Frontend development: React, Next.js, UI components',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "🎨 Frontend development: React, Next.js, UI components",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'eng-mobile',
+    name: "eng-mobile",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '📱 Mobile app development: iOS, Android',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "📱 Mobile app development: iOS, Android",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'eng-devops',
+    name: "eng-devops",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '🚀 DevOps: deployment, CI/CD, infrastructure, monitoring',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "🚀 DevOps: deployment, CI/CD, infrastructure, monitoring",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'eng-bugs',
+    name: "eng-bugs",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '🐛 Bug tracking, fixes, and technical debt',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "🐛 Bug tracking, fixes, and technical debt",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'eng-code-review',
+    name: "eng-code-review",
     type: ChannelType.GuildText,
-    category: '⚙️ ENGINEERING',
-    topic: '👀 Code reviews, PR notifications, and technical feedback',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚙️ ENGINEERING",
+    topic: "👀 Code reviews, PR notifications, and technical feedback",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
 
   // DESIGN Category
-  { name: '🎨 DESIGN', type: ChannelType.GuildCategory, allowedRoles: [] },
+  { name: "🎨 DESIGN", type: ChannelType.GuildCategory, allowedRoles: [] },
   {
-    name: 'design-general',
+    name: "design-general",
     type: ChannelType.GuildText,
-    category: '🎨 DESIGN',
-    topic: '🎨 Design discussions, inspiration, and feedback',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🎨 DESIGN",
+    topic: "🎨 Design discussions, inspiration, and feedback",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'design-ui-ux',
+    name: "design-ui-ux",
     type: ChannelType.GuildText,
-    category: '🎨 DESIGN',
-    topic: '🖥️ UI/UX design, wireframes, prototypes, user flows',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🎨 DESIGN",
+    topic: "🖥️ UI/UX design, wireframes, prototypes, user flows",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'design-branding',
+    name: "design-branding",
     type: ChannelType.GuildText,
-    category: '🎨 DESIGN',
-    topic: '✨ Branding, logos, style guides, visual identity',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🎨 DESIGN",
+    topic: "✨ Branding, logos, style guides, visual identity",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'design-marketing-assets',
+    name: "design-marketing-assets",
     type: ChannelType.GuildText,
-    category: '🎨 DESIGN',
-    topic: '📸 Marketing materials, social media graphics, banners',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🎨 DESIGN",
+    topic: "📸 Marketing materials, social media graphics, banners",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'design-feedback',
+    name: "design-feedback",
     type: ChannelType.GuildText,
-    category: '🎨 DESIGN',
-    topic: '💬 Design critiques and feedback sessions',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🎨 DESIGN",
+    topic: "💬 Design critiques and feedback sessions",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
 
   // COMMERCIAL / BUSINESS Category
   {
-    name: '💼 COMMERCIAL',
+    name: "💼 COMMERCIAL",
     type: ChannelType.GuildCategory,
     allowedRoles: [],
   },
   {
-    name: 'commercial-general',
+    name: "commercial-general",
     type: ChannelType.GuildText,
-    category: '💼 COMMERCIAL',
-    topic: '💼 Business strategy, partnerships, revenue discussions',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "💼 COMMERCIAL",
+    topic: "💼 Business strategy, partnerships, revenue discussions",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'commercial-marketing',
+    name: "commercial-marketing",
     type: ChannelType.GuildText,
-    category: '💼 COMMERCIAL',
-    topic: '📣 Marketing campaigns, content strategy, growth initiatives',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "💼 COMMERCIAL",
+    topic: "📣 Marketing campaigns, content strategy, growth initiatives",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'commercial-sales',
+    name: "commercial-sales",
     type: ChannelType.GuildText,
-    category: '💼 COMMERCIAL',
-    topic: '💰 Sales discussions, partnerships, B2B opportunities',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "💼 COMMERCIAL",
+    topic: "💰 Sales discussions, partnerships, B2B opportunities",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'commercial-analytics',
+    name: "commercial-analytics",
     type: ChannelType.GuildText,
-    category: '💼 COMMERCIAL',
-    topic: '📊 Metrics, KPIs, analytics, data insights',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "💼 COMMERCIAL",
+    topic: "📊 Metrics, KPIs, analytics, data insights",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'commercial-partnerships',
+    name: "commercial-partnerships",
     type: ChannelType.GuildText,
-    category: '💼 COMMERCIAL',
-    topic: '🤝 Partner discussions, vendor relationships, affiliates',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "💼 COMMERCIAL",
+    topic: "🤝 Partner discussions, vendor relationships, affiliates",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
 
   // PRODUCT Category
-  { name: '🚀 PRODUCT', type: ChannelType.GuildCategory, allowedRoles: [] },
+  { name: "🚀 PRODUCT", type: ChannelType.GuildCategory, allowedRoles: [] },
   {
-    name: 'product-general',
+    name: "product-general",
     type: ChannelType.GuildText,
-    category: '🚀 PRODUCT',
-    topic: '🎯 Product strategy, roadmap, and planning',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🚀 PRODUCT",
+    topic: "🎯 Product strategy, roadmap, and planning",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'product-roadmap',
+    name: "product-roadmap",
     type: ChannelType.GuildText,
-    category: '🚀 PRODUCT',
-    topic: '🗺️ Feature roadmap, sprint planning, priorities',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🚀 PRODUCT",
+    topic: "🗺️ Feature roadmap, sprint planning, priorities",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'product-research',
+    name: "product-research",
     type: ChannelType.GuildText,
-    category: '🚀 PRODUCT',
-    topic: '🔍 User research, surveys, feedback analysis',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🚀 PRODUCT",
+    topic: "🔍 User research, surveys, feedback analysis",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'product-launches',
+    name: "product-launches",
     type: ChannelType.GuildText,
-    category: '🚀 PRODUCT',
-    topic: '🎉 Feature launches, release planning, go-to-market',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🚀 PRODUCT",
+    topic: "🎉 Feature launches, release planning, go-to-market",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
 
   // CUSTOMER SUCCESS Category
   {
-    name: '🎫 CUSTOMER SUCCESS',
+    name: "🎫 CUSTOMER SUCCESS",
     type: ChannelType.GuildCategory,
     allowedRoles: [],
   },
   {
-    name: 'cs-general',
+    name: "cs-general",
     type: ChannelType.GuildText,
-    category: '🎫 CUSTOMER SUCCESS',
-    topic: '💬 Customer support discussions and coordination',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🎫 CUSTOMER SUCCESS",
+    topic: "💬 Customer support discussions and coordination",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
   },
   {
-    name: 'cs-tickets',
+    name: "cs-tickets",
     type: ChannelType.GuildText,
-    category: '🎫 CUSTOMER SUCCESS',
-    topic: '🎫 Support ticket tracking and escalations',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🎫 CUSTOMER SUCCESS",
+    topic: "🎫 Support ticket tracking and escalations",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
     rateLimitPerUser: 5,
   },
   {
-    name: 'cs-feedback-review',
+    name: "cs-feedback-review",
     type: ChannelType.GuildText,
-    category: '🎫 CUSTOMER SUCCESS',
-    topic: '📝 Review and discuss customer feedback from community',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🎫 CUSTOMER SUCCESS",
+    topic: "📝 Review and discuss customer feedback from community",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
   },
   {
-    name: 'cs-escalations',
+    name: "cs-escalations",
     type: ChannelType.GuildText,
-    category: '🎫 CUSTOMER SUCCESS',
-    topic: '🚨 Urgent customer issues and escalations',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '💼 Support Team'],
+    category: "🎫 CUSTOMER SUCCESS",
+    topic: "🚨 Urgent customer issues and escalations",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "💼 Support Team"],
   },
 
   // OPERATIONS Category
-  { name: '⚡ OPERATIONS', type: ChannelType.GuildCategory, allowedRoles: [] },
+  { name: "⚡ OPERATIONS", type: ChannelType.GuildCategory, allowedRoles: [] },
   {
-    name: 'ops-general',
+    name: "ops-general",
     type: ChannelType.GuildText,
-    category: '⚡ OPERATIONS',
-    topic: '⚙️ Operations, processes, and daily ops',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚡ OPERATIONS",
+    topic: "⚙️ Operations, processes, and daily ops",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'ops-incidents',
+    name: "ops-incidents",
     type: ChannelType.GuildText,
-    category: '⚡ OPERATIONS',
-    topic: '🔥 System incidents, outages, and emergency response',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚡ OPERATIONS",
+    topic: "🔥 System incidents, outages, and emergency response",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: 'ops-monitoring',
+    name: "ops-monitoring",
     type: ChannelType.GuildText,
-    category: '⚡ OPERATIONS',
-    topic: '📡 System monitoring, alerts, uptime notifications (bot)',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "⚡ OPERATIONS",
+    topic: "📡 System monitoring, alerts, uptime notifications (bot)",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
 
   // VOICE CHANNELS (Staff)
   {
-    name: '🔒 STAFF VOICE',
+    name: "🔒 STAFF VOICE",
     type: ChannelType.GuildCategory,
     allowedRoles: [],
   },
   {
-    name: '📞 Team Meeting Room',
+    name: "📞 Team Meeting Room",
     type: ChannelType.GuildVoice,
-    category: '🔒 STAFF VOICE',
-    allowedRoles: ['👑 Founder', '🛡️ Admin', '🔧 Moderator', '💼 Support Team'],
+    category: "🔒 STAFF VOICE",
+    allowedRoles: ["👑 Founder", "🛡️ Admin", "🔧 Moderator", "💼 Support Team"],
   },
   {
-    name: '💻 Engineering Sync',
+    name: "💻 Engineering Sync",
     type: ChannelType.GuildVoice,
-    category: '🔒 STAFF VOICE',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🔒 STAFF VOICE",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: '🎨 Design Review',
+    name: "🎨 Design Review",
     type: ChannelType.GuildVoice,
-    category: '🔒 STAFF VOICE',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🔒 STAFF VOICE",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
   {
-    name: '🎯 Product Strategy',
+    name: "🎯 Product Strategy",
     type: ChannelType.GuildVoice,
-    category: '🔒 STAFF VOICE',
-    allowedRoles: ['👑 Founder', '🛡️ Admin'],
+    category: "🔒 STAFF VOICE",
+    allowedRoles: ["👑 Founder", "🛡️ Admin"],
   },
 ];
 
 // Main setup function
 async function setupWorkChannels() {
-  console.log('🚀 Starting work channels setup...\n');
+  console.log("🚀 Starting work channels setup...\n");
 
   // Create client
   const client = new Client({
@@ -375,9 +375,9 @@ async function setupWorkChannels() {
   });
 
   // Login
-  console.log('🔑 Logging in...');
+  console.log("🔑 Logging in...");
   await client.login(config.botToken);
-  console.log('✅ Bot logged in successfully!\n');
+  console.log("✅ Bot logged in successfully!\n");
 
   // Get guild
   const guild = await client.guilds.fetch(config.guildId!);
@@ -391,20 +391,20 @@ async function setupWorkChannels() {
   console.log(`📋 Found ${roles.size} existing roles\n`);
 
   // Create work channels
-  console.log('📺 Creating work channels...');
+  console.log("📺 Creating work channels...");
   await createWorkChannels(guild, roles);
-  console.log('✅ All work channels created\n');
+  console.log("✅ All work channels created\n");
 
-  console.log('🎉 Work channels setup complete!');
-  console.log('\n📝 Channels created:');
-  console.log('- 🔒 Internal Team (staff-only)');
-  console.log('- ⚙️ Engineering (dev team)');
-  console.log('- 🎨 Design (design team)');
-  console.log('- 💼 Commercial (business team)');
-  console.log('- 🚀 Product (product team)');
-  console.log('- 🎫 Customer Success (support team)');
-  console.log('- ⚡ Operations (ops team)');
-  console.log('- 🔒 Staff Voice (private voice channels)');
+  console.log("🎉 Work channels setup complete!");
+  console.log("\n📝 Channels created:");
+  console.log("- 🔒 Internal Team (staff-only)");
+  console.log("- ⚙️ Engineering (dev team)");
+  console.log("- 🎨 Design (design team)");
+  console.log("- 💼 Commercial (business team)");
+  console.log("- 🚀 Product (product team)");
+  console.log("- 🎫 Customer Success (support team)");
+  console.log("- ⚡ Operations (ops team)");
+  console.log("- 🔒 Staff Voice (private voice channels)");
 
   // Logout
   client.destroy();
@@ -482,6 +482,6 @@ async function createWorkChannels(guild: Guild, roles: Map<string, string>) {
 // Run setup
 validateConfig();
 setupWorkChannels().catch((error) => {
-  console.error('❌ Setup failed:', error);
+  console.error("❌ Setup failed:", error);
   process.exit(1);
 });

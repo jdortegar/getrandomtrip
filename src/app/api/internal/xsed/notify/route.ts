@@ -33,7 +33,8 @@ function timezoneMatchesOffset(tz: string, target: number, now: Date): boolean {
 
 // ─── Email templates ──────────────────────────────────────────────────────────
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
 
 function buildEmail(locale: string | null): { subject: string; html: string } {
   const isEs = locale !== "en";
@@ -87,72 +88,81 @@ function buildEmail(locale: string | null): { subject: string; html: string } {
 
 export async function POST(request: Request) {
   try {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const force = searchParams.get("force") === "true";
-
-  const now = new Date();
-
-  // Safety: only run on the correct drop day (bypass with ?force=true for testing)
-  if (!force && now.getUTCDay() !== DROP_DAY_OF_WEEK) {
-    return NextResponse.json({ skipped: "not drop day" });
-  }
-
-  const target = targetUtcOffset(now);
-
-  // Use start-of-today (Sunday) UTC — not a rolling 7-day window — so manual/test
-  // runs earlier in the week don't block the production Sunday send.
-  const todayUtcMidnight = new Date(now);
-  todayUtcMidnight.setUTCHours(0, 0, 0, 0);
-
-  const candidates = await prisma.xsedNotificationSignup.findMany({
-    where: {
-      OR: [{ lastNotifiedAt: null }, { lastNotifiedAt: { lt: todayUtcMidnight } }],
-    },
-    select: { id: true, email: true, locale: true, timezone: true },
-  });
-
-  // Match by timezone offset. Null timezone defaults to Argentina (UTC-3).
-  const targets = force
-    ? candidates
-    : candidates.filter((u) => {
-        const tz = u.timezone ?? "America/Argentina/Buenos_Aires";
-        return timezoneMatchesOffset(tz, target, now);
-      });
-
-  if (targets.length === 0) {
-    return NextResponse.json({ sent: 0, targetOffset: target });
-  }
-
-  // Send emails (sequential to avoid rate limits)
-  let sent = 0;
-  const notifiedIds: string[] = [];
-
-  for (const user of targets) {
-    try {
-      const { subject, html } = buildEmail(user.locale);
-      await sendMail({ subject, to: user.email, content: { html } });
-      notifiedIds.push(user.id);
-      sent++;
-    } catch (err) {
-      console.error(`[xsed/notify] Failed to send to ${user.email}:`, err);
+    if (!isAuthorized(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-  }
 
-  // Stamp lastNotifiedAt only for successfully sent emails
-  if (notifiedIds.length > 0) {
-    await prisma.xsedNotificationSignup.updateMany({
-      where: { id: { in: notifiedIds } },
-      data: { lastNotifiedAt: now },
+    const { searchParams } = new URL(request.url);
+    const force = searchParams.get("force") === "true";
+
+    const now = new Date();
+
+    // Safety: only run on the correct drop day (bypass with ?force=true for testing)
+    if (!force && now.getUTCDay() !== DROP_DAY_OF_WEEK) {
+      return NextResponse.json({ skipped: "not drop day" });
+    }
+
+    const target = targetUtcOffset(now);
+
+    // Use start-of-today (Sunday) UTC — not a rolling 7-day window — so manual/test
+    // runs earlier in the week don't block the production Sunday send.
+    const todayUtcMidnight = new Date(now);
+    todayUtcMidnight.setUTCHours(0, 0, 0, 0);
+
+    const candidates = await prisma.xsedNotificationSignup.findMany({
+      where: {
+        OR: [
+          { lastNotifiedAt: null },
+          { lastNotifiedAt: { lt: todayUtcMidnight } },
+        ],
+      },
+      select: { id: true, email: true, locale: true, timezone: true },
     });
-  }
 
-  console.log(`[xsed/notify] offset=${target} sent=${sent}/${targets.length}`);
+    // Match by timezone offset. Null timezone defaults to Argentina (UTC-3).
+    const targets = force
+      ? candidates
+      : candidates.filter((u) => {
+          const tz = u.timezone ?? "America/Argentina/Buenos_Aires";
+          return timezoneMatchesOffset(tz, target, now);
+        });
 
-  return NextResponse.json({ sent, total: targets.length, targetOffset: target });
+    if (targets.length === 0) {
+      return NextResponse.json({ sent: 0, targetOffset: target });
+    }
+
+    // Send emails (sequential to avoid rate limits)
+    let sent = 0;
+    const notifiedIds: string[] = [];
+
+    for (const user of targets) {
+      try {
+        const { subject, html } = buildEmail(user.locale);
+        await sendMail({ subject, to: user.email, content: { html } });
+        notifiedIds.push(user.id);
+        sent++;
+      } catch (err) {
+        console.error(`[xsed/notify] Failed to send to ${user.email}:`, err);
+      }
+    }
+
+    // Stamp lastNotifiedAt only for successfully sent emails
+    if (notifiedIds.length > 0) {
+      await prisma.xsedNotificationSignup.updateMany({
+        where: { id: { in: notifiedIds } },
+        data: { lastNotifiedAt: now },
+      });
+    }
+
+    console.log(
+      `[xsed/notify] offset=${target} sent=${sent}/${targets.length}`,
+    );
+
+    return NextResponse.json({
+      sent,
+      total: targets.length,
+      targetOffset: target,
+    });
   } catch (err) {
     console.error("[xsed/notify] Unhandled error:", err);
     return NextResponse.json(

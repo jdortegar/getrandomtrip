@@ -30,52 +30,47 @@ export interface FilterOption {
 export const FILTER_OPTION_KEYS = {
   accommodationType: {
     options: [
-      { key: 'any' },
-      { key: 'hotel-style' },
-      { key: 'home-style' },
-      { key: 'nature-escape' },
-      { key: 'hybrid-hub' },
-      { key: 'glamping' },
+      { key: "any" },
+      { key: "hotel-style" },
+      { key: "home-style" },
+      { key: "nature-escape" },
+      { key: "hybrid-hub" },
+      { key: "glamping" },
     ],
   },
   arrivePref: {
     options: [
-      { key: 'any' },
-      { key: 'afternoon' },
-      { key: 'morning' },
-      { key: 'night' },
+      { key: "any" },
+      { key: "afternoon" },
+      { key: "morning" },
+      { key: "night" },
     ],
   },
   climate: {
     options: [
-      { key: 'any' },
-      { key: 'cold' },
-      { key: 'mild' },
-      { key: 'warm' },
+      { key: "any" },
+      { key: "cold" },
+      { key: "mild" },
+      { key: "warm" },
     ],
   },
   departPref: {
     options: [
-      { key: 'any' },
-      { key: 'afternoon' },
-      { key: 'morning' },
-      { key: 'night' },
+      { key: "any" },
+      { key: "afternoon" },
+      { key: "morning" },
+      { key: "night" },
     ],
   },
   maxTravelTime: {
-    options: [
-      { key: 'no-limit' },
-      { key: '3h' },
-      { key: '5h' },
-      { key: '8h' },
-    ],
+    options: [{ key: "no-limit" }, { key: "3h" }, { key: "5h" }, { key: "8h" }],
   },
   transport: {
     options: [
-      { key: 'bus' },
-      { key: 'plane' },
-      { key: 'ship' },
-      { key: 'train' },
+      { key: "bus" },
+      { key: "plane" },
+      { key: "ship" },
+      { key: "train" },
     ],
   },
 } as const;

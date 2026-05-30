@@ -1,22 +1,25 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import Confetti from '@/components/feedback/Confetti';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import Confetti from "@/components/feedback/Confetti";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultSuccessProps {
-  hero: Dictionary['confirmation']['hero'];
-  labels: Dictionary['confirmation']['page'];
+  hero: Dictionary["confirmation"]["hero"];
+  labels: Dictionary["confirmation"]["page"];
   locale: string;
   /** Stripe redirect params parsed server-side from searchParams. */
-  stripeReturn?: { paymentIntent: string | null; redirectStatus: string | null } | null;
+  stripeReturn?: {
+    paymentIntent: string | null;
+    redirectStatus: string | null;
+  } | null;
 }
 
 export default function CheckoutResultSuccess({
@@ -27,31 +30,31 @@ export default function CheckoutResultSuccess({
 }: CheckoutResultSuccessProps) {
   const searchParams = useSearchParams();
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   // Prefer server-parsed params; fall back to client URL for non-3DS in-page navigations
   const redirectStatus =
-    stripeReturn?.redirectStatus ?? searchParams.get('redirect_status');
-  const hasFailed = redirectStatus === 'requires_payment_method';
+    stripeReturn?.redirectStatus ?? searchParams.get("redirect_status");
+  const hasFailed = redirectStatus === "requires_payment_method";
 
   const [loading, setLoading] = useState(false);
   const showSuccess = !hasFailed;
 
   const paymentIntentId =
-    stripeReturn?.paymentIntent ?? searchParams.get('payment_intent');
+    stripeReturn?.paymentIntent ?? searchParams.get("payment_intent");
 
   // Fallback confirmation: call our API to mark the trip CONFIRMED in case
   // the Stripe webhook hasn't arrived yet.
   useEffect(() => {
     if (!paymentIntentId || hasFailed) return;
-    fetch('/api/stripe/confirm-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/api/stripe/confirm-payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ paymentIntentId }),
     }).catch(() => {
       // Best-effort — webhook will still arrive eventually
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentIntentId]);
 
   useEffect(() => {
@@ -123,7 +126,10 @@ export default function CheckoutResultSuccess({
               </div>
               <div className="flex justify-center pt-2">
                 <Button asChild size="default" variant="link">
-                  <Link className="text-gray-500 hover:text-gray-700" href={`/${locale}`}>
+                  <Link
+                    className="text-gray-500 hover:text-gray-700"
+                    href={`/${locale}`}
+                  >
                     {labels.ctaHome}
                   </Link>
                 </Button>

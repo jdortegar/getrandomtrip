@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import Link from "next/link";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultPendingProps {
-  labels: Dictionary['paymentPending'];
+  labels: Dictionary["paymentPending"];
   locale: string;
 }
 
@@ -17,7 +17,7 @@ export default function CheckoutResultPending({
   locale,
 }: CheckoutResultPendingProps) {
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">

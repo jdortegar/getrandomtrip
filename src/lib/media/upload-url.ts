@@ -5,7 +5,9 @@
  * (e.g. https://getrandomtrip.com/api/upload?key=...). Stripping the origin
  * makes them work in any environment without depending on the production domain.
  */
-export function normalizeUploadUrl(url: string | null | undefined): string | null {
+export function normalizeUploadUrl(
+  url: string | null | undefined,
+): string | null {
   if (!url) return null;
   try {
     const parsed = new URL(url);

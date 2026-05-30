@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import SafeImage from '@/components/SafeImage';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import SafeImage from "@/components/SafeImage";
+import { cn } from "@/lib/utils";
 
 type TripperCardProps = {
   name: string;
@@ -17,14 +17,14 @@ export default function TripperCard({
   name,
   imageUrl,
   href,
-  instagramUrl = 'instagram',
+  instagramUrl = "instagram",
   className,
 }: TripperCardProps) {
   return (
     <Link href={`/trippers/${href}`} className="block relative">
       <div
         className={cn(
-          'group rounded-lg overflow-hidden shadow-xl bg-white aspect-269/230 w-full relative block origin-center',
+          "group rounded-lg overflow-hidden shadow-xl bg-white aspect-269/230 w-full relative block origin-center",
           className,
         )}
       >
@@ -33,7 +33,7 @@ export default function TripperCard({
             src={imageUrl}
             alt={name}
             fill
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: "cover" }}
             priority
           />
           <div className="absolute bottom-0 left-0 z-20 w-full text-left text-white px-8 py-6 bg-linear-to-t from-black/70 to-transparent">

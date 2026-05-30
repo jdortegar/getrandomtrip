@@ -15,7 +15,10 @@ interface XsedNotifyFormProps {
 
 type SubmitStatus = "idle" | "error" | "invalid" | "success";
 
-export function XsedNotifyForm({ variant = "dark", className }: XsedNotifyFormProps) {
+export function XsedNotifyForm({
+  variant = "dark",
+  className,
+}: XsedNotifyFormProps) {
   const content = useDictionary((d) => d.xsedPage.hero);
   const locale = useLocale();
   const [email, setEmail] = useState("");
@@ -80,7 +83,10 @@ export function XsedNotifyForm({ variant = "dark", className }: XsedNotifyFormPr
       transition={{ delay: 1.2, duration: 0.6 }}
     >
       <form
-        className={cn("mb-4 flex w-full flex-col justify-center gap-4 md:flex-row md:items-center", className)}
+        className={cn(
+          "mb-4 flex w-full flex-col justify-center gap-4 md:flex-row md:items-center",
+          className,
+        )}
         noValidate
         onSubmit={handleSubmit}
       >

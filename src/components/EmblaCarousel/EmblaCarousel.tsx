@@ -57,15 +57,31 @@ const EmblaCarousel = ({
     [wheelGestures],
   );
 
-  const { selectedIndex, scrollSnaps, onDotButtonClick } = useDotButton(emblaApi);
-  const { nextBtnDisabled, onNextButtonClick, onPrevButtonClick, prevBtnDisabled } = usePrevNextButtons(emblaApi);
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi);
+  const {
+    nextBtnDisabled,
+    onNextButtonClick,
+    onPrevButtonClick,
+    prevBtnDisabled,
+  } = usePrevNextButtons(emblaApi);
 
-  const accentStyle = accentColor ? { backgroundColor: accentColor } : undefined;
+  const accentStyle = accentColor
+    ? { backgroundColor: accentColor }
+    : undefined;
 
   const arrows = slides.length > 1 && (
     <div className="flex items-center justify-end gap-2.5 mb-6">
-      <PrevButton disabled={prevBtnDisabled} onClick={onPrevButtonClick} style={accentStyle} />
-      <NextButton disabled={nextBtnDisabled} onClick={onNextButtonClick} style={accentStyle} />
+      <PrevButton
+        disabled={prevBtnDisabled}
+        onClick={onPrevButtonClick}
+        style={accentStyle}
+      />
+      <NextButton
+        disabled={nextBtnDisabled}
+        onClick={onNextButtonClick}
+        style={accentStyle}
+      />
     </div>
   );
 
@@ -78,9 +94,19 @@ const EmblaCarousel = ({
             "h-2 rounded-full transition-all",
             i === selectedIndex
               ? cn("w-8", !accentColor && "bg-light-blue")
-              : cn("w-2", !accentColor && "bg-light-blue/30 hover:bg-light-blue/50"),
+              : cn(
+                  "w-2",
+                  !accentColor && "bg-light-blue/30 hover:bg-light-blue/50",
+                ),
           )}
-          style={accentColor ? { backgroundColor: accentColor, opacity: i === selectedIndex ? 1 : 0.3 } : undefined}
+          style={
+            accentColor
+              ? {
+                  backgroundColor: accentColor,
+                  opacity: i === selectedIndex ? 1 : 0.3,
+                }
+              : undefined
+          }
           onClick={() => onDotButtonClick(i)}
           type="button"
         />
@@ -89,29 +115,43 @@ const EmblaCarousel = ({
   );
 
   const mask = overflow ? MASKS[overflow] : undefined;
-  const maskStyle = mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined;
+  const maskStyle = mask
+    ? { maskImage: mask, WebkitMaskImage: mask }
+    : undefined;
 
   return (
     <div className="@container mx-auto w-full overflow-x-clip">
-      {arrows && <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>}
+      {arrows && (
+        <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>
+      )}
 
       <div style={maskStyle}>
-        <div ref={emblaRef} className={cn("w-full",
-        {
-          "overflow-visible container mx-auto w-full pl-4 sm:pl-6 lg:pl-8" : overflow === "right",
-          "overflow-visible container mx-auto w-full pr-4 sm:pr-6 lg:pr-8" : overflow === "left", 
-          "overflow-visible rt-container" : overflow === "both",
-          "overflow-hidden" : overflow === undefined}, 
-        wrapperClassName)}>
+        <div
+          ref={emblaRef}
+          className={cn(
+            "w-full",
+            {
+              "overflow-visible container mx-auto w-full pl-4 sm:pl-6 lg:pl-8":
+                overflow === "right",
+              "overflow-visible container mx-auto w-full pr-4 sm:pr-6 lg:pr-8":
+                overflow === "left",
+              "overflow-visible rt-container": overflow === "both",
+              "overflow-hidden": overflow === undefined,
+            },
+            wrapperClassName,
+          )}
+        >
           <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start gap-3">
             {slides.map((child, index) => (
               <div
                 key={index}
                 className={cn(
                   "min-w-0 shrink-0",
-                  "flex-[0_0_80%]",{
-                  "@md:flex-[0_0_33.3333%]": slidesPerView === 3, 
-                  "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]": slidesPerView === 4
+                  "flex-[0_0_80%]",
+                  {
+                    "@md:flex-[0_0_33.3333%]": slidesPerView === 3,
+                    "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]":
+                      slidesPerView === 4,
                   },
                   slideClassName,
                 )}
@@ -126,8 +166,6 @@ const EmblaCarousel = ({
       {dots && <div className="container mx-auto px-4 md:px-20">{dots}</div>}
     </div>
   );
-
-
 };
 
 export default EmblaCarousel;

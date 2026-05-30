@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
 
 interface LoginModalDict {
   description: string;
@@ -22,8 +22,8 @@ interface LoginModalProps {
 }
 
 /** Gate: client-only check so only users who know the code see the real home. Not real auth. */
-const GATE_USERNAME = 'admin';
-const GATE_PASSWORD = 'randomtrip2026';
+const GATE_USERNAME = "admin";
+const GATE_PASSWORD = "randomtrip2026";
 
 export function LoginModal({
   dict,
@@ -31,25 +31,25 @@ export function LoginModal({
   onSuccess,
   open,
 }: LoginModalProps) {
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleClose = useCallback(() => {
     setError(null);
-    setPassword('');
-    setUsername('');
+    setPassword("");
+    setUsername("");
     onOpenChange(false);
   }, [onOpenChange]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
+      if (e.key === "Escape") handleClose();
     };
     if (open) {
-      document.addEventListener('keydown', onKeyDown);
-      return () => document.removeEventListener('keydown', onKeyDown);
+      document.addEventListener("keydown", onKeyDown);
+      return () => document.removeEventListener("keydown", onKeyDown);
     }
   }, [open, handleClose]);
 
@@ -62,7 +62,7 @@ export function LoginModal({
       onSuccess();
       handleClose();
     } else {
-      setError('Invalid credentials');
+      setError("Invalid credentials");
     }
     setIsLoading(false);
   };
@@ -130,7 +130,7 @@ export function LoginModal({
             disabled={isLoading}
             type="submit"
           >
-            {isLoading ? '...' : dict.submitButton}
+            {isLoading ? "..." : dict.submitButton}
           </Button>
         </form>
       </div>

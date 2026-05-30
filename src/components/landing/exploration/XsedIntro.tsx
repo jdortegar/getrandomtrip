@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { useDictionary } from '@/hooks/useDictionary';
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { useDictionary } from "@/hooks/useDictionary";
 
 export function XsedIntro() {
-  const copy = useDictionary(d => d.home.exploration.xsedIntro);
+  const copy = useDictionary((d) => d.home.exploration.xsedIntro);
 
   return (
     <div className="relative w-full overflow-hidden rt-container min-h-96 rounded-lg">
@@ -33,7 +33,6 @@ export function XsedIntro() {
           <Button asChild size="lg" variant="tertiary" className="mr-auto">
             <Link href={copy.ctaHref}>{copy.ctaLabel}</Link>
           </Button>
-
         </div>
       </div>
     </div>

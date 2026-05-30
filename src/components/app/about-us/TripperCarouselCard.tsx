@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import SafeImage from '@/components/common/SafeImage';
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import SafeImage from "@/components/common/SafeImage";
 
 interface TripperCarouselCardProps {
   avatarUrl: string | null;
@@ -22,7 +22,7 @@ export function TripperCarouselCard({
   return (
     <Link
       className={cn(
-        'group flex flex-col md:flex-row overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100',
+        "group flex flex-col md:flex-row overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100",
         className,
       )}
       href={`/trippers/${tripperSlug}`}
@@ -50,10 +50,14 @@ export function TripperCarouselCard({
       {/* Right: specialty + bio */}
       <div className="flex flex-1 flex-col justify-center gap-3 bg-gray-50 p-5">
         {specialty && (
-          <p className="font-barlow text-sm font-semibold text-gray-800">{specialty}</p>
+          <p className="font-barlow text-sm font-semibold text-gray-800">
+            {specialty}
+          </p>
         )}
         {bio && (
-          <p className="font-barlow text-sm leading-relaxed text-gray-500 line-clamp-4">{bio}</p>
+          <p className="font-barlow text-sm leading-relaxed text-gray-500 line-clamp-4">
+            {bio}
+          </p>
         )}
       </div>
     </Link>

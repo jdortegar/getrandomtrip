@@ -1,15 +1,15 @@
-import type { Metadata } from 'next';
-import { FaqBlock } from '@/components/display/FaqBlock';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { hasLocale, type Locale } from '@/lib/i18n/config';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import Section from '@/components/layout/Section';
+import type { Metadata } from "next";
+import { FaqBlock } from "@/components/display/FaqBlock";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import Section from "@/components/layout/Section";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
 function resolveLocale(raw: string | string[] | undefined): Locale {
-  const localeStr = typeof raw === 'string' ? raw : raw?.[0];
-  return hasLocale(localeStr) ? localeStr : 'es';
+  const localeStr = typeof raw === "string" ? raw : raw?.[0];
+  return hasLocale(localeStr) ? localeStr : "es";
 }
 
 export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
@@ -22,7 +22,7 @@ export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
     openGraph: {
       description: meta.openGraphDescription,
       title: meta.openGraphTitle,
-      type: 'website',
+      type: "website",
     },
     title: meta.title,
   };

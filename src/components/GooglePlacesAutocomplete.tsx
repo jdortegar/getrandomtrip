@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Autocomplete } from '@react-google-maps/api';
+import React, { useState } from "react";
+import { Autocomplete } from "@react-google-maps/api";
 
 interface GooglePlacesAutocompleteProps {
   label: string;
@@ -17,10 +17,11 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({
   onChange,
   placeholder,
   required = false,
-  inputClassName = '',
+  inputClassName = "",
   isLoaded,
 }) => {
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
 
   const onLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
     setAutocomplete(autocompleteInstance);
@@ -29,9 +30,9 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({
   const onPlaceChanged = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
-      onChange(place.formatted_address || '');
+      onChange(place.formatted_address || "");
     } else {
-      console.log('Autocomplete is not loaded yet!');
+      console.log("Autocomplete is not loaded yet!");
     }
   };
 
@@ -41,17 +42,20 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({
 
   return (
     <div>
-      <label htmlFor={label.toLowerCase().replace(/\s/g, '-')} className="block text-sm font-medium text-gray-700 mb-1">
+      <label
+        htmlFor={label.toLowerCase().replace(/\s/g, "-")}
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
         {label}
       </label>
       <Autocomplete
         onLoad={onLoad}
         onPlaceChanged={onPlaceChanged}
-        options={{ types: ['(cities)'] }}
+        options={{ types: ["(cities)"] }}
       >
         <input
           type="text"
-          id={label.toLowerCase().replace(/\s/g, '-')}
+          id={label.toLowerCase().replace(/\s/g, "-")}
           placeholder={placeholder}
           required={required}
           defaultValue={value}

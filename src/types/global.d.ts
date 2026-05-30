@@ -9,9 +9,15 @@ interface SpeechRecognition extends EventTarget {
   onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
   onend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
-  onnomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onerror:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any)
+    | null;
+  onnomatch:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
+    | null;
+  onresult:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
+    | null;
   onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onsoundend: ((this: SpeechRecognition, ev: Event) => any) | null;
   onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
@@ -25,12 +31,12 @@ interface SpeechRecognition extends EventTarget {
 
 declare var SpeechRecognition: {
   prototype: SpeechRecognition;
-  new(): SpeechRecognition;
+  new (): SpeechRecognition;
 };
 
 declare var webkitSpeechRecognition: {
   prototype: SpeechRecognition;
-  new(): SpeechRecognition;
+  new (): SpeechRecognition;
 };
 
 interface SpeechSynthesis extends EventTarget {
@@ -48,7 +54,7 @@ interface SpeechSynthesis extends EventTarget {
 
 declare var SpeechSynthesis: {
   prototype: SpeechSynthesis;
-  new(): SpeechSynthesis;
+  new (): SpeechSynthesis;
 };
 
 interface SpeechRecognitionEvent extends Event {
@@ -61,7 +67,7 @@ interface SpeechRecognitionEvent extends Event {
 
 declare var SpeechRecognitionEvent: {
   prototype: SpeechRecognitionEvent;
-  new(): SpeechRecognitionEvent;
+  new (): SpeechRecognitionEvent;
 };
 
 interface Window {

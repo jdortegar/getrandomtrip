@@ -37,7 +37,8 @@ const buttonVariants = cva(
         feature: "bg-yellow-400 text-gray-800 hover:bg-yellow-500",
       },
       size: {
-        default: "min-h-9 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-[10px]",
+        default:
+          "min-h-9 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-[10px]",
         sm: "min-h-11 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-2.5",
         md: "min-h-11 px-6 gap-[10px] rounded-sm text-base has-[>svg]:px-4",
         lg: "min-h-14 px-10 gap-[10px] rounded-sm text-base md:text-lg has-[>svg]:px-4",

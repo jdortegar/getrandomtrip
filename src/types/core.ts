@@ -9,15 +9,21 @@
 
 export type ID = string;
 export type Timestamp = string; // ISO 8601 format
-export type Currency = 'USD' | 'EUR' | 'MXN' | 'ARS' | 'COP' | 'CLP' | 'PEN';
+export type Currency = "USD" | "EUR" | "MXN" | "ARS" | "COP" | "CLP" | "PEN";
 
 // ============================================================================
 // USER & AUTHENTICATION TYPES
 // ============================================================================
 
-export type UserRole = 'client' | 'tripper' | 'admin';
-export type TravelerType = 'solo' | 'couple' | 'family' | 'group' | 'honeymoon' | 'paws';
-export type BudgetLevel = 'low' | 'mid' | 'high';
+export type UserRole = "client" | "tripper" | "admin";
+export type TravelerType =
+  | "solo"
+  | "couple"
+  | "family"
+  | "group"
+  | "honeymoon"
+  | "paws";
+export type BudgetLevel = "low" | "mid" | "high";
 
 export interface User {
   id: ID;
@@ -64,30 +70,30 @@ export interface UserMetrics {
 // ============================================================================
 
 export type JourneyType =
-  | 'couple'
-  | 'family'
-  | 'group'
-  | 'solo'
-  | 'honeymoon'
-  | 'paws';
+  | "couple"
+  | "family"
+  | "group"
+  | "solo"
+  | "honeymoon"
+  | "paws";
 export type LevelSlug =
-  | 'essenza'
-  | 'modo-explora'
-  | 'explora-plus'
-  | 'bivouac'
-  | 'atelier-getaway'
-  | 'xsed';
-export type TransportMode = 'bus' | 'plane' | 'ship' | 'train';
-export type ClimatePreference = 'any' | 'cold' | 'mild' | 'warm';
-export type TimePreference = 'no-limit' | '3h' | '5h' | '8h';
-export type DeparturePreference = 'any' | 'afternoon' | 'morning' | 'night';
+  | "essenza"
+  | "modo-explora"
+  | "explora-plus"
+  | "bivouac"
+  | "atelier-getaway"
+  | "xsed";
+export type TransportMode = "bus" | "plane" | "ship" | "train";
+export type ClimatePreference = "any" | "cold" | "mild" | "warm";
+export type TimePreference = "no-limit" | "3h" | "5h" | "8h";
+export type DeparturePreference = "any" | "afternoon" | "morning" | "night";
 export type AccommodationType =
-  | 'any'
-  | 'hotel-style'
-  | 'home-style'
-  | 'nature-escape'
-  | 'hybrid-hub'
-  | 'glamping';
+  | "any"
+  | "hotel-style"
+  | "home-style"
+  | "nature-escape"
+  | "hybrid-hub"
+  | "glamping";
 
 export interface Location {
   name: string;
@@ -116,7 +122,7 @@ export interface JourneyFilters {
 }
 
 export interface JourneyState {
-  from: 'tripper' | '';
+  from: "tripper" | "";
   type: JourneyType;
   level: LevelSlug;
   displayPrice: string;
@@ -127,22 +133,22 @@ export interface JourneyState {
   filtersCostUsd: number;
   addonsCostUsd: number;
   totalPerPaxUsd: number;
-  activeTab: 'logistics' | 'preferences' | 'avoid';
+  activeTab: "logistics" | "preferences" | "avoid";
 }
 
 // ============================================================================
 // ADDONS & PRICING TYPES
 // ============================================================================
 
-export type AddonUnit = 'per_pax' | 'per_trip' | 'percent_total';
+export type AddonUnit = "per_pax" | "per_trip" | "percent_total";
 export type AddonCategory =
-  | 'Seguridad'
-  | 'Vuelo y Equipaje'
-  | 'Movilidad'
-  | 'Alojamiento'
-  | 'Experiencias'
-  | 'Conectividad'
-  | 'Otros';
+  | "Seguridad"
+  | "Vuelo y Equipaje"
+  | "Movilidad"
+  | "Alojamiento"
+  | "Experiencias"
+  | "Conectividad"
+  | "Otros";
 
 export interface AddonSelection {
   id: string;
@@ -175,9 +181,9 @@ export interface AddonOption {
 // TRIPPER TYPES
 // ============================================================================
 
-export type TripperLevel = 'rookie' | 'pro' | 'elite';
-export type RouteStatus = 'draft' | 'in_review' | 'published' | 'archived';
-export type EarningStatus = 'pending' | 'paid' | 'cancelled';
+export type TripperLevel = "rookie" | "pro" | "elite";
+export type RouteStatus = "draft" | "in_review" | "published" | "archived";
+export type EarningStatus = "pending" | "paid" | "cancelled";
 
 export interface TripperRoute {
   id: ID;
@@ -228,7 +234,7 @@ export interface BlogPost {
   updatedAt: Timestamp;
   tags: string[];
   featuredImage?: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
 }
 
 // ============================================================================
@@ -259,13 +265,13 @@ export interface FormField {
   name: string;
   label: string;
   type:
-    | 'text'
-    | 'email'
-    | 'password'
-    | 'select'
-    | 'textarea'
-    | 'checkbox'
-    | 'radio';
+    | "text"
+    | "email"
+    | "password"
+    | "select"
+    | "textarea"
+    | "checkbox"
+    | "radio";
   required?: boolean;
   placeholder?: string;
   options?: { value: string; label: string }[];

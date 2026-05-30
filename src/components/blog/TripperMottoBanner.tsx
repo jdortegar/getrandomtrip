@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import Section from '@/components/layout/Section';
-import { cn } from '@/lib/utils';
+import Image from "next/image";
+import Link from "next/link";
+import Section from "@/components/layout/Section";
+import { cn } from "@/lib/utils";
 
 interface TripperMottoBannerProps {
   authorName: string;
@@ -29,7 +29,11 @@ export default function TripperMottoBanner({
     : authorName.toUpperCase();
 
   return (
-    <Section fullWidth backgroundImage={backgroundImageUrl} className={cn(className)}>
+    <Section
+      fullWidth
+      backgroundImage={backgroundImageUrl}
+      className={cn(className)}
+    >
       <div className="relative z-10 flex max-w-3xl flex-col items-center gap-6 mx-auto">
         <blockquote className="font-barlow-condensed text-2xl font-bold uppercase leading-snug text-white md:text-3xl lg:text-4xl">
           &ldquo;{motto}&rdquo;

@@ -18,7 +18,9 @@ import { useDictionary, useLocale } from "@/hooks/useDictionary";
 export function AdminSidebar() {
   const pathname = usePathname();
   const locale = useLocale();
-  const copy = useDictionary(d => (d as unknown as { adminSidebar: AdminSidebarDict }).adminSidebar);
+  const copy = useDictionary(
+    (d) => (d as unknown as { adminSidebar: AdminSidebarDict }).adminSidebar,
+  );
 
   function base(path: string) {
     return `/${locale}/dashboard/admin${path}`;
@@ -33,7 +35,11 @@ export function AdminSidebar() {
   const links = [
     { href: base(""), icon: Briefcase, label: copy.links.tripRequests },
     { href: base("/users"), icon: Users, label: copy.links.users },
-    { href: base("/experiences"), icon: Package, label: copy.links.experiences },
+    {
+      href: base("/experiences"),
+      icon: Package,
+      label: copy.links.experiences,
+    },
     { href: base("/payments"), icon: CreditCard, label: copy.links.payments },
     { href: base("/reviews"), icon: Star, label: copy.links.reviews },
     { href: base("/waitlist"), icon: Mail, label: copy.links.waitlist },
@@ -48,9 +54,7 @@ export function AdminSidebar() {
   return (
     <aside className="flex w-48 shrink-0 flex-col border-r border-gray-200 bg-white h-full">
       <div className="border-b border-gray-100 px-4 py-3">
-        <p className="text-xl font-semibold text-neutral-900">
-          Admin Panel
-        </p>
+        <p className="text-xl font-semibold text-neutral-900">Admin Panel</p>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2">
         {links.map((link) => (

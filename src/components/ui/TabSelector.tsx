@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface TabSelectorProps {
   tabs: {
@@ -20,7 +20,7 @@ export function TabSelector({
   tabs,
   activeTab,
   onTabChange,
-  layoutId = 'activeTab',
+  layoutId = "activeTab",
 }: TabSelectorProps) {
   return (
     <div className="flex gap-8 justify-center text-[#172C36] text-xl mb-20">
@@ -28,8 +28,8 @@ export function TabSelector({
         <button
           // className={`relative shrink-0 px-3 py-3 font-medium transition-all duration-300 text-base md:px-4 md:text-lg whitespace-nowrap ${getButtonStyles(activeTab === tab.id, !!tab.disabled)}`}
           className={cn(
-            'relative cursor-pointer',
-            activeTab === tab.id ? 'text-[#172C36]' : 'text-[#858585]',
+            "relative cursor-pointer",
+            activeTab === tab.id ? "text-[#172C36]" : "text-[#858585]",
           )}
           disabled={tab.disabled}
           key={tab.id}
@@ -39,16 +39,16 @@ export function TabSelector({
           {activeTab === tab.id && (
             <motion.div
               className={cn(
-                'absolute -bottom-3 left-0 right-0 w-1/2 m-auto h-[2px] bg-light-blue rounded-full',
+                "absolute -bottom-3 left-0 right-0 w-1/2 m-auto h-[2px] bg-light-blue rounded-full",
               )}
               layoutId={layoutId}
               transition={{
-                type: 'spring',
+                type: "spring",
                 stiffness: 500,
                 damping: 30,
               }}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true, margin: "-100px" }}
             />
           )}
         </button>

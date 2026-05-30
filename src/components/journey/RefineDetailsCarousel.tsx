@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
-import RefineDetailsCard from '@/components/journey/RefineDetailsCard';
+import React from "react";
+import { motion } from "framer-motion";
+import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
+import RefineDetailsCard from "@/components/journey/RefineDetailsCard";
 
 interface RefineDetailsOption {
   desc: string;
@@ -37,7 +37,11 @@ export function RefineDetailsCarousel({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <EmblaCarousel slidesPerView={itemsPerView} wrapperClassName="px-0!" overflow="right">
+      <EmblaCarousel
+        slidesPerView={itemsPerView}
+        wrapperClassName="px-0!"
+        overflow="right"
+      >
         {options.map((option) => {
           const isSelected = selectedOptions.includes(option.key);
 

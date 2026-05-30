@@ -12,14 +12,14 @@
 
 ## File Map
 
-| Action | File |
-|--------|------|
-| **Create** | `src/app/api/upload/route.ts` |
-| **Modify** | `src/app/api/user/update/route.ts` |
-| **Delete** | `src/app/api/user/avatar/route.ts` |
-| **Delete** | `src/app/api/tripper/blog-media/route.ts` |
-| **Modify** | `src/app/[locale]/(secure)/profile/page.tsx` |
-| **Modify** | `src/components/tripper/blog/BlogComposer.tsx` |
+| Action     | File                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| **Create** | `src/app/api/upload/route.ts`                                         |
+| **Modify** | `src/app/api/user/update/route.ts`                                    |
+| **Delete** | `src/app/api/user/avatar/route.ts`                                    |
+| **Delete** | `src/app/api/tripper/blog-media/route.ts`                             |
+| **Modify** | `src/app/[locale]/(secure)/profile/page.tsx`                          |
+| **Modify** | `src/components/tripper/blog/BlogComposer.tsx`                        |
 | **Modify** | `src/components/app/tripper/tripper-profile/TripperProfileClient.tsx` |
 
 ---
@@ -27,6 +27,7 @@
 ## Task 1: Create the unified upload route
 
 **Files:**
+
 - Create: `src/app/api/upload/route.ts`
 
 - [ ] **Step 1: Create the route file**
@@ -46,7 +47,10 @@ function getBlobStore() {
   return getStore(STORE_NAME, {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? { siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_AUTH_TOKEN }
+      ? {
+          siteID: process.env.NETLIFY_SITE_ID,
+          token: process.env.NETLIFY_AUTH_TOKEN,
+        }
       : {}),
   });
 }
@@ -102,7 +106,10 @@ export async function POST(request: NextRequest) {
     }
 
     const rawFeature = formData.get("feature");
-    if (typeof rawFeature !== "string" || !/^[a-zA-Z0-9_-]{1,64}$/.test(rawFeature)) {
+    if (
+      typeof rawFeature !== "string" ||
+      !/^[a-zA-Z0-9_-]{1,64}$/.test(rawFeature)
+    ) {
       return NextResponse.json({ error: "Invalid feature" }, { status: 400 });
     }
 
@@ -120,7 +127,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url });
   } catch (error) {
     console.error("[upload] POST", error);
-    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Blob storage unavailable" },
+      { status: 503 },
+    );
   }
 }
 ```
@@ -145,6 +155,7 @@ git commit -m "feat: add unified /api/upload route (GET + POST, user-media blob 
 ## Task 2: Add `avatarUrl` to `/api/user/update`
 
 **Files:**
+
 - Modify: `src/app/api/user/update/route.ts`
 
 - [ ] **Step 1: Update the PATCH body type and data builder**
@@ -209,6 +220,7 @@ git commit -m "feat: accept avatarUrl in PATCH /api/user/update"
 ## Task 3: Migrate avatar upload in profile page
 
 **Files:**
+
 - Modify: `src/app/[locale]/(secure)/profile/page.tsx`
 
 - [ ] **Step 1: Update `handleAvatarChange` to use the unified endpoint**
@@ -287,6 +299,7 @@ git commit -m "feat: migrate avatar upload to /api/upload"
 ## Task 4: Migrate blog image upload in BlogComposer
 
 **Files:**
+
 - Modify: `src/components/tripper/blog/BlogComposer.tsx`
 
 - [ ] **Step 1: Update `uploadImageFile` to use the unified endpoint**
@@ -318,6 +331,7 @@ async function uploadImageFile(file: File, feature: string): Promise<string> {
 Search the file for every call to `uploadImageFile`. The old signature was `uploadImageFile(file, postId?)` where `postId` was used for key namespacing. The new signature is `uploadImageFile(file, feature)`.
 
 Replace calls with the appropriate feature string:
+
 - Cover image uploads → `uploadImageFile(file, "blog-cover")`
 - Gallery/inline image uploads → `uploadImageFile(file, "blog-gallery")`
 
@@ -343,6 +357,7 @@ git commit -m "feat: migrate blog image upload to /api/upload"
 ## Task 5: Migrate tripper hero image upload
 
 **Files:**
+
 - Modify: `src/components/app/tripper/tripper-profile/TripperProfileClient.tsx`
 
 - [ ] **Step 1: Update `handleUploadHeroImage`**
@@ -398,6 +413,7 @@ git commit -m "feat: migrate tripper hero image upload to /api/upload"
 ## Task 6: Delete old upload routes
 
 **Files:**
+
 - Delete: `src/app/api/user/avatar/route.ts`
 - Delete: `src/app/api/tripper/blog-media/route.ts`
 - Delete: (old stub) — already replaced by new `src/app/api/upload/route.ts`

@@ -3,22 +3,22 @@
  * Provides theme context and dark mode support
  */
 
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 // ============================================================================
 // THEME TYPES
 // ============================================================================
 
-export type ColorScheme = 'light' | 'dark' | 'system';
+export type ColorScheme = "light" | "dark" | "system";
 
 export interface ThemeConfig {
   colorScheme: ColorScheme;
   accentColor?: string;
-  borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
-  fontFamily?: 'sans' | 'serif' | 'mono';
+  borderRadius?: "none" | "sm" | "md" | "lg" | "xl";
+  fontFamily?: "sans" | "serif" | "mono";
 }
 
 export interface ThemeContextValue {
@@ -51,9 +51,9 @@ export interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'getrandomtrip-theme',
-  attribute = 'class',
+  defaultTheme = "system",
+  storageKey = "getrandomtrip-theme",
+  attribute = "class",
   enableSystem = true,
   disableTransitionOnChange = false,
 }: ThemeProviderProps) {
@@ -73,24 +73,24 @@ export function ThemeProvider({
     const root = window.document.documentElement;
 
     // Remove previous theme classes
-    root.classList.remove('light', 'dark');
+    root.classList.remove("light", "dark");
 
-    if (colorScheme === 'system' && enableSystem) {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+    if (colorScheme === "system" && enableSystem) {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
-        ? 'dark'
-        : 'light';
+        ? "dark"
+        : "light";
 
       root.classList.add(systemTheme);
-      setIsDark(systemTheme === 'dark');
+      setIsDark(systemTheme === "dark");
     } else {
       root.classList.add(colorScheme);
-      setIsDark(colorScheme === 'dark');
+      setIsDark(colorScheme === "dark");
     }
 
     // Disable transitions during theme change if requested
     if (disableTransitionOnChange) {
-      const css = document.createElement('style');
+      const css = document.createElement("style");
       css.appendChild(
         document.createTextNode(
           `*,*::before,*::after{-webkit-transition:none!important;-moz-transition:none!important;-o-transition:none!important;-ms-transition:none!important;transition:none!important}`,
@@ -110,18 +110,18 @@ export function ThemeProvider({
 
   // Listen for system theme changes
   useEffect(() => {
-    if (colorScheme === 'system' && enableSystem) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (colorScheme === "system" && enableSystem) {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
       const handleChange = (e: MediaQueryListEvent) => {
         const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(e.matches ? 'dark' : 'light');
+        root.classList.remove("light", "dark");
+        root.classList.add(e.matches ? "dark" : "light");
         setIsDark(e.matches);
       };
 
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
     }
   }, [colorScheme, enableSystem]);
 
@@ -131,7 +131,7 @@ export function ThemeProvider({
   };
 
   const toggleColorScheme = () => {
-    const newScheme: ColorScheme = isDark ? 'light' : 'dark';
+    const newScheme: ColorScheme = isDark ? "light" : "dark";
     setColorScheme(newScheme);
     localStorage.setItem(storageKey, newScheme);
   };
@@ -161,7 +161,7 @@ export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
 
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
 
   return context;
@@ -174,31 +174,31 @@ export function useTheme(): ThemeContextValue {
 export interface ThemeToggleProps {
   className?: string;
   showLabel?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 }
 
 export function ThemeToggle({
   className,
   showLabel = false,
-  size = 'md',
+  size = "md",
 }: ThemeToggleProps) {
   const { isDark, toggleColorScheme } = useTheme();
 
   const sizeClasses = {
-    sm: 'h-6 w-6',
-    md: 'h-8 w-8',
-    lg: 'h-10 w-10',
+    sm: "h-6 w-6",
+    md: "h-8 w-8",
+    lg: "h-10 w-10",
   };
 
   return (
     <button
       onClick={toggleColorScheme}
       className={cn(
-        'inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors',
+        "inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors",
         sizeClasses[size],
         className,
       )}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
     >
       {isDark ? (
         <svg
@@ -230,7 +230,7 @@ export function ThemeToggle({
         </svg>
       )}
       {showLabel && (
-        <span className="ml-2 text-sm">{isDark ? 'Light' : 'Dark'}</span>
+        <span className="ml-2 text-sm">{isDark ? "Light" : "Dark"}</span>
       )}
     </button>
   );

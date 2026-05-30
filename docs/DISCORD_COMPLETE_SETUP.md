@@ -26,17 +26,20 @@ npm run discord:setup-messages
 ### 1. Get Discord Bot Credentials
 
 **Create Bot:**
+
 1. Go to https://discord.com/developers/applications
 2. Click "New Application" → Name it "GetRandomTrip Bot"
 3. Go to "Bot" section → "Add Bot"
 4. Copy the **Bot Token** (keep it secret!)
 
 **Enable Intents:**
+
 - ✅ PRESENCE INTENT
 - ✅ SERVER MEMBERS INTENT
 - ✅ MESSAGE CONTENT INTENT
 
 **Invite Bot:**
+
 1. Go to OAuth2 → URL Generator
 2. Select: `bot` + `applications.commands`
 3. Select permissions:
@@ -75,6 +78,7 @@ npm run discord:setup
 ```
 
 **Creates:**
+
 - ✅ 20 roles (staff, community, traveler types, experience levels)
 - ✅ 50+ community channels in 10 categories
 - ✅ Voice channels
@@ -92,6 +96,7 @@ npm run discord:setup-work
 ```
 
 **Creates:**
+
 - ✅ 40+ private staff channels
 - ✅ 8 work categories (Engineering, Design, Commercial, etc.)
 - ✅ Staff-only permissions
@@ -108,6 +113,7 @@ npm run discord:setup-messages
 ```
 
 **Does:**
+
 - ✅ Posts welcome message in #welcome (with embed)
 - ✅ Posts rules in #rules (with embed)
 - ✅ Posts role selection guide in #get-your-role
@@ -167,7 +173,9 @@ GetRandomTrip Discord
 ## 🎨 What the Messages Look Like
 
 ### #welcome
+
 Beautiful embed with:
+
 - Welcome message
 - 4-step getting started guide
 - Links to key channels
@@ -175,27 +183,36 @@ Beautiful embed with:
 - Support info
 
 ### #rules
+
 Professional embed with:
+
 - 8 clear community rules
 - Emoji icons for each rule
 - Consequences explanation
 - Contact info for issues
 
 ### #get-your-role
+
 Two colorful embeds:
+
 1. Traveler types (Solo, Couple, Family, Friends, Honeymoon)
 2. Regions (Americas, Europe, Asia-Pacific, Africa & ME)
+
 - Includes reaction emojis
 - Ready for Carl-bot setup
 
 ### #introductions
+
 Template embed with:
+
 - Questions to answer
 - Friendly tone
 - Encourages engagement
 
 ### #faq
+
 Comprehensive FAQ with:
+
 - About GetRandomTrip
 - How it works
 - Pricing info
@@ -209,11 +226,13 @@ Comprehensive FAQ with:
 ### 1. Set Up Carl-bot Reaction Roles (5 mins)
 
 **Install Carl-bot:**
+
 1. Visit https://carl.gg
 2. Click "Invite" → Select your server
 3. Authorize
 
 **Configure Reaction Roles:**
+
 ```
 1. Go to #get-your-role
 2. Use Carl-bot dashboard or commands:
@@ -234,6 +253,7 @@ Comprehensive FAQ with:
 ### 2. Assign Staff Roles (2 mins)
 
 **Assign roles to your team:**
+
 1. Right-click member → Roles
 2. Assign appropriate role:
    - 👑 Founder (you)
@@ -244,36 +264,43 @@ Comprehensive FAQ with:
 ### 3. Optional: Install More Bots
 
 **MEE6** (Leveling & Welcome):
+
 - Visit: https://mee6.xyz
 - Enable: Welcome messages, Leveling, Moderation
 
 **Dyno** (Auto-moderation):
+
 - Visit: https://dyno.gg
 - Enable: Auto-moderation, Auto-role, Logging
 
 **Ticket Tool** (Support):
+
 - Visit: https://tickettool.xyz
 - Set up in #help-desk and #bookings-support
 
 ### 4. Configure Server Settings (5 mins)
 
 **Community Features:**
+
 1. Server Settings → Enable Community
 2. Set up Welcome Screen:
    - Add #welcome, #rules, #get-your-role
 3. Set default channels
 
 **AFK Channel:**
+
 1. Server Settings → Overview
 2. AFK Channel → Select "🔇 AFK"
 3. AFK Timeout → 5 minutes
 
 **Verification Level:**
+
 1. Server Settings → Safety Setup
 2. Verification Level → Medium (recommended)
 3. Enable "Require 2FA for moderator actions"
 
 **Discovery (if eligible):**
+
 1. Server Settings → Discovery
 2. Fill out application
 3. Add tags and description
@@ -285,6 +312,7 @@ Comprehensive FAQ with:
 ### Generate Invite Link
 
 **For Public:**
+
 ```
 1. Click server name → Invite People
 2. Set: Expire After → Never
@@ -293,6 +321,7 @@ Comprehensive FAQ with:
 ```
 
 **For Custom URL (requires Community):**
+
 ```
 Server Settings → Vanity URL
 Create: discord.gg/getrandomtrip
@@ -372,6 +401,7 @@ After setup, verify:
 ### "Bot can't post messages"
 
 **Solution:**
+
 - Check bot has "Send Messages" permission
 - Verify bot is in the server
 - Check channel permissions override
@@ -379,18 +409,21 @@ After setup, verify:
 ### "Can't pin messages"
 
 **Solution:**
+
 - Grant bot "Pin Messages" permission
 - Check channel-specific permissions
 
 ### "Read-only not working"
 
 **Solution:**
+
 - Bot needs "Manage Channels" permission
 - Verify @everyone role permissions
 
 ### "Reaction roles not working"
 
 **Solution:**
+
 - Carl-bot must be properly configured
 - Use Carl-bot dashboard: https://carl.gg
 - Emojis must match exactly
@@ -398,6 +431,7 @@ After setup, verify:
 ### "Work channels visible to everyone"
 
 **Solution:**
+
 - Run discord:setup first (creates roles)
 - Then run discord:setup-work
 - Verify staff have correct roles
@@ -405,6 +439,7 @@ After setup, verify:
 ### "Script fails halfway"
 
 **Solution:**
+
 - Discord rate limits: Wait 10 minutes
 - Run script again (won't duplicate)
 - Check bot token is valid
@@ -426,11 +461,13 @@ After setup, verify:
 ### Change Welcome Message
 
 Edit `scripts/discord-setup-messages.ts`:
+
 ```typescript
 .setDescription('Your custom message here')
 ```
 
 Then re-run:
+
 ```bash
 npm run discord:setup-messages
 ```
@@ -440,6 +477,7 @@ npm run discord:setup-messages
 Edit `scripts/discord-setup.ts` or `scripts/discord-setup-work-channels.ts`
 
 Add to `channels` array:
+
 ```typescript
 {
   name: 'your-channel',
@@ -452,6 +490,7 @@ Add to `channels` array:
 ### Change Colors
 
 Edit embed colors in `discord-setup-messages.ts`:
+
 ```typescript
 .setColor(0x3498db) // Blue
 .setColor(0xe74c3c) // Red
@@ -501,6 +540,7 @@ Edit embed colors in `discord-setup-messages.ts`:
 ### Future Enhancements
 
 Consider adding:
+
 - **Discord Store** - Sell trips directly
 - **Events** - Schedule community events
 - **Stage Channels** - Host Q&As
@@ -511,6 +551,7 @@ Consider adding:
 ### Integrations
 
 Hook up:
+
 - GitHub → #eng-code-review
 - Stripe → Revenue notifications
 - Google Analytics → Daily stats
@@ -523,15 +564,18 @@ Hook up:
 ## 🆘 Need Help?
 
 **Discord:**
+
 - Official Discord API: https://discord.gg/discord-api
 - Discord.js: https://discord.gg/djs
 
 **Resources:**
+
 - Discord Developer Docs: https://discord.com/developers/docs
 - Discord.js Guide: https://discordjs.guide
 - Carl-bot Docs: https://docs.carl.gg
 
 **Our Team:**
+
 - Check work channels for internal support
 - Tag @Admin for urgent issues
 
@@ -540,6 +584,7 @@ Hook up:
 ## 🎉 You're All Set!
 
 Your Discord server is now:
+
 - ✅ Fully configured
 - ✅ Professionally organized
 - ✅ Ready for community
@@ -563,4 +608,3 @@ npm run discord:setup-messages     # Post messages & configure
 
 **Last updated:** January 2025  
 **Version:** 1.0.0
-

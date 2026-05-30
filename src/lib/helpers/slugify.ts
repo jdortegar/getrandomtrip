@@ -9,10 +9,10 @@ export function slugify(text: string): string {
       .toLowerCase()
       .trim()
       // Replace spaces and special characters with dashes
-      .replace(/[^\w\s-]/g, '')
+      .replace(/[^\w\s-]/g, "")
       // Replace multiple spaces with single dash
-      .replace(/[\s_-]+/g, '-')
+      .replace(/[\s_-]+/g, "-")
       // Remove leading/trailing dashes
-      .replace(/^-+|-+$/g, '')
+      .replace(/^-+|-+$/g, "")
   );
 }

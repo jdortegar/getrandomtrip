@@ -1,20 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import Stripe from 'stripe';
-import { getStripe } from '@/lib/stripe';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { calculatePaymentTotals } from '@/lib/helpers/payment-totals';
-import { getPricePerPerson } from '@/lib/data/traveler-types';
-import { getFixedPaxDetailsForTravelType } from '@/lib/helpers/pax-details';
-import type { AddonSelection, Filters, Logistics } from '@/store/slices/journeyStore';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import Stripe from "stripe";
+import { getStripe } from "@/lib/stripe";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
+import { getPricePerPerson } from "@/lib/data/traveler-types";
+import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
+import type {
+  AddonSelection,
+  Filters,
+  Logistics,
+} from "@/store/slices/journeyStore";
 
 export async function POST(request: NextRequest) {
   try {
     const stripe = getStripe();
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { tripId, promoCode } = (await request.json()) as {
@@ -24,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     if (!tripId || !promoCode?.trim()) {
       return NextResponse.json(
-        { error: 'tripId and promoCode are required' },
+        { error: "tripId and promoCode are required" },
         { status: 400 },
       );
     }
@@ -36,14 +40,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (!trip) {
-      return NextResponse.json({ error: 'Trip not found' }, { status: 404 });
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
     if (trip.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (!trip.payment?.stripePaymentIntentId) {
       return NextResponse.json(
-        { error: 'No payment intent found for this trip' },
+        { error: "No payment intent found for this trip" },
         { status: 409 },
       );
     }
@@ -57,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     if (promoCodes.data.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid or expired promo code' },
+        { error: "Invalid or expired promo code" },
         { status: 404 },
       );
     }
@@ -65,32 +69,34 @@ export async function POST(request: NextRequest) {
     const promoCodeObj = promoCodes.data[0];
     const couponRef = promoCodeObj.promotion.coupon;
     const coupon =
-      typeof couponRef === 'string'
+      typeof couponRef === "string"
         ? await stripe.coupons.retrieve(couponRef)
         : (couponRef as Stripe.Coupon);
 
     if (!coupon.valid) {
       return NextResponse.json(
-        { error: 'This promo code is no longer valid' },
+        { error: "This promo code is no longer valid" },
         { status: 409 },
       );
     }
 
     // Recalculate original amount server-side using effective pax for the travel type
     const fixedPax = getFixedPaxDetailsForTravelType(trip.type);
-    const effectivePax = fixedPax ? fixedPax.adults + fixedPax.minors : trip.pax;
+    const effectivePax = fixedPax
+      ? fixedPax.adults + fixedPax.minors
+      : trip.pax;
     const basePriceUsd = getPricePerPerson(trip.type, trip.level, effectivePax);
     const addonsRaw = Array.isArray(trip.addons)
       ? (trip.addons as unknown as AddonSelection[])
       : [];
     const filters: Filters = {
-      accommodationType: trip.accommodationType as Filters['accommodationType'],
-      arrivePref: trip.arrivePref as Filters['arrivePref'],
+      accommodationType: trip.accommodationType as Filters["accommodationType"],
+      arrivePref: trip.arrivePref as Filters["arrivePref"],
       avoidDestinations: trip.avoidDestinations,
-      climate: trip.climate as Filters['climate'],
-      departPref: trip.departPref as Filters['departPref'],
-      maxTravelTime: trip.maxTravelTime as Filters['maxTravelTime'],
-      transport: trip.transport as Filters['transport'],
+      climate: trip.climate as Filters["climate"],
+      departPref: trip.departPref as Filters["departPref"],
+      maxTravelTime: trip.maxTravelTime as Filters["maxTravelTime"],
+      transport: trip.transport as Filters["transport"],
     };
     const logistics: Logistics = {
       city: trip.originCity,
@@ -142,9 +148,11 @@ export async function POST(request: NextRequest) {
       newTotal: newAmountUsd,
     });
   } catch (error) {
-    console.error('apply-promo error:', error);
+    console.error("apply-promo error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 },
     );
   }

@@ -5,26 +5,32 @@
  * Each type exports content per locale (es, en).
  */
 
-import { couple } from './couple';
-import { solo } from './solo';
-import { family } from './family';
-import { group } from './group';
-import { honeymoon } from './honeymoon';
-import { paws } from './paws';
-import type { TravelerTypeData } from '@/types/traveler-type';
-import type { Locale } from '@/lib/i18n/config';
-import { DEFAULT_LOCALE } from '@/lib/i18n/config';
-import { hasLocale } from '@/lib/i18n/config';
+import { couple } from "./couple";
+import { solo } from "./solo";
+import { family } from "./family";
+import { group } from "./group";
+import { honeymoon } from "./honeymoon";
+import { paws } from "./paws";
+import type { TravelerTypeData } from "@/types/traveler-type";
+import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { hasLocale } from "@/lib/i18n/config";
 
-export type TravelerTypeSlug = 'couple' | 'solo' | 'family' | 'group' | 'honeymoon' | 'paws';
+export type TravelerTypeSlug =
+  | "couple"
+  | "solo"
+  | "family"
+  | "group"
+  | "honeymoon"
+  | "paws";
 
 /** Level ids used for pricing (align with planner level ids: explora = Modo Explora, atelier = Atelier Getaway). */
 export type PriceLevelId =
-  | 'essenza'
-  | 'explora'
-  | 'explora-plus'
-  | 'bivouac'
-  | 'atelier';
+  | "essenza"
+  | "explora"
+  | "explora-plus"
+  | "bivouac"
+  | "atelier";
 
 /**
  * Single source of truth for base price per person (USD) by traveler type and level.
@@ -34,22 +40,65 @@ export const PRICE_BY_TYPE_AND_LEVEL: Record<
   TravelerTypeSlug,
   Record<PriceLevelId, number>
 > = {
-  couple: { essenza: 350, explora: 550, 'explora-plus': 850, bivouac: 1200, atelier: 1200 },
-  family: { essenza: 350, explora: 550, 'explora-plus': 850, bivouac: 1200, atelier: 1200 },
-  group: { essenza: 350, explora: 550, 'explora-plus': 850, bivouac: 1200, atelier: 1200 },
-  solo: { essenza: 450, explora: 650, 'explora-plus': 1100, bivouac: 1550, atelier: 1550 },
-  paws: { essenza: 490, explora: 700, 'explora-plus': 1190, bivouac: 1680, atelier: 1680 },
-  honeymoon: { essenza: 0, explora: 0, 'explora-plus': 0, bivouac: 0, atelier: 1800 },
+  couple: {
+    essenza: 350,
+    explora: 550,
+    "explora-plus": 850,
+    bivouac: 1200,
+    atelier: 1200,
+  },
+  family: {
+    essenza: 350,
+    explora: 550,
+    "explora-plus": 850,
+    bivouac: 1200,
+    atelier: 1200,
+  },
+  group: {
+    essenza: 350,
+    explora: 550,
+    "explora-plus": 850,
+    bivouac: 1200,
+    atelier: 1200,
+  },
+  solo: {
+    essenza: 450,
+    explora: 650,
+    "explora-plus": 1100,
+    bivouac: 1550,
+    atelier: 1550,
+  },
+  paws: {
+    essenza: 490,
+    explora: 700,
+    "explora-plus": 1190,
+    bivouac: 1680,
+    atelier: 1680,
+  },
+  honeymoon: {
+    essenza: 0,
+    explora: 0,
+    "explora-plus": 0,
+    bivouac: 0,
+    atelier: 1800,
+  },
 };
 
 /** Normalize level id from URL/planner (modo-explora -> explora, atelier-getaway -> atelier). */
-export function normalizePriceLevelId(levelId: string | null | undefined): PriceLevelId | null {
+export function normalizePriceLevelId(
+  levelId: string | null | undefined,
+): PriceLevelId | null {
   if (!levelId) return null;
-  const n = levelId.toLowerCase().replace(/\s+/g, '-').replace('explora+', 'explora-plus');
-  if (n === 'exploraplus') return 'explora-plus';
-  if (n === 'modoexplora' || n === 'modo-explora' || n === 'explora') return 'explora';
-  if (n === 'atelier-getaway' || n === 'atelier') return 'atelier';
-  if (n === 'essenza' || n === 'explora-plus' || n === 'bivouac') return n as PriceLevelId;
+  const n = levelId
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace("explora+", "explora-plus");
+  if (n === "exploraplus") return "explora-plus";
+  if (n === "modoexplora" || n === "modo-explora" || n === "explora")
+    return "explora";
+  if (n === "atelier-getaway" || n === "atelier") return "atelier";
+  if (n === "essenza" || n === "explora-plus" || n === "bivouac")
+    return n as PriceLevelId;
   return null;
 }
 
@@ -64,7 +113,7 @@ export function getBasePricePerPerson(
   type: TravelerTypeSlug | string,
   levelId: string | null | undefined,
 ): number {
-  if ((type as string).toLowerCase() === 'xsed') return XSED_PRICE_PER_PERSON;
+  if ((type as string).toLowerCase() === "xsed") return XSED_PRICE_PER_PERSON;
   const slug = type as TravelerTypeSlug;
   if (!TRAVELER_TYPE_SLUGS.includes(slug)) return 0;
   const level = normalizePriceLevelId(levelId);
@@ -85,7 +134,7 @@ export function getPricePerPerson(
 ): number {
   const base = getBasePricePerPerson(type, levelId);
   if (base === 0) return 0;
-  if (type !== 'paws') return base;
+  if (type !== "paws") return base;
   const p = pax ?? 2;
   if (p === 2) return base;
   return Math.round(base * PAWS_PAX_MULTIPLIER);
@@ -93,12 +142,12 @@ export function getPricePerPerson(
 
 /** All traveler type slugs in display order (used for options list and maps). */
 export const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
-  'solo',
-  'couple',
-  'group',
-  'family',
-  'honeymoon',
-  'paws',
+  "solo",
+  "couple",
+  "group",
+  "family",
+  "honeymoon",
+  "paws",
 ];
 
 /** Card display data (subtitle, img) per slug for journey/tripper type selection. */
@@ -107,28 +156,28 @@ const CARD_BY_SLUG: Record<
   { img: string; subtitle: string }
 > = {
   couple: {
-    img: '/images/journey-types/couple-traveler.png',
-    subtitle: 'Creen recuerdos juntos',
+    img: "/images/journey-types/couple-traveler.png",
+    subtitle: "Creen recuerdos juntos",
   },
   family: {
-    img: '/images/journey-types/family-traveler.jpg',
-    subtitle: 'Aventuras para todos',
+    img: "/images/journey-types/family-traveler.jpg",
+    subtitle: "Aventuras para todos",
   },
   group: {
-    img: '/images/journey-types/friends-group.jpg',
-    subtitle: 'Experiencias compartidas',
+    img: "/images/journey-types/friends-group.jpg",
+    subtitle: "Experiencias compartidas",
   },
   honeymoon: {
-    img: '/images/journey-types/honeymoon-same-sex.jpg',
-    subtitle: 'El comienzo perfecto',
+    img: "/images/journey-types/honeymoon-same-sex.jpg",
+    subtitle: "El comienzo perfecto",
   },
   paws: {
-    img: '/images/journey-types/paws-card.jpg',
-    subtitle: 'Con tu mascota de viaje',
+    img: "/images/journey-types/paws-card.jpg",
+    subtitle: "Con tu mascota de viaje",
   },
   solo: {
-    img: '/images/journey-types/solo-traveler.png',
-    subtitle: 'Descubre el mundo a tu ritmo',
+    img: "/images/journey-types/solo-traveler.png",
+    subtitle: "Descubre el mundo a tu ritmo",
   },
 };
 
@@ -173,7 +222,9 @@ const BY_LOCALE: Record<TravelerTypeSlug, Record<Locale, TravelerTypeData>> = {
   paws,
 };
 
-function getBySlug(slugOrAlias: string): Record<Locale, TravelerTypeData> | null {
+function getBySlug(
+  slugOrAlias: string,
+): Record<Locale, TravelerTypeData> | null {
   const normalized = slugOrAlias.toLowerCase();
   for (const data of Object.values(BY_LOCALE)) {
     const esData = data.es;
@@ -193,20 +244,25 @@ function getBySlug(slugOrAlias: string): Record<Locale, TravelerTypeData> | null
  */
 export function getTravelerType(
   slugOrAlias: string,
-  locale?: string
+  locale?: string,
 ): TravelerTypeData | null {
   const byLocale = getBySlug(slugOrAlias);
   if (!byLocale) return null;
-  const loc: Locale = locale && hasLocale(locale) ? (locale as Locale) : DEFAULT_LOCALE;
+  const loc: Locale =
+    locale && hasLocale(locale) ? (locale as Locale) : DEFAULT_LOCALE;
   return byLocale[loc] ?? byLocale[DEFAULT_LOCALE];
 }
 
 /** @deprecated Use getTravelerType(slug, locale) for locale-aware content */
-export const TRAVELER_TYPES: Record<string, TravelerTypeData> = Object.fromEntries(
-  (Object.entries(BY_LOCALE) as [TravelerTypeSlug, Record<Locale, TravelerTypeData>][]).map(
-    ([key, data]) => [key, data[DEFAULT_LOCALE]]
-  )
-);
+export const TRAVELER_TYPES: Record<string, TravelerTypeData> =
+  Object.fromEntries(
+    (
+      Object.entries(BY_LOCALE) as [
+        TravelerTypeSlug,
+        Record<Locale, TravelerTypeData>,
+      ][]
+    ).map(([key, data]) => [key, data[DEFAULT_LOCALE]]),
+  );
 
 /**
  * Get all URL paths for static generation (slugs + aliases)
@@ -222,9 +278,9 @@ export function getAllTravelerTypePaths(): string[] {
 }
 
 // Re-export for convenience
-export * from './couple';
-export * from './solo';
-export * from './family';
-export * from './group';
-export * from './honeymoon';
-export * from './paws';
+export * from "./couple";
+export * from "./solo";
+export * from "./family";
+export * from "./group";
+export * from "./honeymoon";
+export * from "./paws";

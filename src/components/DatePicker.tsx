@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface DatePickerProps {
   label: string;
@@ -8,15 +8,24 @@ interface DatePickerProps {
   inputClassName?: string;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ label, value, onChange, required = false, inputClassName = '' }) => {
+const DatePicker: React.FC<DatePickerProps> = ({
+  label,
+  value,
+  onChange,
+  required = false,
+  inputClassName = "",
+}) => {
   return (
     <div>
-      <label htmlFor={label.toLowerCase().replace(/\s/g, '-')} className="block text-sm font-medium text-gray-700 mb-1">
+      <label
+        htmlFor={label.toLowerCase().replace(/\s/g, "-")}
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
         {label}
       </label>
       <input
         type="date"
-        id={label.toLowerCase().replace(/\s/g, '-')}
+        id={label.toLowerCase().replace(/\s/g, "-")}
         value={value}
         onChange={onChange}
         required={required}

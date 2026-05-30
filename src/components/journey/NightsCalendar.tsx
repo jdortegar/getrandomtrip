@@ -1,11 +1,15 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import { getLevelName, getMaxNights, type Level } from '@/lib/utils/experiencesData';
-import { es } from 'react-day-picker/locale';
-import Chip from '@/components/Chip';
-import { useStore } from '@/store/store';
+"use client";
+import { useState, useEffect } from "react";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import {
+  getLevelName,
+  getMaxNights,
+  type Level,
+} from "@/lib/utils/experiencesData";
+import { es } from "react-day-picker/locale";
+import Chip from "@/components/Chip";
+import { useStore } from "@/store/store";
 
 interface NightsCalendarProps {
   level: Level;
@@ -98,10 +102,10 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
 
   const modifiersStyles = {
     range: {
-      backgroundColor: '#111827',
-      color: 'white',
-      fontWeight: 'bold',
-      borderRadius: '100%',
+      backgroundColor: "#111827",
+      color: "white",
+      fontWeight: "bold",
+      borderRadius: "100%",
     },
   };
 
@@ -140,7 +144,7 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
           classNames={{
             today: `border-primary`,
             selected: `bg-primary border-primary text-white rounded-full`,
-            day: 'text-gray-500',
+            day: "text-gray-500",
             chevron: `fill-primary`,
           }}
         />

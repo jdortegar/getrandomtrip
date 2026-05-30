@@ -1,9 +1,9 @@
 // frontend/src/components/journey/LogisticsForm.tsx
-'use client';
+"use client";
 
-import { useStore } from '@/store/store';
-import { getMaxNights, validateNights } from '@/lib/levels';
-import { useState } from 'react';
+import { useStore } from "@/store/store";
+import { getMaxNights, validateNights } from "@/lib/levels";
+import { useState } from "react";
 
 export default function LogisticsForm() {
   const { logistics, setPartial, level } = useStore();
@@ -22,7 +22,7 @@ export default function LogisticsForm() {
         const maxNights = getMaxNights(level);
         setError(
           `Con ${level} se permiten hasta ${
-            maxNights === 'custom' ? '∞' : maxNights
+            maxNights === "custom" ? "∞" : maxNights
           } noches. Ajusten las fechas.`,
         );
       } else {
@@ -56,7 +56,7 @@ export default function LogisticsForm() {
           type="text"
           id="origin"
           placeholder="Ej.: Buenos Aires (EZE)"
-          value={logistics.city ?? ''}
+          value={logistics.city ?? ""}
           onChange={(e) =>
             setPartial({
               logistics: {
@@ -87,7 +87,7 @@ export default function LogisticsForm() {
             value={
               logistics.startDate
                 ? new Date(logistics.startDate).toISOString().slice(0, 10)
-                : ''
+                : ""
             }
             onChange={handleDateChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -107,7 +107,7 @@ export default function LogisticsForm() {
             value={
               logistics.endDate
                 ? new Date(logistics.endDate).toISOString().slice(0, 10)
-                : ''
+                : ""
             }
             onChange={handleDateChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"

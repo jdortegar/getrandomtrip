@@ -1,6 +1,6 @@
-import 'next-auth';
+import "next-auth";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id: string;
@@ -12,8 +12,8 @@ declare module 'next-auth' {
       interests?: string[];
       name: string;
       phone?: string | null;
-      role?: 'admin' | 'client' | 'tripper';
-      roles?: Array<'admin' | 'client' | 'tripper'>;
+      role?: "admin" | "client" | "tripper";
+      roles?: Array<"admin" | "client" | "tripper">;
       travelerType?: string | null;
     };
   }
@@ -26,7 +26,7 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module "next-auth/jwt" {
   interface JWT {
     id: string;
   }

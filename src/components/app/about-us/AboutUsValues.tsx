@@ -1,12 +1,12 @@
-import Img from '@/components/common/Img';
-import Section from '@/components/layout/Section';
+import Img from "@/components/common/Img";
+import Section from "@/components/layout/Section";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
 const ICONS = [
-  { src: '/assets/svg/handcraft.svg', width: 85, height: 81 },
-  { src: '/assets/svg/security.svg',  width: 63, height: 70 },
-  { src: '/assets/svg/community.svg', width: 72, height: 57 },
+  { src: "/assets/svg/handcraft.svg", width: 85, height: 81 },
+  { src: "/assets/svg/security.svg", width: 63, height: 70 },
+  { src: "/assets/svg/community.svg", width: 72, height: 57 },
 ] as const;
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -34,7 +34,6 @@ export function AboutUsValues({ items }: AboutUsValuesProps) {
                 <div className="flex items-end gap-2">
                   <h3 className="w-auto text-left font-barlow-condensed font-bold text-2xl uppercase leading-tight text-primary">
                     {item.title}
-                    
                   </h3>
                   {icon && (
                     <Img
@@ -46,8 +45,8 @@ export function AboutUsValues({ items }: AboutUsValuesProps) {
                       width={icon.width}
                     />
                   )}
-                  </div>
-                
+                </div>
+
                 <p className="text-left font-barlow text-lg text-[#888] leading-relaxed">
                   {item.copy}
                 </p>

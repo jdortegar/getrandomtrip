@@ -1,10 +1,10 @@
-import type { TestimonialData } from '@/components/Testimonials/types';
-import { findCompletedXsedTripRequestsForTestimonials } from '@/lib/data/xsed';
-import { getCountryCode } from '@/lib/helpers/flags';
+import type { TestimonialData } from "@/components/Testimonials/types";
+import { findCompletedXsedTripRequestsForTestimonials } from "@/lib/data/xsed";
+import { getCountryCode } from "@/lib/helpers/flags";
 
 function formatReviewerAuthor(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return 'Viajero';
+  if (parts.length === 0) return "Viajero";
   if (parts.length === 1) return parts[0]!;
   const first = parts[0]!;
   const last = parts[parts.length - 1]!;
@@ -22,10 +22,10 @@ export async function getXsedDropTestimonials(
 
   const out: TestimonialData[] = [];
   for (const tr of rows) {
-    const quote = (tr.customerFeedback ?? '').trim();
+    const quote = (tr.customerFeedback ?? "").trim();
     if (!quote) continue;
 
-    const country = tr.originCountry?.trim() || 'Argentina';
+    const country = tr.originCountry?.trim() || "Argentina";
     const code = getCountryCode(country);
 
     out.push({

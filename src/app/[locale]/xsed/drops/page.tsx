@@ -31,7 +31,11 @@ export default async function XsedDropsPage(props: LocaleParams) {
         dropsPage={dict.xsedDropsPage}
         hero={dict.xsedPage.hero}
       />
-      <AllDropsGrid excludeId={currentDrop?.id} initialDrops={drops} initialHasMore={hasMore} />
+      <AllDropsGrid
+        excludeId={currentDrop?.id}
+        initialDrops={drops}
+        initialHasMore={hasMore}
+      />
       {currentDrop ? (
         <CountDown
           dropSlug={currentDrop.slug}

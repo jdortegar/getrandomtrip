@@ -5,7 +5,7 @@ declare global {
         places: {
           Autocomplete: new (
             inputField: HTMLInputElement,
-            options?: google.maps.places.AutocompleteOptions
+            options?: google.maps.places.AutocompleteOptions,
           ) => google.maps.places.Autocomplete;
           PlaceResult: google.maps.places.PlaceResult;
         };

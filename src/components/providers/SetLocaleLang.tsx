@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import type { Locale } from '@/lib/i18n/config';
+import { useEffect } from "react";
+import type { Locale } from "@/lib/i18n/config";
 
 interface SetLocaleLangProps {
   locale: Locale;

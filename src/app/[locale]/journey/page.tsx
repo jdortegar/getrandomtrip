@@ -225,8 +225,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               filterFeePaxLine: journey.checkout.filterFeePaxLine,
               perPersonSectionTitle: journey.checkout.perPersonSectionTitle,
               subtotalPerPersonLabel: journey.checkout.subtotalPerPersonLabel,
-              summaryHeroPriceCaption:
-                journey.checkout.summaryHeroPriceCaption,
+              summaryHeroPriceCaption: journey.checkout.summaryHeroPriceCaption,
               totalLabel: journey.checkout.totalLabel,
             }}
           />
@@ -236,11 +235,9 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   );
 }
 
-export default function JourneyPage(
-  props: {
-    params?: Promise<{ locale?: string }>;
-  }
-) {
+export default function JourneyPage(props: {
+  params?: Promise<{ locale?: string }>;
+}) {
   const params = use(props.params ?? Promise.resolve({ locale: undefined }));
   return (
     <Suspense fallback={<LoadingSpinner />}>

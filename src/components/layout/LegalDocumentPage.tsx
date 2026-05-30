@@ -1,16 +1,19 @@
-import Link from 'next/link';
-import HeaderHero from '@/components/journey/HeaderHero';
-import type { Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { LegalDocumentDict } from '@/lib/types/dictionary';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import HeaderHero from "@/components/journey/HeaderHero";
+import type { Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { LegalDocumentDict } from "@/lib/types/dictionary";
+import { cn } from "@/lib/utils";
 
 interface LegalDocumentPageProps {
   document: LegalDocumentDict;
   locale: Locale;
 }
 
-export function LegalDocumentPage({ document: doc, locale }: LegalDocumentPageProps) {
+export function LegalDocumentPage({
+  document: doc,
+  locale,
+}: LegalDocumentPageProps) {
   const { hero } = doc;
 
   return (
@@ -27,8 +30,8 @@ export function LegalDocumentPage({ document: doc, locale }: LegalDocumentPagePr
 
       <main
         className={cn(
-          'container mx-auto max-w-4xl px-4 py-12 text-neutral-700',
-          'md:px-20 md:py-16',
+          "container mx-auto max-w-4xl px-4 py-12 text-neutral-700",
+          "md:px-20 md:py-16",
         )}
       >
         <div className="space-y-8">
@@ -36,7 +39,7 @@ export function LegalDocumentPage({ document: doc, locale }: LegalDocumentPagePr
             <section key={index}>
               <h2
                 className={cn(
-                  'mb-3 font-barlow-condensed text-xl font-semibold text-neutral-900',
+                  "mb-3 font-barlow-condensed text-xl font-semibold text-neutral-900",
                 )}
               >
                 {section.title}
@@ -65,16 +68,16 @@ export function LegalDocumentPage({ document: doc, locale }: LegalDocumentPagePr
           <section className="mt-10 border-t border-neutral-200 pt-8">
             <h2
               className={cn(
-                'mb-3 font-barlow-condensed text-xl font-semibold text-neutral-900',
+                "mb-3 font-barlow-condensed text-xl font-semibold text-neutral-900",
               )}
             >
               {doc.contactBlock.title}
             </h2>
             <p className="leading-relaxed">
-              {doc.contactBlock.before}{' '}
+              {doc.contactBlock.before}{" "}
               <Link
                 className="text-primary underline-offset-2 hover:underline"
-                href={pathForLocale(locale, '/contact')}
+                href={pathForLocale(locale, "/contact")}
               >
                 {doc.contactBlock.linkLabel}
               </Link>

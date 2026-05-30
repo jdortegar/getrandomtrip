@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useRef, useState, useMemo, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import JourneyContentNavigation from '@/components/journey/JourneyContentNavigation';
-import JourneyProgressSidebar from '@/components/journey/JourneyProgressSidebar';
-import { ExperienceFormContent } from './ExperienceFormContent';
-import type { ExperienceFormDraft } from '@/types/tripper';
-import { isExperienceTabComplete } from '@/lib/helpers/experience-form';
-import type { TripperExperiencesDict } from '@/lib/types/dictionary';
-import type { JourneyUserBadgeLabels } from '@/components/journey/JourneyUserBadge';
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
+import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
+import { ExperienceFormContent } from "./ExperienceFormContent";
+import type { ExperienceFormDraft } from "@/types/tripper";
+import { isExperienceTabComplete } from "@/lib/helpers/experience-form";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
+import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 
-export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 interface NewExperienceShellProps {
-  dict: TripperExperiencesDict['form'];
+  dict: TripperExperiencesDict["form"];
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
   initialDraft?: ExperienceFormDraft;
@@ -21,36 +21,38 @@ interface NewExperienceShellProps {
 }
 
 const EMPTY_DRAFT: ExperienceFormDraft = {
-  status: 'DRAFT',
-  title: '',
-  type: 'couple',
-  level: 'essenza',
-  teaser: '',
-  description: '',
-  heroImage: '',
+  status: "DRAFT",
+  title: "",
+  type: "couple",
+  level: "essenza",
+  teaser: "",
+  description: "",
+  heroImage: "",
   tags: [],
   highlights: [],
-  destinationCountry: '',
-  destinationCity: '',
-  excuseKey: '',
-  climate: 'any',
+  destinationCountry: "",
+  destinationCity: "",
+  excuseKey: "",
+  climate: "any",
   minPax: 1,
   maxPax: 1,
   minNights: 1,
   maxNights: 2,
   basePrice: 0,
-  displayPrice: '',
-  estimatedCost: '',
-  season: '',
-  transport: 'any',
-  travelTime: '',
-  maxTravelTime: 'no-limit',
-  departPref: 'any',
-  arrivePref: 'any',
-  accommodationType: 'any',
-  accommodations: [{ hotelName: '', hotelStars: '', hotelLocation: '', hotelDays: '' }],
-  activities: [{ name: '', durationRhythm: '', description: '', risks: '' }],
-  itinerary: [{ title: '', description: '' }],
+  displayPrice: "",
+  estimatedCost: "",
+  season: "",
+  transport: "any",
+  travelTime: "",
+  maxTravelTime: "no-limit",
+  departPref: "any",
+  arrivePref: "any",
+  accommodationType: "any",
+  accommodations: [
+    { hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "" },
+  ],
+  activities: [{ name: "", durationRhythm: "", description: "", risks: "" }],
+  itinerary: [{ title: "", description: "" }],
   inclusions: [],
   exclusions: [],
 };
@@ -66,11 +68,15 @@ export function NewExperienceShell({
 }: NewExperienceShellProps) {
   const router = useRouter();
   const tabs = dict.contentTabs;
-  const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? 'about');
-  const [openSectionId, setOpenSectionId] = useState(tabs[0]?.substeps[0]?.id ?? '');
-  const [form, setForm] = useState<ExperienceFormDraft>(initialDraft ?? EMPTY_DRAFT);
+  const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "about");
+  const [openSectionId, setOpenSectionId] = useState(
+    tabs[0]?.substeps[0]?.id ?? "",
+  );
+  const [form, setForm] = useState<ExperienceFormDraft>(
+    initialDraft ?? EMPTY_DRAFT,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
   const draftIdRef = useRef<string | null>(initialDraftId ?? null);
   const isFirstRender = useRef(true);
@@ -78,30 +84,33 @@ export function NewExperienceShell({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const persistDraft = useCallback(async (snapshot: ExperienceFormDraft) => {
-    setSaveStatus('saving');
+    setSaveStatus("saving");
     try {
       if (!draftIdRef.current) {
-        const res = await fetch('/api/tripper/experiences', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch("/api/tripper/experiences", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(snapshot),
         });
         if (!res.ok) throw new Error();
-        const data = await res.json() as { id: string };
+        const data = (await res.json()) as { id: string };
         draftIdRef.current = data.id;
       } else {
-        const res = await fetch(`/api/tripper/experiences/${draftIdRef.current}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(snapshot),
-        });
+        const res = await fetch(
+          `/api/tripper/experiences/${draftIdRef.current}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(snapshot),
+          },
+        );
         if (!res.ok) throw new Error();
       }
-      setSaveStatus('saved');
+      setSaveStatus("saved");
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
-      savedTimerRef.current = setTimeout(() => setSaveStatus('idle'), 3000);
+      savedTimerRef.current = setTimeout(() => setSaveStatus("idle"), 3000);
     } catch {
-      setSaveStatus('error');
+      setSaveStatus("error");
     }
   }, []);
 
@@ -112,7 +121,7 @@ export function NewExperienceShell({
     }
     // In create mode, don't persist until the user has at least typed a title
     if (!draftIdRef.current && !form.title.trim()) return;
-    setSaveStatus('saving');
+    setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [form, persistDraft]);
@@ -130,15 +139,18 @@ export function NewExperienceShell({
   function handleTabChange(tabId: string) {
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
-    const firstSubstep = tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? '';
+    const firstSubstep =
+      tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
-    contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function handleStepClick(tabId: string, substepId?: string) {
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
-    setOpenSectionId(substepId ?? tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? '');
+    setOpenSectionId(
+      substepId ?? tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "",
+    );
   }
 
   function handleNext() {
@@ -156,16 +168,19 @@ export function NewExperienceShell({
     setIsSubmitting(true);
     try {
       if (draftIdRef.current) {
-        const res = await fetch(`/api/tripper/experiences/${draftIdRef.current}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(form),
-        });
+        const res = await fetch(
+          `/api/tripper/experiences/${draftIdRef.current}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(form),
+          },
+        );
         if (!res.ok) throw new Error();
       } else {
-        const res = await fetch('/api/tripper/experiences', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch("/api/tripper/experiences", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
         });
         if (!res.ok) throw new Error();
@@ -178,13 +193,17 @@ export function NewExperienceShell({
     }
   }
 
-  function handleChange<K extends keyof ExperienceFormDraft>(key: K, value: ExperienceFormDraft[K]) {
+  function handleChange<K extends keyof ExperienceFormDraft>(
+    key: K,
+    value: ExperienceFormDraft[K],
+  ) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
   const navTabs = tabs.map((t) => ({ id: t.id, label: t.label }));
   const completedTabIds = useMemo(
-    () => tabs.filter((t) => isExperienceTabComplete(t.id, form)).map((t) => t.id),
+    () =>
+      tabs.filter((t) => isExperienceTabComplete(t.id, form)).map((t) => t.id),
     [tabs, form],
   );
 

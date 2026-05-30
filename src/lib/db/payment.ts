@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/prisma';
-import type { PaymentStatus, Prisma } from '@prisma/client';
+import { prisma } from "@/lib/prisma";
+import type { PaymentStatus, Prisma } from "@prisma/client";
 
 export interface CreatePaymentData {
   userId: string;
@@ -43,9 +43,9 @@ export async function createPayment(data: CreatePaymentData) {
       provider: data.provider,
       stripePaymentIntentId: data.stripePaymentIntentId,
       amount: data.amount,
-      currency: data.currency ?? 'USD',
+      currency: data.currency ?? "USD",
       expiresAt: data.expiresAt,
-      status: 'PENDING',
+      status: "PENDING",
     },
   });
 }
@@ -55,7 +55,7 @@ export async function createPayment(data: CreatePaymentData) {
  * Used when the user starts checkout again — resets to PENDING with new Stripe PaymentIntent.
  */
 export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
-  const currency = data.currency ?? 'USD';
+  const currency = data.currency ?? "USD";
 
   return prisma.payment.upsert({
     create: {
@@ -64,7 +64,7 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
       expiresAt: data.expiresAt,
       provider: data.provider,
       stripePaymentIntentId: data.stripePaymentIntentId,
-      status: 'PENDING',
+      status: "PENDING",
       tripRequestId: data.tripRequestId,
       userId: data.userId,
     },
@@ -75,7 +75,7 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
       stripePaymentIntentId: data.stripePaymentIntentId,
       /** New checkout attempt — provider will assign a new payment id via webhook. */
       providerPaymentId: null,
-      status: 'PENDING',
+      status: "PENDING",
     },
     where: { tripRequestId: data.tripRequestId },
   });
@@ -113,7 +113,9 @@ export async function findPaymentByProviderId(providerPaymentId: string) {
 /**
  * Find payment by Stripe PaymentIntent ID
  */
-export async function findPaymentByStripeIntentId(stripePaymentIntentId: string) {
+export async function findPaymentByStripeIntentId(
+  stripePaymentIntentId: string,
+) {
   return await prisma.payment.findUnique({
     where: { stripePaymentIntentId },
     include: {
@@ -142,7 +144,7 @@ export async function getUserPayments(userId: string, limit = 10) {
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: limit,
   });
 }
@@ -186,7 +188,11 @@ export async function updatePaymentFromStripeWebhook(
   }
 
   // Prevent late/duplicate events from overwriting a terminal status
-  const TERMINAL_STATUSES: PaymentStatus[] = ['APPROVED', 'COMPLETED', 'REFUNDED'];
+  const TERMINAL_STATUSES: PaymentStatus[] = [
+    "APPROVED",
+    "COMPLETED",
+    "REFUNDED",
+  ];
   if (
     TERMINAL_STATUSES.includes(payment.status) &&
     updateData.status !== undefined &&
@@ -198,7 +204,7 @@ export async function updatePaymentFromStripeWebhook(
   const existingRaw = payment.providerResponse;
   const existingObj =
     existingRaw !== null &&
-    typeof existingRaw === 'object' &&
+    typeof existingRaw === "object" &&
     !Array.isArray(existingRaw)
       ? (existingRaw as Record<string, unknown>)
       : {};
@@ -210,13 +216,14 @@ export async function updatePaymentFromStripeWebhook(
   const finalData: UpdatePaymentData = {
     ...updateData,
     providerResponse: mergedProviderResponse,
-    webhookData: (webhookPayload as UpdatePaymentData['webhookData']) ?? undefined,
+    webhookData:
+      (webhookPayload as UpdatePaymentData["webhookData"]) ?? undefined,
   };
 
-  if (finalData.status === 'APPROVED') {
+  if (finalData.status === "APPROVED") {
     await prisma.tripRequest.update({
       where: { id: payment.tripRequestId },
-      data: { status: 'CONFIRMED' },
+      data: { status: "CONFIRMED" },
     });
   }
 

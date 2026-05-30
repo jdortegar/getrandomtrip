@@ -1,27 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
-import { buildUserRoleUpdate, parseUserRolesPayload } from '@/lib/auth/prismaUserRoles';
-import { prisma } from '@/lib/prisma';
-import type { UserRole } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import {
+  buildUserRoleUpdate,
+  parseUserRolesPayload,
+} from "@/lib/auth/prismaUserRoles";
+import { prisma } from "@/lib/prisma";
+import type { UserRole } from "@prisma/client";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-const VALID_ROLES = ['CLIENT', 'TRIPPER', 'ADMIN'] as const;
+const VALID_ROLES = ["CLIENT", "TRIPPER", "ADMIN"] as const;
 type AdminRoleToken = (typeof VALID_ROLES)[number];
 
 function isValidRoleToken(value: unknown): value is AdminRoleToken {
-  return value === 'CLIENT' || value === 'TRIPPER' || value === 'ADMIN';
+  return value === "CLIENT" || value === "TRIPPER" || value === "ADMIN";
 }
 
-export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
   const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const caller = await prisma.user.findUnique({
@@ -29,8 +35,8 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       where: { id: session.user.id },
     });
 
-    if (!caller || !hasRoleAccess(caller, 'admin')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!caller || !hasRoleAccess(caller, "admin")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = (await request.json()) as { role?: unknown; roles?: unknown };
@@ -40,17 +46,17 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     }
 
     if (!nextRoles) {
-      return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    if (!nextRoles.includes('CLIENT')) {
-      return NextResponse.json({ error: 'Invalid roles' }, { status: 400 });
+    if (!nextRoles.includes("CLIENT")) {
+      return NextResponse.json({ error: "Invalid roles" }, { status: 400 });
     }
 
     // Prevent admins from demoting themselves
-    if (params.id === caller.id && !nextRoles.includes('ADMIN')) {
+    if (params.id === caller.id && !nextRoles.includes("ADMIN")) {
       return NextResponse.json(
-        { error: 'Cannot change your own role' },
+        { error: "Cannot change your own role" },
         { status: 400 },
       );
     }
@@ -65,7 +71,10 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
     return NextResponse.json({ user: updated });
   } catch (error) {
-    console.error('[admin/users/[id]] PATCH', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("[admin/users/[id]] PATCH", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   BookOpen,
@@ -10,9 +10,9 @@ import {
   Plus,
   Settings,
   Star,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useDictionary, useLocale } from '@/hooks/useDictionary';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 export function TripperNavTabs() {
   const pathname = usePathname();
@@ -29,13 +29,38 @@ export function TripperNavTabs() {
   }
 
   const tabs = [
-    { href: base(''),                       icon: LayoutDashboard, label: copy.dashboard,        exact: true  },
-    { href: base('/experiences/new'),        icon: Plus,            label: copy.createExperience, exact: false },
-    { href: base('/experiences'),            icon: LayoutList,      label: copy.experiences,      exact: true  },
-    { href: base('/earnings'),               icon: BarChart3,       label: copy.earnings,         exact: false },
-    { href: base('/reviews'),                icon: Star,            label: copy.reviews,          exact: false },
-    { href: base('/blogs'),                  icon: BookOpen,        label: copy.blogs,            exact: false },
-    { href: `/${locale}/trippers/profile`,   icon: Settings,        label: copy.settings,         exact: false },
+    {
+      href: base(""),
+      icon: LayoutDashboard,
+      label: copy.dashboard,
+      exact: true,
+    },
+    {
+      href: base("/experiences/new"),
+      icon: Plus,
+      label: copy.createExperience,
+      exact: false,
+    },
+    {
+      href: base("/experiences"),
+      icon: LayoutList,
+      label: copy.experiences,
+      exact: true,
+    },
+    {
+      href: base("/earnings"),
+      icon: BarChart3,
+      label: copy.earnings,
+      exact: false,
+    },
+    { href: base("/reviews"), icon: Star, label: copy.reviews, exact: false },
+    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
+    {
+      href: `/${locale}/trippers/profile`,
+      icon: Settings,
+      label: copy.settings,
+      exact: false,
+    },
   ];
 
   return (
@@ -48,22 +73,29 @@ export function TripperNavTabs() {
             <Link
               key={tab.href}
               className={cn(
-                'flex flex-col items-center gap-2.5 rounded-2xl px-5 pt-4 pb-8 text-center transition-all',
+                "flex flex-col items-center gap-2.5 rounded-2xl px-5 pt-4 pb-8 text-center transition-all",
                 active
-                  ? 'bg-light-blue text-white shadow-md'
-                  : 'bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:shadow-md hover:text-gray-700',
+                  ? "bg-light-blue text-white shadow-md"
+                  : "bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:shadow-md hover:text-gray-700",
               )}
               href={tab.href}
             >
               <span
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-full',
-                  active ? 'bg-white' : 'ring-1 ring-gray-200',
+                  "flex h-10 w-10 items-center justify-center rounded-full",
+                  active ? "bg-white" : "ring-1 ring-gray-200",
                 )}
               >
-                <Icon className={cn('h-5 w-5', active ? 'text-light-blue' : 'text-gray-600')} />
+                <Icon
+                  className={cn(
+                    "h-5 w-5",
+                    active ? "text-light-blue" : "text-gray-600",
+                  )}
+                />
               </span>
-              <span className="text-xs font-medium leading-tight max-w-16">{tab.label}</span>
+              <span className="text-xs font-medium leading-tight max-w-16">
+                {tab.label}
+              </span>
             </Link>
           );
         })}

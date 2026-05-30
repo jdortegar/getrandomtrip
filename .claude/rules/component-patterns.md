@@ -33,6 +33,7 @@ Page files (`page.tsx`) are thin orchestrators: data fetching + layout only. No 
 ## Props Pattern
 
 Each component receives:
+
 - Typed data props (from `src/types/`)
 - A `copy` prop sliced from the dictionary (`dict.sectionName` or an intersection `dict.a & dict.b`)
 
@@ -41,6 +42,7 @@ Never pass the full dictionary — slice it at the call site.
 ## Imports
 
 Always use path aliases:
+
 - `@/types/` for domain types
 - `@/lib/types/dictionary` for `TripperDashboardDict` etc.
 - `@/components/ui/Button` for the Button primitive

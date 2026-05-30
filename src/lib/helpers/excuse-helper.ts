@@ -1,13 +1,13 @@
-import { 
-  allExcuses, 
-  getExcusesByTravelerType, 
+import {
+  allExcuses,
+  getExcusesByTravelerType,
   getExcuseByKey as getCentralizedExcuseByKey,
-  type ExcuseData 
-} from '@/lib/data/shared/excuses';
-import { hasExcuseStep } from '@/lib/constants/product-config';
+  type ExcuseData,
+} from "@/lib/data/shared/excuses";
+import { hasExcuseStep } from "@/lib/constants/product-config";
 
 // Re-export the centralized types and data
-export type { ExcuseData } from '@/lib/data/shared/excuses';
+export type { ExcuseData } from "@/lib/data/shared/excuses";
 
 /** Whether the given traveler type and level show the excuse + refine-details step. */
 export function getHasExcuseStep(
@@ -18,14 +18,14 @@ export function getHasExcuseStep(
 }
 
 // All available excuse keys from centralized data
-export const EXCUSE_KEYS = allExcuses.map(excuse => excuse.key);
-export type ExcuseKey = typeof EXCUSE_KEYS[number];
+export const EXCUSE_KEYS = allExcuses.map((excuse) => excuse.key);
+export type ExcuseKey = (typeof EXCUSE_KEYS)[number];
 
 // Excuse option keys from centralized data
-export const EXCUSE_OPTION_KEYS = allExcuses.flatMap(excuse => 
-  excuse.details.options.map(option => option.key)
+export const EXCUSE_OPTION_KEYS = allExcuses.flatMap((excuse) =>
+  excuse.details.options.map((option) => option.key),
 );
-export type ExcuseOptionKey = typeof EXCUSE_OPTION_KEYS[number];
+export type ExcuseOptionKey = (typeof EXCUSE_OPTION_KEYS)[number];
 
 /**
  * Get excuse data by key
@@ -39,7 +39,10 @@ export function getExcuseByKey(key: string): ExcuseData | null {
  */
 export function getExcuseTitle(key: string): string {
   const excuse = getExcuseByKey(key);
-  return excuse?.title || key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return (
+    excuse?.title ||
+    key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+  );
 }
 
 /**
@@ -47,7 +50,7 @@ export function getExcuseTitle(key: string): string {
  */
 export function getExcuseDescription(key: string): string {
   const excuse = getExcuseByKey(key);
-  return excuse?.description || '';
+  return excuse?.description || "";
 }
 
 /**
@@ -55,21 +58,24 @@ export function getExcuseDescription(key: string): string {
  */
 export function getExcuseImage(key: string): string {
   const excuse = getExcuseByKey(key);
-  return excuse?.img || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e';
+  return (
+    excuse?.img ||
+    "https://images.unsplash.com/photo-1469474968028-56623f02e42e"
+  );
 }
 
 /**
  * Get all available excuse keys
  */
 export function getAllExcuseKeys(): string[] {
-  return allExcuses.map(excuse => excuse.key);
+  return allExcuses.map((excuse) => excuse.key);
 }
 
 /**
  * Check if an excuse key exists
  */
 export function isValidExcuseKey(key: string): boolean {
-  return allExcuses.some(excuse => excuse.key === key);
+  return allExcuses.some((excuse) => excuse.key === key);
 }
 
 /**
@@ -88,14 +94,17 @@ export function getExcuseOptions(excuseKey: string): Array<{
 /**
  * Get excuse option by key
  */
-export function getExcuseOption(excuseKey: string, optionKey: string): {
+export function getExcuseOption(
+  excuseKey: string,
+  optionKey: string,
+): {
   key: string;
   label: string;
   desc: string;
   img: string;
 } | null {
   const options = getExcuseOptions(excuseKey);
-  return options.find(option => option.key === optionKey) || null;
+  return options.find((option) => option.key === optionKey) || null;
 }
 
 /**

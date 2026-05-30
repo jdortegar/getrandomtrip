@@ -65,12 +65,14 @@ export default function JourneyContentNavigation({
       className={cn("w-full bg-white border-b border-gray-200 py-4", className)}
     >
       <div className="container mx-auto md:px-4">
-        <div className={cn(
-          "gap-4 items-center",
-          hideProfile
-            ? "flex justify-center"
-            : "grid grid-cols-1 lg:grid-cols-[320px_1fr] justify-center md:justify-start",
-        )}>
+        <div
+          className={cn(
+            "gap-4 items-center",
+            hideProfile
+              ? "flex justify-center"
+              : "grid grid-cols-1 lg:grid-cols-[320px_1fr] justify-center md:justify-start",
+          )}
+        >
           {/* Left Section: User Profile & Back Button */}
           {!hideProfile && (
             <div className="flex items-center gap-4 justify-center lg:justify-start">
@@ -90,70 +92,76 @@ export default function JourneyContentNavigation({
           )}
 
           {tabs.length > 1 && (
-            <div className={cn(
-              "flex items-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar",
-              hideProfile ? "justify-center" : "justify-start md:justify-center",
-            )}>
-            {/* Right Section: Navigation Tabs */}
-            {tabs.map((tab, index) => {
-              const isActive = tab.id === activeTab;
-              const isClickable = index <= activeTabIndex;
-              const stepNumber = index + 1;
-              const isCompleted = isTabComplete(tab.id);
+            <div
+              className={cn(
+                "flex items-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar",
+                hideProfile
+                  ? "justify-center"
+                  : "justify-start md:justify-center",
+              )}
+            >
+              {/* Right Section: Navigation Tabs */}
+              {tabs.map((tab, index) => {
+                const isActive = tab.id === activeTab;
+                const isClickable = index <= activeTabIndex;
+                const stepNumber = index + 1;
+                const isCompleted = isTabComplete(tab.id);
 
-              return (
-                <div key={tab.id} className="flex items-center gap-1">
-                  {/* Numbered Circle or Check Icon */}
-                  <button
-                    className={cn(
-                      "flex h-6 w-6 items-center justify-center rounded-full border transition-colors",
-                      {
-                        "border-light-blue bg-light-blue text-white":
-                          isActive || isCompleted,
-                        "border-gray-300 bg-gray-100 text-gray-400 opacity-60":
-                          !isActive && !isCompleted,
-                        "cursor-not-allowed": !isClickable,
-                      },
-                    )}
-                    disabled={!isClickable}
-                    onClick={() => onTabChange(tab.id)}
-                    type="button"
-                  >
-                    {isCompleted ? (
-                      <Check className="w-4 h-4" strokeWidth={3} />
-                    ) : (
-                      <span className="text-sm font-medium">{stepNumber}</span>
-                    )}
-                  </button>
+                return (
+                  <div key={tab.id} className="flex items-center gap-1">
+                    {/* Numbered Circle or Check Icon */}
+                    <button
+                      className={cn(
+                        "flex h-6 w-6 items-center justify-center rounded-full border transition-colors",
+                        {
+                          "border-light-blue bg-light-blue text-white":
+                            isActive || isCompleted,
+                          "border-gray-300 bg-gray-100 text-gray-400 opacity-60":
+                            !isActive && !isCompleted,
+                          "cursor-not-allowed": !isClickable,
+                        },
+                      )}
+                      disabled={!isClickable}
+                      onClick={() => onTabChange(tab.id)}
+                      type="button"
+                    >
+                      {isCompleted ? (
+                        <Check className="w-4 h-4" strokeWidth={3} />
+                      ) : (
+                        <span className="text-sm font-medium">
+                          {stepNumber}
+                        </span>
+                      )}
+                    </button>
 
-                  {/* Bullet Point */}
-                  <span
-                    className={cn("text-sm", {
-                      "text-gray-700": isActive,
-                      "text-gray-300": !isActive,
-                    })}
-                  >
-                    •
-                  </span>
+                    {/* Bullet Point */}
+                    <span
+                      className={cn("text-sm", {
+                        "text-gray-700": isActive,
+                        "text-gray-300": !isActive,
+                      })}
+                    >
+                      •
+                    </span>
 
-                  {/* Text Label */}
-                  <button
-                    className={cn(
-                      "text-sm font-medium transition-colors whitespace-nowrap",
-                      {
-                        "text-gray-900": isActive,
-                        "text-gray-500 hover:text-gray-700": !isActive,
-                        "cursor-not-allowed opacity-60": !isClickable,
-                        "cursor-pointer": isClickable,
-                      },
-                    )}
-                    disabled={!isClickable}
-                    onClick={() => onTabChange(tab.id)}
-                    type="button"
-                  >
-                    {tab.label}
-                  </button>
-                </div>
+                    {/* Text Label */}
+                    <button
+                      className={cn(
+                        "text-sm font-medium transition-colors whitespace-nowrap",
+                        {
+                          "text-gray-900": isActive,
+                          "text-gray-500 hover:text-gray-700": !isActive,
+                          "cursor-not-allowed opacity-60": !isClickable,
+                          "cursor-pointer": isClickable,
+                        },
+                      )}
+                      disabled={!isClickable}
+                      onClick={() => onTabChange(tab.id)}
+                      type="button"
+                    >
+                      {tab.label}
+                    </button>
+                  </div>
                 );
               })}
             </div>

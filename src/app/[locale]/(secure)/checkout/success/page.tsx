@@ -1,18 +1,16 @@
-import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
-import CheckoutResultSuccess from '../CheckoutResultSuccess';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale } from '@/lib/i18n/config';
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import CheckoutResultSuccess from "../CheckoutResultSuccess";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: string }>;
-  }
-) {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}) {
   const params = await props.params;
   if (!hasLocale(params.locale)) {
-    return { title: 'Confirmation' };
+    return { title: "Confirmation" };
   }
   const dict = await getDictionary(params.locale);
   return {
@@ -21,12 +19,10 @@ export async function generateMetadata(
   };
 }
 
-export default async function CheckoutSuccessPage(
-  props: {
-    params: Promise<{ locale: string }>;
-    searchParams: Promise<Record<string, string | string[] | undefined>>;
-  }
-) {
+export default async function CheckoutSuccessPage(props: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const searchParams = await props.searchParams;
   const params = await props.params;
   if (!hasLocale(params.locale)) {
@@ -38,11 +34,13 @@ export default async function CheckoutSuccessPage(
   // Parse Stripe 3DS redirect params from the URL
   const raw = (key: string) => {
     const v = searchParams[key];
-    return typeof v === 'string' ? v : (Array.isArray(v) ? v[0] : null) ?? null;
+    return typeof v === "string"
+      ? v
+      : ((Array.isArray(v) ? v[0] : null) ?? null);
   };
   const stripeReturn = {
-    paymentIntent: raw('payment_intent'),
-    redirectStatus: raw('redirect_status'),
+    paymentIntent: raw("payment_intent"),
+    redirectStatus: raw("redirect_status"),
   };
 
   return (

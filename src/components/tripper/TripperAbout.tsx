@@ -1,6 +1,10 @@
-'use client';
+"use client";
 export default function TripperAbout({
-  name, bio, videoUrl, interests=[], destinations=[]
+  name,
+  bio,
+  videoUrl,
+  interests = [],
+  destinations = [],
 }: {
   name: string;
   bio?: string;
@@ -25,7 +29,9 @@ export default function TripperAbout({
               />
             </div>
           ) : (
-            <p className="text-slate-700 leading-relaxed">{bio || 'Pronto más sobre mi historia y cómo diseño cada viaje.'}</p>
+            <p className="text-slate-700 leading-relaxed">
+              {bio || "Pronto más sobre mi historia y cómo diseño cada viaje."}
+            </p>
           )}
         </div>
       </div>
@@ -33,15 +39,27 @@ export default function TripperAbout({
         <div className="rounded-xl border bg-white p-5">
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">Interests</h3>
+              <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">
+                Interests
+              </h3>
               <ul className="text-sm text-slate-700 space-y-1">
-                {interests.length ? interests.map((x, i) => <li key={i}>• {x}</li>) : <li>—</li>}
+                {interests.length ? (
+                  interests.map((x, i) => <li key={i}>• {x}</li>)
+                ) : (
+                  <li>—</li>
+                )}
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">Destinations</h3>
+              <h3 className="text-sm font-semibold tracking-wide text-slate-900 uppercase mb-2">
+                Destinations
+              </h3>
               <ul className="text-sm text-slate-700 space-y-1">
-                {destinations.length ? destinations.map((x, i) => <li key={i}>• {x}</li>) : <li>—</li>}
+                {destinations.length ? (
+                  destinations.map((x, i) => <li key={i}>• {x}</li>)
+                ) : (
+                  <li>—</li>
+                )}
               </ul>
             </div>
           </div>

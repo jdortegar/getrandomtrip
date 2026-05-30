@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useNavbarChrome } from '@/context/NavbarChromeContext';
+import { useEffect } from "react";
+import { useNavbarChrome } from "@/context/NavbarChromeContext";
 
 interface DashboardNavbarPrimaryLayoutProps {
   children: React.ReactNode;

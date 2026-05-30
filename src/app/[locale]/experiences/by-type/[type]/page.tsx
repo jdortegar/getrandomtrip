@@ -28,11 +28,9 @@ export async function generateStaticParams() {
 /**
  * Generate metadata for SEO
  */
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale?: string; type: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ locale?: string; type: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   const locale = hasLocale(params?.locale)
     ? (params.locale as Locale)
@@ -51,11 +49,9 @@ export async function generateMetadata(
 /**
  * Main page component. Params include parent [locale] and this segment [type].
  */
-export default async function TravelerTypePage(
-  props: {
-    params: Promise<{ locale?: string; type: string }>;
-  }
-) {
+export default async function TravelerTypePage(props: {
+  params: Promise<{ locale?: string; type: string }>;
+}) {
   const params = await props.params;
   const locale = hasLocale(params.locale)
     ? (params.locale as Locale)
@@ -110,10 +106,8 @@ export default async function TravelerTypePage(
         title={inspirationBanner.title}
       />
       <Testimonials
-       
         testimonials={typeData.testimonials.items}
         title={typeData.testimonials.title}
-       
       />
     </main>
   );

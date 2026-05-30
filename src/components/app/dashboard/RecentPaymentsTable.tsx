@@ -1,18 +1,26 @@
-import { CreditCard } from 'lucide-react';
-import type { Payment } from '@/lib/utils/trips';
-import type { DashboardCopy } from './types';
+import { CreditCard } from "lucide-react";
+import type { Payment } from "@/lib/utils/trips";
+import type { DashboardCopy } from "./types";
 
-function PaymentStatusBadge({ status, label }: { status: string; label: string }) {
+function PaymentStatusBadge({
+  status,
+  label,
+}: {
+  status: string;
+  label: string;
+}) {
   const styles: Record<string, string> = {
-    APPROVED: 'bg-green-100 text-green-800 border-green-200',
-    COMPLETED: 'bg-green-100 text-green-800 border-green-200',
-    PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    FAILED: 'bg-red-100 text-red-800 border-red-200',
-    REJECTED: 'bg-red-100 text-red-800 border-red-200',
+    APPROVED: "bg-green-100 text-green-800 border-green-200",
+    COMPLETED: "bg-green-100 text-green-800 border-green-200",
+    PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    FAILED: "bg-red-100 text-red-800 border-red-200",
+    REJECTED: "bg-red-100 text-red-800 border-red-200",
   };
-  const cls = styles[status] ?? 'bg-gray-100 text-gray-800 border-gray-200';
+  const cls = styles[status] ?? "bg-gray-100 text-gray-800 border-gray-200";
   return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}>
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}
+    >
       {label}
     </span>
   );
@@ -79,11 +87,11 @@ export function RecentPaymentsTable({
                       <td className="py-4 px-4">
                         <div className="text-sm">
                           <div className="font-medium text-neutral-900">
-                            {trip ? `${trip.type} • ${trip.level}` : '—'}
+                            {trip ? `${trip.type} • ${trip.level}` : "—"}
                           </div>
                           {trip && (
                             <div className="text-xs text-neutral-500">
-                              {copy.common.id}: {trip.id ?? '—'}
+                              {copy.common.id}: {trip.id ?? "—"}
                             </div>
                           )}
                           {trip && (
@@ -98,7 +106,9 @@ export function RecentPaymentsTable({
                       </td>
                       <td className="py-4 px-4">
                         <PaymentStatusBadge
-                          label={copy.paymentStatus[payment.status] ?? payment.status}
+                          label={
+                            copy.paymentStatus[payment.status] ?? payment.status
+                          }
                           status={payment.status}
                         />
                       </td>

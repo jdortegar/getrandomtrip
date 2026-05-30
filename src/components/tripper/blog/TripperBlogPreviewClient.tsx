@@ -36,7 +36,7 @@ export function TripperBlogPreviewClient() {
   const localeStr = typeof rawLocale === "string" ? rawLocale : rawLocale?.[0];
   const locale: Locale = hasLocale(localeStr) ? (localeStr as Locale) : "es";
   const postId = params?.id?.toString() ?? "";
-  const tripperBlogs = useDictionary(d => d.tripperBlogs);
+  const tripperBlogs = useDictionary((d) => d.tripperBlogs);
 
   const [post, setPost] = useState<PreviewBlogPost | null>(null);
   const [loading, setLoading] = useState(true);

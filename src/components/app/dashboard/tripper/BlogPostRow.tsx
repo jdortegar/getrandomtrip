@@ -1,30 +1,30 @@
-import Link from 'next/link';
-import { BookOpen, Edit, Eye } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import Img from '@/components/common/Img';
-import type { BlogPost } from '@/types/blog';
-import type { TripperBlogsDict } from '@/lib/types/dictionary';
+import Link from "next/link";
+import { BookOpen, Edit, Eye } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import Img from "@/components/common/Img";
+import type { BlogPost } from "@/types/blog";
+import type { TripperBlogsDict } from "@/lib/types/dictionary";
 
 interface BlogPostRowProps {
   dateLocale: string;
   post: BlogPost;
-  rowLabels: TripperBlogsDict['row'];
+  rowLabels: TripperBlogsDict["row"];
 }
 
 function StatusBadge({
   rowLabels,
   status,
 }: {
-  rowLabels: TripperBlogsDict['row'];
-  status: BlogPost['status'];
+  rowLabels: TripperBlogsDict["row"];
+  status: BlogPost["status"];
 }) {
-  const isPublished = status === 'published';
+  const isPublished = status === "published";
   return (
     <span
       className={`px-2 py-0.5 text-xs rounded-full border ${
         isPublished
-          ? 'bg-green-100 text-green-800 border-green-200'
-          : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+          ? "bg-green-100 text-green-800 border-green-200"
+          : "bg-yellow-100 text-yellow-800 border-yellow-200"
       }`}
     >
       {isPublished ? rowLabels.published : rowLabels.draft}
@@ -34,9 +34,9 @@ function StatusBadge({
 
 export function BlogPostRow({ dateLocale, post, rowLabels }: BlogPostRowProps) {
   const dateOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   };
   const dateLabel = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString(dateLocale, dateOptions)
@@ -71,7 +71,9 @@ export function BlogPostRow({ dateLocale, post, rowLabels }: BlogPostRowProps) {
           {post.title}
         </p>
         {post.subtitle && (
-          <p className="text-sm text-neutral-500 line-clamp-2">{post.subtitle}</p>
+          <p className="text-sm text-neutral-500 line-clamp-2">
+            {post.subtitle}
+          </p>
         )}
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-1">
@@ -97,7 +99,7 @@ export function BlogPostRow({ dateLocale, post, rowLabels }: BlogPostRowProps) {
             {rowLabels.edit}
           </Link>
         </Button>
-        {post.status === 'published' && (
+        {post.status === "published" && (
           <Button asChild size="sm" variant="ghost">
             <Link
               href={`/blog/${post.slug ?? post.id}`}

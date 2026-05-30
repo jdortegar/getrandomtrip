@@ -6,7 +6,7 @@ import type { AdminXsedNotificationEntry } from "@/lib/admin/types";
 import { useDictionary } from "@/hooks/useDictionary";
 
 export function AdminXsedNotificationsPageClient() {
-  const copy = useDictionary(d => d.adminPages.xsedNotifications);
+  const copy = useDictionary((d) => d.adminPages.xsedNotifications);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [entries, setEntries] = useState<AdminXsedNotificationEntry[]>([]);
@@ -37,7 +37,9 @@ export function AdminXsedNotificationsPageClient() {
   async function removeEntry(id: string) {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/xsed-notifications/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/xsed-notifications/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) return;
       setEntries((prev) => prev.filter((entry) => entry.id !== id));
     } finally {
@@ -50,7 +52,8 @@ export function AdminXsedNotificationsPageClient() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+  if (error)
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
 
@@ -66,21 +69,30 @@ export function AdminXsedNotificationsPageClient() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200">
-                {[cols.email, cols.locale, cols.joined, cols.actions].map((h) => (
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
-                    key={h}
-                  >
-                    {h}
-                  </th>
-                ))}
+                {[cols.email, cols.locale, cols.joined, cols.actions].map(
+                  (h) => (
+                    <th
+                      className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
+                      key={h}
+                    >
+                      {h}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>
               {entries.map((entry) => (
-                <tr className="border-b border-gray-100 last:border-0" key={entry.id}>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">{entry.email}</td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">{entry.locale ?? "—"}</td>
+                <tr
+                  className="border-b border-gray-100 last:border-0"
+                  key={entry.id}
+                >
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">
+                    {entry.email}
+                  </td>
+                  <td className="px-4 py-3.5 text-sm text-neutral-700">
+                    {entry.locale ?? "—"}
+                  </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-400">
                     {new Date(entry.createdAt).toLocaleDateString()}
                   </td>
@@ -91,7 +103,9 @@ export function AdminXsedNotificationsPageClient() {
                       onClick={() => void removeEntry(entry.id)}
                       type="button"
                     >
-                      {deletingId === entry.id ? copy.actions.deleting : copy.actions.delete}
+                      {deletingId === entry.id
+                        ? copy.actions.deleting
+                        : copy.actions.delete}
                     </button>
                   </td>
                 </tr>
@@ -99,7 +113,9 @@ export function AdminXsedNotificationsPageClient() {
             </tbody>
           </table>
           {entries.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+            <p className="py-10 text-center text-sm text-gray-400">
+              {copy.empty}
+            </p>
           )}
         </div>
       </div>

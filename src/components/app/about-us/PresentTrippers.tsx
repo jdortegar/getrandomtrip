@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
-import { TripperCarouselCard } from '@/components/app/about-us/TripperCarouselCard';
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
+import { TripperCarouselCard } from "@/components/app/about-us/TripperCarouselCard";
 
 interface TripperSlide {
   id: string;
@@ -39,7 +39,9 @@ export function PresentTrippers({ content, trippers }: PresentTrippersProps) {
         <h2 className="mt-4 font-barlow-condensed text-[50px] font-bold uppercase leading-none text-gray-900 md:text-[70px]">
           {content.title}
         </h2>
-        <p className="mt-4 font-barlow text-sm text-neutral-500">{content.subtitle}</p>
+        <p className="mt-4 font-barlow text-sm text-neutral-500">
+          {content.subtitle}
+        </p>
       </div>
 
       <EmblaCarousel overflow="both" slidesPerView={3}>

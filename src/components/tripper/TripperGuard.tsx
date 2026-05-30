@@ -1,9 +1,9 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useUserStore } from '@/store/slices/userStore';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useUserStore } from "@/store/slices/userStore";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 export default function TripperGuard({
   children,
@@ -33,10 +33,10 @@ export default function TripperGuard({
     if (!isAuthed) {
       // Open auth modal using the user store
       const { openAuth } = useUserStore.getState();
-      openAuth('signin');
+      openAuth("signin");
       return;
     }
-    
+
     if (status === "loading") return;
 
     if (isTripper) {
@@ -45,12 +45,29 @@ export default function TripperGuard({
     }
 
     // If session is present but roles haven't hydrated yet, wait
-    if (session?.user && !sessionUser?.roles && !user?.roles && !sessionUser?.role && !user?.role) {
+    if (
+      session?.user &&
+      !sessionUser?.roles &&
+      !user?.roles &&
+      !sessionUser?.role &&
+      !user?.role
+    ) {
       return;
     }
 
     router.replace("/dashboard");
-  }, [isAuthed, isTripper, router, pathname, session?.user, sessionUser?.role, sessionUser?.roles, status, user?.role, user?.roles]);
+  }, [
+    isAuthed,
+    isTripper,
+    router,
+    pathname,
+    session?.user,
+    sessionUser?.role,
+    sessionUser?.roles,
+    status,
+    user?.role,
+    user?.roles,
+  ]);
 
   if (status === "loading" || !isAuthed) {
     return null;

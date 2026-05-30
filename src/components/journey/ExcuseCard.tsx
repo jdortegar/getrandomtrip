@@ -67,7 +67,12 @@ export default function ExcuseCard({
             </p>
           </div>
 
-          <Button variant="outline" size="sm" onClick={onClick} className="py-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onClick}
+            className="py-1"
+          >
             {ctaLabel}
           </Button>
         </div>

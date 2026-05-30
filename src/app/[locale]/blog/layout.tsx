@@ -1,6 +1,6 @@
 // Route segment config to prevent static generation
 // The blog page uses client-side hooks and must be dynamic
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default function BlogLayout({
   children,
@@ -9,4 +9,3 @@ export default function BlogLayout({
 }) {
   return <>{children}</>;
 }
-

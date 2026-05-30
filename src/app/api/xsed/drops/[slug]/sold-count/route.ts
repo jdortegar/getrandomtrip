@@ -62,7 +62,11 @@ export async function GET(
   const realCount = experience._count.tripRequests;
   const windowOpenAt = getWindowOpenAt(now);
 
-  const displayedSold = computeDisplayedSold(realCount, totalSlots, windowOpenAt);
+  const displayedSold = computeDisplayedSold(
+    realCount,
+    totalSlots,
+    windowOpenAt,
+  );
 
   return NextResponse.json({
     displayedSold,

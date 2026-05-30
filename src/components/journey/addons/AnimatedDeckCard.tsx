@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Minus, Plus, Check } from 'lucide-react';
-import type { Addon } from '@/lib/data/shared/addons-catalog';
-import { useStore } from '@/store/store';
-import { Button } from '@/components/ui/Button';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Minus, Plus, Check } from "lucide-react";
+import type { Addon } from "@/lib/data/shared/addons-catalog";
+import { useStore } from "@/store/store";
+import { Button } from "@/components/ui/Button";
 
 // Helper simple para clases
 const cn = (...c: Array<string | false | null | undefined>) =>
-  c.filter(Boolean).join(' ');
+  c.filter(Boolean).join(" ");
 
 type Props = {
   addon: Addon;
@@ -66,8 +66,8 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
   return (
     <div
       className={cn(
-        'border border-gray-200 rounded-lg overflow-hidden bg-white',
-        !isAvailableForLevel && 'opacity-50',
+        "border border-gray-200 rounded-lg overflow-hidden bg-white",
+        !isAvailableForLevel && "opacity-50",
       )}
     >
       {/* Accordion Header */}
@@ -77,10 +77,10 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
         disabled={!isAvailableForLevel}
         aria-expanded={active}
         className={cn(
-          'w-full flex items-center justify-between p-4 text-left transition-colors',
-          'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-          active ? 'bg-gray-50' : '',
-          !isAvailableForLevel && 'cursor-not-allowed',
+          "w-full flex items-center justify-between p-4 text-left transition-colors",
+          "hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          active ? "bg-gray-50" : "",
+          !isAvailableForLevel && "cursor-not-allowed",
         )}
       >
         <div className="flex items-center gap-3 flex-1">
@@ -94,7 +94,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
 
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-neutral-900">
-            {addon.priceType === 'currency'
+            {addon.priceType === "currency"
               ? `USD ${addon.price}`
               : `${addon.price}%`}
           </span>
@@ -112,21 +112,21 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
         {active && isAvailableForLevel && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
             <div className="p-4 border-t border-gray-100 space-y-4 flex justify-between items-center">
               <p className="text-sm text-neutral-600 m-0 p-0">
-                {addon.longDescription}{' '}
-                {addon.type === 'perPax'
-                  ? 'Se cobra por pasajero'
-                  : 'Se cobra por viaje'}
+                {addon.longDescription}{" "}
+                {addon.type === "perPax"
+                  ? "Se cobra por pasajero"
+                  : "Se cobra por viaje"}
               </p>
 
               {/* Quantity Controls - perPax shows quantity selector, perTrip shows add button */}
-              {addon.type === 'perPax' ? (
+              {addon.type === "perPax" ? (
                 <div className="flex flex-col items-center gap-3 justify-between">
                   <label className="block text-sm font-medium text-neutral-700">
                     Cantidad
@@ -157,13 +157,13 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
                     type="button"
                     onClick={handleAddPerTrip}
                     className={cn(
-                      'px-6 py-2 transition-colors',
+                      "px-6 py-2 transition-colors",
                       isSelected
-                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                        : 'bg-primary text-white hover:bg-primary/90',
+                        ? "bg-red-100 text-red-700 hover:bg-red-200"
+                        : "bg-primary text-white hover:bg-primary/90",
                     )}
                   >
-                    {isSelected ? 'Quitar' : 'Agregar'}
+                    {isSelected ? "Quitar" : "Agregar"}
                   </Button>
                 </div>
               )}

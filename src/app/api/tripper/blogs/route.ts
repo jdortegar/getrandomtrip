@@ -3,19 +3,19 @@
 // POST /api/tripper/blogs - Create a new blog post (tripper only)
 // ============================================================================
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { slugify } from '@/lib/helpers/slugify';
-import { prisma } from '@/lib/prisma';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { slugify } from "@/lib/helpers/slugify";
+import { prisma } from "@/lib/prisma";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user and verify they are a tripper
@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'tripper')) {
+    if (!user || !hasRoleAccess(user, "tripper")) {
       return NextResponse.json(
-        { error: 'Forbidden - Tripper access only' },
+        { error: "Forbidden - Tripper access only" },
         { status: 403 },
       );
     }
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     // Fetch blogs from database
     const blogs = await prisma.blogPost.findMany({
       where: { authorId: user.id },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       select: {
         id: true,
         authorId: true,
@@ -69,9 +69,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ blogs: transformedBlogs });
   } catch (error) {
-    console.error('Error fetching tripper blogs:', error);
+    console.error("Error fetching tripper blogs:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user and verify they are a tripper
@@ -91,9 +91,9 @@ export async function POST(request: NextRequest) {
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'tripper')) {
+    if (!user || !hasRoleAccess(user, "tripper")) {
       return NextResponse.json(
-        { error: 'Forbidden - Tripper access only' },
+        { error: "Forbidden - Tripper access only" },
         { status: 403 },
       );
     }
@@ -117,33 +117,31 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!title) {
-      return NextResponse.json(
-        { error: 'Title is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     // Convert string enums to uppercase for Prisma
-    const blogStatus = status?.toUpperCase() === 'PUBLISHED' ? 'PUBLISHED' : 'DRAFT';
-    const blogFormat = format?.toUpperCase() || 'ARTICLE';
-    const formatMap: Record<string, 'ARTICLE' | 'PHOTO' | 'VIDEO' | 'MIXED'> = {
-      article: 'ARTICLE',
-      photo: 'PHOTO',
-      video: 'VIDEO',
-      mixed: 'MIXED',
+    const blogStatus =
+      status?.toUpperCase() === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
+    const blogFormat = format?.toUpperCase() || "ARTICLE";
+    const formatMap: Record<string, "ARTICLE" | "PHOTO" | "VIDEO" | "MIXED"> = {
+      article: "ARTICLE",
+      photo: "PHOTO",
+      video: "VIDEO",
+      mixed: "MIXED",
     };
-    const prismaFormat = formatMap[blogFormat.toLowerCase()] || 'ARTICLE';
+    const prismaFormat = formatMap[blogFormat.toLowerCase()] || "ARTICLE";
 
     const travelTypeValue =
-      typeof travelType === 'string' && travelType.trim().length > 0
+      typeof travelType === "string" && travelType.trim().length > 0
         ? travelType.trim()
         : null;
     const excuseKeyValue =
-      typeof excuseKey === 'string' && excuseKey.trim().length > 0
+      typeof excuseKey === "string" && excuseKey.trim().length > 0
         ? excuseKey.trim()
         : null;
 
-    const baseSlug = slugify(title) || 'post';
+    const baseSlug = slugify(title) || "post";
     let slug = baseSlug;
     let suffix = 0;
     while (true) {
@@ -170,7 +168,7 @@ export async function POST(request: NextRequest) {
         status: blogStatus,
         coverUrl: coverUrl || null,
         seo: seo || null,
-        publishedAt: blogStatus === 'PUBLISHED' ? new Date() : null,
+        publishedAt: blogStatus === "PUBLISHED" ? new Date() : null,
       },
       select: {
         id: true,
@@ -206,11 +204,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ blog: transformedBlog }, { status: 201 });
   } catch (error) {
-    console.error('Error creating blog:', error);
+    console.error("Error creating blog:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
 }
-

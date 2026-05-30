@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import Link from "next/link";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultFailureProps {
-  labels: Dictionary['paymentFailure'];
+  labels: Dictionary["paymentFailure"];
   locale: string;
   /** tripId to pre-fill the retry link. */
   tripId?: string | null;
@@ -20,10 +20,13 @@ export default function CheckoutResultFailure({
   tripId,
 }: CheckoutResultFailureProps) {
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
   const tryAgainHref = tripId
-    ? pathForLocale(safeLocale, `/checkout?tripId=${encodeURIComponent(tripId)}`)
-    : pathForLocale(safeLocale, '/journey');
+    ? pathForLocale(
+        safeLocale,
+        `/checkout?tripId=${encodeURIComponent(tripId)}`,
+      )
+    : pathForLocale(safeLocale, "/journey");
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">

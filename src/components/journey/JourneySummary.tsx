@@ -429,26 +429,24 @@ export default function JourneySummary({
     transport,
   ]);
 
-  const { calculateTotals } = usePayment(
-    {
-      addons: {
-        selected: JOURNEY_ADDONS_ENABLED
-          ? addonIds.map((id) => ({ id, qty: 1 }))
-          : [],
-      },
-      avoidCount: avoidDestinations.length,
-      basePriceUsd: selectedLevel?.price ?? 0,
-      filters: filtersForPricing,
-      logistics: {
-        city: originCity,
-        country: originCountry,
-        endDate: undefined,
-        nights,
-        pax,
-        startDate: startDate ? new Date(startDate) : undefined,
-      },
+  const { calculateTotals } = usePayment({
+    addons: {
+      selected: JOURNEY_ADDONS_ENABLED
+        ? addonIds.map((id) => ({ id, qty: 1 }))
+        : [],
     },
-  );
+    avoidCount: avoidDestinations.length,
+    basePriceUsd: selectedLevel?.price ?? 0,
+    filters: filtersForPricing,
+    logistics: {
+      city: originCity,
+      country: originCountry,
+      endDate: undefined,
+      nights,
+      pax,
+      startDate: startDate ? new Date(startDate) : undefined,
+    },
+  });
 
   const paymentTotals = calculateTotals();
   const filterBreakdown = getFiltersCostBreakdown(

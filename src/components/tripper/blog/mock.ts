@@ -11,19 +11,31 @@ export const demoPosts: BlogPost[] = [
     authorHandle: "demo.tripper",
     blocks: [
       { type: "paragraph", text: "Este es un ejemplo de párrafo inicial." },
-      { type: "image", url: "/images/placeholders/photo-1.jpg", caption: "Momento dorado" },
-      { type: "quote", text: "Viajar es vivir dos veces.", cite: "Omar Khayyam" },
-      { type: "embed", provider: "youtube", url: "https://www.youtube.com/embed/xxxx" }
+      {
+        type: "image",
+        url: "/images/placeholders/photo-1.jpg",
+        caption: "Momento dorado",
+      },
+      {
+        type: "quote",
+        text: "Viajar es vivir dos veces.",
+        cite: "Omar Khayyam",
+      },
+      {
+        type: "embed",
+        provider: "youtube",
+        url: "https://www.youtube.com/embed/xxxx",
+      },
     ],
     createdAt: "2025-08-01T10:00:00Z",
     updatedAt: "2025-08-02T10:00:00Z",
-    status: "draft"
+    status: "draft",
   },
   {
     id: "2",
     title: "Aventura en la montaña",
     tags: ["aventura", "outdoors"],
     blocks: [{ type: "paragraph", text: "Explorando nuevas alturas." }],
-    status: "published"
-  }
+    status: "published",
+  },
 ];

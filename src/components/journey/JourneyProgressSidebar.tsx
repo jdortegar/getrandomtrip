@@ -136,17 +136,23 @@ export default function JourneyProgressSidebar({
     return false;
   };
 
-  const pct = completedTabIds != null
-    ? Math.round((completedTabIds.length / tabs.length) * 100)
-    : null;
+  const pct =
+    completedTabIds != null
+      ? Math.round((completedTabIds.length / tabs.length) * 100)
+      : null;
 
   return (
     <aside
-      className={cn("w-full md:w-80 shrink-0 bg-white p-6 rounded-lg shadow-md", className)}
+      className={cn(
+        "w-full md:w-80 shrink-0 bg-white p-6 rounded-lg shadow-md",
+        className,
+      )}
     >
       {progressLabel && (
         <div className="flex items-center justify-between mb-6">
-          <span className="text-lg font-bold text-gray-900">{progressLabel}</span>
+          <span className="text-lg font-bold text-gray-900">
+            {progressLabel}
+          </span>
           <span className="text-lg font-bold text-light-blue">{pct ?? 0}%</span>
         </div>
       )}
@@ -189,27 +195,32 @@ export default function JourneyProgressSidebar({
                 )}
 
                 {/* Vertical line for last step: from circle down to last substep */}
-                {tabIndex === lastTabIndex && hasSubsteps && isActive && (() => {
-                  const substepCount = tab.substeps.length;
-                  const bottomOffset = 2.55 + substepCount * 1.10;
-                  const incompleteCount = activeSubstepId
-                    ? 0
-                    : tab.substeps.filter(
-                        (s) => !isSubstepComplete(tab.id, s.id),
-                      ).length;
-                  return (
-                    <>
-                      <div
-                        className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
-                        style={{ height: `calc(100% - ${bottomOffset + incompleteCount * 6.55}rem)` }}
-                      />
-                      <div
-                        className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
-                        style={{ height: `calc(100% - ${bottomOffset}rem)` }}
-                      />
-                    </>
-                  );
-                })()}
+                {tabIndex === lastTabIndex &&
+                  hasSubsteps &&
+                  isActive &&
+                  (() => {
+                    const substepCount = tab.substeps.length;
+                    const bottomOffset = 2.55 + substepCount * 1.1;
+                    const incompleteCount = activeSubstepId
+                      ? 0
+                      : tab.substeps.filter(
+                          (s) => !isSubstepComplete(tab.id, s.id),
+                        ).length;
+                    return (
+                      <>
+                        <div
+                          className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
+                          style={{
+                            height: `calc(100% - ${bottomOffset + incompleteCount * 6.55}rem)`,
+                          }}
+                        />
+                        <div
+                          className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
+                          style={{ height: `calc(100% - ${bottomOffset}rem)` }}
+                        />
+                      </>
+                    );
+                  })()}
 
                 {/* Main Step Circle */}
                 <div className="flex items-start gap-4">
@@ -260,7 +271,10 @@ export default function JourneyProgressSidebar({
                               ? substep.id === activeSubstepId
                               : substepIndex === 0);
                           const isSubstepCompleted = activeSubstepId
-                            ? substepIndex < tab.substeps.findIndex((s) => s.id === activeSubstepId)
+                            ? substepIndex <
+                              tab.substeps.findIndex(
+                                (s) => s.id === activeSubstepId,
+                              )
                             : isSubstepComplete(tab.id, substep.id);
                           const isLastSubstep =
                             substepIndex === tab.substeps.length - 1;

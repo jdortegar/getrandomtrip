@@ -1,23 +1,33 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { Accordion } from '@/components/ui/accordion';
-import CitySelector from '@/components/journey/CitySelector';
-import CountrySelector from '@/components/journey/CountrySelector';
-import { JourneyDatesPicker } from '@/components/journey/JourneyDatesPicker';
-import type { JourneyDatesPickerLabels } from '@/components/journey/JourneyDatesPicker';
-import { JourneyDropdown } from '@/components/journey/JourneyDropdown';
+import { useMemo, useState } from "react";
+import { Accordion } from "@/components/ui/accordion";
+import CitySelector from "@/components/journey/CitySelector";
+import CountrySelector from "@/components/journey/CountrySelector";
+import { JourneyDatesPicker } from "@/components/journey/JourneyDatesPicker";
+import type { JourneyDatesPickerLabels } from "@/components/journey/JourneyDatesPicker";
+import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
 import TransportSelector, {
   TRANSPORT_OPTIONS,
-} from '@/components/journey/TransportSelector';
-import type { TransportSelectorLabels } from '@/components/journey/TransportSelector';
-import { getLevelById } from '@/lib/utils/experiencesData';
+} from "@/components/journey/TransportSelector";
+import type { TransportSelectorLabels } from "@/components/journey/TransportSelector";
+import { getLevelById } from "@/lib/utils/experiencesData";
 
 const DEFAULT_MAX_NIGHTS = 2;
 
 const DEFAULT_MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 function formatDatesRange(
@@ -25,7 +35,7 @@ function formatDatesRange(
   nights: number,
   monthNames: string[] = DEFAULT_MONTH_NAMES,
 ): string {
-  const [y, m, d] = startDate.split('-').map(Number);
+  const [y, m, d] = startDate.split("-").map(Number);
   const start = new Date(y, m - 1, d);
   const end = new Date(start);
   end.setDate(end.getDate() + nights);
@@ -96,21 +106,32 @@ export function JourneyDetailsStep({
 }: JourneyDetailsStepProps) {
   // Tracks the ISO alpha-2 code for the selected origin country.
   // This is separate from originCountry (display name) and scopes city search.
-  const [originCountryCode, setOriginCountryCode] = useState('');
+  const [originCountryCode, setOriginCountryCode] = useState("");
 
   const labels = useMemo(
     () => ({
-      cityLabel: labelsProp?.cityLabel ?? 'Ciudad de salida',
-      cityPlaceholder: labelsProp?.cityPlaceholder ?? 'Escribir ciudad de salida',
-      countryLabel: labelsProp?.countryLabel ?? 'País de salida',
-      countryPlaceholder: labelsProp?.countryPlaceholder ?? 'Escribir país de salida',
-      datesLabel: labelsProp?.datesLabel ?? 'Fechas',
-      datesPlaceholder: labelsProp?.datesPlaceholder ?? 'Elegí cantidad de días y fecha de inicio',
-      monthNames: labelsProp?.monthNames?.length === 12 ? labelsProp.monthNames : DEFAULT_MONTH_NAMES,
-      originLabel: labelsProp?.originLabel ?? 'Origen',
-      originPlaceholder: labelsProp?.originPlaceholder ?? 'Elegí país y ciudad de salida',
-      transportLabel: labelsProp?.transportLabel ?? 'Transporte: Orden de preferencia',
-      transportPlaceholder: labelsProp?.transportPlaceholder ?? 'Definí el orden de preferencia arrastrando',
+      cityLabel: labelsProp?.cityLabel ?? "Ciudad de salida",
+      cityPlaceholder:
+        labelsProp?.cityPlaceholder ?? "Escribir ciudad de salida",
+      countryLabel: labelsProp?.countryLabel ?? "País de salida",
+      countryPlaceholder:
+        labelsProp?.countryPlaceholder ?? "Escribir país de salida",
+      datesLabel: labelsProp?.datesLabel ?? "Fechas",
+      datesPlaceholder:
+        labelsProp?.datesPlaceholder ??
+        "Elegí cantidad de días y fecha de inicio",
+      monthNames:
+        labelsProp?.monthNames?.length === 12
+          ? labelsProp.monthNames
+          : DEFAULT_MONTH_NAMES,
+      originLabel: labelsProp?.originLabel ?? "Origen",
+      originPlaceholder:
+        labelsProp?.originPlaceholder ?? "Elegí país y ciudad de salida",
+      transportLabel:
+        labelsProp?.transportLabel ?? "Transporte: Orden de preferencia",
+      transportPlaceholder:
+        labelsProp?.transportPlaceholder ??
+        "Definí el orden de preferencia arrastrando",
     }),
     [labelsProp],
   );
@@ -158,7 +179,7 @@ export function JourneyDetailsStep({
                 onChange={(name, code) => {
                   onOriginCountryChange(name);
                   setOriginCountryCode(code);
-                  if (originCity) onOriginCityChange('');
+                  if (originCity) onOriginCityChange("");
                 }}
                 placeholder={labels.countryPlaceholder}
                 size="lg"

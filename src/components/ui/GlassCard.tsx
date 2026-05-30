@@ -1,5 +1,5 @@
-'use client';
-import type { ElementType, PropsWithChildren } from 'react';
+"use client";
+import type { ElementType, PropsWithChildren } from "react";
 
 type GlassCardProps = PropsWithChildren<{
   className?: string;
@@ -9,8 +9,8 @@ type GlassCardProps = PropsWithChildren<{
 
 export default function GlassCard({
   children,
-  className = '',
-  as: Tag = 'div',
+  className = "",
+  as: Tag = "div",
 }: GlassCardProps) {
   return (
     <Tag

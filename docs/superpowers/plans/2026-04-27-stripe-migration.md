@@ -13,6 +13,7 @@
 ## Task 1: Install packages and update env
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `env.example`
 
@@ -38,6 +39,7 @@ STRIPE_WEBHOOK_SECRET="whsec_..."
 ```
 
 Remove these lines:
+
 ```
 STRIPE_PUBLIC_KEY="your-stripe-public-key"
 MERCADOPAGO_TEST_ACCESS_TOKEN="your-mercadopago-test-access-token"
@@ -50,6 +52,7 @@ MERCADOPAGO_LIVE_PUBLIC_KEY="your-mercadopago-live-public-key"
 - [ ] **Step 3: Add Stripe keys to your local `.env.local`**
 
 Add the three Stripe vars (use test keys from your Stripe dashboard):
+
 ```
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
@@ -68,6 +71,7 @@ git commit -m "chore: swap mercadopago for stripe packages"
 ## Task 2: Update Prisma schema and run migration
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 
 - [ ] **Step 1: Edit the `Payment` model**
@@ -75,6 +79,7 @@ git commit -m "chore: swap mercadopago for stripe packages"
 In `prisma/schema.prisma`, find the `Payment` model. Make these changes:
 
 Remove the `// MercadoPago Specific` block (lines ~220–224):
+
 ```prisma
   // MercadoPago Specific
   mpExternalReference   String? // External reference sent to MP
@@ -84,16 +89,19 @@ Remove the `// MercadoPago Specific` block (lines ~220–224):
 ```
 
 Remove `providerPreferenceId` from the `// Provider Information` block:
+
 ```prisma
   providerPreferenceId    String? // MP preference ID
 ```
 
 Add `stripePaymentIntentId` after `providerPaymentId` in the `// Provider Information` block:
+
 ```prisma
   stripePaymentIntentId   String? @unique // Stripe PaymentIntent ID for fast webhook lookup
 ```
 
 The `// Provider Information` block should now read:
+
 ```prisma
   // Provider Information
   provider                String  // 'stripe'
@@ -134,14 +142,15 @@ git commit -m "feat: update Payment schema — add stripePaymentIntentId, remove
 ## Task 3: Update `src/lib/db/payment.ts`
 
 **Files:**
+
 - Modify: `src/lib/db/payment.ts`
 
 - [ ] **Step 1: Replace the entire file**
 
 ```typescript
-import { prisma } from '@/lib/prisma';
-import type { PaymentStatus } from '@prisma/client';
-import type Stripe from 'stripe';
+import { prisma } from "@/lib/prisma";
+import type { PaymentStatus } from "@prisma/client";
+import type Stripe from "stripe";
 
 export interface CreatePaymentData {
   userId: string;
@@ -180,7 +189,7 @@ export interface UpdatePaymentData {
  * Resets to PENDING on each new checkout attempt.
  */
 export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
-  const currency = data.currency ?? 'USD';
+  const currency = data.currency ?? "USD";
 
   return prisma.payment.upsert({
     create: {
@@ -190,7 +199,7 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
       provider: data.provider,
       providerPaymentId: data.providerPaymentId,
       stripePaymentIntentId: data.stripePaymentIntentId,
-      status: 'PENDING',
+      status: "PENDING",
       tripRequestId: data.tripRequestId,
       userId: data.userId,
     },
@@ -201,7 +210,7 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
       providerPaymentId: data.providerPaymentId,
       stripePaymentIntentId: data.stripePaymentIntentId,
       /** New checkout attempt — reset so webhook assigns new payment id. */
-      status: 'PENDING',
+      status: "PENDING",
     },
     where: { tripRequestId: data.tripRequestId },
   });
@@ -210,7 +219,10 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
 /**
  * Update payment status and details
  */
-export async function updatePayment(paymentId: string, data: UpdatePaymentData) {
+export async function updatePayment(
+  paymentId: string,
+  data: UpdatePaymentData,
+) {
   return prisma.payment.update({
     where: { id: paymentId },
     data: {
@@ -223,7 +235,9 @@ export async function updatePayment(paymentId: string, data: UpdatePaymentData) 
 /**
  * Find payment by Stripe PaymentIntent ID (primary webhook lookup path).
  */
-export async function findPaymentByStripePaymentIntentId(stripePaymentIntentId: string) {
+export async function findPaymentByStripePaymentIntentId(
+  stripePaymentIntentId: string,
+) {
   return prisma.payment.findUnique({
     where: { stripePaymentIntentId },
     include: { user: true, tripRequest: true },
@@ -269,7 +283,7 @@ export async function getUserPayments(userId: string, limit = 10) {
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: limit,
   });
 }
@@ -289,12 +303,12 @@ export async function getTripPayment(tripRequestId: string) {
 }
 
 const STRIPE_STATUS_MAP: Record<string, PaymentStatus> = {
-  succeeded: 'APPROVED',
-  processing: 'PROCESSING',
-  canceled: 'CANCELLED',
-  requires_payment_method: 'FAILED',
-  requires_action: 'PENDING',
-  requires_confirmation: 'PENDING',
+  succeeded: "APPROVED",
+  processing: "PROCESSING",
+  canceled: "CANCELLED",
+  requires_payment_method: "FAILED",
+  requires_action: "PENDING",
+  requires_confirmation: "PENDING",
 };
 
 /**
@@ -311,11 +325,15 @@ export async function updatePaymentFromStripeEvent(
     (await findPaymentByProviderId(intent.id));
 
   if (!resolvedPayment) {
-    console.error('updatePaymentFromStripeEvent: no payment found for intent', intent.id);
+    console.error(
+      "updatePaymentFromStripeEvent: no payment found for intent",
+      intent.id,
+    );
     return;
   }
 
-  const newStatus: PaymentStatus = STRIPE_STATUS_MAP[intent.status] ?? 'PENDING';
+  const newStatus: PaymentStatus =
+    STRIPE_STATUS_MAP[intent.status] ?? "PENDING";
 
   await prisma.payment.update({
     where: { id: resolvedPayment.id },
@@ -323,17 +341,17 @@ export async function updatePaymentFromStripeEvent(
       status: newStatus,
       providerPaymentId: intent.id,
       stripePaymentIntentId: intent.id,
-      paidAt: intent.status === 'succeeded' ? new Date() : undefined,
+      paidAt: intent.status === "succeeded" ? new Date() : undefined,
       providerResponse: JSON.parse(JSON.stringify(intent)),
       webhookData: JSON.parse(JSON.stringify(event)),
       updatedAt: new Date(),
     },
   });
 
-  if (newStatus === 'APPROVED') {
+  if (newStatus === "APPROVED") {
     await prisma.tripRequest.update({
       where: { id: resolvedPayment.tripRequestId },
-      data: { status: 'CONFIRMED' },
+      data: { status: "CONFIRMED" },
     });
   }
 }
@@ -359,20 +377,25 @@ git commit -m "feat: replace MP payment DB layer with Stripe — add updatePayme
 ## Task 4: Create `/api/stripe/payment-intent` route
 
 **Files:**
+
 - Create: `src/app/api/stripe/payment-intent/route.ts`
 
 - [ ] **Step 1: Create the file**
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import Stripe from 'stripe';
-import { calculatePaymentTotals } from '@/lib/helpers/payment-totals';
-import { getPricePerPerson } from '@/lib/data/traveler-types';
-import { upsertPaymentForTripCheckout } from '@/lib/db/payment';
-import type { AddonSelection, Filters, Logistics } from '@/store/slices/journeyStore';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import Stripe from "stripe";
+import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
+import { getPricePerPerson } from "@/lib/data/traveler-types";
+import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
+import type {
+  AddonSelection,
+  Filters,
+  Logistics,
+} from "@/store/slices/journeyStore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -380,26 +403,31 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = (await request.json()) as { tripId?: string };
     const { tripId } = body;
     if (!tripId) {
-      return NextResponse.json({ error: 'tripId is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "tripId is required" },
+        { status: 400 },
+      );
     }
 
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const trip = await prisma.tripRequest.findUnique({ where: { id: tripId } });
     if (!trip) {
-      return NextResponse.json({ error: 'Trip not found' }, { status: 404 });
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
     if (trip.userId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Compute total server-side — never trust client-supplied amount
@@ -434,15 +462,18 @@ export async function POST(request: NextRequest) {
     const existingPayment = await prisma.payment.findUnique({
       where: { tripRequestId: tripId },
     });
-    if (existingPayment?.stripePaymentIntentId && existingPayment.status === 'PENDING') {
+    if (
+      existingPayment?.stripePaymentIntentId &&
+      existingPayment.status === "PENDING"
+    ) {
       try {
         const existing = await stripe.paymentIntents.retrieve(
           existingPayment.stripePaymentIntentId,
         );
         if (
-          existing.status === 'requires_payment_method' ||
-          existing.status === 'requires_confirmation' ||
-          existing.status === 'requires_action'
+          existing.status === "requires_payment_method" ||
+          existing.status === "requires_confirmation" ||
+          existing.status === "requires_action"
         ) {
           return NextResponse.json({
             clientSecret: existing.client_secret,
@@ -457,18 +488,18 @@ export async function POST(request: NextRequest) {
     // Create new PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
-      currency: 'usd',
+      currency: "usd",
       metadata: { tripId, userId: user.id },
     });
 
     await upsertPaymentForTripCheckout({
       userId: user.id,
       tripRequestId: tripId,
-      provider: 'stripe',
+      provider: "stripe",
       stripePaymentIntentId: paymentIntent.id,
       providerPaymentId: paymentIntent.id,
       amount: totalTrip,
-      currency: 'USD',
+      currency: "USD",
     });
 
     return NextResponse.json({
@@ -476,8 +507,11 @@ export async function POST(request: NextRequest) {
       paymentIntentId: paymentIntent.id,
     });
   } catch (error) {
-    console.error('stripe payment-intent error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("stripe payment-intent error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 ```
@@ -502,39 +536,47 @@ git commit -m "feat: add POST /api/stripe/payment-intent with server-side pricin
 ## Task 5: Create `/api/stripe/webhook` route
 
 **Files:**
+
 - Create: `src/app/api/stripe/webhook/route.ts`
 
 - [ ] **Step 1: Create the file**
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
-import { updatePaymentFromStripeEvent } from '@/lib/db/payment';
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
+import { updatePaymentFromStripeEvent } from "@/lib/db/payment";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: NextRequest) {
   // Must read raw text — request.json() corrupts the body and breaks signature verification
   const body = await request.text();
-  const sig = request.headers.get('stripe-signature');
+  const sig = request.headers.get("stripe-signature");
 
   if (!sig) {
-    return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing stripe-signature header" },
+      { status: 400 },
+    );
   }
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = stripe.webhooks.constructEvent(
+      body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET!,
+    );
   } catch (err) {
-    console.error('Stripe webhook signature verification failed:', err);
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    console.error("Stripe webhook signature verification failed:", err);
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   try {
     switch (event.type) {
-      case 'payment_intent.succeeded':
-      case 'payment_intent.payment_failed':
-      case 'payment_intent.canceled':
+      case "payment_intent.succeeded":
+      case "payment_intent.payment_failed":
+      case "payment_intent.canceled":
         await updatePaymentFromStripeEvent(event);
         break;
       default:
@@ -542,7 +584,10 @@ export async function POST(request: NextRequest) {
         break;
     }
   } catch (error) {
-    console.error('Stripe webhook processing error:', { eventType: event.type, error });
+    console.error("Stripe webhook processing error:", {
+      eventType: event.type,
+      error,
+    });
     // Return 200 anyway — Stripe retries on non-2xx which causes duplicate processing
   }
 
@@ -570,12 +615,13 @@ git commit -m "feat: add POST /api/stripe/webhook with signature verification"
 ## Task 6: Create `src/lib/stripe-client.ts`
 
 **Files:**
+
 - Create: `src/lib/stripe-client.ts`
 
 - [ ] **Step 1: Create the file**
 
 ```typescript
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
 
 /**
  * Module-level singleton — import this instead of calling loadStripe() in components
@@ -606,18 +652,23 @@ git commit -m "feat: add Stripe client singleton"
 ## Task 7: Create `StripePaymentForm` component
 
 **Files:**
+
 - Create: `src/components/app/checkout/StripePaymentForm.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
-import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { hasLocale } from '@/lib/i18n/config';
+import { useState } from "react";
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { hasLocale } from "@/lib/i18n/config";
 
 interface StripePaymentFormProps {
   /** Called when user clicks Back to return to the contact form step. */
@@ -628,7 +679,9 @@ export function StripePaymentForm({ onCancel }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const params = useParams();
-  const locale = hasLocale(params?.locale as string) ? (params?.locale as string) : 'es';
+  const locale = hasLocale(params?.locale as string)
+    ? (params?.locale as string)
+    : "es";
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -647,11 +700,11 @@ export function StripePaymentForm({ onCancel }: StripePaymentFormProps) {
       },
       // For non-3DS cards: resolves here without redirect.
       // For 3DS cards: redirects to return_url, which is /checkout/success.
-      redirect: 'if_required',
+      redirect: "if_required",
     });
 
     if (error) {
-      setErrorMessage(error.message ?? 'Payment failed. Please try again.');
+      setErrorMessage(error.message ?? "Payment failed. Please try again.");
       setIsProcessing(false);
       return;
     }
@@ -682,7 +735,7 @@ export function StripePaymentForm({ onCancel }: StripePaymentFormProps) {
           disabled={!stripe || isProcessing}
           type="submit"
         >
-          {isProcessing ? 'Processing...' : 'Pay now'}
+          {isProcessing ? "Processing..." : "Pay now"}
         </Button>
       </div>
     </form>
@@ -710,17 +763,18 @@ git commit -m "feat: add StripePaymentForm with PaymentElement and confirmPaymen
 ## Task 8: Update `src/hooks/usePayment.ts`
 
 **Files:**
+
 - Modify: `src/hooks/usePayment.ts`
 
 - [ ] **Step 1: Replace the entire file**
 
 ```typescript
-import { useState } from 'react';
+import { useState } from "react";
 import {
   calculatePaymentTotals,
   type PaymentTotalsInput,
   type PaymentTotalsResult,
-} from '@/lib/helpers/payment-totals';
+} from "@/lib/helpers/payment-totals";
 
 /**
  * Hook for payment calculations and Stripe PaymentIntent creation.
@@ -741,18 +795,20 @@ export function usePayment(paymentData: PaymentTotalsInput) {
   ): Promise<{ clientSecret: string }> => {
     setIsProcessing(true);
     try {
-      const response = await fetch('/api/stripe/payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/stripe/payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tripId }),
       });
 
       if (!response.ok) {
         const errorData = (await response.json()) as { error?: string };
-        throw new Error(errorData.error ?? 'Failed to create payment intent');
+        throw new Error(errorData.error ?? "Failed to create payment intent");
       }
 
-      const { clientSecret } = (await response.json()) as { clientSecret: string };
+      const { clientSecret } = (await response.json()) as {
+        clientSecret: string;
+      };
       return { clientSecret };
     } finally {
       setIsProcessing(false);
@@ -787,15 +843,17 @@ git commit -m "feat: replace usePayment MP logic with Stripe createPaymentIntent
 ## Task 9: Update `src/app/[locale]/(secure)/checkout/page.tsx`
 
 **Files:**
+
 - Modify: `src/app/[locale]/(secure)/checkout/page.tsx`
 
 - [ ] **Step 1: Add new imports at the top of the file**
 
 After the existing imports, add:
+
 ```typescript
-import { Elements } from '@stripe/react-stripe-js';
-import { stripePromise } from '@/lib/stripe-client';
-import { StripePaymentForm } from '@/components/app/checkout/StripePaymentForm';
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripe-client";
+import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 ```
 
 - [ ] **Step 2: Add `clientSecret` state inside `CheckoutContent`**
@@ -809,11 +867,13 @@ const [clientSecret, setClientSecret] = useState<string | null>(null);
 - [ ] **Step 3: Update the `usePayment` destructure**
 
 Find:
+
 ```typescript
 const { isProcessing, calculateTotals, initiatePayment } = usePayment(
 ```
 
 Replace with:
+
 ```typescript
 const { isProcessing, calculateTotals, createPaymentIntent } = usePayment(
 ```
@@ -821,47 +881,51 @@ const { isProcessing, calculateTotals, createPaymentIntent } = usePayment(
 - [ ] **Step 4: Replace `payNow` with `createPayment`**
 
 Find the entire `payNow` function:
+
 ```typescript
-  const payNow = async (payer?: { email?: string; name?: string }) => {
-    if (!trip?.id) return;
-    try {
-      await persistCheckoutTravelers(paxDetails);
-      await initiatePayment(trip.id, payer);
-    } catch (err) {
-      console.error('Error initiating payment:', err);
-      toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
-    }
-  };
+const payNow = async (payer?: { email?: string; name?: string }) => {
+  if (!trip?.id) return;
+  try {
+    await persistCheckoutTravelers(paxDetails);
+    await initiatePayment(trip.id, payer);
+  } catch (err) {
+    console.error("Error initiating payment:", err);
+    toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
+  }
+};
 ```
 
 Replace with:
+
 ```typescript
-  const createPayment = async () => {
-    if (!trip?.id) return;
-    try {
-      await persistCheckoutTravelers(paxDetails);
-      const { clientSecret: secret } = await createPaymentIntent(trip.id);
-      setClientSecret(secret);
-    } catch (err) {
-      console.error('Error creating payment intent:', err);
-      toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
-    }
-  };
+const createPayment = async () => {
+  if (!trip?.id) return;
+  try {
+    await persistCheckoutTravelers(paxDetails);
+    const { clientSecret: secret } = await createPaymentIntent(trip.id);
+    setClientSecret(secret);
+  } catch (err) {
+    console.error("Error creating payment intent:", err);
+    toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
+  }
+};
 ```
 
 - [ ] **Step 5: Update `handleSubmit` to call `createPayment`**
 
 Find in `handleSubmit`:
+
 ```typescript
-      await payNow({
-        email: payerEmail,
-        name: saveJson.user?.name ?? formData.name.trim(),
-      });
+await payNow({
+  email: payerEmail,
+  name: saveJson.user?.name ?? formData.name.trim(),
+});
 ```
 
 Replace with:
+
 ```typescript
-      await createPayment();
+await createPayment();
 ```
 
 - [ ] **Step 6: Add Stripe Elements panel in the JSX return**
@@ -869,21 +933,23 @@ Replace with:
 Find the closing `</div>` of the grid inside `<div className="container mx-auto px-4 py-12 md:px-20">` — it's right before `<ChatFab />`. Add the Stripe payment panel inside the container div, after the grid:
 
 ```tsx
-        {clientSecret && (
-          <div className="mt-8 mx-auto max-w-xl">
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-              <h2 className="text-xl font-semibold text-neutral-900 mb-6">
-                {dict?.journey?.checkout?.paymentTitle ?? 'Payment'}
-              </h2>
-              <Elements
-                options={{ clientSecret, appearance: { theme: 'stripe' } }}
-                stripe={stripePromise}
-              >
-                <StripePaymentForm onCancel={() => setClientSecret(null)} />
-              </Elements>
-            </div>
-          </div>
-        )}
+{
+  clientSecret && (
+    <div className="mt-8 mx-auto max-w-xl">
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <h2 className="text-xl font-semibold text-neutral-900 mb-6">
+          {dict?.journey?.checkout?.paymentTitle ?? "Payment"}
+        </h2>
+        <Elements
+          options={{ clientSecret, appearance: { theme: "stripe" } }}
+          stripe={stripePromise}
+        >
+          <StripePaymentForm onCancel={() => setClientSecret(null)} />
+        </Elements>
+      </div>
+    </div>
+  );
+}
 ```
 
 Place this immediately after the `</div>` that closes the grid (`lg:grid-cols-2` div), before `<ChatFab />`.
@@ -891,16 +957,19 @@ Place this immediately after the `</div>` that closes the grid (`lg:grid-cols-2`
 - [ ] **Step 7: Add `paymentTitle` key to dictionaries**
 
 In `src/dictionaries/en.json`, find `"journey"` → `"checkout"` and add:
+
 ```json
 "paymentTitle": "Complete your payment",
 ```
 
 In `src/dictionaries/es.json`, find `"journey"` → `"checkout"` and add:
+
 ```json
 "paymentTitle": "Completar pago",
 ```
 
 In `src/lib/types/dictionary.ts`, find the `checkout` interface inside `journey` and add:
+
 ```typescript
 paymentTitle: string;
 ```
@@ -925,30 +994,34 @@ git commit -m "feat: wire Stripe Elements into checkout page"
 ## Task 10: Update `CheckoutResultSuccess.tsx`
 
 **Files:**
+
 - Modify: `src/app/[locale]/(secure)/checkout/CheckoutResultSuccess.tsx`
 
 - [ ] **Step 1: Replace the entire file**
 
 ```tsx
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import Confetti from '@/components/feedback/Confetti';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import Confetti from "@/components/feedback/Confetti";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultSuccessProps {
-  hero: Dictionary['confirmation']['hero'];
-  labels: Dictionary['confirmation']['page'];
+  hero: Dictionary["confirmation"]["hero"];
+  labels: Dictionary["confirmation"]["page"];
   locale: string;
   /** Stripe redirect params parsed server-side from searchParams. */
-  stripeReturn?: { paymentIntent: string | null; redirectStatus: string | null } | null;
+  stripeReturn?: {
+    paymentIntent: string | null;
+    redirectStatus: string | null;
+  } | null;
 }
 
 export default function CheckoutResultSuccess({
@@ -959,12 +1032,12 @@ export default function CheckoutResultSuccess({
 }: CheckoutResultSuccessProps) {
   const searchParams = useSearchParams();
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   // Prefer server-parsed params; fall back to client URL for non-3DS in-page navigations
   const redirectStatus =
-    stripeReturn?.redirectStatus ?? searchParams.get('redirect_status');
-  const hasFailed = redirectStatus === 'requires_payment_method';
+    stripeReturn?.redirectStatus ?? searchParams.get("redirect_status");
+  const hasFailed = redirectStatus === "requires_payment_method";
 
   const [loading, setLoading] = useState(false);
   const showSuccess = !hasFailed;
@@ -1038,7 +1111,10 @@ export default function CheckoutResultSuccess({
               </div>
               <div className="flex justify-center pt-2">
                 <Button asChild size="default" variant="link">
-                  <Link className="text-gray-500 hover:text-gray-700" href={`/${locale}`}>
+                  <Link
+                    className="text-gray-500 hover:text-gray-700"
+                    href={`/${locale}`}
+                  >
                     {labels.ctaHome}
                   </Link>
                 </Button>
@@ -1073,23 +1149,24 @@ git commit -m "feat: simplify CheckoutResultSuccess for Stripe — remove MP par
 ## Task 11: Update `CheckoutResultPending.tsx` and `CheckoutResultFailure.tsx`
 
 **Files:**
+
 - Modify: `src/app/[locale]/(secure)/checkout/CheckoutResultPending.tsx`
 - Modify: `src/app/[locale]/(secure)/checkout/CheckoutResultFailure.tsx`
 
 - [ ] **Step 1: Replace `CheckoutResultPending.tsx`**
 
 ```tsx
-'use client';
+"use client";
 
-import Link from 'next/link';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import Link from "next/link";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultPendingProps {
-  labels: Dictionary['paymentPending'];
+  labels: Dictionary["paymentPending"];
   locale: string;
 }
 
@@ -1098,7 +1175,7 @@ export default function CheckoutResultPending({
   locale,
 }: CheckoutResultPendingProps) {
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -1134,17 +1211,17 @@ export default function CheckoutResultPending({
 - [ ] **Step 2: Replace `CheckoutResultFailure.tsx`**
 
 ```tsx
-'use client';
+"use client";
 
-import Link from 'next/link';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import Link from "next/link";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultFailureProps {
-  labels: Dictionary['paymentFailure'];
+  labels: Dictionary["paymentFailure"];
   locale: string;
   /** tripId to pre-fill the retry link. */
   tripId?: string | null;
@@ -1156,10 +1233,13 @@ export default function CheckoutResultFailure({
   tripId,
 }: CheckoutResultFailureProps) {
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
   const tryAgainHref = tripId
-    ? pathForLocale(safeLocale, `/checkout?tripId=${encodeURIComponent(tripId)}`)
-    : pathForLocale(safeLocale, '/journey');
+    ? pathForLocale(
+        safeLocale,
+        `/checkout?tripId=${encodeURIComponent(tripId)}`,
+      )
+    : pathForLocale(safeLocale, "/journey");
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -1212,6 +1292,7 @@ git commit -m "feat: remove MP params from CheckoutResultPending and CheckoutRes
 ## Task 12: Update server page files
 
 **Files:**
+
 - Modify: `src/app/[locale]/(secure)/checkout/success/page.tsx`
 - Modify: `src/app/[locale]/(secure)/checkout/failure/page.tsx`
 - Modify: `src/app/[locale]/(secure)/checkout/pending/page.tsx`
@@ -1404,6 +1485,7 @@ git commit -m "feat: update checkout result server pages — remove MP, pass Str
 ## Task 13: Dictionary cleanup
 
 **Files:**
+
 - Modify: `src/dictionaries/en.json`
 - Modify: `src/dictionaries/es.json`
 - Modify: `src/lib/types/dictionary.ts`
@@ -1411,6 +1493,7 @@ git commit -m "feat: update checkout result server pages — remove MP, pass Str
 - [ ] **Step 1: Remove MP keys from `src/dictionaries/en.json`**
 
 Find and remove these 12 lines from the `"paymentFailure"` section (they are consecutive, lines ~1653–1664):
+
 ```json
     "mpDetailsTitle": "Mercado Pago details",
     "mpExternalReference": "External reference",
@@ -1431,6 +1514,7 @@ The `"paymentFailure"` section should end with `"ctaMyTrips"` and `"subtitle"` /
 - [ ] **Step 2: Remove MP keys from `src/dictionaries/es.json`**
 
 Find and remove the same 12 keys from the `"paymentFailure"` section (same line range, ~1653–1664):
+
 ```json
     "mpDetailsTitle": "Detalles (Mercado Pago)",
     "mpExternalReference": "Referencia externa",
@@ -1449,19 +1533,20 @@ Find and remove the same 12 keys from the `"paymentFailure"` section (same line 
 - [ ] **Step 3: Remove MP fields from `src/lib/types/dictionary.ts`**
 
 In the `paymentFailure` interface, remove these 12 fields:
+
 ```typescript
-    mpCollectionId: string;
-    mpCollectionStatus: string;
-    mpDetailsTitle: string;
-    mpExternalReference: string;
-    mpMerchantAccountId: string;
-    mpMerchantOrderId: string;
-    mpPaymentId: string;
-    mpPaymentType: string;
-    mpPreferenceId: string;
-    mpProcessingMode: string;
-    mpSiteId: string;
-    mpStatus: string;
+mpCollectionId: string;
+mpCollectionStatus: string;
+mpDetailsTitle: string;
+mpExternalReference: string;
+mpMerchantAccountId: string;
+mpMerchantOrderId: string;
+mpPaymentId: string;
+mpPaymentType: string;
+mpPreferenceId: string;
+mpProcessingMode: string;
+mpSiteId: string;
+mpStatus: string;
 ```
 
 - [ ] **Step 4: Verify types**
@@ -1484,6 +1569,7 @@ git commit -m "chore: remove MP-specific dictionary keys from paymentFailure"
 ## Task 14: Delete MP files
 
 **Files to delete:**
+
 - `src/app/api/mercadopago/preference/route.ts`
 - `src/app/api/mercadopago/webhook/route.ts`
 - `src/app/api/payments/confirm/route.ts`
@@ -1565,6 +1651,7 @@ stripe listen --forward-to localhost:3010/api/stripe/webhook
 Copy the webhook signing secret it prints (`whsec_...`) into `.env.local` as `STRIPE_WEBHOOK_SECRET`.
 
 For production, register `https://your-domain.com/api/stripe/webhook` in the Stripe Dashboard → Developers → Webhooks, selecting events:
+
 - `payment_intent.succeeded`
 - `payment_intent.payment_failed`
 - `payment_intent.canceled`
@@ -1576,6 +1663,7 @@ npm run dev
 ```
 
 Test the golden path:
+
 1. Open `http://localhost:3010/es/checkout?tripId=<a-valid-trip-id>`
 2. Fill the contact form and click "Pay Now"
 3. Confirm the `<PaymentElement>` card form appears inline

@@ -1,17 +1,20 @@
-'use client';
+"use client";
 
-import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
-import { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useUserStore } from '@/store/slices/userStore';
-import { mapSessionUserToStoreUser, type SessionUser } from '@/lib/types/SessionUser';
+import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useUserStore } from "@/store/slices/userStore";
+import {
+  mapSessionUserToStoreUser,
+  type SessionUser,
+} from "@/lib/types/SessionUser";
 
 function SessionSync() {
   const { data: session, status } = useSession();
   const { setSession, signOut } = useUserStore();
 
   useEffect(() => {
-    if (status === 'loading') return; // Don't update while loading
+    if (status === "loading") return; // Don't update while loading
 
     if (session?.user) {
       const user = mapSessionUserToStoreUser(session.user as SessionUser);
@@ -44,7 +47,7 @@ function SessionSync() {
 
   // Handle sign out from NextAuth
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (status === "unauthenticated") {
       signOut();
     }
   }, [status, signOut]);

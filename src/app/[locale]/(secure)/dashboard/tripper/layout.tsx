@@ -1,8 +1,8 @@
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import SecureRouteWrapper from '@/components/auth/SecureRouteWrapper';
-import { TripperPageHeading } from '@/components/app/dashboard/tripper/TripperPageHeading';
-import { TripperNavTabs } from '@/components/app/dashboard/tripper/TripperNavTabs';
+import SecureRouteWrapper from "@/components/auth/SecureRouteWrapper";
+import { TripperPageHeading } from "@/components/app/dashboard/tripper/TripperPageHeading";
+import { TripperNavTabs } from "@/components/app/dashboard/tripper/TripperNavTabs";
 
 export default function TripperLayout({
   children,

@@ -1,5 +1,5 @@
-import Img from '@/components/common/Img';
-import Section from '@/components/layout/Section';
+import Img from "@/components/common/Img";
+import Section from "@/components/layout/Section";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -23,7 +23,7 @@ interface AboutUsPhilosophyProps {
 
 export function AboutUsPhilosophy({
   content,
-  imageSrc = '/images/about-us-philosophy.png',
+  imageSrc = "/images/about-us-philosophy.png",
   inverted = false,
   tags,
   imageClassName,
@@ -32,10 +32,12 @@ export function AboutUsPhilosophy({
     <Section className="py-0">
       <div className="rt-container grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
         {/* Image */}
-        <div className={`relative min-h-72 md:min-h-full rounded-xl overflow-hidden order-last ${inverted ? 'md:order-first' : 'md:order-last'}`}>
+        <div
+          className={`relative min-h-72 md:min-h-full rounded-xl overflow-hidden order-last ${inverted ? "md:order-first" : "md:order-last"}`}
+        >
           <Img
             alt={content.imageAlt}
-            className={`absolute inset-0 h-full w-full object-cover ${imageClassName ?? ''}`}
+            className={`absolute inset-0 h-full w-full object-cover ${imageClassName ?? ""}`}
             height={720}
             src={imageSrc}
             width={720}
@@ -68,8 +70,6 @@ export function AboutUsPhilosophy({
               {content.p2}
             </p>
           </div>
-
-         
         </div>
       </div>
     </Section>

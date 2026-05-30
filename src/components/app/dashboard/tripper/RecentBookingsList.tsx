@@ -1,32 +1,35 @@
-import { Calendar } from 'lucide-react';
-import Link from 'next/link';
-import type { RecentBooking } from '@/types/tripper';
-import type { TripperDashboardDict } from '@/lib/types/dictionary';
+import { Calendar } from "lucide-react";
+import Link from "next/link";
+import type { RecentBooking } from "@/types/tripper";
+import type { TripperDashboardDict } from "@/lib/types/dictionary";
 
 interface RecentBookingsListProps {
   bookings: RecentBooking[];
-  copy: TripperDashboardDict['recentBookings'] & TripperDashboardDict['status'];
+  copy: TripperDashboardDict["recentBookings"] & TripperDashboardDict["status"];
 }
 
 function getStatusColor(status: string): string {
-  if (status === 'confirmed' || status === 'completed') {
-    return 'bg-green-100 text-green-800 border-green-200';
+  if (status === "confirmed" || status === "completed") {
+    return "bg-green-100 text-green-800 border-green-200";
   }
-  if (status === 'revealed') {
-    return 'bg-purple-100 text-purple-800 border-purple-200';
+  if (status === "revealed") {
+    return "bg-purple-100 text-purple-800 border-purple-200";
   }
-  return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+  return "bg-yellow-100 text-yellow-800 border-yellow-200";
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return new Date(dateString).toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 
-export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) {
+export function RecentBookingsList({
+  bookings,
+  copy,
+}: RecentBookingsListProps) {
   return (
     <div>
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm font-barlow">
@@ -59,7 +62,9 @@ export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) 
                     <p className="font-medium text-neutral-900">
                       {booking.clientName}
                     </p>
-                    <p className="text-sm text-neutral-600">{booking.experienceName}</p>
+                    <p className="text-sm text-neutral-600">
+                      {booking.experienceName}
+                    </p>
                     <p className="text-xs text-neutral-500 flex items-center gap-1 mt-0.5">
                       <Calendar className="h-3 w-3" />
                       {formatDate(booking.date)}
@@ -68,12 +73,14 @@ export function RecentBookingsList({ bookings, copy }: RecentBookingsListProps) 
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-semibold text-neutral-900">
-                    ${booking.amount.toLocaleString('es-AR')}
+                    ${booking.amount.toLocaleString("es-AR")}
                   </p>
                   <span
                     className={`mt-1 inline-block px-2 py-0.5 text-xs rounded-full border ${getStatusColor(booking.status)}`}
                   >
-                    {copy[booking.status as keyof TripperDashboardDict['status']] ?? booking.status}
+                    {copy[
+                      booking.status as keyof TripperDashboardDict["status"]
+                    ] ?? booking.status}
                   </span>
                 </div>
               </div>

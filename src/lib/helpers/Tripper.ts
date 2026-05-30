@@ -1,11 +1,11 @@
-import type { Testimonial } from '@/lib/data/shared/testimonial-types';
-import { DEFAULT_LOCALE } from '@/lib/i18n/config';
-import { couple } from '@/lib/data/traveler-types/couple';
-import { family } from '@/lib/data/traveler-types/family';
-import { group } from '@/lib/data/traveler-types/group';
-import { honeymoon } from '@/lib/data/traveler-types/honeymoon';
-import { paws } from '@/lib/data/traveler-types/paws';
-import { solo } from '@/lib/data/traveler-types/solo';
+import type { Testimonial } from "@/lib/data/shared/testimonial-types";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { couple } from "@/lib/data/traveler-types/couple";
+import { family } from "@/lib/data/traveler-types/family";
+import { group } from "@/lib/data/traveler-types/group";
+import { honeymoon } from "@/lib/data/traveler-types/honeymoon";
+import { paws } from "@/lib/data/traveler-types/paws";
+import { solo } from "@/lib/data/traveler-types/solo";
 
 /** Shape used for testimonial resolution: DB tripper or content tripper. */
 export interface TripperTestimonialInput {
@@ -34,7 +34,7 @@ export function getAllTestimonialsForTripper(
   const tripperTestimonials: Testimonial[] = (tripper.testimonials || []).map(
     (t) => ({
       author: t.author,
-      country: tripper.location || 'Ciudad',
+      country: tripper.location || "Ciudad",
       quote: t.quote,
     }),
   );

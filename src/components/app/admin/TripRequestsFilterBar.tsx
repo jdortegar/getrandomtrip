@@ -21,9 +21,7 @@ export function TripRequestsFilterBar({
 }: TripRequestsFilterBarProps) {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-3">
-      <p className="text-xl font-semibold text-neutral-900">
-        Trip Requests
-      </p>
+      <p className="text-xl font-semibold text-neutral-900">Trip Requests</p>
       <div className="flex gap-1.5">
         {FILTERS.map((f) => (
           <button

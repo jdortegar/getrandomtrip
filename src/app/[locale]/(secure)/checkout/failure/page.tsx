@@ -1,16 +1,14 @@
-import { notFound } from 'next/navigation';
-import CheckoutResultFailure from '../CheckoutResultFailure';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale } from '@/lib/i18n/config';
+import { notFound } from "next/navigation";
+import CheckoutResultFailure from "../CheckoutResultFailure";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
 
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: string }>;
-  }
-) {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}) {
   const params = await props.params;
   if (!hasLocale(params.locale)) {
-    return { title: 'Payment' };
+    return { title: "Payment" };
   }
   const dict = await getDictionary(params.locale);
   return {
@@ -19,12 +17,10 @@ export async function generateMetadata(
   };
 }
 
-export default async function CheckoutFailurePage(
-  props: {
-    params: Promise<{ locale: string }>;
-    searchParams: Promise<Record<string, string | string[] | undefined>>;
-  }
-) {
+export default async function CheckoutFailurePage(props: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const searchParams = await props.searchParams;
   const params = await props.params;
   if (!hasLocale(params.locale)) {
@@ -33,7 +29,7 @@ export default async function CheckoutFailurePage(
 
   const dict = await getDictionary(params.locale);
   const tripId =
-    typeof searchParams.tripId === 'string' ? searchParams.tripId : null;
+    typeof searchParams.tripId === "string" ? searchParams.tripId : null;
 
   return (
     <CheckoutResultFailure

@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-export interface SelectProps
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   placeholder?: string;
 }
 
@@ -14,7 +13,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       <div className="relative">
         <select
           className={cn(
-            'flex h-10 w-full rounded-md border border-gray-200 bg-white pl-3 pr-8 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none',
+            "flex h-10 w-full rounded-md border border-gray-200 bg-white pl-3 pr-8 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none",
             className,
           )}
           ref={ref}
@@ -46,7 +45,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     );
   },
 );
-Select.displayName = 'Select';
+Select.displayName = "Select";
 
 // For compatibility with the existing form
 export const SelectTrigger = Select;
