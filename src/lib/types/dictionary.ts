@@ -1441,6 +1441,25 @@ export interface MarketingDictionary {
     previewHeading: string;
   };
   legalCookies: LegalDocumentDict;
+  faqPage: {
+    hero: {
+      description: string;
+      eyebrow: string;
+      title: string;
+    };
+    meta: {
+      description: string;
+      openGraphDescription: string;
+      openGraphTitle: string;
+      title: string;
+    };
+    block: {
+      description: string;
+      eyebrow: string;
+      items: Array<{ answer: string; question: string }>;
+      title: string;
+    };
+  };
   legalPrivacy: LegalDocumentDict;
   legalRefund: LegalDocumentDict;
   legalTerms: LegalDocumentDict;
