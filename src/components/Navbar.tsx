@@ -57,6 +57,12 @@ const NAV_LINKS: NavLink[] = [
     ariaKey: "ariaLabelNosotros",
     displayPosition: "button",
   },
+  {
+    href: "/contact",
+    labelKey: "labelContact",
+    ariaKey: "ariaLabelContact",
+    displayPosition: "button",
+  },
 ];
 
 export interface NavbarProps {

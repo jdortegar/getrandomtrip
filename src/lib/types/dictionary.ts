@@ -888,6 +888,7 @@ export interface AdminPagesDict {
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
+    ariaLabelContact: string;
     ariaLabelExperiences: string;
     ariaLabelInspiration: string;
     ariaLabelLogo: string;
@@ -896,6 +897,7 @@ export interface MarketingDictionary {
     ariaLabelTrippers: string;
     ariaLabelXsed: string;
     labelBitacoras: string;
+    labelContact: string;
     labelExperiences: string;
     labelInspiration: string;
     labelNosotros: string;
