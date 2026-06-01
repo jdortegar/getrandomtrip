@@ -10,14 +10,17 @@ import {
   Plus,
   Settings,
   Star,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useStore } from "@/store/store";
 
 export function TripperNavTabs() {
   const pathname = usePathname();
   const locale = useLocale();
   const copy = useDictionary((d) => d.tripperDashboard.quickActions);
+  const isAdmin = useStore((s) => s.user?.role === "admin");
 
   function base(path: string) {
     return `/${locale}/dashboard/tripper${path}`;
@@ -42,6 +45,12 @@ export function TripperNavTabs() {
       exact: false,
     },
     {
+      href: `/${locale}/trippers/profile`,
+      icon: Settings,
+      label: copy.settings,
+      exact: false,
+    },
+    {
       href: base("/experiences"),
       icon: LayoutList,
       label: copy.experiences,
@@ -54,19 +63,20 @@ export function TripperNavTabs() {
       exact: false,
     },
     { href: base("/reviews"), icon: Star, label: copy.reviews, exact: false },
-    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
     {
-      href: `/${locale}/trippers/profile`,
-      icon: Settings,
-      label: copy.settings,
+      href: `/${locale}/dashboard/admin/xsed/new`,
+      icon: Zap,
+      label: copy.createDrop,
       exact: false,
+      adminOnly: true,
     },
+    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
   ];
 
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-center gap-3 pb-1">
-        {tabs.map((tab) => {
+        {tabs.filter((tab) => !tab.adminOnly || isAdmin).map((tab) => {
           const active = isActive(tab.href, tab.exact);
           const Icon = tab.icon;
           return (

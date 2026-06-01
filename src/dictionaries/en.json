@@ -3032,7 +3032,8 @@
       "blogsSub": "Manage blog",
       "settings": "Settings",
       "settingsSub": "Profile settings",
-      "dashboard": "My Dashboard"
+      "dashboard": "My Dashboard",
+      "createDrop": "New Drop"
     },
     "keyMetrics": {
       "title": "Key Metrics",

@@ -3032,7 +3032,8 @@
       "experiencesSub": "Ver todas las experiencias",
       "settings": "Configuración",
       "settingsSub": "Ajustes del perfil",
-      "dashboard": "Mi Dashboard"
+      "dashboard": "Mi Dashboard",
+      "createDrop": "Nuevo Drop"
     },
     "keyMetrics": {
       "title": "Métricas Clave",
