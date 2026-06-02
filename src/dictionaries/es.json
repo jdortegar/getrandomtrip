@@ -29,7 +29,8 @@
     "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Panel de Admin"
+    "adminDashboard": "Panel de Admin",
+    "newDrop": "Nuevo Drop"
   },
   "common": {
     "siteName": "Randomtrip"

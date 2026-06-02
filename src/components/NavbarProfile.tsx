@@ -27,11 +27,16 @@ const ADMIN_MENU_ITEM = {
   href: "/dashboard/admin",
 };
 
+const NEW_DROP_MENU_ITEM = {
+  href: "/dashboard/admin/xsed/new",
+};
+
 export interface NavbarProfileLabels {
   adminDashboard: string;
   ariaOpenProfileMenu: string;
   dashboard: string;
   editProfile: string;
+  newDrop: string;
   signOut: string;
   tripperOs: string;
 }
@@ -134,6 +139,14 @@ export function NavbarProfile({
                 role="menuitem"
               >
                 {labels.adminDashboard}
+              </Link>
+              <Link
+                className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                href={NEW_DROP_MENU_ITEM.href}
+                onClick={close}
+                role="menuitem"
+              >
+                {labels.newDrop}
               </Link>
             </>
           ) : null}

@@ -87,7 +87,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       teaser,
       titleInternal,
       heroImage,
-      slug,
       tripDate,
       revealAt: revealAtRaw,
       maxSpots,
@@ -109,6 +108,10 @@ export async function POST(req: Request): Promise<NextResponse> {
       adminNotes,
       supplierNotes,
     } = body ?? {};
+
+    // Auto-generate slug as the next drop number
+    const dropCount = await prisma.experience.count({ where: { type: "XSED" } });
+    const autoSlug = String(dropCount + 1);
 
     // Derive title/description from provided fields
     const title = (titleInternal as string | undefined) || (teaser as string | undefined) || "";
@@ -135,7 +138,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           heroImage: (heroImage as string | undefined) ?? "",
           destinationCity: (destinationCity as string | undefined) ?? "",
           destinationCountry: (destinationCountry as string | undefined) ?? "",
-          slug: (slug as string | undefined) || null,
+          slug: autoSlug,
           titleInternal: (titleInternal as string | undefined) || null,
           tripDate: tripDate ? new Date(tripDate as string) : null,
           revealAt: revealAtDate,

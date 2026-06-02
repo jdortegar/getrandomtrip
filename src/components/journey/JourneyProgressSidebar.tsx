@@ -211,7 +211,7 @@ export default function JourneyProgressSidebar({
                         <div
                           className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
                           style={{
-                            height: `calc(100% - ${bottomOffset + incompleteCount * 6.55}rem)`,
+                            height: `calc(100% - ${bottomOffset}rem)`,
                           }}
                         />
                         <div
