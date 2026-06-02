@@ -24,7 +24,8 @@ export default async function XsedBookPage({ params }: Props) {
   const reqHeaders = await headers();
   const country = reqHeaders.get("x-country") ?? "";
   const tz = countryToTimezone(country) ?? "America/Argentina/Buenos_Aires";
-  const windowOpen = isLocalWindowOpen(tz);
+  const bypassWindow = process.env.XSED_BYPASS_WINDOW === "true";
+  const windowOpen = bypassWindow || isLocalWindowOpen(tz);
 
   if (!windowOpen) {
     return <XsedUnavailablePage />;

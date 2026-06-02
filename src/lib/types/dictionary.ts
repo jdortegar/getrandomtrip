@@ -171,6 +171,7 @@ export interface TripperDashboardDict {
     blogsSub: string;
     settings: string;
     settingsSub: string;
+    createDrop: string;
   };
   keyMetrics: {
     title: string;
@@ -915,6 +916,7 @@ export interface MarketingDictionary {
     ariaOpenProfileMenu: string;
     dashboard: string;
     editProfile: string;
+    newDrop: string;
     signOut: string;
     tripperOs: string;
   };

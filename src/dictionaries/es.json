@@ -29,7 +29,8 @@
     "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Panel de Admin"
+    "adminDashboard": "Panel de Admin",
+    "newDrop": "Nuevo Drop"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -3032,7 +3033,8 @@
       "experiencesSub": "Ver todas las experiencias",
       "settings": "Configuración",
       "settingsSub": "Ajustes del perfil",
-      "dashboard": "Mi Dashboard"
+      "dashboard": "Mi Dashboard",
+      "createDrop": "Nuevo Drop"
     },
     "keyMetrics": {
       "title": "Métricas Clave",

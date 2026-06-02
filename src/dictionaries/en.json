@@ -29,7 +29,8 @@
     "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Admin Dashboard"
+    "adminDashboard": "Admin Dashboard",
+    "newDrop": "New Drop"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -3032,7 +3033,8 @@
       "blogsSub": "Manage blog",
       "settings": "Settings",
       "settingsSub": "Profile settings",
-      "dashboard": "My Dashboard"
+      "dashboard": "My Dashboard",
+      "createDrop": "New Drop"
     },
     "keyMetrics": {
       "title": "Key Metrics",
