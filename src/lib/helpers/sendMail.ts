@@ -1,10 +1,11 @@
+import React from "react";
 import { Resend } from "resend";
 
 interface SendMailParams {
-  content: {
-    html?: string;
-    text?: string;
-  };
+  content:
+    | { react: React.ReactElement; html?: never; text?: string }
+    | { html: string; react?: never; text?: string }
+    | { text: string; react?: never; html?: never };
   from?: string;
   replyTo?: string;
   subject: string;
@@ -18,15 +19,20 @@ function getResendClient() {
 }
 
 export async function sendMail(params: SendMailParams) {
-  if (!params.content.html && !params.content.text)
-    throw new Error("Email content is required");
-
   const resend = getResendClient();
   const from = params.from || process.env.EMAIL_FROM || "onboarding@resend.dev";
 
-  const content = params.content.html
-    ? { html: params.content.html, text: params.content.text }
-    : { text: params.content.text as string };
+  let content: { react: React.ReactElement } | { html: string; text?: string } | { text: string };
+
+  if ("react" in params.content && params.content.react) {
+    content = { react: params.content.react };
+  } else if ("html" in params.content && params.content.html) {
+    content = { html: params.content.html, text: params.content.text };
+  } else if ("text" in params.content && params.content.text) {
+    content = { text: params.content.text };
+  } else {
+    throw new Error("Email content is required");
+  }
 
   const { data, error } = await resend.emails.send({
     ...content,
