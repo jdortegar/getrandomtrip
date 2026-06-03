@@ -20,14 +20,31 @@ interface NewsletterGoLiveProps {
   appUrl?: string;
 }
 
-const DEFAULT_URL = "https://getrandomtrip.netlify.app";
+const BASE_URL = "https://getrandomtrip.com";
+
+const img = (path: string) => `${BASE_URL}${path}`;
 
 export default function NewsletterGoLive({
-  appUrl = DEFAULT_URL,
+  appUrl: _appUrl = BASE_URL,
 }: NewsletterGoLiveProps) {
   return (
     <Html lang="es">
       <Head>
+        {/* Google Fonts link — loaded by browsers and Gmail/Apple Mail */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;700&family=Nothing+You+Could+Do&display=swap"
+        />
+        <Font
+          fontFamily="Nothing You Could Do"
+          fallbackFontFamily="Georgia"
+          webFont={{
+            url: "https://fonts.gstatic.com/s/nothingyoucoulddo/v20/oY1B8fbBpaP5OX3DtrRYf_Q2BPB1SnfZb0OJ.woff2",
+            format: "woff2",
+          }}
+          fontWeight={400}
+          fontStyle="normal"
+        />
         <Font
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
@@ -85,24 +102,27 @@ export default function NewsletterGoLive({
       <Body style={body}>
         <Container style={container}>
           {/* ── Hero ── */}
-          <Section
-            style={{
-              ...heroSection,
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.52),rgba(0,0,0,0.52)),url(${appUrl}/images/newsletter/hero-bg.png)`,
-            }}
-          >
-            <Img
-              src={`${appUrl}/assets/logos/logo_getrandomtrip_white.png`}
-              width="130"
-              alt="GetRandomTrip"
-              style={logo}
-            />
-            <Heading style={heroHeading}>SERENDIPIA DISEÑADA</Heading>
-            <Text style={heroSubtext}>
-              Diseñamos tu viaje y te revelamos el destino desde 48h antes.
+          <Section style={heroSection}>
+            <Row>
+              <Column>
+                <Img
+                  src={img("/images/newsletter/hero-bg.png")}
+                  width="600"
+                  alt="SERENDIPIA DISEÑADA — Diseñamos tu viaje y te revelamos el destino desde 48h antes."
+                  style={{ display: "block", width: "100%" }}
+                />
+              </Column>
+            </Row>
+          </Section>
+
+          {/* ── CTA ── */}
+          <Section style={ctaSection}>
+            <Text style={ctaBodyText}>
+              Diseñamos tu escapada según tus preferencias, cuidando destino,
+              logística y sorpresa.
             </Text>
-            <Button href={appUrl} style={ctaButton}>
-              GET RANDOMTRIP
+            <Button href={BASE_URL} style={ctaButton}>
+              GETRANDOMTRIP!
             </Button>
           </Section>
 
@@ -118,103 +138,104 @@ export default function NewsletterGoLive({
 
           {/* ── Punto de Partida ── */}
           <Section style={midSection}>
-            <Heading style={midHeading}>punto de partida</Heading>
-            <Text style={midTagline}>dale forma a tu aventura</Text>
+            <Text style={midTagline}>DALE FORMA A TU AVENTURA</Text>
+            <Heading style={midHeading}>PUNTO DE PARTIDA</Heading>
             <Text style={midDescription}>
               ¿Con quién vas a escribir tu próxima historia?
-            </Text>
-            <Text style={midBodyText}>
-              Diseñamos tu escapada según tus preferencias, cuidando destino,
-              logística y sorpresa.
             </Text>
           </Section>
 
           {/* ── Cards: SOLO + EN GRUPO ── */}
           <Row style={{ margin: "0", padding: "0" }}>
-            <Column style={cardColumn}>
-              <Section
-                style={{
-                  ...cardSection,
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url(${appUrl}/images/newsletter/card-solo.png)`,
-                }}
-              >
-                <Img
-                  src={`${appUrl}/images/newsletter/trustpilot.png`}
-                  width="70"
-                  alt="Trustpilot 4.6"
-                  style={trustpilot}
-                />
-                <Heading style={cardTitle}>SOLO</Heading>
-                <Text style={cardSubtitle}>
-                  Aventura personal sin compromisos.
-                </Text>
-              </Section>
+            <Column
+              style={{
+                ...cardColumn,
+                paddingLeft: "30px",
+                paddingRight: "6px",
+              }}
+            >
+              <Img
+                src={img("/images/newsletter/card-solo.png")}
+                width="264"
+                alt="SOLO — Aventura personal sin compromisos."
+                style={{ display: "block", width: "100%", borderRadius: "12px" }}
+              />
             </Column>
-            <Column style={cardColumn}>
-              <Section
-                style={{
-                  ...cardSection,
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url(${appUrl}/images/newsletter/card-grupo.png)`,
-                }}
-              >
-                <Img
-                  src={`${appUrl}/images/newsletter/trustpilot.png`}
-                  width="70"
-                  alt="Trustpilot 4.6"
-                  style={trustpilot}
-                />
-                <Heading style={cardTitle}>EN GRUPO</Heading>
-                <Text style={cardSubtitle}>Experiencias compartidas.</Text>
-              </Section>
+            <Column
+              style={{
+                ...cardColumn,
+                paddingLeft: "6px",
+                paddingRight: "30px",
+              }}
+            >
+              <Img
+                src={img("/images/newsletter/card-grupo.png")}
+                width="264"
+                alt="EN GRUPO — Experiencias compartidas."
+                style={{ display: "block", width: "100%", borderRadius: "12px" }}
+              />
             </Column>
           </Row>
 
+          {/* ── Spacer between card rows ── */}
+          <Section style={{ padding: "6px 0" }} />
+
           {/* ── Card: EN PAREJA (full width) ── */}
-          <Section
-            style={{
-              ...parejaCard,
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.55)),url(${appUrl}/images/newsletter/card-pareja.png)`,
-            }}
-          >
-            <Img
-              src={`${appUrl}/images/newsletter/trustpilot.png`}
-              width="70"
-              alt="Trustpilot 4.6"
-              style={trustpilot}
-            />
-            <Heading style={cardTitle}>EN PAREJA</Heading>
-            <Text style={cardSubtitle}>Escapadas románticas.</Text>
-          </Section>
+          <Row>
+            <Column style={{ paddingLeft: "30px", paddingRight: "30px" }}>
+              <Img
+                src={img("/images/newsletter/card-pareja.png")}
+                width="540"
+                alt="EN PAREJA — Escapadas románticas."
+                style={{ display: "block", width: "100%", borderRadius: "12px" }}
+              />
+            </Column>
+          </Row>
 
           {/* ── Footer ── */}
           <Section style={footerSection}>
-            <Row style={{ marginBottom: "16px" }}>
+            <Row>
               <Column align="center">
-                <Link
-                  href="https://www.facebook.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={`${appUrl}/images/newsletter/social-facebook.png`}
-                    width="24"
-                    height="24"
-                    alt="Facebook"
-                  />
-                </Link>
+                <Text style={footerCopyright}>© 2026 RANDOMTRIP</Text>
+              </Column>
+            </Row>
+            <Row>
+              <Column align="center">
+                <Text style={footerTagline}>
+                  VIAJAR TAMBIÉN ES SOLTAR EL CONTROL.
+                </Text>
+              </Column>
+            </Row>
+            <Row>
+              <Column style={{ height: "60px" }} />
+            </Row>
+            <Row>
+              <Column align="center">
                 <Link
                   href="https://www.instagram.com/getrandomtrip"
                   style={socialLink}
                 >
                   <Img
-                    src={`${appUrl}/images/newsletter/social-instagram.png`}
+                    src={img("/images/newsletter/social-instagram.png")}
                     width="24"
                     height="24"
                     alt="Instagram"
                   />
                 </Link>
+                <Link
+                  href="https://www.facebook.com/getrandomtrip"
+                  style={socialLink}
+                >
+                  <Img
+                    src={img("/images/newsletter/social-facebook.png")}
+                    width="24"
+                    height="24"
+                    alt="Facebook"
+                  />
+                </Link>
                 <Link href="https://x.com/getrandomtrip" style={socialLink}>
                   <Img
-                    src={`${appUrl}/images/newsletter/social-x.png`}
+                    src={img("/images/newsletter/social-x.png")}
                     width="24"
                     height="24"
                     alt="X"
@@ -222,9 +243,6 @@ export default function NewsletterGoLive({
                 </Link>
               </Column>
             </Row>
-            <Text style={footerText}>
-              © 2026 Randomtrip · Viajar también es soltar el control.
-            </Text>
           </Section>
         </Container>
       </Body>
@@ -247,53 +265,42 @@ const container: React.CSSProperties = {
   margin: "0 auto",
 };
 
-// Hero
 const heroSection: React.CSSProperties = {
   backgroundColor: "#1a1a1a",
-  backgroundSize: "cover",
-  backgroundPosition: "center top",
+};
+
+const ctaSection: React.CSSProperties = {
+  backgroundColor: "#ffffff",
+  padding: "48px 40px",
   textAlign: "center",
-  padding: "56px 40px 52px",
 };
 
-const logo: React.CSSProperties = {
-  margin: "0 auto 36px",
-  display: "block",
-};
-
-const heroHeading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Impact, Arial Black, sans-serif",
-  fontSize: "52px",
-  fontWeight: "800",
-  color: "#ffffff",
-  margin: "0 0 14px",
-  lineHeight: "1",
-  letterSpacing: "1px",
-  textTransform: "uppercase",
-};
-
-const heroSubtext: React.CSSProperties = {
-  color: "#ffffff",
+const ctaBodyText: React.CSSProperties = {
+  color: "#888787",
   fontSize: "13px",
-  fontWeight: "500",
-  margin: "0 auto 28px",
-  lineHeight: "1.6",
-  maxWidth: "320px",
+  fontFamily: "'Barlow', Arial, sans-serif",
+  fontWeight: "400",
+  margin: "0 auto 32px",
+  lineHeight: "1.7",
+  maxWidth: "340px",
+  textAlign: "center",
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#ffffff",
-  color: "#172c36",
-  padding: "12px 32px",
-  borderRadius: "3px",
+  backgroundColor: "#facc15",
+  color: "#1f2937",
+  fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
-  fontWeight: "700",
-  letterSpacing: "0.5px",
+  fontWeight: "600",
+  letterSpacing: "1.5px",
+  lineHeight: "24px",
+  textTransform: "uppercase",
   textDecoration: "none",
+  padding: "16px 40px",
+  borderRadius: "2px",
   display: "inline-block",
 };
 
-// Quote
 const quoteSection: React.CSSProperties = {
   backgroundColor: "#fdf9f9",
   padding: "28px 48px",
@@ -301,11 +308,13 @@ const quoteSection: React.CSSProperties = {
 };
 
 const quoteText: React.CSSProperties = {
-  color: "#595757",
+  color: "#5A5858",
   fontSize: "12px",
-  fontWeight: "500",
+  fontFamily: "'Barlow', Arial, sans-serif",
+  textAlign: "left",
+  fontWeight: "400",
   fontStyle: "italic",
-  lineHeight: "1.7",
+  lineHeight: "3",
   margin: "0",
 };
 
@@ -314,111 +323,79 @@ const quoteAuthor: React.CSSProperties = {
   fontWeight: "400",
 };
 
-// Mid section
 const midSection: React.CSSProperties = {
   backgroundColor: "#ffffff",
-  padding: "36px 40px 28px",
+  padding: "48px 40px 40px",
   textAlign: "center",
 };
 
-const midHeading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Impact, Arial Black, sans-serif",
-  fontSize: "44px",
+const midTagline: React.CSSProperties = {
+  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
+  color: "#4f96b6",
+  fontSize: "12px",
   fontWeight: "700",
-  color: "#3f3f3f",
-  margin: "0 0 8px",
-  lineHeight: "1",
-  textTransform: "lowercase",
+  letterSpacing: "6px",
+  textTransform: "uppercase",
+  margin: "0 0 12px",
+  lineHeight: "1.4",
 };
 
-const midTagline: React.CSSProperties = {
-  color: "#4f96b6",
-  fontSize: "13px",
-  fontWeight: "700",
-  margin: "0 0 8px",
-  lineHeight: "1.5",
+const midHeading: React.CSSProperties = {
+  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
+  fontSize: "48px",
+  fontWeight: "800",
+  color: "#3f3f3f",
+  margin: "0 0 20px",
+  lineHeight: "1",
+  textTransform: "uppercase",
 };
 
 const midDescription: React.CSSProperties = {
-  color: "#888787",
-  fontSize: "13px",
+  color: "#888",
+  fontSize: "12px",
   fontWeight: "400",
-  margin: "0 0 12px",
-  lineHeight: "1.5",
-};
-
-const midBodyText: React.CSSProperties = {
-  color: "#888787",
-  fontSize: "13px",
-  fontWeight: "500",
   margin: "0",
   lineHeight: "1.6",
 };
 
-// Cards
 const cardColumn: React.CSSProperties = {
   width: "50%",
   padding: "0",
 };
 
-const cardSection: React.CSSProperties = {
-  backgroundColor: "#2a2a2a",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  textAlign: "left",
-  padding: "20px 20px 24px",
-  minHeight: "220px",
-};
 
-const parejaCard: React.CSSProperties = {
-  backgroundColor: "#2a2a2a",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  textAlign: "left",
-  padding: "32px 28px 36px",
-  minHeight: "180px",
-};
-
-const trustpilot: React.CSSProperties = {
-  marginBottom: "auto",
-  display: "block",
-};
-
-const cardTitle: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Impact, Arial Black, sans-serif",
-  fontSize: "38px",
-  fontWeight: "800",
-  color: "#ffffff",
-  margin: "16px 0 4px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const cardSubtitle: React.CSSProperties = {
-  color: "#ffffff",
-  fontSize: "14px",
-  fontWeight: "400",
-  margin: "0",
-  lineHeight: "1.4",
-};
-
-// Footer
 const footerSection: React.CSSProperties = {
+  marginTop: "20px",
   backgroundColor: "#ffffff",
-  borderTop: "1px solid #ebebeb",
   padding: "24px 32px 28px",
   textAlign: "center",
 };
 
 const socialLink: React.CSSProperties = {
   display: "inline-block",
-  margin: "0 8px",
+  margin: "0 15px",
 };
 
-const footerText: React.CSSProperties = {
-  color: "#616161",
-  fontSize: "10px",
-  fontWeight: "500",
-  margin: "8px 0 0",
+const footerCopyright: React.CSSProperties = {
+  fontFamily: "'Barlow', Arial, sans-serif",
+  color: "#626262",
+  fontSize: "9px",
+  fontWeight: "400",
+  letterSpacing: "1px",
+  textTransform: "uppercase",
+  textAlign: "center",
+  margin: "0 0 10px",
+  lineHeight: "1.5",
+};
+
+const footerTagline: React.CSSProperties = {
+  fontFamily: "'Barlow', Arial, sans-serif",
+  color: "#626262",
+  fontSize: "9px",
+  fontWeight: "400",
+  letterSpacing: "1px",
+  textTransform: "uppercase",
+  textAlign: "center",
+  margin: "0",
   lineHeight: "1.5",
 };
