@@ -1,7 +1,10 @@
 {
   "mcpServers": {
     "figma": {
-      "url": "https://mcp.figma.com/mcp"
+      "url": "https://mcp.figma.com/mcp",
+      "headers": {
+        "X-Figma-Token": "YOUR_FIGMA_TOKEN"
+      }
     }
   }
 }

@@ -158,7 +158,11 @@ export default function NewsletterGoLive({
                 src={img("/images/newsletter/card-solo.png")}
                 width="264"
                 alt="SOLO — Aventura personal sin compromisos."
-                style={{ display: "block", width: "100%", borderRadius: "12px" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  borderRadius: "12px",
+                }}
               />
             </Column>
             <Column
@@ -172,7 +176,11 @@ export default function NewsletterGoLive({
                 src={img("/images/newsletter/card-grupo.png")}
                 width="264"
                 alt="EN GRUPO — Experiencias compartidas."
-                style={{ display: "block", width: "100%", borderRadius: "12px" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  borderRadius: "12px",
+                }}
               />
             </Column>
           </Row>
@@ -187,7 +195,11 @@ export default function NewsletterGoLive({
                 src={img("/images/newsletter/card-pareja.png")}
                 width="540"
                 alt="EN PAREJA — Escapadas románticas."
-                style={{ display: "block", width: "100%", borderRadius: "12px" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  borderRadius: "12px",
+                }}
               />
             </Column>
           </Row>
@@ -341,7 +353,7 @@ const midTagline: React.CSSProperties = {
 };
 
 const midHeading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
+  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "48px",
   fontWeight: "800",
   color: "#3f3f3f",
@@ -362,7 +374,6 @@ const cardColumn: React.CSSProperties = {
   width: "50%",
   padding: "0",
 };
-
 
 const footerSection: React.CSSProperties = {
   marginTop: "20px",

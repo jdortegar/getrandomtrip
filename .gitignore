@@ -43,3 +43,6 @@ yarn-error.log*
 next-env.d.ts
 .superpowers/
 .worktrees/
+
+# MCP config (may contain secrets)
+.mcp.json
