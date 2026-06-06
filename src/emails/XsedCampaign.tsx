@@ -17,7 +17,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-const BASE_URL = "http://localhost:3010";
+const BASE_URL = "https://getrandomtrip.com";
 const XSED_URL = `${BASE_URL}/es/xsed`;
 
 const img = (path: string) => `${BASE_URL}${path}`;
@@ -30,6 +30,17 @@ export default function XsedCampaign() {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;700;800&family=Barlow:wght@400;500;600;700&display=swap"
         />
+        <style>{`
+          @media only screen and (max-width: 480px) {
+            .col-half {
+              display: block !important;
+              width: 100% !important;
+              padding-left: 20px !important;
+              padding-right: 20px !important;
+              margin-bottom: 16px !important;
+            }
+          }
+        `}</style>
         <Font
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
@@ -131,24 +142,16 @@ export default function XsedCampaign() {
           <Section style={dropFeaturedSection}>
             <Row>
               <Column>
-                <div style={dropImageWrapper}>
-                  <Img
-                    src={img("/images/newsletter/xsed-drop-mendoza.png")}
-                    width="540"
-                    alt="Mendoza desde arriba — XSED Nº5"
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      borderRadius: "4px",
-                    }}
-                  />
-                  <div style={dropBadgeOverlay}>
-                    <Text style={dropBadgeText}>
-                      <span style={badgeAccent}>|</span> XSED{" "}
-                      <span style={badgeAccent}>Nº5</span>
-                    </Text>
-                  </div>
-                </div>
+                <Img
+                  src={img("/images/newsletter/xsed-drop-mendoza.png")}
+                  width="540"
+                  alt="Mendoza desde arriba — XSED Nº5"
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    borderRadius: "4px",
+                  }}
+                />
               </Column>
             </Row>
             <Row>
@@ -163,47 +166,23 @@ export default function XsedCampaign() {
           {/* ── Two smaller drops ── */}
           <Row style={{ margin: "0", padding: "0 0 16px" }}>
             <Column style={smallDropColumnLeft}>
-              <div style={dropImageWrapper}>
-                <Img
-                  src={img("/images/newsletter/xsed-drop-formosa.png")}
-                  width="264"
-                  alt="Formosa tiene un secreto — XSED Nº4"
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    borderRadius: "4px",
-                  }}
-                />
-                <div style={dropBadgeOverlay}>
-                  <Text style={dropBadgeText}>
-                    <span style={badgeAccent}>|</span> XSED{" "}
-                    <span style={badgeAccent}>Nº4</span>
-                  </Text>
-                </div>
-              </div>
+              <Img
+                src={img("/images/newsletter/xsed-drop-formosa.png")}
+                width="264"
+                alt="Formosa tiene un secreto — XSED Nº4"
+                style={{ display: "block", width: "100%", borderRadius: "4px" }}
+              />
               <Text style={dropDate}>20 marzo 2026</Text>
               <Text style={dropTitle}>Formosa tiene un secreto</Text>
               <Hr style={dropDivider} />
             </Column>
             <Column style={smallDropColumnRight}>
-              <div style={dropImageWrapper}>
-                <Img
-                  src={img("/images/newsletter/xsed-drop-tucuman.png")}
-                  width="264"
-                  alt="Tucumán star night — XSED Nº3"
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    borderRadius: "4px",
-                  }}
-                />
-                <div style={dropBadgeOverlay}>
-                  <Text style={dropBadgeText}>
-                    <span style={badgeAccent}>|</span> XSED{" "}
-                    <span style={badgeAccent}>Nº3</span>
-                  </Text>
-                </div>
-              </div>
+              <Img
+                src={img("/images/newsletter/xsed-drop-tucuman.png")}
+                width="264"
+                alt="Tucumán star night — XSED Nº3"
+                style={{ display: "block", width: "100%", borderRadius: "4px" }}
+              />
               <Text style={dropDate}>2 enero 2026</Text>
               <Text style={dropTitle}>Tucumán star night</Text>
               <Hr style={dropDivider} />
@@ -231,7 +210,7 @@ export default function XsedCampaign() {
 
           {/* ── Testimonials ── */}
           <Row style={testimonialsRow}>
-            <Column style={testimonialColumn}>
+            <Column style={testimonialColumn} className="col-half">
               <Section style={testimonialCard}>
                 <Text style={testimonialQuote}>
                   Compré el Drop el domingo. El sábado estaba tomando vino en un
@@ -256,7 +235,7 @@ export default function XsedCampaign() {
                 </Link>
               </Section>
             </Column>
-            <Column style={testimonialColumn}>
+            <Column style={testimonialColumn} className="col-half">
               <Section style={testimonialCard}>
                 <Text style={testimonialQuote}>
                   La adrenalina de abrir el WhatsApp 48 horas antes para ver a
@@ -441,34 +420,6 @@ const dropFeaturedSection: React.CSSProperties = {
   marginBottom: "40px",
 };
 
-const dropImageWrapper: React.CSSProperties = {
-  position: "relative",
-  display: "block",
-  fontSize: "0",
-  lineHeight: "0",
-};
-
-const dropBadgeOverlay: React.CSSProperties = {
-  position: "absolute",
-  top: "20px",
-  left: "20px",
-  padding: "3px 8px",
-};
-
-const badgeAccent: React.CSSProperties = {
-  color: "#d97e4a",
-};
-
-const dropBadgeText: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#ffffff",
-  fontSize: "12px",
-  fontWeight: "700",
-  margin: "0",
-  lineHeight: "1.4",
-  letterSpacing: "3px",
-};
-
 const dropDate: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
   color: "#d97e4a",
@@ -481,7 +432,7 @@ const dropDate: React.CSSProperties = {
 };
 
 const dropTitle: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Impact, 'Arial Narrow', Arial, sans-serif",
+  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
   color: "#888787",
   fontSize: "25px",
   fontWeight: "300",
