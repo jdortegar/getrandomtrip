@@ -1,6 +1,9 @@
 import { headers } from "next/headers";
+import { getServerSession } from "next-auth";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { authOptions } from "@/lib/auth";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { countryToTimezone } from "@/lib/xsed/country-tz";
 import { isLocalWindowOpen } from "@/lib/xsed/window";
 import { getCurrentXsedDrop } from "@/lib/data/xsed";
@@ -21,10 +24,11 @@ export default async function XsedBookPage({ params }: Props) {
   // request's IP. We map it to a timezone and check if it's Sunday 4pm–8pm
   // local time. If not, we render the unavailable page — same URL, no redirect,
   // nothing to bypass via URL manipulation.
-  const reqHeaders = await headers();
+  const [reqHeaders, session] = await Promise.all([headers(), getServerSession(authOptions)]);
+  const isAdmin = session?.user ? hasRoleAccess(session.user, "admin") : false;
   const country = reqHeaders.get("x-country") ?? "";
   const tz = countryToTimezone(country) ?? "America/Argentina/Buenos_Aires";
-  const bypassWindow = process.env.XSED_BYPASS_WINDOW === "true";
+  const bypassWindow = isAdmin || process.env.XSED_BYPASS_WINDOW === "true";
   const windowOpen = bypassWindow || isLocalWindowOpen(tz);
 
   if (!windowOpen) {
