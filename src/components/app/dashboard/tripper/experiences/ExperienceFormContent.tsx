@@ -7,13 +7,9 @@ import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
 import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
 import { AboutExperienceStep } from "./steps/AboutExperienceStep";
 import { AboutDestinationStep } from "./steps/AboutDestinationStep";
-import { CapacityDurationStep } from "./steps/CapacityDurationStep";
-import { CapacityPricingStep } from "./steps/CapacityPricingStep";
-import { LogisticsTransportStep } from "./steps/LogisticsTransportStep";
 import { LogisticsAccommodationStep } from "./steps/LogisticsAccommodationStep";
 import { ActivitiesListStep } from "./steps/ActivitiesListStep";
 import { ItineraryStep } from "./steps/ItineraryStep";
-import { InclusionsStep } from "./steps/InclusionsStep";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ExperienceFormDraft,
@@ -58,10 +54,6 @@ function resolveStepContent(
       );
   }
   if (activeTab === "logistics") {
-    if (substepId === "transport")
-      return (
-        <LogisticsTransportStep copy={copy} form={form} onChange={onChange} />
-      );
     if (substepId === "accommodation")
       return (
         <LogisticsAccommodationStep
@@ -76,18 +68,6 @@ function resolveStepContent(
       return <ActivitiesListStep copy={copy} form={form} onChange={onChange} />;
     if (substepId === "itinerary")
       return <ItineraryStep copy={copy} form={form} onChange={onChange} />;
-    if (substepId === "inclusions")
-      return <InclusionsStep copy={copy} form={form} onChange={onChange} />;
-  }
-  if (activeTab === "capacity") {
-    if (substepId === "capacity-duration")
-      return (
-        <CapacityDurationStep copy={copy} form={form} onChange={onChange} />
-      );
-    if (substepId === "pricing")
-      return (
-        <CapacityPricingStep copy={copy} form={form} onChange={onChange} />
-      );
   }
   return null;
 }

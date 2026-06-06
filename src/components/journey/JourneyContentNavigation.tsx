@@ -17,6 +17,7 @@ interface Tab {
 interface JourneyContentNavigationProps {
   activeTab: string;
   className?: string;
+  completedTabIds?: string[];
   hideProfile?: boolean;
   onBack?: () => void;
   onTabChange: (tabId: string) => void;
@@ -27,6 +28,7 @@ interface JourneyContentNavigationProps {
 export default function JourneyContentNavigation({
   activeTab,
   className,
+  completedTabIds,
   hideProfile = false,
   onBack,
   onTabChange,
@@ -105,7 +107,9 @@ export default function JourneyContentNavigation({
                 const isActive = tab.id === activeTab;
                 const isClickable = index <= activeTabIndex;
                 const stepNumber = index + 1;
-                const isCompleted = isTabComplete(tab.id);
+                const isCompleted = completedTabIds
+                  ? completedTabIds.includes(tab.id)
+                  : isTabComplete(tab.id);
 
                 return (
                   <div key={tab.id} className="flex items-center gap-1">

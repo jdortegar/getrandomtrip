@@ -731,7 +731,7 @@
           },
           {
             "id": "experience",
-            "title": "EXPERIENCE",
+            "title": "Experience",
             "description": "The only thing you define here is the per-person budget for travel and accommodation. That's your ceiling. We take care of the rest."
           }
         ]
@@ -3199,28 +3199,12 @@
             {
               "id": "experience",
               "title": "Experience",
-              "description": "Name, type, level and who can take part."
+              "description": "Name, type, level, and who can take the experience."
             },
             {
               "id": "destination",
               "title": "Destination",
-              "description": "Country and excuse."
-            }
-          ]
-        },
-        {
-          "id": "capacity",
-          "label": "Capacity & Price",
-          "substeps": [
-            {
-              "id": "capacity-duration",
-              "title": "Capacity & duration",
-              "description": "Number of travelers and recommended duration"
-            },
-            {
-              "id": "pricing",
-              "title": "Price & estimated supply",
-              "description": "Base price and public display price"
+              "description": "Country, city and trip excuse."
             }
           ]
         },
@@ -3229,35 +3213,41 @@
           "label": "Logistics & accommodation",
           "substeps": [
             {
-              "id": "transport",
-              "title": "Transport",
-              "description": "Trip logistics"
-            },
-            {
               "id": "accommodation",
-              "title": "Accommodation",
-              "description": "Hotels and suggested accommodation type."
+              "title": "Logistics & accommodation",
+              "description": "Suggested stays and days."
             }
           ]
         },
         {
           "id": "activities",
-          "label": "Activities & itinerary",
+          "label": "Activities & Itinerary",
           "substeps": [
             {
               "id": "activities-list",
               "title": "Activities",
-              "description": "Suggested activities for the experience."
+              "description": "Transport suggestion"
             },
             {
               "id": "itinerary",
               "title": "Itinerary",
-              "description": "Broken down by day."
+              "description": "Broken down by day"
+            }
+          ]
+        },
+        {
+          "id": "media",
+          "label": "Marketing content",
+          "substeps": [
+            {
+              "id": "tags",
+              "title": "Tags, Highlights & Media",
+              "description": "Image gallery and Tags"
             },
             {
-              "id": "inclusions",
-              "title": "Inclusions / Exclusions",
-              "description": "What is and isn't included in the experience."
+              "id": "visibility",
+              "title": "Visibility",
+              "description": "Randomtrip validations"
             }
           ]
         }

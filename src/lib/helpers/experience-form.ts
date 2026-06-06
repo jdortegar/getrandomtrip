@@ -15,14 +15,7 @@ export function getMissingFields(
       if (!form.destinationCity) m.push(labels.city ?? "Ciudad de destino");
       if (!form.excuseKey) m.push(labels.excuseKey ?? "Excusa del viaje");
       break;
-    case "capacity":
-      if (!(form.basePrice > 0)) m.push(labels.basePrice ?? "Precio base");
-      if (!form.displayPrice)
-        m.push(labels.displayPrice ?? "Precio de visualización");
-      break;
     case "logistics":
-      if (!form.travelTime)
-        m.push(labels.estimatedTravelTime ?? "Tiempo estimado de traslado");
       if (!form.accommodations[0]?.hotelName)
         m.push(labels.hotelName ?? "Nombre del hotel");
       if (!form.accommodations[0]?.hotelLocation)
@@ -34,6 +27,8 @@ export function getMissingFields(
       if (!form.itinerary[0]?.title)
         m.push(labels.itineraryTitle ?? "Titulo del día 1");
       break;
+    case "media":
+      return m;
   }
   return m;
 }
@@ -52,16 +47,15 @@ export function isExperienceTabComplete(
         form.destinationCity &&
         form.excuseKey
       );
-    case "capacity":
-      return !!(form.basePrice > 0 && form.displayPrice);
     case "logistics":
       return !!(
-        form.travelTime &&
         form.accommodations[0]?.hotelName &&
         form.accommodations[0]?.hotelLocation
       );
     case "activities":
       return !!(form.activities[0]?.name && form.itinerary[0]?.title);
+    case "media":
+      return !!(form.tags.length > 0 || form.highlights.length > 0);
     default:
       return false;
   }

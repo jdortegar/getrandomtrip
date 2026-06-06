@@ -212,6 +212,7 @@ export function NewExperienceShell({
       <JourneyContentNavigation
         activeTab={activeTab}
         className="py-6"
+        completedTabIds={completedTabIds}
         hideProfile
         onTabChange={handleTabChange}
         tabs={navTabs}
