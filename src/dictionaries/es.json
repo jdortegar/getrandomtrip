@@ -3178,6 +3178,7 @@
       "createTitle": "CREAR EXPERIENCIA",
       "editTitle": "EDITAR EXPERIENCIA",
       "createSubmit": "Crear Experiencia",
+      "requiredFieldsLabel": "Campos requeridos",
       "actionBar": {
         "clearAll": "Borrar todo",
         "next": "Siguiente",
@@ -3204,7 +3205,7 @@
             {
               "id": "destination",
               "title": "Destino",
-              "description": "Cuál es el país y la excusa del viaje."
+              "description": "Ciudad y país y cuál es la excusa."
             }
           ]
         },
@@ -3267,17 +3268,24 @@
       },
       "fields": {
         "title": "Título",
-        "type": "Tipo de viaje",
+        "titlePlaceholder": "Escribir titular de la experiencia",
+        "type": "Tipo de experiencia",
+        "typeHint": "Puede elegir 1 o +",
         "level": "Nivel",
         "status": "Estado",
         "teaser": "Teaser",
         "teaserHint": "Descripción corta que aparece en las tarjetas (máx. 150 caracteres)",
         "description": "Descripción completa",
+        "descriptionPlaceholder": "Descripción de la experiencia completa",
         "country": "País de destino",
-        "city": "Ciudad de destino",
+        "countryPlaceholder": "Ej: Argentina",
+        "city": "Ciudad",
+        "cityPlaceholder": "Ej: Buenos Aires",
         "excuseKey": "Excusa del viaje",
+        "excuseKeyPlaceholder": "Seleccioná una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
-        "minNights": "Noches mínimas",
+        "minNights": "Duración recomendada",
+        "minNightsHint": "En días",
         "maxNights": "Noches máximas",
         "maxNightsHint": "Este nivel admite máx. {n} noches",
         "minPax": "Viajeros mínimos",
@@ -3287,7 +3295,9 @@
         "displayPrice": "Precio de visualización",
         "displayPriceHint": "Texto libre que aparece en la tarjeta pública. Ej: Desde USD 450",
         "estimatedCost": "Costo estimado por persona",
-        "season": "Temporada",
+        "season": "Meses sugeridos para viajar",
+        "seasonPlaceholder": "Seleccionar meses",
+        "seasonHint": "Meses recomendados para realizar el viaje",
         "pricingDescription": "Proveedores sugeridos, costos y sugerencia de temporada.",
         "accommodationType": "Tipo de alojamiento",
         "transport": "Transporte principal",

@@ -140,7 +140,7 @@ export function ExperienceFormContent({
         <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
           <div className="text-sm text-amber-800">
-            <span className="font-medium">Campos requeridos: </span>
+            <span className="font-medium">{copy.requiredFieldsLabel}: </span>
             {missingFields.join(", ")}
           </div>
         </div>

@@ -3178,6 +3178,7 @@
       "createTitle": "CREATE EXPERIENCE",
       "editTitle": "EDIT EXPERIENCE",
       "createSubmit": "Create Experience",
+      "requiredFieldsLabel": "Required fields",
       "actionBar": {
         "clearAll": "Clear all",
         "next": "Next",
@@ -3204,7 +3205,7 @@
             {
               "id": "destination",
               "title": "Destination",
-              "description": "Country, city and trip excuse."
+              "description": "City, country and what's the excuse."
             }
           ]
         },
@@ -3267,17 +3268,24 @@
       },
       "fields": {
         "title": "Title",
-        "type": "Trip type",
+        "titlePlaceholder": "Write the experience title",
+        "type": "Experience type",
+        "typeHint": "You can choose 1 or more",
         "level": "Level",
         "status": "Status",
         "teaser": "Teaser",
         "teaserHint": "Short description shown on cards (max 150 characters)",
         "description": "Full description",
+        "descriptionPlaceholder": "Full experience description",
         "country": "Destination country",
-        "city": "Destination city",
+        "countryPlaceholder": "E.g.: Argentina",
+        "city": "City",
+        "cityPlaceholder": "E.g.: Buenos Aires",
         "excuseKey": "Trip excuse",
+        "excuseKeyPlaceholder": "Select an excuse",
         "excuseKeyHint": "The excuse the client uses to justify the trip",
-        "minNights": "Minimum nights",
+        "minNights": "Recommended duration",
+        "minNightsHint": "In days",
         "maxNights": "Maximum nights",
         "maxNightsHint": "This level supports max {n} nights",
         "minPax": "Minimum travelers",
@@ -3287,7 +3295,9 @@
         "displayPrice": "Display price",
         "displayPriceHint": "Free text shown on the public card. E.g.: From USD 450",
         "estimatedCost": "Estimated cost per person",
-        "season": "Season",
+        "season": "Suggested travel months",
+        "seasonPlaceholder": "Select months",
+        "seasonHint": "Recommended months to take the trip",
         "pricingDescription": "Suggested providers, costs and season recommendation.",
         "accommodationType": "Accommodation type",
         "transport": "Main transport",

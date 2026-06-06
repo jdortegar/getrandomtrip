@@ -304,6 +304,7 @@ export interface TripperExperiencesDict {
     editSubmit: string;
     cancel: string;
     saving: string;
+    requiredFieldsLabel: string;
     actionBar: {
       clearAll: string;
       next: string;
@@ -338,17 +339,24 @@ export interface TripperExperiencesDict {
     };
     fields: {
       title: string;
+      titlePlaceholder: string;
       type: string;
+      typeHint: string;
       level: string;
       status: string;
       teaser: string;
       teaserHint: string;
       description: string;
+      descriptionPlaceholder: string;
       country: string;
+      countryPlaceholder: string;
       city: string;
+      cityPlaceholder: string;
       excuseKey: string;
+      excuseKeyPlaceholder: string;
       excuseKeyHint: string;
       minNights: string;
+      minNightsHint: string;
       maxNights: string;
       maxNightsHint: string;
       minPax: string;
@@ -359,6 +367,8 @@ export interface TripperExperiencesDict {
       displayPriceHint: string;
       estimatedCost: string;
       season: string;
+      seasonPlaceholder: string;
+      seasonHint: string;
       pricingDescription: string;
       accommodationType: string;
       transport: string;

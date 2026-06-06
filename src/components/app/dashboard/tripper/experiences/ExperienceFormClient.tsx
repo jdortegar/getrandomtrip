@@ -21,7 +21,7 @@ type Activity = ExperienceActivity;
 type ItineraryDay = ExperienceItineraryDay;
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import {
-  EXPERIENCE_TYPES,
+  getExperienceTypes,
   EXPERIENCE_LEVELS,
   EXPERIENCE_STATUSES,
   ACCOMMODATION_TYPES,
@@ -186,7 +186,7 @@ export default function ExperienceFormClient({
   ];
 
   const maxNightsLimit = MAX_NIGHTS_BY_LEVEL[form.level] ?? null;
-  const excuseOptions = getExcuseOptionsForType(form.type);
+  const excuseOptions = getExcuseOptionsForType(form.type, locale);
   const showExcuse = form.level === "explora-plus" || form.level === "bivouac";
 
   const set = <K extends keyof ExperienceFormData>(
@@ -334,7 +334,7 @@ export default function ExperienceFormClient({
                     className={fieldClass}
                     required
                   >
-                    {EXPERIENCE_TYPES.map((t) => (
+                    {getExperienceTypes(locale).map((t) => (
                       <option key={t.value} value={t.value}>
                         {t.label}
                       </option>

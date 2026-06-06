@@ -8,7 +8,7 @@ import { Select } from "@/components/ui/Select";
 import { Plus } from "lucide-react";
 import {
   EXPERIENCE_LEVELS,
-  EXPERIENCE_TYPES,
+  getExperienceTypes,
   EXPERIENCE_STATUSES,
 } from "@/lib/constants/packages";
 import type { ExperienceListItem } from "@/types/tripper";
@@ -94,7 +94,7 @@ export default function ExperiencesPageClient({
             value={selectedTravelType}
           >
             <option value="all">{copy.filters.allTypes}</option>
-            {EXPERIENCE_TYPES.map((travelType) => (
+            {getExperienceTypes(locale).map((travelType) => (
               <option key={travelType.value} value={travelType.value}>
                 {travelType.label}
               </option>
@@ -182,7 +182,7 @@ export default function ExperiencesPageClient({
                     </td>
                     <td className="px-5 py-4">
                       <div className="text-sm text-neutral-700 capitalize">
-                        {EXPERIENCE_TYPES.find(
+                        {getExperienceTypes(locale).find(
                           (type) => type.value === experience.type,
                         )?.label ?? experience.type}
                       </div>
