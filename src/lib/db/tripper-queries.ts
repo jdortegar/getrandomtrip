@@ -57,7 +57,7 @@ export async function getTripperBySlug(
       distinct: ["type"],
     });
 
-    const availableTypes = packages.map((pkg) => pkg.type);
+    const availableTypes = [...new Set(packages.flatMap((pkg) => pkg.type))];
 
     const { roles, ...tripperRest } = tripper;
 
@@ -304,17 +304,14 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
 
     packages.forEach((pkg) => {
       const { type, level } = pkg;
-
-      if (!packagesByType[type]) {
-        packagesByType[type] = {};
-      }
-
       const levelKey = level ?? "unknown";
-      if (!packagesByType[type][levelKey]) {
-        packagesByType[type][levelKey] = [];
-      }
+      const types = Array.isArray(type) ? type : [type];
 
-      packagesByType[type][levelKey].push(pkg);
+      types.forEach((t) => {
+        if (!packagesByType[t]) packagesByType[t] = {};
+        if (!packagesByType[t][levelKey]) packagesByType[t][levelKey] = [];
+        packagesByType[t][levelKey].push(pkg);
+      });
     });
 
     return packagesByType;

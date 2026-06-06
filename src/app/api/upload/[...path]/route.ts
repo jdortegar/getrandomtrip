@@ -9,6 +9,7 @@ export const runtime = "nodejs";
 const FEATURE_STORE: Record<string, string> = {
   avatar: "user-avatars",
   blog: "blog-media",
+  experience: "experience-media",
 };
 const DEFAULT_STORE = "user-media";
 

@@ -9,7 +9,7 @@ export interface AdminTripExperience {
   id: string;
   level: string | null;
   title: string;
-  type: string;
+  type: string[];
 }
 
 export interface AdminTripPayment {

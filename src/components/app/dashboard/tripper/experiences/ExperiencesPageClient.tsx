@@ -40,7 +40,7 @@ export default function ExperiencesPageClient({
 
   const filtered = experiences.filter((experience) => {
     const travelTypeMatch =
-      selectedTravelType === "all" || experience.type === selectedTravelType;
+      selectedTravelType === "all" || experience.type.includes(selectedTravelType);
     const statusMatch =
       selectedStatus === "all" || experience.status === selectedStatus;
     const levelMatch =
@@ -182,9 +182,13 @@ export default function ExperiencesPageClient({
                     </td>
                     <td className="px-5 py-4">
                       <div className="text-sm text-neutral-700 capitalize">
-                        {getExperienceTypes(locale).find(
-                          (type) => type.value === experience.type,
-                        )?.label ?? experience.type}
+                        {experience.type
+                          .map(
+                            (t) =>
+                              getExperienceTypes(locale).find((et) => et.value === t)
+                                ?.label ?? t,
+                          )
+                          .join(", ")}
                       </div>
                       <div className="text-xs text-neutral-500">
                         {EXPERIENCE_LEVELS.find(

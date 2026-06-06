@@ -134,7 +134,7 @@ model Experience {
   status  ExperienceStatus @default(DRAFT)
 
   // Experience metadata — type also accepts 'XSED' for Sunday drops
-  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
+  type  String[] // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
   level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
 
   // User preference matching (for filtering)
@@ -197,7 +197,7 @@ model Experience {
   supplierNotes           String?   @db.Text
 
   // Season hint (e.g. 'Alta', 'Baja', 'any')
-  season String @default("any")
+  season String[] @default([])
 
   // Visibility
   isActive   Boolean @default(true)

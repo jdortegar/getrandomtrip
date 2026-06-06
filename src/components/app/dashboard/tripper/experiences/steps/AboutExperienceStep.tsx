@@ -1,7 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { ComboboxChips } from "@/components/ui/ComboboxChips";
 import { getExperienceTypes, getExcuseOptionsForType } from "@/lib/constants/packages";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
@@ -27,7 +29,9 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
   const experienceTypes = getExperienceTypes(locale);
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
 
-  const handleTypeChange = (value: string) => {
+  const [nightsStr, setNightsStr] = useState(String(form.minNights));
+
+  const handleTypeChange = (value: string[]) => {
     onChange("type", value);
     onChange("excuseKey", "");
   };
@@ -57,18 +61,14 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <FormSelectField
+          <ComboboxChips
             id="exp-type"
             label={<>{copy.fields.type}{req}</>}
+            options={experienceTypes.map((t) => ({ value: t.value, label: t.label }))}
             value={form.type}
-            onChange={(e) => handleTypeChange(e.target.value)}
-          >
-            {experienceTypes.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </FormSelectField>
+            onChange={handleTypeChange}
+            placeholder="Select type..."
+          />
           <p className="text-xs text-neutral-400">{copy.fields.typeHint}</p>
         </div>
       </div>
@@ -78,33 +78,33 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
         <div className="flex flex-col gap-1">
           <FormField
             id="exp-min-nights"
-            type="number"
-            min={1}
+            inputMode="numeric"
             label={copy.fields.minNights}
-            value={form.minNights}
-            onChange={(e) => onChange("minNights", Number(e.target.value))}
+            value={nightsStr}
+            onChange={(e) => {
+              setNightsStr(e.target.value);
+              const n = parseInt(e.target.value, 10);
+              if (!isNaN(n) && n >= 1) onChange("minNights", n);
+            }}
+            onBlur={() => {
+              const n = parseInt(nightsStr, 10);
+              const clamped = isNaN(n) || n < 1 ? 1 : n;
+              setNightsStr(String(clamped));
+              onChange("minNights", clamped);
+            }}
           />
           <p className="text-xs text-neutral-400">{copy.fields.minNightsHint}</p>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <FormSelectField
-            id="exp-season"
-            label={copy.fields.season}
-            value={form.season}
-            onChange={(e) => onChange("season", e.target.value)}
-          >
-            <option value="" disabled>
-              {copy.fields.seasonPlaceholder}
-            </option>
-            {monthOptions.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </FormSelectField>
-          <p className="text-xs text-neutral-400">{copy.fields.seasonHint}</p>
-        </div>
+        <ComboboxChips
+          id="exp-season"
+          label={copy.fields.season}
+          options={monthOptions}
+          value={form.season}
+          onChange={(v) => onChange("season", v)}
+          placeholder={copy.fields.seasonPlaceholder}
+          hint={copy.fields.seasonHint}
+        />
 
         <div className="flex flex-col gap-1">
           <FormSelectField

@@ -57,22 +57,13 @@ export function CapacityPricingStep({ copy, form, onChange }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          id="price-estimated-cost"
-          label={copy.fields.estimatedCost}
-          placeholder="Ej: USD 2000"
-          value={form.estimatedCost}
-          onChange={(e) => onChange("estimatedCost", e.target.value)}
-        />
-        <FormField
-          id="price-season"
-          label={copy.fields.season}
-          placeholder="Alta o Baja, según experiencia"
-          value={form.season}
-          onChange={(e) => onChange("season", e.target.value)}
-        />
-      </div>
+      <FormField
+        id="price-estimated-cost"
+        label={copy.fields.estimatedCost}
+        placeholder="Ej: USD 2000"
+        value={form.estimatedCost}
+        onChange={(e) => onChange("estimatedCost", e.target.value)}
+      />
     </div>
   );
 }

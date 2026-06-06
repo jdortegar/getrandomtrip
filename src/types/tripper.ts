@@ -78,7 +78,7 @@ export interface TripperOwnExperienceListItem {
   minPax: number;
   teaser: string;
   title: string;
-  type: string;
+  type: string[];
 }
 
 /** Public fields returned by listing queries (grids, home, GET /api/trippers). */
@@ -312,17 +312,20 @@ export interface AccommodationEntry {
   hotelStars: string;
   hotelLocation: string;
   hotelDays: string;
+  hotelLink: string;
+  referredLink: string;
 }
 
 export interface ExperienceFormDraft {
   // About
   status: string;
   title: string;
-  type: string;
+  type: string[];
   level: string;
   teaser: string;
   description: string;
   heroImage: string;
+  galleryImages: string[];
   tags: string[];
   highlights: string[];
   // Destination
@@ -339,7 +342,7 @@ export interface ExperienceFormDraft {
   basePrice: number;
   displayPrice: string;
   estimatedCost: string;
-  season: string;
+  season: string[];
   // Logistics
   transport: string;
   travelTime: string;
@@ -353,6 +356,7 @@ export interface ExperienceFormDraft {
   itinerary: ItineraryDayEntry[];
   inclusions: string[];
   exclusions: string[];
+  createBlogPost: boolean;
 }
 
 export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
@@ -363,7 +367,7 @@ export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
 export interface ExperienceListItem {
   id: string;
   title: string;
-  type: string;
+  type: string[];
   level: string | null;
   status: string;
   isActive: boolean;

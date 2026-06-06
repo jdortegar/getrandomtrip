@@ -22,8 +22,12 @@ const EMPTY_ENTRY: ActivityEntry = {
   risks: "",
 };
 
+const req = <span className="text-red-500 ml-0.5">*</span>;
+
 const textareaClass =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[100px]";
+  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[120px]";
+
+const labelClass = "block font-normal text-gray-600 text-base";
 
 export function ActivitiesListStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
@@ -49,7 +53,7 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-neutral-500 -mt-1">
-        {copy.contentTabs[3]?.substeps[0]?.description}
+        {copy.contentTabs[2]?.substeps[0]?.description}
       </p>
 
       <div className="space-y-6">
@@ -58,7 +62,7 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                 <span className="text-sm text-neutral-500">
-                  Actividad {index + 1}
+                  {fields.activityLabel} {index + 1}
                 </span>
                 <button
                   type="button"
@@ -71,30 +75,19 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
               </div>
             )}
 
+            {/* Row 1: Name (required) + Duration */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 id={`act-name-${index}`}
-                label={
-                  <>
-                    <span className="font-semibold text-gray-800">
-                      {fields.activityName}
-                    </span>{" "}
-                    <span className="text-red-500">*</span>
-                  </>
-                }
-                placeholder="Ej: Boutique...."
+                label={<>{fields.activityName}{req}</>}
+                placeholder={fields.activityNamePlaceholder}
                 value={entry.name}
                 onChange={(e) => updateEntry(index, "name", e.target.value)}
               />
-
               <FormField
                 id={`act-duration-${index}`}
-                label={
-                  <span className="font-semibold text-gray-800">
-                    {fields.activityDurationRhythm}
-                  </span>
-                }
-                placeholder="Ej: 3 hs. con ritmo tranquilo"
+                label={fields.activityDurationRhythm}
+                placeholder={fields.activityDurationPlaceholder}
                 value={entry.durationRhythm}
                 onChange={(e) =>
                   updateEntry(index, "durationRhythm", e.target.value)
@@ -102,17 +95,15 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
               />
             </div>
 
+            {/* Row 2: Description */}
             <div className="flex flex-col gap-2">
-              <label
-                className="block font-semibold text-gray-800 text-base"
-                htmlFor={`act-desc-${index}`}
-              >
+              <label className={labelClass} htmlFor={`act-desc-${index}`}>
                 {fields.activityDesc}
               </label>
               <textarea
                 id={`act-desc-${index}`}
                 className={textareaClass}
-                placeholder="Ej: en la actividad podrás montar a caballo....."
+                placeholder={fields.activityDescPlaceholder}
                 value={entry.description}
                 onChange={(e) =>
                   updateEntry(index, "description", e.target.value)
@@ -120,17 +111,15 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
               />
             </div>
 
+            {/* Row 3: Risks */}
             <div className="flex flex-col gap-2">
-              <label
-                className="block font-semibold text-gray-800 text-base"
-                htmlFor={`act-risks-${index}`}
-              >
+              <label className={labelClass} htmlFor={`act-risks-${index}`}>
                 {fields.activityRisks}
               </label>
               <textarea
                 id={`act-risks-${index}`}
                 className={textareaClass}
-                placeholder="Ej: cuidados que deberian tener...."
+                placeholder={fields.activityRisksPlaceholder}
                 value={entry.risks}
                 onChange={(e) => updateEntry(index, "risks", e.target.value)}
               />

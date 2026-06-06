@@ -37,14 +37,22 @@ const EXCUSE_EN_TITLES: Record<string, string> = {
 };
 
 export function getExcuseOptionsForType(
-  type: string,
+  type: string | string[],
   locale?: string,
 ): { value: string; label: string }[] {
   const isEn = locale?.startsWith("en");
-  return getExcusesByTravelerType(type).map((e) => ({
-    value: e.key,
-    label: isEn ? (EXCUSE_EN_TITLES[e.key] ?? e.title) : e.title,
-  }));
+  const types = Array.isArray(type) ? type : [type];
+  const seen = new Set<string>();
+  return types.flatMap((t) =>
+    getExcusesByTravelerType(t).map((e) => ({
+      value: e.key,
+      label: isEn ? (EXCUSE_EN_TITLES[e.key] ?? e.title) : e.title,
+    })),
+  ).filter((o) => {
+    if (seen.has(o.value)) return false;
+    seen.add(o.value);
+    return true;
+  });
 }
 
 export const EXPERIENCE_TYPES = [

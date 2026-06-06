@@ -151,7 +151,7 @@ async function seedTrippersAndPackages() {
       // Dawson packages
       {
         ownerId: createdTrippers[0].id,
-        type: "solo",
+        type: ["solo"],
         level: "essenza",
         minNights: 2,
         maxNights: 4,
@@ -195,7 +195,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[0].id,
-        type: "couple",
+        type: ["couple"],
         level: "exploraPlus",
         minNights: 3,
         maxNights: 5,
@@ -242,7 +242,7 @@ async function seedTrippersAndPackages() {
       // Alma packages
       {
         ownerId: createdTrippers[1].id,
-        type: "family",
+        type: ["family"],
         level: "essenza",
         minNights: 4,
         maxNights: 7,
@@ -268,7 +268,7 @@ async function seedTrippersAndPackages() {
           {
             name: "Park Güell Tour",
             duration: "2 horas",
-            type: "family",
+            type: ["family"],
           },
         ],
         itinerary: {
@@ -287,7 +287,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[1].id,
-        type: "honeymoon",
+        type: ["honeymoon"],
         level: "atelier-getaway",
         minNights: 5,
         maxNights: 10,
@@ -339,7 +339,7 @@ async function seedTrippersAndPackages() {
       // Dawson solo exploraPlus package for Mexico compatibility
       {
         ownerId: createdTrippers[0].id,
-        type: "solo",
+        type: ["solo"],
         level: "exploraPlus",
         minNights: 4,
         maxNights: 6,
@@ -407,7 +407,7 @@ async function seedTrippersAndPackages() {
       // Additional Dawson packages for more excuse variety
       {
         ownerId: createdTrippers[0].id,
-        type: "solo",
+        type: ["solo"],
         level: "essenza",
         minNights: 2,
         maxNights: 3,
@@ -451,7 +451,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[0].id,
-        type: "solo",
+        type: ["solo"],
         level: "exploraPlus",
         minNights: 5,
         maxNights: 7,
@@ -504,7 +504,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[0].id,
-        type: "couple",
+        type: ["couple"],
         level: "exploraPlus",
         minNights: 4,
         maxNights: 6,
@@ -557,7 +557,7 @@ async function seedTrippersAndPackages() {
       // Randomtrip packages (all types and levels)
       {
         ownerId: createdTrippers[2].id,
-        type: "solo",
+        type: ["solo"],
         level: "essenza",
         minNights: 2,
         maxNights: 4,
@@ -601,7 +601,7 @@ async function seedTrippersAndPackages() {
       // David Ortega packages (solo, couple, family, group)
       {
         ownerId: createdTrippers[3].id,
-        type: "solo",
+        type: ["solo"],
         level: "essenza",
         minNights: 2,
         maxNights: 5,
@@ -641,7 +641,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[3].id,
-        type: "couple",
+        type: ["couple"],
         level: "exploraPlus",
         minNights: 3,
         maxNights: 6,
@@ -686,7 +686,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[3].id,
-        type: "family",
+        type: ["family"],
         level: "essenza",
         minNights: 4,
         maxNights: 7,
@@ -732,7 +732,7 @@ async function seedTrippersAndPackages() {
       },
       {
         ownerId: createdTrippers[3].id,
-        type: "group",
+        type: ["group"],
         level: "modo-explora",
         minNights: 3,
         maxNights: 5,

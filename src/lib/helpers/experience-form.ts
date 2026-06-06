@@ -15,16 +15,10 @@ export function getMissingFields(
       if (!form.destinationCity) m.push(labels.city ?? "Ciudad");
       break;
     case "logistics":
-      if (!form.accommodations[0]?.hotelName)
-        m.push(labels.hotelName ?? "Nombre del hotel");
-      if (!form.accommodations[0]?.hotelLocation)
-        m.push(labels.hotelLocation ?? "Ubicación del hotel");
       break;
     case "activities":
       if (!form.activities[0]?.name)
         m.push(labels.activityName ?? "Nombre de la actividad");
-      if (!form.itinerary[0]?.title)
-        m.push(labels.itineraryTitle ?? "Titulo del día 1");
       break;
     case "media":
       return m;
@@ -46,12 +40,9 @@ export function isExperienceTabComplete(
         form.destinationCity
       );
     case "logistics":
-      return !!(
-        form.accommodations[0]?.hotelName &&
-        form.accommodations[0]?.hotelLocation
-      );
+      return true;
     case "activities":
-      return !!(form.activities[0]?.name && form.itinerary[0]?.title);
+      return !!form.activities[0]?.name;
     case "media":
       return !!(form.tags.length > 0 || form.highlights.length > 0);
     default:

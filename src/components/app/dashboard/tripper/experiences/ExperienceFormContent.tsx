@@ -10,6 +10,8 @@ import { AboutDestinationStep } from "./steps/AboutDestinationStep";
 import { LogisticsAccommodationStep } from "./steps/LogisticsAccommodationStep";
 import { ActivitiesListStep } from "./steps/ActivitiesListStep";
 import { ItineraryStep } from "./steps/ItineraryStep";
+import { TagsMediaStep } from "./steps/TagsMediaStep";
+import { VisibilityStep } from "./steps/VisibilityStep";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ExperienceFormDraft,
@@ -19,12 +21,13 @@ import {
   getMissingFields,
   isExperienceTabComplete,
 } from "@/lib/helpers/experience-form";
-import type { SaveStatus } from "./NewExperienceShell";
+import type { SaveStatus, ExperienceImageState } from "./NewExperienceShell";
 
 interface ExperienceFormContentProps {
   activeTab: string;
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
+  imageState: ExperienceImageState;
   isSubmitting: boolean;
   saveStatus: SaveStatus;
   onChange: ExperienceFormDraftOnChange;
@@ -42,6 +45,7 @@ function resolveStepContent(
   form: ExperienceFormDraft,
   onChange: ExperienceFormDraftOnChange,
   copy: TripperExperiencesDict["form"],
+  imageState: ExperienceImageState,
 ): React.ReactNode {
   if (activeTab === "about") {
     if (substepId === "experience")
@@ -69,6 +73,12 @@ function resolveStepContent(
     if (substepId === "itinerary")
       return <ItineraryStep copy={copy} form={form} onChange={onChange} />;
   }
+  if (activeTab === "media") {
+    if (substepId === "tags")
+      return <TagsMediaStep copy={copy} form={form} onChange={onChange} imageState={imageState} />;
+    if (substepId === "visibility")
+      return <VisibilityStep copy={copy} form={form} onChange={onChange} />;
+  }
   return null;
 }
 
@@ -92,6 +102,7 @@ export function ExperienceFormContent({
   activeTab,
   copy,
   form,
+  imageState,
   isSubmitting,
   saveStatus,
   onChange,
@@ -131,7 +142,7 @@ export function ExperienceFormContent({
             label={substep.title}
             content={i === 0 ? "" : "Filtrar"}
           >
-            {resolveStepContent(activeTab, substep.id, form, onChange, copy)}
+            {resolveStepContent(activeTab, substep.id, form, onChange, copy, imageState)}
           </JourneyDropdown>
         ))}
       </Accordion>

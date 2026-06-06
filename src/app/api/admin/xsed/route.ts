@@ -55,7 +55,7 @@ export async function GET(): Promise<NextResponse> {
     if (!auth.ok) return auth.errorResponse;
 
     const drops = await prisma.experience.findMany({
-      where: { type: "XSED" },
+      where: { type: { has: "XSED" } },
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -110,7 +110,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     } = body ?? {};
 
     // Auto-generate slug as the next drop number
-    const dropCount = await prisma.experience.count({ where: { type: "XSED" } });
+    const dropCount = await prisma.experience.count({ where: { type: { has: "XSED" } } });
     const autoSlug = String(dropCount + 1);
 
     // Derive title/description from provided fields
@@ -128,7 +128,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     try {
       const drop = await prisma.experience.create({
         data: {
-          type: "XSED",
+          type: ["XSED"],
           ownerId: adminId,
           createdById: adminId,
           status: "DRAFT",

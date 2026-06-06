@@ -215,7 +215,7 @@ export async function PATCH(
     const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
       data: {
-        ...(type && { type }),
+        ...(type !== undefined && { type: Array.isArray(type) ? type : [type].filter(Boolean) }),
         level: level ?? null,
         ...(title && { title }),
         teaser: teaser ?? "",
@@ -246,7 +246,7 @@ export async function PATCH(
         maxTravelTime: maxTravelTime ?? "no-limit",
         departPref: departPref ?? "any",
         arrivePref: arrivePref ?? "any",
-        season: season ?? "any",
+        season: Array.isArray(season) ? season : [],
         titleInternal: titleInternal || null,
         slug: slug || null,
         tripDate: tripDate ? new Date(tripDate as string) : null,

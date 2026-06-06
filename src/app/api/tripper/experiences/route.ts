@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         status:
           (body.status as "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED") ||
           "DRAFT",
-        type: body.type,
+        type: Array.isArray(body.type) ? body.type : [body.type].filter(Boolean),
         level: body.level || null,
         excuseKey: body.excuseKey || null,
         minNights: body.minNights,
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         maxTravelTime: body.maxTravelTime,
         departPref: body.departPref,
         arrivePref: body.arrivePref,
-        season: body.season || "any",
+        season: Array.isArray(body.season) ? body.season : [],
       },
       select: { id: true },
     });

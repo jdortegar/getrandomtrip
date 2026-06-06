@@ -21,7 +21,7 @@ export default async function EditXsedDropPage(props: {
   const dict = await getDictionary(locale);
 
   const drop = await prisma.experience.findUnique({
-    where: { id: params.id, type: "XSED" },
+    where: { id: params.id, type: { has: "XSED" } },
   });
 
   if (!drop) {

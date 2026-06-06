@@ -42,7 +42,7 @@ export default async function EditExperiencePage(props: {
   const initialDraft: ExperienceFormDraft = {
     status: pkg.status,
     title: pkg.title,
-    type: pkg.type,
+    type: Array.isArray(pkg.type) ? pkg.type : [pkg.type].filter(Boolean),
     level: pkg.level ?? "essenza",
     teaser: pkg.teaser,
     description: pkg.description,
@@ -60,7 +60,7 @@ export default async function EditExperiencePage(props: {
     basePrice: pkg.basePrice,
     displayPrice: pkg.displayPrice,
     estimatedCost: "",
-    season: pkg.season ?? "any",
+    season: Array.isArray(pkg.season) ? pkg.season : [],
     transport: pkg.transport,
     travelTime: "",
     maxTravelTime: pkg.maxTravelTime,
@@ -86,6 +86,8 @@ export default async function EditExperiencePage(props: {
     exclusions: Array.isArray(pkg.exclusions)
       ? (pkg.exclusions as string[])
       : [],
+    galleryImages: [],
+    createBlogPost: false,
   };
 
   const dict = await getDictionary(params.locale);

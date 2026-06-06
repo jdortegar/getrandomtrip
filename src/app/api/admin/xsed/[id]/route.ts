@@ -61,7 +61,7 @@ export async function GET(_req: Request, ctx: RouteContext): Promise<NextRespons
     const { id } = await ctx.params;
 
     const drop = await prisma.experience.findUnique({
-      where: { id, type: "XSED" },
+      where: { id, type: { has: "XSED" } },
     });
 
     if (!drop) {
@@ -85,7 +85,7 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
 
     // Fetch existing record to validate status gate and check current values
     const existing = await prisma.experience.findUnique({
-      where: { id, type: "XSED" },
+      where: { id, type: { has: "XSED" } },
     });
 
     if (!existing) {
@@ -220,7 +220,7 @@ export async function DELETE(_req: Request, ctx: RouteContext): Promise<NextResp
     const { id } = await ctx.params;
 
     const existing = await prisma.experience.findUnique({
-      where: { id, type: "XSED" },
+      where: { id, type: { has: "XSED" } },
       select: { id: true, status: true },
     });
 

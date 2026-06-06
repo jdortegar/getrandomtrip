@@ -17,8 +17,12 @@ interface Props {
 
 const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "" };
 
+const req = <span className="text-red-500 ml-0.5">*</span>;
+
 const textareaClass =
   "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[120px]";
+
+const labelClass = "block font-normal text-gray-600 text-base";
 
 export function ItineraryStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
@@ -46,9 +50,9 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <p className="text-sm text-neutral-500 -mt-1">
-        {copy.contentTabs[3]?.substeps[1]?.description}
+        {copy.contentTabs[2]?.substeps[1]?.description}
       </p>
 
       <div className="space-y-6">
@@ -57,7 +61,7 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                 <span className="text-sm text-neutral-500">
-                  Día {index + 1}
+                  {fields.dayLabel} {index + 1}
                 </span>
                 <button
                   type="button"
@@ -70,34 +74,28 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
               </div>
             )}
 
+            {/* Title — ~50% width */}
             <div className="max-w-[50%] pr-2">
               <FormField
                 id={`itin-title-${index}`}
                 label={
-                  <>
-                    <span className="font-semibold text-gray-800">
-                      {fields.itineraryTitle} {index + 1}
-                    </span>{" "}
-                    <span className="text-red-500">*</span>
-                  </>
+                  <>{fields.itineraryTitle} {index + 1}{req}</>
                 }
-                placeholder="Ej: primer día en la colina"
+                placeholder={fields.itineraryTitlePlaceholder}
                 value={day.title}
                 onChange={(e) => updateDay(index, "title", e.target.value)}
               />
             </div>
 
+            {/* Description — full width */}
             <div className="flex flex-col gap-2">
-              <label
-                className="block font-semibold text-gray-800 text-base"
-                htmlFor={`itin-desc-${index}`}
-              >
+              <label className={labelClass} htmlFor={`itin-desc-${index}`}>
                 {fields.itineraryDesc}
               </label>
               <textarea
                 id={`itin-desc-${index}`}
                 className={textareaClass}
-                placeholder='Ej: el primer día fuimos a la colina llamada "Viva lava"'
+                placeholder={fields.itineraryDescPlaceholder}
                 value={day.description}
                 onChange={(e) =>
                   updateDay(index, "description", e.target.value)

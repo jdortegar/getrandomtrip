@@ -119,7 +119,7 @@ export async function findUpcomingActiveXsedExperiences(
 ): Promise<XsedListRow[]> {
   return prisma.experience.findMany({
     where: {
-      type: "XSED",
+      type: { has: "XSED" },
       status: "ACTIVE",
       OR: [{ tripDate: { gte: now } }, { tripDate: null }],
     },
@@ -130,7 +130,7 @@ export async function findUpcomingActiveXsedExperiences(
 
 export async function findLatestActiveXsedExperience(): Promise<XsedListRow | null> {
   return prisma.experience.findFirst({
-    where: { type: "XSED", status: "ACTIVE" },
+    where: { type: { has: "XSED" }, status: "ACTIVE" },
     orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
@@ -138,7 +138,7 @@ export async function findLatestActiveXsedExperience(): Promise<XsedListRow | nu
 
 export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
   return prisma.experience.findMany({
-    where: { type: "XSED", status: { in: PUBLIC_XSED_GRID_STATUSES } },
+    where: { type: { has: "XSED" }, status: { in: PUBLIC_XSED_GRID_STATUSES } },
     orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });

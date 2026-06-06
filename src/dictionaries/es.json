@@ -3216,7 +3216,7 @@
             {
               "id": "accommodation",
               "title": "Logística y alojamiento",
-              "description": "Estadías y días sugeridos."
+              "description": "Lugares, hotel, estadias sugeridas, si no lo incluis Randomtrip encontrará la mejor opción."
             }
           ]
         },
@@ -3227,12 +3227,12 @@
             {
               "id": "activities-list",
               "title": "Actividades",
-              "description": "Sugerencia de transporte"
+              "description": "Actividades sugeridas"
             },
             {
               "id": "itinerary",
               "title": "Itinerario",
-              "description": "Dividido por día"
+              "description": "Por día, evitar frases que suelen sonar \"trip turístico\" como: postales únicas, destinos soñados, todo incluido, entre otras."
             }
           ]
         },
@@ -3309,9 +3309,15 @@
         "arrivePref": "Preferencia de llegada",
         "compatibilityHint": "Estos campos ayudan al algoritmo a hacer matching con solicitudes de clientes.",
         "hotelName": "Nombre del hotel",
+        "hotelNamePlaceholder": "Ej: Four Seasons...",
+        "hotelLink": "Link Hotel",
+        "hotelLinkPlaceholder": "https://...",
+        "referredLink": "Link referido",
+        "referredLinkPlaceholder": "https://...",
         "hotelStars": "Estrellas",
         "hotelLocation": "Ubicación",
         "hotelDays": "Días sugeridos en el alojamiento",
+        "hotelDaysPlaceholder": "Ej: 1",
         "starsHint": "Hasta 5 estrellas.",
         "addAccommodation": "Agregar otro alojamiento",
         "removeAccommodation": "Quitar",
@@ -3323,16 +3329,24 @@
         "addHotel": "Agregar Hotel",
         "noHotels": "No has agregado hoteles aún.",
         "activityName": "Nombre de la actividad",
+        "activityNamePlaceholder": "Ej: Boutique....",
         "activityDuration": "Duración",
         "activityDurationRhythm": "Duración estimada y ritmo",
+        "activityDurationPlaceholder": "Ej: 3 hs. con ritmo tranquilo",
         "activityDesc": "Descripción de la actividad",
+        "activityDescPlaceholder": "Ej: en la actividad podrás montar a caballo.....",
         "activityRisks": "Riesgos o Advertencias",
+        "activityRisksPlaceholder": "Ej: cuidados que deberían tener....",
+        "activityLabel": "Actividad",
         "addActivity": "Agregar Actividad",
         "addAnotherActivity": "Agregar otra actividad",
         "removeActivity": "Quitar",
         "noActivities": "No has agregado actividades aún.",
         "itineraryTitle": "Titulo del día",
+        "itineraryTitlePlaceholder": "Ej: primer día en la colina",
         "itineraryDesc": "Descripción del día",
+        "itineraryDescPlaceholder": "Ej: el primer día fuimos a la colina llamada \"Viva lava\"",
+        "dayLabel": "Día",
         "addDay": "Agregar Día",
         "addAnotherDay": "Agregar otro día",
         "removeDay": "Quitar",
@@ -3345,8 +3359,14 @@
         "tagInput": "Nuevo tag (Enter para agregar)",
         "highlights": "Highlights",
         "highlightInput": "Nuevo highlight (Enter para agregar)",
-        "heroImage": "Imagen hero (URL)",
-        "heroImageHint": "URL de la imagen principal de la experiencia",
+        "heroImage": "Imagen hero",
+        "heroImageHint": "Imagen principal que aparece en la tarjeta de la experiencia",
+        "galleryImages": "Galería",
+        "galleryImagesHint": "Hasta 3 imágenes adicionales",
+        "uploadImage": "Subir imagen",
+        "uploading": "Subiendo…",
+        "removeImage": "Quitar",
+        "copyrightHint": "Las imágenes deben ser propias o con derechos *",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",
@@ -3372,7 +3392,9 @@
         "supplierNotes": "Notas proveedor",
         "statusLabel": "Estado",
         "statusDraft": "Borrador",
-        "statusActive": "Activo"
+        "statusActive": "Activo",
+        "createBlogPost": "Crear entrada de blog",
+        "createBlogPostHint": "Se generará un borrador con el contenido de la experiencia"
       }
     }
   },

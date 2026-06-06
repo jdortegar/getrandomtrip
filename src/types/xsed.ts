@@ -47,7 +47,7 @@ export const EMPTY_XSED_DRAFT: XsedDropDraft = {
   weatherPolicy: "",
   whatsappMessageTemplate: "",
   accommodationType: "any",
-  hotels: [{ hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "" }],
+  hotels: [{ hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "", hotelLink: "", referredLink: "" }],
   activities: [{ name: "", durationRhythm: "", description: "", risks: "" }],
   adminNotes: "",
   supplierNotes: "",

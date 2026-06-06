@@ -3216,7 +3216,7 @@
             {
               "id": "accommodation",
               "title": "Logistics & accommodation",
-              "description": "Suggested stays and days."
+              "description": "Hotels, stays and suggested days. If you leave it empty, Randomtrip will find the best option."
             }
           ]
         },
@@ -3227,12 +3227,12 @@
             {
               "id": "activities-list",
               "title": "Activities",
-              "description": "Transport suggestion"
+              "description": "Suggested activities"
             },
             {
               "id": "itinerary",
               "title": "Itinerary",
-              "description": "Broken down by day"
+              "description": "Per day, avoid phrases that sound like a \"tourist trip\" such as: unique postcards, dream destinations, all inclusive, among others."
             }
           ]
         },
@@ -3309,9 +3309,15 @@
         "arrivePref": "Arrival preference",
         "compatibilityHint": "These fields help the matching algorithm pair your package with client requests.",
         "hotelName": "Hotel name",
+        "hotelNamePlaceholder": "E.g.: Four Seasons...",
+        "hotelLink": "Hotel link",
+        "hotelLinkPlaceholder": "https://...",
+        "referredLink": "Referred link",
+        "referredLinkPlaceholder": "https://...",
         "hotelStars": "Stars",
         "hotelLocation": "Location",
         "hotelDays": "Suggested days at accommodation",
+        "hotelDaysPlaceholder": "E.g.: 1",
         "starsHint": "Up to 5 stars.",
         "addAccommodation": "Add another accommodation",
         "removeAccommodation": "Remove",
@@ -3323,16 +3329,24 @@
         "addHotel": "Add Hotel",
         "noHotels": "No hotels added yet.",
         "activityName": "Activity name",
+        "activityNamePlaceholder": "E.g.: Boutique....",
         "activityDuration": "Duration",
         "activityDurationRhythm": "Estimated duration and pace",
+        "activityDurationPlaceholder": "E.g.: 3 hrs. at a relaxed pace",
         "activityDesc": "Activity description",
+        "activityDescPlaceholder": "E.g.: during the activity you will be able to ride a horse.....",
         "activityRisks": "Risks or Warnings",
+        "activityRisksPlaceholder": "E.g.: precautions they should take....",
+        "activityLabel": "Activity",
         "addActivity": "Add Activity",
         "addAnotherActivity": "Add another activity",
         "removeActivity": "Remove",
         "noActivities": "No activities added yet.",
         "itineraryTitle": "Day title",
+        "itineraryTitlePlaceholder": "E.g.: first day on the hill",
         "itineraryDesc": "Day description",
+        "itineraryDescPlaceholder": "E.g.: on the first day we went to the hill called \"Viva lava\"",
+        "dayLabel": "Day",
         "addDay": "Add Day",
         "addAnotherDay": "Add another day",
         "removeDay": "Remove",
@@ -3345,8 +3359,14 @@
         "tagInput": "New tag (Enter to add)",
         "highlights": "Highlights",
         "highlightInput": "New highlight (Enter to add)",
-        "heroImage": "Hero image (URL)",
-        "heroImageHint": "URL of the experience's main image",
+        "heroImage": "Hero image",
+        "heroImageHint": "Main image displayed on the experience card",
+        "galleryImages": "Gallery",
+        "galleryImagesHint": "Up to 3 additional images",
+        "uploadImage": "Upload image",
+        "uploading": "Uploading…",
+        "removeImage": "Remove",
+        "copyrightHint": "Images must be your own or royalty-free *",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",
@@ -3372,7 +3392,9 @@
         "supplierNotes": "Supplier notes",
         "statusLabel": "Status",
         "statusDraft": "Draft",
-        "statusActive": "Active"
+        "statusActive": "Active",
+        "createBlogPost": "Create blog post",
+        "createBlogPostHint": "A draft will be created with the experience content"
       }
     }
   },

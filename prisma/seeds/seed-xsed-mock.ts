@@ -273,7 +273,7 @@ async function main() {
 
   const counts = await prisma.experience.groupBy({
     by: ["status"],
-    where: { type: "XSED" },
+    where: { type: { has: "XSED" } },
     _count: { _all: true },
   });
 
