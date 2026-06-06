@@ -284,7 +284,11 @@ export interface TripperExperiencesDict {
     status: string;
     price: string;
     updated: string;
+    duration: string;
+    capacity: string;
     edit: string;
+    delete: string;
+    deleteConfirm: string;
   };
   emptyState: {
     noExperiences: string;

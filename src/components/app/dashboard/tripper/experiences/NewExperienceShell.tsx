@@ -238,6 +238,14 @@ export function NewExperienceShell({
     setOpenSectionId(
       substepId ?? tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "",
     );
+    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function handleSectionChange(sectionId: string) {
+    setOpenSectionId(sectionId);
+    setTimeout(() => {
+      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
   }
 
   function handleNext() {
@@ -378,7 +386,7 @@ export function NewExperienceShell({
         userBadgeLabels={userBadgeLabels}
       />
 
-      <div className="rt-container py-8" ref={contentRef}>
+      <div className="rt-container py-8 scroll-mt-20" ref={contentRef}>
         <div className="flex flex-col lg:flex-row w-full gap-8">
           <div className="hidden lg:block lg:sticky lg:top-8 lg:self-start">
             <JourneyProgressSidebar
@@ -405,7 +413,7 @@ export function NewExperienceShell({
               onNext={handleNext}
               onSubmit={handleSubmit}
               openSectionId={openSectionId}
-              onSectionChange={setOpenSectionId}
+              onSectionChange={handleSectionChange}
               tabs={tabs}
             />
           </div>

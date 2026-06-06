@@ -671,7 +671,7 @@ const PACKAGE_TEMPLATES = {
 // Generate random package data
 function generatePackage(
   tripper: any,
-  type: string,
+  type: string, // kept as string param — converted to array at call site
   level: string,
   template: any,
 ) {
@@ -1088,7 +1088,7 @@ async function seedTrippersAndPackages() {
             packages.push({
               ...packageData,
               ownerId: tripper.id,
-              type,
+              type: [type],
               level,
             });
           }

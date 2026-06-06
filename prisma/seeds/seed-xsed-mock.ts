@@ -207,7 +207,7 @@ async function upsertDrop(drop: MockDrop) {
   const activities = benefits.filter((b) => b.type !== "ACCOMMODATION");
 
   const base = {
-    type: "XSED" as const,
+    type: ["XSED"],
     status: drop.status,
     title: drop.titleInternal,
     titleInternal: drop.titleInternal,

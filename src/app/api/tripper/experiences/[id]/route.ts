@@ -276,3 +276,51 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, roles: true },
+    });
+
+    if (!user || !hasRoleAccess(user, "tripper")) {
+      return NextResponse.json(
+        { error: "Forbidden - Tripper access only" },
+        { status: 403 },
+      );
+    }
+
+    const existing = await prisma.experience.findFirst({
+      where: { id: params.id, ownerId: user.id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Experience not found or access denied" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.experience.delete({ where: { id: params.id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting experience:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}

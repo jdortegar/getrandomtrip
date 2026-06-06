@@ -3161,7 +3161,11 @@
       "status": "Status",
       "price": "Price / person",
       "updated": "Updated",
-      "edit": "Edit"
+      "duration": "Duration",
+      "capacity": "Capacity",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this experience? This action cannot be undone."
     },
     "emptyState": {
       "noExperiences": "You don't have any experiences yet.",

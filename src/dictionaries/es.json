@@ -3161,7 +3161,11 @@
       "status": "Estado",
       "price": "Precio / persona",
       "updated": "Actualizado",
-      "edit": "Editar"
+      "duration": "Duración",
+      "capacity": "Capacidad",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta experiencia? Esta acción no se puede deshacer."
     },
     "emptyState": {
       "noExperiences": "Aún no tienes experiencias.",

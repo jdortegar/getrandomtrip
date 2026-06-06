@@ -375,6 +375,10 @@ export interface ExperienceListItem {
   displayPrice: string;
   destinationCountry: string;
   destinationCity: string;
+  minNights: number;
+  maxNights: number;
+  minPax: number;
+  maxPax: number;
   createdAt: string;
   updatedAt: string;
 }
