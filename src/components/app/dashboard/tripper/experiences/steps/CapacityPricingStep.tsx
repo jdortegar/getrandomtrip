@@ -20,7 +20,7 @@ export function CapacityPricingStep({ copy, form, onChange }: Props) {
         {copy.fields.pricingDescription}
       </p>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
           <FormField
             id="price-base"

@@ -30,7 +30,7 @@ export function JourneyDropdown({
   return (
     <AccordionPrimitive.Item
       className={cn(
-        "min-w-0 w-full bg-white rounded-lg p-6 shadow-md",
+        "min-w-0 w-full bg-white rounded-lg p-4 sm:p-6 shadow-md",
         className,
       )}
       id={id}

@@ -36,7 +36,7 @@ export function JourneyActionBar({
   showClearAll,
 }: JourneyActionBarProps) {
   return (
-    <div className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-gray-200">
+    <div className="flex items-center justify-center gap-4 sm:gap-10 mt-8 pt-6 border-t border-gray-200">
       {showClearAll ? (
         <button
           className="text-sm font-medium text-gray-900 underline hover:no-underline"

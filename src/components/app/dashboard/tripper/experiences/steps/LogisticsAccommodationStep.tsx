@@ -75,7 +75,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
             )}
 
             {/* Row 1: Name | Hotel link | Referred link */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 id={`acc-hotel-name-${index}`}
                 label={fields.hotelName}
@@ -104,7 +104,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
             </div>
 
             {/* Row 2: Days (1/3 width) */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 id={`acc-hotel-days-${index}`}
                 label={fields.hotelDays}

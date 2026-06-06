@@ -76,7 +76,7 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
             )}
 
             {/* Row 1: Name (required) + Duration */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 id={`act-name-${index}`}
                 label={<>{fields.activityName}{req}</>}

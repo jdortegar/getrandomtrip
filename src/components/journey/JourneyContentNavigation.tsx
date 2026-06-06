@@ -69,9 +69,9 @@ export default function JourneyContentNavigation({
       <div className="container mx-auto md:px-4">
         <div
           className={cn(
-            "gap-4 items-center",
+            "gap-4 items-center min-w-0",
             hideProfile
-              ? "flex justify-center"
+              ? "flex w-full justify-center"
               : "grid grid-cols-1 lg:grid-cols-[320px_1fr] justify-center md:justify-start",
           )}
         >
@@ -96,10 +96,10 @@ export default function JourneyContentNavigation({
           {tabs.length > 1 && (
             <div
               className={cn(
-                "flex items-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar",
+                "flex items-center gap-4 sm:gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar w-full min-w-0",
                 hideProfile
-                  ? "justify-center"
-                  : "justify-start md:justify-center",
+                  ? "justify-safe-center"
+                  : "justify-start md:justify-safe-center",
               )}
             >
               {/* Right Section: Navigation Tabs */}

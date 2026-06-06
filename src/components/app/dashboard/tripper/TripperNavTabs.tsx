@@ -87,7 +87,7 @@ export function TripperNavTabs() {
 
   return (
     <div className="overflow-x-auto">
-      <div className="flex justify-center gap-3 pb-1">
+      <div className="flex justify-safe-center gap-2 sm:gap-3 pb-1">
         {tabs
           .filter((tab) => !tab.adminOnly || isAdmin)
           .map((tab) => {
@@ -97,7 +97,7 @@ export function TripperNavTabs() {
               <Link
                 key={tab.href}
                 className={cn(
-                  "flex flex-col items-center gap-2.5 rounded-2xl px-5 pt-4 pb-8 text-center transition-all",
+                  "flex flex-col items-center gap-2 sm:gap-2.5 rounded-2xl px-3 sm:px-5 pt-3 sm:pt-4 pb-4 sm:pb-8 text-center transition-all",
                   active
                     ? "bg-light-blue text-white shadow-md"
                     : "bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:shadow-md hover:text-gray-700",

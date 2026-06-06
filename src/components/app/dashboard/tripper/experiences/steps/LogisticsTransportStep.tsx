@@ -25,7 +25,7 @@ export function LogisticsTransportStep({ copy, form, onChange }: Props) {
         {copy.contentTabs[2]?.substeps[0]?.description}
       </p>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormSelectField
           id="log-transport"
           label={copy.fields.suggestedTransport}
@@ -48,7 +48,7 @@ export function LogisticsTransportStep({ copy, form, onChange }: Props) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormSelectField
           id="log-max-travel-time"
           label={copy.fields.maxTravelTime}
@@ -65,7 +65,7 @@ export function LogisticsTransportStep({ copy, form, onChange }: Props) {
         <div />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormSelectField
           id="log-depart-pref"
           label={copy.fields.departPref}

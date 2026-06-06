@@ -386,7 +386,7 @@ export function NewExperienceShell({
         userBadgeLabels={userBadgeLabels}
       />
 
-      <div className="rt-container py-8 scroll-mt-20" ref={contentRef}>
+      <div className="rt-container py-4 sm:py-8 scroll-mt-20" ref={contentRef}>
         <div className="flex flex-col lg:flex-row w-full gap-8">
           <div className="hidden lg:block lg:sticky lg:top-8 lg:self-start">
             <JourneyProgressSidebar
