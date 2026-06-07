@@ -3226,6 +3226,8 @@
       "editSubmit": "Guardar Cambios",
       "cancel": "Cancelar",
       "saving": "Guardando...",
+      "saved": "Guardado",
+      "errorSave": "Error al guardar",
       "nav": {
         "sections": "Secciones",
         "progress": "Progreso"

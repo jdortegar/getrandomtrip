@@ -309,6 +309,8 @@ export interface TripperExperiencesDict {
     editSubmit: string;
     cancel: string;
     saving: string;
+    saved: string;
+    errorSave: string;
     requiredFieldsLabel: string;
     actionBar: {
       clearAll: string;

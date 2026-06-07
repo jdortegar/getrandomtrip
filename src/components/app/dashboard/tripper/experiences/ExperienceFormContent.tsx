@@ -85,7 +85,13 @@ function resolveStepContent(
   return null;
 }
 
-function SaveIndicator({ status }: { status: SaveStatus }) {
+function SaveIndicator({
+  status,
+  labels,
+}: {
+  status: SaveStatus;
+  labels: { saving: string; saved: string; error: string };
+}) {
   if (status === "idle") return null;
   return (
     <div className="flex items-center gap-1.5 text-xs text-gray-400">
@@ -93,9 +99,9 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
       {status === "saved" && <Check className="h-3 w-3 text-green-500" />}
       {status === "error" && <AlertCircle className="h-3 w-3 text-red-400" />}
       <span>
-        {status === "saving" && "Guardando..."}
-        {status === "saved" && "Guardado"}
-        {status === "error" && "Error al guardar"}
+        {status === "saving" && labels.saving}
+        {status === "saved" && labels.saved}
+        {status === "error" && labels.error}
       </span>
     </div>
   );
@@ -173,14 +179,21 @@ export function ExperienceFormContent({
       {isReadOnly ? (
         <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
           <div className="text-sm text-blue-800">
-            <span className="font-medium">En revisión — </span>
-            Tu experiencia está siendo revisada por el equipo. No podés hacer cambios hasta que recibas una respuesta.
+            <span className="font-medium">{copy.review.pendingTitle} — </span>
+            {copy.review.pendingBody}
           </div>
         </div>
       ) : (
         <div className="relative">
           <div className="absolute left-0 bottom-3">
-            <SaveIndicator status={saveStatus} />
+            <SaveIndicator
+              status={saveStatus}
+              labels={{
+                saving: copy.saving,
+                saved: copy.saved,
+                error: copy.errorSave,
+              }}
+            />
           </div>
 
           <JourneyActionBar
