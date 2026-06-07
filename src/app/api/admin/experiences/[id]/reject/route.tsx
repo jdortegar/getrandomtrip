@@ -9,6 +9,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/helpers/sendMail";
+import ExperienceRejected, { subjects as rejectedSubjects } from "@/emails/ExperienceRejected";
 
 export async function POST(
   request: Request,
@@ -74,6 +76,39 @@ export async function POST(
         reviewNote,
       },
     });
+
+    // Fire-and-forget: send rejection notification email to the experience owner.
+    // This side effect MUST NOT affect the HTTP response — failures are swallowed.
+    const ownerId = (updated as { ownerId?: string }).ownerId;
+    if (ownerId) {
+      void (async () => {
+        try {
+          const owner = await prisma.user.findUnique({
+            where: { id: ownerId },
+            select: { email: true, name: true, locale: true },
+          });
+          if (owner?.email) {
+            const locale = owner.locale === "en" ? "en" : "es";
+            await sendMail({
+              to: owner.email,
+              subject: rejectedSubjects[locale],
+              content: {
+                react: (
+                  <ExperienceRejected
+                    tripper={owner.name ?? ""}
+                    experienceTitle={(updated as { title?: string }).title ?? ""}
+                    reviewNote={reviewNote}
+                    locale={locale}
+                  />
+                ),
+              },
+            });
+          }
+        } catch (err) {
+          console.error("[notifications] reject sendMail failed:", err);
+        }
+      })();
+    }
 
     return NextResponse.json({ experience: updated });
   } catch (error) {

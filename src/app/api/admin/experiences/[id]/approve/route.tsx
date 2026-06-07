@@ -10,6 +10,8 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { validatePricingByType } from "@/lib/admin/experience-pricing";
+import { sendMail } from "@/lib/helpers/sendMail";
+import ExperienceApproved, { subjects as approvedSubjects } from "@/emails/ExperienceApproved";
 
 export async function POST(
   request: Request,
@@ -75,6 +77,38 @@ export async function POST(
         reviewNote: null,
       },
     });
+
+    // Fire-and-forget: send approval notification email to the experience owner.
+    // This side effect MUST NOT affect the HTTP response — failures are swallowed.
+    const ownerId = (updated as { ownerId?: string }).ownerId;
+    if (ownerId) {
+      void (async () => {
+        try {
+          const owner = await prisma.user.findUnique({
+            where: { id: ownerId },
+            select: { email: true, name: true, locale: true },
+          });
+          if (owner?.email) {
+            const locale = owner.locale === "en" ? "en" : "es";
+            await sendMail({
+              to: owner.email,
+              subject: approvedSubjects[locale],
+              content: {
+                react: (
+                  <ExperienceApproved
+                    tripper={owner.name ?? ""}
+                    experienceTitle={(updated as { title?: string }).title ?? ""}
+                    locale={locale}
+                  />
+                ),
+              },
+            });
+          }
+        } catch (err) {
+          console.error("[notifications] approve sendMail failed:", err);
+        }
+      })();
+    }
 
     return NextResponse.json({ experience: updated });
   } catch (error) {

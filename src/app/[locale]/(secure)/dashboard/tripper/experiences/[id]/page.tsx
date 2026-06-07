@@ -90,7 +90,9 @@ export default async function EditExperiencePage(props: {
     exclusions: Array.isArray(pkg.exclusions)
       ? (pkg.exclusions as string[])
       : [],
-    galleryImages: [],
+    galleryImages: Array.isArray((pkg as unknown as Record<string, unknown>).galleryImages)
+      ? ((pkg as unknown as Record<string, unknown>).galleryImages as string[])
+      : [],
     createBlogPost: false,
   };
 
