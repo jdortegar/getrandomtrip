@@ -68,6 +68,7 @@ model User {
   blogPosts          BlogPost[]       @relation("BlogAuthor")
   experiencesCreated Experience[]     @relation("ExperienceCreatedBy")
   experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
+  notifications      Notification[]
 
   @@map("users")
 }
@@ -426,6 +427,43 @@ enum BlogFormat {
   PHOTO
   VIDEO
   MIXED
+}
+
+enum NotificationType {
+  EXPERIENCE_APPROVED
+  EXPERIENCE_REJECTED
+  BOOKING_CONFIRMED
+  BOOKING_REVEALED
+  BOOKING_COMPLETED
+  BOOKING_CANCELLED
+  PAYMENT_RECEIVED
+}
+
+enum NotificationAudience {
+  TRIPPER
+  CLIENT
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+model Notification {
+  id       String               @id @default(cuid())
+  userId   String
+  type     NotificationType
+  audience NotificationAudience
+  isRead   Boolean              @default(false)
+  title    String
+  body     String?
+  metadata Json?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
 }
 
 // ============================================================================

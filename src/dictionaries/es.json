@@ -3637,5 +3637,20 @@
       },
       "submit": "Enviar"
     }
+  },
+  "notifications": {
+    "pageTitle": "Notificaciones",
+    "emptyState": "No tenés notificaciones todavía.",
+    "markRead": "Marcar como leída",
+    "unreadBadge": "Sin leer",
+    "types": {
+      "EXPERIENCE_APPROVED": "Experiencia aprobada",
+      "EXPERIENCE_REJECTED": "Experiencia rechazada",
+      "BOOKING_CONFIRMED": "Reserva confirmada",
+      "BOOKING_REVEALED": "Destino revelado",
+      "BOOKING_COMPLETED": "Viaje completado",
+      "BOOKING_CANCELLED": "Reserva cancelada",
+      "PAYMENT_RECEIVED": "Pago recibido"
+    }
   }
 }

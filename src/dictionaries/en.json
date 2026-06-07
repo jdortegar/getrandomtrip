@@ -3637,5 +3637,20 @@
       },
       "submit": "Send"
     }
+  },
+  "notifications": {
+    "pageTitle": "Notifications",
+    "emptyState": "You have no notifications yet.",
+    "markRead": "Mark as read",
+    "unreadBadge": "Unread",
+    "types": {
+      "EXPERIENCE_APPROVED": "Experience approved",
+      "EXPERIENCE_REJECTED": "Experience rejected",
+      "BOOKING_CONFIRMED": "Booking confirmed",
+      "BOOKING_REVEALED": "Destination revealed",
+      "BOOKING_COMPLETED": "Trip completed",
+      "BOOKING_CANCELLED": "Booking cancelled",
+      "PAYMENT_RECEIVED": "Payment received"
+    }
   }
 }

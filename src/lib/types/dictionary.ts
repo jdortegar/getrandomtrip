@@ -955,6 +955,14 @@ export interface AdminPagesDict {
   };
 }
 
+export interface NotificationsDict {
+  pageTitle: string;
+  emptyState: string;
+  markRead: string;
+  unreadBadge: string;
+  types: Record<string, string>;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -1936,4 +1944,5 @@ export interface MarketingDictionary {
   tripperProfilePage: TripperProfilePageDict;
   tripperExperiences: TripperExperiencesDict;
   unauthorized: UnauthorizedPageDict;
+  notifications: NotificationsDict;
 }
