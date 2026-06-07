@@ -1,0 +1,17 @@
+change: notifications-experience
+status: active
+artifact_store: openspec
+delivery_strategy: ask-on-risk
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: in-progress
+  verify: pending
+  archive: pending
+artifacts:
+  proposal: openspec/changes/notifications-experience/proposal.md
+  spec: openspec/changes/notifications-experience/spec.md
+  design: openspec/changes/notifications-experience/design.md
+updated: 2026-06-07

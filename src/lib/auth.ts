@@ -88,6 +88,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name || "Usuario",
             avatarUrl: user.image || null,
+            locale: "es",
             travelerType: null,
             interests: [],
             dislikes: [],
@@ -146,6 +147,7 @@ export const authOptions: NextAuthOptions = {
             address: true,
             phone: true,
             createdAt: true,
+            locale: true,
             travelerType: true,
             interests: true,
             dislikes: true,
@@ -174,6 +176,7 @@ export const authOptions: NextAuthOptions = {
             | null
             | undefined;
           session.user.createdAt = dbUser.createdAt.toISOString();
+          session.user.locale = dbUser.locale as "es" | "en" | null;
         }
       }
       return session;

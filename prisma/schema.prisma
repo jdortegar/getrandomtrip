@@ -48,6 +48,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   // User preferences
+  locale       String?  // Preferred UI locale: "es" | "en"
   travelerType String?
   interests    String[] @default([])
   dislikes     String[] @default([])
