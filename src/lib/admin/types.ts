@@ -66,13 +66,25 @@ export interface AdminExperienceOwner {
 
 export interface AdminExperience {
   createdAt: string;
-  displayPrice: string;
   id: string;
   isActive: boolean;
   isFeatured: boolean;
   owner: AdminExperienceOwner;
   status: string;
   title: string;
+  type: string[];
+  level: string | null;
+  destinationCountry: string;
+  destinationCity: string;
+  teaser: string;
+  description: string;
+  heroImage: string;
+  minPax: number;
+  maxPax: number;
+  minNights: number;
+  maxNights: number;
+  pricingByType: Record<string, number> | null;
+  reviewNote: string | null;
   updatedAt: string;
 }
 

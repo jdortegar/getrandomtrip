@@ -36,7 +36,8 @@ export async function GET(
 
     const experienceId = params.id;
 
-    const experienceData = await prisma.experience.findFirst({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const experienceData = await (prisma.experience.findFirst as any)({
       where: {
         id: experienceId,
         ownerId: user.id,
@@ -55,8 +56,8 @@ export async function GET(
         maxNights: true,
         minPax: true,
         maxPax: true,
-        basePrice: true,
-        displayPrice: true,
+        pricingByType: true,
+        reviewNote: true,
         heroImage: true,
         tags: true,
         highlights: true,
@@ -171,11 +172,10 @@ export async function PATCH(
       maxNights,
       minPax,
       maxPax,
-      basePrice,
-      displayPrice,
       isActive,
       isFeatured,
-      status,
+      // Privileged fields stripped (D2): status, pricingByType, reviewNote, basePrice, displayPrice
+      // are NOT accepted from tripper PATCH — changes flow through guarded transition endpoints
       // accept both hotels (admin form) and accommodations (tripper form)
       hotels: hotelsField,
       accommodations,
@@ -212,6 +212,9 @@ export async function PATCH(
 
     const hotels = hotelsField ?? accommodations;
 
+    // If the experience is ACTIVE and the tripper is editing it, revert to DRAFT (requires re-review)
+    const revertToDraft = existingExperience.status === "ACTIVE";
+
     const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
       data: {
@@ -230,11 +233,9 @@ export async function PATCH(
         maxNights: maxNights ?? 7,
         minPax: minPax ?? 1,
         maxPax: maxPax ?? 8,
-        basePrice: basePrice ?? 0,
-        displayPrice: displayPrice ?? "",
         ...(isActive !== undefined && { isActive }),
         ...(isFeatured !== undefined && { isFeatured }),
-        ...(status && { status }),
+        ...(revertToDraft && { status: "DRAFT", isActive: false }),
         ...(hotels !== undefined && { hotels }),
         ...(activities !== undefined && { activities }),
         ...(itinerary !== undefined && { itinerary }),

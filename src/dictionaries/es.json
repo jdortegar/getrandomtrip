@@ -175,6 +175,15 @@
       }
     }
   },
+  "adminExperienceReview": {
+    "back": "Volver a experiencias",
+    "approve": "Aprobar y publicar",
+    "reject": "Rechazar",
+    "confirmReject": "Confirmar rechazo",
+    "cancel": "Cancelar",
+    "noteLabel": "Nota para el tripper",
+    "priceSection": "Precio por persona"
+  },
   "adminPages": {
     "payments": {
       "count": "{n} pagos",
@@ -204,13 +213,32 @@
         "active": "Activa",
         "inactive": "Inactiva",
         "featured": "Destacada",
-        "normal": "Normal"
+        "normal": "Normal",
+        "pendingReview": "En revisión"
       },
       "actions": {
         "disable": "Desactivar",
         "enable": "Activar",
         "unfeature": "Quitar destaque",
         "feature": "Destacar"
+      },
+      "tabs": {
+        "all": "Todas",
+        "pending": "Pendientes de revisión"
+      },
+      "review": {
+        "title": "Revisar experiencia",
+        "infoHeading": "Información",
+        "pricingHeading": "Precio por tipo (por persona)",
+        "pricePlaceholder": "USD",
+        "approve": "Aprobar y publicar",
+        "reject": "Rechazar",
+        "noteLabel": "Nota para el tripper",
+        "notePlaceholder": "Explicá qué cambiar...",
+        "close": "Cerrar",
+        "errorApprove": "No se pudo aprobar",
+        "errorReject": "No se pudo rechazar",
+        "errorPricing": "Completá el precio de cada tipo"
       }
     },
     "reviews": {
@@ -2602,7 +2630,11 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos un destino; vendemos un resultado emocional. Nuestra misión es liberar tu mente de la parálisis por análisis y guiarte hacia estados como asombro, calma o conexión.",
       "p2": "Lo llamamos Serendipia Diseñada: entornos seguros y meticulosamente planificados que se sienten espontáneos y transformadores. Renunciás al control logístico para ganar libertad verdadera.",
-      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
+      "pills": [
+        "Brief emocional",
+        "Diseño invisible",
+        "Sorpresa con red"
+      ],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {
@@ -3176,7 +3208,8 @@
       "ACTIVE": "Activo",
       "DRAFT": "Borrador",
       "INACTIVE": "Inactivo",
-      "ARCHIVED": "Archivado"
+      "ARCHIVED": "Archivado",
+      "PENDING_REVIEW": "En revisión"
     },
     "form": {
       "createTitle": "CREAR EXPERIENCIA",
@@ -3187,7 +3220,8 @@
         "clearAll": "Borrar todo",
         "next": "Siguiente",
         "submit": "Crear experiencia",
-        "saveDraft": "Guardar borrador"
+        "saveDraft": "Guardar borrador",
+        "submitForReview": "Enviar a revisión"
       },
       "editSubmit": "Guardar Cambios",
       "cancel": "Cancelar",
@@ -3399,6 +3433,16 @@
         "statusActive": "Activo",
         "createBlogPost": "Crear entrada de blog",
         "createBlogPostHint": "Se generará un borrador con el contenido de la experiencia"
+      },
+      "review": {
+        "pendingTitle": "En revisión",
+        "pendingBody": "Tu experiencia está siendo revisada. No podés hacer cambios hasta recibir una respuesta.",
+        "rejectedTitle": "Cambios solicitados",
+        "rejectedDismiss": "Entendido",
+        "submitError": "Faltan campos obligatorios"
+      },
+      "statusBadge": {
+        "pendingReview": "En revisión"
       }
     }
   },

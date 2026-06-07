@@ -18,6 +18,7 @@ import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
   DRAFT: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  PENDING_REVIEW: "bg-blue-100 text-blue-800 border-blue-200",
   INACTIVE: "bg-red-100 text-red-800 border-red-200",
   ARCHIVED: "bg-neutral-100 text-neutral-600 border-neutral-200",
 };
@@ -225,8 +226,9 @@ export default function ExperiencesPageClient({
                       {" pax"}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
-                      {experience.displayPrice ||
-                        `USD ${experience.basePrice.toLocaleString()}`}
+                      {experience.pricingByType
+                        ? `USD ${Math.min(...Object.values(experience.pricingByType)).toLocaleString()}+`
+                        : "—"}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-500">
                       {new Date(experience.updatedAt).toLocaleDateString(

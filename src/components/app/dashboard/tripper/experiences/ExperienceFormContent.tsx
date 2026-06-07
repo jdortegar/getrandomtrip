@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import type { ReactNode } from "react";
 import { AlertCircle, Check, Loader2 } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
 import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
@@ -28,6 +29,8 @@ interface ExperienceFormContentProps {
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   imageState: ExperienceImageState;
+  adminReviewSlot?: ReactNode;
+  isReadOnly?: boolean;
   isSubmitting: boolean;
   saveStatus: SaveStatus;
   onChange: ExperienceFormDraftOnChange;
@@ -100,9 +103,11 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
 
 export function ExperienceFormContent({
   activeTab,
+  adminReviewSlot,
   copy,
   form,
   imageState,
+  isReadOnly = false,
   isSubmitting,
   saveStatus,
   onChange,
@@ -113,41 +118,49 @@ export function ExperienceFormContent({
   onSectionChange,
   tabs,
 }: ExperienceFormContentProps) {
+  if (activeTab === "admin-review" && adminReviewSlot) {
+    return <>{adminReviewSlot}</>;
+  }
+
   const currentTab = tabs.find((t) => t.id === activeTab);
   if (!currentTab) return null;
 
   const isLastTab = tabs[tabs.length - 1]?.id === activeTab;
   const hasValues = !!(form.title || form.teaser || form.description);
   const canContinue = isExperienceTabComplete(activeTab, form);
-  const allTabsComplete = tabs.every((t) =>
-    isExperienceTabComplete(t.id, form),
-  );
+  const allTabsComplete = tabs
+    .filter((t) => t.id !== "admin-review")
+    .every((t) => isExperienceTabComplete(t.id, form));
   const missingFields = canContinue
     ? []
     : getMissingFields(activeTab, form, copy.fields as Record<string, string>);
 
   return (
     <div className="flex flex-col gap-4">
-      <Accordion
-        type="single"
-        collapsible
-        value={openSectionId}
-        onValueChange={onSectionChange}
-        className="flex flex-col gap-4"
-      >
-        {currentTab.substeps.map((substep, i) => (
-          <JourneyDropdown
-            key={substep.id}
-            value={substep.id}
-            label={substep.title}
-            content={i === 0 ? "" : "Filtrar"}
-          >
-            {resolveStepContent(activeTab, substep.id, form, onChange, copy, imageState)}
-          </JourneyDropdown>
-        ))}
-      </Accordion>
+      {/* Wrap in fieldset to natively disable all descendant form controls when read-only.
+          className="contents" preserves layout without adding a box. */}
+      <fieldset disabled={isReadOnly} className="contents">
+        <Accordion
+          type="single"
+          collapsible
+          value={openSectionId}
+          onValueChange={onSectionChange}
+          className="flex flex-col gap-4"
+        >
+          {currentTab.substeps.map((substep, i) => (
+            <JourneyDropdown
+              key={substep.id}
+              value={substep.id}
+              label={substep.title}
+              content={i === 0 ? "" : "Filtrar"}
+            >
+              {resolveStepContent(activeTab, substep.id, form, onChange, copy, imageState)}
+            </JourneyDropdown>
+          ))}
+        </Accordion>
+      </fieldset>
 
-      {missingFields.length > 0 && (
+      {missingFields.length > 0 && !isReadOnly && (
         <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
           <div className="text-sm text-amber-800">
@@ -157,26 +170,35 @@ export function ExperienceFormContent({
         </div>
       )}
 
-      <div className="relative">
-        <div className="absolute left-0 bottom-3">
-          <SaveIndicator status={saveStatus} />
+      {isReadOnly ? (
+        <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
+          <div className="text-sm text-blue-800">
+            <span className="font-medium">En revisión — </span>
+            Tu experiencia está siendo revisada por el equipo. No podés hacer cambios hasta que recibas una respuesta.
+          </div>
         </div>
+      ) : (
+        <div className="relative">
+          <div className="absolute left-0 bottom-3">
+            <SaveIndicator status={saveStatus} />
+          </div>
 
-        <JourneyActionBar
-          canContinue={canContinue}
-          isAllStepsComplete={isLastTab && allTabsComplete}
-          isSavingAndRedirecting={isSubmitting}
-          labels={{
-            clearAll: copy.actionBar.clearAll,
-            next: copy.actionBar.next,
-            viewCheckout: copy.actionBar.submit,
-          }}
-          onClearAll={onClearAll}
-          onContinue={onNext}
-          onGoToCheckout={onSubmit}
-          showClearAll={hasValues}
-        />
-      </div>
+          <JourneyActionBar
+            canContinue={canContinue}
+            isAllStepsComplete={isLastTab && allTabsComplete}
+            isSavingAndRedirecting={isSubmitting}
+            labels={{
+              clearAll: copy.actionBar.clearAll,
+              next: copy.actionBar.next,
+              viewCheckout: copy.actionBar.submitForReview,
+            }}
+            onClearAll={onClearAll}
+            onContinue={onNext}
+            onGoToCheckout={onSubmit}
+            showClearAll={hasValues}
+          />
+        </div>
+      )}
     </div>
   );
 }

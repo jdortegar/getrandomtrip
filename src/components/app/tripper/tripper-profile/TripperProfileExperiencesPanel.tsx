@@ -67,7 +67,7 @@ export function TripperProfileExperiencesPanel({
                   </div>
                   <div className="text-left sm:text-right">
                     <p className="font-semibold text-neutral-900">
-                      {experience.displayPrice}
+                      {experience.status === "ACTIVE" ? copy.experiences.active : "—"}
                     </p>
                     <p className="text-sm text-neutral-500">
                       {experience.isActive

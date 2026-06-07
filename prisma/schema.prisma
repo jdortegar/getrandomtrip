@@ -168,7 +168,10 @@ model Experience {
   // Pricing
   basePrice    Float  @default(0)
   currency     String @default("USD")
-  displayPrice String @default("")
+  // Admin-set per-type pricing (set on approval). Shape: Record<typeKey, number>
+  pricingByType Json?
+  // Editorial feedback from admin rejection; cleared on approval
+  reviewNote   String? @db.Text
 
   // Compatibility matching (mirrors TripRequest filter fields)
   accommodationType String @default("any")
@@ -388,6 +391,7 @@ enum TripRequestStatus {
 
 enum ExperienceStatus {
   DRAFT
+  PENDING_REVIEW
   ACTIVE
   INACTIVE
   ARCHIVED

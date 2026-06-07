@@ -89,6 +89,7 @@ export const EXPERIENCE_LEVELS = [
 
 export const EXPERIENCE_STATUSES = [
   { value: "DRAFT", label: "Borrador" },
+  { value: "PENDING_REVIEW", label: "En revisión" },
   { value: "ACTIVE", label: "Activo" },
   { value: "INACTIVE", label: "Inactivo" },
   { value: "ARCHIVED", label: "Archivado" },

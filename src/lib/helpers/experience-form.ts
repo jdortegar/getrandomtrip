@@ -1,5 +1,29 @@
 import type { ExperienceFormDraft } from "@/types/tripper";
 
+/**
+ * Returns a completeness summary across all tabs.
+ * Used by both the server-side submit endpoint and the client-side gate.
+ * Pure function — no DOM or client dependencies.
+ */
+export function getExperienceCompleteness(form: ExperienceFormDraft): {
+  complete: boolean;
+  missing: string[];
+} {
+  const missing: string[] = [];
+
+  if (!form.title) missing.push("title");
+  if (!form.type || form.type.length === 0) missing.push("type");
+  if (!form.level) missing.push("level");
+  if (!form.teaser) missing.push("teaser");
+  if (!form.description) missing.push("description");
+  if (!form.heroImage) missing.push("heroImage");
+  if (!form.destinationCountry) missing.push("destinationCountry");
+  if (!form.destinationCity) missing.push("destinationCity");
+  if (!form.activities[0]?.name) missing.push("activityName");
+
+  return { complete: missing.length === 0, missing };
+}
+
 export function getMissingFields(
   tabId: string,
   form: ExperienceFormDraft,

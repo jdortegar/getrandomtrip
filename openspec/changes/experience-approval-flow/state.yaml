@@ -1,0 +1,23 @@
+change: experience-approval-flow
+status: archived
+artifact_store: openspec
+delivery_strategy: single-pr
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+artifacts:
+  proposal: openspec/changes/experience-approval-flow/proposal.md
+  spec: openspec/changes/experience-approval-flow/spec.md
+  design: openspec/changes/experience-approval-flow/design.md
+  tasks: openspec/changes/experience-approval-flow/tasks.md
+  apply: openspec/changes/experience-approval-flow/apply-progress.md
+  verify: openspec/changes/experience-approval-flow/verify-report.md
+  archive: openspec/changes/experience-approval-flow/archive-report.md
+updated: 2026-06-07
+archived: 2026-06-07
+archive_location: openspec/changes/archive/2026-06-07-experience-approval-flow

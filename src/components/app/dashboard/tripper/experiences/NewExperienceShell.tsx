@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect, useCallback } from "react";
+import { useRef, useState, useMemo, useEffect, useCallback, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { AlertCircle, X } from "lucide-react";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
 import { ExperienceFormContent } from "./ExperienceFormContent";
@@ -20,6 +21,7 @@ export interface ExperienceImageState {
 }
 
 interface NewExperienceShellProps {
+  adminReviewSlot?: ReactNode;
   dict: TripperExperiencesDict["form"];
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
@@ -46,8 +48,8 @@ const EMPTY_DRAFT: ExperienceFormDraft = {
   maxPax: 1,
   minNights: 1,
   maxNights: 2,
-  basePrice: 0,
-  displayPrice: "",
+  pricingByType: null,
+  reviewNote: null,
   estimatedCost: "",
   season: [],
   transport: "any",
@@ -80,7 +82,16 @@ async function uploadImageFile(file: File): Promise<string> {
   return data.url;
 }
 
+const ADMIN_TAB: { id: string; label: string; substeps: { description: string; id: string; title: string }[] } = {
+  id: "admin-review",
+  label: "Admin",
+  substeps: [
+    { id: "admin-pricing", title: "Pricing & approval", description: "" },
+  ],
+};
+
 export function NewExperienceShell({
+  adminReviewSlot,
   dict,
   locale,
   userBadgeLabels,
@@ -89,6 +100,7 @@ export function NewExperienceShell({
 }: NewExperienceShellProps) {
   const router = useRouter();
   const tabs = dict.contentTabs;
+  const effectiveTabs = adminReviewSlot ? [...tabs, ADMIN_TAB] : tabs;
   const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "about");
   const [openSectionId, setOpenSectionId] = useState(
     tabs[0]?.substeps[0]?.id ?? "",
@@ -98,6 +110,11 @@ export function NewExperienceShell({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [submitError, setSubmitError] = useState<string[] | null>(null);
+
+  // Derived read-only flag — all edits blocked while in PENDING_REVIEW
+  const isReadOnly = form.status === "PENDING_REVIEW";
 
   // Blob URL → File map for pending uploads (blob URLs live in form state directly)
   const pendingFilesRef = useRef<Map<string, File>>(new Map());
@@ -169,6 +186,7 @@ export function NewExperienceShell({
 
   const persistDraft = useCallback(
     async (snapshot: ExperienceFormDraft) => {
+      if (isReadOnly) return; // no autosave while pending review
       setSaveStatus("saving");
       try {
         const finalSnapshot = await flushPendingBlobs(snapshot);
@@ -207,18 +225,20 @@ export function NewExperienceShell({
       isFirstRender.current = false;
       return;
     }
+    if (isReadOnly) return; // no autosave while pending review
     if (!draftIdRef.current && !form.title.trim()) return;
     setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [form, persistDraft]);
+  }, [form, persistDraft, isReadOnly]);
 
   function canNavigateTo(targetTabId: string): boolean {
-    const targetIndex = tabs.findIndex((t) => t.id === targetTabId);
-    const currentIndex = tabs.findIndex((t) => t.id === activeTab);
+    if (adminReviewSlot) return true;
+    const targetIndex = effectiveTabs.findIndex((t) => t.id === targetTabId);
+    const currentIndex = effectiveTabs.findIndex((t) => t.id === activeTab);
     if (targetIndex <= currentIndex) return true;
     for (let i = 0; i < targetIndex; i++) {
-      if (!isExperienceTabComplete(tabs[i]!.id, form)) return false;
+      if (!isExperienceTabComplete(effectiveTabs[i]!.id, form)) return false;
     }
     return true;
   }
@@ -227,7 +247,7 @@ export function NewExperienceShell({
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
     const firstSubstep =
-      tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
+      effectiveTabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
     contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -236,7 +256,7 @@ export function NewExperienceShell({
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
     setOpenSectionId(
-      substepId ?? tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "",
+      substepId ?? effectiveTabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "",
     );
     contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -249,8 +269,8 @@ export function NewExperienceShell({
   }
 
   function handleNext() {
-    const currentIndex = tabs.findIndex((t) => t.id === activeTab);
-    const nextTab = tabs[currentIndex + 1];
+    const currentIndex = effectiveTabs.findIndex((t) => t.id === activeTab);
+    const nextTab = effectiveTabs[currentIndex + 1];
     if (nextTab) handleTabChange(nextTab.id);
   }
 
@@ -259,11 +279,23 @@ export function NewExperienceShell({
   }
 
   async function handleSubmit() {
-    if (isSubmitting) return;
+    if (isSubmitting || isReadOnly) return;
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const finalForm = await flushPendingBlobs(form);
-      if (draftIdRef.current) {
+
+      // Ensure the draft is persisted first (create if new, update if existing)
+      if (!draftIdRef.current) {
+        const res = await fetch("/api/tripper/experiences", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(finalForm),
+        });
+        if (!res.ok) throw new Error("Failed to create draft");
+        const data = (await res.json()) as { id: string };
+        draftIdRef.current = data.id;
+      } else {
         const res = await fetch(
           `/api/tripper/experiences/${draftIdRef.current}`,
           {
@@ -272,14 +304,22 @@ export function NewExperienceShell({
             body: JSON.stringify(finalForm),
           },
         );
-        if (!res.ok) throw new Error();
-      } else {
-        const res = await fetch("/api/tripper/experiences", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(finalForm),
-        });
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error("Failed to save draft");
+      }
+
+      // Submit for review
+      const submitRes = await fetch(
+        `/api/tripper/experiences/${draftIdRef.current}/submit`,
+        { method: "POST" },
+      );
+
+      if (!submitRes.ok) {
+        const body = (await submitRes.json()) as { error?: string; missing?: string[] };
+        if (submitRes.status === 422 && body.missing) {
+          setSubmitError(body.missing);
+          return;
+        }
+        throw new Error(body.error ?? "Submit failed");
       }
 
       if (finalForm.createBlogPost) {
@@ -367,12 +407,18 @@ export function NewExperienceShell({
     onGalleryRemove: handleGalleryRemove,
   };
 
-  const navTabs = tabs.map((t) => ({ id: t.id, label: t.label }));
+  const navTabs = effectiveTabs.map((t) => ({ id: t.id, label: t.label }));
   const completedTabIds = useMemo(
     () =>
-      tabs.filter((t) => isExperienceTabComplete(t.id, form)).map((t) => t.id),
-    [tabs, form],
+      effectiveTabs
+        .filter((t) => t.id !== "admin-review" && isExperienceTabComplete(t.id, form))
+        .map((t) => t.id),
+    [effectiveTabs, form],
   );
+
+  // Rejection banner: shown when DRAFT + reviewNote exists + not dismissed
+  const showRejectionBanner =
+    form.status === "DRAFT" && !!form.reviewNote && !bannerDismissed;
 
   return (
     <div className="bg-gray-50">
@@ -387,6 +433,36 @@ export function NewExperienceShell({
       />
 
       <div className="rt-container py-4 sm:py-8 scroll-mt-20" ref={contentRef}>
+        {/* Rejection feedback banner */}
+        {showRejectionBanner && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
+            <div className="flex-1 text-sm text-amber-800">
+              <p className="font-medium mb-1">Changes requested</p>
+              <p>{form.reviewNote}</p>
+            </div>
+            <button
+              type="button"
+              className="ml-auto shrink-0 text-amber-500 hover:text-amber-700"
+              onClick={() => setBannerDismissed(true)}
+              aria-label="Dismiss"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Submit error banner */}
+        {submitError && submitError.length > 0 && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
+            <div className="text-sm text-red-800">
+              <span className="font-medium">Required fields missing: </span>
+              {submitError.join(", ")}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row w-full gap-8">
           <div className="hidden lg:block lg:sticky lg:top-8 lg:self-start">
             <JourneyProgressSidebar
@@ -396,16 +472,18 @@ export function NewExperienceShell({
               addonsComingSoonLabel=""
               progressLabel={dict.nav.progress}
               onStepClick={handleStepClick}
-              tabs={tabs}
+              tabs={effectiveTabs}
             />
           </div>
 
           <div className="min-w-0 flex-1">
             <ExperienceFormContent
               activeTab={activeTab}
+              adminReviewSlot={adminReviewSlot}
               copy={dict}
               form={form}
               imageState={imageState}
+              isReadOnly={isReadOnly}
               isSubmitting={isSubmitting}
               saveStatus={saveStatus}
               onChange={handleChange}
@@ -414,7 +492,7 @@ export function NewExperienceShell({
               onSubmit={handleSubmit}
               openSectionId={openSectionId}
               onSectionChange={handleSectionChange}
-              tabs={tabs}
+              tabs={effectiveTabs}
             />
           </div>
         </div>

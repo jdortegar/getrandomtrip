@@ -68,9 +68,9 @@ export interface TripperSessionExtras {
 }
 
 export interface TripperOwnExperienceListItem {
-  displayPrice: string;
   id: string;
   isActive: boolean;
+  status: ExperienceStatus;
   level: string;
   maxNights: number;
   maxPax: number;
@@ -293,6 +293,15 @@ export interface ExperienceFormData {
   supplierNotes?: string | null;
 }
 
+// ─── Experience status union (mirrors Prisma enum) ────────────────────────────
+
+export type ExperienceStatus =
+  | "DRAFT"
+  | "PENDING_REVIEW"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ARCHIVED";
+
 // ─── New experience form draft ────────────────────────────────────────────────
 
 export interface ItineraryDayEntry {
@@ -318,7 +327,7 @@ export interface AccommodationEntry {
 
 export interface ExperienceFormDraft {
   // About
-  status: string;
+  status: ExperienceStatus;
   title: string;
   type: string[];
   level: string;
@@ -338,9 +347,9 @@ export interface ExperienceFormDraft {
   maxPax: number;
   minNights: number;
   maxNights: number;
-  // Pricing
-  basePrice: number;
-  displayPrice: string;
+  // Pricing — admin-set on approval, read-only for tripper
+  pricingByType?: Record<string, number> | null;
+  reviewNote?: string | null;
   estimatedCost: string;
   season: string[];
   // Logistics
@@ -369,10 +378,10 @@ export interface ExperienceListItem {
   title: string;
   type: string[];
   level: string | null;
-  status: string;
+  status: ExperienceStatus;
   isActive: boolean;
-  basePrice: number;
-  displayPrice: string;
+  pricingByType?: Record<string, number> | null;
+  reviewNote?: string | null;
   destinationCountry: string;
   destinationCity: string;
   minNights: number;

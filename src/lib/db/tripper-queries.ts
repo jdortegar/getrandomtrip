@@ -89,7 +89,8 @@ export async function getTripperFeaturedTrips(
 
     if (!tripper) return [];
 
-    const trips = await prisma.experience.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const trips = await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripper.id,
         isActive: true,
@@ -112,9 +113,14 @@ export async function getTripperFeaturedTrips(
         maxNights: true,
         minPax: true,
         maxPax: true,
-        displayPrice: true,
+        pricingByType: true,
       },
-    });
+    }) as Array<{
+      id: string; title: string; teaser: string; heroImage: string;
+      type: string[]; level: string; highlights: string[]; tags: string[];
+      likes: number; minNights: number; minPax: number;
+      pricingByType: Record<string, number> | null;
+    }>;
 
     // Map to FeaturedTripCard with defaults
     return trips.map((trip) => ({
@@ -129,7 +135,9 @@ export async function getTripperFeaturedTrips(
       likes: trip.likes,
       nights: trip.minNights,
       pax: trip.minPax,
-      displayPrice: trip.displayPrice,
+      displayPrice: trip.pricingByType
+        ? `USD ${Math.min(...Object.values(trip.pricingByType)).toLocaleString()}`
+        : "",
     }));
   } catch (error) {
     console.error("Error fetching tripper featured trips:", error);
@@ -276,7 +284,8 @@ export async function getTripById(
  */
 export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
   try {
-    const packages = await prisma.experience.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const packages = await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -293,11 +302,15 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         excuseKey: true,
         destinationCountry: true,
         destinationCity: true,
-        basePrice: true,
-        displayPrice: true,
+        pricingByType: true,
       },
       orderBy: [{ type: "asc" }, { level: "asc" }, { title: "asc" }],
-    });
+    }) as Array<{
+      id: string; type: string[]; level: string | null; title: string;
+      teaser: string; heroImage: string; tags: string[]; highlights: string[];
+      excuseKey: string | null; destinationCountry: string; destinationCity: string;
+      pricingByType: Record<string, number> | null;
+    }>;
 
     // Group packages by type and level
     const packagesByType: Record<string, Record<string, any[]>> = {};
@@ -709,7 +722,8 @@ export async function getTripperReviews(tripperId: string) {
  */
 export async function getTripperExperiences(tripperId: string) {
   try {
-    const packages = await prisma.experience.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const packages = await (prisma.experience.findMany as any)({
       where: { ownerId: tripperId },
       select: {
         id: true,
@@ -718,14 +732,19 @@ export async function getTripperExperiences(tripperId: string) {
         level: true,
         status: true,
         isActive: true,
-        basePrice: true,
+        pricingByType: true,
         destinationCountry: true,
         destinationCity: true,
         createdAt: true,
         updatedAt: true,
       },
       orderBy: { updatedAt: "desc" },
-    });
+    }) as Array<{
+      id: string; title: string; type: string[]; level: string | null;
+      status: string; isActive: boolean; pricingByType: unknown;
+      destinationCountry: string; destinationCity: string;
+      createdAt: Date; updatedAt: Date;
+    }>;
 
     return packages.map((pkg) => ({
       id: pkg.id,
@@ -735,7 +754,7 @@ export async function getTripperExperiences(tripperId: string) {
       level: pkg.level,
       status: pkg.status.toLowerCase() as any,
       isActive: pkg.isActive,
-      price: pkg.basePrice,
+      pricingByType: pkg.pricingByType as Record<string, number> | null,
       destination: `${pkg.destinationCity}, ${pkg.destinationCountry}`,
       createdAt: pkg.createdAt.toISOString(),
       updatedAt: pkg.updatedAt.toISOString(),

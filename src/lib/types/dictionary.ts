@@ -298,6 +298,7 @@ export interface TripperExperiencesDict {
   status: {
     ACTIVE: string;
     DRAFT: string;
+    PENDING_REVIEW: string;
     INACTIVE: string;
     ARCHIVED: string;
   };
@@ -314,6 +315,17 @@ export interface TripperExperiencesDict {
       next: string;
       saveDraft: string;
       submit: string;
+      submitForReview: string;
+    };
+    review: {
+      pendingTitle: string;
+      pendingBody: string;
+      rejectedTitle: string;
+      rejectedDismiss: string;
+      submitError: string;
+    };
+    statusBadge: {
+      pendingReview: string;
     };
     nav: {
       sections: string;
@@ -873,12 +885,31 @@ export interface AdminPagesDict {
       inactive: string;
       featured: string;
       normal: string;
+      pendingReview: string;
     };
     actions: {
       disable: string;
       enable: string;
       unfeature: string;
       feature: string;
+    };
+    tabs: {
+      all: string;
+      pending: string;
+    };
+    review: {
+      title: string;
+      infoHeading: string;
+      pricingHeading: string;
+      pricePlaceholder: string;
+      approve: string;
+      reject: string;
+      noteLabel: string;
+      notePlaceholder: string;
+      close: string;
+      errorApprove: string;
+      errorReject: string;
+      errorPricing: string;
     };
   };
   reviews: {
@@ -962,6 +993,15 @@ export interface MarketingDictionary {
   adminSidebar: AdminSidebarDict;
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
+  adminExperienceReview: {
+    back: string;
+    approve: string;
+    reject: string;
+    confirmReject: string;
+    cancel: string;
+    noteLabel: string;
+    priceSection: string;
+  };
   xsedPage: XsedPageDict;
   xsedUnavailable: {
     heading: string;

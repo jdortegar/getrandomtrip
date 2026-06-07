@@ -175,6 +175,15 @@
       }
     }
   },
+  "adminExperienceReview": {
+    "back": "Back to experiences",
+    "approve": "Approve & publish",
+    "reject": "Reject",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "noteLabel": "Note to tripper",
+    "priceSection": "Price per person"
+  },
   "adminPages": {
     "payments": {
       "count": "{n} payments",
@@ -204,13 +213,32 @@
         "active": "Active",
         "inactive": "Inactive",
         "featured": "Featured",
-        "normal": "Normal"
+        "normal": "Normal",
+        "pendingReview": "Pending review"
       },
       "actions": {
         "disable": "Disable",
         "enable": "Enable",
         "unfeature": "Unfeature",
         "feature": "Feature"
+      },
+      "tabs": {
+        "all": "All",
+        "pending": "Pending review"
+      },
+      "review": {
+        "title": "Review experience",
+        "infoHeading": "Details",
+        "pricingHeading": "Price per type (per person)",
+        "pricePlaceholder": "USD",
+        "approve": "Approve & publish",
+        "reject": "Reject",
+        "noteLabel": "Note to tripper",
+        "notePlaceholder": "Explain what to change...",
+        "close": "Close",
+        "errorApprove": "Could not approve",
+        "errorReject": "Could not reject",
+        "errorPricing": "Set a price for every type"
       }
     },
     "reviews": {
@@ -2602,7 +2630,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -3176,7 +3208,8 @@
       "ACTIVE": "Active",
       "DRAFT": "Draft",
       "INACTIVE": "Inactive",
-      "ARCHIVED": "Archived"
+      "ARCHIVED": "Archived",
+      "PENDING_REVIEW": "Pending review"
     },
     "form": {
       "createTitle": "CREATE EXPERIENCE",
@@ -3187,7 +3220,8 @@
         "clearAll": "Clear all",
         "next": "Next",
         "submit": "Create experience",
-        "saveDraft": "Save draft"
+        "saveDraft": "Save draft",
+        "submitForReview": "Submit for review"
       },
       "editSubmit": "Save Changes",
       "cancel": "Cancel",
@@ -3399,6 +3433,16 @@
         "statusActive": "Active",
         "createBlogPost": "Create blog post",
         "createBlogPostHint": "A draft will be created with the experience content"
+      },
+      "review": {
+        "pendingTitle": "Pending review",
+        "pendingBody": "Your experience is under review. You cannot make changes until you receive a response.",
+        "rejectedTitle": "Changes requested",
+        "rejectedDismiss": "Got it",
+        "submitError": "Required fields missing"
+      },
+      "statusBadge": {
+        "pendingReview": "Pending review"
       }
     }
   },

@@ -67,9 +67,7 @@ export async function POST(request: NextRequest) {
       data: {
         ownerId: user.id,
         createdById: user.id,
-        status:
-          (body.status as "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED") ||
-          "DRAFT",
+        status: "DRAFT",
         type: Array.isArray(body.type) ? body.type : [body.type].filter(Boolean),
         level: body.level || null,
         excuseKey: body.excuseKey || null,
@@ -90,8 +88,6 @@ export async function POST(request: NextRequest) {
         itinerary: body.itinerary as unknown as object[],
         inclusions: body.inclusions as unknown as object[],
         exclusions: body.exclusions as unknown as object[],
-        basePrice: body.basePrice,
-        displayPrice: body.displayPrice,
         accommodationType: body.accommodationType,
         transport: body.transport,
         climate: body.climate,
