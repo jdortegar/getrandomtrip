@@ -16,6 +16,8 @@ const EMPTY_ENTRY: AccommodationEntry = {
   hotelStars: "",
   hotelLocation: "",
   hotelDays: "",
+  hotelLink: "",
+  referredLink: "",
 };
 
 export function XsedAccommodationStep({ form, onChange }: Props) {

@@ -27,7 +27,8 @@ export default async function TripperExperiencesPage(props: {
     redirect(`/${params.locale}/dashboard`);
   }
 
-  const rawExperiences = await prisma.experience.findMany({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawExperiences = await (prisma.experience.findMany as any)({
     where: { ownerId: user.id },
     orderBy: { updatedAt: "desc" },
     select: {
@@ -37,14 +38,18 @@ export default async function TripperExperiencesPage(props: {
       level: true,
       status: true,
       isActive: true,
-      basePrice: true,
-      displayPrice: true,
+      pricingByType: true,
+      reviewNote: true,
       destinationCountry: true,
       destinationCity: true,
+      minNights: true,
+      maxNights: true,
+      minPax: true,
+      maxPax: true,
       createdAt: true,
       updatedAt: true,
     },
-  });
+  }) as Array<ExperienceListItem & { createdAt: Date; updatedAt: Date }>;
 
   const experiences: ExperienceListItem[] = rawExperiences.map((p) => ({
     ...p,

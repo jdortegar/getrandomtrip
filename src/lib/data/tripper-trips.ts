@@ -46,7 +46,7 @@ export async function tripperHasExperiencesForTypeAndLevel(
       where: {
         ownerId: tripperId,
         isActive: true,
-        type: type,
+        type: { has: type },
         level: level,
       },
     });
@@ -78,7 +78,7 @@ export async function getTripperAvailableTypes(
       distinct: ["type"],
     });
 
-    return packages.map((pkg) => pkg.type);
+    return [...new Set(packages.flatMap((pkg) => pkg.type))];
   } catch (error) {
     console.error("Error fetching tripper types:", error);
     return [];
@@ -100,7 +100,7 @@ export async function getTripperAvailableLevelsForType(
       where: {
         ownerId: tripperId,
         isActive: true,
-        type: type,
+        type: { has: type },
       },
       select: {
         level: true,

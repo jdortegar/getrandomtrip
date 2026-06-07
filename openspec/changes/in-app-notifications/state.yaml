@@ -1,0 +1,17 @@
+change: in-app-notifications
+status: tasks_done
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: pending
+  verify: pending
+  archive: pending
+artifacts:
+  proposal: openspec/changes/in-app-notifications/proposal.md
+  spec: openspec/changes/in-app-notifications/spec.md
+  design: openspec/changes/in-app-notifications/design.md
+  tasks: openspec/changes/in-app-notifications/tasks.md
+updated: 2026-06-07

@@ -284,7 +284,11 @@ export interface TripperExperiencesDict {
     status: string;
     price: string;
     updated: string;
+    duration: string;
+    capacity: string;
     edit: string;
+    delete: string;
+    deleteConfirm: string;
   };
   emptyState: {
     noExperiences: string;
@@ -294,6 +298,7 @@ export interface TripperExperiencesDict {
   status: {
     ACTIVE: string;
     DRAFT: string;
+    PENDING_REVIEW: string;
     INACTIVE: string;
     ARCHIVED: string;
   };
@@ -304,11 +309,25 @@ export interface TripperExperiencesDict {
     editSubmit: string;
     cancel: string;
     saving: string;
+    saved: string;
+    errorSave: string;
+    requiredFieldsLabel: string;
     actionBar: {
       clearAll: string;
       next: string;
       saveDraft: string;
       submit: string;
+      submitForReview: string;
+    };
+    review: {
+      pendingTitle: string;
+      pendingBody: string;
+      rejectedTitle: string;
+      rejectedDismiss: string;
+      submitError: string;
+    };
+    statusBadge: {
+      pendingReview: string;
     };
     nav: {
       sections: string;
@@ -338,17 +357,24 @@ export interface TripperExperiencesDict {
     };
     fields: {
       title: string;
+      titlePlaceholder: string;
       type: string;
+      typeHint: string;
       level: string;
       status: string;
       teaser: string;
       teaserHint: string;
       description: string;
+      descriptionPlaceholder: string;
       country: string;
+      countryPlaceholder: string;
       city: string;
+      cityPlaceholder: string;
       excuseKey: string;
+      excuseKeyPlaceholder: string;
       excuseKeyHint: string;
       minNights: string;
+      minNightsHint: string;
       maxNights: string;
       maxNightsHint: string;
       minPax: string;
@@ -359,6 +385,8 @@ export interface TripperExperiencesDict {
       displayPriceHint: string;
       estimatedCost: string;
       season: string;
+      seasonPlaceholder: string;
+      seasonHint: string;
       pricingDescription: string;
       accommodationType: string;
       transport: string;
@@ -370,9 +398,15 @@ export interface TripperExperiencesDict {
       arrivePref: string;
       compatibilityHint: string;
       hotelName: string;
+      hotelNamePlaceholder: string;
+      hotelLink: string;
+      hotelLinkPlaceholder: string;
+      referredLink: string;
+      referredLinkPlaceholder: string;
       hotelStars: string;
       hotelLocation: string;
       hotelDays: string;
+      hotelDaysPlaceholder: string;
       starsHint: string;
       addAccommodation: string;
       removeAccommodation: string;
@@ -384,16 +418,24 @@ export interface TripperExperiencesDict {
       addHotel: string;
       noHotels: string;
       activityName: string;
+      activityNamePlaceholder: string;
       activityDuration: string;
       activityDurationRhythm: string;
+      activityDurationPlaceholder: string;
       activityDesc: string;
+      activityDescPlaceholder: string;
       activityRisks: string;
+      activityRisksPlaceholder: string;
+      activityLabel: string;
       addActivity: string;
       addAnotherActivity: string;
       removeActivity: string;
       noActivities: string;
       itineraryTitle: string;
+      itineraryTitlePlaceholder: string;
       itineraryDesc: string;
+      itineraryDescPlaceholder: string;
+      dayLabel: string;
       addDay: string;
       addAnotherDay: string;
       removeDay: string;
@@ -408,6 +450,12 @@ export interface TripperExperiencesDict {
       highlightInput: string;
       heroImage: string;
       heroImageHint: string;
+      galleryImages: string;
+      galleryImagesHint: string;
+      uploadImage: string;
+      uploading: string;
+      removeImage: string;
+      copyrightHint: string;
       isActive: string;
       isActiveHint: string;
       isFeatured: string;
@@ -415,6 +463,8 @@ export interface TripperExperiencesDict {
       statusLabel: string;
       statusDraft: string;
       statusActive: string;
+      createBlogPost: string;
+      createBlogPostHint: string;
       // XSED fields
       titleInternal: string;
       slug: string;
@@ -837,12 +887,31 @@ export interface AdminPagesDict {
       inactive: string;
       featured: string;
       normal: string;
+      pendingReview: string;
     };
     actions: {
       disable: string;
       enable: string;
       unfeature: string;
       feature: string;
+    };
+    tabs: {
+      all: string;
+      pending: string;
+    };
+    review: {
+      title: string;
+      infoHeading: string;
+      pricingHeading: string;
+      pricePlaceholder: string;
+      approve: string;
+      reject: string;
+      noteLabel: string;
+      notePlaceholder: string;
+      close: string;
+      errorApprove: string;
+      errorReject: string;
+      errorPricing: string;
     };
   };
   reviews: {
@@ -886,6 +955,14 @@ export interface AdminPagesDict {
   };
 }
 
+export interface NotificationsDict {
+  pageTitle: string;
+  emptyState: string;
+  markRead: string;
+  unreadBadge: string;
+  types: Record<string, string>;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -926,6 +1003,15 @@ export interface MarketingDictionary {
   adminSidebar: AdminSidebarDict;
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
+  adminExperienceReview: {
+    back: string;
+    approve: string;
+    reject: string;
+    confirmReject: string;
+    cancel: string;
+    noteLabel: string;
+    priceSection: string;
+  };
   xsedPage: XsedPageDict;
   xsedUnavailable: {
     heading: string;
@@ -1858,4 +1944,5 @@ export interface MarketingDictionary {
   tripperProfilePage: TripperProfilePageDict;
   tripperExperiences: TripperExperiencesDict;
   unauthorized: UnauthorizedPageDict;
+  notifications: NotificationsDict;
 }

@@ -68,9 +68,9 @@ export interface TripperSessionExtras {
 }
 
 export interface TripperOwnExperienceListItem {
-  displayPrice: string;
   id: string;
   isActive: boolean;
+  status: ExperienceStatus;
   level: string;
   maxNights: number;
   maxPax: number;
@@ -78,7 +78,7 @@ export interface TripperOwnExperienceListItem {
   minPax: number;
   teaser: string;
   title: string;
-  type: string;
+  type: string[];
 }
 
 /** Public fields returned by listing queries (grids, home, GET /api/trippers). */
@@ -293,6 +293,15 @@ export interface ExperienceFormData {
   supplierNotes?: string | null;
 }
 
+// ─── Experience status union (mirrors Prisma enum) ────────────────────────────
+
+export type ExperienceStatus =
+  | "DRAFT"
+  | "PENDING_REVIEW"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ARCHIVED";
+
 // ─── New experience form draft ────────────────────────────────────────────────
 
 export interface ItineraryDayEntry {
@@ -312,17 +321,20 @@ export interface AccommodationEntry {
   hotelStars: string;
   hotelLocation: string;
   hotelDays: string;
+  hotelLink: string;
+  referredLink: string;
 }
 
 export interface ExperienceFormDraft {
   // About
-  status: string;
+  status: ExperienceStatus;
   title: string;
-  type: string;
+  type: string[];
   level: string;
   teaser: string;
   description: string;
   heroImage: string;
+  galleryImages: string[];
   tags: string[];
   highlights: string[];
   // Destination
@@ -335,11 +347,11 @@ export interface ExperienceFormDraft {
   maxPax: number;
   minNights: number;
   maxNights: number;
-  // Pricing
-  basePrice: number;
-  displayPrice: string;
+  // Pricing — admin-set on approval, read-only for tripper
+  pricingByType?: Record<string, number> | null;
+  reviewNote?: string | null;
   estimatedCost: string;
-  season: string;
+  season: string[];
   // Logistics
   transport: string;
   travelTime: string;
@@ -353,6 +365,7 @@ export interface ExperienceFormDraft {
   itinerary: ItineraryDayEntry[];
   inclusions: string[];
   exclusions: string[];
+  createBlogPost: boolean;
 }
 
 export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
@@ -363,14 +376,18 @@ export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
 export interface ExperienceListItem {
   id: string;
   title: string;
-  type: string;
+  type: string[];
   level: string | null;
-  status: string;
+  status: ExperienceStatus;
   isActive: boolean;
-  basePrice: number;
-  displayPrice: string;
+  pricingByType?: Record<string, number> | null;
+  reviewNote?: string | null;
   destinationCountry: string;
   destinationCity: string;
+  minNights: number;
+  maxNights: number;
+  minPax: number;
+  maxPax: number;
   createdAt: string;
   updatedAt: string;
 }

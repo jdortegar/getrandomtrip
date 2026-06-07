@@ -31,9 +31,13 @@ export default async function EditExperiencePage(props: {
     redirect(`/${params.locale}/dashboard`);
   }
 
-  const pkg = await prisma.experience.findFirst({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pkg = await (prisma.experience.findFirst as any)({
     where: { id: params.id, ownerId: user.id },
-  });
+  }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
+    pricingByType: Record<string, number> | null;
+    reviewNote: string | null;
+  } | null;
 
   if (!pkg) {
     notFound();
@@ -42,7 +46,7 @@ export default async function EditExperiencePage(props: {
   const initialDraft: ExperienceFormDraft = {
     status: pkg.status,
     title: pkg.title,
-    type: pkg.type,
+    type: Array.isArray(pkg.type) ? pkg.type : [pkg.type].filter(Boolean),
     level: pkg.level ?? "essenza",
     teaser: pkg.teaser,
     description: pkg.description,
@@ -57,10 +61,10 @@ export default async function EditExperiencePage(props: {
     maxPax: pkg.maxPax,
     minNights: pkg.minNights,
     maxNights: pkg.maxNights,
-    basePrice: pkg.basePrice,
-    displayPrice: pkg.displayPrice,
+    pricingByType: (pkg.pricingByType as Record<string, number> | null) ?? null,
+    reviewNote: pkg.reviewNote ?? null,
     estimatedCost: "",
-    season: pkg.season ?? "any",
+    season: Array.isArray(pkg.season) ? pkg.season : [],
     transport: pkg.transport,
     travelTime: "",
     maxTravelTime: pkg.maxTravelTime,
@@ -86,6 +90,10 @@ export default async function EditExperiencePage(props: {
     exclusions: Array.isArray(pkg.exclusions)
       ? (pkg.exclusions as string[])
       : [],
+    galleryImages: Array.isArray((pkg as unknown as Record<string, unknown>).galleryImages)
+      ? ((pkg as unknown as Record<string, unknown>).galleryImages as string[])
+      : [],
+    createBlogPost: false,
   };
 
   const dict = await getDictionary(params.locale);

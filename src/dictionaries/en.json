@@ -175,6 +175,15 @@
       }
     }
   },
+  "adminExperienceReview": {
+    "back": "Back to experiences",
+    "approve": "Approve & publish",
+    "reject": "Reject",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "noteLabel": "Note to tripper",
+    "priceSection": "Price per person"
+  },
   "adminPages": {
     "payments": {
       "count": "{n} payments",
@@ -204,13 +213,32 @@
         "active": "Active",
         "inactive": "Inactive",
         "featured": "Featured",
-        "normal": "Normal"
+        "normal": "Normal",
+        "pendingReview": "Pending review"
       },
       "actions": {
         "disable": "Disable",
         "enable": "Enable",
         "unfeature": "Unfeature",
         "feature": "Feature"
+      },
+      "tabs": {
+        "all": "All",
+        "pending": "Pending review"
+      },
+      "review": {
+        "title": "Review experience",
+        "infoHeading": "Details",
+        "pricingHeading": "Price per type (per person)",
+        "pricePlaceholder": "USD",
+        "approve": "Approve & publish",
+        "reject": "Reject",
+        "noteLabel": "Note to tripper",
+        "notePlaceholder": "Explain what to change...",
+        "close": "Close",
+        "errorApprove": "Could not approve",
+        "errorReject": "Could not reject",
+        "errorPricing": "Set a price for every type"
       }
     },
     "reviews": {
@@ -731,7 +759,7 @@
           },
           {
             "id": "experience",
-            "title": "EXPERIENCE",
+            "title": "Experience",
             "description": "The only thing you define here is the per-person budget for travel and accommodation. That's your ceiling. We take care of the rest."
           }
         ]
@@ -2602,7 +2630,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -3161,7 +3193,11 @@
       "status": "Status",
       "price": "Price / person",
       "updated": "Updated",
-      "edit": "Edit"
+      "duration": "Duration",
+      "capacity": "Capacity",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this experience? This action cannot be undone."
     },
     "emptyState": {
       "noExperiences": "You don't have any experiences yet.",
@@ -3172,21 +3208,26 @@
       "ACTIVE": "Active",
       "DRAFT": "Draft",
       "INACTIVE": "Inactive",
-      "ARCHIVED": "Archived"
+      "ARCHIVED": "Archived",
+      "PENDING_REVIEW": "Pending review"
     },
     "form": {
       "createTitle": "CREATE EXPERIENCE",
       "editTitle": "EDIT EXPERIENCE",
       "createSubmit": "Create Experience",
+      "requiredFieldsLabel": "Required fields",
       "actionBar": {
         "clearAll": "Clear all",
         "next": "Next",
         "submit": "Create experience",
-        "saveDraft": "Save draft"
+        "saveDraft": "Save draft",
+        "submitForReview": "Submit for review"
       },
       "editSubmit": "Save Changes",
       "cancel": "Cancel",
       "saving": "Saving...",
+      "saved": "Saved",
+      "errorSave": "Error saving",
       "nav": {
         "sections": "Sections",
         "progress": "Progress"
@@ -3199,28 +3240,12 @@
             {
               "id": "experience",
               "title": "Experience",
-              "description": "Name, type, level and who can take part."
+              "description": "Name, type, level, and who can take the experience."
             },
             {
               "id": "destination",
               "title": "Destination",
-              "description": "Country and excuse."
-            }
-          ]
-        },
-        {
-          "id": "capacity",
-          "label": "Capacity & Price",
-          "substeps": [
-            {
-              "id": "capacity-duration",
-              "title": "Capacity & duration",
-              "description": "Number of travelers and recommended duration"
-            },
-            {
-              "id": "pricing",
-              "title": "Price & estimated supply",
-              "description": "Base price and public display price"
+              "description": "City, country and what's the excuse."
             }
           ]
         },
@@ -3229,35 +3254,41 @@
           "label": "Logistics & accommodation",
           "substeps": [
             {
-              "id": "transport",
-              "title": "Transport",
-              "description": "Trip logistics"
-            },
-            {
               "id": "accommodation",
-              "title": "Accommodation",
-              "description": "Hotels and suggested accommodation type."
+              "title": "Logistics & accommodation",
+              "description": "Hotels, stays and suggested days. If you leave it empty, Randomtrip will find the best option."
             }
           ]
         },
         {
           "id": "activities",
-          "label": "Activities & itinerary",
+          "label": "Activities & Itinerary",
           "substeps": [
             {
               "id": "activities-list",
               "title": "Activities",
-              "description": "Suggested activities for the experience."
+              "description": "Suggested activities"
             },
             {
               "id": "itinerary",
               "title": "Itinerary",
-              "description": "Broken down by day."
+              "description": "Per day, avoid phrases that sound like a \"tourist trip\" such as: unique postcards, dream destinations, all inclusive, among others."
+            }
+          ]
+        },
+        {
+          "id": "media",
+          "label": "Marketing content",
+          "substeps": [
+            {
+              "id": "tags",
+              "title": "Tags, Highlights & Media",
+              "description": "Image gallery and Tags"
             },
             {
-              "id": "inclusions",
-              "title": "Inclusions / Exclusions",
-              "description": "What is and isn't included in the experience."
+              "id": "visibility",
+              "title": "Visibility",
+              "description": "Randomtrip validations"
             }
           ]
         }
@@ -3277,17 +3308,24 @@
       },
       "fields": {
         "title": "Title",
-        "type": "Trip type",
+        "titlePlaceholder": "Write the experience title",
+        "type": "Experience type",
+        "typeHint": "You can choose 1 or more",
         "level": "Level",
         "status": "Status",
         "teaser": "Teaser",
         "teaserHint": "Short description shown on cards (max 150 characters)",
         "description": "Full description",
+        "descriptionPlaceholder": "Full experience description",
         "country": "Destination country",
-        "city": "Destination city",
+        "countryPlaceholder": "E.g.: Argentina",
+        "city": "City",
+        "cityPlaceholder": "E.g.: Buenos Aires",
         "excuseKey": "Trip excuse",
+        "excuseKeyPlaceholder": "Select an excuse",
         "excuseKeyHint": "The excuse the client uses to justify the trip",
-        "minNights": "Minimum nights",
+        "minNights": "Recommended duration",
+        "minNightsHint": "In days",
         "maxNights": "Maximum nights",
         "maxNightsHint": "This level supports max {n} nights",
         "minPax": "Minimum travelers",
@@ -3297,7 +3335,9 @@
         "displayPrice": "Display price",
         "displayPriceHint": "Free text shown on the public card. E.g.: From USD 450",
         "estimatedCost": "Estimated cost per person",
-        "season": "Season",
+        "season": "Suggested travel months",
+        "seasonPlaceholder": "Select months",
+        "seasonHint": "Recommended months to take the trip",
         "pricingDescription": "Suggested providers, costs and season recommendation.",
         "accommodationType": "Accommodation type",
         "transport": "Main transport",
@@ -3309,9 +3349,15 @@
         "arrivePref": "Arrival preference",
         "compatibilityHint": "These fields help the matching algorithm pair your package with client requests.",
         "hotelName": "Hotel name",
+        "hotelNamePlaceholder": "E.g.: Four Seasons...",
+        "hotelLink": "Hotel link",
+        "hotelLinkPlaceholder": "https://...",
+        "referredLink": "Referred link",
+        "referredLinkPlaceholder": "https://...",
         "hotelStars": "Stars",
         "hotelLocation": "Location",
         "hotelDays": "Suggested days at accommodation",
+        "hotelDaysPlaceholder": "E.g.: 1",
         "starsHint": "Up to 5 stars.",
         "addAccommodation": "Add another accommodation",
         "removeAccommodation": "Remove",
@@ -3323,16 +3369,24 @@
         "addHotel": "Add Hotel",
         "noHotels": "No hotels added yet.",
         "activityName": "Activity name",
+        "activityNamePlaceholder": "E.g.: Boutique....",
         "activityDuration": "Duration",
         "activityDurationRhythm": "Estimated duration and pace",
+        "activityDurationPlaceholder": "E.g.: 3 hrs. at a relaxed pace",
         "activityDesc": "Activity description",
+        "activityDescPlaceholder": "E.g.: during the activity you will be able to ride a horse.....",
         "activityRisks": "Risks or Warnings",
+        "activityRisksPlaceholder": "E.g.: precautions they should take....",
+        "activityLabel": "Activity",
         "addActivity": "Add Activity",
         "addAnotherActivity": "Add another activity",
         "removeActivity": "Remove",
         "noActivities": "No activities added yet.",
         "itineraryTitle": "Day title",
+        "itineraryTitlePlaceholder": "E.g.: first day on the hill",
         "itineraryDesc": "Day description",
+        "itineraryDescPlaceholder": "E.g.: on the first day we went to the hill called \"Viva lava\"",
+        "dayLabel": "Day",
         "addDay": "Add Day",
         "addAnotherDay": "Add another day",
         "removeDay": "Remove",
@@ -3345,8 +3399,14 @@
         "tagInput": "New tag (Enter to add)",
         "highlights": "Highlights",
         "highlightInput": "New highlight (Enter to add)",
-        "heroImage": "Hero image (URL)",
-        "heroImageHint": "URL of the experience's main image",
+        "heroImage": "Hero image",
+        "heroImageHint": "Main image displayed on the experience card",
+        "galleryImages": "Gallery",
+        "galleryImagesHint": "Up to 3 additional images",
+        "uploadImage": "Upload image",
+        "uploading": "Uploading…",
+        "removeImage": "Remove",
+        "copyrightHint": "Images must be your own or royalty-free *",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",
@@ -3372,7 +3432,19 @@
         "supplierNotes": "Supplier notes",
         "statusLabel": "Status",
         "statusDraft": "Draft",
-        "statusActive": "Active"
+        "statusActive": "Active",
+        "createBlogPost": "Create blog post",
+        "createBlogPostHint": "A draft will be created with the experience content"
+      },
+      "review": {
+        "pendingTitle": "Pending review",
+        "pendingBody": "Your experience is under review. You cannot make changes until you receive a response.",
+        "rejectedTitle": "Changes requested",
+        "rejectedDismiss": "Got it",
+        "submitError": "Required fields missing"
+      },
+      "statusBadge": {
+        "pendingReview": "Pending review"
       }
     }
   },
@@ -3564,6 +3636,21 @@
         "description": "We will get back to you shortly."
       },
       "submit": "Send"
+    }
+  },
+  "notifications": {
+    "pageTitle": "Notifications",
+    "emptyState": "You have no notifications yet.",
+    "markRead": "Mark as read",
+    "unreadBadge": "Unread",
+    "types": {
+      "EXPERIENCE_APPROVED": "Experience approved",
+      "EXPERIENCE_REJECTED": "Experience rejected",
+      "BOOKING_CONFIRMED": "Booking confirmed",
+      "BOOKING_REVEALED": "Destination revealed",
+      "BOOKING_COMPLETED": "Trip completed",
+      "BOOKING_CANCELLED": "Booking cancelled",
+      "PAYMENT_RECEIVED": "Payment received"
     }
   }
 }

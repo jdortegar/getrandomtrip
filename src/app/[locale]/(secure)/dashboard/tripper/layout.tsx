@@ -12,7 +12,7 @@ export default function TripperLayout({
   return (
     <SecureRouteWrapper requiredRole="tripper">
       <>
-        <div className="bg-neutral-50 pt-16 pb-10">
+        <div className="bg-neutral-50 pt-8 sm:pt-16 pb-6 sm:pb-10">
           <div className="rt-container">
             <TripperPageHeading />
           </div>

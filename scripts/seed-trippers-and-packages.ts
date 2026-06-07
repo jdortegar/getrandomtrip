@@ -671,7 +671,7 @@ const PACKAGE_TEMPLATES = {
 // Generate random package data
 function generatePackage(
   tripper: any,
-  type: string,
+  type: string, // kept as string param — converted to array at call site
   level: string,
   template: any,
 ) {
@@ -1088,7 +1088,7 @@ async function seedTrippersAndPackages() {
             packages.push({
               ...packageData,
               ownerId: tripper.id,
-              type,
+              type: [type],
               level,
             });
           }
@@ -1119,10 +1119,13 @@ async function seedTrippersAndPackages() {
       });
 
       const byType = tripperPackages.reduce((acc, pkg) => {
-        if (!acc[pkg.type]) acc[pkg.type] = {};
-        const lk = pkg.level ?? "unknown";
-        if (!acc[pkg.type][lk]) acc[pkg.type][lk] = 0;
-        acc[pkg.type][lk]++;
+        const types = Array.isArray(pkg.type) ? pkg.type : [pkg.type];
+        types.forEach((t) => {
+          if (!acc[t]) acc[t] = {};
+          const lk = pkg.level ?? "unknown";
+          if (!acc[t][lk]) acc[t][lk] = 0;
+          acc[t][lk]++;
+        });
         return acc;
       }, {} as any);
 

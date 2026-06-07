@@ -67,10 +67,8 @@ export async function POST(request: NextRequest) {
       data: {
         ownerId: user.id,
         createdById: user.id,
-        status:
-          (body.status as "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED") ||
-          "DRAFT",
-        type: body.type,
+        status: "DRAFT",
+        type: Array.isArray(body.type) ? body.type : [body.type].filter(Boolean),
         level: body.level || null,
         excuseKey: body.excuseKey || null,
         minNights: body.minNights,
@@ -81,6 +79,7 @@ export async function POST(request: NextRequest) {
         teaser: body.teaser,
         description: body.description,
         heroImage: body.heroImage || "",
+        galleryImages: Array.isArray(body.galleryImages) ? body.galleryImages : [],
         tags: body.tags,
         highlights: body.highlights,
         destinationCountry: body.destinationCountry,
@@ -90,15 +89,13 @@ export async function POST(request: NextRequest) {
         itinerary: body.itinerary as unknown as object[],
         inclusions: body.inclusions as unknown as object[],
         exclusions: body.exclusions as unknown as object[],
-        basePrice: body.basePrice,
-        displayPrice: body.displayPrice,
         accommodationType: body.accommodationType,
         transport: body.transport,
         climate: body.climate,
         maxTravelTime: body.maxTravelTime,
         departPref: body.departPref,
         arrivePref: body.arrivePref,
-        season: body.season || "any",
+        season: Array.isArray(body.season) ? body.season : [],
       },
       select: { id: true },
     });

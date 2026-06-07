@@ -36,7 +36,8 @@ export async function GET(
 
     const experienceId = params.id;
 
-    const experienceData = await prisma.experience.findFirst({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const experienceData = await (prisma.experience.findFirst as any)({
       where: {
         id: experienceId,
         ownerId: user.id,
@@ -55,9 +56,10 @@ export async function GET(
         maxNights: true,
         minPax: true,
         maxPax: true,
-        basePrice: true,
-        displayPrice: true,
+        pricingByType: true,
+        reviewNote: true,
         heroImage: true,
+        galleryImages: true,
         tags: true,
         highlights: true,
         excuseKey: true,
@@ -162,6 +164,7 @@ export async function PATCH(
       teaser,
       description,
       heroImage,
+      galleryImages,
       tags,
       highlights,
       destinationCountry,
@@ -171,11 +174,10 @@ export async function PATCH(
       maxNights,
       minPax,
       maxPax,
-      basePrice,
-      displayPrice,
       isActive,
       isFeatured,
-      status,
+      // Privileged fields stripped (D2): status, pricingByType, reviewNote, basePrice, displayPrice
+      // are NOT accepted from tripper PATCH — changes flow through guarded transition endpoints
       // accept both hotels (admin form) and accommodations (tripper form)
       hotels: hotelsField,
       accommodations,
@@ -212,15 +214,19 @@ export async function PATCH(
 
     const hotels = hotelsField ?? accommodations;
 
+    // If the experience is ACTIVE and the tripper is editing it, revert to DRAFT (requires re-review)
+    const revertToDraft = existingExperience.status === "ACTIVE";
+
     const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
       data: {
-        ...(type && { type }),
+        ...(type !== undefined && { type: Array.isArray(type) ? type : [type].filter(Boolean) }),
         level: level ?? null,
         ...(title && { title }),
         teaser: teaser ?? "",
         description: description ?? "",
         heroImage: heroImage ?? "",
+        galleryImages: Array.isArray(galleryImages) ? galleryImages : [],
         tags: tags ?? [],
         highlights: highlights ?? [],
         ...(destinationCountry && { destinationCountry }),
@@ -230,11 +236,9 @@ export async function PATCH(
         maxNights: maxNights ?? 7,
         minPax: minPax ?? 1,
         maxPax: maxPax ?? 8,
-        basePrice: basePrice ?? 0,
-        displayPrice: displayPrice ?? "",
         ...(isActive !== undefined && { isActive }),
         ...(isFeatured !== undefined && { isFeatured }),
-        ...(status && { status }),
+        ...(revertToDraft && { status: "DRAFT", isActive: false }),
         ...(hotels !== undefined && { hotels }),
         ...(activities !== undefined && { activities }),
         ...(itinerary !== undefined && { itinerary }),
@@ -246,7 +250,7 @@ export async function PATCH(
         maxTravelTime: maxTravelTime ?? "no-limit",
         departPref: departPref ?? "any",
         arrivePref: arrivePref ?? "any",
-        season: season ?? "any",
+        season: Array.isArray(season) ? season : [],
         titleInternal: titleInternal || null,
         slug: slug || null,
         tripDate: tripDate ? new Date(tripDate as string) : null,
@@ -270,6 +274,54 @@ export async function PATCH(
     return NextResponse.json({ experience: updatedExperience });
   } catch (error) {
     console.error("Error updating experience:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, roles: true },
+    });
+
+    if (!user || !hasRoleAccess(user, "tripper")) {
+      return NextResponse.json(
+        { error: "Forbidden - Tripper access only" },
+        { status: 403 },
+      );
+    }
+
+    const existing = await prisma.experience.findFirst({
+      where: { id: params.id, ownerId: user.id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Experience not found or access denied" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.experience.delete({ where: { id: params.id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting experience:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

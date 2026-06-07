@@ -6,7 +6,7 @@ const HERO = "/images/drops/drops-mendoza.jpg";
 
 interface MockExperience {
   slug: string;
-  type: string;
+  type: string[];
   level?: string;
   status: ExperienceStatus;
   title: string;
@@ -38,7 +38,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // COUPLE
   {
     slug: "couple-toscana-esencial",
-    type: "couple",
+    type: ["couple"],
     level: "essenza",
     status: "ACTIVE",
     title: "Toscana Esencial",
@@ -61,7 +61,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "couple-lisboa-modo-explora",
-    type: "couple",
+    type: ["couple"],
     level: "modo-explora",
     status: "ACTIVE",
     title: "Lisboa en Modo Explora",
@@ -86,7 +86,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // FAMILY
   {
     slug: "family-patagonia-kin",
-    type: "family",
+    type: ["family"],
     level: "explora-plus",
     status: "ACTIVE",
     title: "Patagonia KIN",
@@ -111,7 +111,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // GROUP
   {
     slug: "group-cartagena-crew",
-    type: "group",
+    type: ["group"],
     level: "modo-explora",
     status: "ACTIVE",
     title: "Cartagena CREW",
@@ -134,7 +134,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "group-mendoza-crew-bivouac",
-    type: "group",
+    type: ["group"],
     level: "bivouac",
     status: "DRAFT",
     title: "Mendoza Crew Bivouac",
@@ -159,7 +159,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // SOLO
   {
     slug: "solo-tokyo-solum",
-    type: "solo",
+    type: ["solo"],
     level: "explora-plus",
     status: "ACTIVE",
     title: "Tokio SOLUM",
@@ -182,7 +182,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "solo-oaxaca-solum-essenza",
-    type: "solo",
+    type: ["solo"],
     level: "essenza",
     status: "ACTIVE",
     title: "Oaxaca SOLUM Essenza",
@@ -207,7 +207,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // HONEYMOON
   {
     slug: "honeymoon-maldivas-nuptia",
-    type: "honeymoon",
+    type: ["honeymoon"],
     level: "atelier-getaway",
     status: "ACTIVE",
     title: "Maldivas NUPTIA Atelier",
@@ -230,7 +230,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "honeymoon-toscana-nuptia",
-    type: "honeymoon",
+    type: ["honeymoon"],
     level: "bivouac",
     status: "ACTIVE",
     title: "Toscana NUPTIA Bivouac",
@@ -255,7 +255,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // PAWS
   {
     slug: "paws-camino-sur-patagonia",
-    type: "paws",
+    type: ["paws"],
     level: "modo-explora",
     status: "ACTIVE",
     title: "Sur Patagónico PAWS",
@@ -278,7 +278,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "paws-amsterdam-essenza",
-    type: "paws",
+    type: ["paws"],
     level: "essenza",
     status: "DRAFT",
     title: "Amsterdam PAWS Essenza",
@@ -303,7 +303,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   // XSED DROPS — slugs must be numeric for parseDropNumber()
   {
     slug: "10",
-    type: "XSED",
+    type: ["XSED"],
     status: "ACTIVE",
     title: "Salta bajo las estrellas — Drop #10",
     titleInternal: "Salta bajo las estrellas — Drop #10",
@@ -325,7 +325,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "9",
-    type: "XSED",
+    type: ["XSED"],
     status: "ACTIVE",
     title: "Córdoba sin mapa — Drop #9",
     titleInternal: "Córdoba sin mapa — Drop #9",
@@ -347,7 +347,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "8",
-    type: "XSED",
+    type: ["XSED"],
     status: "ARCHIVED",
     title: "Mar del Plata off-season — Drop #8",
     titleInternal: "Mar del Plata off-season — Drop #8",
@@ -368,7 +368,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "7",
-    type: "XSED",
+    type: ["XSED"],
     status: "INACTIVE",
     title: "Bariloche nevado — Drop #7",
     titleInternal: "Bariloche nevado — Drop #7",
@@ -389,7 +389,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "6",
-    type: "XSED",
+    type: ["XSED"],
     status: "ARCHIVED",
     title: "Iguazú selva — Drop #6",
     titleInternal: "Iguazú selva — Drop #6",
@@ -410,7 +410,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "5",
-    type: "XSED",
+    type: ["XSED"],
     status: "ACTIVE",
     title: "Mendoza desde arriba — Drop #5",
     titleInternal: "Mendoza desde arriba — Drop #5",
@@ -432,7 +432,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "4",
-    type: "XSED",
+    type: ["XSED"],
     status: "ACTIVE",
     title: "Formosa tiene un secreto — Drop #4",
     titleInternal: "Formosa tiene un secreto — Drop #4",
@@ -454,7 +454,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "3",
-    type: "XSED",
+    type: ["XSED"],
     status: "INACTIVE",
     title: "Tucumán star night — Drop #3",
     titleInternal: "Tucumán star night — Drop #3",
@@ -475,7 +475,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "2",
-    type: "XSED",
+    type: ["XSED"],
     status: "ACTIVE",
     title: "Formosa tiene un secreto — Drop #2",
     titleInternal: "Formosa tiene un secreto — Drop #2",
@@ -497,7 +497,7 @@ const MOCK_EXPERIENCES: MockExperience[] = [
   },
   {
     slug: "1",
-    type: "XSED",
+    type: ["XSED"],
     status: "ACTIVE",
     title: "Tucumán star night — Drop #1",
     titleInternal: "Tucumán star night — Drop #1",
@@ -572,7 +572,7 @@ async function getOwner() {
 }
 
 async function upsertExperience(exp: MockExperience, ownerId: string) {
-  const isXsed = exp.type === "XSED";
+  const isXsed = exp.type.includes("XSED");
   const benefits = isXsed ? makeBenefits(exp.destinationCity) : [];
   const hotels = benefits.filter((b) => b.type === "ACCOMMODATION");
   const activities = benefits.filter((b) => b.type !== "ACCOMMODATION");
@@ -637,8 +637,9 @@ async function main() {
 
   for (const exp of MOCK_EXPERIENCES) {
     const saved = await upsertExperience(exp, owner.id);
-    byType[saved.type] = (byType[saved.type] ?? 0) + 1;
-    console.log(`✅ [${saved.type.padEnd(9)}] ${saved.slug} | ${saved.status}`);
+    const typeKey = saved.type.join(",");
+    byType[typeKey] = (byType[typeKey] ?? 0) + 1;
+    console.log(`✅ [${saved.type.join(",").padEnd(9)}] ${saved.slug} | ${saved.status}`);
   }
 
   console.log("\nTotals by type:");

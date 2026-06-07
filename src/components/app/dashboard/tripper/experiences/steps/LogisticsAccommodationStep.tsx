@@ -1,8 +1,7 @@
 "use client";
 
-import { MapPin, Search, X } from "lucide-react";
-import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { ACCOMMODATION_TYPES } from "@/lib/constants/packages";
+import { X } from "lucide-react";
+import { FormField } from "@/components/ui/FormField";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   AccommodationEntry,
@@ -16,12 +15,13 @@ interface Props {
   onChange: ExperienceFormDraftOnChange;
 }
 
-const STAR_OPTIONS = [1, 2, 3, 4, 5];
 const EMPTY_ENTRY: AccommodationEntry = {
   hotelName: "",
   hotelStars: "",
   hotelLocation: "",
   hotelDays: "",
+  hotelLink: "",
+  referredLink: "",
 };
 
 export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
@@ -52,31 +52,16 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-neutral-500 -mt-1">
-        {copy.contentTabs[2]?.substeps[1]?.description}
+        {copy.contentTabs[1]?.substeps[0]?.description}
       </p>
 
-      <div className="grid grid-cols-2 gap-4 mb-2">
-        <FormSelectField
-          id="acc-type"
-          label={fields.accommodationType}
-          value={form.accommodationType}
-          onChange={(e) => onChange("accommodationType", e.target.value)}
-        >
-          {ACCOMMODATION_TYPES.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </FormSelectField>
-      </div>
-
-      <div className="space-y-4">
+      <div className="space-y-6">
         {form.accommodations.map((entry, index) => (
           <div key={index} className="space-y-4">
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                 <span className="text-sm text-neutral-500">
-                  Alojamiento {index + 1}
+                  {fields.addAccommodation} {index + 1}
                 </span>
                 <button
                   type="button"
@@ -89,66 +74,41 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Row 1: Name | Hotel link | Referred link */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 id={`acc-hotel-name-${index}`}
-                label={`${fields.hotelName} *`}
-                placeholder="Ej: Boutique..."
+                label={fields.hotelName}
+                placeholder={fields.hotelNamePlaceholder}
                 value={entry.hotelName}
+                onChange={(e) => updateEntry(index, "hotelName", e.target.value)}
+              />
+              <FormField
+                id={`acc-hotel-link-${index}`}
+                label={fields.hotelLink}
+                placeholder={fields.hotelLinkPlaceholder}
+                type="url"
+                value={entry.hotelLink}
+                onChange={(e) => updateEntry(index, "hotelLink", e.target.value)}
+              />
+              <FormField
+                id={`acc-referred-link-${index}`}
+                label={fields.referredLink}
+                placeholder={fields.referredLinkPlaceholder}
+                type="url"
+                value={entry.referredLink}
                 onChange={(e) =>
-                  updateEntry(index, "hotelName", e.target.value)
+                  updateEntry(index, "referredLink", e.target.value)
                 }
               />
-
-              <div className="flex flex-col gap-2">
-                <FormSelectField
-                  id={`acc-hotel-stars-${index}`}
-                  label={`${fields.hotelStars} *`}
-                  value={entry.hotelStars}
-                  onChange={(e) =>
-                    updateEntry(index, "hotelStars", e.target.value)
-                  }
-                >
-                  <option value="">{fields.starsPlaceholder}</option>
-                  {STAR_OPTIONS.map((n) => (
-                    <option key={n} value={String(n)}>
-                      {n} {n === 1 ? fields.starSingular : fields.starPlural}
-                    </option>
-                  ))}
-                </FormSelectField>
-                <p className="text-xs text-neutral-400">{fields.starsHint}</p>
-              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <label
-                  className="block font-normal text-gray-600 text-base"
-                  htmlFor={`acc-hotel-location-${index}`}
-                >
-                  {fields.hotelLocation} *
-                </label>
-                <div className="relative">
-                  <input
-                    id={`acc-hotel-location-${index}`}
-                    className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 pr-16 rounded-xl text-gray-900 w-full text-base"
-                    placeholder="Buscar location..."
-                    value={entry.hotelLocation}
-                    onChange={(e) =>
-                      updateEntry(index, "hotelLocation", e.target.value)
-                    }
-                  />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
-                    <Search className="h-4 w-4 text-gray-400" />
-                    <MapPin className="h-4 w-4 text-teal-500" />
-                  </div>
-                </div>
-              </div>
-
+            {/* Row 2: Days (1/3 width) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 id={`acc-hotel-days-${index}`}
                 label={fields.hotelDays}
-                placeholder="Ej: 1"
+                placeholder={fields.hotelDaysPlaceholder}
                 type="text"
                 inputMode="numeric"
                 value={entry.hotelDays}

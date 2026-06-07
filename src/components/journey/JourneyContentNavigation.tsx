@@ -17,6 +17,7 @@ interface Tab {
 interface JourneyContentNavigationProps {
   activeTab: string;
   className?: string;
+  completedTabIds?: string[];
   hideProfile?: boolean;
   onBack?: () => void;
   onTabChange: (tabId: string) => void;
@@ -27,6 +28,7 @@ interface JourneyContentNavigationProps {
 export default function JourneyContentNavigation({
   activeTab,
   className,
+  completedTabIds,
   hideProfile = false,
   onBack,
   onTabChange,
@@ -67,9 +69,9 @@ export default function JourneyContentNavigation({
       <div className="container mx-auto md:px-4">
         <div
           className={cn(
-            "gap-4 items-center",
+            "gap-4 items-center min-w-0",
             hideProfile
-              ? "flex justify-center"
+              ? "flex w-full justify-center"
               : "grid grid-cols-1 lg:grid-cols-[320px_1fr] justify-center md:justify-start",
           )}
         >
@@ -94,10 +96,10 @@ export default function JourneyContentNavigation({
           {tabs.length > 1 && (
             <div
               className={cn(
-                "flex items-center gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar",
+                "flex items-center gap-4 sm:gap-10 overflow-x-auto px-4 md:px-0 no-scrollbar w-full min-w-0",
                 hideProfile
-                  ? "justify-center"
-                  : "justify-start md:justify-center",
+                  ? "justify-safe-center"
+                  : "justify-start md:justify-safe-center",
               )}
             >
               {/* Right Section: Navigation Tabs */}
@@ -105,7 +107,9 @@ export default function JourneyContentNavigation({
                 const isActive = tab.id === activeTab;
                 const isClickable = index <= activeTabIndex;
                 const stepNumber = index + 1;
-                const isCompleted = isTabComplete(tab.id);
+                const isCompleted = completedTabIds
+                  ? completedTabIds.includes(tab.id)
+                  : isTabComplete(tab.id);
 
                 return (
                   <div key={tab.id} className="flex items-center gap-1">

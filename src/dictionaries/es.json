@@ -175,6 +175,15 @@
       }
     }
   },
+  "adminExperienceReview": {
+    "back": "Volver a experiencias",
+    "approve": "Aprobar y publicar",
+    "reject": "Rechazar",
+    "confirmReject": "Confirmar rechazo",
+    "cancel": "Cancelar",
+    "noteLabel": "Nota para el tripper",
+    "priceSection": "Precio por persona"
+  },
   "adminPages": {
     "payments": {
       "count": "{n} pagos",
@@ -204,13 +213,32 @@
         "active": "Activa",
         "inactive": "Inactiva",
         "featured": "Destacada",
-        "normal": "Normal"
+        "normal": "Normal",
+        "pendingReview": "En revisión"
       },
       "actions": {
         "disable": "Desactivar",
         "enable": "Activar",
         "unfeature": "Quitar destaque",
         "feature": "Destacar"
+      },
+      "tabs": {
+        "all": "Todas",
+        "pending": "Pendientes de revisión"
+      },
+      "review": {
+        "title": "Revisar experiencia",
+        "infoHeading": "Información",
+        "pricingHeading": "Precio por tipo (por persona)",
+        "pricePlaceholder": "USD",
+        "approve": "Aprobar y publicar",
+        "reject": "Rechazar",
+        "noteLabel": "Nota para el tripper",
+        "notePlaceholder": "Explicá qué cambiar...",
+        "close": "Cerrar",
+        "errorApprove": "No se pudo aprobar",
+        "errorReject": "No se pudo rechazar",
+        "errorPricing": "Completá el precio de cada tipo"
       }
     },
     "reviews": {
@@ -732,7 +760,7 @@
           },
           {
             "id": "experience",
-            "title": "EXPERIENCIA",
+            "title": "Experiencia",
             "description": "Lo único que definís acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros."
           }
         ]
@@ -2602,7 +2630,11 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos un destino; vendemos un resultado emocional. Nuestra misión es liberar tu mente de la parálisis por análisis y guiarte hacia estados como asombro, calma o conexión.",
       "p2": "Lo llamamos Serendipia Diseñada: entornos seguros y meticulosamente planificados que se sienten espontáneos y transformadores. Renunciás al control logístico para ganar libertad verdadera.",
-      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
+      "pills": [
+        "Brief emocional",
+        "Diseño invisible",
+        "Sorpresa con red"
+      ],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {
@@ -3161,7 +3193,11 @@
       "status": "Estado",
       "price": "Precio / persona",
       "updated": "Actualizado",
-      "edit": "Editar"
+      "duration": "Duración",
+      "capacity": "Capacidad",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta experiencia? Esta acción no se puede deshacer."
     },
     "emptyState": {
       "noExperiences": "Aún no tienes experiencias.",
@@ -3172,21 +3208,26 @@
       "ACTIVE": "Activo",
       "DRAFT": "Borrador",
       "INACTIVE": "Inactivo",
-      "ARCHIVED": "Archivado"
+      "ARCHIVED": "Archivado",
+      "PENDING_REVIEW": "En revisión"
     },
     "form": {
       "createTitle": "CREAR EXPERIENCIA",
       "editTitle": "EDITAR EXPERIENCIA",
       "createSubmit": "Crear Experiencia",
+      "requiredFieldsLabel": "Campos requeridos",
       "actionBar": {
         "clearAll": "Borrar todo",
         "next": "Siguiente",
         "submit": "Crear experiencia",
-        "saveDraft": "Guardar borrador"
+        "saveDraft": "Guardar borrador",
+        "submitForReview": "Enviar a revisión"
       },
       "editSubmit": "Guardar Cambios",
       "cancel": "Cancelar",
       "saving": "Guardando...",
+      "saved": "Guardado",
+      "errorSave": "Error al guardar",
       "nav": {
         "sections": "Secciones",
         "progress": "Progreso"
@@ -3199,28 +3240,12 @@
             {
               "id": "experience",
               "title": "Experiencia",
-              "description": "Información del nombre, tipo de experiencia, nivel y con quién puede realizarse."
+              "description": "Información del nombre y el tipo de experiencia, el nivel y con quién puede realizarse."
             },
             {
               "id": "destination",
               "title": "Destino",
-              "description": "Cuál es el país y la excusa."
-            }
-          ]
-        },
-        {
-          "id": "capacity",
-          "label": "Capacidad y Precio",
-          "substeps": [
-            {
-              "id": "capacity-duration",
-              "title": "Capacidad y duración",
-              "description": "Cantidad de viajeros y duración recomendada"
-            },
-            {
-              "id": "pricing",
-              "title": "Precio y supply estimado",
-              "description": "Precio base y precio público"
+              "description": "Ciudad y país y cuál es la excusa."
             }
           ]
         },
@@ -3229,35 +3254,41 @@
           "label": "Logística y alojamiento",
           "substeps": [
             {
-              "id": "transport",
-              "title": "Transporte",
-              "description": "Logística del viaje"
-            },
-            {
               "id": "accommodation",
-              "title": "Alojamiento",
-              "description": "Hoteles y tipo de alojamiento sugerido."
+              "title": "Logística y alojamiento",
+              "description": "Lugares, hotel, estadias sugeridas, si no lo incluis Randomtrip encontrará la mejor opción."
             }
           ]
         },
         {
           "id": "activities",
-          "label": "Actividades e itinerario",
+          "label": "Actividades e Itinerario",
           "substeps": [
             {
               "id": "activities-list",
               "title": "Actividades",
-              "description": "Actividades sugeridas para la experiencia."
+              "description": "Actividades sugeridas"
             },
             {
               "id": "itinerary",
               "title": "Itinerario",
-              "description": "Dividido por día."
+              "description": "Por día, evitar frases que suelen sonar \"trip turístico\" como: postales únicas, destinos soñados, todo incluido, entre otras."
+            }
+          ]
+        },
+        {
+          "id": "media",
+          "label": "Contenido de marketing",
+          "substeps": [
+            {
+              "id": "tags",
+              "title": "Tags, Highlights & Media",
+              "description": "Galería de imágenes y Tags"
             },
             {
-              "id": "inclusions",
-              "title": "Incluye / No incluye",
-              "description": "Qué está incluido y qué no en la experiencia."
+              "id": "visibility",
+              "title": "Visibilidad",
+              "description": "Validaciones con Randomtrip"
             }
           ]
         }
@@ -3277,17 +3308,24 @@
       },
       "fields": {
         "title": "Título",
-        "type": "Tipo de viaje",
+        "titlePlaceholder": "Escribir titular de la experiencia",
+        "type": "Tipo de experiencia",
+        "typeHint": "Puede elegir 1 o +",
         "level": "Nivel",
         "status": "Estado",
         "teaser": "Teaser",
         "teaserHint": "Descripción corta que aparece en las tarjetas (máx. 150 caracteres)",
         "description": "Descripción completa",
+        "descriptionPlaceholder": "Descripción de la experiencia completa",
         "country": "País de destino",
-        "city": "Ciudad de destino",
+        "countryPlaceholder": "Ej: Argentina",
+        "city": "Ciudad",
+        "cityPlaceholder": "Ej: Buenos Aires",
         "excuseKey": "Excusa del viaje",
+        "excuseKeyPlaceholder": "Seleccioná una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
-        "minNights": "Noches mínimas",
+        "minNights": "Duración recomendada",
+        "minNightsHint": "En días",
         "maxNights": "Noches máximas",
         "maxNightsHint": "Este nivel admite máx. {n} noches",
         "minPax": "Viajeros mínimos",
@@ -3297,7 +3335,9 @@
         "displayPrice": "Precio de visualización",
         "displayPriceHint": "Texto libre que aparece en la tarjeta pública. Ej: Desde USD 450",
         "estimatedCost": "Costo estimado por persona",
-        "season": "Temporada",
+        "season": "Meses sugeridos para viajar",
+        "seasonPlaceholder": "Seleccionar meses",
+        "seasonHint": "Meses recomendados para realizar el viaje",
         "pricingDescription": "Proveedores sugeridos, costos y sugerencia de temporada.",
         "accommodationType": "Tipo de alojamiento",
         "transport": "Transporte principal",
@@ -3309,9 +3349,15 @@
         "arrivePref": "Preferencia de llegada",
         "compatibilityHint": "Estos campos ayudan al algoritmo a hacer matching con solicitudes de clientes.",
         "hotelName": "Nombre del hotel",
+        "hotelNamePlaceholder": "Ej: Four Seasons...",
+        "hotelLink": "Link Hotel",
+        "hotelLinkPlaceholder": "https://...",
+        "referredLink": "Link referido",
+        "referredLinkPlaceholder": "https://...",
         "hotelStars": "Estrellas",
         "hotelLocation": "Ubicación",
         "hotelDays": "Días sugeridos en el alojamiento",
+        "hotelDaysPlaceholder": "Ej: 1",
         "starsHint": "Hasta 5 estrellas.",
         "addAccommodation": "Agregar otro alojamiento",
         "removeAccommodation": "Quitar",
@@ -3323,16 +3369,24 @@
         "addHotel": "Agregar Hotel",
         "noHotels": "No has agregado hoteles aún.",
         "activityName": "Nombre de la actividad",
+        "activityNamePlaceholder": "Ej: Boutique....",
         "activityDuration": "Duración",
         "activityDurationRhythm": "Duración estimada y ritmo",
+        "activityDurationPlaceholder": "Ej: 3 hs. con ritmo tranquilo",
         "activityDesc": "Descripción de la actividad",
+        "activityDescPlaceholder": "Ej: en la actividad podrás montar a caballo.....",
         "activityRisks": "Riesgos o Advertencias",
+        "activityRisksPlaceholder": "Ej: cuidados que deberían tener....",
+        "activityLabel": "Actividad",
         "addActivity": "Agregar Actividad",
         "addAnotherActivity": "Agregar otra actividad",
         "removeActivity": "Quitar",
         "noActivities": "No has agregado actividades aún.",
         "itineraryTitle": "Titulo del día",
+        "itineraryTitlePlaceholder": "Ej: primer día en la colina",
         "itineraryDesc": "Descripción del día",
+        "itineraryDescPlaceholder": "Ej: el primer día fuimos a la colina llamada \"Viva lava\"",
+        "dayLabel": "Día",
         "addDay": "Agregar Día",
         "addAnotherDay": "Agregar otro día",
         "removeDay": "Quitar",
@@ -3345,8 +3399,14 @@
         "tagInput": "Nuevo tag (Enter para agregar)",
         "highlights": "Highlights",
         "highlightInput": "Nuevo highlight (Enter para agregar)",
-        "heroImage": "Imagen hero (URL)",
-        "heroImageHint": "URL de la imagen principal de la experiencia",
+        "heroImage": "Imagen hero",
+        "heroImageHint": "Imagen principal que aparece en la tarjeta de la experiencia",
+        "galleryImages": "Galería",
+        "galleryImagesHint": "Hasta 3 imágenes adicionales",
+        "uploadImage": "Subir imagen",
+        "uploading": "Subiendo…",
+        "removeImage": "Quitar",
+        "copyrightHint": "Las imágenes deben ser propias o con derechos *",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",
@@ -3372,7 +3432,19 @@
         "supplierNotes": "Notas proveedor",
         "statusLabel": "Estado",
         "statusDraft": "Borrador",
-        "statusActive": "Activo"
+        "statusActive": "Activo",
+        "createBlogPost": "Crear entrada de blog",
+        "createBlogPostHint": "Se generará un borrador con el contenido de la experiencia"
+      },
+      "review": {
+        "pendingTitle": "En revisión",
+        "pendingBody": "Tu experiencia está siendo revisada. No podés hacer cambios hasta recibir una respuesta.",
+        "rejectedTitle": "Cambios solicitados",
+        "rejectedDismiss": "Entendido",
+        "submitError": "Faltan campos obligatorios"
+      },
+      "statusBadge": {
+        "pendingReview": "En revisión"
       }
     }
   },
@@ -3564,6 +3636,21 @@
         "description": "Te responderemos a la brevedad."
       },
       "submit": "Enviar"
+    }
+  },
+  "notifications": {
+    "pageTitle": "Notificaciones",
+    "emptyState": "No tenés notificaciones todavía.",
+    "markRead": "Marcar como leída",
+    "unreadBadge": "Sin leer",
+    "types": {
+      "EXPERIENCE_APPROVED": "Experiencia aprobada",
+      "EXPERIENCE_REJECTED": "Experiencia rechazada",
+      "BOOKING_CONFIRMED": "Reserva confirmada",
+      "BOOKING_REVEALED": "Destino revelado",
+      "BOOKING_COMPLETED": "Viaje completado",
+      "BOOKING_CANCELLED": "Reserva cancelada",
+      "PAYMENT_RECEIVED": "Pago recibido"
     }
   }
 }

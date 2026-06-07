@@ -21,11 +21,11 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const experiences = await prisma.experience.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const experiences = await (prisma.experience.findMany as any)({
       orderBy: { updatedAt: "desc" },
       select: {
         createdAt: true,
-        displayPrice: true,
         id: true,
         isActive: true,
         isFeatured: true,
@@ -38,6 +38,19 @@ export async function GET() {
         },
         status: true,
         title: true,
+        type: true,
+        level: true,
+        destinationCountry: true,
+        destinationCity: true,
+        teaser: true,
+        description: true,
+        heroImage: true,
+        minPax: true,
+        maxPax: true,
+        minNights: true,
+        maxNights: true,
+        pricingByType: true,
+        reviewNote: true,
         updatedAt: true,
       },
     });

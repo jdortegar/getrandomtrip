@@ -48,6 +48,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   // User preferences
+  locale       String?  // Preferred UI locale: "es" | "en"
   travelerType String?
   interests    String[] @default([])
   dislikes     String[] @default([])
@@ -67,6 +68,7 @@ model User {
   blogPosts          BlogPost[]       @relation("BlogAuthor")
   experiencesCreated Experience[]     @relation("ExperienceCreatedBy")
   experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
+  notifications      Notification[]
 
   @@map("users")
 }
@@ -134,7 +136,7 @@ model Experience {
   status  ExperienceStatus @default(DRAFT)
 
   // Experience metadata — type also accepts 'XSED' for Sunday drops
-  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
+  type  String[] // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
   level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
 
   // User preference matching (for filtering)
@@ -150,8 +152,9 @@ model Experience {
   title       String // "Aventura Urbana Misteriosa"
   teaser      String // Short description
   description String // Full description
-  heroImage   String // Main image for card
-  tags        String[] @default([]) // ['adventure', 'cultural']
+  heroImage     String // Main image for card
+  galleryImages String[] @default([]) // Additional images
+  tags          String[] @default([]) // ['adventure', 'cultural']
   highlights  String[] @default([]) // ["3 noches", "Hotel boutique"]
 
   // Destination info
@@ -168,7 +171,10 @@ model Experience {
   // Pricing
   basePrice    Float  @default(0)
   currency     String @default("USD")
-  displayPrice String @default("")
+  // Admin-set per-type pricing (set on approval). Shape: Record<typeKey, number>
+  pricingByType Json?
+  // Editorial feedback from admin rejection; cleared on approval
+  reviewNote   String? @db.Text
 
   // Compatibility matching (mirrors TripRequest filter fields)
   accommodationType String @default("any")
@@ -197,7 +203,7 @@ model Experience {
   supplierNotes           String?   @db.Text
 
   // Season hint (e.g. 'Alta', 'Baja', 'any')
-  season String @default("any")
+  season String[] @default([])
 
   // Visibility
   isActive   Boolean @default(true)
@@ -388,6 +394,7 @@ enum TripRequestStatus {
 
 enum ExperienceStatus {
   DRAFT
+  PENDING_REVIEW
   ACTIVE
   INACTIVE
   ARCHIVED
@@ -420,6 +427,43 @@ enum BlogFormat {
   PHOTO
   VIDEO
   MIXED
+}
+
+enum NotificationType {
+  EXPERIENCE_APPROVED
+  EXPERIENCE_REJECTED
+  BOOKING_CONFIRMED
+  BOOKING_REVEALED
+  BOOKING_COMPLETED
+  BOOKING_CANCELLED
+  PAYMENT_RECEIVED
+}
+
+enum NotificationAudience {
+  TRIPPER
+  CLIENT
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+model Notification {
+  id       String               @id @default(cuid())
+  userId   String
+  type     NotificationType
+  audience NotificationAudience
+  isRead   Boolean              @default(false)
+  title    String
+  body     String?
+  metadata Json?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
 }
 
 // ============================================================================

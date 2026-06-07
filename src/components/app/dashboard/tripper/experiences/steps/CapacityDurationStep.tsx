@@ -35,7 +35,7 @@ export function CapacityDurationStep({ copy, form, onChange }: Props) {
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           id="cap-min-pax"
           label={
@@ -70,7 +70,7 @@ export function CapacityDurationStep({ copy, form, onChange }: Props) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           id="cap-min-nights"
           label={copy.fields.minNights}

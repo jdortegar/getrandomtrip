@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { GlobalAuthModal } from "@/components/providers/GlobalAuthModal";
 import SessionProvider from "@/components/providers/SessionProvider";
 import SetLocaleLang from "@/components/providers/SetLocaleLang";
+import SyncLocale from "@/components/providers/SyncLocale";
 import AppTracking from "@/components/tracking/AppTracking";
 import { Toaster } from "@/components/ui/toaster";
 import { GateAwareChrome } from "@/components/waitlist/GateAwareChrome";
@@ -35,6 +36,7 @@ export default async function LocaleLayout(props: {
   return (
     <SessionProvider>
       <SetLocaleLang locale={localeTyped} />
+      <SyncLocale />
       <Suspense fallback={null}>
         <AppTracking />
       </Suspense>

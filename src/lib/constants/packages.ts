@@ -2,13 +2,57 @@
 
 import { getExcusesByTravelerType } from "@/lib/data/shared/excuses";
 
+const EXCUSE_EN_TITLES: Record<string, string> = {
+  // Solo
+  "solo-get-lost": "Get Lost",
+  "solo-busqueda-interior": "Inner Search",
+  "solo-aventura-desafio": "Adventure & Challenge",
+  "solo-exploracion-cultural": "Cultural Exploration",
+  "solo-fotografia-narrativa-visual": "Photography & Visual Narrative",
+  "solo-literatura-arte-talleres": "Literature, Art & Local Workshops",
+  "solo-musica-sonidos": "Music & Sounds",
+  "solo-tribe-encounters": "Tribe Encounters",
+  // Couple
+  "escapada-romantica": "Romantic Getaway",
+  "duo-aventura": "Adventure Duo",
+  "foodie-lovers": "Foodie Lovers",
+  "cultura-tradicion": "Culture & Tradition",
+  "wellness-retreat": "Wellness Retreat",
+  "celebraciones": "Celebrations",
+  "playa-dunas": "Beach & Dunes",
+  "escapada-urbana": "Urban Escape",
+  // Family
+  "family-adventure": "Family Adventure",
+  // Group
+  "group-aventura-familia": "Family Group Adventure",
+  "group-naturaleza-fauna": "Nature & Wildlife",
+  "group-cultura-tradiciones": "Culture & Traditions",
+  "group-playas-dunas": "Beaches & Dunes",
+  "group-graduaciones-celebraciones": "Graduations & Celebrations",
+  "group-escapada-padres-hijos": "Parent & Child Getaways",
+  // Honeymoon
+  "honeymoon-luxury": "Luxury Honeymoon",
+  // Paws
+  "paws-adventure": "Pet Adventure",
+};
+
 export function getExcuseOptionsForType(
-  type: string,
+  type: string | string[],
+  locale?: string,
 ): { value: string; label: string }[] {
-  return getExcusesByTravelerType(type).map((e) => ({
-    value: e.key,
-    label: e.title,
-  }));
+  const isEn = locale?.startsWith("en");
+  const types = Array.isArray(type) ? type : [type];
+  const seen = new Set<string>();
+  return types.flatMap((t) =>
+    getExcusesByTravelerType(t).map((e) => ({
+      value: e.key,
+      label: isEn ? (EXCUSE_EN_TITLES[e.key] ?? e.title) : e.title,
+    })),
+  ).filter((o) => {
+    if (seen.has(o.value)) return false;
+    seen.add(o.value);
+    return true;
+  });
 }
 
 export const EXPERIENCE_TYPES = [
@@ -21,6 +65,20 @@ export const EXPERIENCE_TYPES = [
   { value: "XSED", label: "XSED Drop" },
 ] as const;
 
+const EXPERIENCE_TYPES_EN = [
+  { value: "couple", label: "Couple (BOND©)" },
+  { value: "family", label: "Family (KIN©)" },
+  { value: "group", label: "Group (CREW©)" },
+  { value: "solo", label: "Solo (SOLUM©)" },
+  { value: "honeymoon", label: "Honeymoon (NUPTIA©)" },
+  { value: "paws", label: "With Pets (PAWS©)" },
+  { value: "XSED", label: "XSED Drop" },
+] as const;
+
+export function getExperienceTypes(locale?: string) {
+  return locale?.startsWith("en") ? EXPERIENCE_TYPES_EN : EXPERIENCE_TYPES;
+}
+
 export const EXPERIENCE_LEVELS = [
   { value: "essenza", label: "Essenza" },
   { value: "modo-explora", label: "Modo Explora" },
@@ -31,6 +89,7 @@ export const EXPERIENCE_LEVELS = [
 
 export const EXPERIENCE_STATUSES = [
   { value: "DRAFT", label: "Borrador" },
+  { value: "PENDING_REVIEW", label: "En revisión" },
   { value: "ACTIVE", label: "Activo" },
   { value: "INACTIVE", label: "Inactivo" },
   { value: "ARCHIVED", label: "Archivado" },
