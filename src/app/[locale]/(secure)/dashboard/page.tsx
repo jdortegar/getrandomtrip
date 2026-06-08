@@ -15,6 +15,7 @@ import {
   UpcomingTripsPanel,
   type DashboardStats,
 } from "@/components/app/dashboard";
+import { NotificationsPanel } from "@/components/app/notifications/NotificationsPanel";
 
 function computeDashboardStats(
   mappedTrips: Trip[],
@@ -236,6 +237,7 @@ function DashboardContent() {
                     payments={payments}
                     stats={stats}
                   />
+                  <NotificationsPanel />
                 </div>
 
                 <UpcomingTripsPanel

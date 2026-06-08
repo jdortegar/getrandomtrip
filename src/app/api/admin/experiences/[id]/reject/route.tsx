@@ -108,6 +108,32 @@ export async function POST(
           console.error("[notifications] reject sendMail failed:", err);
         }
       })();
+
+      void (async () => {
+        try {
+          const owner = await prisma.user.findUnique({
+            where: { id: ownerId },
+            select: { locale: true },
+          });
+          const notifLocale = owner?.locale === "en" ? "en" : "es";
+          const notifCopy = notifLocale === "en"
+            ? { title: "Your experience needs revisions.", body: reviewNote ? `Reviewer note: ${reviewNote}` : undefined }
+            : { title: "Tu experiencia necesita revisiones.", body: reviewNote ? `Nota del revisor: ${reviewNote}` : undefined };
+          await prisma.notification.create({
+            data: {
+              userId: ownerId,
+              type: "EXPERIENCE_REJECTED",
+              audience: "TRIPPER",
+              isRead: false,
+              title: notifCopy.title,
+              body: notifCopy.body ?? null,
+              metadata: { experienceId: (updated as { id: string }).id },
+            },
+          });
+        } catch (err) {
+          console.error("[notification] reject emit failed:", err);
+        }
+      })();
     }
 
     return NextResponse.json({ experience: updated });

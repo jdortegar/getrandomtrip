@@ -1,0 +1,40 @@
+change: in-app-notifications
+status: archived
+artifact_store: openspec
+archived_date: 2026-06-08
+verification_result: PASS WITH WARNINGS
+critical_issues: 0
+warning_issues: 2
+suggestion_issues: 2
+
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+
+artifacts:
+  proposal: archive-report.md (and archive/2026-06-08-in-app-notifications/proposal.md)
+  spec: archive-report.md (and archive/2026-06-08-in-app-notifications/spec.md)
+  design: archive-report.md (and archive/2026-06-08-in-app-notifications/design.md)
+  tasks: archive-report.md (and archive/2026-06-08-in-app-notifications/tasks.md)
+  verify-report: archive-report.md (and archive/2026-06-08-in-app-notifications/verify-report.md)
+  archive-report: archive-report.md
+
+engram_observations:
+  proposal: "#44"
+  spec: "#45"
+  design: "#46"
+  tasks: "#47"
+  apply-progress: "#48"
+  verify-report: "#50"
+  archive-report: (to be persisted after archive)
+
+updated: 2026-06-08
+notes: |
+  Archived by sdd-archive executor. Change is CLOSED — no further work required unless follow-ups prioritized.
+  18/19 automated tasks complete; T6.2 (manual QA) remains as non-blocking recommendation.
+  All requirements met; zero CRITICAL issues. Two WARNINGs and two SUGGESTIONs documented.

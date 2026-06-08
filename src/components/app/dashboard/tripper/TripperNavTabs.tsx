@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  Bell,
   BookOpen,
   LayoutDashboard,
   LayoutList,
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { useStore } from "@/store/store";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnreadDot";
 import type { User } from "@/types/core";
 
 export function TripperNavTabs() {
@@ -51,22 +53,16 @@ export function TripperNavTabs() {
       exact: true,
     },
     {
-      href: base("/experiences/new"),
-      icon: Plus,
-      label: copy.createExperience,
-      exact: false,
-    },
-    {
-      href: `/${locale}/trippers/profile`,
-      icon: Settings,
-      label: copy.settings,
-      exact: false,
-    },
-    {
       href: base("/experiences"),
       icon: LayoutList,
       label: copy.experiences,
       exact: true,
+    },
+    {
+      href: base("/experiences/new"),
+      icon: Plus,
+      label: copy.createExperience,
+      exact: false,
     },
     {
       href: base("/earnings"),
@@ -75,6 +71,7 @@ export function TripperNavTabs() {
       exact: false,
     },
     { href: base("/reviews"), icon: Star, label: copy.reviews, exact: false },
+    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
     {
       href: `/${locale}/dashboard/admin/xsed/new`,
       icon: Zap,
@@ -82,7 +79,19 @@ export function TripperNavTabs() {
       exact: false,
       adminOnly: true,
     },
-    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
+    {
+      href: base("/notifications"),
+      icon: Bell,
+      label: copy.notifications,
+      exact: false,
+      showUnreadDot: true,
+    },
+    {
+      href: `/${locale}/trippers/profile`,
+      icon: Settings,
+      label: copy.settings,
+      exact: false,
+    },
   ];
 
   return (
@@ -104,18 +113,21 @@ export function TripperNavTabs() {
                 )}
                 href={tab.href}
               >
-                <span
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full",
-                    active ? "bg-white" : "ring-1 ring-gray-200",
-                  )}
-                >
-                  <Icon
+                <span className="relative">
+                  <span
                     className={cn(
-                      "h-5 w-5",
-                      active ? "text-light-blue" : "text-gray-600",
+                      "flex h-10 w-10 items-center justify-center rounded-full",
+                      active ? "bg-white" : "ring-1 ring-gray-200",
                     )}
-                  />
+                  >
+                    <Icon
+                      className={cn(
+                        "h-5 w-5",
+                        active ? "text-light-blue" : "text-gray-600",
+                      )}
+                    />
+                  </span>
+                  {tab.showUnreadDot && <TripperUnreadDot />}
                 </span>
                 <span className="text-xs font-medium leading-tight max-w-16">
                   {tab.label}

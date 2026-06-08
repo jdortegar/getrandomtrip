@@ -172,6 +172,7 @@ export interface TripperDashboardDict {
     settings: string;
     settingsSub: string;
     createDrop: string;
+    notifications: string;
   };
   keyMetrics: {
     title: string;

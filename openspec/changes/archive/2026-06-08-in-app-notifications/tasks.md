@@ -20,7 +20,7 @@ Sequential. All downstream work depends on the Prisma model existing and types b
 - Add model `Notification` with fields: `id` (cuid), `userId`, `type NotificationType`, `audience NotificationAudience`, `isRead Boolean @default(false)`, `title String`, `body String?`, `metadata Json?`, `createdAt DateTime @default(now())`, `user` relation with `onDelete: Cascade`; add `@@map("notifications")`
 - Add indexes: `@@index([userId, isRead])`, `@@index([userId, createdAt])`
 - Add `notifications Notification[]` to `User` model
-**Note:** `isRead` instead of `readAt` — the spec uses `isRead: Boolean`; the design draft used `readAt: DateTime?`. Use `isRead: Boolean @default(false)` as the spec is authoritative. `ClientNotification.readAt` in the TS type can be derived from `isRead` or we keep `isRead: boolean` throughout — use `isRead` everywhere for consistency.
+**Note:** `isRead` instead of `readAt` — the spec uses `isRead: Boolean`; the design draft used `readAt: DateTime?`. Use `isRead: Boolean @default(false)` as the spec is authoritative. `ClientNotification.isRead` in the TS type consistent throughout.
 
 ### [x] T1.2 — Run Prisma migration
 
