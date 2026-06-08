@@ -108,6 +108,32 @@ export async function POST(
           console.error("[notifications] approve sendMail failed:", err);
         }
       })();
+
+      void (async () => {
+        try {
+          const owner = await prisma.user.findUnique({
+            where: { id: ownerId },
+            select: { locale: true },
+          });
+          const notifLocale = owner?.locale === "en" ? "en" : "es";
+          const notifCopy = notifLocale === "en"
+            ? { title: "Your experience has been approved!", body: `"${(updated as { title?: string }).title ?? ""}" is now live.` }
+            : { title: "¡Tu experiencia fue aprobada!", body: `"${(updated as { title?: string }).title ?? ""}" ya está activa.` };
+          await prisma.notification.create({
+            data: {
+              userId: ownerId,
+              type: "EXPERIENCE_APPROVED",
+              audience: "TRIPPER",
+              isRead: false,
+              title: notifCopy.title,
+              body: notifCopy.body,
+              metadata: { experienceId: (updated as { id: string }).id },
+            },
+          });
+        } catch (err) {
+          console.error("[notification] approve emit failed:", err);
+        }
+      })();
     }
 
     return NextResponse.json({ experience: updated });

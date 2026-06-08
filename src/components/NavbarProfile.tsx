@@ -7,6 +7,7 @@ import type { User } from "@/types/core";
 import { useMenuState } from "@/hooks/useMenuState";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnreadDot";
 
 /** Minimal user shape for navbar (all optional). */
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
@@ -90,7 +91,10 @@ export function NavbarProfile({
         className="p-1 rounded-full hover:bg-white/10 flex items-center justify-center"
         onClick={toggle}
       >
-        <UserAvatar height={32} width={32} />
+        <span className="relative">
+          <UserAvatar height={32} width={32} />
+          {isTripper && <TripperUnreadDot />}
+        </span>
         <ChevronDown size={16} className="ml-1" />
       </button>
 
@@ -118,12 +122,13 @@ export function NavbarProfile({
           </Link>
           {isTripper && (
             <Link
-              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+              className="flex items-center justify-between px-4 py-2 text-sm rounded hover:bg-neutral-50"
               href={TRIPPER_MENU_ITEM.href}
               onClick={close}
               role="menuitem"
             >
               {labels.tripperOs}
+              <TripperUnreadDot variant="inline" />
             </Link>
           )}
           {isAdmin ? (

@@ -3066,7 +3066,8 @@
       "settings": "Settings",
       "settingsSub": "Profile settings",
       "dashboard": "My Dashboard",
-      "createDrop": "New Drop"
+      "createDrop": "New Drop",
+      "notifications": "Notifications"
     },
     "keyMetrics": {
       "title": "Key Metrics",

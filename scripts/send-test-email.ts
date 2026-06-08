@@ -5,6 +5,13 @@ import NewsletterGoLive from "../src/emails/NewsletterGoLive";
 import XsedCampaign from "../src/emails/XsedCampaign";
 import ExperienceApproved, { subjects as approvedSubjects } from "../src/emails/ExperienceApproved";
 import ExperienceRejected, { subjects as rejectedSubjects } from "../src/emails/ExperienceRejected";
+import BookingConfirmed, { subjects as bookingConfirmedSubjects } from "../src/emails/BookingConfirmed";
+import PaymentFailed, { subjects as paymentFailedSubjects } from "../src/emails/PaymentFailed";
+import DestinationRevealed, { subjects as destinationRevealedSubjects } from "../src/emails/DestinationRevealed";
+import TripCancelled, { subjects as tripCancelledSubjects } from "../src/emails/TripCancelled";
+import TripCompleted, { subjects as tripCompletedSubjects } from "../src/emails/TripCompleted";
+import ExperienceSubmitted, { subjects as experienceSubmittedSubjects } from "../src/emails/ExperienceSubmitted";
+import WelcomeEmail, { subjects as welcomeEmailSubjects } from "../src/emails/WelcomeEmail";
 
 const templates: Record<string, { element: React.ReactElement; subject: string }> = {
   NewsletterGoLive: {
@@ -31,6 +38,66 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
       locale: "es",
     }),
     subject: rejectedSubjects.es,
+  },
+  BookingConfirmed: {
+    element: React.createElement(BookingConfirmed, {
+      client: "María García",
+      tripRequestId: "trip-test-001",
+      tripType: "Aventura",
+      nights: 7,
+      departureDate: "15 de julio de 2026",
+      locale: "es",
+    }),
+    subject: bookingConfirmedSubjects.es,
+  },
+  PaymentFailed: {
+    element: React.createElement(PaymentFailed, {
+      client: "María García",
+      tripRequestId: "trip-test-001",
+      failureReason: "Fondos insuficientes en la tarjeta de crédito.",
+      locale: "es",
+    }),
+    subject: paymentFailedSubjects.es,
+  },
+  DestinationRevealed: {
+    element: React.createElement(DestinationRevealed, {
+      client: "María García",
+      destination: "Cartagena, Colombia",
+      departureDate: "15 de julio de 2026",
+      returnDate: "22 de julio de 2026",
+      locale: "es",
+    }),
+    subject: destinationRevealedSubjects.es,
+  },
+  TripCancelled: {
+    element: React.createElement(TripCancelled, {
+      client: "María García",
+      tripRequestId: "trip-test-001",
+      locale: "es",
+    }),
+    subject: tripCancelledSubjects.es,
+  },
+  TripCompleted: {
+    element: React.createElement(TripCompleted, {
+      client: "María García",
+      locale: "es",
+    }),
+    subject: tripCompletedSubjects.es,
+  },
+  ExperienceSubmitted: {
+    element: React.createElement(ExperienceSubmitted, {
+      tripperName: "David Ortega",
+      experienceTitle: "Aventura en la Patagonia Argentina",
+      experienceId: "exp-test-001",
+    }),
+    subject: experienceSubmittedSubjects.es,
+  },
+  WelcomeEmail: {
+    element: React.createElement(WelcomeEmail, {
+      name: "María García",
+      locale: "es",
+    }),
+    subject: welcomeEmailSubjects.es,
   },
 };
 

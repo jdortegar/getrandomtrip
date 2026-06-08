@@ -2,9 +2,8 @@ import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
 
-interface ExperienceApprovedProps {
-  tripper: string;
-  experienceTitle: string;
+interface TripCompletedProps {
+  client: string;
   locale: "es" | "en";
 }
 
@@ -12,42 +11,38 @@ const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
-    preview: "¡Tu experiencia fue aprobada! Ya está disponible en GetRandomTrip.",
-    heading: "¡Felicitaciones!",
-    body: (tripper: string, title: string) =>
-      `Hola ${tripper}, tu experiencia "${title}" fue aprobada y ya está disponible para los viajeros en GetRandomTrip.`,
+    preview: "¡Tu viaje fue completado! Esperamos que haya sido increíble.",
+    heading: "¡Viaje completado!",
+    body: (client: string) =>
+      `Hola ${client}, ¡tu aventura llegó a su fin! Esperamos que cada momento haya sido memorable y que hayas disfrutado al máximo tu experiencia GetRandomTrip.`,
     subtext:
-      "Los clientes ya pueden descubrirla y reservarla. ¡Gracias por compartir tu pasión por el viaje!",
-    cta: "VER MIS EXPERIENCIAS",
+      "Tu opinión nos importa mucho. ¿Qué tal si compartís tu experiencia con otros viajeros dejando una reseña?",
+    cta: "DEJAR UNA RESEÑA",
   },
   en: {
-    preview: "Your experience was approved! It's now live on GetRandomTrip.",
-    heading: "Congratulations!",
-    body: (tripper: string, title: string) =>
-      `Hi ${tripper}, your experience "${title}" has been approved and is now live for travelers on GetRandomTrip.`,
+    preview: "Your trip is complete! We hope it was incredible.",
+    heading: "Trip completed!",
+    body: (client: string) =>
+      `Hi ${client}, your adventure has come to an end! We hope every moment was memorable and that you fully enjoyed your GetRandomTrip experience.`,
     subtext:
-      "Clients can now discover and book it. Thank you for sharing your passion for travel!",
-    cta: "VIEW MY EXPERIENCES",
+      "Your opinion matters to us. How about sharing your experience with other travelers by leaving a review?",
+    cta: "LEAVE A REVIEW",
   },
 };
 
 export const subjects = {
-  es: "Tu experiencia fue aprobada",
-  en: "Your experience was approved",
+  es: "¡Tu viaje fue completado!",
+  en: "Your trip is complete!",
 };
 
-export default function ExperienceApproved({
-  tripper,
-  experienceTitle,
-  locale,
-}: ExperienceApprovedProps) {
+export default function TripCompleted({ client, locale }: TripCompletedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/tripper/experiences`;
+  const ctaHref = `${BASE_URL}/${locale}/dashboard`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
       <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(tripper, experienceTitle)}</Text>
+      <Text style={bodyText}>{c.body(client)}</Text>
       <Text style={subtextStyle}>{c.subtext}</Text>
       <Button href={ctaHref} style={ctaButton}>
         {c.cta}
