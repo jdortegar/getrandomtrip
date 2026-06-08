@@ -1,3 +1,4 @@
+import { sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import type { PaymentStatus, Prisma } from "@prisma/client";
 
@@ -220,11 +221,21 @@ export async function updatePaymentFromStripeWebhook(
       (webhookPayload as UpdatePaymentData["webhookData"]) ?? undefined,
   };
 
+  // Snapshot status before the update for idempotency checks
+  const priorStatus = payment.status;
+
   if (finalData.status === "APPROVED") {
     await prisma.tripRequest.update({
       where: { id: payment.tripRequestId },
       data: { status: "CONFIRMED" },
     });
+    if (priorStatus !== "APPROVED" && priorStatus !== "COMPLETED") {
+      sendBookingConfirmed(payment.tripRequestId, payment.userId);
+    }
+  }
+
+  if (finalData.status === "FAILED") {
+    sendPaymentFailed(payment.tripRequestId, payment.userId);
   }
 
   return await updatePayment(payment.id, finalData);

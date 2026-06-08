@@ -5,6 +5,11 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import { prisma } from "@/lib/prisma";
+import {
+  sendDestinationRevealed,
+  sendTripCancelled,
+  sendTripCompleted,
+} from "@/lib/email";
 
 function parseStatus(status: unknown): TripRequestStatus | null {
   if (typeof status !== "string") return null;
@@ -83,6 +88,14 @@ export async function PATCH(
       where: { id: params.id },
       data,
     });
+
+    if (nextStatus === "REVEALED") {
+      sendDestinationRevealed(tripRequest.id, tripRequest.userId);
+    } else if (nextStatus === "CANCELLED") {
+      sendTripCancelled(tripRequest.id, tripRequest.userId);
+    } else if (nextStatus === "COMPLETED") {
+      sendTripCompleted(tripRequest.id, tripRequest.userId);
+    }
 
     const [exp, payment, tripUser] = await Promise.all([
       tripRequest.experienceId

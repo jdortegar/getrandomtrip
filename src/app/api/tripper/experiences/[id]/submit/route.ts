@@ -11,6 +11,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { getExperienceCompleteness } from "@/lib/helpers/experience-form";
 import type { ExperienceFormDraft } from "@/types/tripper";
+import { sendExperienceSubmitted } from "@/lib/email";
 
 export async function POST(
   _request: Request,
@@ -114,6 +115,8 @@ export async function POST(
       },
       select: { id: true, status: true },
     }) as { id: string; status: string };
+
+    sendExperienceSubmitted(updated.id, user.id);
 
     return NextResponse.json({ experience: updated });
   } catch (error) {

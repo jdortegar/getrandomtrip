@@ -11,6 +11,7 @@ import {
   prismaUserRoleToAppRole,
   prismaUserRolesToAppRoles,
 } from "@/lib/auth/prismaUserRoles";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -95,6 +96,7 @@ export const authOptions: NextAuthOptions = {
           },
         });
         console.log("✅ Created new user from Google OAuth:", dbUser.id);
+        sendWelcomeEmail(dbUser.id);
       }
 
       // For credentials, user should already exist (created during registration)

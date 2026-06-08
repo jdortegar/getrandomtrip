@@ -2,9 +2,9 @@ import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
 
-interface ExperienceApprovedProps {
-  tripper: string;
-  experienceTitle: string;
+interface TripCancelledProps {
+  client: string;
+  tripRequestId: string;
   locale: "es" | "en";
 }
 
@@ -12,42 +12,41 @@ const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
-    preview: "¡Tu experiencia fue aprobada! Ya está disponible en GetRandomTrip.",
-    heading: "¡Felicitaciones!",
-    body: (tripper: string, title: string) =>
-      `Hola ${tripper}, tu experiencia "${title}" fue aprobada y ya está disponible para los viajeros en GetRandomTrip.`,
+    preview: "Tu viaje fue cancelado. Estamos aquí para ayudarte.",
+    heading: "Viaje cancelado",
+    body: (client: string) =>
+      `Hola ${client}, lamentamos informarte que tu viaje fue cancelado. Entendemos que esto puede ser decepcionante.`,
     subtext:
-      "Los clientes ya pueden descubrirla y reservarla. ¡Gracias por compartir tu pasión por el viaje!",
-    cta: "VER MIS EXPERIENCIAS",
+      "Si tenés preguntas o necesitás asistencia, nuestro equipo de soporte está disponible para ayudarte.",
+    cta: "CONTACTAR SOPORTE",
   },
   en: {
-    preview: "Your experience was approved! It's now live on GetRandomTrip.",
-    heading: "Congratulations!",
-    body: (tripper: string, title: string) =>
-      `Hi ${tripper}, your experience "${title}" has been approved and is now live for travelers on GetRandomTrip.`,
+    preview: "Your trip has been cancelled. We're here to help.",
+    heading: "Trip cancelled",
+    body: (client: string) =>
+      `Hi ${client}, we're sorry to inform you that your trip has been cancelled. We understand this can be disappointing.`,
     subtext:
-      "Clients can now discover and book it. Thank you for sharing your passion for travel!",
-    cta: "VIEW MY EXPERIENCES",
+      "If you have questions or need assistance, our support team is available to help you.",
+    cta: "CONTACT SUPPORT",
   },
 };
 
 export const subjects = {
-  es: "Tu experiencia fue aprobada",
-  en: "Your experience was approved",
+  es: "Tu viaje fue cancelado",
+  en: "Your trip has been cancelled",
 };
 
-export default function ExperienceApproved({
-  tripper,
-  experienceTitle,
+export default function TripCancelled({
+  client,
   locale,
-}: ExperienceApprovedProps) {
+}: TripCancelledProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/tripper/experiences`;
+  const ctaHref = `${BASE_URL}/${locale}/contact`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
       <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(tripper, experienceTitle)}</Text>
+      <Text style={bodyText}>{c.body(client)}</Text>
       <Text style={subtextStyle}>{c.subtext}</Text>
       <Button href={ctaHref} style={ctaButton}>
         {c.cta}

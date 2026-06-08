@@ -2,9 +2,8 @@ import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
 
-interface ExperienceApprovedProps {
-  tripper: string;
-  experienceTitle: string;
+interface WelcomeEmailProps {
+  name: string;
   locale: "es" | "en";
 }
 
@@ -12,42 +11,38 @@ const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
-    preview: "¡Tu experiencia fue aprobada! Ya está disponible en GetRandomTrip.",
-    heading: "¡Felicitaciones!",
-    body: (tripper: string, title: string) =>
-      `Hola ${tripper}, tu experiencia "${title}" fue aprobada y ya está disponible para los viajeros en GetRandomTrip.`,
+    preview: "¡Bienvenido/a a GetRandomTrip! Tu próxima aventura te espera.",
+    heading: "¡Bienvenido/a!",
+    body: (name: string) =>
+      `Hola ${name}, estamos muy contentos de que te hayas unido a GetRandomTrip. Somos la plataforma donde el destino es siempre una sorpresa.`,
     subtext:
-      "Los clientes ya pueden descubrirla y reservarla. ¡Gracias por compartir tu pasión por el viaje!",
-    cta: "VER MIS EXPERIENCIAS",
+      "Configurá tu viaje, contanos qué tipo de experiencia buscás, y nosotros nos encargamos del resto. ¡La aventura está a un paso!",
+    cta: "EMPEZAR A PLANIFICAR",
   },
   en: {
-    preview: "Your experience was approved! It's now live on GetRandomTrip.",
-    heading: "Congratulations!",
-    body: (tripper: string, title: string) =>
-      `Hi ${tripper}, your experience "${title}" has been approved and is now live for travelers on GetRandomTrip.`,
+    preview: "Welcome to GetRandomTrip! Your next adventure awaits.",
+    heading: "Welcome!",
+    body: (name: string) =>
+      `Hi ${name}, we're thrilled to have you join GetRandomTrip. We're the platform where the destination is always a surprise.`,
     subtext:
-      "Clients can now discover and book it. Thank you for sharing your passion for travel!",
-    cta: "VIEW MY EXPERIENCES",
+      "Set up your trip, tell us what kind of experience you're looking for, and we'll take care of the rest. Adventure is just one step away!",
+    cta: "START PLANNING",
   },
 };
 
 export const subjects = {
-  es: "Tu experiencia fue aprobada",
-  en: "Your experience was approved",
+  es: "¡Bienvenido/a a GetRandomTrip!",
+  en: "Welcome to GetRandomTrip!",
 };
 
-export default function ExperienceApproved({
-  tripper,
-  experienceTitle,
-  locale,
-}: ExperienceApprovedProps) {
+export default function WelcomeEmail({ name, locale }: WelcomeEmailProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/tripper/experiences`;
+  const ctaHref = `${BASE_URL}/${locale}/journey`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
       <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(tripper, experienceTitle)}</Text>
+      <Text style={bodyText}>{c.body(name)}</Text>
       <Text style={subtextStyle}>{c.subtext}</Text>
       <Button href={ctaHref} style={ctaButton}>
         {c.cta}
