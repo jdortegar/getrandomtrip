@@ -48,44 +48,44 @@ Each PR is independently deployable. Subsequent PRs depend on the merged state o
 **Spec requirements**: §4.1 (blog), §4.2 (attribution), §4.8 (admin), §4.9 (earnings)
 **Estimated changed lines**: ~250
 
-### T-03 · Add `getTripperJourneyContext` query helper
+### [x] T-03 · Add `getTripperJourneyContext` query helper
 - **File**: `src/lib/db/tripper-queries.ts`
 - **Action**: Add function `getTripperJourneyContext(slug: string): Promise<TripperJourneyContext | null>`. Query tripper by `tripperSlug`. Filter `Experience` where `ownerId = tripper.id AND status = ACTIVE`. Return `{ name, avatarUrl, allowedTypes: distinct flat-mapped types, allowedLevelsByType: grouped by type → distinct levels }`. Use `{ has: value }` array semantics only.
 - **Spec**: §4.3, §4.4, §4.5, §4.6
 - **Interface**: `TripperJourneyContext` from design §Interfaces
 - **Parallel**: can be done alongside T-04.
 
-### T-04 · Fix `availableTypes` query to require `status: ACTIVE`
+### [x] T-04 · Fix `availableTypes` query to require `status: ACTIVE`
 - **File**: `src/lib/db/tripper-queries.ts`
 - **Action**: In `getTripperBySlug`, change the `Experience.findMany` where clause from `isActive: true` to `isActive: true, status: "ACTIVE"`. This is an additive filter; no return type change.
 - **Spec**: §4.1 (S1, S2)
 - **Parallel**: can be done alongside T-03.
 
-### T-05 · Create `GET /api/trippers/[slug]/journey-context` route
+### [x] T-05 · Create `GET /api/trippers/[slug]/journey-context` route
 - **File**: `src/app/api/trippers/[slug]/journey-context/route.ts` (new file)
 - **Action**: Export `GET` handler. Extract `slug` from route params. Call `getTripperJourneyContext(slug)`. Return 200 with JSON body or 404 if null. No auth required (public endpoint).
 - **Spec**: §4.3–4.6; Design AD-4
 - **Sequential**: after T-03.
 
-### T-06 · Resolve `tripper` slug in `POST /api/trip-requests`
+### [x] T-06 · Resolve `tripper` slug in `POST /api/trip-requests`
 - **File**: `src/app/api/trip-requests/route.ts`
 - **Action**: In the POST handler, accept optional `body.tripper` (slug string). If present, query `User.findFirst({ where: { tripperSlug: body.tripper } })` to resolve to `id`. Set `tripperId` on the `TripRequest.create` call. If slug not found, set `tripperId: null` — do not throw. If `body.tripper` absent, `tripperId` stays null.
 - **Spec**: §4.2 (S5, S6, S7)
 - **Sequential**: after T-02 (schema field must exist).
 
-### T-07 · Add query filters to `GET /api/admin/experiences`
+### [x] T-07 · Add query filters to `GET /api/admin/experiences`
 - **File**: `src/app/api/admin/experiences/route.ts`
 - **Action**: Read optional query params `tripperId`, `level`, `type`, `status`. Build `where` clause additions: `ownerId: tripperId` if present; `level` if present; `type: { has: type }` if present; `status: status` if present. These are all additive ANDs on the existing filter chain.
 - **Spec**: §4.8 (S12, S13)
 - **Parallel**: can be done alongside T-06.
 
-### T-08 · Derive `actualDestination` on experience assignment in `PATCH /api/admin/trip-requests/[id]`
+### [x] T-08 · Derive `actualDestination` on experience assignment in `PATCH /api/admin/trip-requests/[id]`
 - **File**: `src/app/api/admin/trip-requests/[id]/route.ts`
 - **Action**: When PATCH body includes `experienceId`, after persisting `TripRequest.experienceId`, fetch the assigned experience and compute `actualDestination = "${experience.destinationCity}, ${experience.destinationCountry}"`. Write that value back with a second `prisma.tripRequest.update`. Do NOT set `actualDestination` when `experienceId` is absent from the body.
 - **Spec**: §4.8 (S14), §5 (invariant: actualDestination not set by admin manually)
 - **Sequential**: after T-02.
 
-### T-09 · Update Tripper OS earnings queries to use `tripperId`
+### [x] T-09 · Update Tripper OS earnings queries to use `tripperId`
 - **File**: `src/lib/db/tripper-queries.ts`
 - **Action**: In the stats/earnings aggregation function(s), add a secondary attribution count: `TripRequest.count({ where: { tripperId: tripper.userId, status: { in: [CONFIRMED, COMPLETED] } } })`. Keep `experience.ownerId`-based commission earnings unchanged. Expose the new count as `attributedBookings` (or equivalent) in the stats return shape.
 - **Spec**: §4.9 (S15, S16)

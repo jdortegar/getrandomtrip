@@ -52,10 +52,15 @@ export async function PATCH(
       typeof body?.actualDestination === "string"
         ? body.actualDestination.trim()
         : undefined;
+    const experienceId =
+      typeof body?.experienceId === "string" ? body.experienceId.trim() : undefined;
 
-    if (!nextStatus && actualDestination === undefined) {
+    if (!nextStatus && actualDestination === undefined && experienceId === undefined) {
       return NextResponse.json(
-        { error: "Nothing to update. Provide status or actualDestination." },
+        {
+          error:
+            "Nothing to update. Provide status, actualDestination, or experienceId.",
+        },
         { status: 400 },
       );
     }
@@ -65,6 +70,7 @@ export async function PATCH(
       completedAt?: Date | null;
       destinationRevealedAt?: Date | null;
       status?: TripRequestStatus;
+      experienceId?: string | null;
     } = {};
 
     if (nextStatus) {
@@ -84,10 +90,32 @@ export async function PATCH(
       }
     }
 
-    const tripRequest = await prisma.tripRequest.update({
+    if (experienceId !== undefined) {
+      data.experienceId = experienceId || null;
+    }
+
+    let tripRequest = await prisma.tripRequest.update({
       where: { id: params.id },
       data,
     });
+
+    // When an experience is assigned, derive actualDestination from its city + country.
+    // actualDestination is NOT set directly by the admin — only derived here.
+    if (experienceId) {
+      const assignedExperience = await prisma.experience.findUnique({
+        where: { id: experienceId },
+        select: { destinationCity: true, destinationCountry: true },
+      });
+
+      if (assignedExperience) {
+        tripRequest = await prisma.tripRequest.update({
+          where: { id: params.id },
+          data: {
+            actualDestination: `${assignedExperience.destinationCity}, ${assignedExperience.destinationCountry}`,
+          },
+        });
+      }
+    }
 
     if (nextStatus === "REVEALED") {
       sendDestinationRevealed(tripRequest.id, tripRequest.userId);
