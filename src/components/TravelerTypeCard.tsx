@@ -106,7 +106,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
         <ReviewBadge rating="4.6" />
 
-        <div className="absolute bottom-0 left-0 z-20 w-full p-5 @[200px]:pb-20 text-left text-white">
+        <div className="absolute top-10 left-0 z-20 w-full p-5 @[200px]:pb-20 text-left text-white">
           {tripperBadge && (
             <div className=" flex items-center gap-3 mb-3">
               <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-white/40">
