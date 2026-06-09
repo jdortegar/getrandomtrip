@@ -33,8 +33,10 @@ export default function EmailLayout({
   children,
 }: EmailLayoutProps) {
   return (
-    <Html lang={locale}>
+    <Html lang={locale} style={{ colorScheme: "light" }}>
       <Head>
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;700&display=swap"
@@ -139,6 +141,7 @@ const body: React.CSSProperties = {
   margin: "0",
   padding: "0",
   fontFamily: "'Barlow', Arial, Helvetica, sans-serif",
+  colorScheme: "light",
 };
 
 const container: React.CSSProperties = {
