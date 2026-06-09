@@ -38,6 +38,7 @@ export interface AdminTripRequest {
   departPref: string;
   destinationRevealedAt: string | null;
   endDate: string | null;
+  experienceId: string | null;
   from: string;
   id: string;
   level: string;
@@ -52,6 +53,7 @@ export interface AdminTripRequest {
   startDate: string | null;
   status: TripRequestStatus;
   transport: string;
+  tripperId: string | null;
   tripPhotos: unknown;
   type: string;
   updatedAt: string;

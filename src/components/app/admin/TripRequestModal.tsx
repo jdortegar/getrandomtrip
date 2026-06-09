@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { FormSelectField } from "@/components/ui/FormField";
 import {
   DialogDescription,
   DialogFooter,
@@ -28,8 +28,15 @@ const STATUS_OPTIONS: TripRequestStatus[] = [
   "CANCELLED",
 ];
 
+interface AssignableExperience {
+  id: string;
+  title: string;
+  destinationCity: string;
+  destinationCountry: string;
+}
+
 interface Draft {
-  actualDestination: string;
+  experienceId: string;
   status: TripRequestStatus;
 }
 
@@ -51,9 +58,12 @@ export function TripRequestModal({
   trip,
 }: TripRequestModalProps) {
   const [draft, setDraft] = useState<Draft>({
-    actualDestination: trip.actualDestination ?? "",
+    experienceId: trip.experienceId ?? "",
     status: trip.status,
   });
+  const [assignableExperiences, setAssignableExperiences] = useState<
+    AssignableExperience[]
+  >([]);
   const [deleteConfirming, setDeleteConfirming] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -61,15 +71,39 @@ export function TripRequestModal({
 
   useEffect(() => {
     setDraft({
-      actualDestination: trip.actualDestination ?? "",
+      experienceId: trip.experienceId ?? "",
       status: trip.status,
     });
-  }, [trip.actualDestination, trip.id, trip.status]);
+  }, [trip.experienceId, trip.id, trip.status]);
 
   useEffect(() => {
     setDeleteConfirming(false);
     setDeleteError("");
   }, [trip.id]);
+
+  // Fetch assignable experiences whenever tripperId changes (T-18)
+  useEffect(() => {
+    if (!trip.tripperId) {
+      setAssignableExperiences([]);
+      return;
+    }
+
+    const params = new URLSearchParams({
+      tripperId: trip.tripperId,
+      status: "ACTIVE",
+    });
+    if (trip.level) params.set("level", trip.level);
+    if (trip.type) params.set("type", trip.type);
+
+    fetch(`/api/admin/experiences?${params.toString()}`)
+      .then((res) => res.json())
+      .then((data: { experiences?: AssignableExperience[] }) => {
+        setAssignableExperiences(data.experiences ?? []);
+      })
+      .catch(() => {
+        setAssignableExperiences([]);
+      });
+  }, [trip.tripperId, trip.level, trip.type]);
 
   function statusLabel(status: TripRequestStatus): string {
     return dict.tripStatus[status];
@@ -92,11 +126,17 @@ export function TripRequestModal({
 
   async function handleSave() {
     setSaving(true);
+
+    // Build PATCH body — do NOT include actualDestination (derived server-side from experienceId)
+    const body: { status?: TripRequestStatus; experienceId?: string } = {
+      status: draft.status,
+    };
+    if (draft.experienceId) {
+      body.experienceId = draft.experienceId;
+    }
+
     const res = await fetch(`/api/admin/trip-requests/${trip.id}`, {
-      body: JSON.stringify({
-        actualDestination: draft.actualDestination,
-        status: draft.status,
-      }),
+      body: JSON.stringify(body),
       headers: { "Content-Type": "application/json" },
       method: "PATCH",
     });
@@ -162,22 +202,51 @@ export function TripRequestModal({
           <TripRequestDetails labels={dict.details} trip={trip} />
         </div>
 
+        {/* Experience assignment section (T-18, T-19) */}
+        <div className="border-b border-gray-200 px-6 py-4">
+          <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
+            {dict.experienceSectionTitle}
+          </p>
+          {trip.tripperId ? (
+            <FormSelectField
+              id="modal-trip-experience"
+              label={dict.experienceLabel}
+              onChange={(e) =>
+                setDraft((d) => ({ ...d, experienceId: e.target.value }))
+              }
+              value={draft.experienceId}
+            >
+              <option value="">{dict.experiencePlaceholder}</option>
+              {assignableExperiences.map((exp) => (
+                <option key={exp.id} value={exp.id}>
+                  {exp.title} — {exp.destinationCity}, {exp.destinationCountry}
+                </option>
+              ))}
+            </FormSelectField>
+          ) : (
+            <p className="text-sm text-gray-500">{dict.noTripperNotice}</p>
+          )}
+        </div>
+
         <div className="border-b border-gray-200 px-6 py-4">
           <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
             {dict.sectionManageTrip}
           </p>
-          <p className="mb-3 text-base text-gray-700">{dict.destinationHelp}</p>
           <div className="flex flex-col gap-3">
-            <FormField
-              id="modal-trip-destination"
-              label={dict.destinationLabel}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, actualDestination: e.target.value }))
-              }
-              placeholder={dict.destinationPlaceholder}
-              type="text"
-              value={draft.actualDestination}
-            />
+            {/* actualDestination — read-only, derived from assigned experience (T-21) */}
+            <div className="flex flex-col gap-1">
+              <span className="block text-base font-normal text-gray-600">
+                {dict.destinationLabel}
+              </span>
+              <div className="rounded-xl bg-gray-100 px-6 py-4 text-base text-gray-900">
+                {trip.actualDestination ? (
+                  trip.actualDestination
+                ) : (
+                  <span className="text-gray-400">{dict.destinationPlaceholder}</span>
+                )}
+              </div>
+              <p className="text-xs text-gray-400">{dict.destinationDerivedNote}</p>
+            </div>
             <FormSelectField
               id="modal-trip-status"
               label={dict.statusLabel}

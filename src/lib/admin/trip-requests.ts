@@ -30,6 +30,7 @@ export function attachAdminTripRequestRelations<
     return {
       ...tripRequest,
       experience: experienceId ? (experiencesById[experienceId] ?? null) : null,
+      experienceId: experienceId ?? null,
       payment: paymentsByTripRequestId[tripRequest.id] ?? null,
       user,
     };

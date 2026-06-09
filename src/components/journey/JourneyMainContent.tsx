@@ -54,6 +54,9 @@ interface JourneyMainContentLabels {
   experiencePlaceholder: string;
   experienceStepDescription: string;
   selectTravelTypeFirst: string;
+  noTripperExperiences: string;
+  noLevelsAvailable: string;
+  browseGeneralExperiences: string;
   extrasTabDescription: string;
   extrasTabTitle: string;
   next: string;
@@ -485,6 +488,9 @@ export default function JourneyMainContent({
               experienceStepDescription: labels.experienceStepDescription,
               selectTravelTypeFirst: labels.selectTravelTypeFirst,
               travelTypeLabel: labels.travelTypeLabel,
+              noTripperExperiences: labels.noTripperExperiences,
+              noLevelsAvailable: labels.noLevelsAvailable,
+              browseGeneralExperiences: labels.browseGeneralExperiences,
             }}
             locale={locale}
             localizedTravelerTypes={filteredTravelerTypes}

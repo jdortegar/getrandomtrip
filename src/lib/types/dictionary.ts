@@ -1231,6 +1231,9 @@ export interface MarketingDictionary {
       experiencePlaceholder: string;
       experienceStepDescription: string;
       selectTravelTypeFirst: string;
+      noTripperExperiences: string;
+      noLevelsAvailable: string;
+      browseGeneralExperiences: string;
       extrasTabDescription: string;
       extrasTabTitle: string;
       next: string;
@@ -1915,6 +1918,7 @@ export interface MarketingDictionary {
     deleteHint: string;
     deleteTrip: string;
     description: string;
+    destinationDerivedNote: string;
     destinationHelp: string;
     destinationLabel: string;
     destinationPlaceholder: string;
@@ -1925,6 +1929,10 @@ export interface MarketingDictionary {
       payment: string;
       transport: string;
     };
+    experienceLabel: string;
+    experiencePlaceholder: string;
+    experienceSectionTitle: string;
+    noTripperNotice: string;
     saveChanges: string;
     saving: string;
     sectionDanger: string;

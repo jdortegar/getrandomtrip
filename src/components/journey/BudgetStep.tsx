@@ -1,9 +1,11 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { Accordion } from "@/components/ui/accordion";
 import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
 import { TravelerTypesCarousel } from "@/components/landing/exploration/TravelerTypesCarousel";
 import TypePlanner from "@/components/by-type/TypePlanner";
+import { Button } from "@/components/ui/Button";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 
@@ -14,8 +16,11 @@ type TravelerTypeCardOption = {
 };
 
 interface BudgetStepLabels {
+  browseGeneralExperiences: string;
   experienceLabel: string;
   experienceStepDescription: string;
+  noLevelsAvailable: string;
+  noTripperExperiences: string;
   selectTravelTypeFirst: string;
   travelTypeLabel: string;
 }
@@ -61,6 +66,16 @@ export default function BudgetStep({
   travelTypeContent,
   tripperBadge,
 }: BudgetStepProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  function handleFallbackToGeneral() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("tripper");
+    const qs = params.toString();
+    router.push(`/${locale}/journey${qs ? `?${qs}` : ""}`);
+  }
+
   const hasTravelType = Boolean(travelerType);
   const rawPlannerContent = hasTravelType
     ? getPlannerContentForType(travelerType as TravelerTypeSlug, locale)
@@ -97,16 +112,25 @@ export default function BudgetStep({
           label={labels.travelTypeLabel}
           value="travel-type"
         >
-          <TravelerTypesCarousel
-            overflow="right"
-            localizedTravelerTypes={localizedTravelerTypes}
-            onSelect={(slug) => {
-              handleTravelTypeSelect(slug);
-              onAccordionValueChange("travel-type");
-            }}
-            selectedTravelType={selectedTravelType}
-            tripperBadge={tripperBadge}
-          />
+          {(localizedTravelerTypes ?? []).length === 0 ? (
+            <div className="py-8 text-center space-y-4">
+              <p className="text-gray-500">{labels.noTripperExperiences}</p>
+              <Button onClick={handleFallbackToGeneral} variant="outline" size="sm">
+                {labels.browseGeneralExperiences}
+              </Button>
+            </div>
+          ) : (
+            <TravelerTypesCarousel
+              overflow="right"
+              localizedTravelerTypes={localizedTravelerTypes}
+              onSelect={(slug) => {
+                handleTravelTypeSelect(slug);
+                onAccordionValueChange("travel-type");
+              }}
+              selectedTravelType={selectedTravelType}
+              tripperBadge={tripperBadge}
+            />
+          )}
         </JourneyDropdown>
 
         <JourneyDropdown
@@ -132,9 +156,7 @@ export default function BudgetStep({
             </div>
           ) : hasTravelType && plannerContent && plannerContent.levels.length === 0 ? (
             <div className="py-8 text-center">
-              <p className="text-gray-500">
-                No hay experiencias disponibles para este tipo de viaje.
-              </p>
+              <p className="text-gray-500">{labels.noLevelsAvailable}</p>
             </div>
           ) : (
             <div className="py-8 text-center">

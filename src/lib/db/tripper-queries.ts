@@ -289,6 +289,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
       where: {
         ownerId: tripperId,
         isActive: true,
+        status: "ACTIVE",
       },
       select: {
         id: true,
