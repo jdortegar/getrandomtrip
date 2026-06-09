@@ -87,6 +87,7 @@ function getInitialStepFromParams(params: URLSearchParams): {
 interface TripperJourneyContext {
   name: string;
   avatarUrl: string | null;
+  location: string | null;
   allowedTypes: string[];
   allowedLevelsByType: Record<string, string[]>;
 }
@@ -205,7 +206,11 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         title={journey.hero.title}
         tripperBadge={
           tripperContext
-            ? { name: tripperContext.name, avatarUrl: tripperContext.avatarUrl }
+            ? {
+                name: tripperContext.name,
+                avatarUrl: tripperContext.avatarUrl,
+                location: tripperContext.location,
+              }
             : undefined
         }
         videoSrc="/videos/hero-video-1.mp4"

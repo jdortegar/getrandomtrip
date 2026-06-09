@@ -342,6 +342,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
 export interface TripperJourneyContext {
   name: string;
   avatarUrl: string | null;
+  location: string | null;
   /** Distinct ACTIVE experience types for this tripper. */
   allowedTypes: string[];
   /** For each type, the distinct non-null levels of ACTIVE experiences that include that type. */
@@ -365,6 +366,7 @@ export async function getTripperJourneyContext(
         id: true,
         name: true,
         avatarUrl: true,
+        location: true,
       },
     });
 
@@ -401,6 +403,7 @@ export async function getTripperJourneyContext(
     return {
       name: tripper.name,
       avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+      location: tripper.location ?? null,
       allowedTypes,
       allowedLevelsByType,
     };

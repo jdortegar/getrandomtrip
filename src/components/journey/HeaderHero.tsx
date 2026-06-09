@@ -1,7 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { CountryFlag } from "@/components/common/CountryFlag";
+
+function getCountryFromLocation(
+  location: string | null | undefined,
+): string | null {
+  if (!location?.trim()) return null;
+  const parts = location
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1]! : location;
+}
 
 const DEFAULT_DESCRIPTION = (
   <>
@@ -18,6 +31,7 @@ const DEFAULT_SUBTITLE = (
 interface TripperBadgeProps {
   name: string;
   avatarUrl: string | null;
+  location: string | null;
 }
 
 interface HeaderHeroProps {
@@ -151,47 +165,68 @@ export default function HeaderHero({
         </>
       )}
 
-      {/* Tripper badge overlay — visible only in curated journeys */}
-      {tripperBadge && (
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 backdrop-blur-sm">
-          {tripperBadge.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={tripperBadge.name}
-              className="h-8 w-8 rounded-full object-cover"
-              src={tripperBadge.avatarUrl}
-            />
-          ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-600 text-xs font-bold text-white">
-              {tripperBadge.name.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div className="flex flex-col">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-300">
-              VIAJE CURADO POR
-            </span>
-            <span className="text-sm font-bold text-white leading-tight">
-              {tripperBadge.name}
-            </span>
-          </div>
+      {/* Content row: left text + optional right tripper info */}
+      <div className="relative z-10 mx-auto w-full min-w-7/12 px-6 flex items-center justify-between gap-8 text-white max-w-7xl">
+        {/* Left: eyebrow + title + description */}
+        <div className="flex-1 text-left">
+          <p
+            className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base"
+            style={eyebrowColor ? { color: eyebrowColor } : undefined}
+            {...(typeof subtitle === "string"
+              ? { dangerouslySetInnerHTML: { __html: subtitle } }
+              : { children: subtitle })}
+          />
+          <h1 className="mb-6 font-barlow-condensed text-5xl md:text-7xl font-extrabold">
+            {title}
+          </h1>
+          <p className="text-base">{description}</p>
         </div>
-      )}
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto min-w-7/12 px-6 text-left text-white">
-        <p
-          className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base"
-          style={eyebrowColor ? { color: eyebrowColor } : undefined}
-          {...(typeof subtitle === "string"
-            ? { dangerouslySetInnerHTML: { __html: subtitle } }
-            : { children: subtitle })}
-        />
-
-        <h1 className="mb-6 font-barlow-condensed text-5xl md:text-7xl font-extrabold">
-          {title}
-        </h1>
-
-        <p className="text-base">{description}</p>
+        {/* Right: tripper branding — only in curated journeys */}
+        {tripperBadge &&
+          (() => {
+            const countryForFlag = getCountryFromLocation(
+              tripperBadge.location,
+            );
+            return (
+              <div className="flex shrink-0 items-center gap-4 md:gap-6">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
+                  {tripperBadge.avatarUrl ? (
+                    <Image
+                      alt={tripperBadge.name}
+                      className="object-cover"
+                      fill
+                      sizes="92px"
+                      src={tripperBadge.avatarUrl}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-barlow-condensed text-4xl font-bold text-white">
+                      {tripperBadge.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <p className="font-barlow-condensed text-xl font-extrabold uppercase leading-tight text-white md:text-2xl">
+                    VIAJE CURADO POR
+                    <br />
+                    {tripperBadge.name.toUpperCase()}
+                  </p>
+                  {tripperBadge.location && (
+                    <div className="mt-1 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
+                      {countryForFlag && (
+                        <CountryFlag
+                          className="inline-block shrink-0 align-baseline"
+                          country={countryForFlag}
+                          title={tripperBadge.location}
+                        />
+                      )}
+                      <span>{tripperBadge.location.toUpperCase()}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
       </div>
     </section>
   );
