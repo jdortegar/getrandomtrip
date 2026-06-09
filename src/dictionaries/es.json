@@ -747,6 +747,10 @@
       "description": "¿Con quién vas a escribir tu próxima historia?",
       "subtitle": "PUNTO DE <span style=\"color: #F2C53D\">PARTIDA</span>"
     },
+    "tripperBadge": {
+      "curatedBy": "VIAJE CURADO POR",
+      "byTripper": "BY TRIPPER"
+    },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [
       {

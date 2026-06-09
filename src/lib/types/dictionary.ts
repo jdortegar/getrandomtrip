@@ -1500,6 +1500,10 @@ export interface MarketingDictionary {
         randomtripper: string;
       };
     };
+    tripperBadge: {
+      curatedBy: string;
+      byTripper: string;
+    };
     userNamePlaceholder: string;
   };
   confirmation: {

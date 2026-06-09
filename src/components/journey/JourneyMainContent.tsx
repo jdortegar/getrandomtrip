@@ -80,6 +80,17 @@ interface JourneyMainContentProps {
       title: string;
     }
   >;
+  /**
+   * When defined (curated journey), only these travel type keys are shown.
+   * When undefined, all types are shown (direct journey — current behavior).
+   */
+  allowedTypes?: string[];
+  /**
+   * When defined (curated journey), maps each type key to the allowed level ids.
+   * Threaded into BudgetStep to filter level cards after type selection.
+   * When undefined, all levels are shown.
+   */
+  allowedLevelsByType?: Record<string, string[]>;
   className?: string;
   /** Localized excuse titles/descriptions (journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
@@ -103,11 +114,20 @@ interface JourneyMainContentProps {
   onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
   openSectionId?: string;
+  /** Tripper branding info — when defined, shown on trip type cards (curated journey). */
+  tripperBadge?: { name: string; avatarUrl: string | null };
+  /**
+   * Tripper slug from the URL (?tripper=<slug>). When defined, included in the
+   * POST /api/trip-requests body so the server can resolve and persist tripperId.
+   */
+  tripperSlug?: string;
 }
 
 export default function JourneyMainContent({
   activeTab,
   addonLabels,
+  allowedTypes,
+  allowedLevelsByType,
   className,
   detailsStepLabels,
   localizedExcuses,
@@ -118,6 +138,8 @@ export default function JourneyMainContent({
   onTabChange,
   openSectionId,
   preferencesStepLabels,
+  tripperBadge,
+  tripperSlug,
 }: JourneyMainContentProps) {
   const labels = mainContentLabels;
   const params = useParams();
@@ -204,6 +226,7 @@ export default function JourneyMainContent({
     const tripPayload = {
       ...buildTripRequestPayloadFromSearchParams(searchParams),
       status: "SAVED",
+      ...(tripperSlug ? { tripper: tripperSlug } : {}),
     };
     const { originCountry, originCity } = tripPayload;
     if (!originCountry || !originCity) {
@@ -255,6 +278,7 @@ export default function JourneyMainContent({
     searchParams,
     session?.user?.email,
     sessionStatus,
+    tripperSlug,
     updateQuery,
   ]);
 
@@ -434,10 +458,20 @@ export default function JourneyMainContent({
 
   const renderContent = () => {
     switch (activeTab) {
-      case "budget":
+      case "budget": {
+        // In curated journeys, filter types to only what the tripper offers.
+        // When allowedTypes is undefined, pass the full list (direct journey).
+        const filteredTravelerTypes =
+          allowedTypes !== undefined
+            ? (localizedTravelerTypes ?? []).filter((t) =>
+                allowedTypes.includes(t.key),
+              )
+            : localizedTravelerTypes;
+
         return (
           <BudgetStep
             accordionValue={accordionValue}
+            allowedLevelsByType={allowedLevelsByType}
             experienceContent={getExperienceLabel(
               url.travelType,
               url.experience,
@@ -453,7 +487,7 @@ export default function JourneyMainContent({
               travelTypeLabel: labels.travelTypeLabel,
             }}
             locale={locale}
-            localizedTravelerTypes={localizedTravelerTypes}
+            localizedTravelerTypes={filteredTravelerTypes}
             minimizeAllFeatures
             onAccordionValueChange={setAccordionValue}
             selectedExperienceLevel={url.experience}
@@ -461,11 +495,13 @@ export default function JourneyMainContent({
             travelerType={url.travelType as TravelerTypeSlug}
             travelTypeContent={getTravelTypeLabel(
               url.travelType,
-              localizedTravelerTypes,
+              filteredTravelerTypes,
               labels.travelTypePlaceholder,
             )}
+            tripperBadge={tripperBadge}
           />
         );
+      }
       case "excuse":
         if (!hasExcuseStep) return null;
         return (

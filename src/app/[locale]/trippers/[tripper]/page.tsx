@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { TRIPPERS } from "@/content/trippers";
-import type { BlogPost } from "@/lib/data/shared/blog-types";
 import {
   getTripperBySlug,
   getTripperFeaturedTrips,
@@ -24,28 +23,6 @@ import { hasLocale } from "@/lib/i18n/config";
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from "@/components/tripper/TripperIntroVideoGate";
-
-// Fallback blog posts when tripper has no published posts
-const MOCK_BLOG_POSTS: BlogPost[] = [
-  {
-    category: "Viajes",
-    href: "/blog",
-    image: "/images/fallbacks/tripper-avatar.jpg",
-    title: "Rutas secretas que no aparecen en las guías",
-  },
-  {
-    category: "Inspiración",
-    href: "/blog",
-    image: "/images/fallbacks/tripper-avatar.jpg",
-    title: "Cómo planear tu próxima aventura sin estrés",
-  },
-  {
-    category: "Tips",
-    href: "/blog",
-    image: "/images/fallbacks/tripper-avatar.jpg",
-    title: "Lo que aprendí viajando por Latinoamérica",
-  },
-];
 
 // Always fetch fresh data so carousel shows only types that have packages
 export const dynamic = "force-dynamic";
@@ -106,8 +83,6 @@ export default async function Page(props: {
 
   // Fetch published blog posts for this tripper
   const publishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
-  const posts: BlogPost[] =
-    publishedBlogs.length > 0 ? publishedBlogs : MOCK_BLOG_POSTS;
 
   return (
     <main className="bg-white text-slate-900">
@@ -146,11 +121,11 @@ export default async function Page(props: {
         tripperSlug={tripperData.tripperSlug}
       />
 
-      {/* Blog / inspiración */}
-      {posts.length > 0 && (
+      {/* Blog / inspiración — only render when tripper has published posts */}
+      {publishedBlogs.length > 0 && (
         <Blog
           id="tripper-blog"
-          posts={posts}
+          posts={publishedBlogs}
           subtitle="Notas, guías y momentos que inspiran de este tripper."
           title={`Inspiración de ${tripperData.name}`}
           viewAll={{

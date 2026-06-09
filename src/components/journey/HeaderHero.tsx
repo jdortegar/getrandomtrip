@@ -15,6 +15,11 @@ const DEFAULT_SUBTITLE = (
   </>
 );
 
+interface TripperBadgeProps {
+  name: string;
+  avatarUrl: string | null;
+}
+
 interface HeaderHeroProps {
   backgroundImage?: string;
   className?: string;
@@ -23,6 +28,7 @@ interface HeaderHeroProps {
   fallbackImage?: string;
   subtitle?: React.ReactNode | string;
   title: string;
+  tripperBadge?: TripperBadgeProps;
   videoSrc?: string;
 }
 
@@ -114,6 +120,7 @@ export default function HeaderHero({
   fallbackImage = "/images/hero-image-1.jpeg",
   subtitle = DEFAULT_SUBTITLE,
   title,
+  tripperBadge,
   videoSrc = "/videos/hero-video-1.mp4",
 }: HeaderHeroProps) {
   return (
@@ -142,6 +149,32 @@ export default function HeaderHero({
           {/* Overlay */}
           <div className="absolute inset-0 bg-black/40" />
         </>
+      )}
+
+      {/* Tripper badge overlay — visible only in curated journeys */}
+      {tripperBadge && (
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 backdrop-blur-sm">
+          {tripperBadge.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              alt={tripperBadge.name}
+              className="h-8 w-8 rounded-full object-cover"
+              src={tripperBadge.avatarUrl}
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-600 text-xs font-bold text-white">
+              {tripperBadge.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="flex flex-col">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-300">
+              VIAJE CURADO POR
+            </span>
+            <span className="text-sm font-bold text-white leading-tight">
+              {tripperBadge.name}
+            </span>
+          </div>
+        </div>
       )}
 
       {/* Content */}

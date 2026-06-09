@@ -2119,6 +2119,10 @@
         "randomtripper": "Randomtripper"
       }
     },
+    "tripperBadge": {
+      "curatedBy": "TRIP CURATED BY",
+      "byTripper": "BY TRIPPER"
+    },
     "userNamePlaceholder": "User name"
   },
   "confirmation": {

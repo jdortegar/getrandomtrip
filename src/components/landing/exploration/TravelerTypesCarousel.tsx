@@ -22,6 +22,8 @@ interface TravelerTypesCarouselProps {
   }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   selectedTravelType?: TravelerTypeSlug;
+  /** When defined (curated journey), renders a "BY TRIPPER [NAME]" badge on each card. */
+  tripperBadge?: { name: string; avatarUrl: string | null };
   tripperMode?: boolean;
   tripperSlug?: string;
   overflow?: "both" | "left" | "right" | undefined;
@@ -34,6 +36,7 @@ export function TravelerTypesCarousel({
   localizedTravelerTypes,
   onSelect,
   selectedTravelType,
+  tripperBadge,
   tripperMode = false,
   tripperSlug,
   overflow = "both",
@@ -68,22 +71,42 @@ export function TravelerTypesCarousel({
           const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
           return (
-            <TravelerTypeCard
-              key={type.key}
-              fill
-              className="aspect-3/4"
-              comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
-              href={
-                isComingSoon
-                  ? undefined
-                  : `/experiences/by-type/${slugify(type.key)}`
-              }
-              item={cardDataToCardItem(type)}
-              onClick={
-                onSelect && !isComingSoon ? () => onSelect(slug) : undefined
-              }
-              selected={selectedTravelType === slug}
-            />
+            <div className="relative" key={type.key}>
+              <TravelerTypeCard
+                fill
+                className="aspect-3/4"
+                comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
+                href={
+                  isComingSoon
+                    ? undefined
+                    : `/experiences/by-type/${slugify(type.key)}`
+                }
+                item={cardDataToCardItem(type)}
+                onClick={
+                  onSelect && !isComingSoon ? () => onSelect(slug) : undefined
+                }
+                selected={selectedTravelType === slug}
+              />
+              {tripperBadge && (
+                <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 backdrop-blur-sm">
+                  {tripperBadge.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt={tripperBadge.name}
+                      className="h-5 w-5 rounded-full object-cover"
+                      src={tripperBadge.avatarUrl}
+                    />
+                  ) : (
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-500 text-[9px] font-bold text-white">
+                      {tripperBadge.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="whitespace-nowrap text-[10px] font-semibold text-white">
+                    BY TRIPPER {tripperBadge.name.toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
           );
         })}
       </EmblaCarousel>

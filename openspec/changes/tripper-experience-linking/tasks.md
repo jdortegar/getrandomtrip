@@ -100,49 +100,49 @@ Each PR is independently deployable. Subsequent PRs depend on the merged state o
 **Spec requirements**: §4.1, §4.3–4.7
 **Estimated changed lines**: ~220
 
-### T-10 · Remove mock blog data from tripper landing page
+### [x] T-10 · Remove mock blog data from tripper landing page
 - **File**: `src/app/[locale]/trippers/[tripper]/page.tsx`
 - **Action**: Delete `MOCK_BLOG_POSTS` constant (or import). Change Blog section render to: `{publishedBlogs.length > 0 && <Blog posts={publishedBlogs} ... />}`. If `publishedBlogs` is not yet fetched, add a query for `BlogPost.findMany({ where: { authorId: tripper.id, status: "PUBLISHED" } })`.
 - **Spec**: §4.1 (S3, S4)
 - **Parallel**: can be done alongside T-11 and T-12.
 
-### T-11 · Add `tripperBadge` prop to `HeaderHero`
+### [x] T-11 · Add `tripperBadge` prop to `HeaderHero`
 - **File**: `src/components/journey/HeaderHero.tsx`
 - **Action**: Add optional prop `tripperBadge?: { name: string; avatarUrl: string }`. When present, render an absolute-positioned overlay (top-right inside the section) showing tripper avatar + "VIAJE CURADO POR [name]" text. When absent, render nothing extra (no behavior change for existing call sites).
 - **Spec**: §4.5 (S11)
 - **Parallel**: can be done alongside T-10 and T-12.
 
-### T-12 · Add `allowedTypes` and `allowedLevelsByType` props to `JourneyMainContent`
+### [x] T-12 · Add `allowedTypes` and `allowedLevelsByType` props to `JourneyMainContent`
 - **File**: `src/components/journey/JourneyMainContent.tsx`
 - **Action**: Add optional props `allowedTypes?: string[]` and `allowedLevelsByType?: Record<string, string[]>`. When `allowedTypes` is defined, filter `localizedTravelerTypes` before passing to `BudgetStep`. When undefined, pass full list (current behavior). Thread `allowedLevelsByType` through to `BudgetStep` as a new optional prop.
 - **Spec**: §4.3, §4.4 (S8, S9, S10)
 - **Sequential**: after T-11 conceptually clean, but no code dependency — can be parallel.
 
-### T-13 · Add filtered level rendering to `BudgetStep`
+### [x] T-13 · Add filtered level rendering to `BudgetStep`
 - **File**: `src/components/journey/BudgetStep.tsx`
 - **Action**: Accept new optional prop `allowedLevelsByType?: Record<string, string[]>`. When the user has selected a trip type and this prop is defined, filter the level options to `allowedLevelsByType[selectedType] ?? []`. When undefined, show all levels (current behavior). Render a graceful empty state when the filtered list is empty.
 - **Spec**: §4.4 (S10), §4.3 (S9 — empty state)
 - **Sequential**: after T-12 interface is agreed (same PR, coordinate props).
 
-### T-14 · Update journey page to fetch tripper context and wire props
+### [x] T-14 · Update journey page to fetch tripper context and wire props
 - **File**: `src/app/[locale]/journey/page.tsx`
 - **Action**: Read `searchParams.tripper` (slug). If present, call `GET /api/trippers/[slug]/journey-context` (client-side fetch or server fetch). Store result in state/props. Pass `tripperBadge` to `HeaderHero`; pass `allowedTypes` and `allowedLevelsByType` to `JourneyMainContent`. If context fetch returns 404 or tripper is null, pass nothing (standard journey behavior).
 - **Spec**: §4.3–4.7 (S7–S11)
 - **Sequential**: after T-11, T-12, T-13 are complete in same PR.
 
-### T-15 · Pass `tripper` slug in `POST /api/trip-requests` call from journey
+### [x] T-15 · Pass `tripper` slug in `POST /api/trip-requests` call from journey
 - **File**: wherever journey form submission is assembled (likely `JourneyMainContent` or an action/store)
 - **Action**: Include `tripper: tripperSlug` in the POST body when a tripper context is active. When no tripper context, omit the field entirely.
 - **Spec**: §4.2 (S5, S6)
 - **Sequential**: after T-14 (slug must be in scope).
 
-### T-16 · Add tripper branding to trip type cards (curated journey)
+### [x] T-16 · Add tripper branding to trip type cards (curated journey)
 - **File**: Wherever trip type cards are rendered inside `BudgetStep` or `JourneyMainContent`
 - **Action**: When `allowedTypes` is defined (curated journey), render "BY TRIPPER [NAME]" + avatar on each visible card. When undefined (direct journey), render nothing extra.
 - **Spec**: §4.6 (S8)
 - **Sequential**: after T-12/T-14 (tripper name/avatar must be in scope).
 
-### T-17 · Add i18n copy keys for curated journey branding
+### [x] T-17 · Add i18n copy keys for curated journey branding
 - **Files**: `src/lib/types/dictionary.ts`, `src/dictionaries/es.json`, `src/dictionaries/en.json`
 - **Action**: Add keys for the tripper badge label (e.g. `journey.tripperBadge.curatedBy`) and trip card attribution (e.g. `journey.tripperBadge.byTripper`). Update `MarketingDictionary` type accordingly. Run `npm run typecheck`.
 - **Spec**: §4.5, §4.6
