@@ -58,7 +58,7 @@ export default async function AboutUsPage(props: LocaleParams) {
     <div className="bg-white font-barlow text-neutral-900">
       <Hero content={aboutUs.hero} scrollIndicator />
       <AboutUsValues items={aboutUs.valueProps.items} />
-      <AboutUsPhilosophy content={aboutUs.philosophy} />
+      <AboutUsPhilosophy content={aboutUs.philosophy} id="philosophy" />
       <AboutUsPhilosophy
         content={aboutUs.founder}
         imageSrc="/images/about-us-santiago.png"
