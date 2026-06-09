@@ -45,16 +45,16 @@ export async function getTripperBySlug(
 
     if (!tripper || !tripper.tripperSlug) return null;
 
-    // Dynamically calculate availableTypes based on actual packages
+    // Dynamically calculate availableTypes based on actual ACTIVE packages
     const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripper.id,
         isActive: true,
+        status: "ACTIVE",
       },
       select: {
         type: true,
       },
-      distinct: ["type"],
     });
 
     const availableTypes = [...new Set(packages.flatMap((pkg) => pkg.type))];
@@ -289,6 +289,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
       where: {
         ownerId: tripperId,
         isActive: true,
+        status: "ACTIVE",
       },
       select: {
         id: true,
@@ -335,6 +336,84 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
 }
 
 // ============================================================================
+// JOURNEY CONTEXT
+// ============================================================================
+
+export interface TripperJourneyContext {
+  name: string;
+  avatarUrl: string | null;
+  location: string | null;
+  /** Distinct ACTIVE experience types for this tripper. */
+  allowedTypes: string[];
+  /** For each type, the distinct non-null levels of ACTIVE experiences that include that type. */
+  allowedLevelsByType: Record<string, string[]>;
+}
+
+/**
+ * Returns branding + allowed types/levels for a tripper's curated journey.
+ * Only considers experiences with status = ACTIVE.
+ */
+export async function getTripperJourneyContext(
+  slug: string,
+): Promise<TripperJourneyContext | null> {
+  try {
+    const tripper = await prisma.user.findUnique({
+      where: {
+        tripperSlug: slug,
+        roles: { has: "TRIPPER" },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
+        location: true,
+      },
+    });
+
+    if (!tripper) return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const experiences = await (prisma.experience.findMany as any)({
+      where: {
+        ownerId: tripper.id,
+        status: "ACTIVE",
+      },
+      select: {
+        type: true,
+        level: true,
+      },
+    }) as Array<{ type: string[]; level: string | null }>;
+
+    // Distinct flat-mapped types
+    const allowedTypes = [...new Set(experiences.flatMap((e) => e.type))];
+
+    // For each type, collect distinct non-null levels of experiences that include that type
+    const allowedLevelsByType: Record<string, string[]> = {};
+    for (const type of allowedTypes) {
+      const levels = [
+        ...new Set(
+          experiences
+            .filter((e) => e.type.includes(type) && e.level !== null)
+            .map((e) => e.level as string),
+        ),
+      ];
+      allowedLevelsByType[type] = levels;
+    }
+
+    return {
+      name: tripper.name,
+      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+      location: tripper.location ?? null,
+      allowedTypes,
+      allowedLevelsByType,
+    };
+  } catch (error) {
+    console.error("Error fetching tripper journey context:", error);
+    return null;
+  }
+}
+
+// ============================================================================
 // DASHBOARD QUERIES
 // ============================================================================
 
@@ -347,6 +426,14 @@ export async function getTripperDashboardStats(tripperId: string) {
     const packages = await prisma.experience.findMany({
       where: { ownerId: tripperId },
       select: { id: true, status: true, isActive: true },
+    });
+
+    // Count trip requests attributed to this tripper via the tripperId FK
+    const attributedBookings = await prisma.tripRequest.count({
+      where: {
+        tripperId,
+        status: { in: ["CONFIRMED", "REVEALED", "COMPLETED"] },
+      },
     });
 
     // Get all trip requests that have packages owned by this tripper
@@ -441,6 +528,7 @@ export async function getTripperDashboardStats(tripperId: string) {
       activeExperiences,
       totalClients: uniqueClients,
       conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal
+      attributedBookings,
     };
   } catch (error) {
     console.error("Error fetching tripper dashboard stats:", error);
@@ -451,6 +539,7 @@ export async function getTripperDashboardStats(tripperId: string) {
       activeExperiences: 0,
       totalClients: 0,
       conversionRate: 0,
+      attributedBookings: 0,
     };
   }
 }

@@ -833,6 +833,9 @@
       "experiencePlaceholder": "What I want from my trip",
       "experienceStepDescription": "Select the experience level that best fits your budget and preferences.",
       "selectTravelTypeFirst": "Select a travel type first.",
+      "noTripperExperiences": "No experiences available for this tripper.",
+      "noLevelsAvailable": "No experience levels available for this trip type.",
+      "browseGeneralExperiences": "Explore general experiences",
       "extrasTabDescription": "Add extras to your trip.",
       "extrasTabTitle": "Extras",
       "next": "Next",
@@ -2119,6 +2122,10 @@
         "randomtripper": "Randomtripper"
       }
     },
+    "tripperBadge": {
+      "curatedBy": "TRIP CURATED BY",
+      "byTripper": "BY TRIPPER"
+    },
     "userNamePlaceholder": "User name"
   },
   "confirmation": {
@@ -2850,7 +2857,12 @@
     "sectionManageTrip": "Destination & status",
     "destinationLabel": "Revealed destination",
     "destinationHelp": "Set the real destination for this booking. Saving clears or updates the stored value.",
+    "destinationDerivedNote": "Automatically derived from the assigned experience",
     "destinationPlaceholder": "e.g. Lisbon, Portugal",
+    "experienceSectionTitle": "Assign experience",
+    "experienceLabel": "Experience",
+    "experiencePlaceholder": "Select experience…",
+    "noTripperNotice": "No tripper attributed — experience assignment unavailable",
     "statusLabel": "Trip status",
     "sectionTimeline": "Fulfillment milestones",
     "sectionDanger": "Danger zone",

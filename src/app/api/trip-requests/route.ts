@@ -199,6 +199,7 @@ export async function POST(request: NextRequest) {
       addons,
       status,
       experienceId,
+      tripper: tripperSlug,
     } = body;
 
     let paxDetailsValue:
@@ -218,6 +219,19 @@ export async function POST(request: NextRequest) {
         }
         paxDetailsValue = parsed as unknown as Prisma.InputJsonValue;
       }
+    }
+
+    // Resolve tripper slug → tripperId (only on create; updates do not change attribution)
+    let resolvedTripperId: string | null = null;
+    if (!id && typeof tripperSlug === "string" && tripperSlug.trim() !== "") {
+      const tripperUser = await prisma.user.findFirst({
+        where: {
+          tripperSlug: tripperSlug.trim(),
+          roles: { has: "TRIPPER" },
+        },
+        select: { id: true },
+      });
+      resolvedTripperId = tripperUser?.id ?? null;
     }
 
     let tripRequest;
@@ -275,6 +289,7 @@ export async function POST(request: NextRequest) {
           ? { paxDetails: paxDetailsValue }
           : {}),
         ...(experienceId ? { experienceId: String(experienceId) } : {}),
+        tripperId: resolvedTripperId,
       };
 
       console.log("Creating new trip request for user:", user.id);

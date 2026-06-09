@@ -747,6 +747,10 @@
       "description": "¿Con quién vas a escribir tu próxima historia?",
       "subtitle": "PUNTO DE <span style=\"color: #F2C53D\">PARTIDA</span>"
     },
+    "tripperBadge": {
+      "curatedBy": "VIAJE CURADO POR",
+      "byTripper": "BY TRIPPER"
+    },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [
       {
@@ -834,6 +838,9 @@
       "experiencePlaceholder": "Qué quiero de mi viaje",
       "experienceStepDescription": "Selecciona el nivel de experiencia que más se adapte a tu presupuesto y preferencias.",
       "selectTravelTypeFirst": "Primero selecciona un tipo de viaje.",
+      "noTripperExperiences": "No hay experiencias disponibles para este tripper.",
+      "noLevelsAvailable": "No hay experiencias disponibles para este tipo de viaje.",
+      "browseGeneralExperiences": "Ver experiencias generales",
       "extrasTabDescription": "Agrega extras a tu viaje.",
       "extrasTabTitle": "Extras",
       "next": "Siguiente",
@@ -2850,7 +2857,12 @@
     "sectionManageTrip": "Destino y estado",
     "destinationLabel": "Destino revelado",
     "destinationHelp": "Define el destino real de esta reserva. Al guardar se actualiza o borra el valor guardado.",
+    "destinationDerivedNote": "Se deriva automáticamente de la experiencia asignada",
     "destinationPlaceholder": "ej. Lisboa, Portugal",
+    "experienceSectionTitle": "Asignar experiencia",
+    "experienceLabel": "Experiencia",
+    "experiencePlaceholder": "Seleccionar experiencia…",
+    "noTripperNotice": "No hay tripper atribuido — asignación de experiencia no disponible",
     "statusLabel": "Estado del viaje",
     "sectionTimeline": "Hitos de cumplimiento",
     "sectionDanger": "Zona de riesgo",

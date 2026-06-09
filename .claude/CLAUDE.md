@@ -27,7 +27,7 @@ User instructions always override this file.
 | State         | Zustand 5 (`src/store/`)                   |
 | ORM           | Prisma 7 (PostgreSQL)                      |
 | Auth          | NextAuth 4 (Prisma adapter + Google OAuth) |
-| Payments      | MercadoPago (primary), Stripe (secondary)  |
+| Payments      | Stripe                                     |
 | UI Primitives | Radix UI, shadcn/ui (`components.json`)    |
 | Forms         | react-hook-form                            |
 | Maps          | React Leaflet, Google Maps/Places          |

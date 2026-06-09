@@ -13,6 +13,7 @@ interface PhilosophyContent {
 
 interface AboutUsPhilosophyProps {
   content: PhilosophyContent;
+  id?: string;
   imageSrc?: string;
   inverted?: boolean;
   tags?: string[];
@@ -23,13 +24,14 @@ interface AboutUsPhilosophyProps {
 
 export function AboutUsPhilosophy({
   content,
+  id,
   imageSrc = "/images/about-us-philosophy.png",
   inverted = false,
   tags,
   imageClassName,
 }: AboutUsPhilosophyProps) {
   return (
-    <Section className="py-0">
+    <Section className="py-0" id={id}>
       <div className="rt-container grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
         {/* Image */}
         <div

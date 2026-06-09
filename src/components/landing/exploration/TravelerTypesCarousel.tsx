@@ -22,6 +22,8 @@ interface TravelerTypesCarouselProps {
   }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   selectedTravelType?: TravelerTypeSlug;
+  /** When defined (curated journey), renders a "BY TRIPPER [NAME]" badge on each card. */
+  tripperBadge?: { name: string; avatarUrl: string | null };
   tripperMode?: boolean;
   tripperSlug?: string;
   overflow?: "both" | "left" | "right" | undefined;
@@ -34,6 +36,7 @@ export function TravelerTypesCarousel({
   localizedTravelerTypes,
   onSelect,
   selectedTravelType,
+  tripperBadge,
   tripperMode = false,
   tripperSlug,
   overflow = "both",
@@ -83,6 +86,7 @@ export function TravelerTypesCarousel({
                 onSelect && !isComingSoon ? () => onSelect(slug) : undefined
               }
               selected={selectedTravelType === slug}
+              tripperBadge={tripperBadge}
             />
           );
         })}
