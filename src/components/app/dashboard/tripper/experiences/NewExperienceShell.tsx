@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useMemo, useEffect, useCallback, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AlertCircle, X } from "lucide-react";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
@@ -99,12 +99,32 @@ export function NewExperienceShell({
   initialDraftId,
 }: NewExperienceShellProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const tabs = dict.contentTabs;
   const effectiveTabs = adminReviewSlot ? [...tabs, ADMIN_TAB] : tabs;
-  const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "about");
-  const [openSectionId, setOpenSectionId] = useState(
-    tabs[0]?.substeps[0]?.id ?? "",
-  );
+
+  // Resolve initial tab+section from URL, validating existence and guard
+  const rawTab = searchParams.get("tab");
+  const rawSection = searchParams.get("section");
+  const seed = initialDraft ?? EMPTY_DRAFT;
+  const tabIndex = rawTab ? effectiveTabs.findIndex((t) => t.id === rawTab) : -1;
+  let resolvedTabId = tabs[0]?.id ?? "about";
+  if (tabIndex !== -1) {
+    const canReach =
+      !!adminReviewSlot ||
+      Array.from({ length: tabIndex }, (_, i) => i).every((i) =>
+        isExperienceTabComplete(effectiveTabs[i]!.id, seed),
+      );
+    if (canReach) resolvedTabId = rawTab!;
+  }
+  const resolvedTab = effectiveTabs.find((t) => t.id === resolvedTabId);
+  const resolvedSection =
+    (rawSection && resolvedTab?.substeps.some((s) => s.id === rawSection)
+      ? rawSection
+      : null) ?? resolvedTab?.substeps[0]?.id ?? "";
+
+  const [activeTab, setActiveTab] = useState(resolvedTabId);
+  const [openSectionId, setOpenSectionId] = useState(resolvedSection);
   const [form, setForm] = useState<ExperienceFormDraft>(
     initialDraft ?? EMPTY_DRAFT,
   );
@@ -231,6 +251,14 @@ export function NewExperienceShell({
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [form, persistDraft, isReadOnly]);
+
+  // Keep URL in sync with active tab+section so reloads restore position
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set("tab", activeTab);
+    params.set("section", openSectionId);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [activeTab, openSectionId, router]);
 
   function canNavigateTo(targetTabId: string): boolean {
     if (adminReviewSlot) return true;
