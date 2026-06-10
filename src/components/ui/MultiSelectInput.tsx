@@ -7,15 +7,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command as CommandPrimitive } from "cmdk";
 import { cn } from "@/lib/utils";
 
-export interface ComboboxOption {
+export interface MultiSelectOption {
   value: string;
   label: string;
 }
 
-interface ComboboxChipsProps {
+interface MultiSelectInputProps {
   id?: string;
   label?: ReactNode;
-  options: ComboboxOption[];
+  options: MultiSelectOption[];
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
@@ -24,7 +24,7 @@ interface ComboboxChipsProps {
   hint?: string;
 }
 
-export function ComboboxChips({
+export function MultiSelectInput({
   id,
   label,
   options,
@@ -34,7 +34,7 @@ export function ComboboxChips({
   searchPlaceholder = "Search...",
   emptyLabel = "No results.",
   hint,
-}: ComboboxChipsProps) {
+}: MultiSelectInputProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 

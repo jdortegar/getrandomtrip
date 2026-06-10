@@ -1,9 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { ComboboxChips } from "@/components/ui/ComboboxChips";
+import { DaysInput } from "@/components/ui/DaysInput";
+import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
 import { getExperienceTypes, getExcuseOptionsForType } from "@/lib/constants/packages";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
@@ -28,8 +28,6 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
   const locale = (params?.locale as string) ?? "es";
   const experienceTypes = getExperienceTypes(locale);
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
-
-  const [nightsStr, setNightsStr] = useState(String(form.minNights));
 
   const handleTypeChange = (value: string[]) => {
     onChange("type", value);
@@ -61,7 +59,7 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <ComboboxChips
+          <MultiSelectInput
             id="exp-type"
             label={<>{copy.fields.type}{req}</>}
             options={experienceTypes.map((t) => ({ value: t.value, label: t.label }))}
@@ -74,29 +72,16 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
       </div>
 
       {/* Row 2: Duración + Meses + Excusa */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="flex flex-col gap-1">
-          <FormField
-            id="exp-min-nights"
-            inputMode="numeric"
-            label={copy.fields.minNights}
-            value={nightsStr}
-            onChange={(e) => {
-              setNightsStr(e.target.value);
-              const n = parseInt(e.target.value, 10);
-              if (!isNaN(n) && n >= 1) onChange("minNights", n);
-            }}
-            onBlur={() => {
-              const n = parseInt(nightsStr, 10);
-              const clamped = isNaN(n) || n < 1 ? 1 : n;
-              setNightsStr(String(clamped));
-              onChange("minNights", clamped);
-            }}
-          />
-          <p className="text-xs text-neutral-400">{copy.fields.minNightsHint}</p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-4">
+        <DaysInput
+          id="exp-min-nights"
+          hintTemplate={copy.fields.minNightsHint}
+          label={copy.fields.minNights}
+          value={form.minNights + 1}
+          onChange={(days) => onChange("minNights", days - 1)}
+        />
 
-        <ComboboxChips
+        <MultiSelectInput
           id="exp-season"
           label={copy.fields.season}
           options={monthOptions}

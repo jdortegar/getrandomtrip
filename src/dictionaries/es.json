@@ -3334,7 +3334,7 @@
         "excuseKeyPlaceholder": "Seleccioná una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
         "minNights": "Duración recomendada",
-        "minNightsHint": "En días",
+        "minNightsHint": "{nights} Noches / {days} Días",
         "maxNights": "Noches máximas",
         "maxNightsHint": "Este nivel admite máx. {n} noches",
         "minPax": "Viajeros mínimos",
