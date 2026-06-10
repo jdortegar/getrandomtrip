@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ActivityEntry,
@@ -24,10 +25,6 @@ const EMPTY_ENTRY: ActivityEntry = {
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-const textareaClass =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[120px]";
-
-const labelClass = "block font-normal text-gray-600 text-base";
 
 export function ActivitiesListStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
@@ -96,34 +93,22 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
             </div>
 
             {/* Row 2: Description */}
-            <div className="flex flex-col gap-2">
-              <label className={labelClass} htmlFor={`act-desc-${index}`}>
-                {fields.activityDesc}
-              </label>
-              <textarea
-                id={`act-desc-${index}`}
-                className={textareaClass}
-                placeholder={fields.activityDescPlaceholder}
-                value={entry.description}
-                onChange={(e) =>
-                  updateEntry(index, "description", e.target.value)
-                }
-              />
-            </div>
+            <TextAreaInput
+              id={`act-desc-${index}`}
+              label={fields.activityDesc}
+              placeholder={fields.activityDescPlaceholder}
+              value={entry.description}
+              onChange={(e) => updateEntry(index, "description", e.target.value)}
+            />
 
             {/* Row 3: Risks */}
-            <div className="flex flex-col gap-2">
-              <label className={labelClass} htmlFor={`act-risks-${index}`}>
-                {fields.activityRisks}
-              </label>
-              <textarea
-                id={`act-risks-${index}`}
-                className={textareaClass}
-                placeholder={fields.activityRisksPlaceholder}
-                value={entry.risks}
-                onChange={(e) => updateEntry(index, "risks", e.target.value)}
-              />
-            </div>
+            <TextAreaInput
+              id={`act-risks-${index}`}
+              label={fields.activityRisks}
+              placeholder={fields.activityRisksPlaceholder}
+              value={entry.risks}
+              onChange={(e) => updateEntry(index, "risks", e.target.value)}
+            />
           </div>
         ))}
       </div>

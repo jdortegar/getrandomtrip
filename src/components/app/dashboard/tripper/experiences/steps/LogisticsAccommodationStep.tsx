@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { DaysInput } from "@/components/ui/DaysInput";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   AccommodationEntry,
@@ -105,20 +106,13 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
 
             {/* Row 2: Days (1/3 width) */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <FormField
+              <DaysInput
                 id={`acc-hotel-days-${index}`}
                 label={fields.hotelDays}
-                placeholder={fields.hotelDaysPlaceholder}
-                type="text"
-                inputMode="numeric"
-                value={entry.hotelDays}
-                onChange={(e) =>
-                  updateEntry(
-                    index,
-                    "hotelDays",
-                    e.target.value.replace(/[^0-9]/g, ""),
-                  )
-                }
+                className="w-full"
+                hintTemplate={fields.minNightsHint}
+                value={parseInt(entry.hotelDays, 10) || 1}
+                onChange={(days) => updateEntry(index, "hotelDays", String(days))}
               />
             </div>
           </div>

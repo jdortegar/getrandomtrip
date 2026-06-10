@@ -5,21 +5,22 @@ import type { ReactNode } from "react";
 
 interface DaysInputProps {
   id: string;
-  /** Template with {nights} and {days} placeholders — comes from the dictionary. */
-  hintTemplate: string;
+  /** Optional template with {nights} and {days} placeholders — comes from the dictionary. */
+  hintTemplate?: string;
   label: ReactNode;
-  /** Days value (= nights + 1). */
+  /** Days value (= nights + 1 when used for nights, or plain day count). */
   value: number;
   onChange: (days: number) => void;
+  className?: string;
 }
 
-export function DaysInput({ id, hintTemplate, label, value, onChange }: DaysInputProps) {
+export function DaysInput({ id, hintTemplate, label, value, onChange, className }: DaysInputProps) {
   const [raw, setRaw] = useState(String(value));
 
   const days = Math.max(1, parseInt(raw, 10) || 1);
   const hint = hintTemplate
-    .replace("{nights}", String(days - 1))
-    .replace("{days}", String(days));
+    ? hintTemplate.replace("{nights}", String(days - 1)).replace("{days}", String(days))
+    : null;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const digits = e.target.value.replace(/\D/g, "").slice(0, 2);
@@ -36,7 +37,7 @@ export function DaysInput({ id, hintTemplate, label, value, onChange }: DaysInpu
   }
 
   return (
-    <div className="flex w-fit flex-col gap-2">
+    <div className={`flex flex-col gap-2 ${className ?? "w-fit"}`}>
       <label className="block font-normal text-gray-600 text-base" htmlFor={id}>
         {label}
       </label>
@@ -44,13 +45,13 @@ export function DaysInput({ id, hintTemplate, label, value, onChange }: DaysInpu
         className="w-full bg-gray-100 outline-none px-6 py-4 rounded-xl text-gray-900 text-base tabular-nums"
         id={id}
         inputMode="numeric"
-        maxLength={3}
+        maxLength={2}
         onBlur={handleBlur}
         onChange={handleChange}
         type="text"
         value={raw}
       />
-      <p className="text-xs text-neutral-400">{hint}</p>
+      {hint && <p className="text-xs text-neutral-400">{hint}</p>}
     </div>
   );
 }

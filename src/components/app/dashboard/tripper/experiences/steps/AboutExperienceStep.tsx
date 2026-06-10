@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { FormField } from "@/components/ui/FormField";
 import { DaysInput } from "@/components/ui/DaysInput";
+import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
 import { getExperienceTypes, getExcuseOptionsForType } from "@/lib/constants/packages";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
@@ -113,22 +114,13 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
       />
 
       {/* Row 4: Descripción completa */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="block font-normal text-gray-600 text-base"
-          htmlFor="exp-description"
-        >
-          {copy.fields.description}
-          {req}
-        </label>
-        <textarea
-          id="exp-description"
-          className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base min-h-[160px] resize-none"
-          placeholder={copy.fields.descriptionPlaceholder}
-          value={form.description}
-          onChange={(e) => onChange("description", e.target.value)}
-        />
-      </div>
+      <TextAreaInput
+        id="exp-description"
+        label={<>{copy.fields.description}{req}</>}
+        placeholder={copy.fields.descriptionPlaceholder}
+        value={form.description}
+        onChange={(e) => onChange("description", e.target.value)}
+      />
     </div>
   );
 }
