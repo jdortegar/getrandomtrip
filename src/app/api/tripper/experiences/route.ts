@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         status: "DRAFT",
         type: Array.isArray(body.type) ? body.type : [body.type].filter(Boolean),
         level: body.level || null,
-        excuseKey: body.excuseKey || null,
+        excuseKey: Array.isArray(body.excuseKey) ? body.excuseKey : [],
         minNights: body.minNights,
         maxNights: body.maxNights,
         minPax: body.minPax,

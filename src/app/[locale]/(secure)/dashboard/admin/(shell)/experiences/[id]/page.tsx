@@ -57,7 +57,7 @@ export default async function AdminExperienceReviewPage(props: {
     highlights: pkg.highlights,
     destinationCountry: pkg.destinationCountry,
     destinationCity: pkg.destinationCity,
-    excuseKey: pkg.excuseKey ?? "",
+    excuseKey: Array.isArray(pkg.excuseKey) ? pkg.excuseKey : [],
     climate: pkg.climate,
     minPax: pkg.minPax,
     maxPax: pkg.maxPax,

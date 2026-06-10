@@ -231,7 +231,7 @@ export async function PATCH(
         highlights: highlights ?? [],
         ...(destinationCountry && { destinationCountry }),
         ...(destinationCity && { destinationCity }),
-        excuseKey: excuseKey || null,
+        excuseKey: Array.isArray(excuseKey) ? excuseKey : [],
         minNights: minNights ?? 1,
         maxNights: maxNights ?? 7,
         minPax: minPax ?? 1,

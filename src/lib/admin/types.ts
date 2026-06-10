@@ -5,7 +5,7 @@ export type { TripRequestStatus };
 export type StatusFilterValue = TripRequestStatus | "ALL";
 
 export interface AdminTripExperience {
-  excuseKey: string | null;
+  excuseKey: string[];
   id: string;
   level: string | null;
   title: string;

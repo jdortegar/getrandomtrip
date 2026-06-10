@@ -145,7 +145,7 @@ model Experience {
   level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
 
   // User preference matching (for filtering)
-  excuseKey String? // Excuse key that this package supports (e.g., 'romantic-getaway', 'solo-adventure')
+  excuseKey String[] @default([]) // Excuse keys this experience supports (e.g., ['romantic-getaway', 'solo-adventure'])
 
   // Capacity constraints
   minNights Int @default(1)

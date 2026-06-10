@@ -238,7 +238,7 @@ export interface ExperienceFormData {
   // Destination
   destinationCountry: string;
   destinationCity: string;
-  excuseKey: string;
+  excuseKey: string[];
 
   // Capacity
   minNights: number;
@@ -340,7 +340,7 @@ export interface ExperienceFormDraft {
   // Destination
   destinationCountry: string;
   destinationCity: string;
-  excuseKey: string;
+  excuseKey: string[];
   climate: string;
   // Capacity
   minPax: number;

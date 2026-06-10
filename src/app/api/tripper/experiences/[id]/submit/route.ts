@@ -72,7 +72,7 @@ export async function POST(
       highlights: [],
       destinationCountry: experience.destinationCountry ?? "",
       destinationCity: experience.destinationCity ?? "",
-      excuseKey: "",
+      excuseKey: [],
       climate: "any",
       minPax: 1,
       maxPax: 1,

@@ -43,7 +43,7 @@ const EMPTY_FORM: ExperienceFormData = {
   heroImage: "",
   destinationCountry: "",
   destinationCity: "",
-  excuseKey: "",
+  excuseKey: [],
   minNights: 1,
   maxNights: 2,
   minPax: 1,
@@ -198,7 +198,7 @@ export default function ExperienceFormClient({
     setForm((prev: ExperienceFormData) => ({
       ...prev,
       type: value,
-      excuseKey: "",
+      excuseKey: [],
     }));
   };
 
@@ -465,8 +465,8 @@ export default function ExperienceFormClient({
                 <div>
                   <label className={labelClass}>{copy.fields.excuseKey}</label>
                   <select
-                    value={form.excuseKey}
-                    onChange={(e) => set("excuseKey", e.target.value)}
+                    value={form.excuseKey[0] ?? ""}
+                    onChange={(e) => set("excuseKey", e.target.value ? [e.target.value] : [])}
                     className={fieldClass}
                   >
                     <option value="">— Seleccionar excusa —</option>

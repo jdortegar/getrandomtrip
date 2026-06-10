@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { FormField } from "@/components/ui/FormField";
 import { DaysInput } from "@/components/ui/DaysInput";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
 import { getExperienceTypes, getExcuseOptionsForType } from "@/lib/constants/packages";
@@ -31,7 +31,7 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
 
   const handleTypeChange = (value: string[]) => {
     onChange("type", value);
-    onChange("excuseKey", "");
+    onChange("excuseKey", []);
   };
 
   const monthOptions = MONTH_KEYS.map((value, i) => ({
@@ -91,24 +91,15 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
           hint={copy.fields.seasonHint}
         />
 
-        <div className="flex flex-col gap-1">
-          <FormSelectField
-            id="exp-excuse"
-            label={copy.fields.excuseKey}
-            value={form.excuseKey}
-            onChange={(e) => onChange("excuseKey", e.target.value)}
-          >
-            <option value="" disabled>
-              {copy.fields.excuseKeyPlaceholder}
-            </option>
-            {excuseOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </FormSelectField>
-          <p className="text-xs text-neutral-400">{copy.fields.excuseKeyHint}</p>
-        </div>
+        <MultiSelectInput
+          id="exp-excuse"
+          label={copy.fields.excuseKey}
+          options={excuseOptions}
+          placeholder={copy.fields.excuseKeyPlaceholder}
+          hint={copy.fields.excuseKeyHint}
+          value={form.excuseKey}
+          onChange={(v) => onChange("excuseKey", v)}
+        />
       </div>
 
       {/* Row 3: Teaser */}
