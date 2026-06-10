@@ -2637,11 +2637,7 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": [
-        "Emotional brief",
-        "Invisible design",
-        "Surprise with a net"
-      ],
+      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -3067,7 +3063,7 @@
       "title": "Quick Actions",
       "experiences": "My Experiences",
       "experiencesSub": "View all experiences",
-      "createExperience": "Create Experience",
+      "createExperience": "New Experience",
       "createExperienceSub": "New travel offer",
       "earnings": "View Earnings",
       "earningsSub": "Detailed analytics",
@@ -3597,6 +3593,10 @@
       "admin": "ADMIN",
       "cancel": "Cancel",
       "clientBase": "CLIENT (base)",
+      "confirmDelete": "Confirm deletion?",
+      "delete": "Delete user",
+      "deleteError": "Failed to delete user",
+      "deleting": "Deleting…",
       "errorFallback": "Failed to update role",
       "roleSection": "Roles",
       "saveChanges": "Save changes",

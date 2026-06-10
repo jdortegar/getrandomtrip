@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { DeleteUserModal } from "@/components/app/admin/DeleteUserModal";
 import { UserRoleModal } from "@/components/app/admin/UserRoleModal";
 import { UsersTable } from "@/components/app/admin/UsersTable";
 import type { AdminUser } from "@/components/app/admin/UsersTableRow";
@@ -20,6 +21,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   async function fetchUsers() {
     setLoading(true);
@@ -50,6 +52,10 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     ? users.find((u) => u.id === selectedUserId)
     : null;
 
+  const deleteTarget = deleteTargetId
+    ? users.find((u) => u.id === deleteTargetId)
+    : null;
+
   if (loading) return <LoadingSpinner />;
 
   if (error) {
@@ -66,6 +72,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
       <div className="flex-1 overflow-y-auto">
         <UsersTable
           copy={copy}
+          onDelete={setDeleteTargetId}
           onEdit={setSelectedUserId}
           selectedId={selectedUserId}
           users={users}
@@ -79,6 +86,19 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
           onSaved={() => void fetchUsers()}
           open
           user={selectedUser}
+        />
+      )}
+      {deleteTarget && (
+        <DeleteUserModal
+          copy={copy}
+          key={deleteTarget.id}
+          onClose={() => setDeleteTargetId(null)}
+          onDeleted={() => {
+            setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+            setDeleteTargetId(null);
+          }}
+          open
+          user={deleteTarget}
         />
       )}
     </div>

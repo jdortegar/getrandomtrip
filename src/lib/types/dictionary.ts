@@ -1901,6 +1901,10 @@ export interface MarketingDictionary {
       admin: string;
       cancel: string;
       clientBase: string;
+      confirmDelete: string;
+      delete: string;
+      deleteError: string;
+      deleting: string;
       errorFallback: string;
       roleSection: string;
       saveChanges: string;

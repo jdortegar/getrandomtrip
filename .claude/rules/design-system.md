@@ -54,6 +54,39 @@ Status color map:
 - pending / default → `bg-yellow-100 text-yellow-800 border-yellow-200`
 - cancelled → `bg-red-100 text-red-800 border-red-200`
 
+## Row Actions (edit / delete in tables and lists)
+
+**Always use `<RowActions>` from `@/components/common/RowActions`** for any edit/delete pair in a table row or list item. Never write ad-hoc icon buttons for these actions.
+
+```tsx
+import { RowActions } from "@/components/common/RowActions";
+
+// Link-based edit + delete
+<RowActions
+  editHref={`/path/${id}`}
+  editTitle={copy.edit}
+  deleteTitle={copy.delete}
+  deleteDisabled={isDeleting}
+  onDelete={() => handleDelete(id)}
+/>
+
+// Callback-based edit, no delete
+<RowActions
+  editActive={isSelected}
+  editTitle={copy.edit}
+  onEdit={() => handleEdit(id)}
+/>
+```
+
+Props:
+- `editHref` — renders edit as `<Link>` (navigation); mutually exclusive with `onEdit`
+- `onEdit` — renders edit as a button with callback
+- `editActive` — highlights the edit icon when the row is in "selected" state
+- `onDelete` — renders the delete (Trash2) icon; omit when the entity has no delete action
+- `deleteDisabled` — disables delete while an async operation is in progress
+
+Style contract: ghost variant, `h-8 w-8 p-0`, `Pencil` for edit, `Trash2` for delete, red hover on delete.
+
 ## Buttons / Links
 
 Use `<Button asChild variant="ghost">` wrapping `<Link>` for navigation actions.
