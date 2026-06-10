@@ -1,9 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { ComboboxChips } from "@/components/ui/ComboboxChips";
+import { FormField } from "@/components/ui/FormField";
+import { DaysInput } from "@/components/ui/DaysInput";
+import { TextAreaInput } from "@/components/ui/TextAreaInput";
+import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
 import { getExperienceTypes, getExcuseOptionsForType } from "@/lib/constants/packages";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
@@ -29,11 +30,9 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
   const experienceTypes = getExperienceTypes(locale);
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
 
-  const [nightsStr, setNightsStr] = useState(String(form.minNights));
-
   const handleTypeChange = (value: string[]) => {
     onChange("type", value);
-    onChange("excuseKey", "");
+    onChange("excuseKey", []);
   };
 
   const monthOptions = MONTH_KEYS.map((value, i) => ({
@@ -61,7 +60,7 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <ComboboxChips
+          <MultiSelectInput
             id="exp-type"
             label={<>{copy.fields.type}{req}</>}
             options={experienceTypes.map((t) => ({ value: t.value, label: t.label }))}
@@ -74,29 +73,16 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
       </div>
 
       {/* Row 2: Duración + Meses + Excusa */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="flex flex-col gap-1">
-          <FormField
-            id="exp-min-nights"
-            inputMode="numeric"
-            label={copy.fields.minNights}
-            value={nightsStr}
-            onChange={(e) => {
-              setNightsStr(e.target.value);
-              const n = parseInt(e.target.value, 10);
-              if (!isNaN(n) && n >= 1) onChange("minNights", n);
-            }}
-            onBlur={() => {
-              const n = parseInt(nightsStr, 10);
-              const clamped = isNaN(n) || n < 1 ? 1 : n;
-              setNightsStr(String(clamped));
-              onChange("minNights", clamped);
-            }}
-          />
-          <p className="text-xs text-neutral-400">{copy.fields.minNightsHint}</p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-4">
+        <DaysInput
+          id="exp-min-nights"
+          hintTemplate={copy.fields.minNightsHint}
+          label={copy.fields.minNights}
+          value={form.minNights + 1}
+          onChange={(days) => onChange("minNights", days - 1)}
+        />
 
-        <ComboboxChips
+        <MultiSelectInput
           id="exp-season"
           label={copy.fields.season}
           options={monthOptions}
@@ -106,24 +92,15 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
           hint={copy.fields.seasonHint}
         />
 
-        <div className="flex flex-col gap-1">
-          <FormSelectField
-            id="exp-excuse"
-            label={copy.fields.excuseKey}
-            value={form.excuseKey}
-            onChange={(e) => onChange("excuseKey", e.target.value)}
-          >
-            <option value="" disabled>
-              {copy.fields.excuseKeyPlaceholder}
-            </option>
-            {excuseOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </FormSelectField>
-          <p className="text-xs text-neutral-400">{copy.fields.excuseKeyHint}</p>
-        </div>
+        <MultiSelectInput
+          id="exp-excuse"
+          label={copy.fields.excuseKey}
+          options={excuseOptions}
+          placeholder={copy.fields.excuseKeyPlaceholder}
+          hint={copy.fields.excuseKeyHint}
+          value={form.excuseKey}
+          onChange={(v) => onChange("excuseKey", v)}
+        />
       </div>
 
       {/* Row 3: Teaser */}
@@ -137,22 +114,13 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
       />
 
       {/* Row 4: Descripción completa */}
-      <div className="flex flex-col gap-2">
-        <label
-          className="block font-normal text-gray-600 text-base"
-          htmlFor="exp-description"
-        >
-          {copy.fields.description}
-          {req}
-        </label>
-        <textarea
-          id="exp-description"
-          className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base min-h-[160px] resize-none"
-          placeholder={copy.fields.descriptionPlaceholder}
-          value={form.description}
-          onChange={(e) => onChange("description", e.target.value)}
-        />
-      </div>
+      <TextAreaInput
+        id="exp-description"
+        label={<>{copy.fields.description}{req}</>}
+        placeholder={copy.fields.descriptionPlaceholder}
+        value={form.description}
+        onChange={(e) => onChange("description", e.target.value)}
+      />
     </div>
   );
 }

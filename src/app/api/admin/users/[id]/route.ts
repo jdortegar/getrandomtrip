@@ -11,6 +11,67 @@ import type { UserRole } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
+export async function DELETE(
+  _request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const caller = await prisma.user.findUnique({
+      select: { id: true, roles: true },
+      where: { id: session.user.id },
+    });
+
+    if (!caller || !hasRoleAccess(caller, "admin")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (params.id === caller.id) {
+      return NextResponse.json(
+        { error: "Cannot delete your own account" },
+        { status: 400 },
+      );
+    }
+
+    const target = await prisma.user.findUnique({
+      select: { id: true, roles: true },
+      where: { id: params.id },
+    });
+
+    if (!target) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (target.roles.includes("ADMIN")) {
+      const adminCount = await prisma.user.count({
+        where: { roles: { has: "ADMIN" } },
+      });
+      if (adminCount <= 1) {
+        return NextResponse.json(
+          { error: "Cannot delete the last admin" },
+          { status: 400 },
+        );
+      }
+    }
+
+    await prisma.user.delete({ where: { id: params.id } });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[admin/users/[id]] DELETE", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
 const VALID_ROLES = ["CLIENT", "TRIPPER", "ADMIN"] as const;
 type AdminRoleToken = (typeof VALID_ROLES)[number];
 

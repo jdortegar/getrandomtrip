@@ -27,7 +27,9 @@ export function TripperNavTabs() {
   const copy = useDictionary((d) => d.tripperDashboard.quickActions);
   const storeUser = useStore((s) => s.user);
   const { data: session } = useSession();
-  const sessionUser = session?.user as { role?: string; roles?: User["roles"] } | undefined;
+  const sessionUser = session?.user as
+    | { role?: string; roles?: User["roles"] }
+    | undefined;
   const adminSubject =
     sessionUser?.roles && sessionUser.roles.length > 0
       ? { role: sessionUser.role, roles: sessionUser.roles }
@@ -47,6 +49,13 @@ export function TripperNavTabs() {
 
   const tabs = [
     {
+      href: base("/notifications"),
+      icon: Bell,
+      label: copy.notifications,
+      exact: false,
+      showUnreadDot: true,
+    },
+    {
       href: base(""),
       icon: LayoutDashboard,
       label: copy.dashboard,
@@ -58,20 +67,13 @@ export function TripperNavTabs() {
       label: copy.experiences,
       exact: true,
     },
+    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
     {
       href: base("/experiences/new"),
       icon: Plus,
       label: copy.createExperience,
       exact: false,
     },
-    {
-      href: base("/earnings"),
-      icon: BarChart3,
-      label: copy.earnings,
-      exact: false,
-    },
-    { href: base("/reviews"), icon: Star, label: copy.reviews, exact: false },
-    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
     {
       href: `/${locale}/dashboard/admin/xsed/new`,
       icon: Zap,
@@ -80,12 +82,13 @@ export function TripperNavTabs() {
       adminOnly: true,
     },
     {
-      href: base("/notifications"),
-      icon: Bell,
-      label: copy.notifications,
+      href: base("/earnings"),
+      icon: BarChart3,
+      label: copy.earnings,
       exact: false,
-      showUnreadDot: true,
     },
+    { href: base("/reviews"), icon: Star, label: copy.reviews, exact: false },
+
     {
       href: `/${locale}/trippers/profile`,
       icon: Settings,

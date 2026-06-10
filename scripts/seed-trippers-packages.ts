@@ -166,7 +166,7 @@ async function seedTrippersAndPackages() {
         highlights: ["2-4 noches", "Hotel boutique", "Tours guiados"],
         destinationCountry: "Argentina",
         destinationCity: "Buenos Aires",
-        excuseKey: "solo-adventure",
+        excuseKey: ["solo-adventure"],
         hotels: [
           {
             name: "Hotel Boutique Palermo",
@@ -210,7 +210,7 @@ async function seedTrippersAndPackages() {
         highlights: ["3-5 noches", "Hotel 5 estrellas", "Cenas románticas"],
         destinationCountry: "México",
         destinationCity: "Cancún",
-        excuseKey: "romantic-getaway",
+        excuseKey: ["romantic-getaway"],
         hotels: [
           {
             name: "Resort All Inclusive",
@@ -359,7 +359,7 @@ async function seedTrippersAndPackages() {
         ],
         destinationCountry: "México",
         destinationCity: "Ciudad de México",
-        excuseKey: "culture-tradition",
+        excuseKey: ["culture-tradition"],
         hotels: [
           {
             name: "Hotel Boutique Centro Histórico",
@@ -422,7 +422,7 @@ async function seedTrippersAndPackages() {
         highlights: ["2-3 noches", "Hostel boutique", "Tours locales"],
         destinationCountry: "Argentina",
         destinationCity: "Buenos Aires",
-        excuseKey: "solo-adventure",
+        excuseKey: ["solo-adventure"],
         hotels: [
           {
             name: "Hostel Boutique San Telmo",
@@ -466,7 +466,7 @@ async function seedTrippersAndPackages() {
         highlights: ["5-7 noches", "Lodge ecológico", "Actividades outdoor"],
         destinationCountry: "Argentina",
         destinationCity: "El Calafate",
-        excuseKey: "solo-adventure",
+        excuseKey: ["solo-adventure"],
         hotels: [
           {
             name: "Eco Lodge Patagonia",
@@ -519,7 +519,7 @@ async function seedTrippersAndPackages() {
         highlights: ["4-6 noches", "Hotel boutique", "Degustaciones de vino"],
         destinationCountry: "Argentina",
         destinationCity: "Mendoza",
-        excuseKey: "romantic-getaway",
+        excuseKey: ["romantic-getaway"],
         hotels: [
           {
             name: "Boutique Hotel Mendoza",
@@ -620,7 +620,7 @@ async function seedTrippersAndPackages() {
         ],
         destinationCountry: "México",
         destinationCity: "Ciudad de México",
-        excuseKey: "solo-adventure",
+        excuseKey: ["solo-adventure"],
         hotels: [
           {
             name: "Hotel Céntrico",
@@ -660,7 +660,7 @@ async function seedTrippersAndPackages() {
         ],
         destinationCountry: "España",
         destinationCity: "Barcelona",
-        excuseKey: "romantic-getaway",
+        excuseKey: ["romantic-getaway"],
         hotels: [
           {
             name: "Boutique Hotel",
@@ -705,7 +705,7 @@ async function seedTrippersAndPackages() {
         ],
         destinationCountry: "Argentina",
         destinationCity: "Buenos Aires",
-        excuseKey: "family-getaway",
+        excuseKey: ["family-getaway"],
         hotels: [
           {
             name: "Family Resort",
@@ -751,7 +751,7 @@ async function seedTrippersAndPackages() {
         ],
         destinationCountry: "Colombia",
         destinationCity: "Cartagena",
-        excuseKey: "group-adventure",
+        excuseKey: ["group-adventure"],
         hotels: [
           {
             name: "Hostal Grupo",

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 interface JourneyDropdownProps {
   children: ReactNode;
   className?: string;
-  content: string;
+  content?: string;
   id?: string;
   label: string;
   linkLabel?: string;
@@ -60,9 +60,11 @@ export function JourneyDropdown({
             )} */}
           </div>
 
-          <span className="text-sm font-bold text-gray-700 text-right">
-            {content}
-          </span>
+          {content && (
+            <span className="text-sm font-bold text-gray-700 text-right">
+              {content}
+            </span>
+          )}
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
 

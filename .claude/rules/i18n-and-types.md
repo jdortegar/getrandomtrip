@@ -7,6 +7,31 @@ alwaysApply: true
 
 # i18n and Types
 
+## Mandatory Localization Rule
+
+**Any code that introduces user-visible text MUST be localized in both `es` and `en` in the same change.** No exceptions.
+
+This applies to:
+- UI copy: labels, placeholders, hints, error messages, empty states, button text, confirmation prompts
+- Inline string literals inside UI components (e.g. `"No results."`, `"Select..."`)
+- Dynamic text generated at runtime (e.g. hint templates like `"X Nights / Y Days"`)
+
+**Never** hardcode English-only or Spanish-only strings in components or pages. If a string cannot go into the dictionary (e.g. a UI primitive that must be locale-aware at runtime), use a locale-keyed map covering both `es` and `en`:
+
+```ts
+const LABELS: Record<string, string> = {
+  en: "English string",
+  es: "Spanish string",
+};
+const label = LABELS[locale.slice(0, 2)] ?? LABELS.es;
+```
+
+Checklist for every PR that touches UI text:
+- [ ] String added to `src/dictionaries/es.json`
+- [ ] Same key added to `src/dictionaries/en.json`
+- [ ] Type added to `src/lib/types/dictionary.ts` if it's a new section
+- [ ] `npm run typecheck` passes
+
 ## Dictionary Files
 
 Main dictionaries:

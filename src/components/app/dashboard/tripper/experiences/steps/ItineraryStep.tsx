@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ItineraryDayEntry,
@@ -19,10 +20,6 @@ const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "" };
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-const textareaClass =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[120px]";
-
-const labelClass = "block font-normal text-gray-600 text-base";
 
 export function ItineraryStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
@@ -88,20 +85,13 @@ export function ItineraryStep({ copy, form, onChange }: Props) {
             </div>
 
             {/* Description — full width */}
-            <div className="flex flex-col gap-2">
-              <label className={labelClass} htmlFor={`itin-desc-${index}`}>
-                {fields.itineraryDesc}
-              </label>
-              <textarea
-                id={`itin-desc-${index}`}
-                className={textareaClass}
-                placeholder={fields.itineraryDescPlaceholder}
-                value={day.description}
-                onChange={(e) =>
-                  updateDay(index, "description", e.target.value)
-                }
-              />
-            </div>
+            <TextAreaInput
+              id={`itin-desc-${index}`}
+              label={fields.itineraryDesc}
+              placeholder={fields.itineraryDescPlaceholder}
+              value={day.description}
+              onChange={(e) => updateDay(index, "description", e.target.value)}
+            />
           </div>
         ))}
       </div>

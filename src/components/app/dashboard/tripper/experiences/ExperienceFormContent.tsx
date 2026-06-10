@@ -78,7 +78,14 @@ function resolveStepContent(
   }
   if (activeTab === "media") {
     if (substepId === "tags")
-      return <TagsMediaStep copy={copy} form={form} onChange={onChange} imageState={imageState} />;
+      return (
+        <TagsMediaStep
+          copy={copy}
+          form={form}
+          onChange={onChange}
+          imageState={imageState}
+        />
+      );
     if (substepId === "visibility")
       return <VisibilityStep copy={copy} form={form} onChange={onChange} />;
   }
@@ -158,9 +165,15 @@ export function ExperienceFormContent({
               key={substep.id}
               value={substep.id}
               label={substep.title}
-              content={i === 0 ? "" : "Filtrar"}
             >
-              {resolveStepContent(activeTab, substep.id, form, onChange, copy, imageState)}
+              {resolveStepContent(
+                activeTab,
+                substep.id,
+                form,
+                onChange,
+                copy,
+                imageState,
+              )}
             </JourneyDropdown>
           ))}
         </Accordion>

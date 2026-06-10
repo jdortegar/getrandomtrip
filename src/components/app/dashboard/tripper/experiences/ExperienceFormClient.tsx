@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/Button";
+import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import { ArrowLeft } from "lucide-react";
 import ExperienceFormNav from "./ExperienceFormNav";
 import type {
@@ -43,7 +44,7 @@ const EMPTY_FORM: ExperienceFormData = {
   heroImage: "",
   destinationCountry: "",
   destinationCity: "",
-  excuseKey: "",
+  excuseKey: [],
   minNights: 1,
   maxNights: 2,
   minPax: 1,
@@ -198,7 +199,7 @@ export default function ExperienceFormClient({
     setForm((prev: ExperienceFormData) => ({
       ...prev,
       type: value,
-      excuseKey: "",
+      excuseKey: [],
     }));
   };
 
@@ -465,8 +466,8 @@ export default function ExperienceFormClient({
                 <div>
                   <label className={labelClass}>{copy.fields.excuseKey}</label>
                   <select
-                    value={form.excuseKey}
-                    onChange={(e) => set("excuseKey", e.target.value)}
+                    value={form.excuseKey[0] ?? ""}
+                    onChange={(e) => set("excuseKey", e.target.value ? [e.target.value] : [])}
                     className={fieldClass}
                   >
                     <option value="">— Seleccionar excusa —</option>
@@ -913,24 +914,17 @@ export default function ExperienceFormClient({
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className={labelClass}>
-                      {copy.fields.activityDesc}
-                    </label>
-                    <textarea
-                      value={activity.description ?? ""}
-                      onChange={(e) => {
-                        const updated = [...form.activities];
-                        updated[i] = {
-                          ...updated[i],
-                          description: e.target.value,
-                        };
-                        set("activities", updated);
-                      }}
-                      rows={2}
-                      className={fieldClass}
-                    />
-                  </div>
+                  <TextAreaInput
+                    id={`efc-act-desc-${i}`}
+                    label={copy.fields.activityDesc}
+                    value={activity.description ?? ""}
+                    onChange={(e) => {
+                      const updated = [...form.activities];
+                      updated[i] = { ...updated[i], description: e.target.value };
+                      set("activities", updated);
+                    }}
+                    className="min-h-[80px]"
+                  />
                 </div>
               ))}
               <button
@@ -1000,25 +994,16 @@ export default function ExperienceFormClient({
                       required
                     />
                   </div>
-                  <div>
-                    <label className={labelClass}>
-                      {copy.fields.itineraryDesc} *
-                    </label>
-                    <textarea
-                      value={day.description}
-                      onChange={(e) => {
-                        const updated = [...form.itinerary];
-                        updated[i] = {
-                          ...updated[i],
-                          description: e.target.value,
-                        };
-                        set("itinerary", updated);
-                      }}
-                      rows={3}
-                      className={fieldClass}
-                      required
-                    />
-                  </div>
+                  <TextAreaInput
+                    id={`efc-itin-desc-${i}`}
+                    label={`${copy.fields.itineraryDesc} *`}
+                    value={day.description}
+                    onChange={(e) => {
+                      const updated = [...form.itinerary];
+                      updated[i] = { ...updated[i], description: e.target.value };
+                      set("itinerary", updated);
+                    }}
+                  />
                 </div>
               ))}
               <button
@@ -1120,15 +1105,13 @@ export default function ExperienceFormClient({
                   ["supplierNotes", copy.fields.supplierNotes],
                 ] as [keyof ExperienceFormData, string][]
               ).map(([key, label]) => (
-                <div key={key}>
-                  <label className={labelClass}>{label}</label>
-                  <textarea
-                    value={(form[key] as string) ?? ""}
-                    onChange={(e) => set(key, e.target.value || null)}
-                    rows={3}
-                    className={fieldClass}
-                  />
-                </div>
+                <TextAreaInput
+                  key={key}
+                  id={`efc-${key}`}
+                  label={label}
+                  value={(form[key] as string) ?? ""}
+                  onChange={(e) => set(key, e.target.value || null)}
+                />
               ))}
             </div>
           </div>

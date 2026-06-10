@@ -1,6 +1,7 @@
 "use client";
 
 import { FormField } from "@/components/ui/FormField";
+import { DaysInput } from "@/components/ui/DaysInput";
 import { MAX_NIGHTS_BY_LEVEL } from "@/lib/constants/packages";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
@@ -71,27 +72,21 @@ export function CapacityDurationStep({ copy, form, onChange }: Props) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField
+        <DaysInput
           id="cap-min-nights"
           label={copy.fields.minNights}
-          type="text"
-          inputMode="numeric"
-          value={numDisplay(form.minNights)}
-          onChange={(e) => onChange("minNights", parseNum(e.target.value))}
-          onBlur={() => {
-            if (form.minNights < 1) onChange("minNights", 1);
-          }}
+          className="w-full"
+          hintTemplate={copy.fields.minNightsHint}
+          value={form.minNights + 1}
+          onChange={(days) => onChange("minNights", days - 1)}
         />
-        <FormField
+        <DaysInput
           id="cap-max-nights"
           label={copy.fields.maxNights}
-          type="text"
-          inputMode="numeric"
-          value={numDisplay(form.maxNights)}
-          onChange={(e) => onChange("maxNights", parseNum(e.target.value))}
-          onBlur={() => {
-            if (form.maxNights < 1) onChange("maxNights", 1);
-          }}
+          className="w-full"
+          hintTemplate={copy.fields.minNightsHint}
+          value={form.maxNights + 1}
+          onChange={(days) => onChange("maxNights", days - 1)}
         />
       </div>
 

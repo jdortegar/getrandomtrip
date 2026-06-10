@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
+import { RowActions } from "@/components/common/RowActions";
 import {
   EXPERIENCE_LEVELS,
   getExperienceTypes,
@@ -237,28 +238,14 @@ export default function ExperiencesPageClient({
                       )}
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          asChild
-                          variant="ghost"
-                          size="sm"
-                          title={copy.table.edit}
-                          className="h-8 w-8 p-0 text-neutral-500 hover:text-neutral-900"
-                        >
-                          <Link href={`${basePath}/${experience.id}`}>
-                            <Pencil className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title={copy.table.delete}
-                          className="h-8 w-8 p-0 text-neutral-400 hover:text-red-600 hover:bg-red-50"
-                          disabled={deletingId === experience.id || isPending}
-                          onClick={() => handleDelete(experience.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <div className="flex items-center justify-end">
+                        <RowActions
+                          deleteDisabled={deletingId === experience.id || isPending}
+                          deleteTitle={copy.table.delete}
+                          editHref={`${basePath}/${experience.id}`}
+                          editTitle={copy.table.edit}
+                          onDelete={() => handleDelete(experience.id)}
+                        />
                       </div>
                     </td>
                   </tr>

@@ -238,7 +238,7 @@ export interface ExperienceFormData {
   // Destination
   destinationCountry: string;
   destinationCity: string;
-  excuseKey: string;
+  excuseKey: string[];
 
   // Capacity
   minNights: number;
@@ -309,9 +309,16 @@ export interface ItineraryDayEntry {
   description: string;
 }
 
+export type DurationUnit = "min" | "hr" | "day";
+
+export interface DurationValue {
+  value: number;
+  unit: DurationUnit;
+}
+
 export interface ActivityEntry {
   name: string;
-  durationRhythm: string;
+  durationRhythm: DurationValue | null;
   description: string;
   risks: string;
 }
@@ -340,7 +347,7 @@ export interface ExperienceFormDraft {
   // Destination
   destinationCountry: string;
   destinationCity: string;
-  excuseKey: string;
+  excuseKey: string[];
   climate: string;
   // Capacity
   minPax: number;

@@ -57,7 +57,7 @@ export default async function AdminExperienceReviewPage(props: {
     highlights: pkg.highlights,
     destinationCountry: pkg.destinationCountry,
     destinationCity: pkg.destinationCity,
-    excuseKey: pkg.excuseKey ?? "",
+    excuseKey: Array.isArray(pkg.excuseKey) ? pkg.excuseKey : [],
     climate: pkg.climate,
     minPax: pkg.minPax,
     maxPax: pkg.maxPax,
@@ -79,7 +79,7 @@ export default async function AdminExperienceReviewPage(props: {
     ) as AccommodationEntry[],
     activities: (Array.isArray(pkg.activities) && pkg.activities.length > 0
       ? pkg.activities
-      : [{ name: "", durationRhythm: "", description: "", risks: "" }]
+      : [{ name: "", durationRhythm: null, description: "", risks: "" }]
     ) as ActivityEntry[],
     itinerary: (Array.isArray(pkg.itinerary) && pkg.itinerary.length > 0
       ? pkg.itinerary

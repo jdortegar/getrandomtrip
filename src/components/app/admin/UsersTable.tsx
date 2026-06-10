@@ -4,6 +4,7 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface UsersTableProps {
   copy: MarketingDictionary["adminUsers"];
+  onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   selectedId: string | null;
   users: AdminUser[];
@@ -11,6 +12,7 @@ interface UsersTableProps {
 
 export function UsersTable({
   copy,
+  onDelete,
   onEdit,
   selectedId,
   users,
@@ -43,6 +45,7 @@ export function UsersTable({
               copy={copy}
               key={user.id}
               isSelected={selectedId === user.id}
+              onDelete={onDelete}
               onEdit={onEdit}
               user={user}
             />

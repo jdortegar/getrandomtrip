@@ -423,6 +423,12 @@ export interface TripperExperiencesDict {
       activityDuration: string;
       activityDurationRhythm: string;
       activityDurationPlaceholder: string;
+      durationUnitMin: string;
+      durationUnitHr: string;
+      durationUnitDay: string;
+      durationHintMin: string;
+      durationHintHr: string;
+      durationHintDay: string;
       activityDesc: string;
       activityDescPlaceholder: string;
       activityRisks: string;
@@ -1901,6 +1907,10 @@ export interface MarketingDictionary {
       admin: string;
       cancel: string;
       clientBase: string;
+      confirmDelete: string;
+      delete: string;
+      deleteError: string;
+      deleting: string;
       errorFallback: string;
       roleSection: string;
       saveChanges: string;
