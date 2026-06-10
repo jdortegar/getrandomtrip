@@ -2,7 +2,9 @@
 
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { DurationInput } from "@/components/ui/DurationInput";
 import type { ActivityEntry, XsedDropDraft } from "@/types/xsed";
+import type { DurationValue } from "@/types/tripper";
 
 interface Props {
   form: XsedDropDraft;
@@ -11,16 +13,22 @@ interface Props {
 
 const EMPTY_ENTRY: ActivityEntry = {
   name: "",
-  durationRhythm: "",
+  durationRhythm: null,
   description: "",
   risks: "",
 };
+
+const DURATION_UNITS = [
+  { value: "min" as const, label: "min", hint: "minutos" },
+  { value: "hr" as const, label: "hr", hint: "horas" },
+  { value: "day" as const, label: "día", hint: "días" },
+];
 
 const textareaClass =
   "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[100px]";
 
 export function XsedActivitiesStep({ form, onChange }: Props) {
-  function updateEntry(index: number, key: keyof ActivityEntry, value: string) {
+  function updateEntry<K extends keyof ActivityEntry>(index: number, key: K, value: ActivityEntry[K]) {
     const updated = form.activities.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
     );
@@ -70,14 +78,12 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
                 onChange={(e) => updateEntry(index, "name", e.target.value)}
               />
 
-              <FormField
+              <DurationInput
                 id={`xsed-act-duration-${index}`}
-                label={
-                  <span className="font-semibold text-gray-800">Duración</span>
-                }
-                placeholder="Ej: 3 hs. con ritmo tranquilo"
+                label={<span className="font-semibold text-gray-800">Duración</span>}
                 value={entry.durationRhythm}
-                onChange={(e) => updateEntry(index, "durationRhythm", e.target.value)}
+                units={DURATION_UNITS}
+                onChange={(v: DurationValue) => updateEntry(index, "durationRhythm", v)}
               />
             </div>
 

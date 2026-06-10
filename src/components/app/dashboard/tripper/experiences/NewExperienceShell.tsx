@@ -61,7 +61,7 @@ const EMPTY_DRAFT: ExperienceFormDraft = {
   accommodations: [
     { hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "", hotelLink: "", referredLink: "" },
   ],
-  activities: [{ name: "", durationRhythm: "", description: "", risks: "" }],
+  activities: [{ name: "", durationRhythm: null, description: "", risks: "" }],
   itinerary: [{ title: "", description: "" }],
   inclusions: [],
   exclusions: [],

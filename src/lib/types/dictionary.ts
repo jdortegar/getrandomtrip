@@ -423,6 +423,12 @@ export interface TripperExperiencesDict {
       activityDuration: string;
       activityDurationRhythm: string;
       activityDurationPlaceholder: string;
+      durationUnitMin: string;
+      durationUnitHr: string;
+      durationUnitDay: string;
+      durationHintMin: string;
+      durationHintHr: string;
+      durationHintDay: string;
       activityDesc: string;
       activityDescPlaceholder: string;
       activityRisks: string;

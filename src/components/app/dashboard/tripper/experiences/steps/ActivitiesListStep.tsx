@@ -2,12 +2,14 @@
 
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
-import { TextAreaInput } from "@/components/ui/TextAreaInput";
+import { DurationInput } from "@/components/ui/DurationInput";
+import { RichTextInput } from "@/components/ui/RichTextInput";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ActivityEntry,
   ExperienceFormDraft,
   ExperienceFormDraftOnChange,
+  DurationValue,
 } from "@/types/tripper";
 
 interface Props {
@@ -18,18 +20,23 @@ interface Props {
 
 const EMPTY_ENTRY: ActivityEntry = {
   name: "",
-  durationRhythm: "",
+  durationRhythm: null,
   description: "",
   risks: "",
 };
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-
 export function ActivitiesListStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
 
-  function updateEntry(index: number, key: keyof ActivityEntry, value: string) {
+  const durationUnits = [
+    { value: "min" as const, label: fields.durationUnitMin, hint: fields.durationHintMin },
+    { value: "hr" as const, label: fields.durationUnitHr, hint: fields.durationHintHr },
+    { value: "day" as const, label: fields.durationUnitDay, hint: fields.durationHintDay },
+  ];
+
+  function updateEntry<K extends keyof ActivityEntry>(index: number, key: K, value: ActivityEntry[K]) {
     const updated = form.activities.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
     );
@@ -73,7 +80,7 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
             )}
 
             {/* Row 1: Name (required) + Duration */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4">
               <FormField
                 id={`act-name-${index}`}
                 label={<>{fields.activityName}{req}</>}
@@ -81,33 +88,31 @@ export function ActivitiesListStep({ copy, form, onChange }: Props) {
                 value={entry.name}
                 onChange={(e) => updateEntry(index, "name", e.target.value)}
               />
-              <FormField
+              <DurationInput
                 id={`act-duration-${index}`}
                 label={fields.activityDurationRhythm}
-                placeholder={fields.activityDurationPlaceholder}
                 value={entry.durationRhythm}
-                onChange={(e) =>
-                  updateEntry(index, "durationRhythm", e.target.value)
-                }
+                units={durationUnits}
+                onChange={(v: DurationValue) => updateEntry(index, "durationRhythm", v)}
               />
             </div>
 
             {/* Row 2: Description */}
-            <TextAreaInput
+            <RichTextInput
               id={`act-desc-${index}`}
               label={fields.activityDesc}
               placeholder={fields.activityDescPlaceholder}
               value={entry.description}
-              onChange={(e) => updateEntry(index, "description", e.target.value)}
+              onChange={(html) => updateEntry(index, "description", html)}
             />
 
             {/* Row 3: Risks */}
-            <TextAreaInput
+            <RichTextInput
               id={`act-risks-${index}`}
               label={fields.activityRisks}
               placeholder={fields.activityRisksPlaceholder}
               value={entry.risks}
-              onChange={(e) => updateEntry(index, "risks", e.target.value)}
+              onChange={(html) => updateEntry(index, "risks", html)}
             />
           </div>
         ))}

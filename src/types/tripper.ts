@@ -309,9 +309,16 @@ export interface ItineraryDayEntry {
   description: string;
 }
 
+export type DurationUnit = "min" | "hr" | "day";
+
+export interface DurationValue {
+  value: number;
+  unit: DurationUnit;
+}
+
 export interface ActivityEntry {
   name: string;
-  durationRhythm: string;
+  durationRhythm: DurationValue | null;
   description: string;
   risks: string;
 }
