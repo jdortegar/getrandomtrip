@@ -54,7 +54,6 @@ export default async function AdminExperienceReviewPage(props: {
     description: pkg.description,
     heroImage: pkg.heroImage,
     tags: pkg.tags,
-    highlights: pkg.highlights,
     destinationCountry: pkg.destinationCountry,
     destinationCity: pkg.destinationCity,
     excuseKey: Array.isArray(pkg.excuseKey) ? pkg.excuseKey : [],
@@ -79,15 +78,14 @@ export default async function AdminExperienceReviewPage(props: {
     ) as AccommodationEntry[],
     activities: (Array.isArray(pkg.activities) && pkg.activities.length > 0
       ? pkg.activities
-      : [{ name: "", durationRhythm: null, description: "", risks: "" }]
+      : [{ name: "", durationRhythm: null, description: "", risks: "", image: null }]
     ) as ActivityEntry[],
     itinerary: (Array.isArray(pkg.itinerary) && pkg.itinerary.length > 0
       ? pkg.itinerary
-      : [{ title: "", description: "" }]
+      : [{ title: "", description: "", image: null }]
     ) as ItineraryDayEntry[],
     inclusions: Array.isArray(pkg.inclusions) ? (pkg.inclusions as string[]) : [],
     exclusions: Array.isArray(pkg.exclusions) ? (pkg.exclusions as string[]) : [],
-    galleryImages: [],
     createBlogPost: false,
   };
 

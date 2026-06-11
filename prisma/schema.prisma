@@ -158,9 +158,7 @@ model Experience {
   teaser      String // Short description
   description String // Full description
   heroImage     String // Main image for card
-  galleryImages String[] @default([]) // Additional images
   tags          String[] @default([]) // ['adventure', 'cultural']
-  highlights  String[] @default([]) // ["3 noches", "Hotel boutique"]
 
   // Destination info
   destinationCountry String

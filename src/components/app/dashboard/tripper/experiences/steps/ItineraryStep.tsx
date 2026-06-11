@@ -16,7 +16,7 @@ interface Props {
   onChange: ExperienceFormDraftOnChange;
 }
 
-const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "" };
+const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "", image: null };
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 

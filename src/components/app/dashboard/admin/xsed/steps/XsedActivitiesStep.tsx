@@ -16,6 +16,7 @@ const EMPTY_ENTRY: ActivityEntry = {
   durationRhythm: null,
   description: "",
   risks: "",
+  image: null,
 };
 
 const DURATION_UNITS = [

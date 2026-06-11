@@ -23,6 +23,7 @@ const EMPTY_ENTRY: ActivityEntry = {
   durationRhythm: null,
   description: "",
   risks: "",
+  image: null,
 };
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
