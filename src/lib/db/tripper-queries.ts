@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import type {
+  ActivityEntry,
   FeaturedTrip,
   FeaturedTripCard,
   TripperListItem,
@@ -106,7 +107,7 @@ export async function getTripperFeaturedTrips(
         heroImage: true,
         type: true,
         level: true,
-        highlights: true,
+        activities: true,
         tags: true,
         likes: true,
         minNights: true,
@@ -117,7 +118,7 @@ export async function getTripperFeaturedTrips(
       },
     }) as Array<{
       id: string; title: string; teaser: string; heroImage: string;
-      type: string[]; level: string; highlights: string[]; tags: string[];
+      type: string[]; level: string; activities: unknown; tags: string[];
       likes: number; minNights: number; minPax: number;
       pricingByType: Record<string, number> | null;
     }>;
@@ -130,7 +131,7 @@ export async function getTripperFeaturedTrips(
       heroImage: trip.heroImage || "/images/fallback.jpg",
       type: trip.type as any,
       level: trip.level as any,
-      highlights: trip.highlights,
+      highlights: (trip.activities as ActivityEntry[]).slice(0, 3).map((a) => a.name),
       tags: trip.tags,
       likes: trip.likes,
       nights: trip.minNights,
@@ -299,7 +300,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         teaser: true,
         heroImage: true,
         tags: true,
-        highlights: true,
+        activities: true,
         excuseKey: true,
         destinationCountry: true,
         destinationCity: true,
@@ -308,7 +309,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
       orderBy: [{ type: "asc" }, { level: "asc" }, { title: "asc" }],
     }) as Array<{
       id: string; type: string[]; level: string | null; title: string;
-      teaser: string; heroImage: string; tags: string[]; highlights: string[];
+      teaser: string; heroImage: string; tags: string[]; activities: unknown;
       excuseKey: string | null; destinationCountry: string; destinationCity: string;
       pricingByType: Record<string, number> | null;
     }>;

@@ -15,9 +15,9 @@ export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 export interface ExperienceImageState {
   onHeroSelect: (file: File) => void;
-  onGalleryFilesSelect: (files: File[]) => void;
   onHeroRemove: () => void;
-  onGalleryRemove: (index: number) => void;
+  onEntryImageSelect: (field: "activities" | "itinerary", index: number, file: File) => void;
+  onEntryImageRemove: (field: "activities" | "itinerary", index: number) => void;
 }
 
 interface NewExperienceShellProps {
@@ -37,9 +37,7 @@ const EMPTY_DRAFT: ExperienceFormDraft = {
   teaser: "",
   description: "",
   heroImage: "",
-  galleryImages: [],
   tags: [],
-  highlights: [],
   destinationCountry: "",
   destinationCity: "",
   excuseKey: [],
@@ -61,15 +59,14 @@ const EMPTY_DRAFT: ExperienceFormDraft = {
   accommodations: [
     { hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "", hotelLink: "", referredLink: "" },
   ],
-  activities: [{ name: "", durationRhythm: null, description: "", risks: "" }],
-  itinerary: [{ title: "", description: "" }],
+  activities: [{ name: "", durationRhythm: null, description: "", risks: "", image: null }],
+  itinerary: [{ title: "", description: "", image: null }],
   inclusions: [],
   exclusions: [],
   createBlogPost: false,
 };
 
 const AUTOSAVE_DELAY_MS = 2000;
-const MAX_GALLERY = 3;
 
 async function uploadImageFile(file: File): Promise<string> {
   const formData = new FormData();
@@ -172,32 +169,57 @@ export function NewExperienceShell({
         }
       }
 
-      // Gallery
-      const apiGallery = [...result.galleryImages];
-      for (let i = 0; i < apiGallery.length; i++) {
-        const blobUrl = apiGallery[i];
-        if (!blobUrl?.startsWith("blob:")) continue;
-        const file = pendingFilesRef.current.get(blobUrl);
-        if (file) {
+      // Per-entry images: activities
+      const flushedActivities = await Promise.all(
+        result.activities.map(async (entry, index) => {
+          if (!entry.image?.startsWith("blob:")) return entry;
+          const blobUrl = entry.image;
+          const file = pendingFilesRef.current.get(blobUrl);
+          if (!file) return { ...entry, image: null };
           try {
             const url = await uploadImageFile(file);
             pendingFilesRef.current.delete(blobUrl);
             URL.revokeObjectURL(blobUrl);
-            apiGallery[i] = url;
             setForm((prev) => {
-              const gallery = [...prev.galleryImages];
-              const idx = gallery.indexOf(blobUrl);
-              if (idx !== -1) gallery[idx] = url;
-              return { ...prev, galleryImages: gallery };
+              const updated = [...prev.activities];
+              if (updated[index]?.image === blobUrl) {
+                updated[index] = { ...updated[index]!, image: url };
+              }
+              return { ...prev, activities: updated };
             });
+            return { ...entry, image: url };
           } catch {
-            apiGallery[i] = ""; // strip from API only
+            return { ...entry, image: null };
           }
-        } else {
-          apiGallery[i] = "";
-        }
-      }
-      result = { ...result, galleryImages: apiGallery.filter(Boolean) };
+        }),
+      );
+      result = { ...result, activities: flushedActivities };
+
+      // Per-entry images: itinerary
+      const flushedItinerary = await Promise.all(
+        result.itinerary.map(async (day, index) => {
+          if (!day.image?.startsWith("blob:")) return day;
+          const blobUrl = day.image;
+          const file = pendingFilesRef.current.get(blobUrl);
+          if (!file) return { ...day, image: null };
+          try {
+            const url = await uploadImageFile(file);
+            pendingFilesRef.current.delete(blobUrl);
+            URL.revokeObjectURL(blobUrl);
+            setForm((prev) => {
+              const updated = [...prev.itinerary];
+              if (updated[index]?.image === blobUrl) {
+                updated[index] = { ...updated[index]!, image: url };
+              }
+              return { ...prev, itinerary: updated };
+            });
+            return { ...day, image: url };
+          } catch {
+            return { ...day, image: null };
+          }
+        }),
+      );
+      result = { ...result, itinerary: flushedItinerary };
 
       return result;
     },
@@ -401,38 +423,34 @@ export function NewExperienceShell({
     setForm((prev) => ({ ...prev, heroImage: "" }));
   }
 
-  function handleGalleryFilesSelect(files: File[]) {
-    const slotsLeft = MAX_GALLERY - form.galleryImages.length;
-    const toAdd = files.slice(0, slotsLeft);
-    if (toAdd.length === 0) return;
-    const blobUrls = toAdd.map((file) => {
-      const blobUrl = URL.createObjectURL(file);
-      pendingFilesRef.current.set(blobUrl, file);
-      return blobUrl;
+  function handleEntryImageSelect(field: "activities" | "itinerary", index: number, file: File) {
+    const blobUrl = URL.createObjectURL(file);
+    pendingFilesRef.current.set(blobUrl, file);
+    setForm((prev) => {
+      const updated = [...prev[field]] as typeof prev[typeof field];
+      updated[index] = { ...updated[index]!, image: blobUrl };
+      return { ...prev, [field]: updated };
     });
-    setForm((prev) => ({
-      ...prev,
-      galleryImages: [...prev.galleryImages, ...blobUrls],
-    }));
   }
 
-  function handleGalleryRemove(index: number) {
-    const url = form.galleryImages[index];
-    if (url?.startsWith("blob:")) {
-      pendingFilesRef.current.delete(url);
-      URL.revokeObjectURL(url);
-    }
-    setForm((prev) => ({
-      ...prev,
-      galleryImages: prev.galleryImages.filter((_, i) => i !== index),
-    }));
+  function handleEntryImageRemove(field: "activities" | "itinerary", index: number) {
+    setForm((prev) => {
+      const updated = [...prev[field]] as typeof prev[typeof field];
+      const entry = updated[index];
+      if (entry?.image?.startsWith("blob:")) {
+        pendingFilesRef.current.delete(entry.image);
+        URL.revokeObjectURL(entry.image);
+      }
+      updated[index] = { ...entry!, image: null };
+      return { ...prev, [field]: updated };
+    });
   }
 
   const imageState: ExperienceImageState = {
     onHeroSelect: handleHeroSelect,
-    onGalleryFilesSelect: handleGalleryFilesSelect,
     onHeroRemove: handleHeroRemove,
-    onGalleryRemove: handleGalleryRemove,
+    onEntryImageSelect: handleEntryImageSelect,
+    onEntryImageRemove: handleEntryImageRemove,
   };
 
   const navTabs = effectiveTabs.map((t) => ({ id: t.id, label: t.label }));

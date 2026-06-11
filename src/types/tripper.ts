@@ -307,6 +307,7 @@ export type ExperienceStatus =
 export interface ItineraryDayEntry {
   title: string;
   description: string;
+  image: string | null;
 }
 
 export type DurationUnit = "min" | "hr" | "day";
@@ -321,6 +322,7 @@ export interface ActivityEntry {
   durationRhythm: DurationValue | null;
   description: string;
   risks: string;
+  image: string | null;
 }
 
 export interface AccommodationEntry {
@@ -341,9 +343,7 @@ export interface ExperienceFormDraft {
   teaser: string;
   description: string;
   heroImage: string;
-  galleryImages: string[];
   tags: string[];
-  highlights: string[];
   // Destination
   destinationCountry: string;
   destinationCity: string;
