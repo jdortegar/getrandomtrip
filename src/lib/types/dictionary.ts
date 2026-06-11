@@ -352,8 +352,6 @@ export interface TripperExperiencesDict {
       activities: string;
       itinerary: string;
       inclusions: string;
-      tagsMedia: string;
-      visibility: string;
       policies: string;
     };
     fields: {
@@ -453,12 +451,9 @@ export interface TripperExperiencesDict {
       addExclusion: string;
       tags: string;
       tagInput: string;
-      highlights: string;
-      highlightInput: string;
       heroImage: string;
       heroImageHint: string;
-      galleryImages: string;
-      galleryImagesHint: string;
+      entryImageLabel: string;
       uploadImage: string;
       uploading: string;
       removeImage: string;

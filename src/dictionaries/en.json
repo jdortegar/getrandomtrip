@@ -3284,22 +3284,6 @@
               "description": "Per day, avoid phrases that sound like a \"tourist trip\" such as: unique postcards, dream destinations, all inclusive, among others."
             }
           ]
-        },
-        {
-          "id": "media",
-          "label": "Marketing content",
-          "substeps": [
-            {
-              "id": "tags",
-              "title": "Tags, Highlights & Media",
-              "description": "Image gallery and Tags"
-            },
-            {
-              "id": "visibility",
-              "title": "Visibility",
-              "description": "Randomtrip validations"
-            }
-          ]
         }
       ],
       "sections": {
@@ -3311,8 +3295,6 @@
         "activities": "Activities",
         "itinerary": "Itinerary",
         "inclusions": "Inclusions / Exclusions",
-        "tagsMedia": "Tags, Highlights & Media",
-        "visibility": "Visibility",
         "policies": "Policies & Communication"
       },
       "fields": {
@@ -3412,12 +3394,9 @@
         "addExclusion": "Add exclusion",
         "tags": "Tags",
         "tagInput": "New tag (Enter to add)",
-        "highlights": "Highlights",
-        "highlightInput": "New highlight (Enter to add)",
         "heroImage": "Hero image",
         "heroImageHint": "Main image displayed on the experience card",
-        "galleryImages": "Gallery",
-        "galleryImagesHint": "Up to 3 additional images",
+        "entryImageLabel": "Entry image",
         "uploadImage": "Upload image",
         "uploading": "Uploading…",
         "removeImage": "Remove",

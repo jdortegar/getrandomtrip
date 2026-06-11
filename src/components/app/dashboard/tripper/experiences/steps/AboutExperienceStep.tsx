@@ -1,6 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { useParams } from "next/navigation";
+import { Check, ImagePlus, X } from "lucide-react";
+import Image from "next/image";
 import { FormField } from "@/components/ui/FormField";
 import { DaysInput } from "@/components/ui/DaysInput";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
@@ -11,11 +14,13 @@ import type {
   ExperienceFormDraft,
   ExperienceFormDraftOnChange,
 } from "@/types/tripper";
+import type { ExperienceImageState } from "../NewExperienceShell";
 
 interface Props {
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
+  imageState: ExperienceImageState;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
@@ -24,9 +29,11 @@ const MONTH_KEYS = [
   "01","02","03","04","05","06","07","08","09","10","11","12",
 ];
 
-export function AboutExperienceStep({ copy, form, onChange }: Props) {
+export function AboutExperienceStep({ copy, form, onChange, imageState }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
+  const { onHeroSelect, onHeroRemove } = imageState;
+  const heroRef = useRef<HTMLInputElement>(null);
   const experienceTypes = getExperienceTypes(locale);
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
 
@@ -121,6 +128,85 @@ export function AboutExperienceStep({ copy, form, onChange }: Props) {
         value={form.description}
         onChange={(e) => onChange("description", e.target.value)}
       />
+
+      {/* Hero image — full-width banner upload */}
+      <div className="space-y-2">
+        <label className="block font-normal text-gray-600 text-base">
+          {copy.fields.heroImage}
+        </label>
+        <p className="text-xs text-neutral-400 -mt-1">{copy.fields.heroImageHint}</p>
+
+        {form.heroImage ? (
+          <div className="relative w-40 aspect-video rounded-lg overflow-hidden group shrink-0">
+            <Image
+              src={form.heroImage}
+              alt="Hero"
+              fill
+              className="object-cover"
+              sizes="160px"
+              unoptimized
+            />
+            <button
+              type="button"
+              onClick={onHeroRemove}
+              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X className="h-4 w-4 text-white" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => heroRef.current?.click()}
+            className="flex w-40 aspect-video flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors shrink-0"
+          >
+            <ImagePlus className="h-5 w-5" />
+            <span className="text-xs">{copy.fields.uploadImage}</span>
+          </button>
+        )}
+
+        <input
+          ref={heroRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onHeroSelect(file);
+            e.target.value = "";
+          }}
+        />
+        <p className="text-xs text-neutral-400">{copy.fields.copyrightHint}</p>
+      </div>
+
+      {/* Blog post checkbox */}
+      <label className="flex items-center gap-3 cursor-pointer select-none">
+        <div className="relative shrink-0">
+          <input
+            type="checkbox"
+            checked={form.createBlogPost}
+            onChange={(e) => onChange("createBlogPost", e.target.checked)}
+            className="peer sr-only"
+          />
+          <div
+            className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all duration-200 ${
+              form.createBlogPost
+                ? "border-blue-500 bg-blue-500"
+                : "border-gray-300 bg-white"
+            }`}
+          >
+            {form.createBlogPost && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+          </div>
+        </div>
+        <div>
+          <p className="font-normal text-gray-600 text-base">
+            {copy.fields.createBlogPost}
+          </p>
+          <p className="text-xs text-neutral-400 mt-0.5">
+            {copy.fields.createBlogPostHint}
+          </p>
+        </div>
+      </label>
     </div>
   );
 }

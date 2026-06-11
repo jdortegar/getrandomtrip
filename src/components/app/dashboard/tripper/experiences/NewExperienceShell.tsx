@@ -16,6 +16,8 @@ export type SaveStatus = "idle" | "saving" | "saved" | "error";
 export interface ExperienceImageState {
   onHeroSelect: (file: File) => void;
   onHeroRemove: () => void;
+  onEntryImageSelect: (field: "activities" | "itinerary", index: number, file: File) => void;
+  onEntryImageRemove: (field: "activities" | "itinerary", index: number) => void;
 }
 
 interface NewExperienceShellProps {
@@ -166,6 +168,58 @@ export function NewExperienceShell({
           result = { ...result, heroImage: "" };
         }
       }
+
+      // Per-entry images: activities
+      const flushedActivities = await Promise.all(
+        result.activities.map(async (entry, index) => {
+          if (!entry.image?.startsWith("blob:")) return entry;
+          const blobUrl = entry.image;
+          const file = pendingFilesRef.current.get(blobUrl);
+          if (!file) return { ...entry, image: null };
+          try {
+            const url = await uploadImageFile(file);
+            pendingFilesRef.current.delete(blobUrl);
+            URL.revokeObjectURL(blobUrl);
+            setForm((prev) => {
+              const updated = [...prev.activities];
+              if (updated[index]?.image === blobUrl) {
+                updated[index] = { ...updated[index]!, image: url };
+              }
+              return { ...prev, activities: updated };
+            });
+            return { ...entry, image: url };
+          } catch {
+            return { ...entry, image: null };
+          }
+        }),
+      );
+      result = { ...result, activities: flushedActivities };
+
+      // Per-entry images: itinerary
+      const flushedItinerary = await Promise.all(
+        result.itinerary.map(async (day, index) => {
+          if (!day.image?.startsWith("blob:")) return day;
+          const blobUrl = day.image;
+          const file = pendingFilesRef.current.get(blobUrl);
+          if (!file) return { ...day, image: null };
+          try {
+            const url = await uploadImageFile(file);
+            pendingFilesRef.current.delete(blobUrl);
+            URL.revokeObjectURL(blobUrl);
+            setForm((prev) => {
+              const updated = [...prev.itinerary];
+              if (updated[index]?.image === blobUrl) {
+                updated[index] = { ...updated[index]!, image: url };
+              }
+              return { ...prev, itinerary: updated };
+            });
+            return { ...day, image: url };
+          } catch {
+            return { ...day, image: null };
+          }
+        }),
+      );
+      result = { ...result, itinerary: flushedItinerary };
 
       return result;
     },
@@ -369,9 +423,34 @@ export function NewExperienceShell({
     setForm((prev) => ({ ...prev, heroImage: "" }));
   }
 
+  function handleEntryImageSelect(field: "activities" | "itinerary", index: number, file: File) {
+    const blobUrl = URL.createObjectURL(file);
+    pendingFilesRef.current.set(blobUrl, file);
+    setForm((prev) => {
+      const updated = [...prev[field]] as typeof prev[typeof field];
+      updated[index] = { ...updated[index]!, image: blobUrl };
+      return { ...prev, [field]: updated };
+    });
+  }
+
+  function handleEntryImageRemove(field: "activities" | "itinerary", index: number) {
+    setForm((prev) => {
+      const updated = [...prev[field]] as typeof prev[typeof field];
+      const entry = updated[index];
+      if (entry?.image?.startsWith("blob:")) {
+        pendingFilesRef.current.delete(entry.image);
+        URL.revokeObjectURL(entry.image);
+      }
+      updated[index] = { ...entry!, image: null };
+      return { ...prev, [field]: updated };
+    });
+  }
+
   const imageState: ExperienceImageState = {
     onHeroSelect: handleHeroSelect,
     onHeroRemove: handleHeroRemove,
+    onEntryImageSelect: handleEntryImageSelect,
+    onEntryImageRemove: handleEntryImageRemove,
   };
 
   const navTabs = effectiveTabs.map((t) => ({ id: t.id, label: t.label }));

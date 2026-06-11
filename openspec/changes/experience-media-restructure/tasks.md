@@ -56,29 +56,29 @@ Chain strategy: stacked-to-main
 
 ## Phase 4: UI Redistribution
 
-- [ ] 4.1 In `src/components/app/dashboard/tripper/experiences/steps/AboutExperienceStep.tsx`: add full-width hero banner upload (aspect-video click-to-upload tile, wired to `onHeroSelect`/`onHeroRemove` from `imageState`); add blog-post visibility checkbox wired to `draft.isBlogPost`.
-- [ ] 4.2 In `src/components/app/dashboard/tripper/experiences/steps/ActivitiesListStep.tsx`: add shared tag chip-input block above the entries list (inline, ~15 lines, no separate component); add per-entry `image` upload tile inside each `ActivityEntry` row, wired to `onEntryImageSelect("activities", index, file)` / `onEntryImageRemove("activities", index)`.
-- [ ] 4.3 In `src/components/app/dashboard/tripper/experiences/steps/ItineraryStep.tsx`: add per-entry image upload tile inside each `ItineraryDayEntry` row, wired to `onEntryImageSelect("itinerary", index, file)` / `onEntryImageRemove("itinerary", index)`.
-- [ ] 4.4 Delete `src/components/app/dashboard/tripper/experiences/steps/TagsMediaStep.tsx`.
-- [ ] 4.5 Delete `src/components/app/dashboard/tripper/experiences/steps/VisibilityStep.tsx`.
-- [ ] 4.6 In `src/components/app/dashboard/tripper/experiences/ExperienceFormContent.tsx`: remove `media` branch/routing, remove `TagsMediaStep`/`VisibilityStep` imports; thread `imageState` (with `onEntryImageSelect`/`onEntryImageRemove`) into `ActivitiesListStep` and `ItineraryStep` props.
+- [x] 4.1 In `src/components/app/dashboard/tripper/experiences/steps/AboutExperienceStep.tsx`: add full-width hero banner upload (aspect-video click-to-upload tile, wired to `onHeroSelect`/`onHeroRemove` from `imageState`); add blog-post visibility checkbox wired to `draft.isBlogPost`.
+- [x] 4.2 In `src/components/app/dashboard/tripper/experiences/steps/ActivitiesListStep.tsx`: add shared tag chip-input block above the entries list (inline, ~15 lines, no separate component); add per-entry `image` upload tile inside each `ActivityEntry` row, wired to `onEntryImageSelect("activities", index, file)` / `onEntryImageRemove("activities", index)`.
+- [x] 4.3 In `src/components/app/dashboard/tripper/experiences/steps/ItineraryStep.tsx`: add per-entry image upload tile inside each `ItineraryDayEntry` row, wired to `onEntryImageSelect("itinerary", index, file)` / `onEntryImageRemove("itinerary", index)`.
+- [x] 4.4 Delete `src/components/app/dashboard/tripper/experiences/steps/TagsMediaStep.tsx`.
+- [x] 4.5 Delete `src/components/app/dashboard/tripper/experiences/steps/VisibilityStep.tsx`.
+- [x] 4.6 In `src/components/app/dashboard/tripper/experiences/ExperienceFormContent.tsx`: remove `media` branch/routing, remove `TagsMediaStep`/`VisibilityStep` imports; thread `imageState` (with `onEntryImageSelect`/`onEntryImageRemove`) into `ActivitiesListStep` and `ItineraryStep` props.
 
 ## Phase 5: Shell Image State Wiring
 
-- [ ] 5.1 In `NewExperienceShell.tsx`: update `ExperienceImageState` interface to replace gallery handlers with `onEntryImageSelect(field, index, file)` and `onEntryImageRemove(field, index)`.
-- [ ] 5.2 In `NewExperienceShell.tsx`: update `flushPendingBlobs` — remove gallery blob loop; add loop over `draft.activities` and `draft.itinerary`: if `entry.image?.startsWith("blob:")`, upload and replace URL in both form snapshot and draft state; on upload failure set `image: null`.
-- [ ] 5.3 In `NewExperienceShell.tsx`: remove any remaining `galleryImages` reads from `pendingFilesRef` initialization or autosave logic.
+- [x] 5.1 In `NewExperienceShell.tsx`: update `ExperienceImageState` interface to replace gallery handlers with `onEntryImageSelect(field, index, file)` and `onEntryImageRemove(field, index)`.
+- [x] 5.2 In `NewExperienceShell.tsx`: update `flushPendingBlobs` — remove gallery blob loop; add loop over `draft.activities` and `draft.itinerary`: if `entry.image?.startsWith("blob:")`, upload and replace URL in both form snapshot and draft state; on upload failure set `image: null`.
+- [x] 5.3 In `NewExperienceShell.tsx`: remove any remaining `galleryImages` reads from `pendingFilesRef` initialization or autosave logic.
 
 ## Phase 6: i18n Dictionaries
 
-- [ ] 6.1 In `src/dictionaries/es.json`: remove `media` tab entry from `contentTabs`; remove standalone `tags`/`galleryImages` copy keys if orphaned; add hero image upload label, blog-post checkbox label, and per-entry image upload label under the relevant experience-form section.
-- [ ] 6.2 In `src/dictionaries/en.json`: apply the exact same additions and removals as 6.1.
-- [ ] 6.3 In `src/lib/types/dictionary.ts`: update affected interfaces to match the new/removed keys; ensure no type errors for the new copy fields.
+- [x] 6.1 In `src/dictionaries/es.json`: remove `media` tab entry from `contentTabs`; remove standalone `tags`/`galleryImages` copy keys if orphaned; add hero image upload label, blog-post checkbox label, and per-entry image upload label under the relevant experience-form section.
+- [x] 6.2 In `src/dictionaries/en.json`: apply the exact same additions and removals as 6.1.
+- [x] 6.3 In `src/lib/types/dictionary.ts`: update affected interfaces to match the new/removed keys; ensure no type errors for the new copy fields.
 
 ## Phase 7: Final Verification
 
-- [ ] 7.1 Run `npm run typecheck` — must pass with 0 errors.
-- [ ] 7.2 Run `npm run lint` — must pass; confirm no raw `<img>` tags introduced, no `highlights`/`galleryImages` refs survive.
+- [x] 7.1 Run `npm run typecheck` — must pass with 0 errors.
+- [x] 7.2 Run `npm run lint` — must pass; confirm no raw `<img>` tags introduced, no `highlights`/`galleryImages` refs survive.
 - [ ] 7.3 Manual QA: open the experience wizard — verify hero upload in About step, blog-post checkbox in About step, tags block in Activities step, per-activity image upload, per-day image upload in Itinerary step.
 - [ ] 7.4 Manual QA: create a draft, upload a per-activity image (blob stage), save/reload — confirm blob is resolved to a persisted URL after `flushPendingBlobs`.
 - [ ] 7.5 Manual QA: open `TripperInspirationGallery` for an experience — confirm first 3 activity names appear as highlights; confirm no crash when fewer than 3 activities exist.

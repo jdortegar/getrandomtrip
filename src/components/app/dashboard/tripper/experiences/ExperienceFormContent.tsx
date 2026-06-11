@@ -11,8 +11,6 @@ import { AboutDestinationStep } from "./steps/AboutDestinationStep";
 import { LogisticsAccommodationStep } from "./steps/LogisticsAccommodationStep";
 import { ActivitiesListStep } from "./steps/ActivitiesListStep";
 import { ItineraryStep } from "./steps/ItineraryStep";
-import { TagsMediaStep } from "./steps/TagsMediaStep";
-import { VisibilityStep } from "./steps/VisibilityStep";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ExperienceFormDraft,
@@ -53,7 +51,7 @@ function resolveStepContent(
   if (activeTab === "about") {
     if (substepId === "experience")
       return (
-        <AboutExperienceStep copy={copy} form={form} onChange={onChange} />
+        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} />
       );
     if (substepId === "destination")
       return (
@@ -72,22 +70,9 @@ function resolveStepContent(
   }
   if (activeTab === "activities") {
     if (substepId === "activities-list")
-      return <ActivitiesListStep copy={copy} form={form} onChange={onChange} />;
+      return <ActivitiesListStep copy={copy} form={form} onChange={onChange} imageState={imageState} />;
     if (substepId === "itinerary")
-      return <ItineraryStep copy={copy} form={form} onChange={onChange} />;
-  }
-  if (activeTab === "media") {
-    if (substepId === "tags")
-      return (
-        <TagsMediaStep
-          copy={copy}
-          form={form}
-          onChange={onChange}
-          imageState={imageState}
-        />
-      );
-    if (substepId === "visibility")
-      return <VisibilityStep copy={copy} form={form} onChange={onChange} />;
+      return <ItineraryStep copy={copy} form={form} onChange={onChange} imageState={imageState} />;
   }
   return null;
 }

@@ -3284,22 +3284,6 @@
               "description": "Por día, evitar frases que suelen sonar \"trip turístico\" como: postales únicas, destinos soñados, todo incluido, entre otras."
             }
           ]
-        },
-        {
-          "id": "media",
-          "label": "Contenido de marketing",
-          "substeps": [
-            {
-              "id": "tags",
-              "title": "Tags, Highlights & Media",
-              "description": "Galería de imágenes y Tags"
-            },
-            {
-              "id": "visibility",
-              "title": "Visibilidad",
-              "description": "Validaciones con Randomtrip"
-            }
-          ]
         }
       ],
       "sections": {
@@ -3311,8 +3295,6 @@
         "activities": "Actividades",
         "itinerary": "Itinerario",
         "inclusions": "Incluye / No incluye",
-        "tagsMedia": "Tags, Highlights & Media",
-        "visibility": "Visibilidad",
         "policies": "Políticas & Comunicación"
       },
       "fields": {
@@ -3412,12 +3394,9 @@
         "addExclusion": "Agregar exclusión",
         "tags": "Tags",
         "tagInput": "Nuevo tag (Enter para agregar)",
-        "highlights": "Highlights",
-        "highlightInput": "Nuevo highlight (Enter para agregar)",
         "heroImage": "Imagen hero",
         "heroImageHint": "Imagen principal que aparece en la tarjeta de la experiencia",
-        "galleryImages": "Galería",
-        "galleryImagesHint": "Hasta 3 imágenes adicionales",
+        "entryImageLabel": "Imagen de la entrada",
         "uploadImage": "Subir imagen",
         "uploading": "Subiendo…",
         "removeImage": "Quitar",
