@@ -304,6 +304,15 @@
     "backLabel": "Browse past drops"
   },
   "xsedBook": {
+    "hero": {
+      "brand": "TGIS",
+      "description": "Fill in your departure information to confirm your TGIS.",
+      "fallbackImage": "/images/xsed-hero.jpg",
+      "label": "BOOK YOUR ESCAPE",
+      "progressLabel": "Progress",
+      "subtitle": "THANK GOD<br/>IT'S SUNDAY",
+      "videoSrc": "/videos/hero-xsed.mp4"
+    },
     "actionBar": {
       "clearAll": "Clear all",
       "next": "Next",
@@ -316,13 +325,19 @@
         "substeps": [
           {
             "id": "origin",
-            "title": "Departure country and city",
-            "description": "Where your escape starts"
-          },
+            "title": "Destination",
+            "description": "Country and city where your escape begins."
+          }
+        ]
+      },
+      {
+        "id": "pax",
+        "label": "Travelers",
+        "substeps": [
           {
             "id": "pax",
-            "title": "Travelers",
-            "description": "Number of people"
+            "title": "Number of travelers",
+            "description": "Travelers joining the escape."
           }
         ]
       }
@@ -2011,6 +2026,11 @@
       "importantNote3": "2-3 filters: USD 18 each.",
       "importantNote4": "4+ filters: USD 25 each.",
       "importantTitle": "IMPORTANT",
+      "xsedImportantTitle": "WHAT'S INCLUDED",
+      "xsedImportantNote1": "Roadtrip up to 300 km from your origin city.",
+      "xsedImportantNote2": "1 night hotel, Saturday dinner and Sunday breakfast included.",
+      "xsedImportantNote3": "Surprise local activity included.",
+      "xsedImportantNote4": "Destination revealed 48 hours before departure.",
       "monthsShort": [
         "Jan",
         "Feb",
@@ -2146,7 +2166,15 @@
       "ctaReveal": "Reveal my destination",
       "ctaBackToJourney": "Back to journey",
       "ctaHome": "Go to home",
-      "ctaMyTrips": "Go to my trips"
+      "ctaMyTrips": "Go to my trips",
+      "calendarEventDescription": "Your GetRandomTrip surprise escape. Destination revealed 48 hours before departure.",
+      "xsedTitle": "You've got your XSED",
+      "xsedBody": "You'll receive an email with everything you need for your escape.",
+      "xsedTripTypeLabel": "Trip type",
+      "xsedExperienceLabel": "XSED Drop Experience",
+      "xsedReferenceLabel": "Purchase reference number",
+      "xsedPerPerson": "/person",
+      "xsedDownloadCta": "Download XSED"
     }
   },
   "paymentFailure": {

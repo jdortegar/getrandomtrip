@@ -911,6 +911,7 @@ function CheckoutContent() {
             clientSecret={clientSecret}
             formData={formData}
             formRef={contactFormRef}
+            isXsed={trip?.type === "xsed"}
             onBack={() => router.back()}
             onBeforeConfirm={onBeforeConfirm}
             onFieldChange={handleChange}

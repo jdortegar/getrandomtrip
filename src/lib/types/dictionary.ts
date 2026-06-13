@@ -618,6 +618,15 @@ export interface XsedBookDict {
     next: string;
     viewCheckout: string;
   };
+  hero: {
+    brand: string;
+    description: string;
+    fallbackImage: string;
+    label: string;
+    progressLabel: string;
+    subtitle: string;
+    videoSrc: string;
+  };
   contentTabs: Array<{
     id: string;
     label: string;
@@ -1406,6 +1415,11 @@ export interface MarketingDictionary {
       importantNote3: string;
       importantNote4: string;
       importantTitle: string;
+      xsedImportantNote1: string;
+      xsedImportantNote2: string;
+      xsedImportantNote3: string;
+      xsedImportantNote4: string;
+      xsedImportantTitle: string;
       monthsShort: string[];
       noAddons: string;
       noDetails: string;
@@ -1529,6 +1543,14 @@ export interface MarketingDictionary {
       metaDescription: string;
       retry: string;
       title: string;
+      calendarEventDescription: string;
+      xsedBody: string;
+      xsedDownloadCta: string;
+      xsedExperienceLabel: string;
+      xsedPerPerson: string;
+      xsedReferenceLabel: string;
+      xsedTitle: string;
+      xsedTripTypeLabel: string;
     };
   };
   paymentFailure: {

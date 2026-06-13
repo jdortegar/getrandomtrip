@@ -5,7 +5,7 @@ import CountryFlag from "@/components/common/CountryFlag";
 import VideoBackground from "@/components/media/VideoBackground";
 import { getCountryFromLocation } from "@/lib/helpers/flags";
 import { formatTitleWithCopyright } from "@/lib/helpers/stringHelpers";
-import type { MarketingDictionary, XsedPageDict } from "@/lib/types/dictionary";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 export interface XsedInternalHeroContent {
   author?: {
@@ -18,20 +18,31 @@ export interface XsedInternalHeroContent {
   description?: string;
   dropNumber?: number;
   title?: string;
+  videoSrc?: string;
+}
+
+interface HeroConfig {
+  dropNumberLabel?: string;
+  fallbackImage?: string;
+  label?: string;
+  subtitle?: string;
+  title?: string;
 }
 
 interface XsedInternalHeroProps {
   content: XsedInternalHeroContent;
   dropsPage?: MarketingDictionary["xsedDropsPage"];
-  hero: XsedPageDict["hero"];
+  hero: HeroConfig;
+  maxHeight?: string;
 }
 
 export function XsedInternalHero({
   content,
   dropsPage,
   hero,
+  maxHeight,
 }: XsedInternalHeroProps) {
-  const { author, date, dropNumber } = content;
+  const { author, date, dropNumber, videoSrc } = content;
   const title = content.title ?? dropsPage?.title ?? "";
   const description = content.description ?? dropsPage?.description ?? "";
   const backgroundImage = content.backgroundImage ?? hero.fallbackImage;
@@ -40,22 +51,33 @@ export function XsedInternalHero({
     ? getCountryFromLocation(author.location)
     : null;
   const dropNumberText =
-    dropNumber != null && !Number.isNaN(dropNumber)
+    dropNumber != null && !Number.isNaN(dropNumber) && hero.dropNumberLabel
       ? hero.dropNumberLabel.replace("{number}", String(dropNumber))
       : null;
 
   return (
-    <section className="relative h-[60vh] min-h-[520px] w-full overflow-hidden bg-slate-950 text-white">
-      <VideoBackground fallbackImage={backgroundImage} />
+    <section
+      className="relative h-[60vh] min-h-[520px] w-full overflow-hidden bg-slate-950 text-white"
+      style={maxHeight ? { maxHeight } : undefined}
+    >
+      <VideoBackground fallbackImage={backgroundImage} videoSrc={videoSrc} />
 
       <div className="relative z-10 flex h-full flex-col justify-center container mx-auto px-4 md:px-20">
         <div className="flex flex-col gap-6">
           <div>
+            {hero.label ? (
+              <p className="font-barlow mb-3 text-lg font-bold uppercase text-xsed">
+                {hero.label}
+              </p>
+            ) : null}
             <div className="mb-3 flex flex-wrap items-end gap-x-3 gap-y-2">
-              <h2 className="font-barlow-condensed text-[52px] font-extrabold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]">
-                {formatTitleWithCopyright(hero.title)}
-              </h2>
+              {hero.title ? (
+                <h2 className="font-barlow-condensed text-[52px] font-extrabold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]">
+                  {formatTitleWithCopyright(hero.title)}
+                </h2>
+              ) : null}
 
+              {hero.subtitle ? (
               <div className="flex justify-end gap-2">
                 <span
                   aria-hidden
@@ -79,6 +101,7 @@ export function XsedInternalHero({
                   ) : null}
                 </div>
               </div>
+              ) : null}
             </div>
 
             {title ? (

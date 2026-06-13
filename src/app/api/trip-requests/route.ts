@@ -11,6 +11,25 @@ import {
 } from "@/lib/helpers/transport";
 import { Prisma, TripRequestStatus } from "@prisma/client";
 
+/**
+ * For Xsed trips, startDate must be the Saturday that follows the next
+ * Sunday booking window — regardless of what the client sent.
+ * Uses UTC so server timezone is irrelevant.
+ */
+function xsedCanonicalDates(): { startDate: Date; endDate: Date } {
+  const now = new Date();
+  const day = now.getUTCDay(); // 0=Sun … 6=Sat
+  const daysUntilNextSunday = day === 0 ? 0 : 7 - day;
+  const daysUntilSat = daysUntilNextSunday + 6;
+  const startDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilSat),
+  );
+  const endDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilSat + 1),
+  );
+  return { startDate, endDate };
+}
+
 function hasBodyKey(body: Record<string, unknown>, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(body, key);
 }
@@ -260,14 +279,45 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // For Xsed trips, dates are authoritative server-side.
+      // Priority: Experience.tripDate (if linked) → canonical formula.
+      // Never trust the client-sent startDate/endDate for xsed.
+      let resolvedStartDate: Date | null = startDate
+        ? new Date(String(startDate))
+        : null;
+      let resolvedEndDate: Date | null = endDate
+        ? new Date(String(endDate))
+        : null;
+
+      if ((type as string) === "xsed") {
+        if (experienceId) {
+          const exp = await prisma.experience.findUnique({
+            where: { id: String(experienceId) },
+            select: { tripDate: true },
+          });
+          if (exp?.tripDate) {
+            resolvedStartDate = exp.tripDate;
+            resolvedEndDate = new Date(exp.tripDate.getTime() + 86400000); // +1 day
+          } else {
+            const canonical = xsedCanonicalDates();
+            resolvedStartDate = canonical.startDate;
+            resolvedEndDate = canonical.endDate;
+          }
+        } else {
+          const canonical = xsedCanonicalDates();
+          resolvedStartDate = canonical.startDate;
+          resolvedEndDate = canonical.endDate;
+        }
+      }
+
       const tripFields = {
         from: (from as string) || "admin",
         type: type as string,
         level: level as string,
         originCountry: originCountry as string,
         originCity: originCity as string,
-        startDate: startDate ? new Date(String(startDate)) : null,
-        endDate: endDate ? new Date(String(endDate)) : null,
+        startDate: resolvedStartDate,
+        endDate: resolvedEndDate,
         nights: (typeof nights === "number" ? nights : Number(nights)) || 1,
         pax: (typeof pax === "number" ? pax : Number(pax)) || 1,
         transport: normalizeTransportId(String(transport ?? "")) || "plane",

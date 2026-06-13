@@ -179,6 +179,7 @@ interface CheckoutContactCardProps {
   clientSecret: string | null;
   formData: CheckoutFormFields;
   formRef: React.RefObject<HTMLFormElement | null>;
+  isXsed?: boolean;
   onBack: () => void;
   onBeforeConfirm: () => Promise<boolean>;
   onFieldChange: (field: keyof CheckoutFormFields, value: string) => void;
@@ -191,6 +192,7 @@ export function CheckoutContactCard({
   clientSecret,
   formData,
   formRef,
+  isXsed = false,
   onBack,
   onBeforeConfirm,
   onFieldChange,
@@ -372,14 +374,25 @@ export function CheckoutContactCard({
         <div className="mb-2 flex items-center gap-2">
           <Sparkle aria-hidden className="h-4 w-4 shrink-0 text-neutral-500" />
           <span className="text-base font-bold text-gray-900">
-            {summary?.importantTitle}
+            {isXsed ? summary?.xsedImportantTitle : summary?.importantTitle}
           </span>
         </div>
         <ul className="list-outside list-disc space-y-1 pl-4 text-sm font-normal text-gray-900">
-          <li>{summary?.importantNote1}</li>
-          <li>{summary?.importantNote2}</li>
-          <li>{summary?.importantNote3}</li>
-          <li>{summary?.importantNote4}</li>
+          {isXsed ? (
+            <>
+              <li>{summary?.xsedImportantNote1}</li>
+              <li>{summary?.xsedImportantNote2}</li>
+              <li>{summary?.xsedImportantNote3}</li>
+              <li>{summary?.xsedImportantNote4}</li>
+            </>
+          ) : (
+            <>
+              <li>{summary?.importantNote1}</li>
+              <li>{summary?.importantNote2}</li>
+              <li>{summary?.importantNote3}</li>
+              <li>{summary?.importantNote4}</li>
+            </>
+          )}
         </ul>
       </div>
     </div>

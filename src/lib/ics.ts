@@ -33,6 +33,7 @@ export function buildICS(
   start?: string | Date,
   end?: string | Date,
   location?: unknown,
+  description?: unknown,
 ) {
   const now = new Date();
   const dtstamp = toIcsUtc(now)!;
@@ -56,6 +57,7 @@ export function buildICS(
     `DTEND:${dtend}`,
     `SUMMARY:${icsEscape(title)}`,
     `LOCATION:${icsEscape(location)}`,
+    ...(description != null ? [`DESCRIPTION:${icsEscape(description)}`] : []),
     "END:VEVENT",
     "END:VCALENDAR",
   ];
