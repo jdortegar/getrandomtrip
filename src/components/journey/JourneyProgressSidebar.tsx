@@ -159,7 +159,7 @@ export default function JourneyProgressSidebar({
   const pct =
     completedTabIds != null
       ? Math.round((completedTabIds.length / tabs.length) * 100)
-      : null;
+      : Math.round((tabs.filter((t) => isTabComplete(t.id)).length / tabs.length) * 100);
 
   return (
     <aside

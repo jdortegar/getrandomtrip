@@ -304,6 +304,15 @@
     "backLabel": "Ver escapadas anteriores"
   },
   "xsedBook": {
+    "hero": {
+      "brand": "XSED",
+      "description": "Completá tu información de salida para confirmar tu XSED.",
+      "fallbackImage": "/images/xsed-hero.jpg",
+      "label": "RESERVÁ TU ESCAPE",
+      "progressLabel": "Progreso",
+      "subtitle": "X SUERTE,<br/>ES DOMINGO",
+      "videoSrc": "/videos/hero-xsed.mp4"
+    },
     "actionBar": {
       "clearAll": "Limpiar todo",
       "next": "Siguiente",
@@ -316,13 +325,19 @@
         "substeps": [
           {
             "id": "origin",
-            "title": "País y ciudad de salida",
-            "description": "Desde dónde arrancás tu escape"
-          },
+            "title": "Destino",
+            "description": "País y ciudad donde empieza tu escapada."
+          }
+        ]
+      },
+      {
+        "id": "pax",
+        "label": "Viajeros",
+        "substeps": [
           {
             "id": "pax",
-            "title": "Pasajeros",
-            "description": "Cantidad de personas"
+            "title": "Cantidad de personas",
+            "description": "Viajeros que realizan la escapada."
           }
         ]
       }
@@ -2016,6 +2031,11 @@
       "importantNote3": "2-3 filtros: USD 18 c/u.",
       "importantNote4": "4+ filtros: USD 25 c/u.",
       "importantTitle": "IMPORTANTE",
+      "xsedImportantTitle": "QUÉ INCLUYE",
+      "xsedImportantNote1": "Roadtrip de hasta 300 km desde tu ciudad de salida.",
+      "xsedImportantNote2": "1 noche de hotel, cena del sábado y desayuno del domingo incluidos.",
+      "xsedImportantNote3": "Experiencia local sorpresa incluida.",
+      "xsedImportantNote4": "Destino revelado 48 horas antes de la salida.",
       "monthsShort": [
         "ene",
         "feb",
@@ -2146,7 +2166,15 @@
       "ctaReveal": "Descubrir mi destino",
       "ctaBackToJourney": "Volver al viaje",
       "ctaHome": "Ir al inicio",
-      "ctaMyTrips": "Ir a mis viajes"
+      "ctaMyTrips": "Ir a mis viajes",
+      "calendarEventDescription": "Tu escapada sorpresa GetRandomTrip. Destino revelado 48 horas antes de la salida.",
+      "xsedTitle": "Ya tenés tu XSED",
+      "xsedBody": "Recibirás un correo con todo lo que necesitás para tu escapada.",
+      "xsedTripTypeLabel": "Tipo de viaje",
+      "xsedExperienceLabel": "Experiencia XSED Drop",
+      "xsedReferenceLabel": "Número de referencia de compra",
+      "xsedPerPerson": "/persona",
+      "xsedDownloadCta": "Descargar XSED"
     }
   },
   "paymentFailure": {

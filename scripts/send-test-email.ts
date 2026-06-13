@@ -12,6 +12,7 @@ import TripCancelled, { subjects as tripCancelledSubjects } from "../src/emails/
 import TripCompleted, { subjects as tripCompletedSubjects } from "../src/emails/TripCompleted";
 import ExperienceSubmitted, { subjects as experienceSubmittedSubjects } from "../src/emails/ExperienceSubmitted";
 import WelcomeEmail, { subjects as welcomeEmailSubjects } from "../src/emails/WelcomeEmail";
+import AdminNewBooking, { subject as adminNewBookingSubject } from "../src/emails/AdminNewBooking";
 
 const templates: Record<string, { element: React.ReactElement; subject: string }> = {
   NewsletterGoLive: {
@@ -91,6 +92,22 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
       experienceId: "exp-test-001",
     }),
     subject: experienceSubmittedSubjects.es,
+  },
+  AdminNewBooking: {
+    element: React.createElement(AdminNewBooking, {
+      clientName: "David Ortega",
+      clientEmail: "jd.ortega83@gmail.com",
+      tripRequestId: "trip-test-001",
+      tripType: "xsed",
+      level: "Aventurero",
+      nights: 1,
+      originCity: "Buenos Aires",
+      originCountry: "Argentina",
+      departureDate: "21 de junio de 2026",
+      amount: 150,
+      currency: "usd",
+    }),
+    subject: adminNewBookingSubject,
   },
   WelcomeEmail: {
     element: React.createElement(WelcomeEmail, {

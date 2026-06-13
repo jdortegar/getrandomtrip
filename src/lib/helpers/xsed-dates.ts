@@ -1,9 +1,16 @@
-/** Returns the next upcoming Saturday (day 6). If today is Saturday, jumps one full week. */
+/**
+ * Returns the Saturday that follows the next Sunday booking window.
+ * Booking opens Sunday 16:00–20:00 local time; the trip always departs
+ * the Saturday immediately after that Sunday (6 days later).
+ * Using nearest-Saturday logic was wrong: on a Friday it returned tomorrow,
+ * creating trips that started the next day instead of 8 days out.
+ */
 export function getNextWeekend(): { saturday: Date; sunday: Date } {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const day = today.getDay();
-  const daysUntilSat = day === 6 ? 7 : 6 - day;
+  const day = today.getDay(); // 0=Sun … 6=Sat
+  const daysUntilNextSunday = day === 0 ? 0 : 7 - day;
+  const daysUntilSat = daysUntilNextSunday + 6;
   const saturday = new Date(today);
   saturday.setDate(today.getDate() + daysUntilSat);
   const sunday = new Date(saturday);

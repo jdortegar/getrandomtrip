@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { getNextWeekend, toISODate } from "@/lib/helpers/xsed-dates";
 import { Minus, Plus } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
-import HeaderHero from "@/components/journey/HeaderHero";
+import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
 import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
@@ -51,21 +51,23 @@ export function XsedBookClient({
     searchParams.get("originCity") ?? "",
   );
   const [pax, setPax] = useState(2);
-  const [activeTab, setActiveTab] = useState("details");
   const [openSection, setOpenSection] = useState("origin");
   const [isSaving, setIsSaving] = useState(false);
 
   const { saturday, sunday } = useMemo(() => getNextWeekend(), []);
 
-  const handleTabChange = (tabId: string) => setActiveTab(tabId);
+  // Derive active tab from the open accordion section
+  const activeTab = openSection === "origin" ? "details" : openSection;
+
+  const handleTabChange = (tabId: string) => {
+    setOpenSection(tabId === "details" ? "origin" : tabId);
+  };
 
   const handleStepClick = (tabId: string, substepId?: string) => {
-    setActiveTab(tabId);
-    if (substepId) setOpenSection(substepId);
+    setOpenSection(substepId ?? (tabId === "details" ? "origin" : tabId));
   };
 
   const handleSummaryEdit = (sectionId: string) => {
-    setActiveTab("details");
     setOpenSection(sectionId);
   };
 
@@ -88,11 +90,16 @@ export function XsedBookClient({
     router.replace(`?${next.toString()}`, { scroll: false });
   };
 
-  const canBook = Boolean(originCountry && originCity);
+  const isOriginComplete = Boolean(originCountry && originCity);
+  const canBook = isOriginComplete;
   const isAllStepsComplete = canBook;
-  const canContinue =
-    Boolean(originCountry && originCity) && openSection === "origin";
+  const canContinue = isOriginComplete && openSection === "origin";
   const showClearAll = Boolean(originCountry || originCity || pax !== 2);
+
+  const completedTabIds = [
+    ...(isOriginComplete ? ["details"] : []),
+    ...(isOriginComplete && openSection === "pax" ? ["pax"] : []),
+  ];
 
   const handleContinue = () => {
     setOpenSection("pax");
@@ -160,13 +167,19 @@ export function XsedBookClient({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeaderHero
-        description="Completá tu información de salida para confirmar tu XSED."
-        eyebrowColor="#D97E4A"
-        fallbackImage="/images/hero-image-1.jpeg"
-        subtitle="RESERVÁ TU ESCAPE"
-        title="XSED"
-        videoSrc="/videos/hero-video-1.mp4"
+      <XsedInternalHero
+        content={{
+          description: book.hero.description,
+          backgroundImage: book.hero.fallbackImage,
+          videoSrc: book.hero.videoSrc,
+        }}
+        hero={{
+          title: book.hero.brand,
+          label: book.hero.label,
+          subtitle: book.hero.subtitle,
+          fallbackImage: book.hero.fallbackImage,
+        }}
+        maxHeight="50vh"
       />
 
       <JourneyContentNavigation
@@ -183,7 +196,9 @@ export function XsedBookClient({
             <JourneyProgressSidebar
               activeTab={activeTab}
               addonsComingSoonLabel=""
+              completedTabIds={completedTabIds}
               onStepClick={handleStepClick}
+              progressLabel={book.hero.progressLabel}
               tabs={book.contentTabs}
             />
           </div>

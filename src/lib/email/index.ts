@@ -1,3 +1,6 @@
+import AdminNewBooking, {
+  subject as adminNewBookingSubject,
+} from "@/emails/AdminNewBooking";
 import BookingConfirmed, {
   subjects as bookingConfirmedSubjects,
 } from "@/emails/BookingConfirmed";
@@ -19,6 +22,7 @@ import TripCompleted, {
 import WelcomeEmail, {
   subjects as welcomeEmailSubjects,
 } from "@/emails/WelcomeEmail";
+import { getLevelContent } from "@/lib/data/experience-levels";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
 import React from "react";
@@ -263,6 +267,70 @@ export function sendExperienceSubmitted(
       });
     } catch (err) {
       console.error("[email] sendExperienceSubmitted:", err);
+    }
+  })();
+}
+
+export function sendAdminNewBooking(
+  tripRequestId: string,
+  userId: string,
+): void {
+  void (async () => {
+    try {
+      const [user, tripRequest, payment] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id: userId },
+          select: { email: true, name: true },
+        }),
+        prisma.tripRequest.findUnique({
+          where: { id: tripRequestId },
+          select: {
+            type: true,
+            level: true,
+            nights: true,
+            startDate: true,
+            originCity: true,
+            originCountry: true,
+          },
+        }),
+        prisma.payment.findUnique({
+          where: { tripRequestId },
+          select: { amount: true, currency: true },
+        }),
+      ]);
+
+      if (!user?.email || !tripRequest || !payment) return;
+
+      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const departureDate = tripRequest.startDate
+        ? tripRequest.startDate.toLocaleDateString("es-AR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : undefined;
+
+      await sendMail({
+        to: adminEmail,
+        subject: adminNewBookingSubject,
+        content: {
+          react: React.createElement(AdminNewBooking, {
+            clientName: user.name ?? "",
+            clientEmail: user.email,
+            tripRequestId,
+            tripType: tripRequest.type,
+            level: getLevelContent(tripRequest.level, tripRequest.type, "es")?.name ?? tripRequest.level,
+            nights: tripRequest.nights,
+            originCity: tripRequest.originCity,
+            originCountry: tripRequest.originCountry,
+            departureDate,
+            amount: payment.amount,
+            currency: payment.currency,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendAdminNewBooking:", err);
     }
   })();
 }

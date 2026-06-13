@@ -12,5 +12,12 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "i18n-ally.localesPaths": ["src/dictionaries"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.defaultLocale": "es",
+  "i18n-ally.displayLanguage": "es",
+  "i18n-ally.regex.usageMatchRegex": [
+    "dict\\.([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)+)"
+  ]
 }
