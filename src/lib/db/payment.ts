@@ -1,4 +1,4 @@
-import { sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
+import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import type { PaymentStatus, Prisma } from "@prisma/client";
 
@@ -221,17 +221,29 @@ export async function updatePaymentFromStripeWebhook(
       (webhookPayload as UpdatePaymentData["webhookData"]) ?? undefined,
   };
 
-  // Snapshot status before the update for idempotency checks
-  const priorStatus = payment.status;
-
   if (finalData.status === "APPROVED") {
-    await prisma.tripRequest.update({
-      where: { id: payment.tripRequestId },
-      data: { status: "CONFIRMED" },
+    // Atomic transition: only the first caller to flip the status wins.
+    // Both webhook and confirm-payment call this function; using updateMany
+    // with a status guard ensures exactly one of them gets count=1 and fires
+    // the email. The loser gets count=0 and skips it.
+    const { count } = await prisma.payment.updateMany({
+      where: {
+        id: payment.id,
+        status: { notIn: TERMINAL_STATUSES },
+      },
+      data: { ...finalData, updatedAt: new Date() },
     });
-    if (priorStatus !== "APPROVED" && priorStatus !== "COMPLETED") {
+
+    if (count > 0) {
+      await prisma.tripRequest.update({
+        where: { id: payment.tripRequestId },
+        data: { status: "CONFIRMED" },
+      });
       sendBookingConfirmed(payment.tripRequestId, payment.userId);
+      sendAdminNewBooking(payment.tripRequestId, payment.userId);
     }
+
+    return { ...payment, ...finalData };
   }
 
   if (finalData.status === "FAILED") {
