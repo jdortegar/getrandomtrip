@@ -12,6 +12,7 @@ const STATUS_STYLES: Record<string, string> = {
   INACTIVE: "bg-gray-100 text-gray-700 border-gray-200",
   DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
   PENDING_REVIEW: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  PENDING_TRIPPER_REVIEW: "bg-purple-100 text-purple-800 border-purple-200",
   ARCHIVED: "bg-red-100 text-red-800 border-red-200",
 };
 
@@ -20,6 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
   INACTIVE: "Inactive",
   DRAFT: "Draft",
   PENDING_REVIEW: "Pending review",
+  PENDING_TRIPPER_REVIEW: "Tripper reviewing",
   ARCHIVED: "Archived",
 };
 
@@ -98,12 +100,14 @@ export function AdminExperiencesPageClient() {
   const act = copy.actions;
 
   const pendingCount = experiences.filter(
-    (e) => e.status === "PENDING_REVIEW",
+    (e) => e.status === "PENDING_REVIEW" || e.status === "PENDING_TRIPPER_REVIEW",
   ).length;
 
   const visible =
     tab === "pending"
-      ? experiences.filter((e) => e.status === "PENDING_REVIEW")
+      ? experiences.filter(
+          (e) => e.status === "PENDING_REVIEW" || e.status === "PENDING_TRIPPER_REVIEW",
+        )
       : experiences;
 
   return (
@@ -130,7 +134,7 @@ export function AdminExperiencesPageClient() {
               : "text-neutral-500 hover:text-neutral-700"
           }`}
         >
-          Pending review
+          Pending / In review
           {pendingCount > 0 && (
             <span className="inline-flex items-center justify-center h-5 min-w-5 px-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
               {pendingCount}
