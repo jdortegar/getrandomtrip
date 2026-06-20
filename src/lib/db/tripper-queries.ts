@@ -814,7 +814,7 @@ export async function getTripperExperiences(tripperId: string) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const packages = await (prisma.experience.findMany as any)({
-      where: { ownerId: tripperId },
+      where: { ownerId: tripperId, isReviewCopy: false },
       select: {
         id: true,
         title: true,

@@ -182,7 +182,27 @@
     "confirmReject": "Confirmar rechazo",
     "cancel": "Cancelar",
     "noteLabel": "Nota para el tripper",
-    "priceSection": "Precio por persona"
+    "notePlaceholder": "Explicá qué necesita cambiar...",
+    "notifTitle": "El admin propuso cambios en tu experiencia",
+    "notifBody": "Revisá los cambios propuestos para \"{title}\".",
+    "priceSection": "Precio por persona (USD)",
+    "editExperience": "Editar experiencia",
+    "sendToTripper": "Enviar al tripper para revisión",
+    "discardChanges": "Descartar cambios",
+    "lockedBannerTitle": "Bloqueado para edición",
+    "lockedBannerBody": "Otro admin está editando esta experiencia en este momento.",
+    "errorApprove": "No se pudo aprobar. Intentá de nuevo.",
+    "errorReject": "No se pudo rechazar. Intentá de nuevo.",
+    "errorStartEdit": "No se pudo iniciar la edición. Intentá de nuevo.",
+    "errorLocked": "Bloqueado por otro admin ({name}). Actualizá la página para ver el estado.",
+    "errorSendToTripper": "No se pudo enviar al tripper. Intentá de nuevo.",
+    "errorDiscard": "No se pudieron descartar los cambios. Intentá de nuevo."
+  },
+  "tripperExperienceReviewCopy": {
+    "approve": "Aprobar y aplicar",
+    "reject": "Rechazar cambios",
+    "errorApprove": "No se pudieron aplicar los cambios. Intentá de nuevo.",
+    "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
   },
   "adminPages": {
     "payments": {
@@ -3246,7 +3266,8 @@
       "DRAFT": "Borrador",
       "INACTIVE": "Inactivo",
       "ARCHIVED": "Archivado",
-      "PENDING_REVIEW": "En revisión"
+      "PENDING_REVIEW": "En revisión",
+      "PENDING_TRIPPER_REVIEW": "Revisión del tripper"
     },
     "form": {
       "createTitle": "CREAR EXPERIENCIA",
@@ -3329,6 +3350,7 @@
         "title": "Título",
         "titlePlaceholder": "Escribir titular de la experiencia",
         "type": "Tipo de experiencia",
+        "typePlaceholder": "Seleccionar tipo...",
         "typeHint": "Puede elegir 1 o +",
         "level": "Nivel",
         "status": "Estado",
@@ -3424,10 +3446,14 @@
         "tagInput": "Nuevo tag (Enter para agregar)",
         "heroImage": "Imagen hero",
         "heroImageHint": "Imagen principal que aparece en la tarjeta de la experiencia",
-        "entryImageLabel": "Imagen de la entrada",
+        "activityImageLabel": "Imagen de la actividad",
+        "dayImageLabel": "Imagen del día",
         "uploadImage": "Subir imagen",
         "uploading": "Subiendo…",
         "removeImage": "Quitar",
+        "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
+        "entryImageSizeHint": "Mínimo 800 × 600 px recomendado",
+        "imageTooSmall": "Imagen demasiado pequeña",
         "copyrightHint": "Las imágenes deben ser propias o con derechos *",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
@@ -3467,6 +3493,9 @@
       },
       "statusBadge": {
         "pendingReview": "En revisión"
+      },
+      "changedFieldsBanner": {
+        "prefix": "El admin propuso cambios en: "
       }
     }
   },

@@ -5,8 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
-import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
-import { AdminReviewSlot } from "../../../AdminReviewSlot";
+import { AdminExperienceReviewClient } from "./AdminExperienceReviewClient";
 import type {
   ExperienceFormDraft,
   AccommodationEntry,
@@ -41,71 +40,97 @@ export default async function AdminExperienceReviewPage(props: {
   }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
     pricingByType: Record<string, number> | null;
     reviewNote: string | null;
+    reviewLockedBy: string | null;
   } | null;
 
   if (!pkg) notFound();
 
+  // Check for an existing non-INACTIVE review copy — load full data so admin
+  // resumes editing their previous changes instead of seeing the original.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const existingCopy = await (prisma.experience.findFirst as any)({
+    where: {
+      parentId: params.id,
+      isReviewCopy: true,
+      NOT: { status: "INACTIVE" },
+    },
+  }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
+    pricingByType: Record<string, number> | null;
+    reviewNote: string | null;
+    reviewLockedBy: string | null;
+  } | null;
+
+  // Fetch locker name if locked by another admin
+  let reviewLockedByName: string | null = null;
+  if (pkg.reviewLockedBy && pkg.reviewLockedBy !== user.id) {
+    const locker = await prisma.user.findUnique({
+      where: { id: pkg.reviewLockedBy },
+      select: { name: true },
+    });
+    reviewLockedByName = locker?.name ?? null;
+  }
+
+  // When a copy exists, load its data so admin resumes their previous edits.
+  const source = existingCopy ?? pkg;
+
   const initialDraft: ExperienceFormDraft = {
-    status: pkg.status,
-    title: pkg.title,
-    type: Array.isArray(pkg.type) ? pkg.type : [pkg.type].filter(Boolean),
-    level: pkg.level ?? "essenza",
-    teaser: pkg.teaser,
-    description: pkg.description,
-    heroImage: pkg.heroImage,
-    tags: pkg.tags,
-    destinationCountry: pkg.destinationCountry,
-    destinationCity: pkg.destinationCity,
-    excuseKey: Array.isArray(pkg.excuseKey) ? pkg.excuseKey : [],
-    climate: pkg.climate,
-    minPax: pkg.minPax,
-    maxPax: pkg.maxPax,
-    minNights: pkg.minNights,
-    maxNights: pkg.maxNights,
-    pricingByType: (pkg.pricingByType as Record<string, number> | null) ?? null,
-    reviewNote: pkg.reviewNote ?? null,
+    status: source.status,
+    title: source.title,
+    type: Array.isArray(source.type) ? source.type : [source.type].filter(Boolean),
+    level: source.level ?? "essenza",
+    teaser: source.teaser,
+    description: source.description,
+    heroImage: source.heroImage,
+    tags: source.tags,
+    destinationCountry: source.destinationCountry,
+    destinationCity: source.destinationCity,
+    excuseKey: Array.isArray(source.excuseKey) ? source.excuseKey : [],
+    climate: source.climate,
+    minPax: source.minPax,
+    maxPax: source.maxPax,
+    minNights: source.minNights,
+    maxNights: source.maxNights,
+    pricingByType: ((source as typeof pkg).pricingByType as Record<string, number> | null) ?? null,
+    reviewNote: ((source as typeof pkg).reviewNote) ?? null,
     estimatedCost: "",
-    season: Array.isArray(pkg.season) ? pkg.season : [],
-    transport: pkg.transport,
+    season: Array.isArray(source.season) ? source.season : [],
+    transport: source.transport,
     travelTime: "",
-    maxTravelTime: pkg.maxTravelTime,
-    departPref: pkg.departPref,
-    arrivePref: pkg.arrivePref,
-    accommodationType: pkg.accommodationType,
-    accommodations: (Array.isArray(pkg.hotels) && pkg.hotels.length > 0
-      ? pkg.hotels
+    maxTravelTime: source.maxTravelTime,
+    departPref: source.departPref,
+    arrivePref: source.arrivePref,
+    accommodationType: source.accommodationType,
+    accommodations: (Array.isArray(source.hotels) && source.hotels.length > 0
+      ? source.hotels
       : [{ hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "", hotelLink: "", referredLink: "" }]
     ) as AccommodationEntry[],
-    activities: (Array.isArray(pkg.activities) && pkg.activities.length > 0
-      ? pkg.activities
+    activities: (Array.isArray(source.activities) && source.activities.length > 0
+      ? source.activities
       : [{ name: "", durationRhythm: null, description: "", risks: "", image: null }]
     ) as ActivityEntry[],
-    itinerary: (Array.isArray(pkg.itinerary) && pkg.itinerary.length > 0
-      ? pkg.itinerary
+    itinerary: (Array.isArray(source.itinerary) && source.itinerary.length > 0
+      ? source.itinerary
       : [{ title: "", description: "", image: null }]
     ) as ItineraryDayEntry[],
-    inclusions: Array.isArray(pkg.inclusions) ? (pkg.inclusions as string[]) : [],
-    exclusions: Array.isArray(pkg.exclusions) ? (pkg.exclusions as string[]) : [],
+    inclusions: Array.isArray(source.inclusions) ? (source.inclusions as string[]) : [],
+    exclusions: Array.isArray(source.exclusions) ? (source.exclusions as string[]) : [],
     createBlogPost: false,
   };
 
   const dict = await getDictionary(locale);
 
   return (
-    <NewExperienceShell
+    <AdminExperienceReviewClient
       dict={dict.tripperExperiences.form}
       locale={locale}
       userBadgeLabels={dict.journey.userBadge}
       initialDraft={initialDraft}
-      initialDraftId={pkg.id}
-      adminReviewSlot={
-        <AdminReviewSlot
-          experienceId={pkg.id}
-          types={initialDraft.type}
-          level={initialDraft.level}
-          locale={locale}
-        />
-      }
+      experienceId={params.id}
+      currentAdminId={user.id}
+      initialMode={existingCopy ? "adminEdit" : "adminReadOnly"}
+      reviewLockedBy={pkg.reviewLockedBy ?? null}
+      reviewLockedByName={reviewLockedByName}
+      adminCopyId={existingCopy?.id ?? null}
     />
   );
 }

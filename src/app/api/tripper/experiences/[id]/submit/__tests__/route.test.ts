@@ -14,7 +14,8 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    experience: { findFirst: vi.fn(), update: vi.fn() },
+    experience: { findFirst: vi.fn(), update: vi.fn(), delete: vi.fn() },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -171,10 +172,17 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
     (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
       completeDraftExperience("tripper-1"),
     );
-    (prisma.experience.update as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: "exp-1",
-      status: "PENDING_REVIEW",
-    });
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (cb: (tx: unknown) => unknown) => {
+        return cb({
+          experience: {
+            findFirst: vi.fn().mockResolvedValue(null), // no INACTIVE copy
+            update: vi.fn().mockResolvedValue({ id: "exp-1", status: "PENDING_REVIEW" }),
+            delete: vi.fn(),
+          },
+        });
+      },
+    );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest("exp-1"), {
       params: Promise.resolve({ id: "exp-1" }),
@@ -182,5 +190,36 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.experience.status).toBe("PENDING_REVIEW");
+  });
+
+  it("deletes INACTIVE copy when resubmitting after a tripper rejection", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      completeDraftExperience("tripper-1"),
+    );
+    const mockDelete = vi.fn().mockResolvedValue({ id: "inactive-copy-1" });
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (cb: (tx: unknown) => unknown) => {
+        return cb({
+          experience: {
+            findFirst: vi.fn().mockResolvedValue({ id: "inactive-copy-1" }), // INACTIVE copy exists
+            update: vi.fn().mockResolvedValue({ id: "exp-1", status: "PENDING_REVIEW" }),
+            delete: mockDelete,
+          },
+        });
+      },
+    );
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(makePostRequest("exp-1"), {
+      params: Promise.resolve({ id: "exp-1" }),
+    });
+    expect(res.status).toBe(200);
+    // Verify delete was called for the INACTIVE copy
+    expect(mockDelete).toHaveBeenCalledWith({ where: { id: "inactive-copy-1" } });
   });
 });

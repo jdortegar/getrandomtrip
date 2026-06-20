@@ -29,7 +29,7 @@ export default async function TripperExperiencesPage(props: {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rawExperiences = await (prisma.experience.findMany as any)({
-    where: { ownerId: user.id },
+    where: { ownerId: user.id, isReviewCopy: false },
     orderBy: { updatedAt: "desc" },
     select: {
       id: true,

@@ -298,6 +298,7 @@ export interface ExperienceFormData {
 export type ExperienceStatus =
   | "DRAFT"
   | "PENDING_REVIEW"
+  | "PENDING_TRIPPER_REVIEW"
   | "ACTIVE"
   | "INACTIVE"
   | "ARCHIVED";
@@ -397,4 +398,9 @@ export interface ExperienceListItem {
   maxPax: number;
   createdAt: string;
   updatedAt: string;
+  // Review copy fields
+  isReviewCopy?: boolean;
+  parentId?: string | null;
+  changedFields?: string[];
+  reviewLockedBy?: string | null;
 }

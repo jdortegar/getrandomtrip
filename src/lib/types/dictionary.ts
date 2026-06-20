@@ -300,6 +300,7 @@ export interface TripperExperiencesDict {
     ACTIVE: string;
     DRAFT: string;
     PENDING_REVIEW: string;
+    PENDING_TRIPPER_REVIEW: string;
     INACTIVE: string;
     ARCHIVED: string;
   };
@@ -330,6 +331,9 @@ export interface TripperExperiencesDict {
     statusBadge: {
       pendingReview: string;
     };
+    changedFieldsBanner: {
+      prefix: string;
+    };
     nav: {
       sections: string;
       progress: string;
@@ -358,6 +362,7 @@ export interface TripperExperiencesDict {
       title: string;
       titlePlaceholder: string;
       type: string;
+      typePlaceholder: string;
       typeHint: string;
       level: string;
       status: string;
@@ -453,7 +458,11 @@ export interface TripperExperiencesDict {
       tagInput: string;
       heroImage: string;
       heroImageHint: string;
-      entryImageLabel: string;
+      heroImageSizeHint: string;
+      activityImageLabel: string;
+      dayImageLabel: string;
+      entryImageSizeHint: string;
+      imageTooSmall: string;
       uploadImage: string;
       uploading: string;
       removeImage: string;
@@ -1021,7 +1030,27 @@ export interface MarketingDictionary {
     confirmReject: string;
     cancel: string;
     noteLabel: string;
+    notePlaceholder: string;
+    notifTitle: string;
+    notifBody: string;
     priceSection: string;
+    editExperience: string;
+    sendToTripper: string;
+    discardChanges: string;
+    lockedBannerTitle: string;
+    lockedBannerBody: string;
+    errorApprove: string;
+    errorReject: string;
+    errorStartEdit: string;
+    errorLocked: string;
+    errorSendToTripper: string;
+    errorDiscard: string;
+  };
+  tripperExperienceReviewCopy: {
+    approve: string;
+    reject: string;
+    errorApprove: string;
+    errorReject: string;
   };
   xsedPage: XsedPageDict;
   xsedUnavailable: {

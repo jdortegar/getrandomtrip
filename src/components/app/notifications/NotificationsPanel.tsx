@@ -14,9 +14,10 @@ function getCopy(locale: string): NotificationsDict {
 
 interface NotificationsPanelProps {
   copy?: NotificationsDict;
+  audience?: "CLIENT" | "TRIPPER";
 }
 
-export function NotificationsPanel({ copy: copyProp }: NotificationsPanelProps) {
+export function NotificationsPanel({ copy: copyProp, audience = "CLIENT" }: NotificationsPanelProps) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const copy = copyProp ?? getCopy(locale);
@@ -24,7 +25,7 @@ export function NotificationsPanel({ copy: copyProp }: NotificationsPanelProps) 
   const [notifications, setNotifications] = useState<ClientNotification[]>([]);
 
   useEffect(() => {
-    fetch("/api/notifications?audience=CLIENT")
+    fetch(`/api/notifications?audience=${audience}`)
       .then((res) => {
         if (!res.ok) throw new Error("non-2xx");
         return res.json() as Promise<{ notifications: ClientNotification[] }>;

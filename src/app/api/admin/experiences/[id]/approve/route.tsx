@@ -10,6 +10,7 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { validatePricingByType } from "@/lib/admin/experience-pricing";
+import { overwriteOriginalWithCopy } from "@/lib/experiences/changed-fields";
 import { sendMail } from "@/lib/helpers/sendMail";
 import ExperienceApproved, { subjects as approvedSubjects } from "@/emails/ExperienceApproved";
 
@@ -67,16 +68,51 @@ export async function POST(
       );
     }
 
+    // Check whether a non-INACTIVE review copy exists for this experience.
+    // If yes → perform the atomic copy→original overwrite, then set ACTIVE.
+    // If no  → follow the existing direct-approve path.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updated = await (prisma.experience.update as any)({
-      where: { id: params.id },
-      data: {
-        status: "ACTIVE",
-        isActive: true,
-        pricingByType: validation.value,
-        reviewNote: null,
+    const existingCopy = await (prisma.experience.findFirst as any)({
+      where: {
+        parentId: params.id,
+        isReviewCopy: true,
+        NOT: { status: "INACTIVE" },
       },
-    });
+      select: { id: true },
+    }) as { id: string } | null;
+
+    let updated: unknown;
+
+    if (existingCopy) {
+      // Copy-based approve: overwrite + delete copy in transaction
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      updated = await (prisma.$transaction as any)(async (tx: any) => {
+        const result = await overwriteOriginalWithCopy(tx, params.id, existingCopy.id);
+        // overwriteOriginalWithCopy already sets status=ACTIVE, isActive=true
+        // Apply the admin-supplied pricingByType on top
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const finalResult = await (tx.experience.update as any)({
+          where: { id: params.id },
+          data: { pricingByType: validation.value },
+        });
+        // Hard-delete the copy
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (tx.experience.delete as any)({ where: { id: existingCopy.id } });
+        return finalResult ?? result;
+      });
+    } else {
+      // Direct approve path (no copy)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      updated = await (prisma.experience.update as any)({
+        where: { id: params.id },
+        data: {
+          status: "ACTIVE",
+          isActive: true,
+          pricingByType: validation.value,
+          reviewNote: null,
+        },
+      });
+    }
 
     // Fire-and-forget: send approval notification email to the experience owner.
     // This side effect MUST NOT affect the HTTP response — failures are swallowed.

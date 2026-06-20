@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef } from "react";
+import { toast } from "sonner";
+import { validateImageSize } from "@/lib/utils/validateImageSize";
 import { X, ImagePlus } from "lucide-react";
 import Image from "next/image";
 import { FormField } from "@/components/ui/FormField";
-import { TextAreaInput } from "@/components/ui/TextAreaInput";
+import { RichTextInput } from "@/components/ui/RichTextInput";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ItineraryDayEntry,
@@ -18,6 +20,8 @@ interface Props {
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
   imageState: ExperienceImageState;
+  changedFieldSet?: Set<string>;
+  isReadOnly?: boolean;
 }
 
 const uploadTileClass =
@@ -28,7 +32,7 @@ const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "", image: null }
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
 
-export function ItineraryStep({ copy, form, onChange, imageState }: Props) {
+export function ItineraryStep({ copy, form, onChange, imageState, changedFieldSet, isReadOnly }: Props) {
   const { fields } = copy;
   const { onEntryImageSelect, onEntryImageRemove } = imageState;
   const dayImageRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -61,7 +65,7 @@ export function ItineraryStep({ copy, form, onChange, imageState }: Props) {
         {copy.contentTabs[2]?.substeps[1]?.description}
       </p>
 
-      <div className="space-y-6">
+      <div className={`space-y-6 ${changedFieldSet?.has("itinerary") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
         {form.itinerary.map((day, index) => (
           <div key={index} className="space-y-4">
             {index > 0 && (
@@ -94,18 +98,19 @@ export function ItineraryStep({ copy, form, onChange, imageState }: Props) {
             </div>
 
             {/* Description — full width */}
-            <TextAreaInput
+            <RichTextInput
               id={`itin-desc-${index}`}
               label={fields.itineraryDesc}
               placeholder={fields.itineraryDescPlaceholder}
               value={day.description}
-              onChange={(e) => updateDay(index, "description", e.target.value)}
+              onChange={(html) => updateDay(index, "description", html)}
+              disabled={isReadOnly}
             />
 
             {/* Day image upload tile */}
             <div className="space-y-1.5">
               <label className="block text-sm font-normal text-gray-600">
-                {fields.entryImageLabel}
+                {fields.dayImageLabel}
               </label>
               <div className="flex items-start gap-3">
                 {day.image ? (
@@ -139,14 +144,22 @@ export function ItineraryStep({ copy, form, onChange, imageState }: Props) {
                   </button>
                 )}
               </div>
+              <p className="text-xs text-neutral-400">{fields.entryImageSizeHint}</p>
               <input
                 ref={(el) => { dayImageRefs.current[index] = el; }}
                 type="file"
                 accept="image/*"
                 className="sr-only"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
-                  if (file) onEntryImageSelect("itinerary", index, file);
+                  if (!file) return;
+                  const result = await validateImageSize(file, 800, 600);
+                  if (!result.valid) {
+                    toast.error(`${fields.imageTooSmall} — min 800 × 600 px (actual: ${result.width} × ${result.height} px)`);
+                    e.target.value = "";
+                    return;
+                  }
+                  onEntryImageSelect("itinerary", index, file);
                   e.target.value = "";
                 }}
               />
