@@ -11,6 +11,7 @@ import { TripperDashboardSkeleton } from "@/components/app/dashboard/tripper/Tri
 import { TripperStatsGrid } from "@/components/app/dashboard/tripper/TripperStatsGrid";
 import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBookingsList";
 import { TripperNavTabs } from "@/components/app/dashboard/tripper/TripperNavTabs";
+import { NotificationsPanel } from "@/components/app/notifications/NotificationsPanel";
 import type { TripperDashboardStats, RecentBooking } from "@/types/tripper";
 import { useDictionary } from "@/hooks/useDictionary";
 
@@ -75,10 +76,17 @@ function TripperContent() {
         ) : (
           <div className="space-y-6">
             <TripperStatsGrid stats={stats} copy={copy.stats} />
-            <RecentBookingsList
-              bookings={recentBookings}
-              copy={{ ...copy.recentBookings, ...copy.status }}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <RecentBookingsList
+                  bookings={recentBookings}
+                  copy={{ ...copy.recentBookings, ...copy.status }}
+                />
+              </div>
+              <div>
+                <NotificationsPanel audience="TRIPPER" />
+              </div>
+            </div>
           </div>
         )}
       </div>
