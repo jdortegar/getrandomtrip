@@ -20,13 +20,23 @@ export interface ExperienceImageState {
   onEntryImageRemove: (field: "activities" | "itinerary", index: number) => void;
 }
 
+export type ExperienceShellMode = "tripper" | "adminEdit" | "adminReadOnly";
+
 interface NewExperienceShellProps {
   adminReviewSlot?: ReactNode;
+  /** Renders approve/reject actions in the form action area without adding the Admin tab. */
+  reviewActionsSlot?: ReactNode;
   dict: TripperExperiencesDict["form"];
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
   initialDraft?: ExperienceFormDraft;
   initialDraftId?: string;
+  /** Controls editability and autosave routing. Defaults to 'tripper'. */
+  mode?: ExperienceShellMode;
+  /** ID of the review copy; required when mode === 'adminEdit'. Autosave patches this ID. */
+  adminCopyId?: string;
+  /** Changed fields list; when provided, highlights those fields in the form. */
+  changedFields?: string[];
 }
 
 const EMPTY_DRAFT: ExperienceFormDraft = {
@@ -89,11 +99,15 @@ const ADMIN_TAB: { id: string; label: string; substeps: { description: string; i
 
 export function NewExperienceShell({
   adminReviewSlot,
+  reviewActionsSlot,
   dict,
   locale,
   userBadgeLabels,
   initialDraft,
   initialDraftId,
+  mode = "tripper",
+  adminCopyId,
+  changedFields,
 }: NewExperienceShellProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -109,6 +123,7 @@ export function NewExperienceShell({
   if (tabIndex !== -1) {
     const canReach =
       !!adminReviewSlot ||
+      !!reviewActionsSlot ||
       Array.from({ length: tabIndex }, (_, i) => i).every((i) =>
         isExperienceTabComplete(effectiveTabs[i]!.id, seed),
       );
@@ -130,8 +145,13 @@ export function NewExperienceShell({
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [submitError, setSubmitError] = useState<string[] | null>(null);
 
-  // Derived read-only flag — all edits blocked while in PENDING_REVIEW
-  const isReadOnly = form.status === "PENDING_REVIEW";
+  // Derived read-only flag — controlled by mode, not status.
+  // 'tripper': editable except when status is PENDING_REVIEW.
+  // 'adminEdit': always editable (admin editing the copy).
+  // 'adminReadOnly': always read-only (tripper reviewing proposed changes).
+  const isReadOnly =
+    mode === "adminReadOnly" ||
+    (mode === "tripper" && (form.status === "PENDING_REVIEW" || form.status === "PENDING_TRIPPER_REVIEW"));
 
   // Blob URL → File map for pending uploads (blob URLs live in form state directly)
   const pendingFilesRef = useRef<Map<string, File>>(new Map());
@@ -228,11 +248,22 @@ export function NewExperienceShell({
 
   const persistDraft = useCallback(
     async (snapshot: ExperienceFormDraft) => {
-      if (isReadOnly) return; // no autosave while pending review
+      if (isReadOnly) return; // no autosave in read-only modes
       setSaveStatus("saving");
       try {
         const finalSnapshot = await flushPendingBlobs(snapshot);
-        if (!draftIdRef.current) {
+        if (mode === "adminEdit" && adminCopyId) {
+          // Admin editing a review copy — dedicated endpoint, no ownership check
+          const res = await fetch(
+            `/api/admin/experiences/${adminCopyId}/edit-copy`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(finalSnapshot),
+            },
+          );
+          if (!res.ok) throw new Error();
+        } else if (!draftIdRef.current) {
           const res = await fetch("/api/tripper/experiences", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -259,7 +290,7 @@ export function NewExperienceShell({
         setSaveStatus("error");
       }
     },
-    [flushPendingBlobs],
+    [flushPendingBlobs, mode, adminCopyId],
   );
 
   useEffect(() => {
@@ -283,7 +314,7 @@ export function NewExperienceShell({
   }, [activeTab, openSectionId, router]);
 
   function canNavigateTo(targetTabId: string): boolean {
-    if (adminReviewSlot) return true;
+    if (adminReviewSlot || reviewActionsSlot) return true;
     const targetIndex = effectiveTabs.findIndex((t) => t.id === targetTabId);
     const currentIndex = effectiveTabs.findIndex((t) => t.id === activeTab);
     if (targetIndex <= currentIndex) return true;
@@ -526,6 +557,7 @@ export function NewExperienceShell({
             <ExperienceFormContent
               activeTab={activeTab}
               adminReviewSlot={adminReviewSlot}
+              reviewActionsSlot={reviewActionsSlot}
               copy={dict}
               form={form}
               imageState={imageState}
@@ -539,6 +571,7 @@ export function NewExperienceShell({
               openSectionId={openSectionId}
               onSectionChange={handleSectionChange}
               tabs={effectiveTabs}
+              changedFields={changedFields}
             />
           </div>
         </div>

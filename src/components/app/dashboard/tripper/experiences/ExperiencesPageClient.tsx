@@ -20,6 +20,7 @@ const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
   DRAFT: "bg-yellow-100 text-yellow-800 border-yellow-200",
   PENDING_REVIEW: "bg-blue-100 text-blue-800 border-blue-200",
+  PENDING_TRIPPER_REVIEW: "bg-purple-100 text-purple-800 border-purple-200",
   INACTIVE: "bg-red-100 text-red-800 border-red-200",
   ARCHIVED: "bg-neutral-100 text-neutral-600 border-neutral-200",
 };
@@ -242,7 +243,11 @@ export default function ExperiencesPageClient({
                         <RowActions
                           deleteDisabled={deletingId === experience.id || isPending}
                           deleteTitle={copy.table.delete}
-                          editHref={`${basePath}/${experience.id}`}
+                          editHref={
+                            experience.status === "PENDING_TRIPPER_REVIEW"
+                              ? `${basePath}/${experience.id}/review-copy`
+                              : `${basePath}/${experience.id}`
+                          }
                           editTitle={copy.table.edit}
                           onDelete={() => handleDelete(experience.id)}
                         />

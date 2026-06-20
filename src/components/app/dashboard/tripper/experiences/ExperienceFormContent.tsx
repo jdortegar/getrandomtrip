@@ -28,6 +28,8 @@ interface ExperienceFormContentProps {
   form: ExperienceFormDraft;
   imageState: ExperienceImageState;
   adminReviewSlot?: ReactNode;
+  /** Renders approve/reject actions in the form action area; suppresses the pending banner. */
+  reviewActionsSlot?: ReactNode;
   isReadOnly?: boolean;
   isSubmitting: boolean;
   saveStatus: SaveStatus;
@@ -38,7 +40,10 @@ interface ExperienceFormContentProps {
   openSectionId: string;
   onSectionChange: (id: string) => void;
   tabs: TripperExperiencesDict["form"]["contentTabs"];
+  /** Fields changed by admin edit; when provided, highlights those field labels. */
+  changedFields?: string[];
 }
+
 
 function resolveStepContent(
   activeTab: string,
@@ -47,32 +52,30 @@ function resolveStepContent(
   onChange: ExperienceFormDraftOnChange,
   copy: TripperExperiencesDict["form"],
   imageState: ExperienceImageState,
+  changedFieldSet?: Set<string>,
+  isReadOnly?: boolean,
 ): React.ReactNode {
   if (activeTab === "about") {
     if (substepId === "experience")
       return (
-        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} />
+        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} />
       );
     if (substepId === "destination")
       return (
-        <AboutDestinationStep copy={copy} form={form} onChange={onChange} />
+        <AboutDestinationStep copy={copy} form={form} onChange={onChange} changedFieldSet={changedFieldSet} />
       );
   }
   if (activeTab === "logistics") {
     if (substepId === "accommodation")
       return (
-        <LogisticsAccommodationStep
-          copy={copy}
-          form={form}
-          onChange={onChange}
-        />
+        <LogisticsAccommodationStep copy={copy} form={form} onChange={onChange} changedFieldSet={changedFieldSet} />
       );
   }
   if (activeTab === "activities") {
     if (substepId === "activities-list")
-      return <ActivitiesListStep copy={copy} form={form} onChange={onChange} imageState={imageState} />;
+      return <ActivitiesListStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} isReadOnly={isReadOnly} />;
     if (substepId === "itinerary")
-      return <ItineraryStep copy={copy} form={form} onChange={onChange} imageState={imageState} />;
+      return <ItineraryStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} isReadOnly={isReadOnly} />;
   }
   return null;
 }
@@ -102,6 +105,7 @@ function SaveIndicator({
 export function ExperienceFormContent({
   activeTab,
   adminReviewSlot,
+  reviewActionsSlot,
   copy,
   form,
   imageState,
@@ -115,7 +119,12 @@ export function ExperienceFormContent({
   openSectionId,
   onSectionChange,
   tabs,
+  changedFields,
 }: ExperienceFormContentProps) {
+  // Build a Set for fast lookup of changed field names
+  const changedFieldSet = changedFields && changedFields.length > 0
+    ? new Set(changedFields)
+    : null;
   if (activeTab === "admin-review" && adminReviewSlot) {
     return <>{adminReviewSlot}</>;
   }
@@ -135,22 +144,27 @@ export function ExperienceFormContent({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Wrap in fieldset to natively disable all descendant form controls when read-only.
-          className="contents" preserves layout without adding a box. */}
-      <fieldset disabled={isReadOnly} className="contents">
-        <Accordion
-          type="single"
-          collapsible
-          value={openSectionId}
-          onValueChange={onSectionChange}
-          className="flex flex-col gap-4"
-        >
-          {currentTab.substeps.map((substep, i) => (
-            <JourneyDropdown
-              key={substep.id}
-              value={substep.id}
-              label={substep.title}
-            >
+      {/* Changed-fields banner: shown in adminReadOnly mode when there are highlighted fields */}
+      {changedFieldSet && changedFieldSet.size > 0 && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <span className="mt-0.5 text-base leading-none">⚠</span>
+          <div>
+            <span className="font-semibold">{copy.changedFieldsBanner.prefix}</span>
+            <span>{[...changedFieldSet].join(", ")}</span>
+          </div>
+        </div>
+      )}
+      <Accordion
+        type="single"
+        collapsible
+        value={openSectionId}
+        onValueChange={onSectionChange}
+        className="flex flex-col gap-4"
+      >
+        {currentTab.substeps.map((substep) => (
+          <JourneyDropdown key={substep.id} value={substep.id} label={substep.title}>
+            {/* fieldset wraps only form content so accordion trigger stays clickable */}
+            <fieldset disabled={isReadOnly} className="contents">
               {resolveStepContent(
                 activeTab,
                 substep.id,
@@ -158,11 +172,13 @@ export function ExperienceFormContent({
                 onChange,
                 copy,
                 imageState,
+                changedFieldSet ?? undefined,
+                isReadOnly,
               )}
-            </JourneyDropdown>
-          ))}
-        </Accordion>
-      </fieldset>
+            </fieldset>
+          </JourneyDropdown>
+        ))}
+      </Accordion>
 
       {missingFields.length > 0 && !isReadOnly && (
         <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
@@ -175,12 +191,29 @@ export function ExperienceFormContent({
       )}
 
       {isReadOnly ? (
-        <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
-          <div className="text-sm text-blue-800">
-            <span className="font-medium">{copy.review.pendingTitle} — </span>
-            {copy.review.pendingBody}
+        reviewActionsSlot ? (
+          !isLastTab ? (
+            <JourneyActionBar
+              canContinue
+              isAllStepsComplete={false}
+              isSavingAndRedirecting={false}
+              labels={{ clearAll: "", next: copy.actionBar.next, viewCheckout: "" }}
+              onClearAll={() => { /* read-only */ }}
+              onContinue={onNext}
+              onGoToCheckout={() => { /* read-only */ }}
+              showClearAll={false}
+            />
+          ) : (
+            reviewActionsSlot
+          )
+        ) : (
+          <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
+            <div className="text-sm text-blue-800">
+              <span className="font-medium">{copy.review.pendingTitle} — </span>
+              {copy.review.pendingBody}
+            </div>
           </div>
-        </div>
+        )
       ) : (
         <div className="relative">
           <div className="absolute left-0 bottom-3">
