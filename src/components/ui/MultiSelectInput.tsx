@@ -22,6 +22,7 @@ interface MultiSelectInputProps {
   searchPlaceholder?: string;
   emptyLabel?: string;
   hint?: string;
+  triggerClassName?: string;
 }
 
 export function MultiSelectInput({
@@ -34,6 +35,7 @@ export function MultiSelectInput({
   searchPlaceholder = "Search...",
   emptyLabel = "No results.",
   hint,
+  triggerClassName,
 }: MultiSelectInputProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -71,7 +73,7 @@ export function MultiSelectInput({
             type="button"
             role="combobox"
             aria-expanded={open}
-            className="min-h-[56px] w-full bg-gray-100 rounded-xl px-4 py-3 flex flex-wrap gap-2 items-center text-left"
+            className={cn("min-h-[56px] w-full bg-gray-100 rounded-xl px-4 py-3 flex flex-wrap gap-2 items-center text-left", triggerClassName)}
           >
             {selected.length === 0 && (
               <span className="text-gray-400 text-base flex-1">

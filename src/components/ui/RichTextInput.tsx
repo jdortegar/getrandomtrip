@@ -33,6 +33,7 @@ interface RichTextInputProps {
   onChange: (html: string) => void;
   placeholder?: string;
   value: string;
+  disabled?: boolean;
 }
 
 export function RichTextInput({
@@ -41,6 +42,7 @@ export function RichTextInput({
   onChange,
   placeholder,
   value,
+  disabled,
 }: RichTextInputProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -56,6 +58,7 @@ export function RichTextInput({
           onEditorChange={onChange}
           tinymceScriptSrc={TINYMCE_SCRIPT_SRC}
           value={value}
+          disabled={disabled}
         />
       </div>
     </div>
