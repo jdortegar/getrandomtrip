@@ -28,6 +28,8 @@ interface TravelerTypeCardProps {
   /** When defined (curated journey), renders tripper attribution mid-card. */
   tripperBadge?: { name: string; avatarUrl: string | null };
   width?: number;
+  /** When true, the card content is wrapped to the top of the card. */
+  wrapped?: boolean;
 }
 
 const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
@@ -45,6 +47,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   title: titleProp,
   tripperBadge,
   width = 100,
+  wrapped = false,
 }) => {
   const title = item?.title ?? titleProp ?? "";
   const description = item?.description ?? descriptionProp ?? "";
@@ -106,7 +109,15 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
         <ReviewBadge rating="4.6" />
 
-        <div className="absolute top-10 left-0 z-20 w-full p-5 @[200px]:pb-20 text-left text-white">
+        <div
+          className={cn(
+            "absolute left-0 z-20 w-full p-5 @[200px]:pb-20 text-left text-white @sm:top-1/2",
+            {
+              "top-1/2": !wrapped,
+              "top-10": wrapped,
+            },
+          )}
+        >
           {tripperBadge && (
             <div className=" flex items-center gap-3 mb-3">
               <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-white/40">

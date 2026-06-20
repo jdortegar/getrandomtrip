@@ -115,7 +115,11 @@ export default function BudgetStep({
           {(localizedTravelerTypes ?? []).length === 0 ? (
             <div className="py-8 text-center space-y-4">
               <p className="text-gray-500">{labels.noTripperExperiences}</p>
-              <Button onClick={handleFallbackToGeneral} variant="outline" size="sm">
+              <Button
+                onClick={handleFallbackToGeneral}
+                variant="outline"
+                size="sm"
+              >
                 {labels.browseGeneralExperiences}
               </Button>
             </div>
@@ -129,6 +133,7 @@ export default function BudgetStep({
               }}
               selectedTravelType={selectedTravelType}
               tripperBadge={tripperBadge}
+              wrapped
             />
           )}
         </JourneyDropdown>
@@ -138,7 +143,9 @@ export default function BudgetStep({
           label={labels.experienceLabel}
           value="experience"
         >
-          {hasTravelType && plannerContent && plannerContent.levels.length > 0 ? (
+          {hasTravelType &&
+          plannerContent &&
+          plannerContent.levels.length > 0 ? (
             <div className="space-y-4">
               <p className="text-gray-600">
                 {labels.experienceStepDescription}
@@ -154,7 +161,9 @@ export default function BudgetStep({
                 cardClassName="min-h-[450px]!"
               />
             </div>
-          ) : hasTravelType && plannerContent && plannerContent.levels.length === 0 ? (
+          ) : hasTravelType &&
+            plannerContent &&
+            plannerContent.levels.length === 0 ? (
             <div className="py-8 text-center">
               <p className="text-gray-500">{labels.noLevelsAvailable}</p>
             </div>
