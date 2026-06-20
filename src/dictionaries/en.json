@@ -182,7 +182,27 @@
     "confirmReject": "Confirm rejection",
     "cancel": "Cancel",
     "noteLabel": "Note to tripper",
-    "priceSection": "Price per person"
+    "notePlaceholder": "Explain what needs to change...",
+    "notifTitle": "Admin proposed changes to your experience",
+    "notifBody": "Review the proposed changes for \"{title}\".",
+    "priceSection": "Price per person (USD)",
+    "editExperience": "Edit experience",
+    "sendToTripper": "Send to tripper for review",
+    "discardChanges": "Discard changes",
+    "lockedBannerTitle": "Locked for editing",
+    "lockedBannerBody": "Another admin is currently editing this experience.",
+    "errorApprove": "Could not approve. Please try again.",
+    "errorReject": "Could not reject. Please try again.",
+    "errorStartEdit": "Could not start edit. Please try again.",
+    "errorLocked": "Locked by another admin ({name}). Refresh to see the latest lock status.",
+    "errorSendToTripper": "Could not send to tripper. Please try again.",
+    "errorDiscard": "Could not discard changes. Please try again."
+  },
+  "tripperExperienceReviewCopy": {
+    "approve": "Approve & apply",
+    "reject": "Reject changes",
+    "errorApprove": "Could not approve changes. Please try again.",
+    "errorReject": "Could not reject changes. Please try again."
   },
   "adminPages": {
     "payments": {
@@ -3246,7 +3266,8 @@
       "DRAFT": "Draft",
       "INACTIVE": "Inactive",
       "ARCHIVED": "Archived",
-      "PENDING_REVIEW": "Pending review"
+      "PENDING_REVIEW": "Pending review",
+      "PENDING_TRIPPER_REVIEW": "Tripper reviewing"
     },
     "form": {
       "createTitle": "CREATE EXPERIENCE",
@@ -3329,6 +3350,7 @@
         "title": "Title",
         "titlePlaceholder": "Write the experience title",
         "type": "Experience type",
+        "typePlaceholder": "Select type...",
         "typeHint": "You can choose 1 or more",
         "level": "Level",
         "status": "Status",
@@ -3424,10 +3446,14 @@
         "tagInput": "New tag (Enter to add)",
         "heroImage": "Hero image",
         "heroImageHint": "Main image displayed on the experience card",
-        "entryImageLabel": "Entry image",
+        "activityImageLabel": "Activity image",
+        "dayImageLabel": "Day image",
         "uploadImage": "Upload image",
         "uploading": "Uploading…",
         "removeImage": "Remove",
+        "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
+        "entryImageSizeHint": "Minimum 800 × 600 px recommended",
+        "imageTooSmall": "Image too small",
         "copyrightHint": "Images must be your own or royalty-free *",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
@@ -3467,6 +3493,9 @@
       },
       "statusBadge": {
         "pendingReview": "Pending review"
+      },
+      "changedFieldsBanner": {
+        "prefix": "Admin proposed changes to: "
       }
     }
   },
