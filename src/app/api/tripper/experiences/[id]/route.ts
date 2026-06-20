@@ -154,6 +154,17 @@ export async function PATCH(
       );
     }
 
+    // Guard: cannot edit an experience while it's awaiting tripper review
+    if ((existingExperience.status as string) === "PENDING_TRIPPER_REVIEW") {
+      return NextResponse.json(
+        {
+          error: "locked_for_review",
+          message: "Experience cannot be edited while it is pending tripper review. Approve or reject the proposed changes first.",
+        },
+        { status: 409 },
+      );
+    }
+
     const body = await request.json();
     const {
       type,

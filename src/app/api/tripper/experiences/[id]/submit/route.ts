@@ -104,14 +104,34 @@ export async function POST(
       );
     }
 
+    // Transition to PENDING_REVIEW and clean up any INACTIVE copy from a prior rejection
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updated = await (prisma.experience.update as any)({
-      where: { id: params.id },
-      data: {
-        status: "PENDING_REVIEW",
-        reviewNote: null,
-      },
-      select: { id: true, status: true },
+    const updated = await (prisma.$transaction as any)(async (tx: any) => {
+      // Delete any INACTIVE review copy for this experience (from a prior rejection cycle)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const inactiveCopy = await (tx.experience.findFirst as any)({
+        where: {
+          parentId: params.id,
+          isReviewCopy: true,
+          status: "INACTIVE",
+        },
+        select: { id: true },
+      }) as { id: string } | null;
+
+      if (inactiveCopy) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (tx.experience.delete as any)({ where: { id: inactiveCopy.id } });
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (tx.experience.update as any)({
+        where: { id: params.id },
+        data: {
+          status: "PENDING_REVIEW",
+          reviewNote: null,
+        },
+        select: { id: true, status: true },
+      });
     }) as { id: string; status: string };
 
     sendExperienceSubmitted(updated.id, user.id);

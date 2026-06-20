@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { overwriteOriginalWithCopy as OverwriteFn } from "@/lib/experiences/changed-fields";
 
 type RouteModule = typeof import("../route");
+type OverwriteModule = { overwriteOriginalWithCopy: typeof OverwriteFn };
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 vi.mock("next-auth", () => ({
@@ -14,8 +16,13 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    experience: { findUnique: vi.fn(), update: vi.fn() },
+    experience: { findUnique: vi.fn(), findFirst: vi.fn(), update: vi.fn(), delete: vi.fn() },
+    $transaction: vi.fn(),
   },
+}));
+
+vi.mock("@/lib/experiences/changed-fields", () => ({
+  overwriteOriginalWithCopy: vi.fn(),
 }));
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -162,6 +169,8 @@ describe("POST /api/admin/experiences/[id]/approve", () => {
     (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       pendingExperience(),
     );
+    // No review copy exists — direct approve path
+    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     (prisma.experience.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "exp-1",
       status: "ACTIVE",
@@ -186,6 +195,78 @@ describe("POST /api/admin/experiences/[id]/approve", () => {
           status: "ACTIVE",
           isActive: true,
           reviewNote: null,
+        }),
+      }),
+    );
+  });
+
+  it("returns 200 via copy-overwrite path when a non-INACTIVE copy exists", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      pendingExperience(),
+    );
+    // A review copy exists — triggers the copy-overwrite branch
+    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+    });
+
+    const overwrittenExperience = {
+      id: "exp-1",
+      status: "ACTIVE",
+      isActive: true,
+      pricingByType: { couple: 300, group: 200 },
+      reviewNote: null,
+      ownerId: null,
+    };
+
+    const mockTx = {
+      experience: {
+        update: vi.fn().mockResolvedValue(overwrittenExperience),
+        delete: vi.fn().mockResolvedValue({}),
+      },
+    };
+
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (fn: (tx: typeof mockTx) => Promise<unknown>) => fn(mockTx),
+    );
+
+    const changedFieldsMod = (await import(
+      "@/lib/experiences/changed-fields"
+    )) as OverwriteModule;
+    (changedFieldsMod.overwriteOriginalWithCopy as ReturnType<typeof vi.fn>).mockResolvedValue(
+      overwrittenExperience,
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(
+      makePostRequest("exp-1", { pricingByType: { couple: 300, group: 200 } }),
+      { params: Promise.resolve({ id: "exp-1" }) },
+    );
+
+    expect(res.status).toBe(200);
+
+    // overwriteOriginalWithCopy must have been called with the right IDs
+    expect(changedFieldsMod.overwriteOriginalWithCopy).toHaveBeenCalledWith(
+      mockTx,
+      "exp-1",
+      "copy-1",
+    );
+
+    // Copy must be deleted inside the transaction
+    expect(mockTx.experience.delete).toHaveBeenCalledWith({
+      where: { id: "copy-1" },
+    });
+
+    // pricingByType must be applied on top after overwrite
+    expect(mockTx.experience.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          pricingByType: { couple: 300, group: 200 },
         }),
       }),
     );
