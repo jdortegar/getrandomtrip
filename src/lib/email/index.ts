@@ -1,6 +1,15 @@
 import AdminNewBooking, {
   subject as adminNewBookingSubject,
 } from "@/emails/AdminNewBooking";
+import ExperiencePendingTripperReview, {
+  subjects as pendingTripperReviewSubjects,
+} from "@/emails/ExperiencePendingTripperReview";
+import ExperienceCopyApproved, {
+  subjects as copyApprovedSubjects,
+} from "@/emails/ExperienceCopyApproved";
+import ExperienceCopyRejected, {
+  subjects as copyRejectedSubjects,
+} from "@/emails/ExperienceCopyRejected";
 import BookingConfirmed, {
   subjects as bookingConfirmedSubjects,
 } from "@/emails/BookingConfirmed";
@@ -331,6 +340,129 @@ export function sendAdminNewBooking(
       });
     } catch (err) {
       console.error("[email] sendAdminNewBooking:", err);
+    }
+  })();
+}
+
+export function sendExperiencePendingTripperReview(
+  experienceId: string,
+  tripperId: string,
+): void {
+  void (async () => {
+    try {
+      const [experience, tripper] = await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (prisma.experience.findUnique as any)({
+          where: { id: experienceId },
+          select: { title: true, changedFields: true },
+        }) as Promise<{ title: string; changedFields: string[] } | null>,
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { email: true, name: true, locale: true },
+        }),
+      ]);
+
+      if (!experience?.title || !tripper?.email) return;
+
+      const locale = resolveLocale(tripper.locale);
+      const BASE_URL = "https://getrandomtrip.com";
+      const reviewUrl = `${BASE_URL}/${locale}/dashboard/tripper/experiences/${experienceId}/review-copy`;
+
+      await sendMail({
+        to: tripper.email,
+        subject: pendingTripperReviewSubjects[locale],
+        content: {
+          react: React.createElement(ExperiencePendingTripperReview, {
+            tripperName: tripper.name ?? "",
+            experienceTitle: experience.title,
+            changedFields: experience.changedFields ?? [],
+            reviewUrl,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendExperiencePendingTripperReview:", err);
+    }
+  })();
+}
+
+export function sendExperienceCopyApproved(
+  experienceId: string,
+  tripperId: string,
+): void {
+  void (async () => {
+    try {
+      const [experience, tripper] = await Promise.all([
+        prisma.experience.findUnique({
+          where: { id: experienceId },
+          select: { title: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { name: true },
+        }),
+      ]);
+
+      if (!experience?.title) return;
+
+      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminName = process.env.ADMIN_NAME ?? "Admin";
+
+      await sendMail({
+        to: adminEmail,
+        subject: copyApprovedSubjects.es,
+        content: {
+          react: React.createElement(ExperienceCopyApproved, {
+            adminName,
+            experienceTitle: (experience as { title: string }).title,
+            tripperName: tripper?.name ?? "",
+            locale: "es",
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendExperienceCopyApproved:", err);
+    }
+  })();
+}
+
+export function sendExperienceCopyRejected(
+  experienceId: string,
+  tripperId: string,
+): void {
+  void (async () => {
+    try {
+      const [experience, tripper] = await Promise.all([
+        prisma.experience.findUnique({
+          where: { id: experienceId },
+          select: { title: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { name: true },
+        }),
+      ]);
+
+      if (!experience?.title) return;
+
+      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminName = process.env.ADMIN_NAME ?? "Admin";
+
+      await sendMail({
+        to: adminEmail,
+        subject: copyRejectedSubjects.es,
+        content: {
+          react: React.createElement(ExperienceCopyRejected, {
+            adminName,
+            experienceTitle: (experience as { title: string }).title,
+            tripperName: tripper?.name ?? "",
+            locale: "es",
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendExperienceCopyRejected:", err);
     }
   })();
 }
