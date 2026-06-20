@@ -88,6 +88,11 @@ export interface AdminExperience {
   pricingByType: Record<string, number> | null;
   reviewNote: string | null;
   updatedAt: string;
+  // Review copy fields
+  isReviewCopy?: boolean;
+  parentId?: string | null;
+  changedFields?: string[];
+  reviewLockedBy?: string | null;
 }
 
 export interface AdminPayment {

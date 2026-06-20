@@ -179,6 +179,12 @@ model Experience {
   // Editorial feedback from admin rejection; cleared on approval
   reviewNote   String? @db.Text
 
+  // Review copy fields (lazy copy mechanism for admin edit flow)
+  isReviewCopy   Boolean  @default(false)
+  parentId       String?  // foreign key to original experience (set only on copy rows)
+  changedFields  String[] @default([])
+  reviewLockedBy String?  // admin id holding the edit lock; null when unlocked
+
   // Compatibility matching (mirrors TripRequest filter fields)
   accommodationType String @default("any")
   transport         String @default("any")
@@ -398,6 +404,7 @@ enum TripRequestStatus {
 enum ExperienceStatus {
   DRAFT
   PENDING_REVIEW
+  PENDING_TRIPPER_REVIEW
   ACTIVE
   INACTIVE
   ARCHIVED
@@ -435,6 +442,7 @@ enum BlogFormat {
 enum NotificationType {
   EXPERIENCE_APPROVED
   EXPERIENCE_REJECTED
+  EXPERIENCE_PENDING_TRIPPER_REVIEW
   BOOKING_CONFIRMED
   BOOKING_REVEALED
   BOOKING_COMPLETED
