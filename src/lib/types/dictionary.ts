@@ -1692,6 +1692,7 @@ export interface MarketingDictionary {
         linkedin: string;
         name: string;
         role: string;
+        tagline?: string;
       }>;
       sectionTitle: string;
       subtitle: string;
