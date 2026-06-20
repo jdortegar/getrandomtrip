@@ -1,0 +1,14 @@
+change: experience-approval-flow-v2
+status: archive
+artifact_store: openspec
+phases:
+  explore: done
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+created: 2026-06-19
+archived: 2026-06-20
