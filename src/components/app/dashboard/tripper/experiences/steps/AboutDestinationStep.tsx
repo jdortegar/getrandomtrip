@@ -13,6 +13,7 @@ interface Props {
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
+  changedFieldSet?: Set<string>;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
@@ -20,8 +21,9 @@ const req = <span className="text-red-500 ml-0.5">*</span>;
 const selectorClassName = "bg-gray-100 border-0 pr-6 py-4 h-auto rounded-xl";
 const labelClassName = "block font-normal text-gray-600 text-base";
 
-export function AboutDestinationStep({ copy, form, onChange }: Props) {
+export function AboutDestinationStep({ copy, form, onChange, changedFieldSet }: Props) {
   const [countryCode, setCountryCode] = useState("");
+  const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   return (
     <div className="space-y-5">
@@ -36,7 +38,7 @@ export function AboutDestinationStep({ copy, form, onChange }: Props) {
             {req}
           </label>
           <CountrySelector
-            className={selectorClassName}
+            className={`${selectorClassName}${ch("destinationCountry") ? ` ${ch("destinationCountry")}` : ""}`}
             placeholder={copy.fields.countryPlaceholder}
             value={form.destinationCountry}
             onChange={(name, code) => {
@@ -52,7 +54,7 @@ export function AboutDestinationStep({ copy, form, onChange }: Props) {
             {req}
           </label>
           <CitySelector
-            className={selectorClassName}
+            className={`${selectorClassName}${ch("destinationCity") ? ` ${ch("destinationCity")}` : ""}`}
             countryCode={countryCode}
             placeholder={copy.fields.cityPlaceholder}
             value={form.destinationCity}

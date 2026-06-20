@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent } from "react";
+import { toast } from "sonner";
+import { validateImageSize } from "@/lib/utils/validateImageSize";
 import { X, ImagePlus } from "lucide-react";
 import Image from "next/image";
 import { FormField } from "@/components/ui/FormField";
@@ -20,6 +22,8 @@ interface Props {
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
   imageState: ExperienceImageState;
+  changedFieldSet?: Set<string>;
+  isReadOnly?: boolean;
 }
 
 const chipClass =
@@ -38,7 +42,7 @@ const EMPTY_ENTRY: ActivityEntry = {
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-export function ActivitiesListStep({ copy, form, onChange, imageState }: Props) {
+export function ActivitiesListStep({ copy, form, onChange, imageState, changedFieldSet, isReadOnly }: Props) {
   const { fields } = copy;
   const { onEntryImageSelect, onEntryImageRemove } = imageState;
 
@@ -93,7 +97,7 @@ export function ActivitiesListStep({ copy, form, onChange, imageState }: Props) 
         {copy.contentTabs[2]?.substeps[0]?.description}
       </p>
 
-      <div className="space-y-6">
+      <div className={`space-y-6 ${changedFieldSet?.has("activities") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
         {form.activities.map((entry, index) => (
           <div key={index} className="space-y-4">
             {index > 0 && (
@@ -137,6 +141,7 @@ export function ActivitiesListStep({ copy, form, onChange, imageState }: Props) 
               placeholder={fields.activityDescPlaceholder}
               value={entry.description}
               onChange={(html) => updateEntry(index, "description", html)}
+              disabled={isReadOnly}
             />
 
             {/* Row 3: Risks */}
@@ -146,12 +151,13 @@ export function ActivitiesListStep({ copy, form, onChange, imageState }: Props) 
               placeholder={fields.activityRisksPlaceholder}
               value={entry.risks}
               onChange={(html) => updateEntry(index, "risks", html)}
+              disabled={isReadOnly}
             />
 
             {/* Row 4: Entry image upload tile */}
             <div className="space-y-1.5">
               <label className="block text-sm font-normal text-gray-600">
-                {fields.entryImageLabel}
+                {fields.activityImageLabel}
               </label>
               <div className="flex items-start gap-3">
                 {entry.image ? (
@@ -185,14 +191,22 @@ export function ActivitiesListStep({ copy, form, onChange, imageState }: Props) 
                   </button>
                 )}
               </div>
+              <p className="text-xs text-neutral-400">{fields.entryImageSizeHint}</p>
               <input
                 ref={(el) => { entryImageRefs.current[index] = el; }}
                 type="file"
                 accept="image/*"
                 className="sr-only"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
-                  if (file) onEntryImageSelect("activities", index, file);
+                  if (!file) return;
+                  const result = await validateImageSize(file, 800, 600);
+                  if (!result.valid) {
+                    toast.error(`${fields.imageTooSmall} — min 800 × 600 px (actual: ${result.width} × ${result.height} px)`);
+                    e.target.value = "";
+                    return;
+                  }
+                  onEntryImageSelect("activities", index, file);
                   e.target.value = "";
                 }}
               />
@@ -209,35 +223,7 @@ export function ActivitiesListStep({ copy, form, onChange, imageState }: Props) 
         + {fields.addAnotherActivity}
       </button>
 
-      {/* Shared tags block */}
-      <div className="space-y-3">
-        <label className="block font-normal text-gray-600 text-base">{fields.tags}</label>
-        <input
-          className="bg-gray-100 outline-none placeholder:text-gray-400 px-4 py-3 rounded-xl text-gray-900 w-full text-base"
-          placeholder={fields.tagInput}
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={onTagKeyDown}
-          onBlur={() => addTag(tagInput)}
-        />
-        {form.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {form.tags.map((tag) => (
-              <span key={tag} className={chipClass}>
-                <span className="text-gray-400">#</span>
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* tags section hidden — pending design decision */}
     </div>
   );
 }

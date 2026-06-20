@@ -14,6 +14,7 @@ interface Props {
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
+  changedFieldSet?: Set<string>;
 }
 
 const EMPTY_ENTRY: AccommodationEntry = {
@@ -25,7 +26,7 @@ const EMPTY_ENTRY: AccommodationEntry = {
   referredLink: "",
 };
 
-export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
+export function LogisticsAccommodationStep({ copy, form, onChange, changedFieldSet }: Props) {
   const { fields } = copy;
 
   function updateEntry(
@@ -56,7 +57,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange }: Props) {
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>
 
-      <div className="space-y-6">
+      <div className={`space-y-6 ${changedFieldSet?.has("hotels") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
         {form.accommodations.map((entry, index) => (
           <div key={index} className="space-y-4">
             {index > 0 && (

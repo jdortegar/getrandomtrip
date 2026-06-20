@@ -4,7 +4,9 @@ import { useRef } from "react";
 import { useParams } from "next/navigation";
 import { Check, ImagePlus, X } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { FormField } from "@/components/ui/FormField";
+import { validateImageSize } from "@/lib/utils/validateImageSize";
 import { DaysInput } from "@/components/ui/DaysInput";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
@@ -21,6 +23,7 @@ interface Props {
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
   imageState: ExperienceImageState;
+  changedFieldSet?: Set<string>;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
@@ -29,13 +32,14 @@ const MONTH_KEYS = [
   "01","02","03","04","05","06","07","08","09","10","11","12",
 ];
 
-export function AboutExperienceStep({ copy, form, onChange, imageState }: Props) {
+export function AboutExperienceStep({ copy, form, onChange, imageState, changedFieldSet }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const { onHeroSelect, onHeroRemove } = imageState;
   const heroRef = useRef<HTMLInputElement>(null);
   const experienceTypes = getExperienceTypes(locale);
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
+  const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   const handleTypeChange = (value: string[]) => {
     onChange("type", value);
@@ -64,6 +68,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
             placeholder={copy.fields.titlePlaceholder}
             value={form.title}
             onChange={(e) => onChange("title", e.target.value)}
+            className={ch("title")}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -73,7 +78,8 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
             options={experienceTypes.map((t) => ({ value: t.value, label: t.label }))}
             value={form.type}
             onChange={handleTypeChange}
-            placeholder="Select type..."
+            placeholder={copy.fields.typePlaceholder}
+            triggerClassName={ch("type")}
           />
           <p className="text-xs text-neutral-400">{copy.fields.typeHint}</p>
         </div>
@@ -87,6 +93,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
           label={copy.fields.minNights}
           value={form.minNights + 1}
           onChange={(days) => onChange("minNights", days - 1)}
+          inputClassName={ch("minNights")}
         />
 
         <MultiSelectInput
@@ -97,6 +104,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
           onChange={(v) => onChange("season", v)}
           placeholder={copy.fields.seasonPlaceholder}
           hint={copy.fields.seasonHint}
+          triggerClassName={ch("season")}
         />
 
         <MultiSelectInput
@@ -107,6 +115,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
           hint={copy.fields.excuseKeyHint}
           value={form.excuseKey}
           onChange={(v) => onChange("excuseKey", v)}
+          triggerClassName={ch("excuseKey")}
         />
       </div>
 
@@ -118,6 +127,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
         maxLength={150}
         value={form.teaser}
         onChange={(e) => onChange("teaser", e.target.value)}
+        className={ch("teaser")}
       />
 
       {/* Row 4: Descripción completa */}
@@ -127,6 +137,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
         placeholder={copy.fields.descriptionPlaceholder}
         value={form.description}
         onChange={(e) => onChange("description", e.target.value)}
+        className={ch("description")}
       />
 
       {/* Hero image — full-width banner upload */}
@@ -137,7 +148,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
         <p className="text-xs text-neutral-400 -mt-1">{copy.fields.heroImageHint}</p>
 
         {form.heroImage ? (
-          <div className="relative w-40 aspect-video rounded-lg overflow-hidden group shrink-0">
+          <div className={`relative w-40 aspect-video rounded-lg overflow-hidden group shrink-0${ch("heroImage") ? ` ${ch("heroImage")}` : ""}`}>
             <Image
               src={form.heroImage}
               alt="Hero"
@@ -158,21 +169,29 @@ export function AboutExperienceStep({ copy, form, onChange, imageState }: Props)
           <button
             type="button"
             onClick={() => heroRef.current?.click()}
-            className="flex w-40 aspect-video flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors shrink-0"
+            className={`flex w-40 aspect-video flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors shrink-0${ch("heroImage") ? ` ${ch("heroImage")}` : ""}`}
           >
             <ImagePlus className="h-5 w-5" />
             <span className="text-xs">{copy.fields.uploadImage}</span>
           </button>
         )}
 
+        <p className="text-xs text-neutral-400">{copy.fields.heroImageSizeHint}</p>
         <input
           ref={heroRef}
           type="file"
           accept="image/*"
           className="sr-only"
-          onChange={(e) => {
+          onChange={async (e) => {
             const file = e.target.files?.[0];
-            if (file) onHeroSelect(file);
+            if (!file) return;
+            const result = await validateImageSize(file, 1280, 720);
+            if (!result.valid) {
+              toast.error(`${copy.fields.imageTooSmall} — min 1280 × 720 px (actual: ${result.width} × ${result.height} px)`);
+              e.target.value = "";
+              return;
+            }
+            onHeroSelect(file);
             e.target.value = "";
           }}
         />
