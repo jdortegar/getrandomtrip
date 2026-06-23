@@ -13,7 +13,7 @@ import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBoo
 import { TripperNavTabs } from "@/components/app/dashboard/tripper/TripperNavTabs";
 import { NotificationsPanel } from "@/components/app/notifications/NotificationsPanel";
 import type { TripperDashboardStats, RecentBooking } from "@/types/tripper";
-import { useDictionary } from "@/hooks/useDictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 const EMPTY_STATS: TripperDashboardStats = {
   totalBookings: 0,
@@ -28,6 +28,7 @@ function TripperContent() {
   const { data: session } = useSession();
   const { user } = useUserStore();
   const copy = useDictionary((d) => d.tripperDashboard);
+  const locale = useLocale();
 
   const currentUser = session?.user || user;
 
@@ -81,6 +82,7 @@ function TripperContent() {
                 <RecentBookingsList
                   bookings={recentBookings}
                   copy={{ ...copy.recentBookings, ...copy.status }}
+                  locale={locale}
                 />
               </div>
               <div>
