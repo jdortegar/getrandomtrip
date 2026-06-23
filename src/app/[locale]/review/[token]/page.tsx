@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import HeaderHero from "@/components/journey/HeaderHero";
 import Section from "@/components/layout/Section";
 import ReviewFormClient from "./ReviewFormClient";
+import { NeedsDesignBanner } from "@/components/common/NeedsDesignBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function ReviewPage({ params }: PageProps) {
   if (!tripRequest) {
     return (
       <>
+        <NeedsDesignBanner />
         <HeaderHero
           className="h-[40vh]!"
           title={copy.errorInvalidToken}
@@ -53,6 +55,7 @@ export default async function ReviewPage({ params }: PageProps) {
   if (tripRequest.reviewSubmittedAt) {
     return (
       <>
+        <NeedsDesignBanner />
         <HeaderHero
           className="h-[40vh]!"
           title={copy.successTitle}
@@ -93,6 +96,7 @@ export default async function ReviewPage({ params }: PageProps) {
 
   return (
     <>
+      <NeedsDesignBanner />
       <HeaderHero
         className="h-[40vh]!"
         title={copy.pageTitle}
