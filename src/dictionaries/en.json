@@ -2194,7 +2194,8 @@
       "xsedExperienceLabel": "XSED Drop Experience",
       "xsedReferenceLabel": "Purchase reference number",
       "xsedPerPerson": "/person",
-      "xsedDownloadCta": "Download XSED"
+      "xsedDownloadCta": "Download XSED",
+      "receiptLink": "View receipt"
     }
   },
   "paymentFailure": {
@@ -2604,28 +2605,32 @@
           "img": "/images/about-us-santiago.png",
           "linkedin": "#",
           "name": "Santiago Senega",
-          "role": "Founder"
+          "role": "Founder",
+          "tagline": "Designs every experience as if it were the only one that matters."
         },
         {
           "bio": "Technology and product. Builds the systems that make serendipity possible at scale without losing the soul of the detail.",
           "img": "/images/about-us-david.png",
           "linkedin": "#",
           "name": "David Ortega",
-          "role": "Tech & Product"
+          "role": "Tech & Product",
+          "tagline": "Bridges product, technology and user experience."
         },
         {
           "bio": "Operations and logistics. Turns every itinerary into a flawless choreography that happens behind the scenes.",
           "img": "/images/about-us-rodrigo.png",
           "linkedin": "#",
           "name": "Rodrigo S. Benítez",
-          "role": "Operations"
+          "role": "Operations",
+          "tagline": "Transforms logistics into invisible art."
         },
         {
           "bio": "Design and brand. Shapes the visual world of GetRandomTrip, tending to every pixel as if it were part of the landscape.",
           "img": "/images/about-us-carla.png",
           "linkedin": "#",
           "name": "Carla C. J Vázquez",
-          "role": "Design"
+          "role": "Design",
+          "tagline": "Gives visual shape to worlds that don't exist yet."
         }
       ],
       "sectionTitle": "Who we are",
@@ -2685,7 +2690,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
       "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -3707,5 +3716,41 @@
       "BOOKING_CANCELLED": "Booking cancelled",
       "PAYMENT_RECEIVED": "Payment received"
     }
+  },
+  "tripReview": {
+    "buttonLabel": "Leave a review",
+    "title": "How was your trip?",
+    "ratingLabel": "Your rating",
+    "feedbackPlaceholder": "Tell us about your experience...",
+    "submit": "Submit review",
+    "cancel": "Cancel",
+    "success": "Thank you for your review!",
+    "emailHintTitle": "Leave a review",
+    "emailHint": "Check your email — we sent you a link to rate your experience."
+  },
+  "tripItinerary": {
+    "title": "Trip Itinerary",
+    "backToTrip": "Back to trip",
+    "day": "Day",
+    "emptyTitle": "Your itinerary is being prepared",
+    "emptyDescription": "Once your tripper assigns the experience, you'll see the full itinerary here.",
+    "noExperience": "No experience has been assigned to this trip yet.",
+    "inclusions": "Included",
+    "exclusions": "Not included"
+  },
+  "reviewForm": {
+    "pageTitle": "How was your trip?",
+    "pageSubtitle": "Your feedback helps us improve and helps other travelers make better choices.",
+    "ratingLabel": "Rating",
+    "titleLabel": "Title (optional)",
+    "titlePlaceholder": "A summary of your experience",
+    "contentLabel": "Your review",
+    "contentPlaceholder": "Tell us what you loved most (and what could be improved)…",
+    "submitButton": "Submit review",
+    "successTitle": "Thank you for your review!",
+    "successMessage": "Your review has been submitted and is under review. Once approved, it will appear on your tripper's profile.",
+    "errorInvalidToken": "This link is invalid or has expired. If you think this is an error, please contact us.",
+    "errorAlreadySubmitted": "You have already submitted a review for this trip. Thank you for your time!",
+    "errorGeneric": "An error occurred while submitting your review. Please try again."
   }
 }

@@ -14,7 +14,7 @@ import { ArrowLeft } from "lucide-react";
 import Blog from "@/components/Blog";
 import TripperMottoBanner from "@/components/blog/TripperMottoBanner";
 import Testimonials from "@/components/Testimonials/Testimonials";
-import { getAllTestimonialsForTripper } from "@/lib/helpers/Tripper";
+import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 import type {
   BlogDetailAuthor,
   BlogPost as BlogCardPost,
@@ -48,6 +48,7 @@ function BlogDetailContent() {
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
   const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,6 +84,16 @@ function BlogDetailContent() {
 
     fetchBlog();
   }, [slugOrId]);
+
+  useEffect(() => {
+    if (!blog?.author?.id) return;
+    fetch(`/api/tripper/${blog.author.id}/testimonials`)
+      .then((r) => r.json())
+      .then((data: { testimonials?: Testimonial[] }) => {
+        if (Array.isArray(data.testimonials)) setTestimonials(data.testimonials);
+      })
+      .catch(() => undefined);
+  }, [blog?.author?.id]);
 
   useEffect(() => {
     if (!blog?.author?.id) return;
@@ -287,10 +298,7 @@ function BlogDetailContent() {
       )}
 
       <Testimonials
-        testimonials={getAllTestimonialsForTripper({
-          location: blog.author.location ?? "",
-          testimonials: [],
-        })}
+        testimonials={testimonials}
         title={`Lo que dicen sobre ${blog.author.name}`}
       />
     </>

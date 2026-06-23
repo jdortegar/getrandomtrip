@@ -30,6 +30,15 @@ export async function GET(
       where: { id: params.id },
       include: {
         payment: true,
+        experience: {
+          select: {
+            id: true,
+            title: true,
+            itinerary: true,
+            inclusions: true,
+            exclusions: true,
+          },
+        },
       },
     });
 

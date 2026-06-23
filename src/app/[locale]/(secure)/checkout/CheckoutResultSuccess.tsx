@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { MapPin, Share2 } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/app/checkout/AddToCalendarButton";
 import { Button } from "@/components/ui/Button";
 import Confetti from "@/components/feedback/Confetti";
@@ -87,18 +88,6 @@ export default function CheckoutResultSuccess({
   useEffect(() => {
     setLoading(false);
   }, []);
-
-  async function handleShare() {
-    const title = hero.title;
-    const text = tripData
-      ? `${title} — ${tripData.trip.originCity}, ${tripData.trip.originCountry}`
-      : title;
-    if (navigator.share) {
-      await navigator.share({ title, text }).catch(() => {});
-    } else {
-      await navigator.clipboard.writeText(text).catch(() => {});
-    }
-  }
 
   if (loading) {
     return (
@@ -220,24 +209,22 @@ export default function CheckoutResultSuccess({
             )}
 
             {/* Actions */}
-            <div className="mt-12 flex items-center gap-4">
+            <div className="mt-12 flex flex-col items-center gap-2">
               <Button asChild className="min-w-[280px]" size="lg" variant="default">
+                <Link href={`/${safeLocale}/dashboard`}>
+                  {labels.ctaMyTrips}
+                </Link>
+              </Button>
+              {tripData?.payment.receiptUrl && (
                 <a
-                  href={tripData?.payment.receiptUrl ?? "#"}
+                  className="text-sm text-gray-400 underline transition-colors hover:text-gray-600"
+                  href={tripData.payment.receiptUrl}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  {xsedTrip ? labels.xsedDownloadCta : labels.ctaMyTrips}
+                  {xsedTrip ? labels.xsedDownloadCta : labels.receiptLink}
                 </a>
-              </Button>
-              <button
-                aria-label="Share"
-                className="flex h-10 w-10 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100"
-                onClick={handleShare}
-                type="button"
-              >
-                <Share2 className="h-5 w-5" />
-              </button>
+              )}
             </div>
           </div>
         </Section>

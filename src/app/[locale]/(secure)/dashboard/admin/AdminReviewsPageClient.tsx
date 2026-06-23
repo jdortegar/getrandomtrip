@@ -12,6 +12,7 @@ export function AdminReviewsPageClient() {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<AdminReview[]>([]);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   async function fetchReviews() {
     setLoading(true);
@@ -81,6 +82,8 @@ export function AdminReviewsPageClient() {
                   cols.review,
                   cols.rating,
                   cols.status,
+                  "Tripper",
+                  "Trip ID",
                   cols.created,
                   cols.actions,
                 ].map((h) => (
@@ -105,11 +108,27 @@ export function AdminReviewsPageClient() {
                       {review.user.email}
                     </p>
                   </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    <p>{review.title}</p>
-                    <p className="text-xs text-neutral-500">
-                      {review.destination}
+                  <td className="px-4 py-3.5 text-sm text-neutral-700 max-w-xs">
+                    {review.title && (
+                      <p className="font-medium mb-0.5">{review.title}</p>
+                    )}
+                    <p className={`text-xs text-neutral-600 ${expandedId === review.id ? "" : "line-clamp-2"}`}>
+                      {review.content}
                     </p>
+                    {review.content.length > 120 && (
+                      <button
+                        className="text-xs text-neutral-400 hover:text-neutral-700 mt-0.5"
+                        onClick={() => setExpandedId(expandedId === review.id ? null : review.id)}
+                        type="button"
+                      >
+                        {expandedId === review.id ? "Show less" : "Show more"}
+                      </button>
+                    )}
+                    {review.destination && (
+                      <p className="text-xs text-neutral-400 mt-1">
+                        {review.destination}
+                      </p>
+                    )}
                   </td>
                   <td className="px-4 py-3.5 text-sm text-neutral-700">
                     {review.rating}/5
@@ -118,13 +137,25 @@ export function AdminReviewsPageClient() {
                     {review.isApproved ? st.approved : st.pending} ·{" "}
                     {review.isPublic ? st.public : st.private}
                   </td>
+                  <td className="px-4 py-3.5 text-xs text-neutral-500">
+                    {review.tripperName ?? "RandomTrip"}
+                  </td>
+                  <td className="px-4 py-3.5 text-xs text-neutral-400">
+                    {review.tripRequestId ? (
+                      <span title={review.tripRequestId}>
+                        {review.tripRequestId.slice(0, 8)}…
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-400">
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3.5">
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <button
-                        className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
+                        className="cursor-pointer text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         disabled={savingId === review.id}
                         onClick={() =>
                           void updateReview(review.id, {
@@ -136,7 +167,7 @@ export function AdminReviewsPageClient() {
                         {review.isApproved ? act.unapprove : act.approve}
                       </button>
                       <button
-                        className="text-xs font-medium text-neutral-600 hover:text-neutral-900"
+                        className="cursor-pointer text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         disabled={savingId === review.id}
                         onClick={() =>
                           void updateReview(review.id, {

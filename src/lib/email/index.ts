@@ -211,8 +211,9 @@ export function sendTripCancelled(
 }
 
 export function sendTripCompleted(
-  tripRequestId: string,
+  _tripRequestId: string,
   userId: string,
+  reviewToken: string,
 ): void {
   void (async () => {
     try {
@@ -232,6 +233,7 @@ export function sendTripCompleted(
           react: React.createElement(TripCompleted, {
             client: user.name ?? "",
             locale,
+            reviewToken,
           }),
         },
       });

@@ -27,6 +27,8 @@ interface TravelerTypesCarouselProps {
   tripperMode?: boolean;
   tripperSlug?: string;
   overflow?: "both" | "left" | "right" | undefined;
+  /** When true, the card content is wrapped to the top of the card. */
+  wrapped?: boolean;
 }
 
 const COMING_SOON_SLUGS: TravelerTypeSlug[] = ["family", "paws", "honeymoon"];
@@ -40,6 +42,7 @@ export function TravelerTypesCarousel({
   tripperMode = false,
   tripperSlug,
   overflow = "both",
+  wrapped = false,
 }: TravelerTypesCarouselProps) {
   const locale = useLocale();
   const comingSoonLabel = useDictionary((d) => d.profile.comingSoon);
@@ -87,6 +90,7 @@ export function TravelerTypesCarousel({
               }
               selected={selectedTravelType === slug}
               tripperBadge={tripperBadge}
+              wrapped={wrapped}
             />
           );
         })}

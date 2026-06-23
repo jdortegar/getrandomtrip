@@ -983,6 +983,45 @@ export interface NotificationsDict {
   types: Record<string, string>;
 }
 
+export interface TripReviewDict {
+  buttonLabel: string;
+  title: string;
+  ratingLabel: string;
+  feedbackPlaceholder: string;
+  submit: string;
+  cancel: string;
+  success: string;
+  emailHintTitle: string;
+  emailHint: string;
+}
+
+export interface TripItineraryDict {
+  title: string;
+  backToTrip: string;
+  day: string;
+  emptyTitle: string;
+  emptyDescription: string;
+  noExperience: string;
+  inclusions: string;
+  exclusions: string;
+}
+
+export interface ReviewFormDict {
+  pageTitle: string;
+  pageSubtitle: string;
+  ratingLabel: string;
+  titleLabel: string;
+  titlePlaceholder: string;
+  contentLabel: string;
+  contentPlaceholder: string;
+  submitButton: string;
+  successTitle: string;
+  successMessage: string;
+  errorInvalidToken: string;
+  errorAlreadySubmitted: string;
+  errorGeneric: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -1573,6 +1612,7 @@ export interface MarketingDictionary {
       retry: string;
       title: string;
       calendarEventDescription: string;
+      receiptLink: string;
       xsedBody: string;
       xsedDownloadCta: string;
       xsedExperienceLabel: string;
@@ -1692,6 +1732,7 @@ export interface MarketingDictionary {
         linkedin: string;
         name: string;
         role: string;
+        tagline?: string;
       }>;
       sectionTitle: string;
       subtitle: string;
@@ -2014,4 +2055,7 @@ export interface MarketingDictionary {
   tripperExperiences: TripperExperiencesDict;
   unauthorized: UnauthorizedPageDict;
   notifications: NotificationsDict;
+  tripReview: TripReviewDict;
+  tripItinerary: TripItineraryDict;
+  reviewForm: ReviewFormDict;
 }

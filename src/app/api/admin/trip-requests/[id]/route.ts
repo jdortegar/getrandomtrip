@@ -122,7 +122,16 @@ export async function PATCH(
     } else if (nextStatus === "CANCELLED") {
       sendTripCancelled(tripRequest.id, tripRequest.userId);
     } else if (nextStatus === "COMPLETED") {
-      sendTripCompleted(tripRequest.id, tripRequest.userId);
+      // Generate and persist reviewToken before sending email (Scenario 1.1, 1.2, 1.3)
+      let reviewToken = tripRequest.reviewToken;
+      if (!reviewToken) {
+        reviewToken = crypto.randomUUID();
+        await prisma.tripRequest.update({
+          where: { id: params.id },
+          data: { reviewToken },
+        });
+      }
+      sendTripCompleted(tripRequest.id, tripRequest.userId, reviewToken);
     }
 
     const [exp, payment, tripUser] = await Promise.all([

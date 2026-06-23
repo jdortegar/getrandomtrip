@@ -12,6 +12,7 @@ import type {
   TripperListItem,
   TripperProfile,
 } from "@/types/tripper";
+import type { TestimonialData } from "@/components/Testimonials/types";
 
 /**
  * Get tripper profile by slug
@@ -666,11 +667,6 @@ export async function getTripperEarnings(
       const monthKey = `${paymentDate.getFullYear()}-${String(
         paymentDate.getMonth() + 1,
       ).padStart(2, "0")}`;
-      const monthName = paymentDate.toLocaleDateString("es-ES", {
-        month: "long",
-        year: "numeric",
-      });
-
       if (!earningsByMonth[monthKey]) {
         earningsByMonth[monthKey] = {
           bookings: 0,
@@ -746,9 +742,10 @@ export async function getTripperReviews(tripperId: string) {
       orderBy: { completedAt: "desc" },
     });
 
-    // Also get general reviews (from Review model) if they reference this tripper
+    // Also get reviews from the Review model filtered by tripperId
     const generalReviews = await prisma.review.findMany({
       where: {
+        tripperId,
         isApproved: true,
         isPublic: true,
       },
@@ -771,20 +768,41 @@ export async function getTripperReviews(tripperId: string) {
     const nps =
       totalRatings > 0 ? ((promoters - detractors) / totalRatings) * 100 : 0;
 
+    // Merge legacy TripRequest reviews with Review model records
+    const legacyReviews = completedTrips.map((trip) => ({
+      id: trip.id,
+      userId: trip.user.id,
+      userName: trip.user.name,
+      userAvatar: trip.user.avatarUrl,
+      rating: trip.customerRating || 0,
+      title: `Viaje a ${trip.actualDestination || "Destino"}`,
+      content: trip.customerFeedback || "",
+      tripType: trip.type,
+      destination: trip.actualDestination || "",
+      packageTitle: trip.experience?.title || "",
+      createdAt: trip.completedAt || trip.updatedAt,
+      source: "legacy" as const,
+    }));
+
+    const modelReviews = generalReviews.map((review) => ({
+      id: review.id,
+      userId: review.user.id,
+      userName: review.user.name,
+      userAvatar: review.user.avatarUrl,
+      rating: review.rating,
+      title: review.title ?? "",
+      content: review.content,
+      tripType: "",
+      destination: "",
+      packageTitle: "",
+      createdAt: review.createdAt,
+      source: "review_model" as const,
+    }));
+
+    const allReviews = [...legacyReviews, ...modelReviews];
+
     return {
-      reviews: completedTrips.map((trip) => ({
-        id: trip.id,
-        userId: trip.user.id,
-        userName: trip.user.name,
-        userAvatar: trip.user.avatarUrl,
-        rating: trip.customerRating || 0,
-        title: `Viaje a ${trip.actualDestination || "Destino"}`,
-        content: trip.customerFeedback || "",
-        tripType: trip.type,
-        destination: trip.actualDestination || "",
-        packageTitle: trip.experience?.title || "",
-        createdAt: trip.completedAt || trip.updatedAt,
-      })),
+      reviews: allReviews,
       averageRating:
         ratings.length > 0
           ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
@@ -856,6 +874,37 @@ export async function getTripperExperiences(tripperId: string) {
 }
 
 /**
+ * Get approved and public reviews for a tripper (for public profile)
+ */
+export async function getApprovedReviewsForTripper(tripperId: string) {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        tripperId,
+        isApproved: true,
+        isPublic: true,
+      },
+      select: {
+        id: true,
+        rating: true,
+        title: true,
+        content: true,
+        createdAt: true,
+        user: {
+          select: { id: true, name: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return reviews;
+  } catch (error) {
+    console.error("Error fetching approved reviews for tripper:", error);
+    return [];
+  }
+}
+
+/**
  * Get published blog posts for a tripper (for public profile)
  */
 export async function getTripperPublishedBlogs(
@@ -895,6 +944,31 @@ export async function getTripperPublishedBlogs(
       }));
   } catch (error) {
     console.error("Error fetching tripper published blogs:", error);
+    return [];
+  }
+}
+
+export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { isApproved: true, isPublic: true, tripperId: null },
+      orderBy: { createdAt: "desc" },
+      take: 9,
+      select: {
+        content: true,
+        destination: true,
+        tripRequest: { select: { originCountry: true } },
+        user: { select: { name: true } },
+      },
+    });
+
+    return reviews.map((r) => ({
+      author: r.user.name ?? "Viajero",
+      country: r.tripRequest?.originCountry ?? "",
+      quote: r.content,
+    }));
+  } catch (error) {
+    console.error("Error fetching homepage testimonials:", error);
     return [];
   }
 }
