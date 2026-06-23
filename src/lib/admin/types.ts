@@ -107,6 +107,7 @@ export interface AdminPayment {
 }
 
 export interface AdminReview {
+  content: string;
   createdAt: string;
   destination: string;
   id: string;
@@ -114,6 +115,8 @@ export interface AdminReview {
   isPublic: boolean;
   rating: number;
   title: string;
+  tripRequestId: string | null;
+  tripperName: string | null;
   user: AdminTripUser;
 }
 

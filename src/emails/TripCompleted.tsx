@@ -5,6 +5,7 @@ import EmailLayout from "./components/EmailLayout";
 interface TripCompletedProps {
   client: string;
   locale: "es" | "en";
+  reviewToken: string;
 }
 
 const BASE_URL = "https://getrandomtrip.com";
@@ -35,9 +36,9 @@ export const subjects = {
   en: "Your trip is complete!",
 };
 
-export default function TripCompleted({ client, locale }: TripCompletedProps) {
+export default function TripCompleted({ client, locale, reviewToken }: TripCompletedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard`;
+  const ctaHref = `${BASE_URL}/${locale}/review/${reviewToken}`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

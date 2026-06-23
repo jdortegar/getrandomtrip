@@ -21,9 +21,10 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const reviews = await prisma.review.findMany({
+    const rawReviews = await prisma.review.findMany({
       orderBy: { createdAt: "desc" },
       select: {
+        content: true,
         createdAt: true,
         destination: true,
         id: true,
@@ -31,6 +32,10 @@ export async function GET() {
         isPublic: true,
         rating: true,
         title: true,
+        tripRequestId: true,
+        tripper: {
+          select: { name: true },
+        },
         user: {
           select: {
             email: true,
@@ -40,6 +45,12 @@ export async function GET() {
         },
       },
     });
+
+    const reviews = rawReviews.map((r) => ({
+      ...r,
+      tripperName: r.tripper?.name ?? null,
+      tripper: undefined,
+    }));
 
     return NextResponse.json({ reviews });
   } catch (error) {

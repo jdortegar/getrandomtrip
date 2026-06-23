@@ -3737,5 +3737,20 @@
     "noExperience": "No experience has been assigned to this trip yet.",
     "inclusions": "Included",
     "exclusions": "Not included"
+  },
+  "reviewForm": {
+    "pageTitle": "How was your trip?",
+    "pageSubtitle": "Your feedback helps us improve and helps other travelers make better choices.",
+    "ratingLabel": "Rating",
+    "titleLabel": "Title (optional)",
+    "titlePlaceholder": "A summary of your experience",
+    "contentLabel": "Your review",
+    "contentPlaceholder": "Tell us what you loved most (and what could be improved)…",
+    "submitButton": "Submit review",
+    "successTitle": "Thank you for your review!",
+    "successMessage": "Your review has been submitted and is under review. Once approved, it will appear on your tripper's profile.",
+    "errorInvalidToken": "This link is invalid or has expired. If you think this is an error, please contact us.",
+    "errorAlreadySubmitted": "You have already submitted a review for this trip. Thank you for your time!",
+    "errorGeneric": "An error occurred while submitting your review. Please try again."
   }
 }

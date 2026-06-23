@@ -3737,5 +3737,20 @@
     "noExperience": "Aún no hay una experiencia asignada a este viaje.",
     "inclusions": "Incluye",
     "exclusions": "No incluye"
+  },
+  "reviewForm": {
+    "pageTitle": "¿Cómo fue tu viaje?",
+    "pageSubtitle": "Tu opinión nos ayuda a mejorar y a otros viajeros a elegir mejor.",
+    "ratingLabel": "Calificación",
+    "titleLabel": "Título (opcional)",
+    "titlePlaceholder": "Un resumen de tu experiencia",
+    "contentLabel": "Tu reseña",
+    "contentPlaceholder": "Contanos qué fue lo que más te gustó (y lo que mejorarías)…",
+    "submitButton": "Enviar reseña",
+    "successTitle": "¡Gracias por tu reseña!",
+    "successMessage": "Tu opinión fue enviada y está siendo revisada. Una vez aprobada, aparecerá en el perfil de tu tripper.",
+    "errorInvalidToken": "Este enlace no es válido o ya venció. Si creés que es un error, contactate con nosotros.",
+    "errorAlreadySubmitted": "Ya enviaste una reseña para este viaje. ¡Gracias por tu tiempo!",
+    "errorGeneric": "Ocurrió un error al enviar tu reseña. Por favor intentá de nuevo."
   }
 }

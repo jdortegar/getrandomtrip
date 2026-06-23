@@ -40,7 +40,7 @@ interface HeaderHeroProps {
   description?: React.ReactNode;
   eyebrowColor?: string;
   fallbackImage?: string;
-  subtitle?: React.ReactNode | string;
+  subtitle?: React.ReactNode | string | null;
   title: string;
   tripperBadge?: TripperBadgeProps;
   videoSrc?: string;
@@ -169,13 +169,15 @@ export default function HeaderHero({
       <div className="relative z-10 mx-auto w-full min-w-7/12 px-6 flex items-center justify-between gap-8 text-white max-w-7xl">
         {/* Left: eyebrow + title + description */}
         <div className="flex-1 text-left">
-          <p
-            className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base"
-            style={eyebrowColor ? { color: eyebrowColor } : undefined}
-            {...(typeof subtitle === "string"
-              ? { dangerouslySetInnerHTML: { __html: subtitle } }
-              : { children: subtitle })}
-          />
+          {subtitle != null && (
+            <p
+              className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base"
+              style={eyebrowColor ? { color: eyebrowColor } : undefined}
+              {...(typeof subtitle === "string"
+                ? { dangerouslySetInnerHTML: { __html: subtitle } }
+                : { children: subtitle })}
+            />
+          )}
           <h1 className="mb-6 font-barlow-condensed text-5xl md:text-7xl font-extrabold">
             {title}
           </h1>

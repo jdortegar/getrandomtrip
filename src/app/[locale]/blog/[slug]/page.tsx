@@ -48,6 +48,7 @@ function BlogDetailContent() {
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
   const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
+  const [testimonials, setTestimonials] = useState<import("@/lib/data/shared/testimonial-types").Testimonial[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,6 +84,14 @@ function BlogDetailContent() {
 
     fetchBlog();
   }, [slugOrId]);
+
+  useEffect(() => {
+    if (!blog?.author) return;
+    void getAllTestimonialsForTripper({
+      location: blog.author.location ?? "",
+      testimonials: [],
+    }).then(setTestimonials);
+  }, [blog?.author?.id]);
 
   useEffect(() => {
     if (!blog?.author?.id) return;
@@ -287,10 +296,7 @@ function BlogDetailContent() {
       )}
 
       <Testimonials
-        testimonials={getAllTestimonialsForTripper({
-          location: blog.author.location ?? "",
-          testimonials: [],
-        })}
+        testimonials={testimonials}
         title={`Lo que dicen sobre ${blog.author.name}`}
       />
     </>

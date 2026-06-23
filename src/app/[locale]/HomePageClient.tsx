@@ -11,12 +11,14 @@ import { HOME_TESTIMONIALS } from "@/lib/data/home-testimonials";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import type { TripperListItem } from "@/types/tripper";
+import type { TestimonialData } from "@/components/Testimonials/types";
 
 interface HomePageClientProps {
   trippers: TripperListItem[];
+  testimonials?: TestimonialData[];
 }
 
-export function HomePageClient({ trippers }: HomePageClientProps) {
+export function HomePageClient({ trippers, testimonials }: HomePageClientProps) {
   const home = useDictionary((d) => d.home);
   const locale = useLocale();
 
@@ -38,7 +40,7 @@ export function HomePageClient({ trippers }: HomePageClientProps) {
         subtitle={home.testimonials.subtitle}
         title={home.testimonials.title}
         viewFullReviewLabel={home.testimonials.viewFullReviewLabel}
-        testimonials={HOME_TESTIMONIALS.items}
+        testimonials={testimonials?.length ? testimonials : HOME_TESTIMONIALS.items}
       />
     </main>
   );

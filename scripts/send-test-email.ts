@@ -82,6 +82,7 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
     element: React.createElement(TripCompleted, {
       client: "María García",
       locale: "es",
+      reviewToken: "test-review-token-preview",
     }),
     subject: tripCompletedSubjects.es,
   },

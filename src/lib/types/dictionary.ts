@@ -1006,6 +1006,22 @@ export interface TripItineraryDict {
   exclusions: string;
 }
 
+export interface ReviewFormDict {
+  pageTitle: string;
+  pageSubtitle: string;
+  ratingLabel: string;
+  titleLabel: string;
+  titlePlaceholder: string;
+  contentLabel: string;
+  contentPlaceholder: string;
+  submitButton: string;
+  successTitle: string;
+  successMessage: string;
+  errorInvalidToken: string;
+  errorAlreadySubmitted: string;
+  errorGeneric: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -2041,4 +2057,5 @@ export interface MarketingDictionary {
   notifications: NotificationsDict;
   tripReview: TripReviewDict;
   tripItinerary: TripItineraryDict;
+  reviewForm: ReviewFormDict;
 }
