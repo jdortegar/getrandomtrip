@@ -2194,7 +2194,8 @@
       "xsedExperienceLabel": "Experiencia XSED Drop",
       "xsedReferenceLabel": "Número de referencia de compra",
       "xsedPerPerson": "/persona",
-      "xsedDownloadCta": "Descargar XSED"
+      "xsedDownloadCta": "Descargar XSED",
+      "receiptLink": "Ver recibo"
     }
   },
   "paymentFailure": {

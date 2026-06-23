@@ -1573,6 +1573,7 @@ export interface MarketingDictionary {
       retry: string;
       title: string;
       calendarEventDescription: string;
+      receiptLink: string;
       xsedBody: string;
       xsedDownloadCta: string;
       xsedExperienceLabel: string;
