@@ -957,13 +957,14 @@ export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
       select: {
         content: true,
         destination: true,
+        tripRequest: { select: { originCountry: true } },
         user: { select: { name: true } },
       },
     });
 
     return reviews.map((r) => ({
       author: r.user.name ?? "Viajero",
-      country: r.destination ?? "",
+      country: r.tripRequest?.originCountry ?? "",
       quote: r.content,
     }));
   } catch (error) {
