@@ -30,6 +30,15 @@ export async function GET(
       where: { id: params.id },
       include: {
         payment: true,
+        experience: {
+          select: {
+            id: true,
+            title: true,
+            itinerary: true,
+            inclusions: true,
+            exclusions: true,
+          },
+        },
       },
     });
 
@@ -45,6 +54,76 @@ export async function GET(
     return NextResponse.json({ trip }, { status: 200 });
   } catch (error) {
     console.error("Error fetching trip:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
+// PATCH /api/trips/[id] - Submit customer review
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const trip = await prisma.tripRequest.findUnique({
+      where: { id: params.id },
+    });
+    if (!trip) {
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
+    }
+    if (trip.userId !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (trip.status !== "COMPLETED") {
+      return NextResponse.json(
+        { error: "Reviews can only be submitted for completed trips" },
+        { status: 400 },
+      );
+    }
+    if (trip.customerRating !== null) {
+      return NextResponse.json(
+        { error: "A review has already been submitted for this trip" },
+        { status: 409 },
+      );
+    }
+
+    const body = await request.json();
+    const rating = Number(body.customerRating);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return NextResponse.json(
+        { error: "Rating must be an integer between 1 and 5" },
+        { status: 400 },
+      );
+    }
+
+    const updated = await prisma.tripRequest.update({
+      where: { id: params.id },
+      data: {
+        customerRating: rating,
+        customerFeedback: typeof body.customerFeedback === "string"
+          ? body.customerFeedback.trim() || null
+          : null,
+      },
+    });
+
+    return NextResponse.json({ trip: updated }, { status: 200 });
+  } catch (error) {
+    console.error("Error submitting review:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

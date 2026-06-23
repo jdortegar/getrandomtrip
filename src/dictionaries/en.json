@@ -3716,5 +3716,26 @@
       "BOOKING_CANCELLED": "Booking cancelled",
       "PAYMENT_RECEIVED": "Payment received"
     }
+  },
+  "tripReview": {
+    "buttonLabel": "Leave a review",
+    "title": "How was your trip?",
+    "ratingLabel": "Your rating",
+    "feedbackPlaceholder": "Tell us about your experience...",
+    "submit": "Submit review",
+    "cancel": "Cancel",
+    "success": "Thank you for your review!",
+    "emailHintTitle": "Leave a review",
+    "emailHint": "Check your email — we sent you a link to rate your experience."
+  },
+  "tripItinerary": {
+    "title": "Trip Itinerary",
+    "backToTrip": "Back to trip",
+    "day": "Day",
+    "emptyTitle": "Your itinerary is being prepared",
+    "emptyDescription": "Once your tripper assigns the experience, you'll see the full itinerary here.",
+    "noExperience": "No experience has been assigned to this trip yet.",
+    "inclusions": "Included",
+    "exclusions": "Not included"
   }
 }

@@ -196,6 +196,8 @@ function TripDetailsContent() {
     return labels[status] || status;
   };
 
+
+
   const filterOptions = dict?.journey?.preferencesStep?.filterOptions;
   const filterChips = [
     { key: "transport" as JourneyFilterKey, value: trip.transport },
@@ -657,10 +659,14 @@ function TripDetailsContent() {
                 </h3>
                 <div className="space-y-3">
                   {trip.status === "COMPLETED" && !trip.customerRating && (
-                    <Button className="w-full justify-start">
-                      <Star className="w-4 h-4 mr-2" />
-                      Dejar Reseña
-                    </Button>
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <p className="text-sm font-medium text-neutral-900">
+                        {dict?.tripReview?.emailHintTitle ?? "Dejá tu reseña"}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {dict?.tripReview?.emailHint ?? "Revisá tu correo — te enviamos un enlace para calificar tu experiencia."}
+                      </p>
+                    </div>
                   )}
 
                   {(trip.status === "CONFIRMED" ||
@@ -670,7 +676,7 @@ function TripDetailsContent() {
                       className="w-full justify-start"
                       asChild
                     >
-                      <Link href={`/dashboard/trips/${trip.id}/details`}>
+                      <Link href={`/${locale}/dashboard/trips/${trip.id}/details`}>
                         <Calendar className="w-4 h-4 mr-2" />
                         Ver Itinerario
                       </Link>

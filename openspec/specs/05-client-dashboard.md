@@ -21,11 +21,11 @@ What works end-to-end today:
 ## User Flows
 
 **Post-booking flow:**
-1. Pay → `/checkout/success` → primary CTA links to Stripe receipt URL (bug — should link to `/dashboard`)
+1. Pay → `/checkout/success` → primary CTA links to `/dashboard` ✅ (fixed)
 2. `/dashboard` → see trip in Upcoming panel → click "Ver detalles" → `/dashboard/trips/[id]`
 3. View logistics (origin city, dates, traveler count, transport, filters, addons, pricing)
 4. Trip transitions to REVEALED → destination toggle appears → click to reveal → **no client notification is sent**
-5. "Ver Itinerario" button → links to `/dashboard/trips/[id]/details` → **route does not exist — 404**
+5. "Ver Itinerario" button → links to `/${locale}/dashboard/trips/[id]/details` ✅ (fixed — route created)
 6. Trip transitions to COMPLETED → "Dejar Reseña" button appears → **button is inert — no handler, no API**
 
 **Account management:**
@@ -38,10 +38,8 @@ What works end-to-end today:
 
 | Severity | Issue |
 |----------|-------|
-| CRITICAL | `/dashboard/trips/[id]/details` does not exist — "Ver Itinerario" button on every CONFIRMED/REVEALED trip is a broken link |
 | CRITICAL | No `PATCH /api/trips/[id]` for review submission — "Dejar Reseña" button is inert; no handler, no API |
 | HIGH | `AllTripsGrid` filters to COMPLETED trips only — CONFIRMED and REVEALED trips with approved payments are invisible in the grid |
-| HIGH | Success page CTA links to Stripe receipt, not `/dashboard` — clients land on a Stripe PDF instead of their account |
 | HIGH | Destination reveal does not trigger a client notification |
 | MEDIUM | `RecentPaymentsTable` component is built and exported but rendered nowhere |
 | MEDIUM | Account → Payments tab is "coming soon" placeholder; component already exists |
@@ -49,6 +47,15 @@ What works end-to-end today:
 | MEDIUM | Account page calls `/api/trips?userId=X` — the API ignores this param and always uses session; misleading but harmless |
 | LOW | Trip detail page has hardcoded Spanish strings for status labels and not-found copy — not i18n-ready |
 | LOW | No empty-state handling when a client has no trips in the dashboard |
+
+## Needs Design
+
+Pages that are functionally complete but require a visual design pass before shipping:
+
+| Page | Route | Notes |
+|------|-------|-------|
+| Trip detail | `/dashboard/trips/[id]` | Functional but uses ad-hoc layout — needs design system pass, i18n for hardcoded strings, and responsive review |
+| Trip itinerary | `/dashboard/trips/[id]/details` | Newly created — mirrors trip detail layout; needs full design pass |
 
 ---
 
