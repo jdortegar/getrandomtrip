@@ -92,7 +92,7 @@ export default async function TravelerTypePage(props: {
       <Blog
         eyebrow={blogEyebrow}
         id="blog"
-        posts={typeData.blog.posts}
+        posts={typeData.blog.posts.map((p) => ({ ...p, href: pathForLocale(locale, p.href) }))}
         subtitle={typeData.blog.subtitle}
         title={typeData.blog.title}
         viewAll={viewAll}

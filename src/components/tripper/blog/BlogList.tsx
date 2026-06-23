@@ -1,12 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import type { BlogPost } from "@/components/tripper/blog/types";
+import { useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface BlogListProps {
   posts: BlogPost[];
 }
 
 export default function BlogList({ posts }: BlogListProps) {
+  const locale = useLocale();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {posts.length === 0 ? (
@@ -14,7 +20,7 @@ export default function BlogList({ posts }: BlogListProps) {
           <h2 className="text-xl font-semibold mb-2">Aún no tienes posts.</h2>
           <p className="mb-4">¡Es hora de contar tu primera historia!</p>
           <Link
-            href="/dashboard/tripper/blogs/new"
+            href={pathForLocale(locale as Locale, "/dashboard/tripper/blogs/new")}
             className="rt-btn rt-btn--primary"
           >
             Crear mi primer post
@@ -61,13 +67,13 @@ export default function BlogList({ posts }: BlogListProps) {
               </div>
               <div className="flex space-x-3">
                 <Link
-                  href={`/dashboard/tripper/blogs/${post.id}`}
+                  href={pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}`)}
                   className="rt-btn rt-btn--secondary rt-btn--sm"
                 >
                   Editar
                 </Link>
                 <Link
-                  href={`/dashboard/tripper/blogs/${post.id}/preview`}
+                  href={pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}/preview`)}
                   className="rt-btn rt-btn--ghost rt-btn--sm"
                 >
                   Previsualizar

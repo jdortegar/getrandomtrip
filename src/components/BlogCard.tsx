@@ -4,13 +4,17 @@ import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/lib/data/shared/blog-types";
 import Link from "next/link";
+import { useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export default function BlogCard({ post }: BlogCardProps) {
-  const href = post.href ?? "/blog";
+  const locale = useLocale();
+  const href = post.href ?? pathForLocale(locale as Locale, "/blog");
 
   return (
     <div className="group relative block aspect-3/4 w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">

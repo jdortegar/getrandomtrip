@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/Button";
 import Img from "@/components/common/Img";
 import type { BlogPost } from "@/types/blog";
 import type { TripperBlogsDict } from "@/lib/types/dictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface BlogPostRowProps {
   dateLocale: string;
+  locale: string;
   post: BlogPost;
   rowLabels: TripperBlogsDict["row"];
 }
@@ -32,7 +35,7 @@ function StatusBadge({
   );
 }
 
-export function BlogPostRow({ dateLocale, post, rowLabels }: BlogPostRowProps) {
+export function BlogPostRow({ dateLocale, locale, post, rowLabels }: BlogPostRowProps) {
   const dateOptions: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "short",
@@ -102,7 +105,7 @@ export function BlogPostRow({ dateLocale, post, rowLabels }: BlogPostRowProps) {
         {post.status === "published" && (
           <Button asChild size="sm" variant="ghost">
             <Link
-              href={`/blog/${post.slug ?? post.id}`}
+              href={pathForLocale(locale as Locale, `/blog/${post.slug ?? post.id}`)}
               rel="noopener noreferrer"
               target="_blank"
             >

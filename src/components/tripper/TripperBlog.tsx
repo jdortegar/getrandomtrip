@@ -1,6 +1,9 @@
 "use client";
 import Link from "next/link";
 import Img from "@/components/common/Img"; // Added import
+import { useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 export default function TripperBlog({
   sectionId = "tripper-blog",
@@ -11,6 +14,7 @@ export default function TripperBlog({
   posts?: any[];
   t?: any;
 }) {
+  const locale = useLocale();
   const items = posts ?? t?.posts ?? [];
   if (!items.length) return null;
   return (
@@ -54,7 +58,7 @@ export default function TripperBlog({
                 </div>
               ),
             )}
-            <Link href="/blog">
+            <Link href={pathForLocale(locale as Locale, "/blog")}>
               <div className="bg-gray-800 rounded-lg flex flex-col items-center justify-center text-center p-6 w-80 shrink-0 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700">
                 <div className="w-16 h-16 border-2 border-gray-500 rounded-full flex items-center justify-center mb-4">
                   →

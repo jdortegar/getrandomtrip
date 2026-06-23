@@ -19,6 +19,8 @@ import type {
   BlogDetailAuthor,
   BlogPost as BlogCardPost,
 } from "@/lib/data/shared/blog-types";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface BlogPost {
   id: string;
@@ -45,6 +47,7 @@ interface BlogPost {
 
 function BlogDetailContent() {
   const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
   const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
@@ -121,7 +124,7 @@ function BlogDetailContent() {
               tags: string[];
             }) => ({
               category: b.tags?.[0] ?? "Viajes",
-              href: `/blog/${b.slug ?? b.id}`,
+              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
               image: b.coverUrl,
               title: b.title,
             }),
@@ -166,7 +169,7 @@ function BlogDetailContent() {
               tags: string[];
             }) => ({
               category: b.tags?.[0] ?? "Viajes",
-              href: `/blog/${b.slug ?? b.id}`,
+              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
               image: b.coverUrl,
               title: b.title,
             }),
@@ -215,7 +218,7 @@ function BlogDetailContent() {
               </p>
               <Link
                 className="inline-flex items-center text-blue-600 hover:text-blue-700"
-                href="/blog"
+                href={pathForLocale(locale as Locale, "/blog")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Volver al Blog
@@ -255,7 +258,7 @@ function BlogDetailContent() {
       <Section>
         <Breadcrumb
           items={[
-            { href: "/blog", label: "Tripper Inspirations" },
+            { href: pathForLocale(locale as Locale, "/blog"), label: "Tripper Inspirations" },
             { label: blog.title },
           ]}
         />
@@ -290,7 +293,7 @@ function BlogDetailContent() {
           subtitle="Notas, guías y momentos que inspiran. Escritos en primera persona."
           title="MÁS DE MIS AVENTURAS"
           viewAll={{
-            href: `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`,
+            href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
             subtitle: "Explora más contenido",
             title: "Ver Todo",
           }}

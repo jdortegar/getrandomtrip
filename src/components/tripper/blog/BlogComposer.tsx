@@ -10,6 +10,9 @@ import { BlogComposerSidebar } from "@/components/tripper/blog/BlogComposerSideb
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/blog";
 import type { TripperBlogComposerDict } from "@/lib/types/dictionary";
+import { useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 const BlogRichTextEditor = dynamic(
   () =>
@@ -73,6 +76,7 @@ export default function BlogComposer({
   post: initialPost,
 }: BlogComposerProps) {
   const router = useRouter();
+  const locale = useLocale();
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [galleryUploading, setGalleryUploading] = useState(false);
@@ -241,7 +245,7 @@ export default function BlogComposer({
               ? copy.toasts.saveSuccessCreate
               : copy.toasts.publishSuccess,
           );
-          router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
+          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${data.blog.id}`));
         } else {
           const error = (await response.json()) as { error?: string };
           toast.error(
@@ -479,7 +483,7 @@ export default function BlogComposer({
         }
         onPreview={() => {
           if (!post.id) return;
-          router.push(`/dashboard/tripper/blogs/${post.id}/preview`);
+          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}/preview`));
         }}
         onPublish={() => submitPost("published")}
         onTravelTypeChange={(value) =>

@@ -9,50 +9,53 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface TripperQuickActionsProps {
   copy: TripperDashboardDict["quickActions"];
+  locale?: string;
 }
 
-export function TripperQuickActions({ copy }: TripperQuickActionsProps) {
+export function TripperQuickActions({ copy, locale = "es" }: TripperQuickActionsProps) {
   const actions = [
     {
-      href: "/dashboard/tripper/experiences/new",
+      href: pathForLocale(locale as Locale, "/dashboard/tripper/experiences/new"),
       icon: Plus,
       key: "packages",
       label: copy.createExperience,
       sub: copy.createExperienceSub,
     },
     {
-      href: "/dashboard/tripper/experiences",
+      href: pathForLocale(locale as Locale, "/dashboard/tripper/experiences"),
       icon: LayoutList,
       key: "experiences",
       label: copy.experiences,
       sub: copy.experiencesSub,
     },
     {
-      href: "/dashboard/tripper/earnings",
+      href: pathForLocale(locale as Locale, "/dashboard/tripper/earnings"),
       icon: BarChart3,
       key: "earnings",
       label: copy.earnings,
       sub: copy.earningsSub,
     },
     {
-      href: "/dashboard/tripper/reviews",
+      href: pathForLocale(locale as Locale, "/dashboard/tripper/reviews"),
       icon: Star,
       key: "reviews",
       label: copy.reviews,
       sub: copy.reviewsSub,
     },
     {
-      href: "/dashboard/tripper/blogs",
+      href: pathForLocale(locale as Locale, "/dashboard/tripper/blogs"),
       icon: BookOpen,
       key: "blogs",
       label: copy.blogs,
       sub: copy.blogsSub,
     },
     {
-      href: "/trippers/profile",
+      href: pathForLocale(locale as Locale, "/trippers/profile"),
       icon: Settings,
       key: "settings",
       label: copy.settings,
