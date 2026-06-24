@@ -31,7 +31,7 @@ Chain strategy: size:exception
 
 - [ ] 1.1 Add `destinationAssignmentNotifiedAt DateTime?` to `TripRequest` in `prisma/schema.prisma`; add `ADMIN` to `NotificationAudience` enum
 - [ ] 1.2 Run `npm run db:generate` to regenerate Prisma client
-- [x] 1.3 Add `TripRevealDict` interface to `src/lib/types/dictionary.ts`; add `tripReveal` section + dashboard card labels (`revealCountdown`, `revealDestination`) to `src/dictionaries/es.json` and `src/dictionaries/en.json`
+- [ ] 1.3 Add `TripRevealDict` interface to `src/lib/types/dictionary.ts`; add `tripReveal` section + dashboard card labels (`revealCountdown`, `revealDestination`) to `src/dictionaries/es.json` and `src/dictionaries/en.json`
 - [ ] 1.4 **TEST (RED→GREEN)**: write vitest unit test for schema field presence — assert `destinationAssignmentNotifiedAt` is nullable on a mock `TripRequest` object (type-level test via `satisfies`)
 
 ---
@@ -69,38 +69,38 @@ Chain strategy: size:exception
 
 ## Phase 6: API Extension — GET `/api/trips/[id]`
 
-- [x] 6.1 Modify `src/app/api/trips/[id]/route.ts` — extend `include.experience.select` to add `heroImage: true`, `destinationCity: true`, `destinationCountry: true`
+- [ ] 6.1 Modify `src/app/api/trips/[id]/route.ts` — extend `include.experience.select` to add `heroImage: true`, `destinationCity: true`, `destinationCountry: true`
 
 ---
 
 ## Phase 7: Reveal Page
 
-- [x] 7.1 Create route directory `src/app/[locale]/(secure)/dashboard/trips/[id]/reveal/`
-- [x] 7.2 Create `reveal/page.tsx` — `dynamic(..., { ssr: false })`; `SecureRoute` wrapper; fetch `GET /api/trips/[id]`; ownership redirect (404 on 403); branch on `trip.status`: pre-reveal (`CONFIRMED`) renders countdown, post-reveal (`REVEALED | COMPLETED`) renders `HeaderHero` + destination + "Ver Itinerario" CTA → `/{locale}/dashboard/trips/[id]/details`
-- [x] 7.3 Inline countdown UI in the page — `useEffect` + `setInterval(1000)` calling `getRevealCountdown`; "destino en preparación" fallback when `revealAt` is past but status still `CONFIRMED`; all copy from `dict.tripReveal`
-- [x] 7.4 **TEST (RED→GREEN)**: logic tests for reveal-state discriminator, destination resolution, and ownership enforcement (project has no @testing-library/react; 8 tests, all green)
+- [ ] 7.1 Create route directory `src/app/[locale]/(secure)/dashboard/trips/[id]/reveal/`
+- [ ] 7.2 Create `reveal/page.tsx` — `dynamic(..., { ssr: false })`; `SecureRoute` wrapper; fetch `GET /api/trips/[id]`; ownership redirect (404 on 403); branch on `trip.status`: pre-reveal (`CONFIRMED`) renders countdown, post-reveal (`REVEALED | COMPLETED`) renders `HeaderHero` + destination + "Ver Itinerario" CTA → `/{locale}/dashboard/trips/[id]/details`
+- [ ] 7.3 Inline countdown UI in the page — `useEffect` + `setInterval(1000)` calling `getRevealCountdown`; "destino en preparación" fallback when `revealAt` is past but status still `CONFIRMED`; all copy from `dict.tripReveal`
+- [ ] 7.4 **TEST (RED→GREEN)**: logic tests for reveal-state discriminator, destination resolution, and ownership enforcement (project has no @testing-library/react; 8 tests, all green)
 
 ---
 
 ## Phase 8: Dashboard Entry Points
 
-- [x] 8.1 Modify `src/components/app/dashboard/UpcomingTripsPanel.tsx` — add conditional reveal link for `CONFIRMED` (label from `dict.revealCountdown`, icon `Clock`) and `REVEALED` (label from `dict.revealDestination`, icon `Sparkles`) statuses; use `<Button asChild size="sm" variant="ghost">` + `<Link>`
-- [x] 8.2 Modify `src/components/app/dashboard/AllTripsGrid.tsx` — same conditional reveal link (safety/consistency; CONFIRMED/REVEALED trips don't currently render here but it guards future filter changes)
+- [ ] 8.1 Modify `src/components/app/dashboard/UpcomingTripsPanel.tsx` — add conditional reveal link for `CONFIRMED` (label from `dict.revealCountdown`, icon `Clock`) and `REVEALED` (label from `dict.revealDestination`, icon `Sparkles`) statuses; use `<Button asChild size="sm" variant="ghost">` + `<Link>`
+- [ ] 8.2 Modify `src/components/app/dashboard/AllTripsGrid.tsx` — same conditional reveal link (safety/consistency; CONFIRMED/REVEALED trips don't currently render here but it guards future filter changes)
 
 ---
 
 ## Phase 9: Cleanup — Dead Code Removal
 
-- [x] 9.1 Verify zero references: run `rg -F "reveal-destination"` and `rg -F "api/bookings"` across `src/`; fix any remaining callers before deleting
-- [x] 9.2 Delete `src/app/[locale]/(secure)/reveal-destination/` (entire directory)
-- [x] 9.3 Delete `src/app/api/bookings/route.ts` (and `bookings/` dir if empty)
-- [x] 9.4 Remove `"/reveal-destination"` from `SECURE_PATH_PREFIXES` in `src/lib/helpers/secureClientPaths.ts`
+- [ ] 9.1 Verify zero references: run `rg -F "reveal-destination"` and `rg -F "api/bookings"` across `src/`; fix any remaining callers before deleting
+- [ ] 9.2 Delete `src/app/[locale]/(secure)/reveal-destination/` (entire directory)
+- [ ] 9.3 Delete `src/app/api/bookings/route.ts` (and `bookings/` dir if empty)
+- [ ] 9.4 Remove `"/reveal-destination"` from `SECURE_PATH_PREFIXES` in `src/lib/helpers/secureClientPaths.ts`
 
 ---
 
 ## Phase 10: Quality Gate
 
-- [x] 10.1 Run `npm run typecheck` — 0 errors
-- [x] 10.2 Run `npm run lint` — pre-existing environment issue (next lint command missing in Next.js 16); verified no raw `<img>` tags manually; no TS errors confirmed by typecheck
-- [x] 10.3 Run vitest — 171 passing (13 new tests from PR 2: 5 route + 8 page logic); 6 pre-existing failures unrelated to this PR
+- [ ] 10.1 Run `npm run typecheck` — 0 errors
+- [ ] 10.2 Run `npm run lint` — pre-existing environment issue (next lint command missing in Next.js 16); verified no raw `<img>` tags manually; no TS errors confirmed by typecheck
+- [ ] 10.3 Run vitest — 171 passing (13 new tests from PR 2: 5 route + 8 page logic); 6 pre-existing failures unrelated to this PR
 - [ ] 10.4 Manual QA: (a) navigate to reveal page as CONFIRMED trip owner — countdown visible; (b) navigate as REVEALED trip owner — hero + destination + CTA visible; (c) navigate as non-owner — 404/redirect; (d) dashboard card CONFIRMED shows Clock → reveal link; (e) dashboard card REVEALED shows Sparkles → reveal link
