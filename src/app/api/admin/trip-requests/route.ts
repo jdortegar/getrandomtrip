@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     const tripRequests = await prisma.tripRequest.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ startDate: "asc" }, { createdAt: "desc" }],
     });
 
     const experienceIds = Array.from(

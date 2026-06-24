@@ -81,18 +81,9 @@ export function TripRequestModal({
     setDeleteError("");
   }, [trip.id]);
 
-  // Fetch assignable experiences whenever tripperId changes (T-18)
   useEffect(() => {
-    if (!trip.tripperId) {
-      setAssignableExperiences([]);
-      return;
-    }
-
-    const params = new URLSearchParams({
-      tripperId: trip.tripperId,
-      status: "ACTIVE",
-    });
-    if (trip.level) params.set("level", trip.level);
+    const params = new URLSearchParams({ status: "ACTIVE" });
+    if (trip.tripperId) params.set("tripperId", trip.tripperId);
     if (trip.type) params.set("type", trip.type);
 
     fetch(`/api/admin/experiences?${params.toString()}`)
@@ -103,7 +94,7 @@ export function TripRequestModal({
       .catch(() => {
         setAssignableExperiences([]);
       });
-  }, [trip.tripperId, trip.level, trip.type]);
+  }, [trip.tripperId, trip.type]);
 
   function statusLabel(status: TripRequestStatus): string {
     return dict.tripStatus[status];
@@ -165,49 +156,41 @@ export function TripRequestModal({
       showCloseButton
     >
       <DialogHeader className="shrink-0 border-b border-gray-200 px-6 py-4 text-left">
-        <DialogTitle className="text-xl font-semibold text-gray-900">
+        <DialogTitle className="font-barlow-condensed font-bold text-2xl uppercase text-neutral-900">
           {modalTitle}
         </DialogTitle>
-        <DialogDescription className="text-base text-gray-700">
+        <DialogDescription className="text-sm text-neutral-500 mt-0.5">
           {modalDescription}
         </DialogDescription>
       </DialogHeader>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex flex-wrap gap-1.5 border-b border-gray-200 px-6 py-2.5">
-          <span className="inline-block rounded-full border border-gray-300 bg-gray-50 px-2.5 py-0.5 text-base font-bold text-gray-900">
+        <div className="flex flex-wrap gap-1.5 border-b border-gray-200 px-6 py-3">
+          <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
             {trip.type}
           </span>
-          <StatusBadge
-            className="text-base"
-            status={trip.status}
-            variant="trip"
-          />
-          <span className="inline-block rounded-full border border-gray-300 bg-gray-50 px-2.5 py-0.5 text-base font-bold text-gray-900">
+          <StatusBadge status={trip.status} variant="trip" />
+          <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
             {trip.level}
           </span>
           {trip.payment ? (
-            <StatusBadge
-              className="text-base"
-              status={trip.payment.status}
-              variant="payment"
-            />
+            <StatusBadge status={trip.payment.status} variant="payment" />
           ) : null}
         </div>
 
         <div className="border-b border-gray-200 px-6 py-4">
-          <p className="mb-3 text-base font-bold uppercase tracking-wide text-gray-800">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-400">
             {dict.sectionSummary}
           </p>
           <TripRequestDetails labels={dict.details} trip={trip} />
         </div>
 
-        {/* Experience assignment section (T-18, T-19) */}
+        {/* Experience + derived destination + status */}
         <div className="border-b border-gray-200 px-6 py-4">
-          <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
-            {dict.experienceSectionTitle}
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-400">
+            {dict.sectionManageTrip}
           </p>
-          {trip.tripperId ? (
+          <div className="flex flex-col gap-3">
             <FormSelectField
               id="modal-trip-experience"
               label={dict.experienceLabel}
@@ -223,30 +206,15 @@ export function TripRequestModal({
                 </option>
               ))}
             </FormSelectField>
-          ) : (
-            <p className="text-sm text-gray-500">{dict.noTripperNotice}</p>
-          )}
-        </div>
 
-        <div className="border-b border-gray-200 px-6 py-4">
-          <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
-            {dict.sectionManageTrip}
-          </p>
-          <div className="flex flex-col gap-3">
-            {/* actualDestination — read-only, derived from assigned experience (T-21) */}
-            <div className="flex flex-col gap-1">
-              <span className="block text-base font-normal text-gray-600">
-                {dict.destinationLabel}
-              </span>
-              <div className="rounded-xl bg-gray-100 px-6 py-4 text-base text-gray-900">
-                {trip.actualDestination ? (
-                  trip.actualDestination
-                ) : (
-                  <span className="text-gray-400">{dict.destinationPlaceholder}</span>
-                )}
+            {/* Destination — read-only preview derived from selected experience */}
+            {trip.actualDestination && (
+              <div className="flex items-center justify-between rounded-lg bg-gray-50 border border-gray-100 px-4 py-2.5">
+                <span className="text-sm text-neutral-500">{dict.destinationLabel}</span>
+                <span className="text-sm font-semibold text-neutral-900">{trip.actualDestination}</span>
               </div>
-              <p className="text-xs text-gray-400">{dict.destinationDerivedNote}</p>
-            </div>
+            )}
+
             <FormSelectField
               id="modal-trip-status"
               label={dict.statusLabel}
@@ -277,21 +245,18 @@ export function TripRequestModal({
         </div>
 
         <div className="px-6 py-4">
-          <p className="mb-2 text-base font-bold uppercase tracking-wide text-gray-800">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">
             {dict.sectionDanger}
           </p>
-          <p className="mb-3 text-base text-gray-700">{dict.deleteHint}</p>
+          <p className="mb-3 text-sm text-neutral-600">{dict.deleteHint}</p>
           {deleteError ? (
-            <p className="mb-2 text-base font-medium text-red-600">
+            <p className="mb-2 text-sm font-medium text-red-600">
               {deleteError}
             </p>
           ) : null}
           {!deleteConfirming ? (
             <Button
-              className={cn(
-                " border-red-800 text-base text-red-800",
-                "hover:bg-red-50",
-              )}
+              className="border-red-800 text-red-800 hover:bg-red-50"
               disabled={deleting}
               onClick={() => setDeleteConfirming(true)}
               size="sm"
@@ -307,12 +272,12 @@ export function TripRequestModal({
                 "p-3",
               )}
             >
-              <p className="text-base font-semibold text-red-900">
+              <p className="text-sm font-semibold text-red-900">
                 {dict.deleteConfirm}
               </p>
               <div className="flex flex-wrap justify-end gap-2">
                 <Button
-                  className="text-base"
+                  
                   disabled={deleting}
                   onClick={() => {
                     setDeleteConfirming(false);
@@ -325,7 +290,7 @@ export function TripRequestModal({
                   {dict.deleteCancel}
                 </Button>
                 <Button
-                  className="text-base"
+                  
                   disabled={deleting}
                   onClick={() => void handleDelete()}
                   size="sm"
@@ -342,7 +307,7 @@ export function TripRequestModal({
 
       <DialogFooter className="shrink-0 border-t border-gray-200 px-6 py-4 sm:justify-end">
         <Button
-          className="text-base"
+          
           disabled={saving}
           onClick={onClose}
           size="sm"
@@ -352,7 +317,7 @@ export function TripRequestModal({
           {dict.cancel}
         </Button>
         <Button
-          className="text-base"
+          
           disabled={saving}
           onClick={() => void handleSave()}
           size="sm"
