@@ -558,6 +558,7 @@ export function NewExperienceShell({
               activeTab={activeTab}
               adminReviewSlot={adminReviewSlot}
               reviewActionsSlot={reviewActionsSlot}
+              backHref={initialDraftId ? `/${locale}/dashboard/tripper/experiences` : undefined}
               copy={dict}
               form={form}
               imageState={imageState}

@@ -8,6 +8,7 @@ interface DestinationRevealedProps {
   departureDate?: string;
   returnDate?: string;
   locale: "es" | "en";
+  tripId: string;
 }
 
 const BASE_URL = "https://getrandomtrip.com";
@@ -52,9 +53,10 @@ export default function DestinationRevealed({
   departureDate,
   returnDate,
   locale,
+  tripId,
 }: DestinationRevealedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard`;
+  const ctaHref = `${BASE_URL}/${locale}/dashboard/trips/${tripId}/reveal`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview(destination)}>
@@ -92,7 +94,7 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "38px",
   fontWeight: "800",
-  color: "#3f3f3f",
+  color: "#111827",
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",

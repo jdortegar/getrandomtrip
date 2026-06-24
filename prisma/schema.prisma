@@ -127,6 +127,9 @@ model TripRequest {
   reviewToken       String?   @unique
   reviewSubmittedAt DateTime?
 
+  // Destination reveal pipeline
+  destinationAssignmentNotifiedAt DateTime? // T-72h admin reminder idempotency stamp
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -465,6 +468,7 @@ enum NotificationType {
 enum NotificationAudience {
   TRIPPER
   CLIENT
+  ADMIN
 }
 
 // ============================================================================

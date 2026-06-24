@@ -72,7 +72,7 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#3f3f3f",
+  color: "#111827",
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
@@ -90,7 +90,7 @@ const bodyText: React.CSSProperties = {
 };
 
 const changedFieldsText: React.CSSProperties = {
-  color: "#3f3f3f",
+  color: "#111827",
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "600",

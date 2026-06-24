@@ -15,7 +15,6 @@ const SECURE_PATH_PREFIXES = [
   "/checkout",
   "/dashboard",
   "/account",
-  "/reveal-destination",
   "/tripper",
   "/trips/",
 ] as const;

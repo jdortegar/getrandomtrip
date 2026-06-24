@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 interface JourneyActionBarLabels {
+  back?: string;
   clearAll: string;
   next: string;
   saveDraft?: string;
@@ -10,6 +12,7 @@ interface JourneyActionBarLabels {
 }
 
 interface JourneyActionBarProps {
+  backHref?: string;
   canContinue: boolean;
   isAllStepsComplete: boolean;
   isSavingAndRedirecting: boolean;
@@ -24,6 +27,7 @@ interface JourneyActionBarProps {
 }
 
 export function JourneyActionBar({
+  backHref,
   canContinue,
   isAllStepsComplete,
   isSavingAndRedirecting,
@@ -37,6 +41,15 @@ export function JourneyActionBar({
 }: JourneyActionBarProps) {
   return (
     <div className="flex items-center justify-center gap-4 sm:gap-10 mt-8 pt-6 border-t border-gray-200">
+      {backHref && labels.back ? (
+        <Link
+          className="text-sm font-medium text-gray-900 underline hover:no-underline"
+          href={backHref}
+        >
+          {labels.back}
+        </Link>
+      ) : null}
+
       {showClearAll ? (
         <button
           className="text-sm font-medium text-gray-900 underline hover:no-underline"

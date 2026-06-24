@@ -34,6 +34,7 @@ interface ExperienceFormContentProps {
   isSubmitting: boolean;
   saveStatus: SaveStatus;
   onChange: ExperienceFormDraftOnChange;
+  backHref?: string;
   onClearAll: () => void;
   onNext: () => void;
   onSubmit: () => void;
@@ -106,6 +107,7 @@ export function ExperienceFormContent({
   activeTab,
   adminReviewSlot,
   reviewActionsSlot,
+  backHref,
   copy,
   form,
   imageState,
@@ -228,10 +230,12 @@ export function ExperienceFormContent({
           </div>
 
           <JourneyActionBar
+            backHref={backHref}
             canContinue={canContinue}
             isAllStepsComplete={isLastTab && allTabsComplete}
             isSavingAndRedirecting={isSubmitting}
             labels={{
+              back: copy.actionBar.back,
               clearAll: copy.actionBar.clearAll,
               next: copy.actionBar.next,
               viewCheckout: copy.actionBar.submitForReview,

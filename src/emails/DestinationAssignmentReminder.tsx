@@ -2,12 +2,11 @@ import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
 
-interface BookingConfirmedProps {
-  client: string;
-  tripRequestId: string;
-  tripType: string;
-  nights: number;
-  departureDate?: string;
+interface DestinationAssignmentReminderProps {
+  adminName: string;
+  clientName: string;
+  tripId: string;
+  startDate: string;
   locale: "es" | "en";
 }
 
@@ -15,70 +14,70 @@ const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
-    preview: "¡Tu reserva está confirmada! Tu aventura comienza pronto.",
-    heading: "¡Reserva confirmada!",
-    body: (client: string) =>
-      `Hola ${client}, tu reserva fue confirmada exitosamente. Estamos preparando todo para que tu experiencia sea increíble.`,
-    tripLabel: "Tipo de viaje:",
-    nightsLabel: "Noches:",
-    departureDateLabel: "Fecha de salida:",
-    subtext:
-      "Recibirás más detalles a medida que se acerque la fecha. ¡Gracias por confiar en GetRandomTrip!",
-    cta: "VER MI VIAJE",
+    preview: (clientName: string) =>
+      `Acción requerida: asignar destino para el viaje de ${clientName}`,
+    heading: "Asignación de destino pendiente",
+    body: (adminName: string) =>
+      `Hola ${adminName}, hay un viaje que requiere asignación de experiencia antes de la fecha de salida.`,
+    tripIdLabel: "ID de reserva:",
+    clientLabel: "Cliente:",
+    startDateLabel: "Fecha de salida:",
+    urgency:
+      "Este viaje parte en menos de 72 horas. Por favor, asigná una experiencia lo antes posible.",
+    cta: "IR AL PANEL ADMIN",
   },
   en: {
-    preview: "Your booking is confirmed! Your adventure starts soon.",
-    heading: "Booking confirmed!",
-    body: (client: string) =>
-      `Hi ${client}, your booking has been successfully confirmed. We're preparing everything to make your experience incredible.`,
-    tripLabel: "Trip type:",
-    nightsLabel: "Nights:",
-    departureDateLabel: "Departure date:",
-    subtext:
-      "You'll receive more details as the date approaches. Thank you for trusting GetRandomTrip!",
-    cta: "VIEW MY TRIP",
+    preview: (clientName: string) =>
+      `Action required: assign destination for ${clientName}'s trip`,
+    heading: "Destination assignment pending",
+    body: (adminName: string) =>
+      `Hi ${adminName}, there is a trip that requires an experience assignment before the departure date.`,
+    tripIdLabel: "Booking ID:",
+    clientLabel: "Client:",
+    startDateLabel: "Departure date:",
+    urgency:
+      "This trip departs in less than 72 hours. Please assign an experience as soon as possible.",
+    cta: "GO TO ADMIN PANEL",
   },
 };
 
 export const subjects = {
-  es: "¡Tu reserva está confirmada!",
-  en: "Your booking is confirmed!",
+  es: "Acción requerida: asignar destino antes de la salida",
+  en: "Action required: assign destination before departure",
 };
 
-export default function BookingConfirmed({
-  client,
-  tripType,
-  nights,
-  departureDate,
+export default function DestinationAssignmentReminder({
+  adminName,
+  clientName,
+  tripId,
+  startDate,
   locale,
-}: BookingConfirmedProps) {
+}: DestinationAssignmentReminderProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard`;
+  const ctaHref = `${BASE_URL}/${locale}/dashboard/admin`;
 
   return (
-    <EmailLayout locale={locale} preview={c.preview}>
+    <EmailLayout locale={locale} preview={c.preview(clientName)}>
       <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(client)}</Text>
+      <Text style={bodyText}>{c.body(adminName)}</Text>
 
-      {/* Trip summary */}
       <Section style={summaryPanel}>
         <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.tripLabel}</span>{" "}
-          <span style={summaryValue}>{tripType}</span>
+          <span style={summaryLabel}>{c.tripIdLabel}</span>{" "}
+          <span style={summaryValue}>{tripId}</span>
         </Text>
         <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.nightsLabel}</span>{" "}
-          <span style={summaryValue}>{nights}</span>
+          <span style={summaryLabel}>{c.clientLabel}</span>{" "}
+          <span style={summaryValue}>{clientName}</span>
         </Text>
-        {departureDate && (
-          <Text style={summaryRow}>
-            <span style={summaryLabel}>{c.departureDateLabel}</span>{" "}
-            <span style={summaryValue}>{departureDate}</span>
-          </Text>
-        )}
+        <Text style={summaryRow}>
+          <span style={summaryLabel}>{c.startDateLabel}</span>{" "}
+          <span style={summaryValue}>{startDate}</span>
+        </Text>
       </Section>
 
-      <Text style={subtextStyle}>{c.subtext}</Text>
+      <Text style={urgencyText}>{c.urgency}</Text>
+
       <Button href={ctaHref} style={ctaButton}>
         {c.cta}
       </Button>
@@ -90,7 +89,7 @@ export default function BookingConfirmed({
 
 const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
+  fontSize: "38px",
   fontWeight: "800",
   color: "#111827",
   margin: "0 0 24px",
@@ -134,11 +133,11 @@ const summaryValue: React.CSSProperties = {
   fontWeight: "400",
 };
 
-const subtextStyle: React.CSSProperties = {
-  color: "#888",
+const urgencyText: React.CSSProperties = {
+  color: "#b45309",
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
+  fontWeight: "600",
   margin: "0 auto 32px",
   lineHeight: "1.6",
   maxWidth: "400px",
