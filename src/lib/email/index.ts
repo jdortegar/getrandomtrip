@@ -1,6 +1,9 @@
 import AdminNewBooking, {
   subject as adminNewBookingSubject,
 } from "@/emails/AdminNewBooking";
+import DestinationAssignmentReminder, {
+  subjects as destinationAssignmentReminderSubjects,
+} from "@/emails/DestinationAssignmentReminder";
 import ExperiencePendingTripperReview, {
   subjects as pendingTripperReviewSubjects,
 } from "@/emails/ExperiencePendingTripperReview";
@@ -169,6 +172,7 @@ export function sendDestinationRevealed(
             departureDate: fmt(tripRequest.startDate),
             returnDate: fmt(tripRequest.endDate),
             locale,
+            tripId: tripRequestId,
           }),
         },
       });
@@ -465,6 +469,61 @@ export function sendExperienceCopyRejected(
       });
     } catch (err) {
       console.error("[email] sendExperienceCopyRejected:", err);
+    }
+  })();
+}
+
+export function sendDestinationAssignmentReminder(tripRequestId: string): void {
+  void (async () => {
+    try {
+      const [tripRequest, admins] = await Promise.all([
+        prisma.tripRequest.findUnique({
+          where: { id: tripRequestId },
+          select: {
+            startDate: true,
+            user: { select: { name: true } },
+          },
+        }),
+        prisma.user.findMany({
+          where: { roles: { has: "ADMIN" } },
+          select: { email: true, name: true, locale: true },
+        }),
+      ]);
+
+      if (!tripRequest) return;
+
+      for (const admin of admins) {
+        try {
+          const locale = resolveLocale(admin.locale);
+          const startDate = tripRequest.startDate
+            ? tripRequest.startDate.toLocaleDateString(
+                locale === "en" ? "en-US" : "es-AR",
+                { year: "numeric", month: "long", day: "numeric" },
+              )
+            : "—";
+
+          await sendMail({
+            to: admin.email,
+            subject: destinationAssignmentReminderSubjects[locale],
+            content: {
+              react: React.createElement(DestinationAssignmentReminder, {
+                adminName: admin.name ?? "",
+                clientName: tripRequest.user?.name ?? "",
+                tripId: tripRequestId,
+                startDate,
+                locale,
+              }),
+            },
+          });
+        } catch (err) {
+          console.error(
+            `[email] sendDestinationAssignmentReminder admin=${admin.email}:`,
+            err,
+          );
+        }
+      }
+    } catch (err) {
+      console.error("[email] sendDestinationAssignmentReminder:", err);
     }
   })();
 }

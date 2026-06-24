@@ -265,6 +265,8 @@ export interface DashboardDict {
     newTrip: string;
     title: string;
     viewDetails: string;
+    revealCountdown: string;
+    revealDestination: string;
   };
 }
 
@@ -315,6 +317,7 @@ export interface TripperExperiencesDict {
     errorSave: string;
     requiredFieldsLabel: string;
     actionBar: {
+      back: string;
       clearAll: string;
       next: string;
       saveDraft: string;
@@ -1004,6 +1007,32 @@ export interface TripItineraryDict {
   noExperience: string;
   inclusions: string;
   exclusions: string;
+}
+
+export interface TripRevealDict {
+  // Page header
+  pageTitle: string;
+  pageDescription: string;
+  // Pre-reveal (CONFIRMED)
+  countdownTitle: string;
+  countdownSubtitle: string;
+  daysLabel: string;
+  hoursLabel: string;
+  minutesLabel: string;
+  secondsLabel: string;
+  pendingAssignment: string;
+  // Post-reveal (REVEALED | COMPLETED)
+  revealedEyebrow: string;
+  revealedTitle: string;
+  revealedSubtitle: string;
+  viewItinerary: string;
+  // Not found / error
+  notFoundTitle: string;
+  notFoundDescription: string;
+  backToDashboard: string;
+  // Dashboard card links
+  revealCountdown: string;
+  revealDestination: string;
 }
 
 export interface ReviewFormDict {
@@ -2057,5 +2086,6 @@ export interface MarketingDictionary {
   notifications: NotificationsDict;
   tripReview: TripReviewDict;
   tripItinerary: TripItineraryDict;
+  tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
 }

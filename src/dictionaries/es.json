@@ -3239,7 +3239,9 @@
       "emptyTitle": "No tienes viajes proximos",
       "newTrip": "Nuevo Viaje",
       "title": "Proximos Viajes",
-      "viewDetails": "Ver Detalles"
+      "viewDetails": "Ver Detalles",
+      "revealCountdown": "Cuenta Regresiva",
+      "revealDestination": "Ver Destino"
     }
   },
   "tripperExperiences": {
@@ -3285,6 +3287,7 @@
       "requiredFieldsLabel": "Campos requeridos",
       "actionBar": {
         "clearAll": "Borrar todo",
+        "back": "Volver a experiencias",
         "next": "Siguiente",
         "submit": "Crear experiencia",
         "saveDraft": "Guardar borrador",
@@ -3737,6 +3740,26 @@
     "noExperience": "Aún no hay una experiencia asignada a este viaje.",
     "inclusions": "Incluye",
     "exclusions": "No incluye"
+  },
+  "tripReveal": {
+    "pageTitle": "Tu Destino Sorpresa",
+    "pageDescription": "El suspenso es parte de la aventura",
+    "countdownTitle": "Tu destino se revela en...",
+    "countdownSubtitle": "Estamos preparando todo para tu viaje. Quedan pocas horas para descubrir a dónde vas.",
+    "daysLabel": "Días",
+    "hoursLabel": "Horas",
+    "minutesLabel": "Minutos",
+    "secondsLabel": "Segundos",
+    "pendingAssignment": "Tu destino está siendo preparado con mucho cuidado. ¡Ya casi es hora!",
+    "revealedEyebrow": "Tu destino revelado",
+    "revealedTitle": "¡Tu destino ha sido revelado!",
+    "revealedSubtitle": "Preparate para vivir una experiencia increíble.",
+    "viewItinerary": "Ver Itinerario",
+    "notFoundTitle": "Viaje no encontrado",
+    "notFoundDescription": "El viaje que buscás no existe o no tenés permiso para verlo.",
+    "backToDashboard": "Volver al Dashboard",
+    "revealCountdown": "Cuenta Regresiva",
+    "revealDestination": "Ver Destino"
   },
   "reviewForm": {
     "pageTitle": "¿Cómo fue tu viaje?",

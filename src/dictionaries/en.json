@@ -3239,7 +3239,9 @@
       "emptyTitle": "You have no upcoming trips",
       "newTrip": "New Trip",
       "title": "Upcoming Trips",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "revealCountdown": "Countdown",
+      "revealDestination": "View Destination"
     }
   },
   "tripperExperiences": {
@@ -3285,6 +3287,7 @@
       "requiredFieldsLabel": "Required fields",
       "actionBar": {
         "clearAll": "Clear all",
+        "back": "Back to experiences",
         "next": "Next",
         "submit": "Create experience",
         "saveDraft": "Save draft",
@@ -3737,6 +3740,26 @@
     "noExperience": "No experience has been assigned to this trip yet.",
     "inclusions": "Included",
     "exclusions": "Not included"
+  },
+  "tripReveal": {
+    "pageTitle": "Your Mystery Destination",
+    "pageDescription": "The suspense is part of the adventure",
+    "countdownTitle": "Your destination is revealed in...",
+    "countdownSubtitle": "We're preparing everything for your trip. Just a few hours until you discover where you're going.",
+    "daysLabel": "Days",
+    "hoursLabel": "Hours",
+    "minutesLabel": "Minutes",
+    "secondsLabel": "Seconds",
+    "pendingAssignment": "Your destination is being carefully prepared. It's almost time!",
+    "revealedEyebrow": "Your destination revealed",
+    "revealedTitle": "Your destination has been revealed!",
+    "revealedSubtitle": "Get ready to live an incredible experience.",
+    "viewItinerary": "View Itinerary",
+    "notFoundTitle": "Trip not found",
+    "notFoundDescription": "The trip you're looking for doesn't exist or you don't have permission to view it.",
+    "backToDashboard": "Back to Dashboard",
+    "revealCountdown": "Countdown",
+    "revealDestination": "View Destination"
   },
   "reviewForm": {
     "pageTitle": "How was your trip?",

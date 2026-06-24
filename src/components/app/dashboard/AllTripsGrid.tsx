@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, Calendar, Eye, MapPin, Star } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Eye, MapPin, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 import Img from "@/components/common/Img";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Trip } from "@/lib/utils/trips";
@@ -93,6 +95,32 @@ export function AllTripsGrid({
                   >
                     {getStatusLabel(trip.status)}
                   </span>
+                  {trip.status === "CONFIRMED" && (
+                    <Button asChild size="sm" variant="ghost">
+                      <Link
+                        href={pathForLocale(
+                          locale as Locale,
+                          `/dashboard/trips/${trip.id}/reveal`,
+                        )}
+                      >
+                        <Clock className="w-3.5 h-3.5" />
+                        {copy.upcomingTrips.revealCountdown}
+                      </Link>
+                    </Button>
+                  )}
+                  {trip.status === "REVEALED" && (
+                    <Button asChild size="sm" variant="ghost">
+                      <Link
+                        href={pathForLocale(
+                          locale as Locale,
+                          `/dashboard/trips/${trip.id}/reveal`,
+                        )}
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        {copy.upcomingTrips.revealDestination}
+                      </Link>
+                    </Button>
+                  )}
                   <Button asChild size="sm" variant="ghost">
                     <Link href={`/dashboard/trips/${trip.id}`}>
                       <Eye className="w-3.5 h-3.5" />

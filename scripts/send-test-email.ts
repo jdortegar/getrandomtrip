@@ -67,6 +67,7 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
       departureDate: "15 de julio de 2026",
       returnDate: "22 de julio de 2026",
       locale: "es",
+      tripId: "trip-test-001",
     }),
     subject: destinationRevealedSubjects.es,
   },
