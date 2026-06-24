@@ -221,8 +221,38 @@ export async function PATCH(
 
     const hotels = hotelsField ?? accommodations;
 
-    // If the experience is ACTIVE and the tripper is editing it, revert to DRAFT (requires re-review)
-    const revertToDraft = existingExperience.status === "ACTIVE";
+    // Revert to DRAFT only if a reviewable content field actually changed.
+    // Autosave fires on mount even when nothing changed — we must not penalise no-ops.
+    const eq = (a: unknown, b: unknown) =>
+      JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+
+    const incomingType = type !== undefined
+      ? (Array.isArray(type) ? type : [type].filter(Boolean))
+      : existingExperience.type;
+
+    const contentChanged =
+      !eq(incomingType, existingExperience.type) ||
+      !eq(level ?? null, existingExperience.level) ||
+      !eq(title, existingExperience.title) ||
+      !eq(teaser ?? "", existingExperience.teaser) ||
+      !eq(description ?? "", existingExperience.description) ||
+      !eq(heroImage ?? "", existingExperience.heroImage) ||
+      !eq(destinationCountry, existingExperience.destinationCountry) ||
+      !eq(destinationCity, existingExperience.destinationCity) ||
+      !eq(hotels, existingExperience.hotels) ||
+      !eq(activities, existingExperience.activities) ||
+      !eq(itinerary, existingExperience.itinerary) ||
+      !eq(inclusions, existingExperience.inclusions) ||
+      !eq(exclusions, existingExperience.exclusions) ||
+      !eq(minNights ?? 1, existingExperience.minNights) ||
+      !eq(maxNights ?? 7, existingExperience.maxNights) ||
+      !eq(minPax ?? 1, existingExperience.minPax) ||
+      !eq(maxPax ?? 8, existingExperience.maxPax) ||
+      !eq(transport ?? "any", existingExperience.transport) ||
+      !eq(climate ?? "any", existingExperience.climate) ||
+      !eq(accommodationType ?? "any", existingExperience.accommodationType);
+
+    const revertToDraft = existingExperience.status === "ACTIVE" && contentChanged;
 
     const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },
