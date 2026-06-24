@@ -2,10 +2,13 @@ import { Calendar } from "lucide-react";
 import Link from "next/link";
 import type { RecentBooking } from "@/types/tripper";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface RecentBookingsListProps {
   bookings: RecentBooking[];
   copy: TripperDashboardDict["recentBookings"] & TripperDashboardDict["status"];
+  locale?: string;
 }
 
 function getStatusColor(status: string): string {
@@ -29,6 +32,7 @@ function formatDate(dateString: string): string {
 export function RecentBookingsList({
   bookings,
   copy,
+  locale = "es",
 }: RecentBookingsListProps) {
   return (
     <div>
@@ -38,7 +42,7 @@ export function RecentBookingsList({
             {copy.title}
           </h2>
           <Link
-            href="/dashboard/tripper/bookings"
+            href={pathForLocale(locale as Locale, "/dashboard/tripper")}
             className="text-xs font-medium text-light-blue hover:text-sky-700"
           >
             {copy.viewAll}

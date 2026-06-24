@@ -11,10 +11,13 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/blog";
 import { ArrowLeft } from "lucide-react";
-import { useDictionary } from "@/hooks/useDictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 function EditBlogContent() {
   const params = useParams();
+  const locale = useLocale();
   const blogsCopy = useDictionary((d) => d.tripperBlogs);
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
@@ -86,7 +89,7 @@ function EditBlogContent() {
           </div>
           <div className="py-12 text-center">
             <Button asChild variant="link">
-              <Link href="/dashboard/tripper/blogs">
+              <Link href={pathForLocale(locale as Locale, "/dashboard/tripper/blogs")}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {blogsCopy.composer.editNotFound.backToList}
               </Link>

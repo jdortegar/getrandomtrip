@@ -20,6 +20,7 @@ import {
 } from "@/components/tripper/TripperTravelerTypesSection";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from "@/components/tripper/TripperIntroVideoGate";
@@ -82,7 +83,11 @@ export default async function Page(props: {
   const availableTypesFromPackages = tripperData.availableTypes ?? [];
 
   // Fetch published blog posts for this tripper
-  const publishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
+  const rawPublishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
+  const publishedBlogs = rawPublishedBlogs.map((p) => ({
+    ...p,
+    href: pathForLocale(locale, p.href),
+  }));
 
   return (
     <main className="bg-white text-slate-900">
@@ -129,7 +134,7 @@ export default async function Page(props: {
           subtitle="Notas, guías y momentos que inspiran de este tripper."
           title={`Inspiración de ${tripperData.name}`}
           viewAll={{
-            href: `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`,
+            href: pathForLocale(locale, `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`),
             subtitle: "Explora más contenido",
             title: "Ver Todo",
           }}

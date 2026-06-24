@@ -12,6 +12,8 @@ import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import type { TripperListItem } from "@/types/tripper";
 import type { TestimonialData } from "@/components/Testimonials/types";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface HomePageClientProps {
   trippers: TripperListItem[];
@@ -31,7 +33,7 @@ export function HomePageClient({ trippers, testimonials }: HomePageClientProps) 
         eyebrow={home.blog.eyebrow}
         subtitle={home.blog.subtitle}
         title={home.blog.title}
-        posts={BLOG_CONSTANTS.posts}
+        posts={BLOG_CONSTANTS.posts.map((p) => ({ ...p, href: pathForLocale(locale as Locale, p.href) }))}
         viewAll={home.blog.viewAll}
       />
       <XsedHero content={home.xsedHero} />
