@@ -356,7 +356,7 @@ const midHeading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "48px",
   fontWeight: "800",
-  color: "#3f3f3f",
+  color: "#111827",
   margin: "0 0 20px",
   lineHeight: "1",
   textTransform: "uppercase",

@@ -391,7 +391,7 @@ const sectionHeading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', Impact, 'Arial Narrow', Arial, sans-serif",
   fontSize: "48px",
   fontWeight: "700",
-  color: "#3f3f3f",
+  color: "#111827",
   margin: "0 0 12px",
   lineHeight: "1.05",
   textTransform: "uppercase",
