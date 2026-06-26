@@ -67,7 +67,7 @@ export function WaitlistPage({ dict, onOpenLogin }: WaitlistPageProps) {
     <section className="grid h-screen grid-cols-1 lg:grid-cols-2 rt-container">
       <div className="flex min-w-0 items-center justify-center py-4 md:py-6">
         <img
-          alt="RandomTrip"
+          alt="Randomtrip"
           className="h-24 w-auto md:h-32 lg:h-40"
           src="/assets/svg/randomtrip.svg"
         />

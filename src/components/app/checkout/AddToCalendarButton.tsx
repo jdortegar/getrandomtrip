@@ -60,7 +60,7 @@ export function AddToCalendarButton({
 
   const start = new Date(startDate);
   const end = endDate ? new Date(endDate) : addDays(start, Math.max(nights, 1));
-  const title = `${tripType.toUpperCase()} — GetRandomTrip`;
+  const title = `${tripType.toUpperCase()} — GetRandomtrip`;
   const location = `${originCity}, ${originCountry}`;
   const href = buildGoogleCalendarUrl(title, start, end, location, eventDescription);
   const formattedDate = formatTripDate(startDate, locale);

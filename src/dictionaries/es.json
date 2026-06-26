@@ -696,7 +696,7 @@
     "testimonials": {
       "eyebrow": "Opiniones de viajeros",
       "subtitle": "Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.",
-      "title": "Lo que dicen sobre RandomTrip",
+      "title": "Lo que dicen sobre Randomtrip",
       "viewFullReviewLabel": "Ver opinión completa"
     },
     "xsedHero": {
@@ -2176,18 +2176,18 @@
     },
     "page": {
       "title": "¡Gracias por tu compra!",
-      "body": "Tu aventura sorpresa GetRandomTrip está confirmada.",
+      "body": "Tu aventura sorpresa GetRandomtrip está confirmada.",
       "messageApproved": "Pago aprobado. Tu viaje sorpresa está confirmado.",
       "messagePending": "Estado del pago: {status}. Revisá tu correo para la confirmación.",
       "messageGeneric": "Gracias por tu compra. Si acabás de pagar, tu viaje está en proceso de confirmación.",
       "errorTitle": "Error al cargar el pedido",
-      "metaDescription": "Tu compra en GetRandomTrip está confirmada.",
+      "metaDescription": "Tu compra en GetRandomtrip está confirmada.",
       "retry": "Reintentar",
       "ctaReveal": "Descubrir mi destino",
       "ctaBackToJourney": "Volver al viaje",
       "ctaHome": "Ir al inicio",
       "ctaMyTrips": "Ir a mis viajes",
-      "calendarEventDescription": "Tu escapada sorpresa GetRandomTrip. Destino revelado 48 horas antes de la salida.",
+      "calendarEventDescription": "Tu escapada sorpresa GetRandomtrip. Destino revelado 48 horas antes de la salida.",
       "xsedTitle": "Ya tenés tu XSED",
       "xsedBody": "Recibirás un correo con todo lo que necesitás para tu escapada.",
       "xsedTripTypeLabel": "Tipo de viaje",
@@ -2201,7 +2201,7 @@
   "paymentFailure": {
     "title": "Pago rechazado",
     "body": "El pago no pudo completarse. Podés intentar de nuevo o elegir otro medio de pago.",
-    "metaDescription": "El pago fue rechazado. Intentá de nuevo en GetRandomTrip.",
+    "metaDescription": "El pago fue rechazado. Intentá de nuevo en GetRandomtrip.",
     "subtitle": "PAGO <span style=\"color: #F2C53D\">RECHAZADO</span>",
     "ctaBackToJourney": "Volver al viaje",
     "ctaHome": "Ir al inicio",
@@ -2211,7 +2211,7 @@
   "paymentPending": {
     "title": "Pago pendiente",
     "body": "Tu pago está en proceso. Revisá tu correo para ver el estado.",
-    "metaDescription": "Tu pago está pendiente. GetRandomTrip.",
+    "metaDescription": "Tu pago está pendiente. GetRandomtrip.",
     "subtitle": "PAGO <span style=\"color: #F2C53D\">PENDIENTE</span>",
     "ctaBackToJourney": "Volver al viaje",
     "ctaHome": "Ir al inicio",
@@ -2248,10 +2248,10 @@
   },
   "legalCookies": {
     "meta": {
-      "description": "Cómo GetRandomTrip utiliza cookies y tecnologías similares en nuestro sitio y servicios.",
-      "openGraphDescription": "Política de cookies de GetRandomTrip.",
-      "openGraphTitle": "Política de Cookies | GetRandomTrip",
-      "title": "Política de Cookies | GetRandomTrip"
+      "description": "Cómo GetRandomtrip utiliza cookies y tecnologías similares en nuestro sitio y servicios.",
+      "openGraphDescription": "Política de cookies de GetRandomtrip.",
+      "openGraphTitle": "Política de Cookies | GetRandomtrip",
+      "title": "Política de Cookies | GetRandomtrip"
     },
     "hero": {
       "description": "Transparencia sobre cookies y tus opciones.",
@@ -2262,7 +2262,7 @@
       {
         "title": "Qué cubre esta política",
         "paragraphs": [
-          "Esta Política de Cookies explica cómo GetRandomTrip (nosotros) usa cookies y tecnologías similares cuando visitás nuestro sitio, usás el flujo de viaje, iniciás sesión o completás una compra. Debe leerse junto con nuestra Política de Privacidad."
+          "Esta Política de Cookies explica cómo GetRandomtrip (nosotros) usa cookies y tecnologías similares cuando visitás nuestro sitio, usás el flujo de viaje, iniciás sesión o completás una compra. Debe leerse junto con nuestra Política de Privacidad."
         ]
       },
       {
@@ -2273,7 +2273,7 @@
       },
       {
         "title": "Cookies que usamos",
-        "listIntro": "Según cómo uses GetRandomTrip, podemos usar:",
+        "listIntro": "Según cómo uses GetRandomtrip, podemos usar:",
         "listItems": [
           "Cookies estrictamente necesarias: seguridad, autenticación, continuidad de sesión, balanceo de carga y prevención de fraude (por ejemplo mantener tu sesión o recordar tu idioma).",
           "Cookies funcionales: recuerdan elecciones como idioma, avance del journey cuando el producto lo contempla y preferencias de interfaz.",
@@ -2315,10 +2315,10 @@
   },
   "legalPrivacy": {
     "meta": {
-      "description": "Cómo GetRandomTrip recopila, usa y protege tus datos personales al planificar y reservar viajes sorpresa.",
-      "openGraphDescription": "Política de privacidad para viajeros y trippers de GetRandomTrip.",
-      "openGraphTitle": "Política de Privacidad | GetRandomTrip",
-      "title": "Política de Privacidad | GetRandomTrip"
+      "description": "Cómo GetRandomtrip recopila, usa y protege tus datos personales al planificar y reservar viajes sorpresa.",
+      "openGraphDescription": "Política de privacidad para viajeros y trippers de GetRandomtrip.",
+      "openGraphTitle": "Política de Privacidad | GetRandomtrip",
+      "title": "Política de Privacidad | GetRandomtrip"
     },
     "hero": {
       "description": "Tu privacidad importa cuando confiás en nosotros con tu viaje.",
@@ -2329,7 +2329,7 @@
       {
         "title": "Quiénes somos",
         "paragraphs": [
-          "GetRandomTrip opera una plataforma que conecta viajeros con curadores independientes (Trippers) que diseñan y entregan experiencias de viaje sorpresa. Esta política describe cómo tratamos datos personales en ese contexto."
+          "GetRandomtrip opera una plataforma que conecta viajeros con curadores independientes (Trippers) que diseñan y entregan experiencias de viaje sorpresa. Esta política describe cómo tratamos datos personales en ese contexto."
         ]
       },
       {
@@ -2395,7 +2395,7 @@
       {
         "title": "Menores",
         "paragraphs": [
-          "GetRandomTrip no está dirigido a menores de 16 años (o la edad que exija tu jurisdicción). No recopilamos datos de menores a sabiendas. Si creés que un menor nos envió datos, escribinos para eliminarlos."
+          "GetRandomtrip no está dirigido a menores de 16 años (o la edad que exija tu jurisdicción). No recopilamos datos de menores a sabiendas. Si creés que un menor nos envió datos, escribinos para eliminarlos."
         ]
       },
       {
@@ -2414,13 +2414,13 @@
   },
   "legalRefund": {
     "meta": {
-      "description": "Reembolsos, cancelaciones y contracargos para compras y experiencias GetRandomTrip.",
-      "openGraphDescription": "Política de reembolsos y cancelaciones de GetRandomTrip.",
-      "openGraphTitle": "Política de Reembolso | GetRandomTrip",
-      "title": "Política de Reembolso | GetRandomTrip"
+      "description": "Reembolsos, cancelaciones y contracargos para compras y experiencias GetRandomtrip.",
+      "openGraphDescription": "Política de reembolsos y cancelaciones de GetRandomtrip.",
+      "openGraphTitle": "Política de Reembolso | GetRandomtrip",
+      "title": "Política de Reembolso | GetRandomtrip"
     },
     "hero": {
-      "description": "Cómo funcionan reembolsos y cancelaciones en viajes comprados por GetRandomTrip.",
+      "description": "Cómo funcionan reembolsos y cancelaciones en viajes comprados por GetRandomtrip.",
       "eyebrow": "LEGAL",
       "title": "Política de Reembolso"
     },
@@ -2428,13 +2428,13 @@
       {
         "title": "Resumen",
         "paragraphs": [
-          "Esta Política de Reembolso explica cancelaciones, reembolsos y disputas de pago cuando comprás experiencias a través de GetRandomTrip. Algunas ofertas pueden incluir términos adicionales en el checkout; si hay conflicto, prevalecen los términos de esa compra."
+          "Esta Política de Reembolso explica cancelaciones, reembolsos y disputas de pago cuando comprás experiencias a través de GetRandomtrip. Algunas ofertas pueden incluir términos adicionales en el checkout; si hay conflicto, prevalecen los términos de esa compra."
         ]
       },
       {
         "title": "Naturaleza del servicio",
         "paragraphs": [
-          "Muchas experiencias GetRandomTrip son personalizadas o ligadas a fechas (servicios de viaje, reservas o tiempo del curator). Una vez comprometidos componentes con proveedores, los reembolsos pueden ser limitados. El modelo sorpresa no elimina tus derechos de consumidor donde correspondan."
+          "Muchas experiencias GetRandomtrip son personalizadas o ligadas a fechas (servicios de viaje, reservas o tiempo del curator). Una vez comprometidos componentes con proveedores, los reembolsos pueden ser limitados. El modelo sorpresa no elimina tus derechos de consumidor donde correspondan."
         ]
       },
       {
@@ -2447,7 +2447,7 @@
         ]
       },
       {
-        "title": "Cambios o cancelaciones del Tripper o GetRandomTrip",
+        "title": "Cambios o cancelaciones del Tripper o GetRandomtrip",
         "paragraphs": [
           "Si un Tripper no puede entregar la experiencia por fuerza mayor, falla de proveedor u operativa, ofreceremos nueva fecha, alternativa comparable cuando sea viable, o reembolso de lo pagado por la parte no entregada, según ley y condiciones de venta."
         ]
@@ -2486,10 +2486,10 @@
   },
   "legalTerms": {
     "meta": {
-      "description": "Términos de Servicio para usar GetRandomTrip y reservar experiencias de viaje sorpresa.",
-      "openGraphDescription": "Términos de Servicio de GetRandomTrip.",
-      "openGraphTitle": "Términos de Servicio | GetRandomTrip",
-      "title": "Términos de Servicio | GetRandomTrip"
+      "description": "Términos de Servicio para usar GetRandomtrip y reservar experiencias de viaje sorpresa.",
+      "openGraphDescription": "Términos de Servicio de GetRandomtrip.",
+      "openGraphTitle": "Términos de Servicio | GetRandomtrip",
+      "title": "Términos de Servicio | GetRandomtrip"
     },
     "hero": {
       "description": "Reglas para usar nuestra plataforma, reservar viajes y trabajar con Trippers.",
@@ -2500,13 +2500,13 @@
       {
         "title": "Aceptación",
         "paragraphs": [
-          "Al acceder o usar sitios, apps o servicios de GetRandomTrip (los Servicios), aceptás estos Términos de Servicio. Si no estás de acuerdo, no uses los Servicios. Podemos actualizar los Términos; la versión actualizada se publicará aquí y el uso continuado puede implicar aceptación según permita la ley."
+          "Al acceder o usar sitios, apps o servicios de GetRandomtrip (los Servicios), aceptás estos Términos de Servicio. Si no estás de acuerdo, no uses los Servicios. Podemos actualizar los Términos; la versión actualizada se publicará aquí y el uso continuado puede implicar aceptación según permita la ley."
         ]
       },
       {
-        "title": "Qué ofrece GetRandomTrip",
+        "title": "Qué ofrece GetRandomtrip",
         "paragraphs": [
-          "GetRandomTrip es un marketplace y capa tecnológica que ayuda a viajeros a expresar preferencias y reservar experiencias sorpresa curadas por Trippers independientes. Salvo que se indique lo contrario, los Trippers son responsables de diseñar y entregar la experiencia; GetRandomTrip facilita descubrimiento, reserva, comunicación y procesamiento de pagos."
+          "GetRandomtrip es un marketplace y capa tecnológica que ayuda a viajeros a expresar preferencias y reservar experiencias sorpresa curadas por Trippers independientes. Salvo que se indique lo contrario, los Trippers son responsables de diseñar y entregar la experiencia; GetRandomtrip facilita descubrimiento, reserva, comunicación y procesamiento de pagos."
         ]
       },
       {
@@ -2521,7 +2521,7 @@
       },
       {
         "title": "Reservas, precios y pagos",
-        "listIntro": "Cuando comprás a través de GetRandomTrip:",
+        "listIntro": "Cuando comprás a través de GetRandomtrip:",
         "listItems": [
           "Los precios se muestran en la moneda del checkout salvo indicación distinta.",
           "El pago se procesa con Mercado Pago u otro procesador que designemos; también aplican sus términos y política de privacidad.",
@@ -2543,13 +2543,13 @@
       {
         "title": "Trippers y terceros",
         "paragraphs": [
-          "Trippers y operadores locales son partes independientes. GetRandomTrip no controla cada decisión in situ. Su desempeño es su responsabilidad según acuerdos con Trippers y ley de consumo. Transportistas, hoteles y actividades pueden tener términos propios."
+          "Trippers y operadores locales son partes independientes. GetRandomtrip no controla cada decisión in situ. Su desempeño es su responsabilidad según acuerdos con Trippers y ley de consumo. Transportistas, hoteles y actividades pueden tener términos propios."
         ]
       },
       {
         "title": "Propiedad intelectual",
         "paragraphs": [
-          "El contenido de los Servicios (marca, diseño, texto, gráficos, video, software) pertenece a GetRandomTrip o licenciantes. Recibís una licencia limitada, no exclusiva, para uso personal y no comercial del servicio salvo acuerdo por escrito distinto."
+          "El contenido de los Servicios (marca, diseño, texto, gráficos, video, software) pertenece a GetRandomtrip o licenciantes. Recibís una licencia limitada, no exclusiva, para uso personal y no comercial del servicio salvo acuerdo por escrito distinto."
         ]
       },
       {
@@ -2561,13 +2561,13 @@
       {
         "title": "Limitación de responsabilidad",
         "paragraphs": [
-          "En la medida máxima permitida por la ley aplicable, GetRandomTrip y afiliados no serán responsables por daños indirectos, incidentales, especiales, consecuentes o punitivos, ni por lucro cesante, datos o fondo de comercio. Nuestra responsabilidad agregada por estos Términos o los Servicios se limita al monto que pagaste por la reserva específica que originó el reclamo en los doce (12) meses previos al hecho, salvo donde la ley no permita limitar (incluida negligencia grave o dolo)."
+          "En la medida máxima permitida por la ley aplicable, GetRandomtrip y afiliados no serán responsables por daños indirectos, incidentales, especiales, consecuentes o punitivos, ni por lucro cesante, datos o fondo de comercio. Nuestra responsabilidad agregada por estos Términos o los Servicios se limita al monto que pagaste por la reserva específica que originó el reclamo en los doce (12) meses previos al hecho, salvo donde la ley no permita limitar (incluida negligencia grave o dolo)."
         ]
       },
       {
         "title": "Indemnización",
         "paragraphs": [
-          "Nos indemnizarás y mantendrás indemne a GetRandomTrip frente a reclamos, daños, pérdidas y gastos (incluidos honorarios razonables de abogados) derivados de tu mal uso de los Servicios, incumplimiento de estos Términos o violación de derechos de terceros."
+          "Nos indemnizarás y mantendrás indemne a GetRandomtrip frente a reclamos, daños, pérdidas y gastos (incluidos honorarios razonables de abogados) derivados de tu mal uso de los Servicios, incumplimiento de estos Términos o violación de derechos de terceros."
         ]
       },
       {
@@ -2579,7 +2579,7 @@
       {
         "title": "Ley aplicable y disputas",
         "paragraphs": [
-          "Salvo normas imperativas de consumidor en tu país que dispongan otra cosa, estos Términos se rigen por las leyes aplicables a la entidad operadora de GetRandomTrip sin considerar conflictos de leyes. Los tribunales o arbitraje de esa jurisdicción pueden tener competencia, salvo derechos irrenunciables de consumidores en sus tribunales locales."
+          "Salvo normas imperativas de consumidor en tu país que dispongan otra cosa, estos Términos se rigen por las leyes aplicables a la entidad operadora de GetRandomtrip sin considerar conflictos de leyes. Los tribunales o arbitraje de esa jurisdicción pueden tener competencia, salvo derechos irrenunciables de consumidores en sus tribunales locales."
         ]
       }
     ],
@@ -2601,7 +2601,7 @@
       "eyebrow": "Equipo multidisciplinario",
       "items": [
         {
-          "bio": "Fundador y visionario detrás de GetRandomTrip. Diseña cada experiencia con la obsesión de quien sabe que el viaje perfecto no se elige, se descubre.",
+          "bio": "Fundador y visionario detrás de GetRandomtrip. Diseña cada experiencia con la obsesión de quien sabe que el viaje perfecto no se elige, se descubre.",
           "img": "/images/about-us-santiago.png",
           "linkedin": "#",
           "name": "Santiago Senega",
@@ -2625,7 +2625,7 @@
           "tagline": "Transforma la logística en arte invisible."
         },
         {
-          "bio": "Diseño y marca. Da forma visual al mundo de GetRandomTrip, cuidando cada píxel como si fuera parte del paisaje.",
+          "bio": "Diseño y marca. Da forma visual al mundo de GetRandomtrip, cuidando cada píxel como si fuera parte del paisaje.",
           "img": "/images/about-us-carla.png",
           "linkedin": "#",
           "name": "Carla C. J Vázquez",
@@ -2772,8 +2772,8 @@
     "linkFamily": "En Familia",
     "linkSolo": "Viajes Solo",
     "linkTrippers": "Nuestros Trippers",
-    "metaDescription": "La página que buscas no existe. Descubre increíbles destinos con RandomTrip.",
-    "metaTitle": "Página No Encontrada - RandomTrip",
+    "metaDescription": "La página que buscas no existe. Descubre increíbles destinos con Randomtrip.",
+    "metaTitle": "Página No Encontrada - Randomtrip",
     "needHelp": "¿Necesitas ayuda?",
     "subtitle": "La página que buscas no existe o ha sido movida. Pero no te preocupes, tenemos muchos destinos increíbles esperándote. ¿Por qué no exploras nuestras aventuras?",
     "tipLabel": "Tip:",
@@ -2782,7 +2782,7 @@
     "viewPackages": "Ver Paquetes"
   },
   "waitlist": {
-    "headline": "Accedé antes que nadie al lanzamiento de RandomTrip",
+    "headline": "Accedé antes que nadie al lanzamiento de Randomtrip",
     "subheadline": "Sumate a la lista y te avisamos cuando estemos listos.",
     "namePlaceholder": "Nombre",
     "lastNamePlaceholder": "Apellido",
