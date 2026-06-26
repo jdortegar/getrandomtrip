@@ -10,8 +10,8 @@ import {
   TRAVELER_TYPE_SLUGS,
   type TravelerTypeOption,
   type TravelerTypeSlug,
-} from '@/lib/data/traveler-types';
-import type { TravelerTypeData } from '@/types/traveler-type';
+} from "@/lib/data/traveler-types";
+import type { TravelerTypeData } from "@/types/traveler-type";
 
 export type { TravelerTypeOption, TravelerTypeSlug };
 
@@ -34,7 +34,7 @@ export function getTravelerTypeData(
 export function getTravelerTypeMeta(
   slugOrAlias: string,
   locale?: string,
-): TravelerTypeData['meta'] | null {
+): TravelerTypeData["meta"] | null {
   const data = getTravelerType(slugOrAlias, locale);
   return data?.meta ?? null;
 }
@@ -83,7 +83,7 @@ export function getTravelerTypeCard(
 export function getTravelerTypePlanner(
   slugOrAlias: string,
   locale?: string,
-): TravelerTypeData['planner'] | null {
+): TravelerTypeData["planner"] | null {
   const data = getTravelerType(slugOrAlias, locale);
   return data?.planner ?? null;
 }
@@ -94,7 +94,7 @@ export function getTravelerTypePlanner(
 export function getTravelerTypeHero(
   slugOrAlias: string,
   locale?: string,
-): TravelerTypeData['content']['hero'] | null {
+): TravelerTypeData["content"]["hero"] | null {
   const data = getTravelerType(slugOrAlias, locale);
   return data?.content?.hero ?? null;
 }
@@ -105,7 +105,7 @@ export function getTravelerTypeHero(
 export function getTravelerTypeStory(
   slugOrAlias: string,
   locale?: string,
-): TravelerTypeData['content']['story'] | null {
+): TravelerTypeData["content"]["story"] | null {
   const data = getTravelerType(slugOrAlias, locale);
   return data?.content?.story ?? null;
 }
@@ -116,7 +116,7 @@ export function getTravelerTypeStory(
 export function getTravelerTypeBlog(
   slugOrAlias: string,
   locale?: string,
-): TravelerTypeData['blog'] | null {
+): TravelerTypeData["blog"] | null {
   const data = getTravelerType(slugOrAlias, locale);
   return data?.blog ?? null;
 }
@@ -127,7 +127,7 @@ export function getTravelerTypeBlog(
 export function getTravelerTypeTestimonials(
   slugOrAlias: string,
   locale?: string,
-): TravelerTypeData['testimonials'] | null {
+): TravelerTypeData["testimonials"] | null {
   const data = getTravelerType(slugOrAlias, locale);
   return data?.testimonials ?? null;
 }
@@ -142,7 +142,9 @@ export function isTravelerTypeSlug(value: string): value is TravelerTypeSlug {
 /**
  * Normalize alias to canonical slug, or null if unknown.
  */
-export function toTravelerTypeSlug(slugOrAlias: string): TravelerTypeSlug | null {
+export function toTravelerTypeSlug(
+  slugOrAlias: string,
+): TravelerTypeSlug | null {
   const data = getTravelerType(slugOrAlias);
   return data ? (data.meta.slug as TravelerTypeSlug) : null;
 }

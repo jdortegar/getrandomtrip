@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import Script from 'next/script';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useEffect, useRef } from "react";
+import Script from "next/script";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   setUser,
   trackPageview,
   trackScrollDepth,
-} from '@/lib/helpers/tracking/gtm';
-import { GTM_ID } from '@/lib/constants/tracking/service-keys';
+} from "@/lib/helpers/tracking/gtm";
+import { GTM_ID } from "@/lib/constants/tracking/service-keys";
 
 const isDev =
-  typeof process !== 'undefined' && process.env.NODE_ENV !== 'production';
+  typeof process !== "undefined" && process.env.NODE_ENV !== "production";
 
 const SCROLL_DEPTH_MILESTONES = [25, 50, 75, 90, 100] as const;
 
@@ -25,7 +25,7 @@ function AppTracking() {
 
   useEffect(() => {
     const url = `${pathname}${
-      searchParams?.toString() ? `?${searchParams}` : ''
+      searchParams?.toString() ? `?${searchParams}` : ""
     }`;
     trackPageview(url);
 
@@ -35,16 +35,16 @@ function AppTracking() {
   }, [pathname, searchParams, session?.user?.id]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    const pathKey = `${pathname}${searchParams?.toString() ?? ''}`;
+    const pathKey = `${pathname}${searchParams?.toString() ?? ""}`;
     if (currentPathKey.current !== pathKey) {
       currentPathKey.current = pathKey;
       reachedMilestones.current = new Set();
     }
 
     const pagePath = `${pathname}${
-      searchParams?.toString() ? `?${searchParams}` : ''
+      searchParams?.toString() ? `?${searchParams}` : ""
     }`;
 
     const handleScroll = () => {
@@ -61,10 +61,10 @@ function AppTracking() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname, searchParams]);
 
   if (!GTM_ID || isDev) return null;
@@ -88,7 +88,7 @@ function AppTracking() {
         <iframe
           height="0"
           src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-          style={{ display: 'none', visibility: 'hidden' }}
+          style={{ display: "none", visibility: "hidden" }}
           width="0"
         />
       </noscript>

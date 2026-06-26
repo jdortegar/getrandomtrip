@@ -25,10 +25,10 @@ Replace MercadoPago with Stripe as the sole payment provider. Use Stripe Element
 
 ### New
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/api/stripe/payment-intent` | Authenticated. Fetches the trip from DB and computes the total server-side (never trusts a client-supplied amount). If a `PENDING` payment with a `stripePaymentIntentId` already exists for the trip, retrieves and returns the existing PaymentIntent's `clientSecret` from Stripe rather than creating a new one. Otherwise creates a new PaymentIntent, upserts the `Payment` row, and returns `{ clientSecret, paymentIntentId }`. |
-| POST | `/api/stripe/webhook` | Verifies Stripe signature via `STRIPE_WEBHOOK_SECRET`. Must read raw body with `request.text()` (not `request.json()`) before calling `stripe.webhooks.constructEvent()`. Handles `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`. Updates `Payment` status and sets `TripRequest.status = CONFIRMED` on success. |
+| Method | Route                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/api/stripe/payment-intent` | Authenticated. Fetches the trip from DB and computes the total server-side (never trusts a client-supplied amount). If a `PENDING` payment with a `stripePaymentIntentId` already exists for the trip, retrieves and returns the existing PaymentIntent's `clientSecret` from Stripe rather than creating a new one. Otherwise creates a new PaymentIntent, upserts the `Payment` row, and returns `{ clientSecret, paymentIntentId }`. |
+| POST   | `/api/stripe/webhook`        | Verifies Stripe signature via `STRIPE_WEBHOOK_SECRET`. Must read raw body with `request.text()` (not `request.json()`) before calling `stripe.webhooks.constructEvent()`. Handles `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`. Updates `Payment` status and sets `TripRequest.status = CONFIRMED` on success.                                                                                |
 
 ### Deleted
 
@@ -107,11 +107,13 @@ Replace MercadoPago with Stripe as the sole payment provider. Use Stripe Element
 ### `Payment` model
 
 **Add:**
+
 ```prisma
 stripePaymentIntentId String? @unique
 ```
 
 **Remove:**
+
 ```prisma
 mpExternalReference     String?
 mpDescription           String?
@@ -120,6 +122,7 @@ providerPreferenceId    String?
 ```
 
 **Keep:**
+
 - `providerPaymentId` — holds the Stripe PaymentIntent ID for generic lookup via `findPaymentByProviderId()`
 - All status fields and the full `PaymentStatus` enum (values are provider-agnostic)
 
@@ -137,11 +140,13 @@ providerPreferenceId    String?
 ## Packages
 
 ### Add
+
 - `stripe` — server-side Node SDK
 - `@stripe/stripe-js` — client-side Stripe.js loader
 - `@stripe/react-stripe-js` — React components (`Elements`, `PaymentElement`)
 
 ### Remove
+
 - `mercadopago`
 
 ---
@@ -149,6 +154,7 @@ providerPreferenceId    String?
 ## Environment Variables
 
 ### Add
+
 ```
 STRIPE_SECRET_KEY                    # sk_live_... or sk_test_...
 STRIPE_WEBHOOK_SECRET                # whsec_...
@@ -156,6 +162,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   # pk_live_... or pk_test_...
 ```
 
 ### Remove
+
 ```
 MERCADOPAGO_TEST_ACCESS_TOKEN
 MERCADOPAGO_TEST_PUBLIC_KEY
@@ -166,30 +173,30 @@ MERCADOPAGO_LIVE_ACCESS_TOKEN
 
 ## Files Touched Summary
 
-| Action | Path |
-|--------|------|
-| Create | `src/app/api/stripe/payment-intent/route.ts` |
-| Create | `src/app/api/stripe/webhook/route.ts` |
-| Create | `src/lib/stripe-client.ts` |
-| Create | `src/components/app/checkout/StripePaymentForm.tsx` |
-| Edit | `src/hooks/usePayment.ts` |
-| Edit | `src/app/[locale]/(secure)/checkout/page.tsx` |
-| Edit | `src/app/[locale]/(secure)/checkout/CheckoutResultSuccess.tsx` |
-| Edit | `src/app/[locale]/(secure)/checkout/CheckoutResultPending.tsx` |
-| Edit | `src/app/[locale]/(secure)/checkout/CheckoutResultFailure.tsx` |
-| Edit | `src/app/[locale]/(secure)/checkout/success/page.tsx` |
-| Edit | `src/app/[locale]/(secure)/checkout/failure/page.tsx` |
-| Edit | `src/app/[locale]/(secure)/checkout/pending/page.tsx` |
-| Edit | `src/lib/db/payment.ts` |
-| Edit | `prisma/schema.prisma` |
-| Edit | `src/dictionaries/en.json` |
-| Edit | `src/dictionaries/es.json` |
-| Edit | `src/lib/types/dictionary.ts` |
-| Delete | `src/app/api/mercadopago/preference/route.ts` |
-| Delete | `src/app/api/mercadopago/webhook/route.ts` |
-| Delete | `src/app/api/payments/confirm/route.ts` |
-| Delete | `src/app/api/payments/mercadopago/checkout-return/route.ts` |
-| Delete | `src/lib/helpers/confirm-mercadopago-payment-from-return.ts` |
-| Delete | `src/lib/helpers/persist-mercadopago-checkout-return.ts` |
-| Delete | `src/lib/types/MercadoPagoCheckoutReturnParams.ts` |
-| Delete | `src/lib/helpers/mercadopago-checkout-params.ts` |
+| Action | Path                                                           |
+| ------ | -------------------------------------------------------------- |
+| Create | `src/app/api/stripe/payment-intent/route.ts`                   |
+| Create | `src/app/api/stripe/webhook/route.ts`                          |
+| Create | `src/lib/stripe-client.ts`                                     |
+| Create | `src/components/app/checkout/StripePaymentForm.tsx`            |
+| Edit   | `src/hooks/usePayment.ts`                                      |
+| Edit   | `src/app/[locale]/(secure)/checkout/page.tsx`                  |
+| Edit   | `src/app/[locale]/(secure)/checkout/CheckoutResultSuccess.tsx` |
+| Edit   | `src/app/[locale]/(secure)/checkout/CheckoutResultPending.tsx` |
+| Edit   | `src/app/[locale]/(secure)/checkout/CheckoutResultFailure.tsx` |
+| Edit   | `src/app/[locale]/(secure)/checkout/success/page.tsx`          |
+| Edit   | `src/app/[locale]/(secure)/checkout/failure/page.tsx`          |
+| Edit   | `src/app/[locale]/(secure)/checkout/pending/page.tsx`          |
+| Edit   | `src/lib/db/payment.ts`                                        |
+| Edit   | `prisma/schema.prisma`                                         |
+| Edit   | `src/dictionaries/en.json`                                     |
+| Edit   | `src/dictionaries/es.json`                                     |
+| Edit   | `src/lib/types/dictionary.ts`                                  |
+| Delete | `src/app/api/mercadopago/preference/route.ts`                  |
+| Delete | `src/app/api/mercadopago/webhook/route.ts`                     |
+| Delete | `src/app/api/payments/confirm/route.ts`                        |
+| Delete | `src/app/api/payments/mercadopago/checkout-return/route.ts`    |
+| Delete | `src/lib/helpers/confirm-mercadopago-payment-from-return.ts`   |
+| Delete | `src/lib/helpers/persist-mercadopago-checkout-return.ts`       |
+| Delete | `src/lib/types/MercadoPagoCheckoutReturnParams.ts`             |
+| Delete | `src/lib/helpers/mercadopago-checkout-params.ts`               |

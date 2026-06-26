@@ -15,6 +15,7 @@ Replace the current monolithic `page.tsx` (GlassCard + Hero, inline logic) with 
 ## Files Changed
 
 ### New files
+
 ```
 src/components/app/dashboard/tripper/TripperStatsGrid.tsx
 src/components/app/dashboard/tripper/RecentBookingsList.tsx
@@ -25,6 +26,7 @@ src/components/app/dashboard/tripper/TripperDashboardSkeleton.tsx
 ```
 
 ### Modified files
+
 ```
 src/app/[locale]/dashboard/tripper/page.tsx     # thin orchestrator
 src/types/tripper.ts                             # add TripperDashboardStats + RecentBooking
@@ -173,31 +175,37 @@ Added to both `src/dictionaries/es.json` and `src/dictionaries/en.json` under ke
 ## Components
 
 ### TripperStatsGrid
+
 - Props: `stats: TripperDashboardStats`, `copy: TripperDashboardDict['stats']`
 - 4 stat cards in `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6`
 - Icons: `Users`, `DollarSign`, `Star`, `MapPin` — all `text-light-blue`
 
 ### RecentBookingsList
+
 - Props: `bookings: RecentBooking[]`, `copy: TripperDashboardDict['recentBookings']`
 - Each row: avatar initial circle, client name + package + date, amount + status badge
 - Empty state: centered text from `copy.empty`
 
 ### TripperQuickActions
+
 - Props: `copy: TripperDashboardDict['quickActions']`
 - 5 `<Button asChild variant="ghost">` links with icon + title + subtitle
 - Links: `/dashboard/tripper/packages`, `/dashboard/tripper/earnings`, `/dashboard/tripper/reviews`, `/dashboard/tripper/blogs`, `/trippers/profile`
 
 ### TripperKeyMetrics
+
 - Props: `stats: TripperDashboardStats`, `copy: TripperDashboardDict['keyMetrics']`
 - 3 rows: label/value pairs
 - Crecimiento hardcoded `+12.5%` with `TrendingUp` icon (same as current — real data not available from API)
 
 ### TripperPackagesSummary
+
 - Props: `activePackages: number`, `copy: TripperDashboardDict['packages']`
 - Empty state: message + CTA button
 - Non-empty: count text + "Ver todos" link + "Nuevo Paquete" button
 
 ### TripperDashboardSkeleton
+
 - No props
 - Skeleton pulses matching layout: 4 stat cards row, 2+1 panel row, 1 full-width panel
 

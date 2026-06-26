@@ -1,5 +1,8 @@
 const dfCache = new Map<string, Intl.DateTimeFormat>();
-function getDF(locale = 'es-MX', opts: Intl.DateTimeFormatOptions = { dateStyle: 'medium' }) {
+function getDF(
+  locale = "es-MX",
+  opts: Intl.DateTimeFormatOptions = { dateStyle: "medium" },
+) {
   const key = JSON.stringify([locale, opts]);
   let f = dfCache.get(key);
   if (!f) {
@@ -9,8 +12,8 @@ function getDF(locale = 'es-MX', opts: Intl.DateTimeFormatOptions = { dateStyle:
   return f;
 }
 
-export function formatDateISO(iso: string, locale = 'es-MX') {
+export function formatDateISO(iso: string, locale = "es-MX") {
   const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso || '';
+  if (isNaN(d.getTime())) return iso || "";
   return getDF(locale).format(d);
 }

@@ -240,8 +240,8 @@ Delete a trip.
 
 ```typescript
 // src/hooks/useSaveTrip.ts
-import { useState } from 'react';
-import { useStore } from '@/store/store';
+import { useState } from "react";
+import { useStore } from "@/store/store";
 
 export function useSaveTrip() {
   const [isLoading, setIsLoading] = useState(false);
@@ -263,20 +263,20 @@ export function useSaveTrip() {
         // ... map all store fields to API payload
       };
 
-      const response = await fetch('/api/trips', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save trip');
+        throw new Error("Failed to save trip");
       }
 
       const data = await response.json();
       return data.trip;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save trip');
+      setError(err instanceof Error ? err.message : "Failed to save trip");
       throw err;
     } finally {
       setIsLoading(false);

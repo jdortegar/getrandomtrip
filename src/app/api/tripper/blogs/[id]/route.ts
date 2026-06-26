@@ -4,21 +4,22 @@
 // DELETE /api/tripper/blogs/[id] - Delete a blog post by ID for tripper
 // ============================================================================
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  props: { params: Promise<{ id: string }> },
 ) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user and verify they are a tripper
@@ -27,9 +28,9 @@ export async function GET(
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'tripper')) {
+    if (!user || !hasRoleAccess(user, "tripper")) {
       return NextResponse.json(
-        { error: 'Forbidden - Tripper access only' },
+        { error: "Forbidden - Tripper access only" },
         { status: 403 },
       );
     }
@@ -78,7 +79,7 @@ export async function GET(
 
     if (!blog) {
       return NextResponse.json(
-        { error: 'Blog post not found or access denied' },
+        { error: "Blog post not found or access denied" },
         { status: 404 },
       );
     }
@@ -95,9 +96,9 @@ export async function GET(
 
     return NextResponse.json({ blog: transformedBlog });
   } catch (error) {
-    console.error('Error fetching blog:', error);
+    console.error("Error fetching blog:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
@@ -105,13 +106,14 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  props: { params: Promise<{ id: string }> },
 ) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user and verify they are a tripper
@@ -120,9 +122,9 @@ export async function PATCH(
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'tripper')) {
+    if (!user || !hasRoleAccess(user, "tripper")) {
       return NextResponse.json(
-        { error: 'Forbidden - Tripper access only' },
+        { error: "Forbidden - Tripper access only" },
         { status: 403 },
       );
     }
@@ -139,7 +141,7 @@ export async function PATCH(
 
     if (!existingBlog) {
       return NextResponse.json(
-        { error: 'Blog post not found or access denied' },
+        { error: "Blog post not found or access denied" },
         { status: 404 },
       );
     }
@@ -163,18 +165,15 @@ export async function PATCH(
 
     // Validate required fields
     if (title !== undefined && !title) {
-      return NextResponse.json(
-        { error: 'Title is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     // Convert string enums to uppercase for Prisma
-    const { slugify } = await import('@/lib/helpers/slugify');
+    const { slugify } = await import("@/lib/helpers/slugify");
     const updateData: any = {};
     if (title !== undefined) {
       updateData.title = title;
-      const baseSlug = slugify(title) || 'post';
+      const baseSlug = slugify(title) || "post";
       let slug = baseSlug;
       let suffix = 0;
       while (true) {
@@ -195,13 +194,13 @@ export async function PATCH(
     if (tags !== undefined) updateData.tags = tags;
     if (travelType !== undefined) {
       updateData.travelType =
-        typeof travelType === 'string' && travelType.trim().length > 0
+        typeof travelType === "string" && travelType.trim().length > 0
           ? travelType.trim()
           : null;
     }
     if (excuseKey !== undefined) {
       updateData.excuseKey =
-        typeof excuseKey === 'string' && excuseKey.trim().length > 0
+        typeof excuseKey === "string" && excuseKey.trim().length > 0
           ? excuseKey.trim()
           : null;
     }
@@ -209,19 +208,21 @@ export async function PATCH(
     if (seo !== undefined) updateData.seo = seo || null;
 
     if (format !== undefined) {
-      const formatMap: Record<string, 'ARTICLE' | 'PHOTO' | 'VIDEO' | 'MIXED'> = {
-        article: 'ARTICLE',
-        photo: 'PHOTO',
-        video: 'VIDEO',
-        mixed: 'MIXED',
-      };
-      updateData.format = formatMap[format.toLowerCase()] || 'ARTICLE';
+      const formatMap: Record<string, "ARTICLE" | "PHOTO" | "VIDEO" | "MIXED"> =
+        {
+          article: "ARTICLE",
+          photo: "PHOTO",
+          video: "VIDEO",
+          mixed: "MIXED",
+        };
+      updateData.format = formatMap[format.toLowerCase()] || "ARTICLE";
     }
 
     if (status !== undefined) {
-      updateData.status = status.toUpperCase() === 'PUBLISHED' ? 'PUBLISHED' : 'DRAFT';
+      updateData.status =
+        status.toUpperCase() === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
       // Set publishedAt if status changed to published and it wasn't published before
-      if (updateData.status === 'PUBLISHED' && !existingBlog.publishedAt) {
+      if (updateData.status === "PUBLISHED" && !existingBlog.publishedAt) {
         updateData.publishedAt = new Date();
       }
     }
@@ -264,9 +265,9 @@ export async function PATCH(
 
     return NextResponse.json({ blog: transformedBlog });
   } catch (error) {
-    console.error('Error updating blog:', error);
+    console.error("Error updating blog:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
@@ -274,13 +275,14 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  props: { params: Promise<{ id: string }> },
 ) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user and verify they are a tripper
@@ -289,9 +291,9 @@ export async function DELETE(
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'tripper')) {
+    if (!user || !hasRoleAccess(user, "tripper")) {
       return NextResponse.json(
-        { error: 'Forbidden - Tripper access only' },
+        { error: "Forbidden - Tripper access only" },
         { status: 403 },
       );
     }
@@ -308,7 +310,7 @@ export async function DELETE(
 
     if (!existingBlog) {
       return NextResponse.json(
-        { error: 'Blog post not found or access denied' },
+        { error: "Blog post not found or access denied" },
         { status: 404 },
       );
     }
@@ -320,11 +322,10 @@ export async function DELETE(
 
     return NextResponse.json({ success: true }, { status: 204 });
   } catch (error) {
-    console.error('Error deleting blog:', error);
+    console.error("Error deleting blog:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
 }
-

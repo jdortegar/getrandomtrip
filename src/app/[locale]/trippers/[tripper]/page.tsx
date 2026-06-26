@@ -1,62 +1,32 @@
-import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
-import { TRIPPERS } from '@/content/trippers';
-import type { BlogPost } from '@/lib/data/shared/blog-types';
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+import { TRIPPERS } from "@/content/trippers";
 import {
   getTripperBySlug,
   getTripperFeaturedTrips,
-  getTripperPackagesByTypeAndLevel,
+  getTripperExperiencesByTypeAndLevel,
   getTripperPublishedBlogs,
-} from '@/lib/db/tripper-queries';
-import TripperHero from '@/components/tripper/TripperHero';
-import TripperPlanner from '@/components/tripper/TripperPlanner';
-import TripperInspirationGallery from '@/components/tripper/TripperInspirationGallery';
-import Blog from '@/components/Blog';
-import nextDynamic from 'next/dynamic';
-const TripperVisitedMap = nextDynamic(
-  () => import('@/components/tripper/TripperVisitedMap'),
-  {
-    loading: () => <div className="h-72 rounded-xl bg-gray-100" />,
-    ssr: false,
-  },
-);
-import Testimonials from '@/components/Testimonials';
-import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
-import HomeInfo from '@/components/HomeInfo';
+} from "@/lib/db/tripper-queries";
+import TripperHero from "@/components/tripper/TripperHero";
+import TripperPlanner from "@/components/tripper/TripperPlanner";
+import TripperInspirationGallery from "@/components/tripper/TripperInspirationGallery";
+import Blog from "@/components/Blog";
+import Testimonials from "@/components/Testimonials/Testimonials";
+import { getAllTestimonialsForTripper } from "@/lib/helpers/Tripper";
+import HomeInfo from "@/components/HomeInfo";
 import {
   TRIPPER_TRAVELER_TYPES_ANCHOR_ID,
   TripperTravelerTypesSection,
-} from '@/components/tripper/TripperTravelerTypesSection';
-import { getDictionary } from '@/lib/i18n/dictionaries';
-import { hasLocale } from '@/lib/i18n/config';
+} from "@/components/tripper/TripperTravelerTypesSection";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 // 👇 Modal de video (client component)
-import TripperIntroVideoGate from '@/components/tripper/TripperIntroVideoGate';
-
-// Fallback blog posts when tripper has no published posts
-const MOCK_BLOG_POSTS: BlogPost[] = [
-  {
-    category: 'Viajes',
-    href: '/blog',
-    image: '/images/fallbacks/tripper-avatar.jpg',
-    title: 'Rutas secretas que no aparecen en las guías',
-  },
-  {
-    category: 'Inspiración',
-    href: '/blog',
-    image: '/images/fallbacks/tripper-avatar.jpg',
-    title: 'Cómo planear tu próxima aventura sin estrés',
-  },
-  {
-    category: 'Tips',
-    href: '/blog',
-    image: '/images/fallbacks/tripper-avatar.jpg',
-    title: 'Lo que aprendí viajando por Latinoamérica',
-  },
-];
+import TripperIntroVideoGate from "@/components/tripper/TripperIntroVideoGate";
 
 // Always fetch fresh data so carousel shows only types that have packages
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   // For now, we'll use the static TRIPPERS list
@@ -64,16 +34,15 @@ export async function generateStaticParams() {
   return TRIPPERS.map((t) => ({ tripper: t.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { tripper: string };
+export async function generateMetadata(props: {
+  params: Promise<{ tripper: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const dbTripper = await getTripperBySlug(params.tripper);
 
-  if (!dbTripper) return { title: 'Randomtrip' };
+  if (!dbTripper) return { title: "Randomtrip" };
 
-  const heroImage = dbTripper.avatarUrl || '/images/fallback-profile.jpg';
+  const heroImage = dbTripper.avatarUrl || "/images/fallback-profile.jpg";
 
   return {
     title: `${dbTripper.name} | Randomtrip`,
@@ -84,17 +53,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { locale?: string; tripper: string };
+export default async function Page(props: {
+  params: Promise<{ locale?: string; tripper: string }>;
 }) {
+  const params = await props.params;
   // Guard si viene vacío o 'undefined'
-  if (!params?.tripper || params.tripper === 'undefined') {
-    redirect('/trippers');
+  if (!params?.tripper || params.tripper === "undefined") {
+    redirect("/trippers");
   }
 
-  const locale = hasLocale(params.locale) ? params.locale : 'es';
+  const locale = hasLocale(params.locale) ? params.locale : "es";
   const dict = await getDictionary(locale);
   const homeInfoContent = {
     ...dict.home.homeInfo,
@@ -108,21 +76,22 @@ export default async function Page({
   // Must have database tripper data
   if (!tripperData) return notFound();
 
-  const tripperPackagesByType = await getTripperPackagesByTypeAndLevel(
+  const tripperPackagesByType = await getTripperExperiencesByTypeAndLevel(
     tripperData.id,
   );
   // availableTypesFromPackages = distinct types from this tripper's packages (from getTripperBySlug)
   const availableTypesFromPackages = tripperData.availableTypes ?? [];
 
   // Fetch published blog posts for this tripper
-  const publishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
-  const posts: BlogPost[] =
-    publishedBlogs.length > 0 ? publishedBlogs : MOCK_BLOG_POSTS;
+  const rawPublishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
+  const publishedBlogs = rawPublishedBlogs.map((p) => ({
+    ...p,
+    href: pathForLocale(locale, p.href),
+  }));
 
   return (
     <main className="bg-white text-slate-900">
       <TripperHero tripper={tripperData} />
-
 
       {tripperData && tripperData.tripperSlug && (
         <TripperPlanner
@@ -142,9 +111,13 @@ export default async function Page({
           tripperPackagesByType={tripperPackagesByType}
         />
       )}
+
       {/* Featured Trips Gallery */}
       {featuredTrips.length > 0 && (
-        <TripperInspirationGallery trips={featuredTrips} tripperName={tripperData.name} />
+        <TripperInspirationGallery
+          trips={featuredTrips}
+          tripperName={tripperData.name}
+        />
       )}
       <HomeInfo content={homeInfoContent} />
       <TripperTravelerTypesSection
@@ -153,25 +126,27 @@ export default async function Page({
         tripperSlug={tripperData.tripperSlug}
       />
 
-      {/* Blog / inspiración */}
-      {posts.length > 0 && (
+      {/* Blog / inspiración — only render when tripper has published posts */}
+      {publishedBlogs.length > 0 && (
         <Blog
           id="tripper-blog"
-          posts={posts}
+          posts={publishedBlogs}
           subtitle="Notas, guías y momentos que inspiran de este tripper."
           title={`Inspiración de ${tripperData.name}`}
           viewAll={{
-            href: `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`,
-            subtitle: 'Explora más contenido',
-            title: 'Ver Todo',
+            href: pathForLocale(locale, `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`),
+            subtitle: "Explora más contenido",
+            title: "Ver Todo",
           }}
         />
       )}
       <Testimonials
-        testimonials={getAllTestimonialsForTripper(tripperData)}
-        content={{ title: `Lo que dicen sobre ${tripperData.name}` }}
+        testimonials={await getAllTestimonialsForTripper(tripperData)}
+        title={`Lo que dicen sobre ${tripperData.name}`}
+        subtitle={`Lo que dicen sobre ${tripperData.name}`}
+        eyebrow={`Lo que dicen sobre ${tripperData.name}`}
+        viewFullReviewLabel={`Lo que dicen sobre ${tripperData.name}`}
       />
-      
     </main>
   );
 }

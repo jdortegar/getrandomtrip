@@ -1,9 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import {
-  BLOG_TRAVEL_TYPE_OPTIONS,
-} from "@/lib/constants/blog-filters";
+import { BLOG_TRAVEL_TYPE_OPTIONS } from "@/lib/constants/blog-filters";
 import { getExcusesByTravelerType } from "@/lib/data/shared/excuses";
 import type { TripperBlogComposerDict } from "@/lib/types/dictionary";
 import type { BlogPost } from "@/types/blog";

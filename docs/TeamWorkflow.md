@@ -37,10 +37,10 @@ The project follows a sequential workflow, with clear handoffs between roles. Ea
 ## 4. Communication Protocol
 
 - **Alignment Meetings**: Schedule brief syncs at key handoffs:
-  - After Product roadmap is finalized  
-  - Before UX/UI design begins  
-  - After UX/UI → Frontend handoff  
-  - Pre-release sprint demos  
+  - After Product roadmap is finalized
+  - Before UX/UI design begins
+  - After UX/UI → Frontend handoff
+  - Pre-release sprint demos
 - **Documentation**: Record meeting notes and action points in a shared channel or project board for clarity and auditability.
 
 ---
@@ -56,7 +56,7 @@ The project follows a sequential workflow, with clear handoffs between roles. Ea
 
 ## 6. Use of Shared Context
 
-- All team members reference `Guidelines.md` for style, tone, naming, and animations.  
+- All team members reference `Guidelines.md` for style, tone, naming, and animations.
 - **Component Library**: Maintain a shared style token file or components directory aligned with `Guidelines.md`. This library should be accessible to Frontend and Copywriter.
 
 ---

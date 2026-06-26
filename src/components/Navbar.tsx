@@ -1,48 +1,71 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { Phone, User, Search, Menu, Globe } from 'lucide-react';
-import { useUserStore } from '@/store/slices/userStore';
-import { useScrollDetection } from '@/hooks/useScrollDetection';
-import AuthModal from '@/components/auth/AuthModal';
-import { useAuthModal } from '@/hooks/useAuthModal';
-import { NavbarProfile, type NavbarProfileLabels } from './NavbarProfile';
-import { useMenuState } from '@/hooks/useMenuState';
-import { NAVBAR_CONSTANTS } from '@/lib/data/constants/navbar';
-import {
-  COOKIE_LOCALE,
-  LOCALE_LABELS,
-  type Locale,
-} from '@/lib/i18n/config';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
-import { pathForLocale, pathWithoutLocale } from '@/lib/i18n/pathForLocale';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { Phone, User, Search, Menu, Globe } from "lucide-react";
+import { useUserStore } from "@/store/slices/userStore";
+import { useScrollDetection } from "@/hooks/useScrollDetection";
+import AuthModal from "@/components/auth/AuthModal";
+import { useAuthModal } from "@/hooks/useAuthModal";
+import { NavbarProfile, type NavbarProfileLabels } from "./NavbarProfile";
+import { useMenuState } from "@/hooks/useMenuState";
+import { COOKIE_LOCALE, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { pathForLocale, pathWithoutLocale } from "@/lib/i18n/pathForLocale";
+import { cn } from "@/lib/utils";
 
-// Types
-export type NavbarVariant = 'overlay' | 'auto' | 'solid';
+export type NavbarVariant = "overlay" | "auto" | "solid";
 
-type NavKeys = keyof NonNullable<Dictionary['nav']>;
+type NavKeys = keyof NonNullable<Dictionary["nav"]>;
 
-interface LinkKey {
-  ariaKey: NavKeys;
+type NavLink = {
   href: string;
   labelKey: NavKeys;
-}
+  ariaKey: NavKeys;
+  displayPosition: "navbar" | "button";
+};
 
-const PRIMARY_LINK_KEYS: LinkKey[] = [
-  { href: '/trippers', labelKey: 'labelTrippers', ariaKey: 'ariaLabelTrippers' },
-  { href: '/blog', labelKey: 'labelInspiration', ariaKey: 'ariaLabelInspiration' },
-  { href: '/experiences', labelKey: 'labelExperiences', ariaKey: 'ariaLabelExperiences' },
-  { href: '/xsed', labelKey: 'labelXsed', ariaKey: 'ariaLabelXsed' },
-  { href: '/about-us', labelKey: 'labelNosotros', ariaKey: 'ariaLabelNosotros' },
+const NAV_LINKS: NavLink[] = [
+  {
+    href: "/trippers",
+    labelKey: "labelTrippers",
+    ariaKey: "ariaLabelTrippers",
+    displayPosition: "navbar",
+  },
+  {
+    href: "/experiences",
+    labelKey: "labelExperiences",
+    ariaKey: "ariaLabelExperiences",
+    displayPosition: "navbar",
+  },
+  {
+    href: "/xsed",
+    labelKey: "labelXsed",
+    ariaKey: "ariaLabelXsed",
+    displayPosition: "navbar",
+  },
+  {
+    href: "/blog",
+    labelKey: "labelInspiration",
+    ariaKey: "ariaLabelInspiration",
+    displayPosition: "button",
+  },
+  {
+    href: "/about-us",
+    labelKey: "labelNosotros",
+    ariaKey: "ariaLabelNosotros",
+    displayPosition: "button",
+  },
+  {
+    href: "/contact",
+    labelKey: "labelContact",
+    ariaKey: "ariaLabelContact",
+    displayPosition: "button",
+  },
 ];
 
-const EXTRA_LINK_KEYS: LinkKey[] = [];
-
 export interface NavbarProps {
-  /** Solid primary bar for pages without a hero (e.g. dashboard). */
   backgroundPrimary?: boolean;
   dict?: Dictionary;
   locale?: Locale;
@@ -51,72 +74,76 @@ export interface NavbarProps {
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-// Main Navbar Component
 export default function Navbar({
   backgroundPrimary = false,
   dict,
   locale: localeProp,
-  variant = 'auto',
+  variant = "auto",
 }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  useScrollDetection({
-    variant: backgroundPrimary ? 'solid' : variant,
-  });
+  useScrollDetection({ variant: backgroundPrimary ? "solid" : variant });
   const { isAuthed, user, signOut, session } = useUserStore();
   const { isOpen, mode, close, openLogin } = useAuthModal();
-  const linksMenu = useMenuState();
   const languageMenu = useMenuState();
-  const currentLocale: Locale = localeProp ?? 'es';
+  const mobileMenu = useMenuState();
+  const currentLocale: Locale = localeProp ?? "es";
   const nav = dict?.nav;
   const profileLabels = dict?.navbarProfile as NavbarProfileLabels;
 
-  const headerClass = backgroundPrimary
-    ? cn(
-        'bg-primary duration-500 ease-in-out ring-1 ring-black/10 shadow-sm sticky text-primary-foreground top-0 transition-all w-full z-50',
-        NAVBAR_CONSTANTS.HEIGHT,
-      )
-    : cn(
-        'absolute backdrop-blur-md bg-white/0 duration-500 ease-in-out inset-x-0 text-white top-0 transition-all z-50',
-        NAVBAR_CONSTANTS.HEIGHT,
-      );
-  const logoSrc = '/assets/logos/logo_getrandomtrip_1.png';
+  const headerClass = cn(
+    "duration-500 ease-in-out h-16 top-0 transition-all z-50",
+    backgroundPrimary
+      ? "bg-primary ring-1 ring-black/10 shadow-sm sticky text-primary-foreground w-full"
+      : "absolute backdrop-blur-md bg-white/0 inset-x-0 text-white",
+  );
+
+  const desktopLinks = NAV_LINKS.filter(
+    (link) => link.displayPosition === "navbar",
+  );
 
   return (
     <>
       <header className={headerClass} data-site-header>
-        <nav
-          className={`mx-auto ${NAVBAR_CONSTANTS.HEIGHT}  ${NAVBAR_CONSTANTS.PADDING} flex items-center justify-between container`}
-        >
+        <nav className="rt-container h-16 flex items-center justify-between gap-1">
           <Link
-            aria-label={nav?.ariaLabelLogo ?? 'Randomtrip'}
+            aria-label={nav?.ariaLabelLogo ?? "Randomtrip"}
             className="flex items-center gap-2 shrink-0 py-2"
-            href={pathForLocale(currentLocale, '/')}
+            href={pathForLocale(currentLocale, "/")}
           >
             <Image
-              alt={nav?.ariaLabelLogo ?? 'Randomtrip'}
+              alt="Randomtrip"
+              width={45}
+              height={45}
+              src="/assets/logos/iso-randomtrip.svg"
+              className="sm:hidden"
+            />
+            <Image
+              alt="Randomtrip"
               height={50}
               priority
-              src={logoSrc}
-              style={{ height: 'auto' }}
+              src="/assets/logos/logo_getrandomtrip_1.png"
+              style={{ height: "auto" }}
               width={180}
+              className="hidden sm:block"
             />
           </Link>
 
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+          {/* Desktop nav — navbar links only */}
+          <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
             <button
-              aria-label={nav?.search ?? 'Search'}
+              aria-label={nav?.search ?? "Search"}
               className="p-2 rounded-lg hover:bg-white/10"
               onClick={() => {}}
               type="button"
             >
               <Search className="h-5 w-5" />
             </button>
-            {PRIMARY_LINK_KEYS.map((link) => (
+            {desktopLinks.map((link) => (
               <Link
                 key={link.href}
-                aria-label={nav?.[link.ariaKey] }
-                className="hover:underline underline-offset-4 uppercase text-base font-barlow "
+                aria-label={nav?.[link.ariaKey]}
+                className="hover:underline underline-offset-4 uppercase text-base font-barlow"
                 href={pathForLocale(currentLocale, link.href)}
               >
                 {nav?.[link.labelKey]}
@@ -125,43 +152,8 @@ export default function Navbar({
           </div>
 
           <div className="flex items-center gap-2">
-            {EXTRA_LINK_KEYS.length > 0 && (
-              <div className="relative" ref={linksMenu.menuRef}>
-                <button
-                  aria-expanded={linksMenu.isOpen}
-                  aria-haspopup="menu"
-                  aria-label={nav?.openMenu ?? 'Open menu'}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10"
-                  onClick={linksMenu.toggle}
-                  type="button"
-                >
-                  <Menu className="h-5 w-5" />
-                </button>
-
-                {linksMenu.isOpen && (
-                  <div
-                    className="absolute right-0 mt-3 w-60 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
-                    role="menu"
-                  >
-                    {EXTRA_LINK_KEYS && EXTRA_LINK_KEYS.map((link) => (
-                      <Link
-                        key={link.href}
-                        aria-label={nav?.[link.ariaKey] ?? link.href}
-                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-                        href={pathForLocale(currentLocale, link.href)}
-                        role="menuitem"
-                        onClick={() => linksMenu.close()}
-                      >
-                        {nav?.[link.labelKey] ?? link.href}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
             <a
-              aria-label={nav?.whatsApp ?? 'WhatsApp'}
+              aria-label={nav?.whatsApp ?? "WhatsApp"}
               className="p-2 rounded-lg hover:bg-white/10"
               href="https://wa.me/526241928208"
               rel="noopener"
@@ -170,9 +162,63 @@ export default function Navbar({
               <Phone className="h-5 w-5" />
             </a>
 
+            {/* Hamburger — always present; shows all links (navbar links included for mobile) */}
+            <div className="relative" ref={mobileMenu.menuRef}>
+              <button
+                aria-expanded={mobileMenu.isOpen}
+                aria-haspopup="menu"
+                aria-label={nav?.openMenu ?? "Open menu"}
+                className="p-2 rounded-lg hover:bg-white/10"
+                onClick={mobileMenu.toggle}
+                type="button"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+
+              {mobileMenu.isOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                >
+                  {/* navbar links: hidden on desktop (already in the nav bar), visible on mobile */}
+                  <div className="lg:hidden">
+                    {NAV_LINKS.filter(
+                      (l) => l.displayPosition === "navbar",
+                    ).map((link) => (
+                      <Link
+                        key={link.href}
+                        aria-label={nav?.[link.ariaKey]}
+                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                        href={pathForLocale(currentLocale, link.href)}
+                        role="menuitem"
+                        onClick={mobileMenu.close}
+                      >
+                        {nav?.[link.labelKey]}
+                      </Link>
+                    ))}
+                  </div>
+                  {/* button links: always in the hamburger */}
+                  {NAV_LINKS.filter((l) => l.displayPosition === "button").map(
+                    (link) => (
+                      <Link
+                        key={link.href}
+                        aria-label={nav?.[link.ariaKey]}
+                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                        href={pathForLocale(currentLocale, link.href)}
+                        role="menuitem"
+                        onClick={mobileMenu.close}
+                      >
+                        {nav?.[link.labelKey]}
+                      </Link>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
+
             {!isAuthed && (
               <button
-                aria-label={nav?.signIn ?? 'Sign in'}
+                aria-label={nav?.signIn ?? "Sign in"}
                 className="p-2 rounded-lg hover:bg-white/10"
                 onClick={() => openLogin()}
               >
@@ -188,18 +234,19 @@ export default function Navbar({
                 user={user}
               />
             )}
+
             <div className="relative" ref={languageMenu.menuRef}>
               <button
                 aria-expanded={languageMenu.isOpen}
                 aria-haspopup="menu"
-                aria-label={nav?.selectLanguage ?? 'Select language'}
+                aria-label={nav?.selectLanguage ?? "Select language"}
                 className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10"
                 onClick={languageMenu.toggle}
                 type="button"
               >
                 <Globe className="h-5 w-5" />
                 <span className="hidden lg:inline text-sm font-medium">
-                  {currentLocale === 'es' ? 'ES' : 'EN'}
+                  {currentLocale === "es" ? "ES" : "EN"}
                 </span>
               </button>
 
@@ -208,17 +255,20 @@ export default function Navbar({
                   role="menu"
                   className="absolute right-0 mt-3 w-40 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
                 >
-                  {(['es', 'en'] as const).map((loc) => (
+                  {(["es", "en"] as const).map((loc) => (
                     <button
                       key={loc}
                       role="menuitemradio"
                       aria-checked={currentLocale === loc}
-                      className={`w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50 ${currentLocale === loc ? 'bg-neutral-100 font-semibold' : ''}`}
+                      className={cn(
+                        "w-full text-left px-4 py-2 text-sm rounded hover:bg-neutral-50",
+                        currentLocale === loc && "bg-neutral-100 font-semibold",
+                      )}
                       onClick={() => {
                         languageMenu.close();
                         document.cookie = `${COOKIE_LOCALE}=${loc}; path=/; max-age=${COOKIE_MAX_AGE}; sameSite=lax`;
                         const pathWithout = pathWithoutLocale(pathname);
-                        router.push(pathForLocale(loc, pathWithout || '/'));
+                        router.push(pathForLocale(loc, pathWithout || "/"));
                       }}
                     >
                       {LOCALE_LABELS[loc]}

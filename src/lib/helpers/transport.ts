@@ -29,7 +29,7 @@ export function parseTransportOrderParam(
 ): string[] {
   if (!raw) return [];
   return raw
-    .split(',')
+    .split(",")
     .map((s) => s.trim())
     .map((id) => normalizeTransportId(id))
     .filter((id): id is string => Boolean(id));
@@ -50,7 +50,7 @@ export function getPrimaryTransportIdFromOrderParam(
   raw: string | null | undefined,
 ): string {
   const first = parseTransportOrderParam(raw)[0];
-  return normalizeTransportId(first) ?? 'plane';
+  return normalizeTransportId(first) ?? "plane";
 }
 
 /** Primary mode for display when the URL has a full order; otherwise undefined. */
@@ -61,4 +61,3 @@ export function getOptionalPrimaryTransportFromOrderParam(
   const first = parseTransportOrderParam(raw)[0];
   return normalizeTransportId(first);
 }
-

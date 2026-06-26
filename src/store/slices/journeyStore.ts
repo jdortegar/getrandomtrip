@@ -1,16 +1,16 @@
 // frontend/src/store/journeyStore.ts
-import { create, StateCreator } from 'zustand';
+import { create, StateCreator } from "zustand";
 import {
   FILTER_OPTION_KEYS,
   FILTER_OPTIONS,
   type FilterOption,
-} from '@/lib/constants/journey-filters';
+} from "@/lib/constants/journey-filters";
 import type {
   AddonSelection,
   AddonsState,
   AddonUnit,
   LevelSlug,
-} from '@/types/core';
+} from "@/types/core";
 
 export type { LevelSlug };
 
@@ -26,12 +26,12 @@ export type Logistics = {
 export type { FilterOption };
 
 export type Filters = {
-  accommodationType: FilterOption['key'];
-  arrivePref: FilterOption['key'];
-  climate: FilterOption['key'];
-  departPref: FilterOption['key'];
-  maxTravelTime: FilterOption['key'];
-  transport: FilterOption['key'];
+  accommodationType: FilterOption["key"];
+  arrivePref: FilterOption["key"];
+  climate: FilterOption["key"];
+  departPref: FilterOption["key"];
+  maxTravelTime: FilterOption["key"];
+  transport: FilterOption["key"];
   avoidDestinations: string[];
 };
 
@@ -52,9 +52,9 @@ export type JourneyState = {
   filtersCostUsd: number; // por viaje (total)
   addonsCostUsd: number; // por viaje (total)
   totalPerPaxUsd: number;
-  activeTab: 'logistics' | 'preferences' | 'addons';
+  activeTab: "logistics" | "preferences" | "addons";
   // Hidden state for tripper package context (not exposed to user)
-  _tripperPackageDestinations?: Array<{ city: string; country: string }>;
+  _tripperExperienceDestinations?: Array<{ city: string; country: string }>;
   _originLocked?: boolean; // When origin came from URL params (tripper flow)
   setPartial: (patch: Partial<JourneyState>) => void;
   setAddon: (sel: AddonSelection | undefined) => void;
@@ -67,34 +67,34 @@ export type JourneyState = {
 };
 
 export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
-  from: '',
-  type: 'couple',
-  level: 'modo-explora',
-  displayPrice: '',
+  from: "",
+  type: "couple",
+  level: "modo-explora",
+  displayPrice: "",
   basePriceUsd: 0,
   tripperId: undefined,
   logistics: {
     nights: 1,
     pax: 1,
-    city: '',
-    country: '',
+    city: "",
+    country: "",
     startDate: undefined,
     endDate: undefined,
   },
   filters: {
-    accommodationType: 'any',
-    arrivePref: 'any',
-    climate: 'any',
-    departPref: 'any',
-    maxTravelTime: 'no-limit',
-    transport: 'plane',
+    accommodationType: "any",
+    arrivePref: "any",
+    climate: "any",
+    departPref: "any",
+    maxTravelTime: "no-limit",
+    transport: "plane",
     avoidDestinations: [],
   },
   addons: { selected: [] },
   filtersCostUsd: 0,
   addonsCostUsd: 0,
   totalPerPaxUsd: 0,
-  activeTab: 'logistics',
+  activeTab: "logistics",
   setPartial: (patch) => set({ ...get(), ...patch }),
   setAddon: (sel) => {
     const cur = get().addons.selected;
@@ -117,31 +117,31 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
   resetJourney: () =>
     set({
       basePriceUsd: 0,
-      displayPrice: '',
-      level: 'essenza',
-      type: 'solo',
+      displayPrice: "",
+      level: "essenza",
+      type: "solo",
       logistics: {
         nights: 1,
         pax: 1,
-        city: '',
-        country: '',
+        city: "",
+        country: "",
         startDate: undefined,
         endDate: undefined,
       },
       filters: {
-        accommodationType: 'any',
-        arrivePref: 'any',
-        climate: 'any',
-        departPref: 'any',
-        maxTravelTime: 'no-limit',
-        transport: 'plane',
+        accommodationType: "any",
+        arrivePref: "any",
+        climate: "any",
+        departPref: "any",
+        maxTravelTime: "no-limit",
+        transport: "plane",
         avoidDestinations: [],
       },
       addons: { selected: [] },
       filtersCostUsd: 0,
       addonsCostUsd: 0,
       totalPerPaxUsd: 0,
-      activeTab: 'logistics',
+      activeTab: "logistics",
     }),
   clearFormAfterPurchase: () =>
     set({
@@ -149,37 +149,37 @@ export const createJourneySlice: StateCreator<JourneyState> = (set, get) => ({
       logistics: {
         nights: 1,
         pax: 1,
-        city: '',
-        country: '',
+        city: "",
+        country: "",
         startDate: undefined,
         endDate: undefined,
       },
       filters: {
-        accommodationType: 'any',
-        arrivePref: 'any',
-        climate: 'any',
-        departPref: 'any',
-        maxTravelTime: 'no-limit',
-        transport: 'plane',
+        accommodationType: "any",
+        arrivePref: "any",
+        climate: "any",
+        departPref: "any",
+        maxTravelTime: "no-limit",
+        transport: "plane",
         avoidDestinations: [],
       },
       addons: { selected: [] },
       filtersCostUsd: 0,
       addonsCostUsd: 0,
       totalPerPaxUsd: 0,
-      activeTab: 'logistics',
+      activeTab: "logistics",
     }),
   setOriginAndResetFilters: (country, city) => {
     const state = get();
     const pax = Math.max(1, state.logistics.pax ?? 1);
     set({
       filters: {
-        accommodationType: 'any',
-        arrivePref: 'any',
-        climate: 'any',
-        departPref: 'any',
-        maxTravelTime: 'no-limit',
-        transport: 'plane',
+        accommodationType: "any",
+        arrivePref: "any",
+        climate: "any",
+        departPref: "any",
+        maxTravelTime: "no-limit",
+        transport: "plane",
         avoidDestinations: [],
       },
       filtersCostUsd: 0,

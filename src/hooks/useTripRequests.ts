@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import type { AdminTripRequest } from '@/lib/admin/types';
+import { useCallback, useEffect, useState } from "react";
+import type { AdminTripRequest } from "@/lib/admin/types";
 
 interface UseTripRequestsResult {
   error: string | null;
@@ -18,10 +18,13 @@ export function useTripRequests(): UseTripRequestsResult {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const res = await fetch('/api/admin/trip-requests');
-    const data = (await res.json()) as { error?: string; tripRequests?: AdminTripRequest[] };
+    const res = await fetch("/api/admin/trip-requests");
+    const data = (await res.json()) as {
+      error?: string;
+      tripRequests?: AdminTripRequest[];
+    };
     if (!res.ok) {
-      setError(data.error ?? 'Failed to load trip requests.');
+      setError(data.error ?? "Failed to load trip requests.");
       setLoading(false);
       return;
     }

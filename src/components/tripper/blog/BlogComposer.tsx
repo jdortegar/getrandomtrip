@@ -10,6 +10,9 @@ import { BlogComposerSidebar } from "@/components/tripper/blog/BlogComposerSideb
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/blog";
 import type { TripperBlogComposerDict } from "@/lib/types/dictionary";
+import { useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 const BlogRichTextEditor = dynamic(
   () =>
@@ -59,7 +62,11 @@ async function deleteImageFile(url: string): Promise<void> {
   const res = await fetch(url, { method: "DELETE" });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    console.error(`[deleteImageFile] ${res.status} ${res.statusText}`, body, url);
+    console.error(
+      `[deleteImageFile] ${res.status} ${res.statusText}`,
+      body,
+      url,
+    );
   }
 }
 
@@ -69,6 +76,7 @@ export default function BlogComposer({
   post: initialPost,
 }: BlogComposerProps) {
   const router = useRouter();
+  const locale = useLocale();
   const coverInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [galleryUploading, setGalleryUploading] = useState(false);
@@ -90,8 +98,14 @@ export default function BlogComposer({
   const galleryImages = (post.blocks ?? [])
     .map((b, i) => ({ ...b, _index: i }))
     .filter(
-      (b): b is { type: "image"; url: string; caption?: string; _index: number } =>
-        b.type === "image",
+      (
+        b,
+      ): b is {
+        type: "image";
+        url: string;
+        caption?: string;
+        _index: number;
+      } => b.type === "image",
     );
 
   const handleUploadImage = async (file: File) => {
@@ -159,7 +173,11 @@ export default function BlogComposer({
           ...p,
           blocks: [
             ...(p.blocks ?? []),
-            ...urls.map((url) => ({ type: "image" as const, url, caption: "" })),
+            ...urls.map((url) => ({
+              type: "image" as const,
+              url,
+              caption: "",
+            })),
           ],
         }));
       }
@@ -227,7 +245,7 @@ export default function BlogComposer({
               ? copy.toasts.saveSuccessCreate
               : copy.toasts.publishSuccess,
           );
-          router.push(`/dashboard/tripper/blogs/${data.blog.id}`);
+          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${data.blog.id}`));
         } else {
           const error = (await response.json()) as { error?: string };
           toast.error(
@@ -256,7 +274,9 @@ export default function BlogComposer({
       }
     } catch {
       toast.error(
-        isSaving ? copy.toasts.genericSaveError : copy.toasts.genericPublishError,
+        isSaving
+          ? copy.toasts.genericSaveError
+          : copy.toasts.genericPublishError,
       );
     } finally {
       isSaving ? setSaving(false) : setPublishing(false);
@@ -438,7 +458,9 @@ export default function BlogComposer({
                   </div>
                   <input
                     className="w-full rounded border border-neutral-200 px-2 py-1 text-xs text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                    onChange={(e) => updateGalleryCaption(img._index, e.target.value)}
+                    onChange={(e) =>
+                      updateGalleryCaption(img._index, e.target.value)
+                    }
                     placeholder={copy.gallery.captionPlaceholder}
                     type="text"
                     value={img.caption ?? ""}
@@ -461,7 +483,7 @@ export default function BlogComposer({
         }
         onPreview={() => {
           if (!post.id) return;
-          router.push(`/dashboard/tripper/blogs/${post.id}/preview`);
+          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}/preview`));
         }}
         onPublish={() => submitPost("published")}
         onTravelTypeChange={(value) =>

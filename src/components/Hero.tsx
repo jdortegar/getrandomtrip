@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import BrandingAnimation from '@/components/BrandingAnimation';
-import VideoBackground from '@/components/media/VideoBackground';
-import { formatTitleWithCopyright } from '@/lib/helpers/stringHelpers';
+import React from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import BrandingAnimation from "@/components/BrandingAnimation";
+import VideoBackground from "@/components/media/VideoBackground";
+import { formatTitleWithCopyright } from "@/lib/helpers/stringHelpers";
 
 export interface HeroContent {
   branding?: { repeatText?: string; text: string };
@@ -17,9 +17,10 @@ export interface HeroContent {
   subtitle: string;
   tagline?: string;
   title: string;
-  videoSrc: string;
+  videoSrc?: string;
   secondaryCta?: { ariaLabel: string; href: string; text: string };
   tags?: unknown;
+  eyebrow?: string;
 }
 
 interface HeroProps {
@@ -40,32 +41,33 @@ const Hero: React.FC<HeroProps> = ({
 }) => {
   return (
     <section
-      id={id || 'home-hero'}
+      id={id || "home-hero"}
       className={cn(
-        'relative h-screen flex flex-col overflow-hidden',
+        "relative h-screen flex flex-col overflow-hidden",
         className,
       )}
     >
-      <div
-        id="hero-sentinel"
-        aria-hidden
-        className="absolute top-0 left-0 h-px w-px"
-      />
       <VideoBackground
         fallbackImage={content.fallbackImage}
         videoSrc={content.videoSrc}
       />
 
       {/* Main Content - Left Aligned */}
-      <div className="relative z-10 flex flex-col justify-center h-full container mx-auto md:px-20 px-4">
+      <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">
         {/* Top Left Branding */}
 
-        <BrandingAnimation className="flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+        {content.eyebrow ? (
+          <span className="text-center md:text-left mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base text-white">
+            {content.eyebrow}
+          </span>
+        ) : (
+          <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+        )}
 
-        <div className="max-w-3xl flex flex-col justify-center text-center md:text-left">
+        <div className="max-w-3xl flex flex-col justify-center text-center lg:text-left">
           <motion.h2
             className={cn(
-              'mb-6 text-white font-barlow-condensed font-extrabold text-[80px] md:text-[130px] z-10 leading-none [&_sup]:text-[0.6em] [&_sup]:leading-none',
+              "text-center md:text-left mb-6 text-white font-barlow-condensed font-extrabold text-[60px] md:text-[80px] lg:text-[130px] z-10 leading-none [&_sup]:text-[0.6em] [&_sup]:leading-none",
               titleClassName,
             )}
             dangerouslySetInnerHTML={{
@@ -77,7 +79,7 @@ const Hero: React.FC<HeroProps> = ({
           />
 
           <motion.p
-            className="font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            className="whitespace-pre-line text-center md:text-left font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -86,7 +88,7 @@ const Hero: React.FC<HeroProps> = ({
 
           {content.tagline && (
             <motion.p
-              className="font-barlow text-base md:text-lg font-bold leading-relaxed text-white max-w-xl mb-8"
+              className="text-center md:text-left font-barlow text-base md:text-lg font-bold leading-relaxed text-white max-w-xl mb-8"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -95,7 +97,7 @@ const Hero: React.FC<HeroProps> = ({
             </motion.p>
           )}
         </div>
-        <div className="flex items-center justify-center md:justify-start gap-4">
+        <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
           {/* CTA Button - Lower Left */}
           {content.primaryCta && (
             <motion.div
@@ -138,12 +140,12 @@ const Hero: React.FC<HeroProps> = ({
       </div>
 
       {scrollIndicator && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 hidden md:block">
           <div
             className="scroll-indicator pointer-events-none select-none z-10 text-white"
             aria-hidden="true"
           >
-            {content.scrollText || 'SCROLL'}
+            {content.scrollText || "SCROLL"}
           </div>
         </div>
       )}

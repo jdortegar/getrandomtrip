@@ -1,15 +1,15 @@
-import type { TripRequestStatus } from './trip-status';
+import type { TripRequestStatus } from "./trip-status";
 
 export type { TripRequestStatus };
 
-export type StatusFilterValue = TripRequestStatus | 'ALL';
+export type StatusFilterValue = TripRequestStatus | "ALL";
 
-export interface AdminTripPackage {
-  excuseKey: string | null;
+export interface AdminTripExperience {
+  excuseKey: string[];
   id: string;
-  level: string;
+  level: string | null;
   title: string;
-  type: string;
+  type: string[];
 }
 
 export interface AdminTripPayment {
@@ -38,6 +38,7 @@ export interface AdminTripRequest {
   departPref: string;
   destinationRevealedAt: string | null;
   endDate: string | null;
+  experienceId: string | null;
   from: string;
   id: string;
   level: string;
@@ -45,13 +46,14 @@ export interface AdminTripRequest {
   nights: number;
   originCity: string;
   originCountry: string;
-  package: AdminTripPackage | null;
+  experience: AdminTripExperience | null;
   pax: number;
   paxDetails: unknown;
   payment: AdminTripPayment | null;
   startDate: string | null;
   status: TripRequestStatus;
   transport: string;
+  tripperId: string | null;
   tripPhotos: unknown;
   type: string;
   updatedAt: string;
@@ -66,14 +68,31 @@ export interface AdminExperienceOwner {
 
 export interface AdminExperience {
   createdAt: string;
-  displayPrice: string;
   id: string;
   isActive: boolean;
   isFeatured: boolean;
   owner: AdminExperienceOwner;
   status: string;
   title: string;
+  type: string[];
+  level: string | null;
+  destinationCountry: string;
+  destinationCity: string;
+  teaser: string;
+  description: string;
+  heroImage: string;
+  minPax: number;
+  maxPax: number;
+  minNights: number;
+  maxNights: number;
+  pricingByType: Record<string, number> | null;
+  reviewNote: string | null;
   updatedAt: string;
+  // Review copy fields
+  isReviewCopy?: boolean;
+  parentId?: string | null;
+  changedFields?: string[];
+  reviewLockedBy?: string | null;
 }
 
 export interface AdminPayment {
@@ -88,6 +107,7 @@ export interface AdminPayment {
 }
 
 export interface AdminReview {
+  content: string;
   createdAt: string;
   destination: string;
   id: string;
@@ -95,6 +115,8 @@ export interface AdminReview {
   isPublic: boolean;
   rating: number;
   title: string;
+  tripRequestId: string | null;
+  tripperName: string | null;
   user: AdminTripUser;
 }
 
@@ -111,4 +133,61 @@ export interface AdminXsedNotificationEntry {
   email: string;
   id: string;
   locale: string | null;
+}
+
+export interface AdminXsedBenefit {
+  id: string;
+  type: "ACCOMMODATION" | "DINNER" | "ACTIVITY";
+  sortOrder: number;
+  name: string | null;
+  providerName: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  googleMapsUrl: string | null;
+  customerVisibleNotes: string | null;
+  internalNotes: string | null;
+  confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
+  reservationCode: string | null;
+  photos: {
+    id: string;
+    url: string;
+    altText: string | null;
+    sortOrder: number;
+  }[];
+}
+
+export interface AdminXsedExperience {
+  id: string;
+  slug: string | null;
+  status: string;
+  titleInternal: string | null;
+  teaser: string;
+  heroImage: string;
+  destinationCity: string;
+  destinationCountry: string;
+  tripDate: string | null;
+  revealAt: string | null;
+  basePrice: number;
+  currency: string;
+  maxSpots: number | null;
+  minSpots: number | null;
+  inclusions: unknown;
+  exclusions: unknown;
+  hotels: unknown;
+  activities: unknown;
+  cancellationPolicy: string | null;
+  weatherPolicy: string | null;
+  accessibilityNotes: string | null;
+  safetyNotes: string | null;
+  revealCopy: string | null;
+  preRevealCopy: string | null;
+  packingHints: string | null;
+  whatsappMessageTemplate: string | null;
+  adminNotes: string | null;
+  supplierNotes: string | null;
+  /** Confirmed bookings count. */
+  soldCount: number;
+  createdAt: string;
+  updatedAt: string;
 }

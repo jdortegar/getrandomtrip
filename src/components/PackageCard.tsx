@@ -1,5 +1,5 @@
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
 
 interface PackageCardProps {
   tier: string;
@@ -25,16 +25,29 @@ const PackageCard: React.FC<PackageCardProps> = ({
       <div className="relative h-56 w-full">
         <Image src={image} alt={tier} layout="fill" objectFit="cover" />
       </div>
-      <div className="p-8"> {/* Increased padding */}
-        <h3 className="text-3xl font-serif text-gray-900 mb-3">{tier}</h3> {/* Larger tier title */}
-        <p className="text-gray-700 text-base mb-5 leading-relaxed">{description}</p> {/* Improved description typography */}
-        <div className="text-gray-900 text-4xl font-bold mb-5">{price}</div> {/* Larger price */}
-        <ul className="text-gray-700 text-base mb-8 space-y-3"> {/* Improved feature list typography and spacing */}
+      <div className="p-8">
+        {" "}
+        {/* Increased padding */}
+        <h3 className="text-3xl font-serif text-gray-900 mb-3">{tier}</h3>{" "}
+        {/* Larger tier title */}
+        <p className="text-gray-700 text-base mb-5 leading-relaxed">
+          {description}
+        </p>{" "}
+        {/* Improved description typography */}
+        <div className="text-gray-900 text-4xl font-bold mb-5">
+          {price}
+        </div>{" "}
+        {/* Larger price */}
+        <ul className="text-gray-700 text-base mb-8 space-y-3">
+          {" "}
+          {/* Improved feature list typography and spacing */}
           {features.map((feature, index) => (
-            <li key={index} className="flex items-start"> {/* Align items to start for better icon alignment */}
+            <li key={index} className="flex items-start">
+              {" "}
+              {/* Align items to start for better icon alignment */}
               {/* Custom checkmark icon */}
               <svg
-                className="w-5 h-5 mr-3 text-yellow-600 flex-shrink-0"
+                className="w-5 h-5 mr-3 text-yellow-600 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

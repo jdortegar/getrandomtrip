@@ -1,4 +1,4 @@
-import type { UserProfileAddress } from '@/lib/types/UserProfileAddress';
+import type { UserProfileAddress } from "@/lib/types/UserProfileAddress";
 
 export interface UserProfileMe {
   id: string;
@@ -13,10 +13,10 @@ export interface UserProfileMe {
   /**
    * App-level role tokens (lowercase) derived from Prisma `User.roles`.
    */
-  roles: Array<'admin' | 'client' | 'tripper'>;
+  roles: Array<"admin" | "client" | "tripper">;
   /**
    * Most privileged app role (lowercase), for simple UI checks.
    */
-  role: 'admin' | 'client' | 'tripper';
+  role: "admin" | "client" | "tripper";
   avatarUrl?: string | null;
 }

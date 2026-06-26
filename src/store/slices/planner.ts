@@ -1,14 +1,14 @@
-import { StateCreator } from 'zustand';
+import { StateCreator } from "zustand";
 
 export interface PlannerState {
   budgetTier: string | null;
-  familyType: 'toddlers' | 'teens' | 'adults' | 'multigen' | null;
+  familyType: "toddlers" | "teens" | "adults" | "multigen" | null;
   escapeType: string | null;
   setBudgetTier: (v: string) => void;
-  setFamilyType: (v: PlannerState['familyType']) => void;
+  setFamilyType: (v: PlannerState["familyType"]) => void;
   setEscapeType: (v: string) => void;
   reset: () => void;
-};
+}
 
 export const createPlannerSlice: StateCreator<PlannerState> = (set) => ({
   budgetTier: null,

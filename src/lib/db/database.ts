@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from "@prisma/client";
 
 // ========================================
 // ENHANCED TYPES WITH RELATIONS
@@ -56,7 +56,7 @@ export interface CreateTripData {
   arrivePref?: string;
   avoidDestinations?: string[];
   addons?: any;
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice?: string;
   filtersCostUsd?: number;
   addonsCostUsd?: number;
@@ -113,7 +113,7 @@ export interface SearchParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 // ========================================

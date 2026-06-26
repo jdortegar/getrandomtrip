@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, Suspense } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Book } from "lucide-react";
@@ -20,6 +19,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { cn } from "@/lib/utils";
+import SafeImage from "@/components/common/SafeImage";
 
 interface BlogPost {
   id: string;
@@ -273,26 +273,22 @@ function BlogListContent() {
                         >
                           <GlassCard className="relative h-full overflow-hidden rounded-xl transition-shadow hover:shadow-lg">
                             <div className="relative h-[304.83px] w-full overflow-hidden">
-                              {post.coverUrl ? (
-                                <>
-                                  <Image
-                                    alt={post.title}
-                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                    fill
-                                    sizes={
-                                      isLarge
-                                        ? "(min-width: 768px) 100vw, 100vw"
-                                        : "(min-width: 768px) 50vw, 100vw"
-                                    }
-                                    src={post.coverUrl}
-                                  />
-                                  <div
-                                    aria-hidden
-                                    className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
-                                  />
-                                </>
-                              ) : (
-                                <div className="absolute inset-0 bg-neutral-200" />
+                              <SafeImage
+                                alt={post.title}
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                fill
+                                sizes={
+                                  isLarge
+                                    ? "(min-width: 768px) 100vw, 100vw"
+                                    : "(min-width: 768px) 50vw, 100vw"
+                                }
+                                src={post.coverUrl}
+                              />
+                              {post.coverUrl && (
+                                <div
+                                  aria-hidden
+                                  className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"
+                                />
                               )}
                               <div
                                 className={cn(

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
-import { DEFAULT_LOCALE, hasLocale, type Locale } from '@/lib/i18n/config';
-import { pathForLocale } from '@/lib/i18n/pathForLocale';
-import type { Dictionary } from '@/lib/i18n/dictionaries';
+import Link from "next/link";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutResultPendingProps {
-  labels: Dictionary['paymentPending'];
+  labels: Dictionary["paymentPending"];
   locale: string;
 }
 
@@ -17,7 +17,7 @@ export default function CheckoutResultPending({
   locale,
 }: CheckoutResultPendingProps) {
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
-  const myTripsHref = pathForLocale(safeLocale, '/dashboard');
+  const myTripsHref = pathForLocale(safeLocale, "/dashboard");
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -28,7 +28,7 @@ export default function CheckoutResultPending({
         title={labels.title}
         videoSrc="/videos/hero-video-1.mp4"
       />
-      <main className="flex-grow">
+      <main className="grow">
         <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
           <div className="w-full max-w-3xl space-y-6 rounded-lg bg-white px-6 py-10 shadow-lg sm:px-8 sm:py-14">
             <p className="text-center font-barlow text-base leading-relaxed text-gray-600 md:text-lg">

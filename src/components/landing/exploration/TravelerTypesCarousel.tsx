@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useParams } from "next/navigation";
 import TravelerTypeCard from "@/components/TravelerTypeCard";
 import { slugify } from "@/lib/slugify";
 import {
@@ -12,11 +11,10 @@ import {
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import { motion } from "framer-motion";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface TravelerTypesCarouselProps {
-  /** When set, only these traveler type slugs are shown. In tripper context, only these are shown; otherwise all are shown unless this filters them. */
   availableTypes?: string[];
-  /** Localized labels from dictionary (home.exploration.travelerTypes). Merged with base data. */
   localizedTravelerTypes?: Array<{
     description: string;
     key: string;
@@ -24,10 +22,13 @@ interface TravelerTypesCarouselProps {
   }>;
   onSelect?: (slug: TravelerTypeSlug) => void;
   selectedTravelType?: TravelerTypeSlug;
-  /** When true, only show types in availableTypes; hide carousel if none. Use on tripper pages. */
+  /** When defined (curated journey), renders a "BY TRIPPER [NAME]" badge on each card. */
+  tripperBadge?: { name: string; avatarUrl: string | null };
   tripperMode?: boolean;
-  /** When set, card links go to this tripper's packages page (tripper context). */
   tripperSlug?: string;
+  overflow?: "both" | "left" | "right" | undefined;
+  /** When true, the card content is wrapped to the top of the card. */
+  wrapped?: boolean;
 }
 
 const COMING_SOON_SLUGS: TravelerTypeSlug[] = ["family", "paws", "honeymoon"];
@@ -37,11 +38,14 @@ export function TravelerTypesCarousel({
   localizedTravelerTypes,
   onSelect,
   selectedTravelType,
+  tripperBadge,
   tripperMode = false,
   tripperSlug,
+  overflow = "both",
+  wrapped = false,
 }: TravelerTypesCarouselProps) {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
+  const locale = useLocale();
+  const comingSoonLabel = useDictionary((d) => d.profile.comingSoon);
 
   const cards = getCarouselCardOptions(locale, {
     localizedTravelerTypes,
@@ -65,37 +69,29 @@ export function TravelerTypesCarousel({
       viewport={{ once: true }}
       whileInView={{ opacity: 1, y: 0 }}
     >
-      <EmblaCarousel slidesPerView={3}>
-        {typesToShow.map((t) => {
-          const slug = t.key.toLowerCase() as TravelerTypeSlug;
-          const href = `/experiences/by-type/${slugify(t.key)}`;
+      <EmblaCarousel slidesPerView={4} overflow={overflow}>
+        {typesToShow.map((type) => {
+          const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
           return (
-            <div
-              key={t.key}
-              className="aspect-[280/332] w-full min-h-0 relative"
-            >
-              <TravelerTypeCard
-                fill
-                href={isComingSoon ? undefined : href}
-                item={cardDataToCardItem(t)}
-                onClick={
-                  isComingSoon
-                    ? undefined
-                    : onSelect
-                      ? () => onSelect(slug)
-                      : undefined
-                }
-                selected={selectedTravelType === slug}
-              />
-              {isComingSoon && (
-                <div className="absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-black/50 cursor-not-allowed">
-                  <span className="font-barlow-condensed text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-lg">
-                    {locale === "es" ? "Próximamente" : "Coming Soon"}
-                  </span>
-                </div>
-              )}
-            </div>
+            <TravelerTypeCard
+              key={type.key}
+              fill
+              className="aspect-3/4"
+              comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
+              href={
+                isComingSoon
+                  ? undefined
+                  : `/experiences/by-type/${slugify(type.key)}`
+              }
+              item={cardDataToCardItem(type)}
+              onClick={
+                onSelect && !isComingSoon ? () => onSelect(slug) : undefined
+              }
+              selected={selectedTravelType === slug}
+              tripperBadge={tripperBadge}
+              wrapped={wrapped}
+            />
           );
         })}
       </EmblaCarousel>

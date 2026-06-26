@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
-import type { TripperProfilePageDict } from '@/lib/types/dictionary';
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import type { TripperProfilePageDict } from "@/lib/types/dictionary";
 
 export interface TripperProfileFormState {
   availableTypes: string[];
@@ -24,7 +24,7 @@ interface TripperProfileEditModalProps {
   onChange: (next: TripperProfileFormState) => void;
   onClose: () => void;
   onSave: () => void;
-  t: TripperProfilePageDict['modal'];
+  t: TripperProfilePageDict["modal"];
 }
 
 export function TripperProfileEditModal({
@@ -40,9 +40,7 @@ export function TripperProfileEditModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
     >
-      <div
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-neutral-200 bg-white shadow-xl"
-      >
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-neutral-200 bg-white shadow-xl">
         <div className="sticky top-0 flex items-center justify-between border-b border-neutral-200 bg-white">
           <div className="flex-1 p-6">
             <h3 className="text-2xl font-semibold leading-none tracking-tight text-neutral-900">
@@ -62,7 +60,10 @@ export function TripperProfileEditModal({
         <div className="p-6">
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-900" htmlFor="tripper-bio">
+              <label
+                className="text-sm font-medium text-neutral-900"
+                htmlFor="tripper-bio"
+              >
                 {t.bio}
               </label>
               <textarea
@@ -75,12 +76,17 @@ export function TripperProfileEditModal({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-900" htmlFor="tripper-hero">
+              <label
+                className="text-sm font-medium text-neutral-900"
+                htmlFor="tripper-hero"
+              >
                 {t.heroImage}
               </label>
               <Input
                 id="tripper-hero"
-                onChange={(e) => onChange({ ...formData, heroImage: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...formData, heroImage: e.target.value })
+                }
                 placeholder={t.heroImagePlaceholder}
                 type="url"
                 value={formData.heroImage}
@@ -88,12 +94,17 @@ export function TripperProfileEditModal({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-900" htmlFor="tripper-location">
+              <label
+                className="text-sm font-medium text-neutral-900"
+                htmlFor="tripper-location"
+              >
                 {t.location}
               </label>
               <Input
                 id="tripper-location"
-                onChange={(e) => onChange({ ...formData, location: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...formData, location: e.target.value })
+                }
                 placeholder={t.locationPlaceholder}
                 type="text"
                 value={formData.location}
@@ -101,13 +112,18 @@ export function TripperProfileEditModal({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-900" htmlFor="tripper-tier">
+              <label
+                className="text-sm font-medium text-neutral-900"
+                htmlFor="tripper-tier"
+              >
                 {t.tier}
               </label>
               <select
                 className="w-full rounded-md border border-neutral-200 px-3 py-2 text-base text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
                 id="tripper-tier"
-                onChange={(e) => onChange({ ...formData, tierLevel: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...formData, tierLevel: e.target.value })
+                }
                 value={formData.tierLevel}
               >
                 <option value="">{t.tierSelectPlaceholder}</option>
@@ -130,24 +146,29 @@ export function TripperProfileEditModal({
                   onChange({
                     ...formData,
                     destinations: e.target.value
-                      .split(',')
+                      .split(",")
                       .map((d) => d.trim())
-                      .filter((d) => d !== ''),
+                      .filter((d) => d !== ""),
                   })
                 }
                 placeholder={t.destinationsPlaceholder}
                 type="text"
-                value={formData.destinations.filter((d) => d).join(', ')}
+                value={formData.destinations.filter((d) => d).join(", ")}
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-900" htmlFor="tripper-slug">
+              <label
+                className="text-sm font-medium text-neutral-900"
+                htmlFor="tripper-slug"
+              >
                 {t.slug}
               </label>
               <Input
                 id="tripper-slug"
-                onChange={(e) => onChange({ ...formData, tripperSlug: e.target.value })}
+                onChange={(e) =>
+                  onChange({ ...formData, tripperSlug: e.target.value })
+                }
                 placeholder={t.slugPlaceholder}
                 type="text"
                 value={formData.tripperSlug}
@@ -166,7 +187,10 @@ export function TripperProfileEditModal({
                 max={1}
                 min={0}
                 onChange={(e) =>
-                  onChange({ ...formData, commission: parseFloat(e.target.value) || 0 })
+                  onChange({
+                    ...formData,
+                    commission: parseFloat(e.target.value) || 0,
+                  })
                 }
                 placeholder={t.commissionPlaceholder}
                 step="0.01"
@@ -176,7 +200,10 @@ export function TripperProfileEditModal({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-900" htmlFor="tripper-types">
+              <label
+                className="text-sm font-medium text-neutral-900"
+                htmlFor="tripper-types"
+              >
                 {t.availableTypes}
               </label>
               <Input
@@ -185,14 +212,14 @@ export function TripperProfileEditModal({
                   onChange({
                     ...formData,
                     availableTypes: e.target.value
-                      .split(',')
+                      .split(",")
                       .map((x) => x.trim())
-                      .filter((x) => x !== ''),
+                      .filter((x) => x !== ""),
                   })
                 }
                 placeholder={t.availableTypesPlaceholder}
                 type="text"
-                value={formData.availableTypes.filter((x) => x).join(', ')}
+                value={formData.availableTypes.filter((x) => x).join(", ")}
               />
             </div>
           </div>

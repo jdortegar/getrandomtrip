@@ -1,31 +1,33 @@
 // src/components/app/dashboard/tripper/experiences/ExperiencesPageClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Plus } from "lucide-react";
+import { RowActions } from "@/components/common/RowActions";
 import {
   EXPERIENCE_LEVELS,
-  EXPERIENCE_TYPES,
+  getExperienceTypes,
   EXPERIENCE_STATUSES,
 } from "@/lib/constants/packages";
 import type { ExperienceListItem } from "@/types/tripper";
-import type { PackagesDict } from "@/lib/types/dictionary";
+import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-green-100 text-green-800 border-green-200",
   DRAFT: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  PENDING_REVIEW: "bg-blue-100 text-blue-800 border-blue-200",
+  PENDING_TRIPPER_REVIEW: "bg-purple-100 text-purple-800 border-purple-200",
   INACTIVE: "bg-red-100 text-red-800 border-red-200",
   ARCHIVED: "bg-neutral-100 text-neutral-600 border-neutral-200",
 };
 
-const selectClassName = "";
-
 interface ExperiencesPageClientProps {
   experiences: ExperienceListItem[];
-  dict: PackagesDict;
+  dict: TripperExperiencesDict;
   locale: string;
 }
 
@@ -34,13 +36,21 @@ export default function ExperiencesPageClient({
   dict: copy,
   locale,
 }: ExperiencesPageClientProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [selectedTravelType, setSelectedTravelType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+
+  const scrollToFilters = useCallback(() => {
+    filtersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   const filtered = experiences.filter((experience) => {
     const travelTypeMatch =
-      selectedTravelType === "all" || experience.type === selectedTravelType;
+      selectedTravelType === "all" || experience.type.includes(selectedTravelType);
     const statusMatch =
       selectedStatus === "all" || experience.status === selectedStatus;
     const levelMatch =
@@ -48,37 +58,32 @@ export default function ExperiencesPageClient({
     return travelTypeMatch && statusMatch && levelMatch;
   });
 
-  const availableLevels = Array.from(
-    new Set(experiences.map((experience) => experience.level)),
-  ).sort();
-
-  const availableTravelTypes = Array.from(
-    new Set(experiences.map((experience) => experience.type)),
-  ).sort();
-
   const basePath = `/${locale}/dashboard/tripper/experiences`;
+
+  function handleDelete(id: string) {
+    if (!confirm(copy.table.deleteConfirm)) return;
+    setDeletingId(id);
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/tripper/experiences/${id}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          router.refresh();
+        }
+      } finally {
+        setDeletingId(null);
+      }
+    });
+  }
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
-      <div className="flex items-start justify-center mb-14">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] font-semibold text-neutral-500 mb-2">
-            Tripper OS
-          </p>
-          <h1 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase">
-            {copy.title}
-          </h1>
-          <p className="mt-2 text-sm text-neutral-600">{copy.description}</p>
-        </div>
-      </div>
-
       {/* Filters */}
-      <div className="flex gap-3 justify-between">
+      <div ref={filtersRef} className="flex gap-3 justify-between">
         <div className="flex flex-wrap gap-3">
           <Select
-            className={selectClassName}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+            onChange={(e) => { setSelectedStatus(e.target.value); scrollToFilters(); }}
             value={selectedStatus}
           >
             <option value="all">{copy.filters.allStatuses}</option>
@@ -89,21 +94,18 @@ export default function ExperiencesPageClient({
             ))}
           </Select>
           <Select
-            className={selectClassName}
-            onChange={(e) => setSelectedTravelType(e.target.value)}
+            onChange={(e) => { setSelectedTravelType(e.target.value); scrollToFilters(); }}
             value={selectedTravelType}
           >
             <option value="all">{copy.filters.allTypes}</option>
-            {EXPERIENCE_TYPES.map((travelType) => (
+            {getExperienceTypes(locale).map((travelType) => (
               <option key={travelType.value} value={travelType.value}>
                 {travelType.label}
               </option>
             ))}
           </Select>
-
           <Select
-            className={selectClassName}
-            onChange={(e) => setSelectedLevel(e.target.value)}
+            onChange={(e) => { setSelectedLevel(e.target.value); scrollToFilters(); }}
             value={selectedLevel}
           >
             <option value="all">{copy.filters.allLevels}</option>
@@ -117,7 +119,7 @@ export default function ExperiencesPageClient({
         <Button asChild>
           <Link href={`${basePath}/new`}>
             <Plus className="h-4 w-4 mr-2" />
-            {copy.newPackage}
+            {copy.newExperience}
           </Link>
         </Button>
       </div>
@@ -128,7 +130,7 @@ export default function ExperiencesPageClient({
           <div className="text-center py-16">
             <p className="text-sm text-neutral-500 mb-4">
               {experiences.length === 0
-                ? copy.emptyState.noPackages
+                ? copy.emptyState.noExperiences
                 : copy.emptyState.noMatch}
             </p>
             {experiences.length === 0 && (
@@ -155,12 +157,18 @@ export default function ExperiencesPageClient({
                     {copy.table.status}
                   </th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                    {copy.table.duration}
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                    {copy.table.capacity}
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                     {copy.table.price}
                   </th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                     {copy.table.updated}
                   </th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                     {copy.table.actions}
                   </th>
                 </tr>
@@ -182,9 +190,13 @@ export default function ExperiencesPageClient({
                     </td>
                     <td className="px-5 py-4">
                       <div className="text-sm text-neutral-700 capitalize">
-                        {EXPERIENCE_TYPES.find(
-                          (type) => type.value === experience.type,
-                        )?.label ?? experience.type}
+                        {experience.type
+                          .map(
+                            (t) =>
+                              getExperienceTypes(locale).find((et) => et.value === t)
+                                ?.label ?? t,
+                          )
+                          .join(", ")}
                       </div>
                       <div className="text-xs text-neutral-500">
                         {EXPERIENCE_LEVELS.find(
@@ -204,9 +216,21 @@ export default function ExperiencesPageClient({
                         ] ?? experience.status}
                       </span>
                     </td>
+                    <td className="px-5 py-4 text-sm text-neutral-700 whitespace-nowrap">
+                      {experience.minNights === experience.maxNights
+                        ? `${experience.minNights}n`
+                        : `${experience.minNights}–${experience.maxNights}n`}
+                    </td>
+                    <td className="px-5 py-4 text-sm text-neutral-700 whitespace-nowrap">
+                      {experience.minPax === experience.maxPax
+                        ? `${experience.minPax}`
+                        : `${experience.minPax}–${experience.maxPax}`}
+                      {" pax"}
+                    </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
-                      {experience.displayPrice ||
-                        `USD ${experience.basePriceUsd.toLocaleString()}`}
+                      {experience.pricingByType
+                        ? `USD ${Math.min(...Object.values(experience.pricingByType)).toLocaleString()}+`
+                        : "—"}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-500">
                       {new Date(experience.updatedAt).toLocaleDateString(
@@ -215,9 +239,19 @@ export default function ExperiencesPageClient({
                       )}
                     </td>
                     <td className="px-5 py-4">
-                      <Link href={`${basePath}/${experience.id}`}>
-                        {copy.table.edit}
-                      </Link>
+                      <div className="flex items-center justify-end">
+                        <RowActions
+                          deleteDisabled={deletingId === experience.id || isPending}
+                          deleteTitle={copy.table.delete}
+                          editHref={
+                            experience.status === "PENDING_TRIPPER_REVIEW"
+                              ? `${basePath}/${experience.id}/review-copy`
+                              : `${basePath}/${experience.id}`
+                          }
+                          editTitle={copy.table.edit}
+                          onDelete={() => handleDelete(experience.id)}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}

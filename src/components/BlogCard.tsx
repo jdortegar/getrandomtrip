@@ -1,19 +1,23 @@
-'use client';
+"use client";
 
-import Img from '@/components/common/Img';
-import { Button } from '@/components/ui/Button';
-import type { BlogPost } from '@/lib/data/shared/blog-types';
-import Link from 'next/link';
+import Img from "@/components/common/Img";
+import { Button } from "@/components/ui/Button";
+import type { BlogPost } from "@/lib/data/shared/blog-types";
+import Link from "next/link";
+import { useLocale } from "@/hooks/useDictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export default function BlogCard({ post }: BlogCardProps) {
-  const href = post.href ?? '/blog';
+  const locale = useLocale();
+  const href = post.href ?? pathForLocale(locale as Locale, "/blog");
 
   return (
-    <div className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="group relative block aspect-3/4 w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
       <Link
         aria-label={`Read ${post.title}`}
         className="absolute inset-0 z-0"
@@ -28,7 +32,7 @@ export default function BlogCard({ post }: BlogCardProps) {
           width={400}
         />
       </div>
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/75 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-black/75 to-transparent" />
 
       <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-white md:p-7">
         <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">

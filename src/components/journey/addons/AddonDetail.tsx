@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import { ADDONS } from '@/lib/data/shared/addons-catalog';
-import { useStore } from '@/store/store';
-import { X, Minus, Plus } from 'lucide-react';
+import { useEffect, useMemo, useState } from "react";
+import { ADDONS } from "@/lib/data/shared/addons-catalog";
+import { useStore } from "@/store/store";
+import { X, Minus, Plus } from "lucide-react";
 
 export default function AddonDetail({
   activeId,

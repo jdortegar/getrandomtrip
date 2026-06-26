@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!email || !password || !name) {
       return NextResponse.json(
-        { message: 'Email, password, and name are required' },
+        { message: "Email, password, and name are required" },
         { status: 400 },
       );
     }
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: 'User already exists with this email' },
+        { message: "User already exists with this email" },
         { status: 400 },
       );
     }
@@ -42,15 +42,15 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: 'User created successfully',
+        message: "User created successfully",
         user: { id: user.id, email: user.email, name: user.name },
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error("Signup error:", error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: "Internal server error" },
       { status: 500 },
     );
   }

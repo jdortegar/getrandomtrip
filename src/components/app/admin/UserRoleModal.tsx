@@ -92,7 +92,9 @@ export function UserRoleModal({
   return (
     <Modal
       className="flex max-w-md flex-col gap-0 overflow-hidden border-gray-200 p-0 sm:max-w-md"
-      onOpenChange={(nextOpen) => { if (!nextOpen) onClose(); }}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) onClose();
+      }}
       open={open}
       showCloseButton
     >
@@ -107,14 +109,11 @@ export function UserRoleModal({
 
       <div className="px-6 py-5">
         <div className="space-y-3">
-          <p className="text-sm font-medium text-neutral-900">{copy.modal.roleSection}</p>
+          <p className="text-sm font-medium text-neutral-900">
+            {copy.modal.roleSection}
+          </p>
           <label className="flex items-center gap-2 text-sm text-neutral-700">
-            <input
-              checked
-              className="h-4 w-4"
-              disabled
-              type="checkbox"
-            />
+            <input checked className="h-4 w-4" disabled type="checkbox" />
             <span>{copy.modal.clientBase}</span>
           </label>
           <label className="flex items-center gap-2 text-sm text-neutral-700">
@@ -123,7 +122,11 @@ export function UserRoleModal({
               className="h-4 w-4"
               onChange={() => {
                 setRoles((prev) =>
-                  withMembershipToggled(prev, "TRIPPER", !prev.includes("TRIPPER")),
+                  withMembershipToggled(
+                    prev,
+                    "TRIPPER",
+                    !prev.includes("TRIPPER"),
+                  ),
                 );
               }}
               type="checkbox"

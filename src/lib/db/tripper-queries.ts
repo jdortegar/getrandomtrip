@@ -2,13 +2,17 @@
 // Tripper Database Queries
 // ============================================================================
 
-import { prisma } from '@/lib/prisma';
-import { primaryRoleFromMembership } from '@/lib/auth/prismaUserRoles';
+import { prisma } from "@/lib/prisma";
+import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
+import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import type {
+  ActivityEntry,
   FeaturedTrip,
   FeaturedTripCard,
+  TripperListItem,
   TripperProfile,
-} from '@/types/tripper';
+} from "@/types/tripper";
+import type { TestimonialData } from "@/components/Testimonials/types";
 
 /**
  * Get tripper profile by slug
@@ -20,7 +24,7 @@ export async function getTripperBySlug(
     const tripper = await prisma.user.findUnique({
       where: {
         tripperSlug: slug,
-        roles: { has: 'TRIPPER' },
+        roles: { has: "TRIPPER" },
       },
       select: {
         id: true,
@@ -43,31 +47,32 @@ export async function getTripperBySlug(
 
     if (!tripper || !tripper.tripperSlug) return null;
 
-    // Dynamically calculate availableTypes based on actual packages
-    const packages = await prisma.package.findMany({
+    // Dynamically calculate availableTypes based on actual ACTIVE packages
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripper.id,
         isActive: true,
+        status: "ACTIVE",
       },
       select: {
         type: true,
       },
-      distinct: ['type'],
     });
 
-    const availableTypes = packages.map((pkg) => pkg.type);
+    const availableTypes = [...new Set(packages.flatMap((pkg) => pkg.type))];
 
     const { roles, ...tripperRest } = tripper;
 
     return {
       ...tripperRest,
+      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
       role: primaryRoleFromMembership(roles),
       tripperSlug: tripper.tripperSlug,
       commission: tripper.commission || 0,
       availableTypes,
     } as TripperProfile;
   } catch (error) {
-    console.error('Error fetching tripper by slug:', error);
+    console.error("Error fetching tripper by slug:", error);
     return null;
   }
 }
@@ -81,19 +86,20 @@ export async function getTripperFeaturedTrips(
 ): Promise<FeaturedTripCard[]> {
   try {
     const tripper = await prisma.user.findUnique({
-      where: { tripperSlug, roles: { has: 'TRIPPER' } },
+      where: { tripperSlug, roles: { has: "TRIPPER" } },
     });
 
     if (!tripper) return [];
 
-    const trips = await prisma.package.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const trips = await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripper.id,
         isActive: true,
         isFeatured: true,
-        status: 'ACTIVE', // Only show active packages
+        status: "ACTIVE", // Only show active packages
       },
-      orderBy: { likes: 'desc' },
+      orderBy: { likes: "desc" },
       take: limit,
       select: {
         id: true,
@@ -102,34 +108,41 @@ export async function getTripperFeaturedTrips(
         heroImage: true,
         type: true,
         level: true,
-        highlights: true,
+        activities: true,
         tags: true,
         likes: true,
         minNights: true,
         maxNights: true,
         minPax: true,
         maxPax: true,
-        displayPrice: true,
+        pricingByType: true,
       },
-    });
+    }) as Array<{
+      id: string; title: string; teaser: string; heroImage: string;
+      type: string[]; level: string; activities: unknown; tags: string[];
+      likes: number; minNights: number; minPax: number;
+      pricingByType: Record<string, number> | null;
+    }>;
 
     // Map to FeaturedTripCard with defaults
     return trips.map((trip) => ({
       id: trip.id,
-      title: trip.title || 'Aventura Sorpresa',
-      teaser: trip.teaser || 'Una experiencia única diseñada por tu tripper.',
-      heroImage: trip.heroImage || '/images/fallback.jpg',
+      title: trip.title || "Aventura Sorpresa",
+      teaser: trip.teaser || "Una experiencia única diseñada por tu tripper.",
+      heroImage: trip.heroImage || "/images/fallback.jpg",
       type: trip.type as any,
       level: trip.level as any,
-      highlights: trip.highlights,
+      highlights: (trip.activities as ActivityEntry[]).slice(0, 3).map((a) => a.name),
       tags: trip.tags,
       likes: trip.likes,
       nights: trip.minNights,
       pax: trip.minPax,
-      displayPrice: trip.displayPrice,
+      displayPrice: trip.pricingByType
+        ? `USD ${Math.min(...Object.values(trip.pricingByType)).toLocaleString()}`
+        : "",
     }));
   } catch (error) {
-    console.error('Error fetching tripper featured trips:', error);
+    console.error("Error fetching tripper featured trips:", error);
     return [];
   }
 }
@@ -137,10 +150,10 @@ export async function getTripperFeaturedTrips(
 /**
  * Get all trippers (for listings/search)
  */
-export async function getAllTrippers() {
+export async function getAllTrippers(): Promise<TripperListItem[]> {
   try {
-    return await prisma.user.findMany({
-      where: { roles: { has: 'TRIPPER' } },
+    const trippers = await prisma.user.findMany({
+      where: { roles: { has: "TRIPPER" } },
       select: {
         id: true,
         name: true,
@@ -149,13 +162,23 @@ export async function getAllTrippers() {
         bio: true,
         location: true,
         commission: true,
-        availableTypes: true,
-        interests: true,
+        travelerType: true,
       },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
+
+    return trippers.map((tripper) => ({
+      id: tripper.id,
+      name: tripper.name,
+      tripperSlug: tripper.tripperSlug,
+      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+      bio: tripper.bio,
+      location: tripper.location,
+      commission: tripper.commission,
+      travelerType: tripper.travelerType,
+    }));
   } catch (error) {
-    console.error('Error fetching all trippers:', error);
+    console.error("Error fetching all trippers:", error);
     return [];
   }
 }
@@ -168,19 +191,19 @@ export async function toggleTripLike(
   userId: string,
 ): Promise<{ liked: boolean; likes: number }> {
   try {
-    const existing = await prisma.packageLike.findUnique({
+    const existing = await prisma.experienceLike.findUnique({
       where: {
-        packageId_userId: { packageId: tripId, userId },
+        experienceId_userId: { experienceId: tripId, userId },
       },
     });
 
     if (existing) {
       // Unlike
-      await prisma.packageLike.delete({
+      await prisma.experienceLike.delete({
         where: { id: existing.id },
       });
 
-      const trip = await prisma.package.update({
+      const trip = await prisma.experience.update({
         where: { id: tripId },
         data: { likes: { decrement: 1 } },
         select: { likes: true },
@@ -189,11 +212,11 @@ export async function toggleTripLike(
       return { liked: false, likes: trip.likes };
     } else {
       // Like
-      await prisma.packageLike.create({
-        data: { packageId: tripId, userId },
+      await prisma.experienceLike.create({
+        data: { experienceId: tripId, userId },
       });
 
-      const trip = await prisma.package.update({
+      const trip = await prisma.experience.update({
         where: { id: tripId },
         data: { likes: { increment: 1 } },
         select: { likes: true },
@@ -202,7 +225,7 @@ export async function toggleTripLike(
       return { liked: true, likes: trip.likes };
     }
   } catch (error) {
-    console.error('Error toggling trip like:', error);
+    console.error("Error toggling trip like:", error);
     throw error;
   }
 }
@@ -215,15 +238,15 @@ export async function hasUserLikedTrip(
   userId: string,
 ): Promise<boolean> {
   try {
-    const like = await prisma.packageLike.findUnique({
+    const like = await prisma.experienceLike.findUnique({
       where: {
-        packageId_userId: { packageId: tripId, userId },
+        experienceId_userId: { experienceId: tripId, userId },
       },
     });
 
     return !!like;
   } catch (error) {
-    console.error('Error checking trip like:', error);
+    console.error("Error checking trip like:", error);
     return false;
   }
 }
@@ -235,7 +258,7 @@ export async function getTripById(
   tripId: string,
 ): Promise<FeaturedTrip | null> {
   try {
-    const trip = await prisma.package.findUnique({
+    const trip = await prisma.experience.findUnique({
       where: { id: tripId },
       include: {
         owner: {
@@ -252,7 +275,7 @@ export async function getTripById(
 
     return trip as any;
   } catch (error) {
-    console.error('Error fetching trip by ID:', error);
+    console.error("Error fetching trip by ID:", error);
     return null;
   }
 }
@@ -261,12 +284,14 @@ export async function getTripById(
  * Get tripper packages organized by type and level
  * Returns packages directly without transformation - components handle the data structure
  */
-export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
+export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
   try {
-    const packages = await prisma.package.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const packages = await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripperId,
         isActive: true,
+        status: "ACTIVE",
       },
       select: {
         id: true,
@@ -276,37 +301,117 @@ export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
         teaser: true,
         heroImage: true,
         tags: true,
-        highlights: true,
+        activities: true,
         excuseKey: true,
         destinationCountry: true,
         destinationCity: true,
-        basePriceUsd: true,
-        displayPrice: true,
+        pricingByType: true,
       },
-      orderBy: [{ type: 'asc' }, { level: 'asc' }, { title: 'asc' }],
-    });
+      orderBy: [{ type: "asc" }, { level: "asc" }, { title: "asc" }],
+    }) as Array<{
+      id: string; type: string[]; level: string | null; title: string;
+      teaser: string; heroImage: string; tags: string[]; activities: unknown;
+      excuseKey: string | null; destinationCountry: string; destinationCity: string;
+      pricingByType: Record<string, number> | null;
+    }>;
 
     // Group packages by type and level
     const packagesByType: Record<string, Record<string, any[]>> = {};
 
     packages.forEach((pkg) => {
       const { type, level } = pkg;
+      const levelKey = level ?? "unknown";
+      const types = Array.isArray(type) ? type : [type];
 
-      if (!packagesByType[type]) {
-        packagesByType[type] = {};
-      }
-
-      if (!packagesByType[type][level]) {
-        packagesByType[type][level] = [];
-      }
-
-      packagesByType[type][level].push(pkg);
+      types.forEach((t) => {
+        if (!packagesByType[t]) packagesByType[t] = {};
+        if (!packagesByType[t][levelKey]) packagesByType[t][levelKey] = [];
+        packagesByType[t][levelKey].push(pkg);
+      });
     });
 
     return packagesByType;
   } catch (error) {
-    console.error('Error fetching tripper packages:', error);
+    console.error("Error fetching tripper packages:", error);
     return {};
+  }
+}
+
+// ============================================================================
+// JOURNEY CONTEXT
+// ============================================================================
+
+export interface TripperJourneyContext {
+  name: string;
+  avatarUrl: string | null;
+  location: string | null;
+  /** Distinct ACTIVE experience types for this tripper. */
+  allowedTypes: string[];
+  /** For each type, the distinct non-null levels of ACTIVE experiences that include that type. */
+  allowedLevelsByType: Record<string, string[]>;
+}
+
+/**
+ * Returns branding + allowed types/levels for a tripper's curated journey.
+ * Only considers experiences with status = ACTIVE.
+ */
+export async function getTripperJourneyContext(
+  slug: string,
+): Promise<TripperJourneyContext | null> {
+  try {
+    const tripper = await prisma.user.findUnique({
+      where: {
+        tripperSlug: slug,
+        roles: { has: "TRIPPER" },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
+        location: true,
+      },
+    });
+
+    if (!tripper) return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const experiences = await (prisma.experience.findMany as any)({
+      where: {
+        ownerId: tripper.id,
+        status: "ACTIVE",
+      },
+      select: {
+        type: true,
+        level: true,
+      },
+    }) as Array<{ type: string[]; level: string | null }>;
+
+    // Distinct flat-mapped types
+    const allowedTypes = [...new Set(experiences.flatMap((e) => e.type))];
+
+    // For each type, collect distinct non-null levels of experiences that include that type
+    const allowedLevelsByType: Record<string, string[]> = {};
+    for (const type of allowedTypes) {
+      const levels = [
+        ...new Set(
+          experiences
+            .filter((e) => e.type.includes(type) && e.level !== null)
+            .map((e) => e.level as string),
+        ),
+      ];
+      allowedLevelsByType[type] = levels;
+    }
+
+    return {
+      name: tripper.name,
+      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+      location: tripper.location ?? null,
+      allowedTypes,
+      allowedLevelsByType,
+    };
+  } catch (error) {
+    console.error("Error fetching tripper journey context:", error);
+    return null;
   }
 }
 
@@ -320,15 +425,23 @@ export async function getTripperPackagesByTypeAndLevel(tripperId: string) {
 export async function getTripperDashboardStats(tripperId: string) {
   try {
     // Get all packages owned by tripper
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: { ownerId: tripperId },
       select: { id: true, status: true, isActive: true },
+    });
+
+    // Count trip requests attributed to this tripper via the tripperId FK
+    const attributedBookings = await prisma.tripRequest.count({
+      where: {
+        tripperId,
+        status: { in: ["CONFIRMED", "REVEALED", "COMPLETED"] },
+      },
     });
 
     // Get all trip requests that have packages owned by this tripper
     const tripRequests = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
       },
@@ -336,8 +449,8 @@ export async function getTripperDashboardStats(tripperId: string) {
         user: {
           select: { id: true, name: true },
         },
-        package: {
-          select: { id: true, title: true, basePriceUsd: true },
+        experience: {
+          select: { id: true, title: true, basePrice: true },
         },
         payment: {
           select: {
@@ -354,9 +467,9 @@ export async function getTripperDashboardStats(tripperId: string) {
     // Calculate stats
     const totalBookings = tripRequests.filter(
       (tr) =>
-        tr.status === 'CONFIRMED' ||
-        tr.status === 'REVEALED' ||
-        tr.status === 'COMPLETED',
+        tr.status === "CONFIRMED" ||
+        tr.status === "REVEALED" ||
+        tr.status === "COMPLETED",
     ).length;
 
     // Monthly revenue (from completed payments in current month)
@@ -369,8 +482,8 @@ export async function getTripperDashboardStats(tripperId: string) {
       const paymentDate =
         tr.payment.paidAt || new Date(tr.payment.createdAt || Date.now());
       return (
-        (tr.payment.status === 'APPROVED' ||
-          tr.payment.status === 'COMPLETED') &&
+        (tr.payment.status === "APPROVED" ||
+          tr.payment.status === "COMPLETED") &&
         paymentDate >= currentMonth
       );
     });
@@ -382,7 +495,7 @@ export async function getTripperDashboardStats(tripperId: string) {
 
     // Average rating from completed trips
     const completedTrips = tripRequests.filter(
-      (tr) => tr.status === 'COMPLETED' && tr.customerRating,
+      (tr) => tr.status === "COMPLETED" && tr.customerRating,
     );
     const averageRating =
       completedTrips.length > 0
@@ -392,9 +505,9 @@ export async function getTripperDashboardStats(tripperId: string) {
           ) / completedTrips.length
         : 0;
 
-    // Active packages
-    const activePackages = packages.filter(
-      (pkg) => pkg.isActive && pkg.status === 'ACTIVE',
+    // Active experiences
+    const activeExperiences = packages.filter(
+      (pkg) => pkg.isActive && pkg.status === "ACTIVE",
     ).length;
 
     // Total unique clients
@@ -414,19 +527,21 @@ export async function getTripperDashboardStats(tripperId: string) {
       totalBookings,
       monthlyRevenue,
       averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal
-      activePackages,
+      activeExperiences,
       totalClients: uniqueClients,
       conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal
+      attributedBookings,
     };
   } catch (error) {
-    console.error('Error fetching tripper dashboard stats:', error);
+    console.error("Error fetching tripper dashboard stats:", error);
     return {
       totalBookings: 0,
       monthlyRevenue: 0,
       averageRating: 0,
-      activePackages: 0,
+      activeExperiences: 0,
       totalClients: 0,
       conversionRate: 0,
+      attributedBookings: 0,
     };
   }
 }
@@ -441,25 +556,25 @@ export async function getTripperRecentBookings(
   try {
     const bookings = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
         status: {
-          in: ['CONFIRMED', 'REVEALED', 'COMPLETED'],
+          in: ["CONFIRMED", "REVEALED", "COMPLETED"],
         },
       },
       include: {
         user: {
           select: { id: true, name: true, email: true },
         },
-        package: {
-          select: { id: true, title: true, basePriceUsd: true },
+        experience: {
+          select: { id: true, title: true, basePrice: true },
         },
         payment: {
           select: { id: true, amount: true, status: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: limit,
     });
 
@@ -467,15 +582,15 @@ export async function getTripperRecentBookings(
       id: booking.id,
       clientName: booking.user.name,
       clientEmail: booking.user.email,
-      package: booking.package?.title || 'Paquete eliminado',
-      packageId: booking.package?.id,
+      experienceName: booking.experience?.title || "Experiencia eliminada",
+      experienceId: booking.experience?.id,
       date: booking.createdAt.toISOString(),
-      amount: booking.payment?.amount || booking.package?.basePriceUsd || 0,
+      amount: booking.payment?.amount || booking.experience?.basePrice || 0,
       status: booking.status.toLowerCase(),
-      paymentStatus: booking.payment?.status?.toLowerCase() || 'pending',
+      paymentStatus: booking.payment?.status?.toLowerCase() || "pending",
     }));
   } catch (error) {
-    console.error('Error fetching recent bookings:', error);
+    console.error("Error fetching recent bookings:", error);
     return [];
   }
 }
@@ -491,12 +606,12 @@ export async function getTripperEarnings(
     // Get all trip requests with payments for this tripper's packages
     const tripRequests = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
         payment: {
           status: {
-            in: ['APPROVED', 'COMPLETED'],
+            in: ["APPROVED", "COMPLETED"],
           },
         },
       },
@@ -510,10 +625,10 @@ export async function getTripperEarnings(
             paidAt: true,
           },
         },
-        package: {
+        experience: {
           select: {
             id: true,
-            basePriceUsd: true,
+            basePrice: true,
             owner: {
               select: {
                 commission: true,
@@ -543,7 +658,7 @@ export async function getTripperEarnings(
     > = {};
 
     tripRequests.forEach((tr) => {
-      if (!tr.payment || !tr.package) return;
+      if (!tr.payment || !tr.experience) return;
 
       const paymentDate =
         tr.payment.paidAt || new Date(tr.payment.createdAt || Date.now());
@@ -551,12 +666,7 @@ export async function getTripperEarnings(
 
       const monthKey = `${paymentDate.getFullYear()}-${String(
         paymentDate.getMonth() + 1,
-      ).padStart(2, '0')}`;
-      const monthName = paymentDate.toLocaleDateString('es-ES', {
-        month: 'long',
-        year: 'numeric',
-      });
-
+      ).padStart(2, "0")}`;
       if (!earningsByMonth[monthKey]) {
         earningsByMonth[monthKey] = {
           bookings: 0,
@@ -567,7 +677,7 @@ export async function getTripperEarnings(
         };
       }
 
-      const commission = tr.package.owner.commission || 0;
+      const commission = tr.experience.owner.commission || 0;
       const baseCommission = tr.payment.amount * commission;
       // Bonus calculation could be added based on tier level or performance
       const bonus = 0;
@@ -587,20 +697,20 @@ export async function getTripperEarnings(
     return Object.entries(earningsByMonth)
       .map(([monthKey, data]) => ({
         id: monthKey,
-        month: new Date(monthKey + '-01').toLocaleDateString('es-ES', {
-          month: 'long',
-          year: 'numeric',
+        month: new Date(monthKey + "-01").toLocaleDateString("es-ES", {
+          month: "long",
+          year: "numeric",
         }),
         bookings: data.bookings,
         baseCommissionUSD: data.baseCommissionUSD,
         bonusUSD: data.bonusUSD,
         totalUSD: data.totalUSD,
-        status: 'pending' as const, // TODO: Calculate actual payout status
+        status: "pending" as const, // TODO: Calculate actual payout status
         payoutDate: undefined, // TODO: Add payout tracking
       }))
       .sort((a, b) => b.id.localeCompare(a.id));
   } catch (error) {
-    console.error('Error fetching tripper earnings:', error);
+    console.error("Error fetching tripper earnings:", error);
     return [];
   }
 }
@@ -613,10 +723,10 @@ export async function getTripperReviews(tripperId: string) {
     // Get reviews from completed trips that used this tripper's packages
     const completedTrips = await prisma.tripRequest.findMany({
       where: {
-        package: {
+        experience: {
           ownerId: tripperId,
         },
-        status: 'COMPLETED',
+        status: "COMPLETED",
         customerRating: {
           not: null,
         },
@@ -625,16 +735,17 @@ export async function getTripperReviews(tripperId: string) {
         user: {
           select: { id: true, name: true, avatarUrl: true },
         },
-        package: {
+        experience: {
           select: { id: true, title: true },
         },
       },
-      orderBy: { completedAt: 'desc' },
+      orderBy: { completedAt: "desc" },
     });
 
-    // Also get general reviews (from Review model) if they reference this tripper
+    // Also get reviews from the Review model filtered by tripperId
     const generalReviews = await prisma.review.findMany({
       where: {
+        tripperId,
         isApproved: true,
         isPublic: true,
       },
@@ -643,7 +754,7 @@ export async function getTripperReviews(tripperId: string) {
           select: { id: true, name: true, avatarUrl: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     // Calculate NPS (Net Promoter Score)
@@ -657,20 +768,41 @@ export async function getTripperReviews(tripperId: string) {
     const nps =
       totalRatings > 0 ? ((promoters - detractors) / totalRatings) * 100 : 0;
 
+    // Merge legacy TripRequest reviews with Review model records
+    const legacyReviews = completedTrips.map((trip) => ({
+      id: trip.id,
+      userId: trip.user.id,
+      userName: trip.user.name,
+      userAvatar: trip.user.avatarUrl,
+      rating: trip.customerRating || 0,
+      title: `Viaje a ${trip.actualDestination || "Destino"}`,
+      content: trip.customerFeedback || "",
+      tripType: trip.type,
+      destination: trip.actualDestination || "",
+      packageTitle: trip.experience?.title || "",
+      createdAt: trip.completedAt || trip.updatedAt,
+      source: "legacy" as const,
+    }));
+
+    const modelReviews = generalReviews.map((review) => ({
+      id: review.id,
+      userId: review.user.id,
+      userName: review.user.name,
+      userAvatar: review.user.avatarUrl,
+      rating: review.rating,
+      title: review.title ?? "",
+      content: review.content,
+      tripType: "",
+      destination: "",
+      packageTitle: "",
+      createdAt: review.createdAt,
+      source: "review_model" as const,
+    }));
+
+    const allReviews = [...legacyReviews, ...modelReviews];
+
     return {
-      reviews: completedTrips.map((trip) => ({
-        id: trip.id,
-        userId: trip.user.id,
-        userName: trip.user.name,
-        userAvatar: trip.user.avatarUrl,
-        rating: trip.customerRating || 0,
-        title: `Viaje a ${trip.actualDestination || 'Destino'}`,
-        content: trip.customerFeedback || '',
-        tripType: trip.type,
-        destination: trip.actualDestination || '',
-        packageTitle: trip.package?.title || '',
-        createdAt: trip.completedAt || trip.updatedAt,
-      })),
+      reviews: allReviews,
       averageRating:
         ratings.length > 0
           ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
@@ -681,7 +813,7 @@ export async function getTripperReviews(tripperId: string) {
       detractors,
     };
   } catch (error) {
-    console.error('Error fetching tripper reviews:', error);
+    console.error("Error fetching tripper reviews:", error);
     return {
       reviews: [],
       averageRating: 0,
@@ -696,10 +828,11 @@ export async function getTripperReviews(tripperId: string) {
 /**
  * Get all packages for tripper (for routes page)
  */
-export async function getTripperPackages(tripperId: string) {
+export async function getTripperExperiences(tripperId: string) {
   try {
-    const packages = await prisma.package.findMany({
-      where: { ownerId: tripperId },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const packages = await (prisma.experience.findMany as any)({
+      where: { ownerId: tripperId, isReviewCopy: false },
       select: {
         id: true,
         title: true,
@@ -707,14 +840,19 @@ export async function getTripperPackages(tripperId: string) {
         level: true,
         status: true,
         isActive: true,
-        basePriceUsd: true,
+        pricingByType: true,
         destinationCountry: true,
         destinationCity: true,
         createdAt: true,
         updatedAt: true,
       },
-      orderBy: { updatedAt: 'desc' },
-    });
+      orderBy: { updatedAt: "desc" },
+    }) as Array<{
+      id: string; title: string; type: string[]; level: string | null;
+      status: string; isActive: boolean; pricingByType: unknown;
+      destinationCountry: string; destinationCity: string;
+      createdAt: Date; updatedAt: Date;
+    }>;
 
     return packages.map((pkg) => ({
       id: pkg.id,
@@ -724,13 +862,44 @@ export async function getTripperPackages(tripperId: string) {
       level: pkg.level,
       status: pkg.status.toLowerCase() as any,
       isActive: pkg.isActive,
-      price: pkg.basePriceUsd,
+      pricingByType: pkg.pricingByType as Record<string, number> | null,
       destination: `${pkg.destinationCity}, ${pkg.destinationCountry}`,
       createdAt: pkg.createdAt.toISOString(),
       updatedAt: pkg.updatedAt.toISOString(),
     }));
   } catch (error) {
-    console.error('Error fetching tripper packages:', error);
+    console.error("Error fetching tripper packages:", error);
+    return [];
+  }
+}
+
+/**
+ * Get approved and public reviews for a tripper (for public profile)
+ */
+export async function getApprovedReviewsForTripper(tripperId: string) {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        tripperId,
+        isApproved: true,
+        isPublic: true,
+      },
+      select: {
+        id: true,
+        rating: true,
+        title: true,
+        content: true,
+        createdAt: true,
+        user: {
+          select: { id: true, name: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return reviews;
+  } catch (error) {
+    console.error("Error fetching approved reviews for tripper:", error);
     return [];
   }
 }
@@ -746,7 +915,7 @@ export async function getTripperPublishedBlogs(
     const blogs = await prisma.blogPost.findMany({
       where: {
         authorId: tripperId,
-        status: 'PUBLISHED',
+        status: "PUBLISHED",
       },
       select: {
         id: true,
@@ -757,21 +926,49 @@ export async function getTripperPublishedBlogs(
         tags: true,
         publishedAt: true,
       },
-      orderBy: { publishedAt: 'desc' },
+      orderBy: { publishedAt: "desc" },
       take: limit,
     });
 
     // Transform to match Blog component format; only include posts with a cover
     return blogs
-      .filter((blog): blog is typeof blog & { coverUrl: string } => blog.coverUrl != null)
+      .filter(
+        (blog): blog is typeof blog & { coverUrl: string } =>
+          blog.coverUrl != null,
+      )
       .map((blog) => ({
-        category: blog.tags[0] ?? 'Viajes',
+        category: blog.tags[0] ?? "Viajes",
         href: `/blog/${blog.slug ?? blog.id}`,
         image: blog.coverUrl,
         title: blog.title,
       }));
   } catch (error) {
-    console.error('Error fetching tripper published blogs:', error);
+    console.error("Error fetching tripper published blogs:", error);
+    return [];
+  }
+}
+
+export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { isApproved: true, isPublic: true, tripperId: null },
+      orderBy: { createdAt: "desc" },
+      take: 9,
+      select: {
+        content: true,
+        destination: true,
+        tripRequest: { select: { originCountry: true } },
+        user: { select: { name: true } },
+      },
+    });
+
+    return reviews.map((r) => ({
+      author: r.user.name ?? "Viajero",
+      country: r.tripRequest?.originCountry ?? "",
+      quote: r.content,
+    }));
+  } catch (error) {
+    console.error("Error fetching homepage testimonials:", error);
     return [];
   }
 }

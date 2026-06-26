@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import TripperCard from '@/components/TripperCard';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
+import React from "react";
+import TripperCard from "@/components/TripperCard";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 interface TopTrippersGridProps {
   buttonHref: string;
@@ -28,10 +28,20 @@ export function TopTrippersGrid({
     .filter((tripper) => tripper.avatarUrl)
     .slice(0, 8);
 
+  const count = displayedTrippers.length;
+  const smGridCols =
+    count >= 4
+      ? "sm:grid-cols-4"
+      : count === 3
+        ? "sm:grid-cols-3"
+        : count === 2
+          ? "sm:grid-cols-2"
+          : "sm:grid-cols-1";
+
   return (
-    <div className="w-full">
+    <div className="rt-container">
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full"
+        className={`grid gap-4 grid-cols-1 ${smGridCols} justify-center`}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -41,10 +51,10 @@ export function TopTrippersGrid({
           <TripperCard
             key={tripper.id}
             name={tripper.name}
-            href={tripper.tripperSlug ?? ''}
+            href={tripper.tripperSlug ?? ""}
             className="h-full w-full"
             instagramUrl={tripper.instagramUrl ?? undefined}
-            imageUrl={tripper.avatarUrl ?? '/images/fallback.jpg'}
+            imageUrl={tripper.avatarUrl ?? "/images/fallback.jpg"}
           />
         ))}
       </motion.div>

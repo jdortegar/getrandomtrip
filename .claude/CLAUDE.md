@@ -27,7 +27,7 @@ User instructions always override this file.
 | State         | Zustand 5 (`src/store/`)                   |
 | ORM           | Prisma 7 (PostgreSQL)                      |
 | Auth          | NextAuth 4 (Prisma adapter + Google OAuth) |
-| Payments      | MercadoPago (primary), Stripe (secondary)  |
+| Payments      | Stripe                                     |
 | UI Primitives | Radix UI, shadcn/ui (`components.json`)    |
 | Forms         | react-hook-form                            |
 | Maps          | React Leaflet, Google Maps/Places          |
@@ -165,7 +165,7 @@ MERCADOPAGO_TEST_ACCESS_TOKEN / TEST_PUBLIC_KEY
 
 Project-specific skills live in `.claude/skills/`. Invoke them with the `Skill` tool before starting the corresponding work.
 
-| Skill                | When to use                                                                 |
-| -------------------- | --------------------------------------------------------------------------- |
-| `create-component`   | Scaffolding any new component, page, or UI under `src/components/`          |
+| Skill                | When to use                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `create-component`   | Scaffolding any new component, page, or UI under `src/components/`                 |
 | `refactor-component` | Refactoring or restyling an existing component — extract, migrate copy, fix layout |

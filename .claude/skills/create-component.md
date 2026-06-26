@@ -61,6 +61,7 @@ Only use a client component page when the page itself has no data requirements a
 ## Verification
 
 After creating:
+
 ```bash
 npm run typecheck   # must pass clean
 npm run lint        # must pass clean

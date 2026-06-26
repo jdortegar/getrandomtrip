@@ -1,18 +1,20 @@
-'use client';
+"use client";
 
-import React from 'react';
-import CountryFlag from '@/components/common/CountryFlag';
-import Img from '@/components/common/Img';
-import { getInitial } from '@/lib/helpers/stringHelpers';
-import type { TestimonialData } from './types';
+import React from "react";
+import CountryFlag from "@/components/common/CountryFlag";
+import Img from "@/components/common/Img";
+import { getInitial } from "@/lib/helpers/stringHelpers";
+import type { TestimonialData } from "./types";
 
 interface TestimonialCardProps {
+  accentColor?: string;
   index: number;
   testimonial: TestimonialData;
   viewFullReviewLabel: string;
 }
 
 export function TestimonialCard({
+  accentColor,
   index,
   testimonial,
   viewFullReviewLabel,
@@ -62,6 +64,7 @@ export function TestimonialCard({
         {reviewUrl && (
           <a
             className="mt-6 block cursor-pointer font-barlow text-base font-medium text-[#1A73E8] hover:underline"
+            style={accentColor ? { color: accentColor } : undefined}
             href={reviewUrl}
             rel="noopener noreferrer"
             target="_blank"

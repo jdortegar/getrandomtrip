@@ -1,24 +1,26 @@
-import 'dotenv/config';
+import "dotenv/config";
 import {
   PrismaClient,
   TripRequestStatus,
-  PackageStatus,
+  ExperienceStatus,
   UserRole,
-} from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import bcrypt from 'bcryptjs';
+} from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import bcrypt from "bcryptjs";
 
 const connectionString = process.env.DATABASE_URL;
-const adapter = connectionString ? new PrismaPg({ connectionString }) : undefined;
+const adapter = connectionString
+  ? new PrismaPg({ connectionString })
+  : undefined;
 const prisma = new PrismaClient(
-  (adapter ? { adapter, log: ['error'] } : { log: ['error'] }) as object,
+  (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
 );
 
 // NOTE: This seed file is outdated and needs to be updated for the new schema
 // For now, we're using the custom seed script in scripts/seed-trippers-packages.ts
 async function main() {
   console.log(
-    '⚠️  This seed file is outdated. Use scripts/seed-trippers-packages.ts instead.',
+    "⚠️  This seed file is outdated. Use scripts/seed-trippers-packages.ts instead.",
   );
   return;
 
@@ -502,7 +504,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    console.error("❌ Error seeding database:", e);
     process.exit(1);
   })
   .finally(async () => {

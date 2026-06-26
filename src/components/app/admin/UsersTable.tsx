@@ -4,12 +4,19 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface UsersTableProps {
   copy: MarketingDictionary["adminUsers"];
+  onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   selectedId: string | null;
   users: AdminUser[];
 }
 
-export function UsersTable({ copy, onEdit, selectedId, users }: UsersTableProps) {
+export function UsersTable({
+  copy,
+  onDelete,
+  onEdit,
+  selectedId,
+  users,
+}: UsersTableProps) {
   const headers = [
     copy.headers.user,
     copy.headers.roles,
@@ -38,6 +45,7 @@ export function UsersTable({ copy, onEdit, selectedId, users }: UsersTableProps)
               copy={copy}
               key={user.id}
               isSelected={selectedId === user.id}
+              onDelete={onDelete}
               onEdit={onEdit}
               user={user}
             />
@@ -45,9 +53,7 @@ export function UsersTable({ copy, onEdit, selectedId, users }: UsersTableProps)
         </tbody>
       </table>
       {users.length === 0 && (
-        <p className="py-10 text-center text-sm text-gray-400">
-          {copy.empty}
-        </p>
+        <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
       )}
     </div>
   );

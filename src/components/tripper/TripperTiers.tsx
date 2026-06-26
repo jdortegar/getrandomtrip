@@ -1,23 +1,25 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { getTiersForDisplay } from '@/lib/utils/experiencesData';
+import { useParams, useRouter } from "next/navigation";
+import { getTiersForDisplay } from "@/lib/utils/experiencesData";
 
 export default function TripperTiers({
   tripperSlug,
-  type = 'couple',
+  type = "couple",
 }: {
   tripperSlug: string;
   type?: string;
 }) {
   const router = useRouter();
   const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const tiers = getTiersForDisplay(type, locale);
 
   return (
     <section className="rt-container px-4 py-10 md:px-8">
-      <h2 className="text-xl font-medium">Selecciona tu Nivel de Experiencia</h2>
+      <h2 className="text-xl font-medium">
+        Selecciona tu Nivel de Experiencia
+      </h2>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
         {tiers.map((t) => (
           <div

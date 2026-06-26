@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  AlertCircle,
-  Calendar,
-  CreditCard,
-  MapPin,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { AlertCircle, Calendar, CreditCard, MapPin } from "lucide-react";
+import { RowActions } from "@/components/common/RowActions";
 import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import {
@@ -160,25 +154,11 @@ export function UnpaidTripsAlert({
                         {copy.unpaidTrips.action}
                       </Link>
                     </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="outline"
-                      className="text-primary hover:bg-gray-50 hover:text-gray-700 border-primary"
-                    >
-                      <Link href={buildEditUrl(locale, trip)}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Link>
-                    </Button>
-                    <Button
-                      disabled={deletingId === trip.id}
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(trip.id)}
-                      className="text-red-400 hover:bg-red-50 hover:text-red-700 border-red-400"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    <RowActions
+                      deleteDisabled={deletingId === trip.id}
+                      editHref={buildEditUrl(locale, trip)}
+                      onDelete={() => handleDelete(trip.id)}
+                    />
                   </div>
                 </div>
               </div>

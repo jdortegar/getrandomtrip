@@ -1,13 +1,13 @@
-import type { Session } from 'next-auth';
-import type { TravelerType, User, UserRole } from '@/store/slices/userStore';
+import type { Session } from "next-auth";
+import type { TravelerType, User, UserRole } from "@/store/slices/userStore";
 
-export type SessionUser = Session['user'] & {
+export type SessionUser = Session["user"] & {
   avatar?: string | null;
   avatarUrl?: string | null;
   handle?: string | null;
   image?: string | null;
   role?: string;
-  roles?: Array<'admin' | 'client' | 'tripper'>;
+  roles?: Array<"admin" | "client" | "tripper">;
   travelerType?: string | null;
   interests?: string[];
   dislikes?: string[];
@@ -16,18 +16,25 @@ export type SessionUser = Session['user'] & {
 function normalizeRoleToken(token: string | undefined): UserRole | undefined {
   if (!token) return undefined;
   const normalized = token.toLowerCase();
-  if (normalized === 'client' || normalized === 'tripper' || normalized === 'admin') {
+  if (
+    normalized === "client" ||
+    normalized === "tripper" ||
+    normalized === "admin"
+  ) {
     return normalized;
   }
 
   const upper = token.toUpperCase();
-  if (upper === 'CLIENT') return 'client';
-  if (upper === 'TRIPPER') return 'tripper';
-  if (upper === 'ADMIN') return 'admin';
+  if (upper === "CLIENT") return "client";
+  if (upper === "TRIPPER") return "tripper";
+  if (upper === "ADMIN") return "admin";
   return undefined;
 }
 
-function normalizeRoles(roles: SessionUser['roles'], legacyRole: SessionUser['role']): UserRole[] {
+function normalizeRoles(
+  roles: SessionUser["roles"],
+  legacyRole: SessionUser["role"],
+): UserRole[] {
   if (Array.isArray(roles) && roles.length > 0) {
     return Array.from(new Set(roles));
   }
@@ -35,24 +42,34 @@ function normalizeRoles(roles: SessionUser['roles'], legacyRole: SessionUser['ro
   return single ? [single] : [];
 }
 
-function normalizeTravelerType(value: string | null | undefined): TravelerType | undefined {
+function normalizeTravelerType(
+  value: string | null | undefined,
+): TravelerType | undefined {
   if (!value) return undefined;
-  if (value === 'solo' || value === 'pareja' || value === 'familia' || value === 'amigos' || value === 'empresa') {
+  if (
+    value === "solo" ||
+    value === "pareja" ||
+    value === "familia" ||
+    value === "amigos" ||
+    value === "empresa"
+  ) {
     return value;
   }
   return undefined;
 }
 
-export function mapSessionUserToStoreUser(sessionUser: SessionUser): User | null {
+export function mapSessionUserToStoreUser(
+  sessionUser: SessionUser,
+): User | null {
   if (!sessionUser.id || !sessionUser.name || !sessionUser.email) return null;
 
   const roles = normalizeRoles(sessionUser.roles, sessionUser.role);
   const role = sessionUser.role
     ? normalizeRoleToken(sessionUser.role)
-    : roles.includes('admin')
-      ? 'admin'
-      : roles.includes('tripper')
-        ? 'tripper'
+    : roles.includes("admin")
+      ? "admin"
+      : roles.includes("tripper")
+        ? "tripper"
         : roles[0];
 
   return {
@@ -62,10 +79,16 @@ export function mapSessionUserToStoreUser(sessionUser: SessionUser): User | null
     role,
     roles: roles.length > 0 ? roles : undefined,
     handle: sessionUser.handle ?? undefined,
-    avatar: sessionUser.avatar ?? sessionUser.avatarUrl ?? sessionUser.image ?? undefined,
+    avatar:
+      sessionUser.avatar ??
+      sessionUser.avatarUrl ??
+      sessionUser.image ??
+      undefined,
     prefs: {
       travelerType: normalizeTravelerType(sessionUser.travelerType),
-      interests: Array.isArray(sessionUser.interests) ? sessionUser.interests : [],
+      interests: Array.isArray(sessionUser.interests)
+        ? sessionUser.interests
+        : [],
       dislikes: Array.isArray(sessionUser.dislikes) ? sessionUser.dislikes : [],
     },
   };

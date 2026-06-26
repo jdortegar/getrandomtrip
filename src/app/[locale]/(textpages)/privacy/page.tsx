@@ -1,18 +1,17 @@
-import type { Metadata } from 'next';
-import { LegalDocumentPage } from '@/components/layout/LegalDocumentPage';
-import { hasLocale, type Locale } from '@/lib/i18n/config';
-import { getDictionary } from '@/lib/i18n/dictionaries';
+import type { Metadata } from "next";
+import { LegalDocumentPage } from "@/components/layout/LegalDocumentPage";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
 function resolveLocale(raw: string | string[] | undefined): Locale {
-  const localeStr = typeof raw === 'string' ? raw : raw?.[0];
-  return hasLocale(localeStr) ? localeStr : 'es';
+  const localeStr = typeof raw === "string" ? raw : raw?.[0];
+  return hasLocale(localeStr) ? localeStr : "es";
 }
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const locale = resolveLocale(params?.locale);
   const dict = await getDictionary(locale);
   const meta = dict.legalPrivacy.meta;
@@ -21,13 +20,14 @@ export async function generateMetadata({
     openGraph: {
       description: meta.openGraphDescription,
       title: meta.openGraphTitle,
-      type: 'website',
+      type: "website",
     },
     title: meta.title,
   };
 }
 
-export default async function PrivacyPage({ params }: LocaleParams) {
+export default async function PrivacyPage(props: LocaleParams) {
+  const params = await props.params;
   const locale = resolveLocale(params?.locale);
   const dict = await getDictionary(locale);
   return <LegalDocumentPage document={dict.legalPrivacy} locale={locale} />;

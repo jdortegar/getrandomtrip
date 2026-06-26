@@ -1,9 +1,9 @@
-import { create, StateCreator } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Session } from 'next-auth';
+import { create, StateCreator } from "zustand";
+import { persist } from "zustand/middleware";
+import type { Session } from "next-auth";
 
-export type TravelerType = 'solo' | 'pareja' | 'familia' | 'amigos' | 'empresa';
-export type BudgetLevel = 'low' | 'mid' | 'high';
+export type TravelerType = "solo" | "pareja" | "familia" | "amigos" | "empresa";
+export type BudgetLevel = "low" | "mid" | "high";
 
 export interface UserPrefs {
   travelerType?: TravelerType;
@@ -30,7 +30,7 @@ export interface UserMetrics {
   favs?: number;
 }
 
-export type UserRole = 'client' | 'tripper' | 'admin';
+export type UserRole = "client" | "tripper" | "admin";
 
 export interface User {
   id: string;
@@ -52,8 +52,8 @@ export interface UserStore {
   user: User | null;
   session: Session | null;
   authModalOpen: boolean;
-  authModalStep: 'signin' | 'onboarding' | 'review';
-  openAuth: (initialStep?: 'signin' | 'onboarding') => void;
+  authModalStep: "signin" | "onboarding" | "review";
+  openAuth: (initialStep?: "signin" | "onboarding") => void;
   closeAuth: () => void;
   signOut: () => void;
   updateAccount?: (name?: string, email?: string) => void; // <-- NUEVO
@@ -71,9 +71,9 @@ export const createUserSlice: StateCreator<UserStore> = (set, get) => ({
   user: null,
   session: null,
   authModalOpen: false,
-  authModalStep: 'signin',
+  authModalStep: "signin",
 
-  openAuth: (initialStep = 'signin') => {
+  openAuth: (initialStep = "signin") => {
     const s = get();
     if (s.authModalOpen && s.authModalStep === initialStep) {
       return;
@@ -116,7 +116,7 @@ export const createUserSlice: StateCreator<UserStore> = (set, get) => ({
 // Export the store for backward compatibility
 export const useUserStore = create<UserStore>()(
   persist(createUserSlice, {
-    name: 'rt-user',
+    name: "rt-user",
     // Only persist UI state — never user/auth data, which must come from NextAuth
     partialize: (state) => ({
       authModalOpen: state.authModalOpen,

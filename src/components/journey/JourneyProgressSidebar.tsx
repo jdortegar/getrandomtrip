@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -21,21 +22,48 @@ interface ContentTab {
 
 interface JourneyProgressSidebarProps {
   activeTab: string;
+  activeSubstepId?: string;
+  /** Tab IDs considered fully complete (used instead of search-param checks when provided). */
+  completedTabIds?: string[];
   /** Shown as a badge when add-ons substep exists but is disabled (journey flag). */
   addonsComingSoonLabel: string;
   className?: string;
+  /** When provided, renders a "Label  XX%" header at the top of the sidebar. */
+  progressLabel?: string;
   onStepClick?: (tabId: string, substepId?: string) => void;
   tabs: ContentTab[];
 }
 
+// Matches the `top-10` class on the vertical line div (2.5rem × 16px/rem).
+const LINE_TOP_PX = 40;
+
 export default function JourneyProgressSidebar({
   activeTab,
+  activeSubstepId,
+  completedTabIds,
   addonsComingSoonLabel,
   className,
+  progressLabel,
   onStepClick,
   tabs,
 }: JourneyProgressSidebarProps) {
   const searchParams = useSearchParams();
+  const lastSubstepRowRef = useRef<HTMLDivElement>(null);
+  const [lastTabLineHeight, setLastTabLineHeight] = useState(0);
+
+  useEffect(() => {
+    const el = lastSubstepRowRef.current;
+    if (!el) return;
+    const measure = () => {
+      setLastTabLineHeight(Math.max(0, el.offsetTop + 7 - LINE_TOP_PX));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    const parent = el.offsetParent;
+    if (parent) ro.observe(parent);
+    return () => ro.disconnect();
+  }, [activeTab]);
 
   const getActiveTabIndex = () => {
     return tabs.findIndex((tab) => tab.id === activeTab);
@@ -110,6 +138,9 @@ export default function JourneyProgressSidebar({
       if (substepId === "transport") {
         return !!transportOrder;
       }
+      if (substepId === "pax") {
+        return true;
+      }
     }
 
     if (tabId === "preferences") {
@@ -125,16 +156,34 @@ export default function JourneyProgressSidebar({
     return false;
   };
 
+  const pct =
+    completedTabIds != null
+      ? Math.round((completedTabIds.length / tabs.length) * 100)
+      : Math.round((tabs.filter((t) => isTabComplete(t.id)).length / tabs.length) * 100);
+
   return (
     <aside
-      className={cn("w-full md:w-80 flex-shrink-0 bg-white p-6", className)}
+      className={cn(
+        "w-full md:w-80 shrink-0 bg-white p-6 rounded-lg shadow-md",
+        className,
+      )}
     >
+      {progressLabel && (
+        <div className="flex items-center justify-between mb-6">
+          <span className="text-lg font-bold text-gray-900">
+            {progressLabel}
+          </span>
+          <span className="text-lg font-bold text-light-blue">{pct ?? 0}%</span>
+        </div>
+      )}
       <div className="relative pl-5">
         {/* Steps */}
         <div className="space-y-8">
           {tabs.map((tab, tabIndex) => {
             const isActive = tab.id === activeTab;
-            const isCompleted = isTabComplete(tab.id);
+            const isCompleted = completedTabIds
+              ? completedTabIds.includes(tab.id)
+              : isTabComplete(tab.id);
             const isUpcoming = tabIndex > activeIndex;
             const stepNumber = tabIndex + 1;
             const hasSubsteps = tab.substeps.length > 0;
@@ -165,23 +214,17 @@ export default function JourneyProgressSidebar({
                   />
                 )}
 
-                {/* Vertical line for last step: from circle down to last substep */}
+                {/* Vertical line for last step: from circle down to last substep bullet */}
                 {tabIndex === lastTabIndex && hasSubsteps && isActive && (
-                  <>
-                    <div
-                      className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
-                      style={{ height: "calc(100% - 11.3rem)" }}
-                    />
-                    <div
-                      className="absolute left-[20px] top-10 w-0.5 bg-gray-300"
-                      style={{ height: "calc(100% - 4.75rem)" }}
-                    />
-                  </>
+                  <div
+                    className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
+                    style={{ height: lastTabLineHeight > 0 ? `${lastTabLineHeight}px` : 0 }}
+                  />
                 )}
 
                 {/* Main Step Circle */}
                 <div className="flex items-start gap-4">
-                  <div className="relative z-10 flex-shrink-0">
+                  <div className="relative z-10 shrink-0">
                     <div
                       className={cn(
                         "relative w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all",
@@ -223,11 +266,16 @@ export default function JourneyProgressSidebar({
                             substep.id === "addons" &&
                             !JOURNEY_ADDONS_ENABLED;
                           const isSubstepActive =
-                            isActive && substepIndex === 0;
-                          const isSubstepCompleted = isSubstepComplete(
-                            tab.id,
-                            substep.id,
-                          );
+                            isActive &&
+                            (activeSubstepId
+                              ? substep.id === activeSubstepId
+                              : substepIndex === 0);
+                          const isSubstepCompleted = activeSubstepId
+                            ? substepIndex <
+                              tab.substeps.findIndex(
+                                (s) => s.id === activeSubstepId,
+                              )
+                            : isSubstepComplete(tab.id, substep.id);
                           const isLastSubstep =
                             substepIndex === tab.substeps.length - 1;
 
@@ -241,6 +289,7 @@ export default function JourneyProgressSidebar({
                                   : "cursor-pointer",
                               )}
                               key={substep.id}
+                              ref={tabIndex === lastTabIndex && isLastSubstep ? lastSubstepRowRef : undefined}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (isAddonsComingSoon) return;
@@ -271,7 +320,7 @@ export default function JourneyProgressSidebar({
                               />
 
                               {/* Substep Bullet */}
-                              <div className="relative z-10 flex-shrink-0 mt-1">
+                              <div className="relative z-10 shrink-0 mt-1">
                                 <div
                                   className={cn("w-2 h-2 rounded-full", {
                                     "bg-light-blue":

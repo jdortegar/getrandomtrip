@@ -1,0 +1,23 @@
+{
+  "tailwindCSS.experimental.configFile": "src/app/globals.css",
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "i18n-ally.localesPaths": ["src/dictionaries"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.defaultLocale": "es",
+  "i18n-ally.displayLanguage": "es",
+  "i18n-ally.regex.usageMatchRegex": [
+    "dict\\.([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)+)"
+  ]
+}

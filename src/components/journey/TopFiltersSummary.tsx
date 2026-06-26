@@ -1,32 +1,32 @@
-'use client';
-import { useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useStore } from '@/store/store';
+"use client";
+import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useStore } from "@/store/store";
 
 const LABELS = {
   transport: {
-    bus: 'Bus',
-    plane: 'Avión',
-    ship: 'Barco/Crucero',
-    train: 'Tren',
+    bus: "Bus",
+    plane: "Avión",
+    ship: "Barco/Crucero",
+    train: "Tren",
   } as const,
   climate: {
-    any: 'Indistinto',
-    cold: 'Frío',
-    mild: 'Templado',
-    warm: 'Cálido',
+    any: "Indistinto",
+    cold: "Frío",
+    mild: "Templado",
+    warm: "Cálido",
   } as const,
   maxTravelTime: {
-    'no-limit': 'Sin límite',
-    '3h': 'Hasta 3h',
-    '5h': 'Hasta 5h',
-    '8h': 'Hasta 8h',
+    "no-limit": "Sin límite",
+    "3h": "Hasta 3h",
+    "5h": "Hasta 5h",
+    "8h": "Hasta 8h",
   } as const,
   daypart: {
-    afternoon: 'Tarde',
-    any: 'Indistinto',
-    morning: 'Mañana',
-    night: 'Noche',
+    afternoon: "Tarde",
+    any: "Indistinto",
+    morning: "Mañana",
+    night: "Noche",
   } as const,
 };
 
@@ -41,8 +41,8 @@ function Chip({
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-sm border ${
         muted
-          ? 'bg-neutral-100 text-neutral-600 border-neutral-200'
-          : 'bg-white text-neutral-900 border-neutral-300'
+          ? "bg-neutral-100 text-neutral-600 border-neutral-200"
+          : "bg-white text-neutral-900 border-neutral-300"
       }`}
     >
       {children}
@@ -53,12 +53,17 @@ function Chip({
 export default function TopFiltersSummary() {
   const { filters, setPartial } = useStore();
   const searchParams = useSearchParams();
-  const goPrefs = () => setPartial({ activeTab: 'preferences' as const });
-  const goAvoid = () => setPartial({ activeTab: 'addons' as const });
+  const goPrefs = () => setPartial({ activeTab: "preferences" as const });
+  const goAvoid = () => setPartial({ activeTab: "addons" as const });
 
   const avoidCount = useMemo(() => {
-    const raw = searchParams.get('avoidDestinations');
-    return raw ? raw.split(',').map((s) => s.trim()).filter(Boolean).length : 0;
+    const raw = searchParams.get("avoidDestinations");
+    return raw
+      ? raw
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean).length
+      : 0;
   }, [searchParams]);
 
   const items: Array<{
@@ -69,10 +74,10 @@ export default function TopFiltersSummary() {
 
   // Transporte (siempre)
   items.push({
-    key: 'transport',
+    key: "transport",
     node: (
       <Chip>
-        Transporte:{' '}
+        Transporte:{" "}
         {LABELS.transport[filters.transport as keyof typeof LABELS.transport] ||
           filters.transport}
       </Chip>
@@ -80,12 +85,12 @@ export default function TopFiltersSummary() {
   });
 
   // Clima
-  if (filters.climate !== 'any') {
+  if (filters.climate !== "any") {
     items.push({
-      key: 'climate',
+      key: "climate",
       node: (
         <Chip>
-          Clima:{' '}
+          Clima:{" "}
           {LABELS.climate[filters.climate as keyof typeof LABELS.climate] ||
             filters.climate}
         </Chip>
@@ -95,12 +100,12 @@ export default function TopFiltersSummary() {
   }
 
   // Máx tiempo viaje
-  if (filters.maxTravelTime !== 'no-limit') {
+  if (filters.maxTravelTime !== "no-limit") {
     items.push({
-      key: 'max',
+      key: "max",
       node: (
         <Chip>
-          Máx viaje:{' '}
+          Máx viaje:{" "}
           {LABELS.maxTravelTime[
             filters.maxTravelTime as keyof typeof LABELS.maxTravelTime
           ] || filters.maxTravelTime}
@@ -111,12 +116,12 @@ export default function TopFiltersSummary() {
   }
 
   // Horarios
-  if (filters.departPref !== 'any') {
+  if (filters.departPref !== "any") {
     items.push({
-      key: 'depart',
+      key: "depart",
       node: (
         <Chip>
-          Salida:{' '}
+          Salida:{" "}
           {LABELS.daypart[filters.departPref as keyof typeof LABELS.daypart] ||
             filters.departPref}
         </Chip>
@@ -124,12 +129,12 @@ export default function TopFiltersSummary() {
       onClick: goPrefs,
     });
   }
-  if (filters.arrivePref !== 'any') {
+  if (filters.arrivePref !== "any") {
     items.push({
-      key: 'arrive',
+      key: "arrive",
       node: (
         <Chip>
-          Llegada:{' '}
+          Llegada:{" "}
           {LABELS.daypart[filters.arrivePref as keyof typeof LABELS.daypart] ||
             filters.arrivePref}
         </Chip>
@@ -141,7 +146,7 @@ export default function TopFiltersSummary() {
   // Destinos a evitar -> chip compacto con contador (from URL)
   if (avoidCount > 0) {
     items.push({
-      key: 'avoid',
+      key: "avoid",
       node: <Chip>Evitar: {avoidCount}</Chip>,
       onClick: goAvoid,
     });

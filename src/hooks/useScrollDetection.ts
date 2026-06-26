@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface UseScrollDetectionOptions {
-  variant: 'auto' | 'solid' | 'overlay';
+  variant: "auto" | "solid" | "overlay";
   threshold?: number;
 }
 
@@ -14,8 +14,8 @@ export function useScrollDetection({
   const [overlay, setOverlay] = useState(true);
 
   useEffect(() => {
-    if (variant !== 'auto') {
-      setOverlay(variant === 'overlay');
+    if (variant !== "auto") {
+      setOverlay(variant === "overlay");
       return;
     }
 
@@ -26,8 +26,8 @@ export function useScrollDetection({
 
     handleScroll();
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [variant, threshold]);
 
   return overlay;

@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { X } from 'lucide-react';
-import EmblaCarousel from '@/components/EmblaCarousel/EmblaCarousel';
-import Section from '@/components/layout/Section';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
+import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
+import Section from "@/components/layout/Section";
+import { cn } from "@/lib/utils";
 
 interface LightboxImage {
   url: string;
@@ -15,41 +16,45 @@ interface LightboxCarouselProps {
   ariaCloseLabel?: string;
   ariaViewLargeLabel?: string;
   images: LightboxImage[];
+  className?: string;
 }
 
 export default function LightboxCarousel({
-  ariaCloseLabel = 'Cerrar',
-  ariaViewLargeLabel = 'Ver imagen en grande',
+  className,
+  ariaCloseLabel = "Cerrar",
+  ariaViewLargeLabel = "Ver imagen en grande",
   images,
 }: LightboxCarouselProps) {
-  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!lightboxImage) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightboxImage(null);
+      if (e.key === "Escape") setLightboxImage(null);
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [lightboxImage]);
 
   if (images.length === 0) return null;
 
   return (
     <>
-      <Section className="!py-0">
+      <Section className={cn("py-10!", className)} fullWidth>
         <div className="relative">
-          <EmblaCarousel options={{ align: 'start', loop: true }} slidesPerView={3}>
+          <EmblaCarousel slidesPerView={3} wrapperClassName="w-full p-0!">
             {images.map((image, index) => (
               <button
                 key={`${image.url}-${index}`}
-                className="relative h-[316px] w-full cursor-pointer overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
+                className="relative aspect-video w-full cursor-pointer overflow-hidden focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
                 onClick={() => setLightboxImage(image)}
                 type="button"
               >
                 <Image
-                  alt={image.caption ?? ''}
-                  className="object-cover"
+                  alt={image.caption ?? ""}
+                  className="object-cover aspect-video"
                   fill
                   sizes="(max-width: 768px) 85vw, (max-width: 1024px) 70vw, 55vw"
                   src={image.url}
@@ -82,11 +87,17 @@ export default function LightboxCarousel({
               <X className="h-5 w-5" />
             </button>
             <Image
-              alt={lightboxImage.caption ?? ''}
+              alt={lightboxImage.caption ?? ""}
               height={0}
               sizes="85vw"
               src={lightboxImage.url}
-              style={{ display: 'block', height: 'auto', maxHeight: '80vh', maxWidth: '85vw', width: 'auto' }}
+              style={{
+                display: "block",
+                height: "auto",
+                maxHeight: "80vh",
+                maxWidth: "85vw",
+                width: "auto",
+              }}
               unoptimized
               width={0}
             />

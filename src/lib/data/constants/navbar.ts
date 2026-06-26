@@ -1,37 +1,37 @@
 export const NAVBAR_CONSTANTS = {
-  HEIGHT: 'h-16', // Increased height for better spacing
-  MAX_WIDTH: 'rt-container',
-  PADDING: 'px-4 sm:px-6 lg:px-8',
-  SPACER_HEIGHT: 'h-16', // Match navbar height
+  HEIGHT: "h-16", // Increased height for better spacing
+  /** Same shell as site content: `max-w-screen-xl` + horizontal padding (see `rt.css`). */
+  MAX_WIDTH: "rt-container",
+  SPACER_HEIGHT: "h-16", // Match navbar height
 } as const;
 
 export const NAVBAR_LINKS = [
   {
-    href: '/trippers',
-    label: 'Trippers',
-    ariaLabel: 'Ir a la página de Trippers',
+    href: "/trippers",
+    label: "Trippers",
+    ariaLabel: "Ir a la página de Trippers",
   },
   {
-    href: '/blog',
-    label: 'Inspiración',
-    ariaLabel: 'Ir a la sección de inspiración',
+    href: "/blog",
+    label: "Inspiración",
+    ariaLabel: "Ir a la sección de inspiración",
     prefetch: false,
   },
   {
-    href: '/nosotros',
-    label: 'Nosotros',
-    ariaLabel: 'Ir a la página sobre nosotros',
+    href: "/nosotros",
+    label: "Nosotros",
+    ariaLabel: "Ir a la página sobre nosotros",
   },
   {
-    href: '/tripbuddy',
-    label: 'North IA',
-    ariaLabel: 'Ir a IA TripBuddy',
+    href: "/tripbuddy",
+    label: "North IA",
+    ariaLabel: "Ir a IA TripBuddy",
   },
 ] as const;
 
 export const NAVBAR_STYLES = {
   SOLID:
-    'fixed top-0 inset-x-0 z-50 bg-white text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-all duration-500 ease-in-out',
+    "fixed top-0 inset-x-0 z-50 bg-white text-neutral-900 backdrop-blur-md shadow ring-1 ring-black/5 transition-all duration-500 ease-in-out",
   OVERLAY:
-    'fixed top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out',
+    "fixed top-0 inset-x-0 z-50 bg-white/0 text-white backdrop-blur-md transition-all duration-500 ease-in-out",
 } as const;

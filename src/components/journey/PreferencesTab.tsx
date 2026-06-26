@@ -1,19 +1,17 @@
-'use client';
+"use client";
 
-import SelectedFiltersChips from './SelectedFiltersChips';
-import { useStore } from '@/store/store';
-import { useQuerySync } from '@/hooks/useQuerySync';
-import { useSearchParams } from 'next/navigation';
-import { Info } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { FILTER_OPTIONS, FilterOption } from '@/store/slices/journeyStore';
+import SelectedFiltersChips from "./SelectedFiltersChips";
+import { useStore } from "@/store/store";
+import { useQuerySync } from "@/hooks/useQuerySync";
+import { useSearchParams } from "next/navigation";
+import { Info } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { FILTER_OPTIONS, FilterOption } from "@/store/slices/journeyStore";
 
-function toFilterOptions(
-  opts: Array<{ key: string }>,
-): FilterOption[] {
+function toFilterOptions(opts: Array<{ key: string }>): FilterOption[] {
   return opts.map((o) => ({ key: o.key, label: o.key }));
 }
-import AvoidGrid, { type AvoidGridLabels } from './avoid/AvoidGrid';
+import AvoidGrid, { type AvoidGridLabels } from "./avoid/AvoidGrid";
 
 const Seg = ({
   options,
@@ -22,18 +20,18 @@ const Seg = ({
   className,
 }: {
   options: FilterOption[];
-  value: FilterOption['key'];
-  onChange: (v: FilterOption['key']) => void;
+  value: FilterOption["key"];
+  onChange: (v: FilterOption["key"]) => void;
   className?: string;
 }) => (
-  <div className={cn('inline-flex flex-wrap gap-2', className)}>
+  <div className={cn("inline-flex flex-wrap gap-2", className)}>
     {options.map((opt) => (
       <button
         key={opt.key}
         type="button"
         onClick={() => onChange(opt.key)}
         className={`px-3 py-1.5 rounded-full text-sm border transition
-          ${value === opt.key ? 'bg-primary-900 text-white border-primary-900' : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200'}`}
+          ${value === opt.key ? "bg-primary-900 text-white border-primary-900" : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200"}`}
       >
         {opt.label}
       </button>
@@ -45,12 +43,14 @@ interface PreferencesTabProps {
   avoidGridLabels: AvoidGridLabels;
 }
 
-export default function PreferencesTab({ avoidGridLabels }: PreferencesTabProps) {
+export default function PreferencesTab({
+  avoidGridLabels,
+}: PreferencesTabProps) {
   const searchParams = useSearchParams();
-  const { filters, setPartial, _tripperPackageDestinations } = useStore();
-  const originCity = searchParams.get('originCity') ?? '';
-  const originCountry = searchParams.get('originCountry') ?? '';
-  const experience = searchParams.get('experience') ?? undefined;
+  const { filters, setPartial, _tripperExperienceDestinations } = useStore();
+  const originCity = searchParams.get("originCity") ?? "";
+  const originCountry = searchParams.get("originCountry") ?? "";
+  const experience = searchParams.get("experience") ?? undefined;
   // const sync = useQuerySync();
 
   const setAndSync = (patch: Partial<typeof filters>) => {
@@ -137,7 +137,7 @@ export default function PreferencesTab({ avoidGridLabels }: PreferencesTabProps)
               labels={avoidGridLabels}
               originCity={originCity}
               originCountry={originCountry}
-              tripperPackageDestinations={_tripperPackageDestinations}
+              tripperExperienceDestinations={_tripperExperienceDestinations}
             />
           </div>
         </div>

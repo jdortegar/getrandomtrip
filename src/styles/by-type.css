@@ -1,9 +1,9 @@
 /* Styles for By Type pages */
 
 :root {
-  --rt-primary: #FFFFFF;
-  --rt-secondary: #0A2240;
-  --rt-accent: #F2C53D;
+  --rt-primary: #ffffff;
+  --rt-secondary: #0a2240;
+  --rt-accent: #f2c53d;
   --rt-text: #1a1a1a;
 }
 
@@ -65,5 +65,3 @@
   background-color: var(--rt-accent);
   color: var(--rt-secondary);
 }
-
-

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Image, { ImageProps } from 'next/image';
-import { useMemo, useState } from 'react';
-import Img from '@/components/common/Img'; // Added import
+import Image, { ImageProps } from "next/image";
+import { useMemo, useState } from "react";
+import Img from "@/components/common/Img"; // Added import
 
 type Props = {
   src?: string | null;
@@ -14,34 +14,38 @@ type Props = {
   className?: string;
   sizes?: string;
   priority?: boolean;
-} & Omit<ImageProps, 'src' | 'alt' | 'width' | 'height' | 'fill'>;
+} & Omit<ImageProps, "src" | "alt" | "width" | "height" | "fill">;
 
 const ALLOWED_HOSTS = new Set([
-  'images.unsplash.com',
-  'source.unsplash.com',
-  'images.pexels.com',
-  'upload.wikimedia.org',
-  'i.pravatar.cc',
-  'picsum.photos',
-  'cdn.pixabay.com',
-  'randomuser.me',
-  'res.cloudinary.com',
-  'avatars.githubusercontent.com',
+  "images.unsplash.com",
+  "source.unsplash.com",
+  "images.pexels.com",
+  "upload.wikimedia.org",
+  "i.pravatar.cc",
+  "picsum.photos",
+  "cdn.pixabay.com",
+  "randomuser.me",
+  "res.cloudinary.com",
+  "avatars.githubusercontent.com",
 ]);
 
 function getHost(u?: string | null) {
   if (!u) return null;
-  try { return new URL(u).hostname; } catch { return null; }
+  try {
+    return new URL(u).hostname;
+  } catch {
+    return null;
+  }
 }
 function isSvgPath(u?: string | null) {
   return !!u && /\.svg(\?.*)?$/i.test(u);
 }
 function normalizeUnsplash(u: string) {
   try {
-    const url = new URL(u, 'http://dummy'); // base por si es relativa
-    if (url.hostname === 'images.unsplash.com') {
+    const url = new URL(u, "http://dummy"); // base por si es relativa
+    if (url.hostname === "images.unsplash.com") {
       // si no tiene query, agregamos defaults para que el proxy de Next no falle
-      if (!url.search || url.search === '') {
+      if (!url.search || url.search === "") {
         return `${u}?auto=format&fit=crop&w=1600&q=80`;
       }
     }
@@ -52,7 +56,7 @@ function normalizeUnsplash(u: string) {
 export default function SafeImage({
   src,
   alt,
-  fallbackSrc = '/images/fallbacks/tripper-avatar.svg',
+  fallbackSrc,
   fill,
   width,
   height,
@@ -61,25 +65,56 @@ export default function SafeImage({
   priority,
   ...rest
 }: Props) {
+  const hasSource = !!src;
   const initialRaw = src || fallbackSrc;
   const initial =
-    initialRaw && initialRaw.startsWith('http')
+    initialRaw && initialRaw.startsWith("http")
       ? normalizeUnsplash(initialRaw)
       : initialRaw;
 
-  const [current, setCurrent] = useState(initial);
+  const [current, setCurrent] = useState(initial ?? "");
+  const [finalError, setFinalError] = useState(!hasSource);
 
   const host = useMemo(() => getHost(current), [current]);
   const isRemote = /^https?:\/\//i.test(current);
   const looksLikeSvg = isSvgPath(current) || isSvgPath(fallbackSrc);
 
   const canUseNextImage =
-    !looksLikeSvg &&
-    (!isRemote || (host && ALLOWED_HOSTS.has(host)));
+    !looksLikeSvg && (!isRemote || (host && ALLOWED_HOSTS.has(host)));
 
   const handleError = () => {
-    if (current !== fallbackSrc) setCurrent(fallbackSrc);
+    if (fallbackSrc && current !== fallbackSrc) {
+      setCurrent(fallbackSrc);
+    } else {
+      setFinalError(true);
+    }
   };
+
+  if (finalError) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-neutral-200 ${className ?? ""}`}
+        style={
+          fill
+            ? { width: "100%", height: "100%" }
+            : { width: width ?? 800, height: height ?? 600 }
+        }
+        role="img"
+        aria-label={alt}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/logos/iso-randomtrip.svg"
+          alt=""
+          style={{
+            maxHeight: 100,
+            width: "auto",
+            filter: "brightness(0) saturate(0) invert(40%)",
+          }}
+        />
+      </div>
+    );
+  }
 
   if (canUseNextImage) {
     return fill ? (
@@ -117,7 +152,9 @@ export default function SafeImage({
       height={height}
       onError={handleError}
       unoptimized={true} // Since this is a fallback, we don't want Next.js optimization
-      style={fill ? { width: '100%', height: '100%', objectFit: 'cover' } : undefined}
+      style={
+        fill ? { width: "100%", height: "100%", objectFit: "cover" } : undefined
+      }
     />
   );
 }

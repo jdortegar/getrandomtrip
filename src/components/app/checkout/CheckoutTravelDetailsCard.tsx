@@ -119,8 +119,12 @@ export function CheckoutTravelDetailsCard({
           <div>
             <p className="font-barlow text-2xl font-bold">
               <span>{summary?.travelTypeSection}</span>
-              <span className="px-1.5">{checkoutCopy.travelTypeTitleSeparator}</span>
-              <span className="text-sky-600">{selectedTravelTypeInfo?.label}</span>
+              <span className="px-1.5">
+                {checkoutCopy.travelTypeTitleSeparator}
+              </span>
+              <span className="text-sky-600">
+                {selectedTravelTypeInfo?.label}
+              </span>
             </p>
             <p className="font-barlow text-lg font-normal text-gray-500">
               {summary?.experienceSection}{" "}

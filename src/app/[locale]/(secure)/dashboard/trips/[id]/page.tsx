@@ -58,7 +58,7 @@ interface TripDetails {
   addons: any;
 
   // Pricing
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice: string;
   filtersCostUsd: number;
   addonsCostUsd: number;
@@ -143,7 +143,7 @@ function TripDetailsContent() {
     return (
       <>
         <HeaderHero
-          className="!h-[40vh]"
+          className="h-[40vh]!"
           description="No pudimos encontrar este viaje"
           fallbackImage="/images/hero-image-1.jpeg"
           title="Viaje no encontrado"
@@ -196,6 +196,8 @@ function TripDetailsContent() {
     return labels[status] || status;
   };
 
+
+
   const filterOptions = dict?.journey?.preferencesStep?.filterOptions;
   const filterChips = [
     { key: "transport" as JourneyFilterKey, value: trip.transport },
@@ -243,7 +245,7 @@ function TripDetailsContent() {
   return (
     <>
       <HeaderHero
-        className="!h-[50vh]"
+        className="h-[50vh]!"
         description={`Viaje ${trip.type} • ${trip.level}`}
         fallbackImage="/images/hero-image-1.jpeg"
         title={
@@ -473,7 +475,7 @@ function TripDetailsContent() {
                       Precio Base
                     </span>
                     <span className="font-semibold text-neutral-900">
-                      ${(trip.basePriceUsd ?? 0).toFixed(2)}
+                      ${(trip.basePrice ?? 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pb-3 border-b border-gray-200">
@@ -582,7 +584,7 @@ function TripDetailsContent() {
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
@@ -597,7 +599,7 @@ function TripDetailsContent() {
 
                   {trip.payment?.paidAt && (
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                         <CreditCard className="h-4 w-4 text-green-600" />
                       </div>
                       <div>
@@ -613,7 +615,7 @@ function TripDetailsContent() {
 
                   {trip.destinationRevealedAt && (
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
                         <Eye className="h-4 w-4 text-purple-600" />
                       </div>
                       <div>
@@ -631,7 +633,7 @@ function TripDetailsContent() {
 
                   {trip.completedAt && (
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                         <CheckCircle className="h-4 w-4 text-green-600" />
                       </div>
                       <div>
@@ -657,10 +659,14 @@ function TripDetailsContent() {
                 </h3>
                 <div className="space-y-3">
                   {trip.status === "COMPLETED" && !trip.customerRating && (
-                    <Button className="w-full justify-start">
-                      <Star className="w-4 h-4 mr-2" />
-                      Dejar Reseña
-                    </Button>
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <p className="text-sm font-medium text-neutral-900">
+                        {dict?.tripReview?.emailHintTitle ?? "Dejá tu reseña"}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {dict?.tripReview?.emailHint ?? "Revisá tu correo — te enviamos un enlace para calificar tu experiencia."}
+                      </p>
+                    </div>
                   )}
 
                   {(trip.status === "CONFIRMED" ||
@@ -670,7 +676,7 @@ function TripDetailsContent() {
                       className="w-full justify-start"
                       asChild
                     >
-                      <Link href={`/dashboard/trips/${trip.id}/details`}>
+                      <Link href={`/${locale}/dashboard/trips/${trip.id}/details`}>
                         <Calendar className="w-4 h-4 mr-2" />
                         Ver Itinerario
                       </Link>

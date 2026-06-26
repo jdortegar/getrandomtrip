@@ -1,42 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { attachPaymentsToTrips } from '@/lib/utils/trip-relations';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
 import {
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
   normalizeTransportId,
-} from '@/lib/helpers/transport';
+} from "@/lib/helpers/transport";
 
 // GET /api/trips - Get all trips for the authenticated user
 export async function GET(request: NextRequest) {
   try {
-    console.log('GET /api/trips called');
+    console.log("GET /api/trips called");
     const session = await getServerSession(authOptions);
-    console.log('Session:', session);
+    console.log("Session:", session);
 
     if (!session?.user?.email) {
-      console.log('No session or email');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      console.log("No session or email");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Find user by email
-    console.log('Finding user by email:', session.user.email);
+    console.log("Finding user by email:", session.user.email);
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
-    console.log('User found:', user);
+    console.log("User found:", user);
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Get all trips for this user
-    console.log('Fetching trips for userId:', user.id);
+    console.log("Fetching trips for userId:", user.id);
     const trips = await prisma.tripRequest.findMany({
       where: { userId: user.id },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     const paymentEntries = await Promise.all(
       trips.map(async (trip) => {
@@ -50,22 +50,24 @@ export async function GET(request: NextRequest) {
     const paymentsByTripRequestId: Record<string, Record<string, unknown>> = {};
     for (const entry of paymentEntries) {
       if (!entry) continue;
-      paymentsByTripRequestId[entry.tripId] =
-        entry.payment as Record<string, unknown>;
+      paymentsByTripRequestId[entry.tripId] = entry.payment as Record<
+        string,
+        unknown
+      >;
     }
     const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId);
-    console.log('Trips found:', trips.length);
+    console.log("Trips found:", trips.length);
 
     return NextResponse.json({ trips: hydratedTrips }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching trips:', error);
+    console.error("Error fetching trips:", error);
     console.error(
-      'Error details:',
+      "Error details:",
       error instanceof Error ? error.message : String(error),
     );
     return NextResponse.json(
       {
-        error: 'Internal server error',
+        error: "Internal server error",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },
@@ -79,23 +81,23 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Find user by email
-    console.log('Finding user by email:', session.user.email);
+    console.log("Finding user by email:", session.user.email);
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
 
     if (!user) {
-      console.error('User not found:', session.user.email);
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      console.error("User not found:", session.user.email);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    console.log('User found:', user.id);
+    console.log("User found:", user.id);
     const body = await request.json();
-    console.log('Trip data received:', body);
+    console.log("Trip data received:", body);
     const {
       id, // If provided, update existing trip
       from,
@@ -127,7 +129,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!type || !level || !country || !city) {
       return NextResponse.json(
-        { error: 'Missing required fields: type, level, country, city' },
+        { error: "Missing required fields: type, level, country, city" },
         { status: 400 },
       );
     }
@@ -135,7 +137,7 @@ export async function POST(request: NextRequest) {
     // Create or update trip
     const tripData = {
       userId: user.id,
-      from: from || '',
+      from: from || "",
       type,
       level,
       originCountry: country,
@@ -144,46 +146,47 @@ export async function POST(request: NextRequest) {
       endDate: endDate ? new Date(endDate) : null,
       nights: nights || 1,
       pax: pax || 1,
-      transport: normalizeTransportId(transport) || 'plane',
-      accommodationType: normalizeJourneyFilterValue(accommodationType) || 'any',
-      climate: normalizeJourneyFilterValue(climate) || 'any',
-      maxTravelTime: normalizeMaxTravelTimeKey(maxTravelTime) || 'no-limit',
-      departPref: normalizeJourneyFilterValue(departPref) || 'any',
-      arrivePref: normalizeJourneyFilterValue(arrivePref) || 'any',
+      transport: normalizeTransportId(transport) || "plane",
+      accommodationType:
+        normalizeJourneyFilterValue(accommodationType) || "any",
+      climate: normalizeJourneyFilterValue(climate) || "any",
+      maxTravelTime: normalizeMaxTravelTimeKey(maxTravelTime) || "no-limit",
+      departPref: normalizeJourneyFilterValue(departPref) || "any",
+      arrivePref: normalizeJourneyFilterValue(arrivePref) || "any",
       avoidDestinations: avoidDestinations || [],
       addons: addons || [],
       basePriceUsd: basePriceUsd || 0,
-      displayPrice: displayPrice || '',
+      displayPrice: displayPrice || "",
       filtersCostUsd: filtersCostUsd || 0,
       addonsCostUsd: addonsCostUsd || 0,
       totalPerPaxUsd: totalPerPaxUsd || 0,
       totalTripUsd: totalTripUsd || 0,
-      status: status || 'SAVED',
+      status: status || "SAVED",
     };
 
     let trip;
     if (id) {
       // Update existing trip
-      console.log('Updating trip:', id);
+      console.log("Updating trip:", id);
       trip = await prisma.tripRequest.update({
         where: { id },
         data: tripData,
       });
-      console.log('Trip updated:', trip.id);
+      console.log("Trip updated:", trip.id);
     } else {
       // Create new trip
-      console.log('Creating new trip for user:', user.id);
+      console.log("Creating new trip for user:", user.id);
       trip = await prisma.tripRequest.create({
         data: tripData,
       });
-      console.log('Trip created:', trip.id);
+      console.log("Trip created:", trip.id);
     }
 
     return NextResponse.json({ trip }, { status: id ? 200 : 201 });
   } catch (error) {
-    console.error('Error saving trip:', error);
+    console.error("Error saving trip:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

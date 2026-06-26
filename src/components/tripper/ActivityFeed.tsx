@@ -14,7 +14,8 @@ const mockActivities: ActivityItem[] = [
   {
     id: "1",
     type: "message",
-    message: "Nuevo mensaje de soporte de un viajero: '¿Puedo cambiar la fecha?'",
+    message:
+      "Nuevo mensaje de soporte de un viajero: '¿Puedo cambiar la fecha?'",
     timestamp: "Hace 5 minutos",
   },
   {
@@ -57,12 +58,14 @@ export default function ActivityFeed() {
           const Icon = iconMap[activity.type];
           return (
             <li key={activity.id} className="flex items-start space-x-3">
-              <div className="flex-shrink-0 p-2 rounded-full bg-neutral-700 text-neutral-300">
+              <div className="shrink-0 p-2 rounded-full bg-neutral-700 text-neutral-300">
                 <Icon size={18} />
               </div>
               <div className="flex-1">
                 <p className="text-sm text-neutral-300">{activity.message}</p>
-                <p className="text-xs text-neutral-400 mt-1">{activity.timestamp}</p>
+                <p className="text-xs text-neutral-400 mt-1">
+                  {activity.timestamp}
+                </p>
               </div>
             </li>
           );

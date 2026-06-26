@@ -7,14 +7,17 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 ## 🏠 WELCOME & INFO Category
 
 ### #welcome (Read-Only)
+
 **Purpose:** First impression and server introduction  
 **Content:**
+
 - Welcome message with server overview
 - Quick start guide (numbered steps)
 - Links to important channels
 - GetRandomTrip website link
 
 **Setup:**
+
 ```
 📌 Pin the welcome message
 🔒 Make read-only (disable "Send Messages" for @everyone)
@@ -22,6 +25,7 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 ```
 
 **Example Message:**
+
 ```
 👋 Welcome to GetRandomTrip Community!
 
@@ -37,8 +41,10 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 ---
 
 ### #announcements (Read-Only)
+
 **Purpose:** Official updates and important news  
 **Content:**
+
 - New feature launches
 - Platform updates
 - Scheduled maintenance
@@ -46,12 +52,14 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 - Major events
 
 **Best Practices:**
+
 - Post 2-4 times per month (avoid spam)
 - Use @everyone sparingly (major updates only)
 - Add rich media (images, videos)
 - Keep messages concise and actionable
 
 **Example Posts:**
+
 - "🎉 New Destination Added: Patagonia!"
 - "🛠️ Maintenance Schedule: Sunday 2AM-4AM EST"
 - "🎊 We hit 10,000 trips booked! Thank you!"
@@ -59,14 +67,17 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 ---
 
 ### #rules (Read-Only)
+
 **Purpose:** Community guidelines and code of conduct  
 **Content:**
+
 - Server rules (numbered list)
 - Consequences for violations
 - Contact info for reporting issues
 - Discord ToS reminder
 
 **Key Rules to Include:**
+
 ```
 1. 🤝 Be respectful and kind
 2. 🚫 No spam, self-promotion, or advertising
@@ -81,24 +92,28 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 ---
 
 ### #get-your-role
+
 **Purpose:** Self-service role assignment via reactions  
 **Content:**
+
 - Role selection message with emoji reactions
 - Clear instructions
 - Role descriptions
 
 **Setup with Carl-bot:**
+
 1. Create role selection message
 2. Use Carl-bot reaction roles
 3. Add emojis for each role
 
 **Example Message:**
+
 ```
 🎭 CHOOSE YOUR TRAVELER TYPE:
 React to get your role and access exclusive channels!
 
 🧳 - Solo Traveler
-💑 - Couple Traveler  
+💑 - Couple Traveler
 👨‍👩‍👧‍👦 - Family Traveler
 👯 - Friends Traveler
 🌙 - Honeymoon Traveler
@@ -115,20 +130,24 @@ React to get your role and access exclusive channels!
 ## 💬 COMMUNITY Category
 
 ### #general-chat
+
 **Purpose:** Main community hangout for any topic  
 **Expected Content:**
+
 - Travel discussions
 - Random conversations
 - Community banter
 - Getting to know each other
 
 **Moderation:**
+
 - Keep conversations friendly
 - Redirect specific topics to relevant channels
 - Monitor for spam
 - Encourage participation
 
 **Conversation Starters:**
+
 - "What's on your travel bucket list?"
 - "Coffee or tea when traveling?"
 - "Best travel memory?"
@@ -136,8 +155,10 @@ React to get your role and access exclusive channels!
 ---
 
 ### #introductions
+
 **Purpose:** New member introductions  
 **Expected Content:**
+
 - Name/nickname
 - Location
 - Travel style
@@ -145,12 +166,14 @@ React to get your role and access exclusive channels!
 - Why they joined
 
 **Engagement Tips:**
+
 - Welcome every new member (use bots)
 - Ask follow-up questions
 - React with emojis
 - Connect members with similar interests
 
 **Prompt Message (Pin):**
+
 ```
 👋 INTRODUCE YOURSELF!
 
@@ -164,8 +187,10 @@ Tell us:
 ---
 
 ### #off-topic
+
 **Purpose:** Non-travel discussions  
 **Expected Content:**
+
 - Hobbies
 - Movies/TV shows
 - Music
@@ -173,6 +198,7 @@ Tell us:
 - Life updates
 
 **Guidelines:**
+
 - Keep it clean
 - Respect diverse opinions
 - Avoid controversial topics (politics, religion)
@@ -181,14 +207,17 @@ Tell us:
 ---
 
 ### #travel-memes
+
 **Purpose:** Travel humor and funny content  
 **Expected Content:**
+
 - Travel memes
 - Funny travel fails
 - Relatable travel jokes
 - Vacation vs. Reality posts
 
 **Rules:**
+
 - Must be travel-related
 - Keep it appropriate
 - No reposts (search first)
@@ -199,19 +228,23 @@ Tell us:
 ## ✈️ TRAVEL TALK Category
 
 ### #trip-planning
+
 **Purpose:** Help members plan their trips  
 **Expected Content:**
+
 - Itinerary advice
 - Trip duration questions
 - Multi-destination planning
 - Travel logistics
 
 **Help Members With:**
+
 - "How many days in Rome?"
 - "Best order to visit: Paris → Amsterdam → Berlin?"
 - "Is 10 days enough for Japan?"
 
 **Encourage:**
+
 - Sharing personal experiences
 - Constructive feedback
 - Resource links (blogs, guides)
@@ -219,14 +252,17 @@ Tell us:
 ---
 
 ### #destination-ideas
+
 **Purpose:** Discover and share amazing places  
 **Expected Content:**
+
 - Hidden gems
 - Underrated destinations
 - Seasonal recommendations
 - "Where should I go?" questions
 
 **Engagement Ideas:**
+
 - Weekly "Destination Spotlight"
 - "Overrated or Worth It?" discussions
 - Member destination reviews
@@ -234,8 +270,10 @@ Tell us:
 ---
 
 ### #travel-tips
+
 **Purpose:** Practical travel advice and hacks  
 **Expected Content:**
+
 - Packing tips
 - Airport hacks
 - Money-saving strategies
@@ -243,6 +281,7 @@ Tell us:
 - Visa/documentation advice
 
 **Popular Topics:**
+
 - "Best travel backpack?"
 - "How to pack carry-on only?"
 - "Travel insurance recommendations?"
@@ -251,8 +290,10 @@ Tell us:
 ---
 
 ### #budget-travel
+
 **Purpose:** Affordable travel strategies  
 **Expected Content:**
+
 - Budget destinations
 - Cheap flights/accommodation
 - Travel rewards/points
@@ -260,6 +301,7 @@ Tell us:
 - Budget breakdowns
 
 **Value-Add:**
+
 - Share actual costs
 - "Trip for under $X" challenges
 - Budget comparison by destination
@@ -267,8 +309,10 @@ Tell us:
 ---
 
 ### #luxury-escapes
+
 **Purpose:** Premium and high-end travel  
 **Expected Content:**
+
 - 5-star resorts
 - Business class flights
 - Luxury experiences
@@ -276,6 +320,7 @@ Tell us:
 - Premium services
 
 **Topics:**
+
 - Hotel reviews
 - Upgrade strategies
 - Splurge-worthy experiences
@@ -286,14 +331,17 @@ Tell us:
 ## 🌍 BY REGION Category
 
 ### #americas
+
 **Purpose:** North, Central, and South America travel  
 **Expected Content:**
+
 - USA, Canada, Mexico
 - Central America (Costa Rica, Panama, etc.)
 - South America (Brazil, Argentina, Peru, etc.)
 - Caribbean
 
 **Regional Focus:**
+
 - Visa requirements
 - Language tips
 - Regional transportation
@@ -302,8 +350,10 @@ Tell us:
 ---
 
 ### #europe
+
 **Purpose:** European travel discussions  
 **Expected Content:**
+
 - Western Europe (France, Spain, Italy, UK)
 - Eastern Europe (Poland, Czech, Hungary)
 - Scandinavia
@@ -313,8 +363,10 @@ Tell us:
 ---
 
 ### #asia-pacific
+
 **Purpose:** Asia and Oceania travel  
 **Expected Content:**
+
 - Southeast Asia (Thailand, Vietnam, Indonesia)
 - East Asia (Japan, Korea, China)
 - South Asia (India, Sri Lanka)
@@ -324,8 +376,10 @@ Tell us:
 ---
 
 ### #africa-middle-east
+
 **Purpose:** Africa and Middle East travel  
 **Expected Content:**
+
 - North Africa (Morocco, Egypt)
 - East Africa (Kenya, Tanzania)
 - Southern Africa (South Africa, Botswana)
@@ -334,11 +388,14 @@ Tell us:
 ---
 
 ## 👥 BY TRAVELER TYPE Category
-*(Role-Restricted Channels)*
+
+_(Role-Restricted Channels)_
 
 ### #solo-travelers 🧳
+
 **Purpose:** Community for solo adventurers  
 **Expected Content:**
+
 - Safety tips for solo travel
 - Meeting other travelers
 - Solo-friendly destinations
@@ -346,6 +403,7 @@ Tell us:
 - Hostel recommendations
 
 **Community Building:**
+
 - Organize meetups
 - Share solo success stories
 - Buddy system for trips
@@ -353,8 +411,10 @@ Tell us:
 ---
 
 ### #couples-travel 💑
+
 **Purpose:** Romance and couple adventures  
 **Expected Content:**
+
 - Romantic destinations
 - Couple activities
 - Travel compatibility tips
@@ -364,8 +424,10 @@ Tell us:
 ---
 
 ### #family-adventures 👨‍👩‍👧‍👦
+
 **Purpose:** Family-friendly travel  
 **Expected Content:**
+
 - Kid-friendly destinations
 - Travel with babies/toddlers
 - Educational trips
@@ -375,8 +437,10 @@ Tell us:
 ---
 
 ### #friends-trips 👯
+
 **Purpose:** Group travel planning  
 **Expected Content:**
+
 - Group coordination tips
 - Split cost strategies
 - Activities for groups
@@ -386,8 +450,10 @@ Tell us:
 ---
 
 ### #honeymoon-magic 🌙
+
 **Purpose:** Romantic honeymoon planning  
 **Expected Content:**
+
 - Top honeymoon destinations
 - Romance packages
 - Once-in-a-lifetime experiences
@@ -399,8 +465,10 @@ Tell us:
 ## 📸 SHARE YOUR JOURNEY Category
 
 ### #trip-photos
+
 **Purpose:** Visual travel memories  
 **Expected Content:**
+
 - Travel photography
 - Scenic views
 - Street photography
@@ -408,6 +476,7 @@ Tell us:
 - Candid moments
 
 **Encourage:**
+
 - Location tags
 - Photo stories (context)
 - Photography tips
@@ -416,8 +485,10 @@ Tell us:
 ---
 
 ### #bitacoras
+
 **Purpose:** Detailed travel journals (like blog posts)  
 **Expected Content:**
+
 - Day-by-day trip reports
 - Comprehensive destination guides
 - Lessons learned
@@ -425,6 +496,7 @@ Tell us:
 - Cost breakdowns
 
 **Format:**
+
 ```
 📔 BITÁCORA: [Destination]
 📅 Duration: X days
@@ -442,8 +514,10 @@ Day 2: ...
 ---
 
 ### #travel-videos
+
 **Purpose:** Video content sharing  
 **Expected Content:**
+
 - Vlogs
 - Destination videos
 - Time-lapses
@@ -451,6 +525,7 @@ Day 2: ...
 - Travel montages
 
 **Platforms:**
+
 - YouTube links
 - TikTok
 - Instagram Reels
@@ -459,14 +534,17 @@ Day 2: ...
 ---
 
 ### #current-trips
+
 **Purpose:** Real-time travel updates  
 **Expected Content:**
+
 - Live updates from travelers
 - Real-time photos
 - Current experiences
 - "I'm here now!" posts
 
 **Interactive:**
+
 - Quick questions answered
 - Real-time recommendations
 - Safety check-ins
@@ -477,8 +555,10 @@ Day 2: ...
 ## 🎫 GETRANDOMTRIP Category
 
 ### #how-it-works
+
 **Purpose:** Product questions and onboarding  
 **Expected Content:**
+
 - How GetRandomTrip works
 - Booking process questions
 - Feature explanations
@@ -486,6 +566,7 @@ Day 2: ...
 - Cancellation policies
 
 **Team Response:**
+
 - Quick FAQ answers
 - Link to help docs
 - Video tutorials
@@ -494,20 +575,24 @@ Day 2: ...
 ---
 
 ### #feature-requests
+
 **Purpose:** Collect product improvement ideas  
 **Expected Content:**
+
 - New feature suggestions
 - UI/UX improvements
 - Destination requests
 - Integration ideas
 
 **Management:**
+
 - Acknowledge all requests
 - Use voting (reactions)
 - Update on implementation
 - Close loop when shipped
 
 **Template:**
+
 ```
 💡 FEATURE REQUEST
 🙋 Requested by: @user
@@ -519,8 +604,10 @@ Day 2: ...
 ---
 
 ### #feedback
+
 **Purpose:** General product feedback  
 **Expected Content:**
+
 - User experience feedback
 - What worked well
 - What could improve
@@ -528,6 +615,7 @@ Day 2: ...
 - Suggestions
 
 **Response:**
+
 - Thank every feedback
 - Ask clarifying questions
 - Share with product team
@@ -536,8 +624,10 @@ Day 2: ...
 ---
 
 ### #bookings-support
+
 **Purpose:** Help with bookings and reservations  
 **Expected Content:**
+
 - Booking issues
 - Payment problems
 - Itinerary questions
@@ -545,6 +635,7 @@ Day 2: ...
 - Refund inquiries
 
 **Support Team:**
+
 - Response time: < 2 hours
 - Use ticket system
 - DM for sensitive info
@@ -553,20 +644,24 @@ Day 2: ...
 ---
 
 ### #mystery-reveals
+
 **Purpose:** Excitement and unboxing moments  
 **Expected Content:**
+
 - Destination reveal reactions
 - "OMG I got [destination]!"
 - Excitement sharing
 - Pre-trip anticipation
 
 **Encourage:**
+
 - Screenshots of reveals
 - Immediate reactions
 - Guess before reveal
 - Share with friends
 
 **Builds:**
+
 - Social proof
 - FOMO
 - Community excitement
@@ -577,14 +672,17 @@ Day 2: ...
 ## 🆘 SUPPORT Category
 
 ### #help-desk (10s slowmode)
+
 **Purpose:** General questions and help  
 **Expected Content:**
+
 - General questions
 - Account issues
 - Navigation help
 - Discord server questions
 
 **Support Guidelines:**
+
 - Response time: < 1 hour
 - Be patient and kind
 - Redirect to specific channels
@@ -593,14 +691,17 @@ Day 2: ...
 ---
 
 ### #technical-issues (10s slowmode)
+
 **Purpose:** Bug reports and technical problems  
 **Expected Content:**
+
 - Website bugs
 - App crashes
 - Payment errors
 - Login issues
 
 **Required Info:**
+
 ```
 🐛 BUG REPORT
 📱 Device: iOS/Android/Web
@@ -613,14 +714,17 @@ Day 2: ...
 ---
 
 ### #faq (Read-Only)
+
 **Purpose:** Common questions answered  
 **Content:**
+
 - Frequently asked questions
 - Organized by category
 - Clear, concise answers
 - Updated regularly
 
 **Categories:**
+
 - Booking & Payment
 - Destinations
 - Cancellations & Refunds
@@ -632,8 +736,10 @@ Day 2: ...
 ## 🎉 EVENTS & ACTIVITIES Category
 
 ### #community-events
+
 **Purpose:** Virtual and IRL meetups  
 **Expected Content:**
+
 - Event announcements
 - Virtual travel trivia
 - Watch parties
@@ -641,6 +747,7 @@ Day 2: ...
 - Group trips
 
 **Event Types:**
+
 - Monthly trivia nights
 - Destination presentations
 - Guest speaker sessions
@@ -649,8 +756,10 @@ Day 2: ...
 ---
 
 ### #travel-deals
+
 **Purpose:** Share flight/hotel deals  
 **Expected Content:**
+
 - Flight error fares
 - Hotel promotions
 - Travel hacks
@@ -658,6 +767,7 @@ Day 2: ...
 - Limited-time offers
 
 **Rules:**
+
 - Must include dates
 - Include links
 - Tag relevant regions
@@ -666,14 +776,17 @@ Day 2: ...
 ---
 
 ### #competitions
+
 **Purpose:** Contests and giveaways  
 **Expected Content:**
+
 - Photo contests
 - Caption competitions
 - Trivia challenges
 - Free trip giveaways
 
 **Examples:**
+
 - "Best Travel Photo 2025"
 - "Most Unique Destination"
 - "Travel Caption Contest"
@@ -684,8 +797,10 @@ Day 2: ...
 ## 🎵 VOICE CHANNELS Category
 
 ### 🎙️ General Hangout
+
 **Purpose:** Casual voice chat  
 **Use Cases:**
+
 - Social hanging out
 - Making friends
 - Random conversations
@@ -693,8 +808,10 @@ Day 2: ...
 ---
 
 ### ✈️ Travel Planning
+
 **Purpose:** Collaborative trip planning  
 **Use Cases:**
+
 - Group trip coordination
 - Real-time advice
 - Itinerary discussions
@@ -702,8 +819,10 @@ Day 2: ...
 ---
 
 ### 🎮 Gaming Lounge
+
 **Purpose:** Gaming and fun  
 **Use Cases:**
+
 - GeoGuessr competitions
 - Travel trivia games
 - Casual gaming
@@ -711,8 +830,10 @@ Day 2: ...
 ---
 
 ### 🎵 Music & Chill
+
 **Purpose:** Music and relaxation  
 **Use Cases:**
+
 - Music sharing
 - Background music
 - Chill sessions
@@ -720,6 +841,7 @@ Day 2: ...
 ---
 
 ### 🔇 AFK
+
 **Purpose:** Away from keyboard  
 **Setup:** Set as AFK channel in Server Settings
 
@@ -730,16 +852,19 @@ Day 2: ...
 ### Content Posting Frequency
 
 **High Activity (Multiple times/day):**
+
 - #general-chat
 - #trip-planning
 - #destination-ideas
 
 **Medium Activity (Daily):**
+
 - #travel-tips
 - #introductions
 - Regional channels
 
 **Low Activity (Weekly):**
+
 - #announcements
 - #bitacoras
 - #competitions
@@ -747,12 +872,14 @@ Day 2: ...
 ### Moderation Guidelines
 
 **Auto-Moderate:**
+
 - Spam links
 - Excessive caps
 - Mass mentions
 - Inappropriate words
 
 **Manual Review:**
+
 - Heated discussions
 - Off-topic content
 - Self-promotion
@@ -761,16 +888,19 @@ Day 2: ...
 ### Engagement Strategies
 
 **Daily:**
+
 - Welcome new members
 - Respond to questions
 - React to good content
 
 **Weekly:**
+
 - Topic of the week
 - Spotlight member
 - Share featured content
 
 **Monthly:**
+
 - Community event
 - Recap/highlights
 - Feature request review
@@ -780,18 +910,22 @@ Day 2: ...
 ## 🤖 Recommended Bots per Channel
 
 ### MEE6
+
 - #introductions (welcome messages)
 - #general-chat (leveling)
 
 ### Carl-bot
+
 - #get-your-role (reaction roles)
 - Custom commands in support
 
 ### Dyno
+
 - Auto-moderation everywhere
 - Custom embeds in #welcome
 
 ### Ticket Tool
+
 - #help-desk (support tickets)
 - #bookings-support
 
@@ -800,6 +934,7 @@ Day 2: ...
 ## 📈 Success Metrics per Channel
 
 ### Track:
+
 - Message count
 - Active members
 - Response times
@@ -807,6 +942,7 @@ Day 2: ...
 - Sentiment
 
 ### Tools:
+
 - Statbot
 - MEE6 Analytics
 - Discord Server Insights
@@ -814,4 +950,3 @@ Day 2: ...
 ---
 
 **Need help with specific channel setup or moderation? Let me know!** 🚀
-

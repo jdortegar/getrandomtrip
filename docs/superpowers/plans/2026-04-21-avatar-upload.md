@@ -12,22 +12,23 @@
 
 ## File Map
 
-| File | Action |
-|------|--------|
-| `src/lib/types/UserProfileMe.ts` | Add `avatarUrl?: string \| null` |
-| `src/dictionaries/es.json` | Add `profile.toasts.avatarUploadError` + `avatarUploadSuccess` |
-| `src/dictionaries/en.json` | Same, in English |
-| `src/app/api/user/avatar/route.ts` | Create — GET serve + POST upload |
-| `src/lib/auth.ts` | Add `avatarUrl` to session DB select; set `session.user.image` |
-| `src/app/api/user/me/route.ts` | Add `avatarUrl` to select + response |
-| `src/components/ui/UserAvatar.tsx` | Add `onAvatarChange` prop + hover overlay |
-| `src/app/[locale]/(secure)/profile/page.tsx` | Add upload handler + wire to `UserAvatar` |
+| File                                         | Action                                                         |
+| -------------------------------------------- | -------------------------------------------------------------- |
+| `src/lib/types/UserProfileMe.ts`             | Add `avatarUrl?: string \| null`                               |
+| `src/dictionaries/es.json`                   | Add `profile.toasts.avatarUploadError` + `avatarUploadSuccess` |
+| `src/dictionaries/en.json`                   | Same, in English                                               |
+| `src/app/api/user/avatar/route.ts`           | Create — GET serve + POST upload                               |
+| `src/lib/auth.ts`                            | Add `avatarUrl` to session DB select; set `session.user.image` |
+| `src/app/api/user/me/route.ts`               | Add `avatarUrl` to select + response                           |
+| `src/components/ui/UserAvatar.tsx`           | Add `onAvatarChange` prop + hover overlay                      |
+| `src/app/[locale]/(secure)/profile/page.tsx` | Add upload handler + wire to `UserAvatar`                      |
 
 ---
 
 ## Task 1: Extend `UserProfileMe` type and i18n strings
 
 **Files:**
+
 - Modify: `src/lib/types/UserProfileMe.ts`
 - Modify: `src/dictionaries/es.json`
 - Modify: `src/dictionaries/en.json`
@@ -37,7 +38,7 @@
 Open `src/lib/types/UserProfileMe.ts` and add the field:
 
 ```ts
-import type { UserProfileAddress } from '@/lib/types/UserProfileAddress';
+import type { UserProfileAddress } from "@/lib/types/UserProfileAddress";
 
 export interface UserProfileMe {
   id: string;
@@ -103,6 +104,7 @@ git commit -m "feat: add avatarUrl to UserProfileMe type and i18n avatar toast s
 ## Task 2: Create `POST /api/user/avatar` and `GET /api/user/avatar` route
 
 **Files:**
+
 - Create: `src/app/api/user/avatar/route.ts`
 
 - [ ] **Step 1: Create the route file**
@@ -228,6 +230,7 @@ git commit -m "feat: add POST/GET /api/user/avatar route for avatar blob upload"
 ## Task 3: Fix session callback to expose `avatarUrl`
 
 **Files:**
+
 - Modify: `src/lib/auth.ts` (around lines 134–165)
 
 - [ ] **Step 1: Add `avatarUrl` to the session DB select**
@@ -284,6 +287,7 @@ git commit -m "fix: expose avatarUrl in NextAuth session callback"
 ## Task 4: Fix `/api/user/me` to return `avatarUrl`
 
 **Files:**
+
 - Modify: `src/app/api/user/me/route.ts`
 
 - [ ] **Step 1: Add `avatarUrl` to the Prisma select**
@@ -349,6 +353,7 @@ git commit -m "fix: include avatarUrl in /api/user/me response"
 ## Task 5: Add hover overlay to `UserAvatar`
 
 **Files:**
+
 - Modify: `src/components/ui/UserAvatar.tsx`
 
 - [ ] **Step 1: Rewrite `UserAvatar` with the new prop and overlay**
@@ -401,7 +406,7 @@ export function UserAvatar({
         </div>
       ) : (
         <div
-          className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-bold text-white"
+          className="flex h-full w-full items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white"
           style={{ fontSize }}
         >
           {initial}
@@ -467,6 +472,7 @@ git commit -m "feat: add onAvatarChange prop with camera hover overlay to UserAv
 ## Task 6: Wire up avatar upload in the profile page
 
 **Files:**
+
 - Modify: `src/app/[locale]/(secure)/profile/page.tsx`
 
 - [ ] **Step 1: Add `avatarUploading` state and `handleAvatarChange` handler**

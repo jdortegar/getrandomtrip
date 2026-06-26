@@ -1,7 +1,11 @@
-'use client';
-import { PropsWithChildren } from 'react';
+"use client";
+import { PropsWithChildren } from "react";
 
-export default function SectionCard({ title, actions, children }: PropsWithChildren<{ title?: string; actions?: React.ReactNode }>) {
+export default function SectionCard({
+  title,
+  actions,
+  children,
+}: PropsWithChildren<{ title?: string; actions?: React.ReactNode }>) {
   return (
     <div className="rt-card">
       <div className="rt-card-body">

@@ -1,18 +1,17 @@
+"use client";
 
-'use client';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { name: 'Dashboard', href: '/dashboard/tripper' },
-  { name: 'Mis Paquetes', href: '/dashboard/tripper/packages' },
-  { name: 'Ganancias', href: '/dashboard/tripper/earnings' },
-  { name: 'Reseñas & NPS', href: '/dashboard/tripper/reviews' },
-  { name: 'Media', href: '/dashboard/tripper/media' },
-  { name: 'Promos', href: '/dashboard/tripper/promos' }, // Assuming 'Promos' is a link, though not explicitly a page yet.
-  { name: 'Perfil', href: '/dashboard/tripper/profile' },
-  { name: 'Settings', href: '/dashboard/tripper/settings' },
+  { name: "Dashboard", href: "/dashboard/tripper" },
+  { name: "Mis Paquetes", href: "/dashboard/tripper/packages" },
+  { name: "Ganancias", href: "/dashboard/tripper/earnings" },
+  { name: "Reseñas & NPS", href: "/dashboard/tripper/reviews" },
+  { name: "Media", href: "/dashboard/tripper/media" },
+  { name: "Promos", href: "/dashboard/tripper/promos" }, // Assuming 'Promos' is a link, though not explicitly a page yet.
+  { name: "Perfil", href: "/dashboard/tripper/profile" },
+  { name: "Settings", href: "/dashboard/tripper/settings" },
 ];
 
 export default function TripperSidebar() {
@@ -29,7 +28,9 @@ export default function TripperSidebar() {
                 <Link
                   href={link.href}
                   className={`block p-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                    isActive ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'
+                    isActive
+                      ? "bg-blue-500 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   {link.name}

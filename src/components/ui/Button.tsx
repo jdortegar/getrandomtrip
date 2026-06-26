@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   [
-    "cursor-pointer flex items-center justify-center outline-none shrink-0 text-center transition-all whitespace-nowrap",
+    "cursor-pointer flex items-center justify-center outline-none shrink-0 text-center transition-all",
     "font-barlow font-semibold leading-[24px] tracking-[1.5px] uppercase",
     "disabled:pointer-events-none disabled:opacity-50",
     "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -20,27 +20,28 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border-2 border-white text-white bg-primary text-primary-foreground hover:bg-primary/90",
+          "border-2 border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:border-primary/90",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-2 border-red-600 bg-red-600 text-white hover:bg-red-700 hover:border-red-700 focus-visible:ring-red-600/20",
         outline:
           "border-2 border-white text-white bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
           "bg-white text-secondary-foreground hover:bg-secondary/80  border-primary border-2 text-primary",
         tertiary: "border-2 border-xsed bg-xsed text-white hover:bg-xsed/90",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
-        pill: "bg-yellow-400 text-gray-900 hover:bg-yellow-500 rounded-full",
+          "border-2 border-transparent hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        link: "border-2 border-transparent text-primary underline-offset-4 hover:underline",
+        pill: "border-2 border-yellow-400 bg-yellow-400 text-gray-900 hover:bg-yellow-500 hover:border-yellow-500 rounded-full",
         white:
           "border-2 border-white bg-white hover:bg-white/90 hover:text-black",
-        feature: "bg-yellow-400 text-gray-800 hover:bg-yellow-500",
+        feature: "border-2 border-yellow-400 bg-yellow-400 text-gray-800 hover:bg-yellow-500 hover:border-yellow-500",
       },
       size: {
-        default: "h-9 px-6 gap-[10px] rounded-md text-sm has-[>svg]:px-[10px]",
-        sm: "h-11 px-6 gap-[10px] rounded-md text-sm has-[>svg]:px-2.5",
-        md: "h-11 px-6 gap-[10px] rounded-md text-base has-[>svg]:px-4",
-        lg: "h-14 px-10 gap-[10px] rounded-md text-lg has-[>svg]:px-4",
+        default:
+          "min-h-9 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-[10px]",
+        sm: "min-h-11 px-6 gap-[10px] rounded-sm text-sm has-[>svg]:px-2.5",
+        md: "min-h-11 px-6 gap-[10px] rounded-sm text-base has-[>svg]:px-4",
+        lg: "min-h-14 px-10 gap-[10px] rounded-sm text-base md:text-lg has-[>svg]:px-4",
         icon: "size-9 rounded-md text-base",
       },
     },

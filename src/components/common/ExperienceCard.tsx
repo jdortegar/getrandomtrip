@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import GlassCard from '@/components/ui/GlassCard';
+import Link from "next/link";
+import GlassCard from "@/components/ui/GlassCard";
 
 type TierLite = {
   id: string;
@@ -25,7 +25,12 @@ type Props = {
   className?: string;
 };
 
-export default function ExperienceCard({ tier, href, onSelect, className }: Props) {
+export default function ExperienceCard({
+  tier,
+  href,
+  onSelect,
+  className,
+}: Props) {
   const {
     title,
     subtitle,
@@ -33,7 +38,7 @@ export default function ExperienceCard({ tier, href, onSelect, className }: Prop
     priceFootnote,
     bullets = [],
     closingLine,
-    ctaLabel = 'Elegir',
+    ctaLabel = "Elegir",
   } = tier;
 
   return (
@@ -45,9 +50,7 @@ export default function ExperienceCard({ tier, href, onSelect, className }: Prop
             {title}
           </h3>
           {subtitle && (
-            <p className="text-sm text-neutral-600 mt-1">
-              {subtitle}
-            </p>
+            <p className="text-sm text-neutral-600 mt-1">{subtitle}</p>
           )}
         </div>
 
@@ -55,7 +58,9 @@ export default function ExperienceCard({ tier, href, onSelect, className }: Prop
         {(priceLabel || priceFootnote) && (
           <div className="mb-3">
             {priceLabel && (
-              <div className="text-sm font-medium text-neutral-900">{priceLabel}</div>
+              <div className="text-sm font-medium text-neutral-900">
+                {priceLabel}
+              </div>
             )}
             {priceFootnote && (
               <div className="text-xs text-neutral-600">{priceFootnote}</div>

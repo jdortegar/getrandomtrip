@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 
 /**
  * Fetches packages for a specific tripper and extracts unique type/level combinations
@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  */
 export async function getTripperAvailableTypesAndLevels(tripperId: string) {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId, // Packages are owned by trippers
         isActive: true, // Only get active packages
@@ -16,7 +16,7 @@ export async function getTripperAvailableTypesAndLevels(tripperId: string) {
         type: true,
         level: true,
       },
-      distinct: ['type', 'level'],
+      distinct: ["type", "level"],
     });
 
     return packages.map((pkg) => ({
@@ -24,7 +24,7 @@ export async function getTripperAvailableTypesAndLevels(tripperId: string) {
       level: pkg.level,
     }));
   } catch (error) {
-    console.error('Error fetching tripper packages:', error);
+    console.error("Error fetching tripper packages:", error);
     return [];
   }
 }
@@ -36,24 +36,24 @@ export async function getTripperAvailableTypesAndLevels(tripperId: string) {
  * @param level - The experience level (essenza, explora, exploraPlus, etc.)
  * @returns Boolean indicating if the tripper has packages for this combination
  */
-export async function tripperHasPackagesForTypeAndLevel(
+export async function tripperHasExperiencesForTypeAndLevel(
   tripperId: string,
   type: string,
   level: string,
 ): Promise<boolean> {
   try {
-    const pkg = await prisma.package.findFirst({
+    const pkg = await prisma.experience.findFirst({
       where: {
         ownerId: tripperId,
         isActive: true,
-        type: type,
+        type: { has: type },
         level: level,
       },
     });
 
     return !!pkg;
   } catch (error) {
-    console.error('Error checking tripper packages:', error);
+    console.error("Error checking tripper packages:", error);
     return false;
   }
 }
@@ -67,7 +67,7 @@ export async function getTripperAvailableTypes(
   tripperId: string,
 ): Promise<string[]> {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -75,12 +75,12 @@ export async function getTripperAvailableTypes(
       select: {
         type: true,
       },
-      distinct: ['type'],
+      distinct: ["type"],
     });
 
-    return packages.map((pkg) => pkg.type);
+    return [...new Set(packages.flatMap((pkg) => pkg.type))];
   } catch (error) {
-    console.error('Error fetching tripper types:', error);
+    console.error("Error fetching tripper types:", error);
     return [];
   }
 }
@@ -96,21 +96,23 @@ export async function getTripperAvailableLevelsForType(
   type: string,
 ): Promise<string[]> {
   try {
-    const packages = await prisma.package.findMany({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
         isActive: true,
-        type: type,
+        type: { has: type },
       },
       select: {
         level: true,
       },
-      distinct: ['level'],
+      distinct: ["level"],
     });
 
-    return packages.map((pkg) => pkg.level);
+    return packages
+      .map((pkg) => pkg.level)
+      .filter((l): l is string => l !== null);
   } catch (error) {
-    console.error('Error fetching tripper levels for type:', error);
+    console.error("Error fetching tripper levels for type:", error);
     return [];
   }
 }

@@ -3,10 +3,10 @@ import React, {
   useCallback,
   useEffect,
   useState,
-} from 'react';
-import { EmblaCarouselType } from 'embla-carousel';
-import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+} from "react";
+import { EmblaCarouselType } from "embla-carousel";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type UsePrevNextButtonsType = {
   prevBtnDisabled: boolean;
@@ -40,7 +40,7 @@ export const usePrevNextButtons = (
     if (!emblaApi) return;
 
     onSelect(emblaApi);
-    emblaApi.on('reInit', onSelect).on('select', onSelect);
+    emblaApi.on("reInit", onSelect).on("select", onSelect);
   }, [emblaApi, onSelect]);
 
   return {
@@ -51,10 +51,10 @@ export const usePrevNextButtons = (
   };
 };
 
-type PropType = ComponentPropsWithRef<'button'>;
+type PropType = ComponentPropsWithRef<"button">;
 
 const buttonBaseClass =
-  'inline-flex h-9 w-9 touch-manipulation cursor-pointer items-center justify-center rounded-full border-2 border-neutral-400 bg-transparent p-0 text-neutral-700 [-webkit-tap-highlight-color:rgba(0,0,0,0.1)] [appearance:none] disabled:border-neutral-300 disabled:text-neutral-400';
+  "inline-flex h-9 w-9 touch-manipulation cursor-pointer items-center justify-center rounded-full border-2 border-neutral-400 bg-transparent p-0 text-neutral-700 [-webkit-tap-highlight-color:rgba(0,0,0,0.1)] appearance-none disabled:border-neutral-300 disabled:text-neutral-400";
 
 export const PrevButton = (props: PropType) => {
   const { children, className, disabled, ...restProps } = props;
@@ -62,7 +62,7 @@ export const PrevButton = (props: PropType) => {
   return (
     <button
       className={cn(
-        'h-8 w-8 rounded-full bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center ',
+        "h-8 w-8 rounded-full bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center ",
         className,
       )}
       disabled={disabled}
@@ -80,7 +80,7 @@ export const NextButton = (props: PropType) => {
   return (
     <button
       className={cn(
-        'h-8 w-8 rounded-full bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center ',
+        "h-8 w-8 rounded-full bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center ",
         className,
       )}
       disabled={disabled}

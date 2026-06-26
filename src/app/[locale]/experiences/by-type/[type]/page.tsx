@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Hero from "@/components/Hero";
 import Paragraph from "@/components/Paragraph";
-import Testimonials from "@/components/Testimonials";
+import Testimonials from "@/components/Testimonials/Testimonials";
 import Blog from "@/components/Blog";
 import TypePlanner from "@/components/by-type/TypePlanner";
 import InspirationBanner from "@/components/InspirationBanner";
@@ -28,11 +28,10 @@ export async function generateStaticParams() {
 /**
  * Generate metadata for SEO
  */
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale?: string; type: string };
+export async function generateMetadata(props: {
+  params: Promise<{ locale?: string; type: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const locale = hasLocale(params?.locale)
     ? (params.locale as Locale)
     : ("es" as Locale);
@@ -50,11 +49,10 @@ export async function generateMetadata({
 /**
  * Main page component. Params include parent [locale] and this segment [type].
  */
-export default async function TravelerTypePage({
-  params,
-}: {
-  params: { locale?: string; type: string };
+export default async function TravelerTypePage(props: {
+  params: Promise<{ locale?: string; type: string }>;
 }) {
+  const params = await props.params;
   const locale = hasLocale(params.locale)
     ? (params.locale as Locale)
     : ("es" as Locale);
@@ -94,7 +92,7 @@ export default async function TravelerTypePage({
       <Blog
         eyebrow={blogEyebrow}
         id="blog"
-        posts={typeData.blog.posts}
+        posts={typeData.blog.posts.map((p) => ({ ...p, href: pathForLocale(locale, p.href) }))}
         subtitle={typeData.blog.subtitle}
         title={typeData.blog.title}
         viewAll={viewAll}

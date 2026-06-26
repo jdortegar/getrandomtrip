@@ -1,25 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { Prisma } from '@prisma/client';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const ADDRESS_MERGE_KEYS = [
-  'city',
-  'country',
-  'idDocument',
-  'state',
-  'street',
-  'zipCode',
+  "city",
+  "country",
+  "idDocument",
+  "state",
+  "street",
+  "zipCode",
 ] as const;
 
 function recordFromAddressJson(val: unknown): Record<string, string> {
-  if (!val || typeof val !== 'object' || Array.isArray(val)) return {};
+  if (!val || typeof val !== "object" || Array.isArray(val)) return {};
   const o = val as Record<string, unknown>;
   const out: Record<string, string> = {};
   for (const key of ADDRESS_MERGE_KEYS) {
     const v = o[key];
-    if (typeof v === 'string' && v.trim()) out[key] = v.trim();
+    if (typeof v === "string" && v.trim()) out[key] = v.trim();
   }
   return out;
 }
@@ -31,7 +31,7 @@ function mergeAddressPatch(
 ): Prisma.InputJsonValue | null | undefined {
   if (incoming === undefined) return undefined;
   if (incoming === null) return null;
-  if (typeof incoming !== 'object' || Array.isArray(incoming)) return undefined;
+  if (typeof incoming !== "object" || Array.isArray(incoming)) return undefined;
 
   const base = recordFromAddressJson(existingJson);
   const inc = incoming as Record<string, unknown>;
@@ -39,7 +39,7 @@ function mergeAddressPatch(
   for (const key of ADDRESS_MERGE_KEYS) {
     if (!Object.prototype.hasOwnProperty.call(inc, key)) continue;
     const v = inc[key];
-    if (typeof v !== 'string') continue;
+    if (typeof v !== "string") continue;
     const t = v.trim();
     if (t) base[key] = t;
     else delete base[key];
@@ -53,7 +53,7 @@ export async function PATCH(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -68,24 +68,35 @@ export async function PATCH(request: NextRequest) {
     const data: Prisma.UserUpdateInput = {};
 
     if (typeof avatarUrl === "string" && avatarUrl.trim()) {
-      data.avatarUrl = avatarUrl.trim();
+      // Store as relative path so the URL works in any environment.
+      // Strip the origin if the URL points to the same site.
+      const raw = avatarUrl.trim();
+      try {
+        const parsed = new URL(raw);
+        data.avatarUrl = parsed.pathname + parsed.search;
+      } catch {
+        data.avatarUrl = raw;
+      }
     }
 
-    if (typeof name === 'string') {
+    if (typeof name === "string") {
       const trimmed = name.trim();
       if (!trimmed) {
-        return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+        return NextResponse.json(
+          { error: "Name is required" },
+          { status: 400 },
+        );
       }
       data.name = trimmed;
     }
 
-    if (typeof email === 'string' && email.trim()) {
+    if (typeof email === "string" && email.trim()) {
       data.email = email.trim();
     }
 
     if (phone !== undefined) {
       data.phone =
-        typeof phone === 'string' && phone.trim() ? phone.trim() : null;
+        typeof phone === "string" && phone.trim() ? phone.trim() : null;
     }
 
     if (address !== undefined) {
@@ -100,7 +111,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (Object.keys(data).length === 0) {
-      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+      return NextResponse.json(
+        { error: "No valid fields to update" },
+        { status: 400 },
+      );
     }
 
     const updatedUser = await prisma.user.update({
@@ -119,9 +133,9 @@ export async function PATCH(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error("Error updating user:", error);
     return NextResponse.json(
-      { error: 'Failed to update user' },
+      { error: "Failed to update user" },
       { status: 500 },
     );
   }

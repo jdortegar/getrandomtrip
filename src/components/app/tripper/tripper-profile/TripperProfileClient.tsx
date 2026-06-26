@@ -361,6 +361,14 @@ export function TripperProfileClient({
           </div>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <TripperProfileSidebarNav
+              activeTab={activeTab}
+              copy={copy}
+              dashboardPath={tripperDash}
+              onTabChange={setActiveTab}
+              stats={stats}
+            />
+
             <div className="space-y-6 lg:col-span-2">
               {activeTab === "overview" ? (
                 <TripperProfileOverviewSection
@@ -388,14 +396,6 @@ export function TripperProfileClient({
                 />
               ) : null}
             </div>
-
-            <TripperProfileSidebarNav
-              activeTab={activeTab}
-              copy={copy}
-              dashboardPath={tripperDash}
-              onTabChange={setActiveTab}
-              stats={stats}
-            />
           </div>
         </div>
       </section>

@@ -1,10 +1,10 @@
-import { ADDONS } from '@/lib/data/shared/addons-catalog';
-import { computeFiltersCostPerTrip } from '@/lib/pricing';
+import { ADDONS } from "@/lib/data/shared/addons-catalog";
+import { computeFiltersCostPerTrip } from "@/lib/pricing";
 import type {
   AddonSelection,
   Filters,
   Logistics,
-} from '@/store/slices/journeyStore';
+} from "@/store/slices/journeyStore";
 
 /** Same shape as `usePayment` input — pure totals (no React). */
 export interface PaymentTotalsInput {
@@ -36,16 +36,16 @@ export function calculatePaymentTotals(
   const filtersPerPax = filtersTripTotal / pax;
 
   let addonsPerPax = 0;
-  const hasCancelInsurance = addons.selected.some((s) => s.id === 'cancel-ins');
+  const hasCancelInsurance = addons.selected.some((s) => s.id === "cancel-ins");
 
   addons.selected.forEach((s) => {
     const a = ADDONS.find((x) => x.id === s.id);
-    if (!a || a.id === 'cancel-ins') return;
+    if (!a || a.id === "cancel-ins") return;
 
     const qty = s.qty || 1;
     const totalPrice = a.price * qty;
 
-    if (a.type === 'perPax') {
+    if (a.type === "perPax") {
       addonsPerPax += totalPrice / qty;
     } else {
       addonsPerPax += totalPrice / pax;

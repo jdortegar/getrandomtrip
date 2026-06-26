@@ -2,21 +2,22 @@
 // GET /api/blogs - Get all published blog posts (public, with pagination)
 // ============================================================================
 
-import { BlogStatus } from '@prisma/client';
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { BlogStatus } from "@prisma/client";
+import { normalizeUploadUrl } from "@/lib/media/upload-url";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '12', 10);
-    const tripperId = searchParams.get('tripperId');
-    const tripperIds = searchParams.get('tripperIds'); // comma-separated
-    const travelType = searchParams.get('travelType');
-    const excuseKey = searchParams.get('excuseKey');
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "12", 10);
+    const tripperId = searchParams.get("tripperId");
+    const tripperIds = searchParams.get("tripperIds"); // comma-separated
+    const travelType = searchParams.get("travelType");
+    const excuseKey = searchParams.get("excuseKey");
     const skip = (page - 1) * limit;
 
     const where: {
@@ -30,7 +31,10 @@ export async function GET(request: NextRequest) {
     if (tripperId) {
       where.authorId = tripperId;
     } else if (tripperIds?.trim()) {
-      const ids = tripperIds.split(',').map((id) => id.trim()).filter(Boolean);
+      const ids = tripperIds
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
       if (ids.length > 0) {
         where.authorId = { in: ids };
       }
@@ -50,7 +54,7 @@ export async function GET(request: NextRequest) {
         where,
         skip,
         take: limit,
-        orderBy: { publishedAt: 'desc' },
+        orderBy: { publishedAt: "desc" },
         select: {
           id: true,
           slug: true,
@@ -80,10 +84,10 @@ export async function GET(request: NextRequest) {
     type BlogWithAuthor = (typeof blogs)[number];
     const transformedBlogs = blogs.map((blog: BlogWithAuthor) => ({
       author: {
-        avatarUrl: blog.author.avatarUrl ?? '',
+        avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
         id: blog.author.id,
         name: blog.author.name,
-        slug: blog.author.tripperSlug ?? '',
+        slug: blog.author.tripperSlug ?? "",
       },
       coverUrl: blog.coverUrl,
       excuseKey: blog.excuseKey ?? null,
@@ -91,8 +95,8 @@ export async function GET(request: NextRequest) {
       id: blog.id,
       publishedAt: blog.publishedAt?.toISOString(),
       slug: blog.slug ?? blog.id,
-      subtitle: blog.subtitle ?? '',
-      tagline: blog.tagline ?? '',
+      subtitle: blog.subtitle ?? "",
+      tagline: blog.tagline ?? "",
       tags: blog.tags,
       title: blog.title,
       travelType: blog.travelType ?? null,
@@ -111,9 +115,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching blogs:', error);
+    console.error("Error fetching blogs:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

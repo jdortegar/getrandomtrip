@@ -9,7 +9,8 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const tripperId = searchParams.get("tripperId") || searchParams.get("ownerId");
+    const tripperId =
+      searchParams.get("tripperId") || searchParams.get("ownerId");
     const type = searchParams.get("type");
     const level = searchParams.get("level");
 
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (type) where.type = type;
     if (level) where.level = level;
 
-    const experiences = await prisma.package.findMany({
+    const experiences = await prisma.experience.findMany({
       where,
       orderBy: { createdAt: "desc" },
       include: {
@@ -45,7 +46,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ experiences }, { status: 200 });
   } catch (error) {
     console.error("Error fetching experiences:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -86,7 +90,6 @@ export async function POST(request: NextRequest) {
       description,
       heroImage,
       tags,
-      highlights,
       destinationCountry,
       destinationCity,
       hotels,
@@ -94,8 +97,6 @@ export async function POST(request: NextRequest) {
       itinerary,
       inclusions,
       exclusions,
-      basePriceUsd,
-      displayPrice,
       accommodationType,
       transport,
       climate,
@@ -130,7 +131,6 @@ export async function POST(request: NextRequest) {
       description: description || "",
       heroImage: heroImage || "",
       tags: tags || [],
-      highlights: highlights || [],
       destinationCountry,
       destinationCity,
       hotels: hotels || null,
@@ -138,8 +138,6 @@ export async function POST(request: NextRequest) {
       itinerary: itinerary || null,
       inclusions: inclusions || null,
       exclusions: exclusions || null,
-      basePriceUsd: basePriceUsd || 0,
-      displayPrice: displayPrice || "",
       excuseKey: excuseKey || null,
       isActive: isActive ?? true,
       isFeatured: isFeatured ?? false,
@@ -152,13 +150,16 @@ export async function POST(request: NextRequest) {
       status: "DRAFT" as const,
     };
 
-    const newExperience = await prisma.package.create({
+    const newExperience = await prisma.experience.create({
       data: experienceData,
     });
 
     return NextResponse.json({ experience: newExperience }, { status: 201 });
   } catch (error) {
     console.error("Error creating experience:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

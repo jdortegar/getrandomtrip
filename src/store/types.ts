@@ -7,7 +7,7 @@
  * Dependency Inversion: Depend on abstractions, not concretions
  */
 
-import type { StateCreator } from 'zustand';
+import type { StateCreator } from "zustand";
 import type {
   User,
   UserPreferences,
@@ -19,7 +19,7 @@ import type {
   TripperRoute,
   Earning,
   BlogPost,
-} from '@/types/core';
+} from "@/types/core";
 
 // ============================================================================
 // STORE SLICE INTERFACES (Interface Segregation Principle)
@@ -30,7 +30,7 @@ export interface UserSlice {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Actions
   setUser: (user: User | null) => void;
   updateUser: (updates: Partial<User>) => void;
@@ -43,7 +43,7 @@ export interface UserSlice {
 export interface JourneySlice {
   // State
   journey: JourneyState;
-  
+
   // Actions
   setJourney: (journey: Partial<JourneyState>) => void;
   setLogistics: (logistics: Partial<JourneyLogistics>) => void;
@@ -57,7 +57,7 @@ export interface TripperSlice {
   routes: TripperRoute[];
   earnings: Earning[];
   isLoading: boolean;
-  
+
   // Actions
   setRoutes: (routes: TripperRoute[]) => void;
   addRoute: (route: TripperRoute) => void;
@@ -72,7 +72,7 @@ export interface BlogSlice {
   posts: BlogPost[];
   currentPost: BlogPost | null;
   isLoading: boolean;
-  
+
   // Actions
   setPosts: (posts: BlogPost[]) => void;
   setCurrentPost: (post: BlogPost | null) => void;
@@ -117,19 +117,26 @@ export interface UserActions {
 }
 
 export interface JourneyActions {
-  initializeJourney: (type: JourneyState['type']) => void;
+  initializeJourney: (type: JourneyState["type"]) => void;
   calculatePricing: () => void;
   validateJourney: () => boolean;
 }
 
 export interface TripperActions {
   fetchRoutes: () => Promise<void>;
-  createRoute: (route: Omit<TripperRoute, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateRouteStatus: (id: string, status: TripperRoute['status']) => Promise<void>;
+  createRoute: (
+    route: Omit<TripperRoute, "id" | "createdAt" | "updatedAt">,
+  ) => Promise<void>;
+  updateRouteStatus: (
+    id: string,
+    status: TripperRoute["status"],
+  ) => Promise<void>;
 }
 
 export interface BlogActions {
   fetchPosts: () => Promise<void>;
-  createPost: (post: Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  createPost: (
+    post: Omit<BlogPost, "id" | "createdAt" | "updatedAt">,
+  ) => Promise<void>;
   publishPost: (id: string) => Promise<void>;
 }

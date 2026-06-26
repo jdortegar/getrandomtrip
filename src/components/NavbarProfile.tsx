@@ -7,12 +7,13 @@ import type { User } from "@/types/core";
 import { useMenuState } from "@/hooks/useMenuState";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnreadDot";
 
 /** Minimal user shape for navbar (all optional). */
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
 
 const PROFILE_MENU_ITEM = {
-  href: "/profile",
+  href: "/account",
 };
 
 const TRIPPER_MENU_ITEM = {
@@ -27,11 +28,16 @@ const ADMIN_MENU_ITEM = {
   href: "/dashboard/admin",
 };
 
+const NEW_DROP_MENU_ITEM = {
+  href: "/dashboard/admin/xsed/new",
+};
+
 export interface NavbarProfileLabels {
   adminDashboard: string;
   ariaOpenProfileMenu: string;
   dashboard: string;
   editProfile: string;
+  newDrop: string;
   signOut: string;
   tripperOs: string;
 }
@@ -61,6 +67,12 @@ export function NavbarProfile({
         : { role: sessionUser?.role ?? user?.role };
   const isAdmin = hasRoleAccess(adminSubject, "admin");
 
+  // Strict check — does not promote admin to tripper.
+  const userRoles: string[] = (sessionUser?.roles ??
+    user?.roles ??
+    []) as string[];
+  const isTripper = userRoles.some((r) => r?.toLowerCase() === "tripper");
+
   const handleSignOut = () => {
     if (session) {
       nextAuthSignOut({ callbackUrl: "/" });
@@ -79,7 +91,10 @@ export function NavbarProfile({
         className="p-1 rounded-full hover:bg-white/10 flex items-center justify-center"
         onClick={toggle}
       >
-        <UserAvatar height={32} width={32} />
+        <span className="relative">
+          <UserAvatar height={32} width={32} />
+          {isTripper && <TripperUnreadDot />}
+        </span>
         <ChevronDown size={16} className="ml-1" />
       </button>
 
@@ -105,23 +120,40 @@ export function NavbarProfile({
           >
             {labels.dashboard}
           </Link>
-          <Link
-            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-            href={TRIPPER_MENU_ITEM.href}
-            onClick={close}
-            role="menuitem"
-          >
-            {labels.tripperOs}
-          </Link>
-          {isAdmin ? (
+          {isTripper && (
             <Link
-              className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-              href={ADMIN_MENU_ITEM.href}
+              className="flex items-center justify-between px-4 py-2 text-sm rounded hover:bg-neutral-50"
+              href={TRIPPER_MENU_ITEM.href}
               onClick={close}
               role="menuitem"
             >
-              {labels.adminDashboard}
+              {labels.tripperOs}
+              <TripperUnreadDot variant="inline" />
             </Link>
+          )}
+          {isAdmin ? (
+            <>
+              <div className="my-1 h-px bg-neutral-200" />
+              <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                Admin
+              </p>
+              <Link
+                className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                href={ADMIN_MENU_ITEM.href}
+                onClick={close}
+                role="menuitem"
+              >
+                {labels.adminDashboard}
+              </Link>
+              <Link
+                className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                href={NEW_DROP_MENU_ITEM.href}
+                onClick={close}
+                role="menuitem"
+              >
+                {labels.newDrop}
+              </Link>
+            </>
           ) : null}
 
           <div className="my-1 h-px bg-neutral-200" />

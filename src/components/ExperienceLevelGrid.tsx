@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useParams } from 'next/navigation';
-import { getTiersForDisplay } from '@/lib/utils/experiencesData';
+import React from "react";
+import { useParams } from "next/navigation";
+import { getTiersForDisplay } from "@/lib/utils/experiencesData";
 
 interface ExperienceLevelGridProps {
   className?: string;
@@ -14,34 +14,34 @@ interface ExperienceLevelGridProps {
 export default function ExperienceLevelGrid({
   className,
   onSelect,
-  type = 'couple',
+  type = "couple",
 }: ExperienceLevelGridProps) {
   const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const tiers = getTiersForDisplay(type, locale);
 
   return (
     <div
-      className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ''}`}
+      className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ""}`}
     >
       {tiers.map((level) => (
         <div
           key={level.key}
           className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
         >
-          <div className="flex-grow p-6">
+          <div className="grow p-6">
             <h3 className="mb-2 text-2xl font-bold text-gray-900">
               {level.title}
             </h3>
-            <p className="mb-4 text-sm text-gray-600">{level.tagline ?? ''}</p>
+            <p className="mb-4 text-sm text-gray-600">{level.tagline ?? ""}</p>
             <p className="mb-4 text-2xl font-extrabold text-[#D4AF37]">
-              {level.price ?? ''}
+              {level.price ?? ""}
             </p>
             <ul className="text-gray-700 text-sm space-y-2">
               {level.bullets.map((bullet, index) => (
                 <li key={index} className="flex items-center">
                   <svg
-                    className="w-4 h-4 text-[#D4AF37] mr-2 flex-shrink-0"
+                    className="w-4 h-4 text-[#D4AF37] mr-2 shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

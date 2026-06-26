@@ -1,9 +1,9 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 import {
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
   normalizeTransportId,
-} from '@/lib/helpers/transport';
+} from "@/lib/helpers/transport";
 import type {
   CreateTripData,
   UpdateUserPrefsData,
@@ -12,7 +12,7 @@ import type {
   SearchParams,
   TripStats,
   UserStats,
-} from './database';
+} from "./database";
 
 // ========================================
 // USER OPERATIONS
@@ -78,7 +78,7 @@ export async function createTrip(userId: string, data: CreateTripData) {
   return await prisma.tripRequest.create({
     data: {
       userId,
-      from: data.from || '',
+      from: data.from || "",
       type: data.type,
       level: data.level,
       originCountry: data.country,
@@ -87,12 +87,14 @@ export async function createTrip(userId: string, data: CreateTripData) {
       endDate: data.endDate,
       nights: data.nights,
       pax: data.pax,
-      transport: normalizeTransportId(data.transport) || 'plane',
-      accommodationType: normalizeJourneyFilterValue(data.accommodationType) || 'any',
-      climate: normalizeJourneyFilterValue(data.climate) || 'any',
-      maxTravelTime: normalizeMaxTravelTimeKey(data.maxTravelTime) || 'no-limit',
-      departPref: normalizeJourneyFilterValue(data.departPref) || 'any',
-      arrivePref: normalizeJourneyFilterValue(data.arrivePref) || 'any',
+      transport: normalizeTransportId(data.transport) || "plane",
+      accommodationType:
+        normalizeJourneyFilterValue(data.accommodationType) || "any",
+      climate: normalizeJourneyFilterValue(data.climate) || "any",
+      maxTravelTime:
+        normalizeMaxTravelTimeKey(data.maxTravelTime) || "no-limit",
+      departPref: normalizeJourneyFilterValue(data.departPref) || "any",
+      arrivePref: normalizeJourneyFilterValue(data.arrivePref) || "any",
       avoidDestinations: data.avoidDestinations || [],
       addons: data.addons || [],
       // basePriceUsd: data.basePriceUsd, // Pricing fields removed from TripRequest
@@ -101,7 +103,7 @@ export async function createTrip(userId: string, data: CreateTripData) {
       // addonsCostUsd: data.addonsCostUsd || 0,
       // totalPerPaxUsd: data.totalPerPaxUsd || 0,
       // totalTripUsd: data.totalTripUsd || 0,
-      status: (data.status as any) || 'DRAFT',
+      status: (data.status as any) || "DRAFT",
     },
   });
 }
@@ -112,7 +114,7 @@ export async function getTripsByUserId(userId: string) {
     include: {
       payment: true,
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { updatedAt: "desc" },
   });
 }
 
@@ -153,7 +155,7 @@ export async function createReview(userId: string, data: CreateReviewData) {
 export async function getReviewsByUser(userId: string) {
   return await prisma.review.findMany({
     where: { userId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 }
 
@@ -192,10 +194,10 @@ export async function getTripStats(): Promise<TripStats> {
   const [total, confirmed, byType] = await Promise.all([
     prisma.tripRequest.count(),
     prisma.tripRequest.count({
-      where: { status: 'CONFIRMED' },
+      where: { status: "CONFIRMED" },
     }),
     prisma.tripRequest.groupBy({
-      by: ['type'],
+      by: ["type"],
       _count: true,
     }),
   ]);

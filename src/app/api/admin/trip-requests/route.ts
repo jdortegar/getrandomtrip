@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { hasRoleAccess } from '@/lib/auth/roleAccess';
-import { attachAdminTripRequestRelations } from '@/lib/admin/trip-requests';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import type {
-  AdminTripPackage,
+  AdminTripExperience,
   AdminTripPayment,
   AdminTripUser,
-} from '@/lib/admin/types';
-import { prisma } from '@/lib/prisma';
+} from "@/lib/admin/types";
+import { prisma } from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -25,18 +25,21 @@ export async function GET(request: NextRequest) {
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, 'admin')) {
-      return NextResponse.json({ error: 'Forbidden - Admin access only' }, { status: 403 });
+    if (!user || !hasRoleAccess(user, "admin")) {
+      return NextResponse.json(
+        { error: "Forbidden - Admin access only" },
+        { status: 403 },
+      );
     }
 
     const tripRequests = await prisma.tripRequest.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ startDate: "asc" }, { createdAt: "desc" }],
     });
 
-    const packageIds = Array.from(
+    const experienceIds = Array.from(
       new Set(
         tripRequests.flatMap((tripRequest) =>
-          tripRequest.packageId ? [tripRequest.packageId] : [],
+          tripRequest.experienceId ? [tripRequest.experienceId] : [],
         ),
       ),
     );
@@ -44,10 +47,10 @@ export async function GET(request: NextRequest) {
       new Set(tripRequests.map((tripRequest) => tripRequest.userId)),
     );
 
-    const [packageEntries, paymentEntries, userEntries] = await Promise.all([
+    const [experienceEntries, paymentEntries, userEntries] = await Promise.all([
       Promise.all(
-        packageIds.map(async (packageId) => {
-          const pkg = await prisma.package.findUnique({
+        experienceIds.map(async (experienceId) => {
+          const exp = await prisma.experience.findUnique({
             select: {
               excuseKey: true,
               id: true,
@@ -55,10 +58,10 @@ export async function GET(request: NextRequest) {
               title: true,
               type: true,
             },
-            where: { id: packageId },
+            where: { id: experienceId },
           });
 
-          return pkg ? { packageId, pkg } : null;
+          return exp ? { experienceId, exp } : null;
         }),
       ),
       Promise.all(
@@ -91,10 +94,10 @@ export async function GET(request: NextRequest) {
       ),
     ]);
 
-    const packagesById: Record<string, AdminTripPackage> = {};
-    for (const entry of packageEntries) {
+    const experiencesById: Record<string, AdminTripExperience> = {};
+    for (const entry of experienceEntries) {
       if (!entry) continue;
-      packagesById[entry.packageId] = entry.pkg;
+      experiencesById[entry.experienceId] = entry.exp;
     }
 
     const paymentsByTripRequestId: Record<string, AdminTripPayment> = {};
@@ -111,13 +114,16 @@ export async function GET(request: NextRequest) {
     const hydratedTripRequests = attachAdminTripRequestRelations(
       tripRequests,
       usersById,
-      packagesById,
+      experiencesById,
       paymentsByTripRequestId,
     );
 
     return NextResponse.json({ tripRequests: hydratedTripRequests });
   } catch (error) {
-    console.error('Error fetching admin trip requests:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error fetching admin trip requests:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

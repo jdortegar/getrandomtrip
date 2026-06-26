@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useStore } from '@/store/store'
-import { ADDONS } from '@/lib/data/shared/addons-catalog'
-import { X } from 'lucide-react'
+import React from "react";
+import { useStore } from "@/store/store";
+import { ADDONS } from "@/lib/data/shared/addons-catalog";
+import { X } from "lucide-react";
 
 export default function SelectedAddonsChips() {
-  const { addons, removeAddon } = useStore()
-  const sel = addons?.selected ?? []
-  if (!sel.length) return null
+  const { addons, removeAddon } = useStore();
+  const sel = addons?.selected ?? [];
+  if (!sel.length) return null;
 
   return (
     <div className="mb-4 rounded-xl bg-neutral-50 ring-1 ring-neutral-200 p-3">
@@ -17,15 +17,15 @@ export default function SelectedAddonsChips() {
       </div>
       <div className="flex flex-wrap gap-2">
         {sel.map((s) => {
-          const a = ADDONS.find((x) => x.id === s.id)
-          if (!a) return null
+          const a = ADDONS.find((x) => x.id === s.id);
+          if (!a) return null;
           return (
             <span
               key={s.id}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-violet-50 text-violet-800 border border-violet-200"
             >
               {a.title}
-              {s.qty > 1 ? ` ×${s.qty}` : ''}
+              {s.qty > 1 ? ` ×${s.qty}` : ""}
               <button
                 type="button"
                 onClick={() => removeAddon(s.id)}
@@ -35,9 +35,9 @@ export default function SelectedAddonsChips() {
                 <X size={14} />
               </button>
             </span>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

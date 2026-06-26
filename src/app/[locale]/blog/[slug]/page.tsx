@@ -1,21 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import Section from '@/components/layout/Section';
-import BlogPostHero from '@/components/blog/BlogPostHero';
-import BlogArticle from '@/components/blog/BlogArticle';
-import Breadcrumb from '@/components/navigation/Breadcrumb';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import LightboxCarousel from '@/components/media/LightboxCarousel';
-import FaqSection from '@/components/display/FaqSection';
-import { ArrowLeft } from 'lucide-react';
-import Blog from '@/components/Blog';
-import TripperMottoBanner from '@/components/blog/TripperMottoBanner';
-import Testimonials from '@/components/Testimonials';
-import { getAllTestimonialsForTripper } from '@/lib/helpers/Tripper';
-import type { BlogPost as BlogCardPost } from '@/lib/data/shared/blog-types';
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import Section from "@/components/layout/Section";
+import BlogPostHero from "@/components/blog/BlogPostHero";
+import BlogArticle from "@/components/blog/BlogArticle";
+import Breadcrumb from "@/components/navigation/Breadcrumb";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import LightboxCarousel from "@/components/media/LightboxCarousel";
+import FaqSection from "@/components/display/FaqSection";
+import { ArrowLeft } from "lucide-react";
+import Blog from "@/components/Blog";
+import TripperMottoBanner from "@/components/blog/TripperMottoBanner";
+import Testimonials from "@/components/Testimonials/Testimonials";
+import type { Testimonial } from "@/lib/data/shared/testimonial-types";
+import type {
+  BlogDetailAuthor,
+  BlogPost as BlogCardPost,
+} from "@/lib/data/shared/blog-types";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 
 interface BlogPost {
   id: string;
@@ -37,31 +42,24 @@ interface BlogPost {
   publishedAt?: string;
   createdAt: string;
   updatedAt: string;
-  author: {
-    id: string;
-    name: string;
-    slug: string;
-    avatarUrl: string;
-    bio?: string;
-    location?: string;
-    motto?: string | null;
-    specialization?: string | null;
-  };
+  author: BlogDetailAuthor;
 }
 
 function BlogDetailContent() {
   const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
   const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const isSofia =
-    blog?.author?.name?.toLowerCase() === 'sofia' ||
-    blog?.author?.slug?.toLowerCase() === 'sofia';
+    blog?.author?.name?.toLowerCase() === "sofia" ||
+    blog?.author?.slug?.toLowerCase() === "sofia";
 
-  const slugOrId = params?.slug?.toString() ?? '';
+  const slugOrId = params?.slug?.toString() ?? "";
 
   useEffect(() => {
     async function fetchBlog() {
@@ -75,13 +73,13 @@ function BlogDetailContent() {
         if (response.ok && data.blog) {
           setBlog(data.blog);
         } else if (response.status === 404) {
-          setError('Post no encontrado');
+          setError("Post no encontrado");
         } else {
-          setError(data.error || 'Error al cargar el post');
+          setError(data.error || "Error al cargar el post");
         }
       } catch (err) {
-        console.error('Error fetching blog:', err);
-        setError('Error al cargar el post');
+        console.error("Error fetching blog:", err);
+        setError("Error al cargar el post");
       } finally {
         setLoading(false);
       }
@@ -89,6 +87,16 @@ function BlogDetailContent() {
 
     fetchBlog();
   }, [slugOrId]);
+
+  useEffect(() => {
+    if (!blog?.author?.id) return;
+    fetch(`/api/tripper/${blog.author.id}/testimonials`)
+      .then((r) => r.json())
+      .then((data: { testimonials?: Testimonial[] }) => {
+        if (Array.isArray(data.testimonials)) setTestimonials(data.testimonials);
+      })
+      .catch(() => undefined);
+  }, [blog?.author?.id]);
 
   useEffect(() => {
     if (!blog?.author?.id) return;
@@ -115,8 +123,8 @@ function BlogDetailContent() {
               coverUrl: string;
               tags: string[];
             }) => ({
-              category: b.tags?.[0] ?? 'Viajes',
-              href: `/blog/${b.slug ?? b.id}`,
+              category: b.tags?.[0] ?? "Viajes",
+              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
               image: b.coverUrl,
               title: b.title,
             }),
@@ -133,8 +141,8 @@ function BlogDetailContent() {
   useEffect(() => {
     if (!blog) return;
     const isAuthorSofia =
-      blog.author.name?.toLowerCase() === 'sofia' ||
-      blog.author.slug?.toLowerCase() === 'sofia';
+      blog.author.name?.toLowerCase() === "sofia" ||
+      blog.author.slug?.toLowerCase() === "sofia";
     if (!isAuthorSofia) return;
 
     const currentId = blog.id;
@@ -160,8 +168,8 @@ function BlogDetailContent() {
               coverUrl: string;
               tags: string[];
             }) => ({
-              category: b.tags?.[0] ?? 'Viajes',
-              href: `/blog/${b.slug ?? b.id}`,
+              category: b.tags?.[0] ?? "Viajes",
+              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
               image: b.coverUrl,
               title: b.title,
             }),
@@ -180,7 +188,8 @@ function BlogDetailContent() {
     const items: { url: string; caption?: string }[] = [];
     if (blog.coverUrl) items.push({ url: blog.coverUrl });
     (blog.blocks ?? []).forEach((b) => {
-      if (b.type === 'image' && b.url) items.push({ url: b.url, caption: b.caption });
+      if (b.type === "image" && b.url)
+        items.push({ url: b.url, caption: b.caption });
     });
     return items;
   }, [blog?.coverUrl, blog?.blocks]);
@@ -205,11 +214,11 @@ function BlogDetailContent() {
             <div className="py-12 text-center">
               <p className="mb-4 text-neutral-500">
                 {error ??
-                  'El post que buscas no existe o ya no está disponible.'}
+                  "El post que buscas no existe o ya no está disponible."}
               </p>
               <Link
                 className="inline-flex items-center text-blue-600 hover:text-blue-700"
-                href="/blog"
+                href={pathForLocale(locale as Locale, "/blog")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Volver al Blog
@@ -242,37 +251,35 @@ function BlogDetailContent() {
           slug: blog.author.slug,
         }}
         coverUrl={blog.coverUrl}
-        subtitle={blog.subtitle || blog.tagline || ''}
+        subtitle={blog.subtitle || blog.tagline || ""}
         title={blog.title}
       />
 
       <Section>
-        <div className="mx-auto max-w-4xl px-4">
-          <Breadcrumb
-            items={[
-              { href: '/blog', label: 'Tripper Inspirations' },
-              { label: blog.title },
-            ]}
-          />
+        <Breadcrumb
+          items={[
+            { href: pathForLocale(locale as Locale, "/blog"), label: "Tripper Inspirations" },
+            { label: blog.title },
+          ]}
+        />
 
-          {/* Main content */}
-          <BlogArticle
-            content={blog.content}
-            emptyMessage="Este post aún no tiene contenido."
-            title={blog.title}
-          />
+        {/* Main content */}
+        <BlogArticle
+          content={blog.content}
+          emptyMessage="Este post aún no tiene contenido."
+          title={blog.title}
+        />
 
-          <FaqSection items={faqItems} />
-        </div>
+        <FaqSection items={faqItems} />
       </Section>
-      <LightboxCarousel images={carouselImages} />
+      <LightboxCarousel images={carouselImages} className="" />
 
       {blog.author.motto && (
         <TripperMottoBanner
           authorName={blog.author.name}
           authorSlug={blog.author.slug}
           avatarUrl={blog.author.avatarUrl}
-          backgroundImageUrl={blog.coverUrl}
+          backgroundImageUrl={blog.coverUrl ?? ""}
           motto={blog.author.motto}
           specialization={blog.author.specialization}
         />
@@ -286,18 +293,15 @@ function BlogDetailContent() {
           subtitle="Notas, guías y momentos que inspiran. Escritos en primera persona."
           title="MÁS DE MIS AVENTURAS"
           viewAll={{
-            href: `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`,
-            subtitle: 'Explora más contenido',
-            title: 'Ver Todo',
+            href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
+            subtitle: "Explora más contenido",
+            title: "Ver Todo",
           }}
         />
       )}
 
       <Testimonials
-        testimonials={getAllTestimonialsForTripper({
-          location: blog.author.location ?? '',
-          testimonials: [],
-        })}
+        testimonials={testimonials}
         title={`Lo que dicen sobre ${blog.author.name}`}
       />
     </>

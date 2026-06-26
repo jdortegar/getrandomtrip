@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { LoginModal } from '@/components/waitlist/LoginModal';
-import { WaitlistPage } from '@/components/waitlist/WaitlistPage';
-import { getGateUnlocked, GATE_STORAGE_KEY } from '@/lib/constants/marketing-gate';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
+import { LoginModal } from "@/components/waitlist/LoginModal";
+import { WaitlistPage } from "@/components/waitlist/WaitlistPage";
+import {
+  getGateUnlocked,
+  GATE_STORAGE_KEY,
+} from "@/lib/constants/marketing-gate";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface HomeWrapperProps {
   children: React.ReactNode;
@@ -25,8 +28,8 @@ export function HomeWrapper({ children, dict }: HomeWrapperProps) {
   }, []);
 
   const handleLoginSuccess = () => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(GATE_STORAGE_KEY, '1');
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(GATE_STORAGE_KEY, "1");
     }
     setLoginModalOpen(false);
     setIsUnlocked(true);

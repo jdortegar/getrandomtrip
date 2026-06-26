@@ -77,7 +77,7 @@ export default function DestinationCard({
       onClick={toggle}
       type="button"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-200 to-neutral-400" />
+      <div className="absolute inset-0 bg-linear-to-b from-neutral-200 to-neutral-400" />
 
       {suggestion.image ? (
         <Img

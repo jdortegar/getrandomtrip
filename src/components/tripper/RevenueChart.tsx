@@ -16,7 +16,9 @@ export default function RevenueChart() {
         <LineChart size={48} />
         <p className="ml-4 text-lg">Gráfico de ingresos (placeholder)</p>
       </div>
-      <p className="text-sm text-neutral-400 mt-4">Datos de ingresos de los últimos 12 meses.</p>
+      <p className="text-sm text-neutral-400 mt-4">
+        Datos de ingresos de los últimos 12 meses.
+      </p>
     </motion.div>
   );
 }

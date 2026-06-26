@@ -1,0 +1,22 @@
+change: destination-reveal-flow
+status: archive_done
+artifact_store: openspec
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+artifacts:
+  proposal: openspec/changes/archive/2026-06-24-destination-reveal-flow/proposal.md
+  design: openspec/changes/archive/2026-06-24-destination-reveal-flow/design.md
+  tasks: openspec/changes/archive/2026-06-24-destination-reveal-flow/tasks.md
+  apply-progress: openspec/changes/archive/2026-06-24-destination-reveal-flow/apply-progress.md
+  verify-report: openspec/changes/archive/2026-06-24-destination-reveal-flow/verify-report.md
+  archive-report: openspec/changes/archive/2026-06-24-destination-reveal-flow/archive-report.md
+updated: 2026-06-24
+archived: true

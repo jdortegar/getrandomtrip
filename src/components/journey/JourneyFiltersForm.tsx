@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Cloud,
@@ -7,9 +7,9 @@ import {
   Sparkle,
   Sun,
   Thermometer,
-} from 'lucide-react';
-import AvoidGrid from '@/components/journey/avoid/AvoidGrid';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import AvoidGrid from "@/components/journey/avoid/AvoidGrid";
+import { cn } from "@/lib/utils";
 
 export interface FilterOption {
   key: string;
@@ -28,16 +28,13 @@ function FilterSeg({ onChange, options, value }: FilterSegProps) {
   return (
     <div className="inline-flex flex-wrap gap-2">
       {options.map((opt) => (
-        <div
-          className="group relative inline-flex"
-          key={opt.key}
-        >
+        <div className="group relative inline-flex" key={opt.key}>
           <button
             className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition cursor-pointer',
+              "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition cursor-pointer",
               value === opt.key
-                ? 'border-gray-800 bg-gray-800 text-white'
-                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100',
+                ? "border-gray-800 bg-gray-800 text-white"
+                : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
             )}
             onClick={() => onChange(opt.key)}
             type="button"
@@ -47,15 +44,15 @@ function FilterSeg({ onChange, options, value }: FilterSegProps) {
               <Info
                 aria-hidden
                 className={cn(
-                  'h-3.5 w-3.5 shrink-0',
-                  value === opt.key ? 'text-white' : 'text-gray-500',
+                  "h-3.5 w-3.5 shrink-0",
+                  value === opt.key ? "text-white" : "text-gray-500",
                 )}
               />
             ) : null}
           </button>
           {opt.tooltip ? (
             <span
-              className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 min-w-[320px] max-w-[320px] -translate-x-1/2 rounded-md border border-gray-200 bg-gray-900 px-3 py-2 text-left text-xs font-normal leading-snug text-white shadow-lg opacity-0 transition-opacity duration-150 group-hover:opacity-100 [width:320px]"
+              className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 min-w-[320px] max-w-[320px] -translate-x-1/2 rounded-md border border-gray-200 bg-gray-900 px-3 py-2 text-left text-xs font-normal leading-snug text-white shadow-lg opacity-0 transition-opacity duration-150 group-hover:opacity-100 w-[320px]"
               role="tooltip"
             >
               {opt.tooltip}
@@ -98,11 +95,23 @@ export interface JourneyFiltersFormLabels {
       label: string;
       options: Array<{ key: string; label: string; tooltip?: string }>;
     };
-    arrivePref: { label: string; options: Array<{ key: string; label: string }> };
+    arrivePref: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
     climate: { label: string; options: Array<{ key: string; label: string }> };
-    departPref: { label: string; options: Array<{ key: string; label: string }> };
-    maxTravelTime: { label: string; options: Array<{ key: string; label: string }> };
-    transport: { label: string; options: Array<{ key: string; label: string }> };
+    departPref: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
+    maxTravelTime: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
+    transport: {
+      label: string;
+      options: Array<{ key: string; label: string }>;
+    };
   };
   importantNote1: string;
   importantNote2: string;
@@ -155,14 +164,18 @@ export function JourneyFiltersForm({
       label: o.label,
       tooltip: o.tooltip,
     }));
-  const departOptions = labelsProp.filterOptions.departPref.options.map((o) => ({
-    key: o.key,
-    label: o.label,
-  }));
-  const arriveOptions = labelsProp.filterOptions.arrivePref.options.map((o) => ({
-    key: o.key,
-    label: o.label,
-  }));
+  const departOptions = labelsProp.filterOptions.departPref.options.map(
+    (o) => ({
+      key: o.key,
+      label: o.label,
+    }),
+  );
+  const arriveOptions = labelsProp.filterOptions.arrivePref.options.map(
+    (o) => ({
+      key: o.key,
+      label: o.label,
+    }),
+  );
   const maxTravelTimeOptions =
     labelsProp.filterOptions.maxTravelTime.options.map((o) => ({
       key: o.key,
@@ -237,10 +250,10 @@ export function JourneyFiltersForm({
             return (
               <button
                 className={cn(
-                  'flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition',
+                  "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition",
                   isSelected
-                    ? 'border-gray-800 bg-gray-800 text-white'
-                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100',
+                    ? "border-gray-800 bg-gray-800 text-white"
+                    : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
                 )}
                 key={opt.key}
                 onClick={() => onClimateChange(opt.key)}

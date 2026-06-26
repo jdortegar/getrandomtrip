@@ -1,3 +1,4 @@
+import { RowActions } from "@/components/common/RowActions";
 import { cn } from "@/lib/utils";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
@@ -22,6 +23,7 @@ const ROLE_COLORS: Record<UserRole, string> = {
 interface UsersTableRowProps {
   copy: MarketingDictionary["adminUsers"];
   isSelected: boolean;
+  onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   user: AdminUser;
 }
@@ -29,6 +31,7 @@ interface UsersTableRowProps {
 export function UsersTableRow({
   copy,
   isSelected,
+  onDelete,
   onEdit,
   user,
 }: UsersTableRowProps) {
@@ -66,13 +69,13 @@ export function UsersTableRow({
         {new Date(user.createdAt).toLocaleDateString()}
       </td>
       <td className="px-4 py-3.5">
-        <button
-          className="text-sm font-medium text-neutral-500 hover:text-neutral-900"
-          onClick={() => onEdit(user.id)}
-          type="button"
-        >
-          {isSelected ? copy.editing : copy.edit}
-        </button>
+        <RowActions
+          editActive={isSelected}
+          editTitle={copy.edit}
+          deleteTitle={copy.modal.delete}
+          onDelete={() => onDelete(user.id)}
+          onEdit={() => onEdit(user.id)}
+        />
       </td>
     </tr>
   );

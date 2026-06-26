@@ -2,7 +2,7 @@
 // Locale-aware paths – default locale has no prefix, others use /en, /es
 // ============================================================================
 
-import { DEFAULT_LOCALE, LOCALES, type Locale } from './config';
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "./config";
 
 /**
  * Returns the path for a given locale.
@@ -10,7 +10,7 @@ import { DEFAULT_LOCALE, LOCALES, type Locale } from './config';
  * - Other locales: prefix with locale, e.g. pathForLocale('en', '/blog') => '/en/blog'
  */
 export function pathForLocale(locale: Locale, path: string): string {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   if (locale === DEFAULT_LOCALE) {
     return normalizedPath;
   }
@@ -22,10 +22,10 @@ export function pathForLocale(locale: Locale, path: string): string {
  * e.g. '/en/blog' => '/blog', '/blog' => '/blog'
  */
 export function pathWithoutLocale(pathname: string): string {
-  const segments = pathname.split('/').filter(Boolean);
+  const segments = pathname.split("/").filter(Boolean);
   const first = segments[0];
   if (first && LOCALES.includes(first as Locale)) {
-    return '/' + segments.slice(1).join('/') || '/';
+    return "/" + segments.slice(1).join("/") || "/";
   }
   return pathname;
 }

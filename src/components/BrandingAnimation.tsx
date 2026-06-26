@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface BrandingAnimationProps {
   className?: string;
   initialDelay?: number;
 }
 
-const BRANDING_TEXT = 'WONDER • WANDER';
-const BRANDING_REPEAT_TEXT = 'Repeat';
+const BRANDING_TEXT = "WONDER • WANDER";
+const BRANDING_REPEAT_TEXT = "Repeat";
 
 function BrandingAnimation({
   className,
@@ -31,7 +31,7 @@ function BrandingAnimation({
 
   return (
     <motion.div
-      className={cn('flex items-center relative text-white', className)}
+      className={cn("flex items-center relative text-white", className)}
       initial="hidden"
       animate="visible"
       variants={{
@@ -43,8 +43,8 @@ function BrandingAnimation({
         },
       }}
     >
-      <motion.span className="font-barlow-condensed text-[18px] md:text-[30px] font-semibold  uppercase tracking-[6px] inline-flex">
-        {BRANDING_TEXT.split('').map((char, index) => (
+      <motion.span className="font-barlow-condensed text-[16px] md:text-[18px] lg:text-[30px] font-semibold  uppercase tracking-[6px] inline-flex">
+        {BRANDING_TEXT.split("").map((char, index) => (
           <motion.span
             key={index}
             variants={{
@@ -54,17 +54,17 @@ function BrandingAnimation({
                 opacity: 1,
                 transition: {
                   duration: 0.4,
-                  ease: 'easeOut',
+                  ease: "easeOut",
                 },
               },
             }}
           >
-            {char === ' ' ? '\u00A0' : char}
+            {char === " " ? "\u00A0" : char}
           </motion.span>
         ))}
       </motion.span>
       <motion.div
-        className="relative flex items-center md:w-[190px] w-fit px-4"
+        className="relative flex items-center lg:w-[190px] w-fit px-4"
         initial="hidden"
         animate="visible"
         variants={{
@@ -78,7 +78,7 @@ function BrandingAnimation({
       >
         <motion.img
           alt=""
-          className="w-full absolute -top-5 left-0 md:-top-10 md:-left-2 object-cover"
+          className="w-full absolute -top-5 left-0 lg:-top-10 lg:-left-2 object-cover"
           initial={{ scale: 1.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           src="/assets/svg/yellow-circle.svg"
@@ -92,12 +92,12 @@ function BrandingAnimation({
               BRANDING_REPEAT_TEXT.length * 0.05 +
               0.4 +
               0.2,
-            ease: 'easeOut',
+            ease: "easeOut",
           }}
         />
         <div className="relative">
-          <motion.span className="font-nothing-you-could-do text-yellow-400 text-2xl md:text-5xl inline-flex">
-            {BRANDING_REPEAT_TEXT.split('').map((char, index) => (
+          <motion.span className="font-nothing-you-could-do text-yellow-400 text-xl md:text-2xl lg:text-5xl xl:text-5xl inline-flex">
+            {BRANDING_REPEAT_TEXT.split("").map((char, index) => (
               <motion.span
                 key={index}
                 variants={{
@@ -107,25 +107,25 @@ function BrandingAnimation({
                     opacity: 1,
                     transition: {
                       duration: 0.4,
-                      ease: 'easeOut',
+                      ease: "easeOut",
                     },
                   },
                 }}
               >
-                {char === ' ' ? '\u00A0' : char}
+                {char === " " ? "\u00A0" : char}
               </motion.span>
             ))}
           </motion.span>
         </div>
       </motion.div>
       <motion.div
-        className="w-[200px] md:w-[300px] absolute top-8 md:top-12 left-20 md:left-25 overflow-hidden"
-        animate={{ clipPath: 'inset(0 0% 0 0%)' }}
-        initial={{ clipPath: 'inset(0 0% 0 100%)' }}
+        className="w-[200px] lg:w-[300px] absolute top-8 lg:top-12 left-10 lg:left-20 xl:left-25 overflow-hidden"
+        animate={{ clipPath: "inset(0 0% 0 0%)" }}
+        initial={{ clipPath: "inset(0 0% 0 100%)" }}
         transition={{
           duration: 0.8,
           delay: arrowAnimationDelay,
-          ease: 'easeOut',
+          ease: "easeOut",
         }}
       >
         <img

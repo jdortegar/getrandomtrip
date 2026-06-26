@@ -1,8 +1,8 @@
-import type { HeroContent } from '@/components/Hero';
-import type { ParagraphContent } from '@/components/Paragraph';
-import type { TypePlannerContent } from '@/types/planner';
-import type { BlogPost, BlogViewAll } from '@/lib/data/shared/blog-types';
-import type { Testimonial } from '@/lib/data/shared/testimonial-types';
+import type { HeroContent } from "@/components/Hero";
+import type { ParagraphContent } from "@/components/Paragraph";
+import type { TypePlannerContent } from "@/types/planner";
+import type { BlogPost, BlogViewAll } from "@/lib/data/shared/blog-types";
+import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 
 export interface TravelerTypeMeta {
   slug: string;

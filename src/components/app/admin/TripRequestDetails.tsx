@@ -1,8 +1,8 @@
-import { formatAdminDate, formatAdminAmount } from '@/lib/admin/format';
-import type { AdminTripRequest } from '@/lib/admin/types';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
+import { formatAdminDate, formatAdminAmount } from "@/lib/admin/format";
+import type { AdminTripRequest } from "@/lib/admin/types";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 
-type DetailLabels = MarketingDictionary['adminTripEditModal']['details'];
+type DetailLabels = MarketingDictionary["adminTripEditModal"]["details"];
 
 interface DetailRowProps {
   label: string;
@@ -12,8 +12,8 @@ interface DetailRowProps {
 function DetailRow({ label, value }: DetailRowProps) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-base text-gray-600">{label}</span>
-      <span className="text-base font-semibold text-gray-900">{value}</span>
+      <span className="text-sm text-neutral-500">{label}</span>
+      <span className="text-sm font-semibold text-neutral-900">{value}</span>
     </div>
   );
 }
@@ -25,7 +25,7 @@ interface TripRequestDetailsProps {
 
 export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
   return (
-    <div className="flex flex-col gap-1.5 px-4 py-3">
+    <div className="flex flex-col gap-2">
       <DetailRow
         label={labels.origin}
         value={`${trip.originCity}, ${trip.originCountry}`}

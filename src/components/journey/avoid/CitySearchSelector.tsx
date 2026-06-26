@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Input } from '@/components/ui/input';
-import { searchCities, type AvoidCity } from '@/lib/helpers/avoid-cities';
-import { ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { searchCities, type AvoidCity } from "@/lib/helpers/avoid-cities";
+import { ChevronDown } from "lucide-react";
 
 interface CitySearchSelectorProps {
   value: string;
@@ -18,7 +18,7 @@ export default function CitySearchSelector({
   onChange,
   onSelect,
   onKeyDown,
-  className = '',
+  className = "",
 }: CitySearchSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<AvoidCity[]>([]);
@@ -47,8 +47,8 @@ export default function CitySearchSelector({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (city: AvoidCity) => {

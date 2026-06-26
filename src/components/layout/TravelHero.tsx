@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { TravelButton } from '@/components/ui/TravelButton';
+import { cn } from "@/lib/utils";
+import { TravelButton } from "@/components/ui/TravelButton";
 
 interface TravelHeroProps {
   title: string;
@@ -10,12 +10,12 @@ interface TravelHeroProps {
   backgroundImage?: string;
   overlay?: boolean;
   variant?:
-    | 'default'
-    | 'luxury'
-    | 'adventure'
-    | 'coastal'
-    | 'mountain'
-    | 'urban';
+    | "default"
+    | "luxury"
+    | "adventure"
+    | "coastal"
+    | "mountain"
+    | "urban";
   ctaText?: string;
   ctaHref?: string;
   onCtaClick?: () => void;
@@ -28,50 +28,50 @@ export function TravelHero({
   description,
   backgroundImage,
   overlay = true,
-  variant = 'default',
-  ctaText = 'Get Started',
+  variant = "default",
+  ctaText = "Get Started",
   ctaHref,
   onCtaClick,
   className,
 }: TravelHeroProps) {
   const getVariantStyles = () => {
     switch (variant) {
-      case 'luxury':
-        return 'from-primary/80 to-primary-900/80';
-      case 'adventure':
-        return 'from-tropical-coral/80 to-desert-orange/80';
-      case 'coastal':
-        return 'from-coastal-deep/80 to-coastal-teal/80';
-      case 'mountain':
-        return 'from-mountain-rich/80 to-mountain-forest/80';
-      case 'urban':
-        return 'from-urban-charcoal/80 to-urban-vibrant/80';
+      case "luxury":
+        return "from-primary/80 to-primary-900/80";
+      case "adventure":
+        return "from-tropical-coral/80 to-desert-orange/80";
+      case "coastal":
+        return "from-coastal-deep/80 to-coastal-teal/80";
+      case "mountain":
+        return "from-mountain-rich/80 to-mountain-forest/80";
+      case "urban":
+        return "from-urban-charcoal/80 to-urban-vibrant/80";
       default:
-        return 'from-black/40 to-black/60';
+        return "from-black/40 to-black/60";
     }
   };
 
   const getButtonVariant = () => {
     switch (variant) {
-      case 'luxury':
-        return 'luxury';
-      case 'adventure':
-        return 'adventure';
-      case 'coastal':
-        return 'coastal';
-      case 'mountain':
-        return 'mountain';
-      case 'urban':
-        return 'urban';
+      case "luxury":
+        return "luxury";
+      case "adventure":
+        return "adventure";
+      case "coastal":
+        return "coastal";
+      case "mountain":
+        return "mountain";
+      case "urban":
+        return "urban";
       default:
-        return 'primary';
+        return "primary";
     }
   };
 
   return (
     <section
       className={cn(
-        'relative min-h-screen flex items-center justify-center overflow-hidden',
+        "relative min-h-screen flex items-center justify-center overflow-hidden",
         className,
       )}
     >
@@ -86,10 +86,7 @@ export function TravelHero({
       {/* Overlay */}
       {overlay && (
         <div
-          className={cn(
-            'absolute inset-0 bg-gradient-to-br',
-            getVariantStyles(),
-          )}
+          className={cn("absolute inset-0 bg-linear-to-br", getVariantStyles())}
         />
       )}
 

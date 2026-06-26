@@ -20,9 +20,7 @@ export default function SectionHeading({
       <h2 className="font-display text-3xl sm:text-4xl md:text-[44px] leading-[1.1] tracking-tightish">
         {title}
       </h2>
-      {subtitle && (
-        <p className="mt-3 text-neutral-600">{subtitle}</p>
-      )}
+      {subtitle && <p className="mt-3 text-neutral-600">{subtitle}</p>}
     </header>
   );
 }

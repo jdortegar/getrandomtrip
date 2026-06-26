@@ -1,7 +1,7 @@
 // frontend/src/components/tripper/TripperIntroVideoGate.tsx
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
 type Props = {
   /** ID de YouTube (no la URL completa). Ej: "1d4OiltwQYs" */
@@ -17,18 +17,18 @@ type Props = {
  * al landing del tripper (referrer externo) y no lo vio antes.
  */
 export default function TripperIntroVideoGate({
-  youtubeId = '1d4OiltwQYs',
+  youtubeId = "1d4OiltwQYs",
   forceShow = false,
-  storageKey = 'rt_tripper_intro_seen',
+  storageKey = "rt_tripper_intro_seen",
 }: Props) {
   const [open, setOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
   // Clave por página (evita que ver el video en un tripper bloquee otros)
   const derivedKey = useMemo(() => {
-    if (typeof window === 'undefined') return storageKey;
+    if (typeof window === "undefined") return storageKey;
     try {
-      const path = window.location?.pathname || '';
+      const path = window.location?.pathname || "";
       return `${storageKey}:${path}`;
     } catch {
       return storageKey;
@@ -38,11 +38,11 @@ export default function TripperIntroVideoGate({
   const videoSrc = useMemo(() => {
     const base = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
     const params = new URLSearchParams({
-      autoplay: '1',
-      mute: '1', // autoplay más fiable en mobile
-      rel: '0',
-      modestbranding: '1',
-      playsinline: '1',
+      autoplay: "1",
+      mute: "1", // autoplay más fiable en mobile
+      rel: "0",
+      modestbranding: "1",
+      playsinline: "1",
     });
     return `${base}?${params.toString()}`;
   }, [youtubeId]);
@@ -52,38 +52,40 @@ export default function TripperIntroVideoGate({
       setOpen(true);
       return;
     }
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // ya lo vio
-    if (sessionStorage.getItem(derivedKey) === '1') return;
+    if (sessionStorage.getItem(derivedKey) === "1") return;
 
     // si viene de la misma web (home u otra interna) => no mostrar
     const ref = document.referrer;
     const sameOrigin =
-      !!ref && !!window.location.origin && ref.startsWith(window.location.origin);
+      !!ref &&
+      !!window.location.origin &&
+      ref.startsWith(window.location.origin);
 
     // permite desactivar con ?novideo=1
     const url = new URL(window.location.href);
-    const noVideo = url.searchParams.get('novideo') === '1';
+    const noVideo = url.searchParams.get("novideo") === "1";
 
     if (!sameOrigin && !noVideo) setOpen(true);
   }, [forceShow, derivedKey]);
 
   // Bloquea scroll del body y ESC para cerrar
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
     function onKey(e: KeyboardEvent) {
       if (!open) return;
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === "Escape") setOpen(false);
     }
 
     if (open) {
       const prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      document.addEventListener('keydown', onKey);
+      document.body.style.overflow = "hidden";
+      document.addEventListener("keydown", onKey);
       return () => {
-        document.removeEventListener('keydown', onKey);
+        document.removeEventListener("keydown", onKey);
         document.body.style.overflow = prevOverflow;
       };
     }
@@ -93,27 +95,30 @@ export default function TripperIntroVideoGate({
     setOpen(false);
     if (dontShowAgain) {
       try {
-        sessionStorage.setItem(derivedKey, '1');
+        sessionStorage.setItem(derivedKey, "1");
       } catch {}
     }
   }
 
   if (!open) return null;
 
-  const titleId = 'rt-tripper-intro-title';
+  const titleId = "rt-tripper-intro-title";
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+      className="fixed inset-0 z-80 flex items-center justify-center p-4"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal} />
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={closeModal}
+      />
 
       {/* Modal */}
-      <div className="relative z-[81] w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden">
+      <div className="relative z-81 w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b">
           <h2 id={titleId} className="text-sm text-neutral-700">
             ¿Primera vez por acá? Te contamos en 40s 👇

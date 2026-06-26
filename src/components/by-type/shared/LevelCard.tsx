@@ -31,6 +31,7 @@ interface LevelCardProps {
   selected?: boolean;
   travelerType?: string;
   variant?: "light" | "dark";
+  className?: string;
 }
 
 const FEATURE_ICONS: Record<
@@ -55,6 +56,7 @@ export default function LevelCard({
   selected = false,
   travelerType,
   variant = "light",
+  className,
 }: LevelCardProps) {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -108,6 +110,7 @@ export default function LevelCard({
         borderColor,
         featured && "shadow-lg",
         (onSelect || navigateOnCardClick) && "cursor-pointer hover:shadow-xl",
+        className,
       )}
       onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
       style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
@@ -122,7 +125,7 @@ export default function LevelCard({
 
       {/* Selected Checkmark - Top Right */}
       {selected && (
-        <div className="absolute -right-[9.8px] -top-2 z-10 @[250px]:-right-[14px] @[250px]:-top-3">
+        <div className="absolute right-[-9.8px] -top-2 z-10 @[250px]:right-[-14px] @[250px]:-top-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
@@ -140,7 +143,8 @@ export default function LevelCard({
       </p>
 
       {/* Title and Price Row */}
-      <div className="mb-3 flex @[280px]:items-end gap-3 @[280px]:mb-4 @[280px]:gap-4 flex-col @[280px]:flex-row">
+      {/* <div className="mb-3 flex-wrap flex @[280px]:items-end gap-3 @[280px]:mb-4 @[280px]:gap-4 flex-col @[280px]:flex-row"> */}
+      <div className="mb-3 flex-wrap flex items-end gap-3">
         <h3
           className={cn(
             "flex-1 font-barlow-condensed font-extrabold uppercase text-left text-[2.1rem] @[250px]:text-5xl",
@@ -150,29 +154,28 @@ export default function LevelCard({
         >
           {level.name}
         </h3>
-        <div
-          className={cn(
-            "h-px w-12 flex-shrink-0 @[280px]:h-8 @[280px]:w-px",
-            priceDividerColor,
-          )}
-        />
-        <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[250px]:text-lg">
-          {level.priceLabel ? (
+        <div className="flex gap-3 flex-1 items-stretch">
+          <div
+            className={cn(" w-px shrink-0 self-stretch", priceDividerColor)}
+          />
+          <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[250px]:text-lg">
+            {level.priceLabel ? (
+              <span className={cn("leading-none whitespace-nowrap", textColor)}>
+                {level.priceLabel}
+              </span>
+            ) : null}
             <span className={cn("leading-none whitespace-nowrap", textColor)}>
-              {level.priceLabel}
+              {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
             </span>
-          ) : null}
-          <span className={cn("leading-none whitespace-nowrap", textColor)}>
-            {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
-          </span>
-          <span
-            className={cn(
-              "whitespace-pre-line text-left leading-tight text-[0.525rem] @[250px]:text-xs",
-              textColor,
-            )}
-          >
-            {level.priceFootnote}
-          </span>
+            <span
+              className={cn(
+                "whitespace-pre-line text-left leading-tight text-[0.525rem] @[250px]:text-xs",
+                textColor,
+              )}
+            >
+              {level.priceFootnote}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -206,7 +209,7 @@ export default function LevelCard({
                   {/* Icon on the left */}
                   <IconComponent
                     className={cn(
-                      "h-4 w-4 flex-shrink-0 @[250px]:h-6 @[250px]:w-6",
+                      "h-4 w-4 shrink-0 @[250px]:h-6 @[250px]:w-6",
                       secondaryTextColor,
                     )}
                   />
@@ -260,7 +263,7 @@ export default function LevelCard({
           </button>
         </div>
       )}
-      <div className="mt-4 flex justify-center px-7 @[250px]:mt-6 @[250px]:px-10">
+      <div className="mt-4 mx-auto">
         <Button asChild variant="feature" size="sm">
           <Link
             className="uppercase"

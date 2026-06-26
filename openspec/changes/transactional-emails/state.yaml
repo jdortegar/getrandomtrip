@@ -1,0 +1,20 @@
+change: transactional-emails
+status: verify_done
+artifact_store: openspec
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: pending
+artifacts:
+  proposal: openspec/changes/transactional-emails/proposal.md
+  spec: openspec/changes/transactional-emails/spec.md
+  design: openspec/changes/transactional-emails/design.md
+  tasks: openspec/changes/transactional-emails/tasks.md
+  verify: openspec/changes/transactional-emails/verify-report.md
+updated: 2026-06-08

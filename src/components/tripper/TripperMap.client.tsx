@@ -17,12 +17,15 @@ export default function TripperMap({ places, className, height = 420 }: Props) {
   useEffect(() => fixLeafletIcons(), []);
 
   const bounds = useMemo(() => {
-    const pts = places.map(p => [p.lat, p.lng]) as [number, number][];
+    const pts = places.map((p) => [p.lat, p.lng]) as [number, number][];
     return pts.length ? L.latLngBounds(pts) : undefined;
   }, [places]);
 
   return (
-    <div className={className} style={{ height, borderRadius: 12, overflow: "hidden" }}>
+    <div
+      className={className}
+      style={{ height, borderRadius: 12, overflow: "hidden" }}
+    >
       <MapContainer
         style={{ height: "100%", width: "100%" }}
         center={bounds ? bounds.getCenter() : [20, 0]}
@@ -46,7 +49,7 @@ export default function TripperMap({ places, className, height = 420 }: Props) {
                   {(p.lastTrip || p.trips) && (
                     <div className="text-xs text-neutral-500">
                       {p.lastTrip ? `Último viaje: ${p.lastTrip}` : null}
-                      {p.lastTrip && p.trips ? ' · ' : null}
+                      {p.lastTrip && p.trips ? " · " : null}
                       {p.trips ? `Nº de viajes: ${p.trips}` : null}
                     </div>
                   )}

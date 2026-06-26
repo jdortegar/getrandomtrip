@@ -1,0 +1,27 @@
+change: notifications-experience
+status: archived
+artifact_store: hybrid
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+artifacts:
+  proposal: openspec/changes/archive/2026-06-07-notifications-experience/proposal.md
+  spec: openspec/changes/archive/2026-06-07-notifications-experience/spec.md
+  design: openspec/changes/archive/2026-06-07-notifications-experience/design.md
+  tasks: openspec/changes/archive/2026-06-07-notifications-experience/tasks.md
+  apply-progress: openspec/changes/archive/2026-06-07-notifications-experience/apply-progress.md
+  verify-report: openspec/changes/archive/2026-06-07-notifications-experience/verify-report.md
+  archive-report: openspec/changes/archive/2026-06-07-notifications-experience/archive-report.md
+archived: 2026-06-07
+verification_verdict: PASS WITH WARNINGS
+critical_issues: 0
+warnings: 5
+suggestions: 3
+updated: 2026-06-07

@@ -1,85 +1,85 @@
-import { AMERICAN_COUNTRIES } from '@/lib/data/shared/countries';
+import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 
 // Country neighboring relationships (simplified for American countries)
 const NEIGHBORING_COUNTRIES: Record<string, string[]> = {
   // North America
-  US: ['CA', 'MX'],
-  CA: ['US'],
-  MX: ['US', 'GT', 'BZ'],
+  US: ["CA", "MX"],
+  CA: ["US"],
+  MX: ["US", "GT", "BZ"],
 
   // Central America
-  GT: ['MX', 'BZ', 'SV', 'HN'],
-  BZ: ['MX', 'GT'],
-  SV: ['GT', 'HN'],
-  HN: ['GT', 'SV', 'NI'],
-  NI: ['HN', 'CR'],
-  CR: ['NI', 'PA'],
-  PA: ['CR', 'CO'],
+  GT: ["MX", "BZ", "SV", "HN"],
+  BZ: ["MX", "GT"],
+  SV: ["GT", "HN"],
+  HN: ["GT", "SV", "NI"],
+  NI: ["HN", "CR"],
+  CR: ["NI", "PA"],
+  PA: ["CR", "CO"],
 
   // South America
-  CO: ['PA', 'VE', 'BR', 'PE', 'EC'],
-  VE: ['CO', 'BR', 'GY'],
-  GY: ['VE', 'SR', 'BR'],
-  SR: ['GY', 'GF', 'BR'],
-  GF: ['SR', 'BR'],
-  BR: ['CO', 'VE', 'GY', 'SR', 'GF', 'UY', 'AR', 'PY', 'BO', 'PE'],
-  EC: ['CO', 'PE'],
-  PE: ['EC', 'CO', 'BR', 'BO', 'CL'],
-  BO: ['PE', 'BR', 'PY', 'AR', 'CL'],
-  CL: ['PE', 'BO', 'AR'],
-  AR: ['CL', 'BO', 'PY', 'BR', 'UY'],
-  UY: ['AR', 'BR'],
-  PY: ['AR', 'BO', 'BR'],
+  CO: ["PA", "VE", "BR", "PE", "EC"],
+  VE: ["CO", "BR", "GY"],
+  GY: ["VE", "SR", "BR"],
+  SR: ["GY", "GF", "BR"],
+  GF: ["SR", "BR"],
+  BR: ["CO", "VE", "GY", "SR", "GF", "UY", "AR", "PY", "BO", "PE"],
+  EC: ["CO", "PE"],
+  PE: ["EC", "CO", "BR", "BO", "CL"],
+  BO: ["PE", "BR", "PY", "AR", "CL"],
+  CL: ["PE", "BO", "AR"],
+  AR: ["CL", "BO", "PY", "BR", "UY"],
+  UY: ["AR", "BR"],
+  PY: ["AR", "BO", "BR"],
 
   // Caribbean
-  CU: ['JM', 'HT', 'BS'],
-  JM: ['CU', 'HT'],
-  HT: ['CU', 'JM', 'DO'],
-  DO: ['HT'],
-  TT: ['VE', 'GD'],
-  BB: ['LC', 'VC'],
-  LC: ['BB', 'VC'],
-  VC: ['LC', 'BB', 'GD'],
-  GD: ['VC', 'TT'],
-  AG: ['KN'],
-  KN: ['AG'],
-  DM: ['GD'],
-  BS: ['CU', 'US'],
+  CU: ["JM", "HT", "BS"],
+  JM: ["CU", "HT"],
+  HT: ["CU", "JM", "DO"],
+  DO: ["HT"],
+  TT: ["VE", "GD"],
+  BB: ["LC", "VC"],
+  LC: ["BB", "VC"],
+  VC: ["LC", "BB", "GD"],
+  GD: ["VC", "TT"],
+  AG: ["KN"],
+  KN: ["AG"],
+  DM: ["GD"],
+  BS: ["CU", "US"],
 };
 
 // Regional groupings (by geographic proximity)
 const REGIONAL_GROUPS: Record<string, string[]> = {
-  'north-america': ['US', 'CA', 'MX'],
-  'central-america': ['GT', 'BZ', 'SV', 'HN', 'NI', 'CR', 'PA'],
+  "north-america": ["US", "CA", "MX"],
+  "central-america": ["GT", "BZ", "SV", "HN", "NI", "CR", "PA"],
   caribbean: [
-    'CU',
-    'JM',
-    'HT',
-    'DO',
-    'TT',
-    'BB',
-    'LC',
-    'VC',
-    'GD',
-    'AG',
-    'KN',
-    'DM',
-    'BS',
+    "CU",
+    "JM",
+    "HT",
+    "DO",
+    "TT",
+    "BB",
+    "LC",
+    "VC",
+    "GD",
+    "AG",
+    "KN",
+    "DM",
+    "BS",
   ],
-  'south-america': [
-    'CO',
-    'VE',
-    'GY',
-    'SR',
-    'GF',
-    'BR',
-    'EC',
-    'PE',
-    'BO',
-    'CL',
-    'AR',
-    'UY',
-    'PY',
+  "south-america": [
+    "CO",
+    "VE",
+    "GY",
+    "SR",
+    "GF",
+    "BR",
+    "EC",
+    "PE",
+    "BO",
+    "CL",
+    "AR",
+    "UY",
+    "PY",
   ],
 };
 
@@ -111,17 +111,17 @@ export function getAvoidCities(
   const deptCountry = AMERICAN_COUNTRIES.find(
     (c) => c.name === departureCountry || c.code === departureCountry,
   );
-  const deptCountryCode = deptCountry?.code || '';
+  const deptCountryCode = deptCountry?.code || "";
 
   let eligibleCountries: string[] = [];
 
   switch (level) {
-    case 'essenza':
+    case "essenza":
       // Only national cities
       eligibleCountries = [deptCountryCode];
       break;
 
-    case 'modo-explora':
+    case "modo-explora":
       // National + neighboring countries
       eligibleCountries = [
         deptCountryCode,
@@ -129,7 +129,7 @@ export function getAvoidCities(
       ];
       break;
 
-    case 'explora-plus':
+    case "explora-plus":
       // National + neighboring + regional countries
       const region =
         Object.entries(REGIONAL_GROUPS).find(([_, countries]) =>
@@ -144,8 +144,8 @@ export function getAvoidCities(
       eligibleCountries = [...new Set(eligibleCountries)];
       break;
 
-    case 'bivouac':
-    case 'atelier-getaway':
+    case "bivouac":
+    case "atelier-getaway":
       // All American countries
       eligibleCountries = AMERICAN_COUNTRIES.map((c) => c.code);
       break;
@@ -167,11 +167,11 @@ export function getAvoidCities(
       }
 
       allCities.push({
-        id: `${countryCode}-${city}`.toLowerCase().replace(/\s+/g, '-'),
+        id: `${countryCode}-${city}`.toLowerCase().replace(/\s+/g, "-"),
         name: city,
         country: country.name,
         countryCode: country.code,
-        image: '', // Will be populated separately
+        image: "", // Will be populated separately
       });
     });
   });
@@ -212,11 +212,11 @@ export function searchCities(query: string, limit: number = 20): AvoidCity[] {
     country.cities.forEach((city) => {
       if (city.toLowerCase().includes(lowerQuery)) {
         results.push({
-          id: `${country.code}-${city}`.toLowerCase().replace(/\s+/g, '-'),
+          id: `${country.code}-${city}`.toLowerCase().replace(/\s+/g, "-"),
           name: city,
           country: country.name,
           countryCode: country.code,
-          image: '',
+          image: "",
         });
       }
     });
@@ -234,11 +234,11 @@ export function getAllCities(): AvoidCity[] {
   AMERICAN_COUNTRIES.forEach((country) => {
     country.cities.forEach((city) => {
       cities.push({
-        id: `${country.code}-${city}`.toLowerCase().replace(/\s+/g, '-'),
+        id: `${country.code}-${city}`.toLowerCase().replace(/\s+/g, "-"),
         name: city,
         country: country.name,
         countryCode: country.code,
-        image: '',
+        image: "",
       });
     });
   });

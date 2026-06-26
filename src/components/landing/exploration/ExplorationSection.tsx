@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { AnimatePresence, motion } from 'framer-motion';
-import Section from '@/components/layout/Section';
-import { TabSelector } from '@/components/ui/TabSelector';
-import type { TravelerTypeCardData } from '@/lib/utils/experiencesData';
-import { TopTrippersGrid } from './TopTrippersGrid';
-import { TravelerTypesCarousel } from './TravelerTypesCarousel';
+import { AnimatePresence, motion } from "framer-motion";
+import Section from "@/components/layout/Section";
+import { TabSelector } from "@/components/ui/TabSelector";
+import type { TravelerTypeCardData } from "@/lib/utils/experiencesData";
+import { TopTrippersGrid } from "./TopTrippersGrid";
+import { TravelerTypesCarousel } from "./TravelerTypesCarousel";
+import { XsedIntro } from "./XsedIntro";
 
 export interface ExplorationContent {
   buttonTrippers: string;
@@ -45,9 +46,7 @@ interface ExplorationSectionProps {
 function ComingSoon({ message }: { message: string }) {
   return (
     <div className="py-4">
-      <p className="text-center text-lg italic text-gray-600">
-        {message}
-      </p>
+      <p className="text-center text-lg italic text-gray-600">{message}</p>
     </div>
   );
 }
@@ -70,13 +69,13 @@ export function ExplorationSection({
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case 'byTraveller':
+      case "byTraveller":
         return (
           <TravelerTypesCarousel
             localizedTravelerTypes={localizedTravelerTypes}
           />
         );
-      case 'topTrippers':
+      case "topTrippers":
         return (
           <TopTrippersGrid
             buttonHref={trippersHref}
@@ -84,9 +83,11 @@ export function ExplorationSection({
             trippers={trippers}
           />
         );
-      case 'roadtrips':
+      case "xsed":
+        return <XsedIntro />;
+      case "roadtrips":
         return <ComingSoon message={comingSoonText} />;
-      case 'trippersDecode':
+      case "trippersDecode":
         return <ComingSoon message={comingSoonText} />;
       default:
         return null;
@@ -95,17 +96,17 @@ export function ExplorationSection({
 
   return (
     <Section
-      className="relative flex items-center py-20"
-      eyebrow={eyebrow}
       id="exploration-section"
+      eyebrow={eyebrow}
       subtitle={subtitle}
       title={title}
+      fullWidth
     >
       {/* Tab Navigation */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
-        viewport={{ once: true, margin: '-100px' }}
+        viewport={{ once: true, margin: "-100px" }}
         whileInView={{ y: 0, opacity: 1 }}
       >
         <TabSelector
@@ -119,7 +120,6 @@ export function ExplorationSection({
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          className="container mx-auto mt-12 flex justify-center overflow-x-visible px-4 md:px-20"
           animate={{ y: 0, opacity: 1 }}
           initial={{ y: 40, opacity: 0 }}
           transition={{ duration: 0.6, delay: 1 }}

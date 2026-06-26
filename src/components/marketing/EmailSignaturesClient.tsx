@@ -1,39 +1,39 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { toast } from 'sonner';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { Button } from '@/components/ui/Button';
+import { useState } from "react";
+import { toast } from "sonner";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { Button } from "@/components/ui/Button";
 import {
   buildEmailSignatureOption1Html,
   buildEmailSignatureOption2Html,
-} from '@/lib/helpers/emailSignatureHtml';
-import { cn } from '@/lib/utils';
-import type { MarketingDictionary } from '@/lib/types/dictionary';
+} from "@/lib/helpers/emailSignatureHtml";
+import { cn } from "@/lib/utils";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 export interface EmailSignaturesClientProps {
-  copy: MarketingDictionary['emailSignatures'];
+  copy: MarketingDictionary["emailSignatures"];
   copyBaseUrl: string;
   previewOrigin: string;
 }
 
 function stripTagsForPlainText(html: string): string {
   return html
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/(p|div|tr)>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/\n{3,}/g, '\n\n')
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|tr)>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
 async function copyHtmlToClipboard(html: string): Promise<void> {
   const plain = stripTagsForPlainText(html);
   try {
-    if (typeof ClipboardItem !== 'undefined' && navigator.clipboard?.write) {
+    if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
       await navigator.clipboard.write([
         new ClipboardItem({
-          'text/html': new Blob([html], { type: 'text/html' }),
-          'text/plain': new Blob([plain], { type: 'text/plain' }),
+          "text/html": new Blob([html], { type: "text/html" }),
+          "text/plain": new Blob([plain], { type: "text/plain" }),
         }),
       ]);
       return;
@@ -72,7 +72,7 @@ export function EmailSignaturesClient({
   return (
     <>
       <HeaderHero
-        className="!min-h-[40vh]"
+        className="min-h-[40vh]!"
         description={copy.hero.description}
         eyebrowColor="#F2C53D"
         fallbackImage="/images/hero-image-1.jpeg"
@@ -83,8 +83,8 @@ export function EmailSignaturesClient({
 
       <main
         className={cn(
-          'container mx-auto max-w-3xl px-4 py-12 text-neutral-700',
-          'md:px-20 md:py-16',
+          "container mx-auto max-w-3xl px-4 py-12 text-neutral-700",
+          "md:px-20 md:py-16",
         )}
       >
         <div className="space-y-4 font-barlow leading-relaxed">
@@ -100,7 +100,9 @@ export function EmailSignaturesClient({
             <h2 className="mb-2 font-barlow-condensed text-lg font-semibold text-neutral-900 md:text-xl">
               {copy.option1Title}
             </h2>
-            <p className="mb-4 text-sm text-neutral-600">{copy.option1Description}</p>
+            <p className="mb-4 text-sm text-neutral-600">
+              {copy.option1Description}
+            </p>
             <Button
               aria-label={copy.copyOption1AriaLabel}
               disabled={busyOption !== null}
@@ -120,8 +122,8 @@ export function EmailSignaturesClient({
             {/* Static table HTML from lib/helpers/emailSignatureHtml */}
             <div
               className={cn(
-                'overflow-x-auto rounded-lg border border-neutral-200 p-6',
-                'bg-[#eef1f3]',
+                "overflow-x-auto rounded-lg border border-neutral-200 p-6",
+                "bg-[#eef1f3]",
               )}
               dangerouslySetInnerHTML={{ __html: preview1 }}
             />
@@ -131,7 +133,9 @@ export function EmailSignaturesClient({
             <h2 className="mb-2 font-barlow-condensed text-lg font-semibold text-neutral-900 md:text-xl">
               {copy.option2Title}
             </h2>
-            <p className="mb-4 text-sm text-neutral-600">{copy.option2Description}</p>
+            <p className="mb-4 text-sm text-neutral-600">
+              {copy.option2Description}
+            </p>
             <Button
               aria-label={copy.copyOption2AriaLabel}
               disabled={busyOption !== null}
@@ -150,8 +154,8 @@ export function EmailSignaturesClient({
             </p>
             <div
               className={cn(
-                'overflow-x-auto rounded-lg border border-neutral-200 p-6',
-                'bg-[#eef1f3]',
+                "overflow-x-auto rounded-lg border border-neutral-200 p-6",
+                "bg-[#eef1f3]",
               )}
               dangerouslySetInnerHTML={{ __html: preview2 }}
             />

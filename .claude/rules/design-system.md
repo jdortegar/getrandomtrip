@@ -12,13 +12,17 @@ alwaysApply: true
 Two canonical card styles — use nothing else:
 
 **Stat card** (large value + icon):
+
 ```html
-<div class="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
+<div
+  class="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100"
+></div>
 ```
 
 **Panel card** (section with heading + content):
+
 ```html
-<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"></div>
 ```
 
 Do NOT use `GlassCard` for dashboard pages. It belongs to the marketing/public pages only.
@@ -44,10 +48,44 @@ All icons from `lucide-react`.
 ```
 
 Status color map:
+
 - confirmed / completed → `bg-green-100 text-green-800 border-green-200`
 - revealed → `bg-purple-100 text-purple-800 border-purple-200`
 - pending / default → `bg-yellow-100 text-yellow-800 border-yellow-200`
 - cancelled → `bg-red-100 text-red-800 border-red-200`
+
+## Row Actions (edit / delete in tables and lists)
+
+**Always use `<RowActions>` from `@/components/common/RowActions`** for any edit/delete pair in a table row or list item. Never write ad-hoc icon buttons for these actions.
+
+```tsx
+import { RowActions } from "@/components/common/RowActions";
+
+// Link-based edit + delete
+<RowActions
+  editHref={`/path/${id}`}
+  editTitle={copy.edit}
+  deleteTitle={copy.delete}
+  deleteDisabled={isDeleting}
+  onDelete={() => handleDelete(id)}
+/>
+
+// Callback-based edit, no delete
+<RowActions
+  editActive={isSelected}
+  editTitle={copy.edit}
+  onEdit={() => handleEdit(id)}
+/>
+```
+
+Props:
+- `editHref` — renders edit as `<Link>` (navigation); mutually exclusive with `onEdit`
+- `onEdit` — renders edit as a button with callback
+- `editActive` — highlights the edit icon when the row is in "selected" state
+- `onDelete` — renders the delete (Trash2) icon; omit when the entity has no delete action
+- `deleteDisabled` — disables delete while an async operation is in progress
+
+Style contract: ghost variant, `h-8 w-8 p-0`, `Pencil` for edit, `Trash2` for delete, red hover on delete.
 
 ## Buttons / Links
 
@@ -58,6 +96,7 @@ Never use raw styled `<a>` or `<Link>` for actions — always go through `Button
 ## Page Header
 
 Dashboard pages use `<HeaderHero>` (not `<Hero>`):
+
 ```tsx
 <HeaderHero
   title={copy.header.title}

@@ -2,7 +2,7 @@
 // RANDOMTRIP - New Schema with TripRequest and Package Models
 // ============================================================================
 // TripRequest: User planning data (what user wants)
-// Package: Tripper-created content (what tripper offers)
+// Experience: Tripper-created content (what tripper offers)
 // ============================================================================
 
 generator client {
@@ -18,8 +18,8 @@ datasource db {
 // ============================================================================
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String     @id @default(cuid())
+  email     String     @unique
   name      String
   password  String?
   avatarUrl String?
@@ -35,34 +35,42 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
-  bio             String? // Tripper biography/description
-  heroImage       String? // Hero banner image
-  location        String? // Tripper location
-  motto           String? // Inspirational quote for testimonial banner
-  specialization  String? // e.g. "Tripper especializada en aventuras acuáticas"
-  tierLevel       String? // Tripper tier level
-  destinations    String[] @default([]) // Countries/cities they specialize in
+  bio            String? // Tripper biography/description
+  heroImage      String? // Hero banner image
+  location       String? // Tripper location
+  motto          String? // Inspirational quote for testimonial banner
+  specialization String? // e.g. "Tripper especializada en aventuras acuáticas"
+  tierLevel      String? // Tripper tier level
+  destinations   String[] @default([]) // Countries/cities they specialize in
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // User preferences
+  locale       String?  // Preferred UI locale: "es" | "en"
   travelerType String?
   interests    String[] @default([])
   dislikes     String[] @default([])
 
-  /** Contact / checkout: phone and structured address (street, city, state, zipCode, country). */
+  /**
+   * Contact / checkout: phone and structured address (street, city, state, zipCode, country).
+   */
   phone   String?
   address Json?
 
   // Relations
-  tripRequests  TripRequest[] @relation("CustomerTripRequests")
-  ownedPackages Package[]     @relation("OwnedPackages")
-  payments      Payment[]
-  reviews       Review[]
-  likedPackages PackageLike[]
-  blogPosts     BlogPost[]    @relation("BlogAuthor")
+  tripRequests          TripRequest[]    @relation("CustomerTripRequests")
+  attributedTripRequests TripRequest[]   @relation("TripperTripRequests")
+  ownedExperiences      Experience[]     @relation("OwnedExperiences")
+  payments           Payment[]
+  reviews            Review[]
+  tripperReviews     Review[]         @relation("TripperReviews")
+  likedExperiences   ExperienceLike[]
+  blogPosts          BlogPost[]       @relation("BlogAuthor")
+  experiencesCreated Experience[]     @relation("ExperienceCreatedBy")
+  experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
+  notifications      Notification[]
 
   @@map("users")
 }
@@ -84,7 +92,9 @@ model TripRequest {
   endDate       DateTime?
   nights        Int       @default(1)
   pax           Int       @default(1)
-  /** Family/group: { adults, minors, rooms }; headcount stays in `pax`. */
+  /**
+   * Family/group: { adults, minors, rooms }; headcount stays in `pax`.
+   */
   paxDetails    Json?
 
   // Filters
@@ -99,8 +109,11 @@ model TripRequest {
   // Addons (JSON for flexibility)
   addons Json? // Array of { id: string, qty: number, optionId?: string }
 
-  // Package Assignment
-  packageId String? // Assigned package when user selects one
+  // Experience Assignment
+  experienceId String? // Assigned experience when user selects one (tripper or XSED)
+
+  // Tripper Attribution
+  tripperId String? // Tripper who attributed this request (set at creation via ?tripper=slug)
 
   // Completed trip data (optional - populated after trip completion)
   actualDestination     String? // Revealed destination
@@ -110,29 +123,38 @@ model TripRequest {
   customerFeedback      String? // Customer review/feedback
   tripPhotos            Json? // Array of photo URLs from the trip
 
+  // Review token (generated on COMPLETED transition)
+  reviewToken       String?   @unique
+  reviewSubmittedAt DateTime?
+
+  // Destination reveal pipeline
+  destinationAssignmentNotifiedAt DateTime? // T-72h admin reminder idempotency stamp
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  user    User     @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
-  package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
-  payment Payment?
+  user       User        @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience? @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  tripper    User?       @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
+  payment    Payment?
+  review     Review?
 
   @@map("trip_requests")
 }
 
-model Package {
-  id      String        @id @default(cuid())
-  ownerId String // Tripper who created this package
-  status  PackageStatus @default(DRAFT)
+model Experience {
+  id      String           @id @default(cuid())
+  ownerId String // Tripper who created this experience
+  status  ExperienceStatus @default(DRAFT)
 
-  // Package metadata
-  type  String // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws'
-  level String // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'
+  // Experience metadata — type also accepts 'XSED' for Sunday drops
+  type  String[] // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
+  level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
 
   // User preference matching (for filtering)
-  excuseKey String? // Excuse key that this package supports (e.g., 'romantic-getaway', 'solo-adventure')
+  excuseKey String[] @default([]) // Excuse keys this experience supports (e.g., ['romantic-getaway', 'solo-adventure'])
 
   // Capacity constraints
   minNights Int @default(1)
@@ -144,15 +166,14 @@ model Package {
   title       String // "Aventura Urbana Misteriosa"
   teaser      String // Short description
   description String // Full description
-  heroImage   String // Main image for card
-  tags        String[] @default([]) // ['adventure', 'cultural']
-  highlights  String[] @default([]) // ["3 noches", "Hotel boutique"]
+  heroImage     String // Main image for card
+  tags          String[] @default([]) // ['adventure', 'cultural']
 
   // Destination info
   destinationCountry String
   destinationCity    String
 
-  // Package content (JSON for flexibility)
+  // Experience content (JSON for flexibility)
   hotels     Json? // Array of hotel objects
   activities Json? // Array of activity objects
   itinerary  Json? // Detailed itinerary
@@ -160,8 +181,18 @@ model Package {
   exclusions Json? // What's not included
 
   // Pricing
-  basePriceUsd Float  @default(0)
-  displayPrice String @default("")
+  basePrice    Float  @default(0)
+  currency     String @default("USD")
+  // Admin-set per-type pricing (set on approval). Shape: Record<typeKey, number>
+  pricingByType Json?
+  // Editorial feedback from admin rejection; cleared on approval
+  reviewNote   String? @db.Text
+
+  // Review copy fields (lazy copy mechanism for admin edit flow)
+  isReviewCopy   Boolean  @default(false)
+  parentId       String?  // foreign key to original experience (set only on copy rows)
+  changedFields  String[] @default([])
+  reviewLockedBy String?  // admin id holding the edit lock; null when unlocked
 
   // Compatibility matching (mirrors TripRequest filter fields)
   accommodationType String @default("any")
@@ -171,21 +202,52 @@ model Package {
   departPref        String @default("any")
   arrivePref        String @default("any")
 
+  // XSED-specific fields (null on tripper experiences)
+  slug                    String?   @unique
+  titleInternal           String?
+  tripDate                DateTime?
+  revealAt                DateTime?
+  maxSpots                Int?
+  minSpots                Int?
+  cancellationPolicy      String?   @db.Text
+  weatherPolicy           String?   @db.Text
+  accessibilityNotes      String?   @db.Text
+  safetyNotes             String?   @db.Text
+  revealCopy              String?   @db.Text
+  preRevealCopy           String?   @db.Text
+  packingHints            String?   @db.Text
+  whatsappMessageTemplate String?   @db.Text
+  adminNotes              String?   @db.Text
+  supplierNotes           String?   @db.Text
+
+  // Season hint (e.g. 'Alta', 'Baja', 'any')
+  season String[] @default([])
+
   // Visibility
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)
   likes      Int     @default(0)
+
+  // Audit trail
+  createdById String?
+  updatedById String?
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  owner        User          @relation("OwnedPackages", fields: [ownerId], references: [id], onDelete: Cascade)
-  tripRequests TripRequest[] @relation
-  packageLikes PackageLike[]
+  owner           User             @relation("OwnedExperiences", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdBy       User?            @relation("ExperienceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy       User?            @relation("ExperienceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  tripRequests    TripRequest[]    @relation
+  experienceLikes ExperienceLike[]
 
-  @@map("packages")
+  @@index([type])
+  @@index([slug])
+  @@index([tripDate])
+  @@index([revealAt])
+  @@map("experiences")
 }
 
 model Payment {
@@ -198,7 +260,7 @@ model Payment {
   tripRequest   TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
 
   // Provider Information
-  provider                String  // 'stripe'
+  provider                String // 'stripe'
   providerPaymentId       String? // Stripe PaymentIntent ID
   stripePaymentIntentId   String? @unique // Stripe PaymentIntent ID for fast webhook lookup
   providerMerchantOrderId String? // MP merchant order ID (legacy, kept for historical rows)
@@ -250,35 +312,41 @@ model Review {
   id          String  @id @default(cuid())
   userId      String
   rating      Int
-  title       String
+  title       String?
   content     String
-  tripType    String
-  destination String
+  tripType    String?
+  destination String?
   isApproved  Boolean @default(false)
-  isPublic    Boolean @default(true)
+  isPublic    Boolean @default(false)
+
+  // New submission-flow fields
+  tripRequestId String? @unique
+  tripperId     String?
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tripRequest TripRequest? @relation(fields: [tripRequestId], references: [id])
+  tripper    User?        @relation("TripperReviews", fields: [tripperId], references: [id])
 
   @@map("reviews")
 }
 
-model PackageLike {
-  id        String   @id @default(cuid())
-  packageId String
-  userId    String
-  createdAt DateTime @default(now())
+model ExperienceLike {
+  id           String   @id @default(cuid())
+  experienceId String
+  userId       String
+  createdAt    DateTime @default(now())
 
   // Relations
-  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([packageId, userId])
-  @@map("package_likes")
+  @@unique([experienceId, userId])
+  @@map("experience_likes")
 }
 
 model BlogPost {
@@ -289,7 +357,7 @@ model BlogPost {
 
   // Basic info
   title    String
-  slug     String?  @unique // SEO-friendly URL (e.g. aventura-acuatica)
+  slug     String? @unique // SEO-friendly URL (e.g. aventura-acuatica)
   subtitle String?
   tagline  String?
   coverUrl String? // Hero/cover image URL
@@ -301,7 +369,7 @@ model BlogPost {
   blocks Json @default("[]")
 
   // Metadata
-  tags String[] @default([])
+  tags       String[] @default([])
   travelType String? // solo | couple | family | group | honeymoon | paws
   excuseKey  String? // e.g. solo-adventure (from shared excuses)
 
@@ -348,8 +416,10 @@ enum TripRequestStatus {
   CANCELLED
 }
 
-enum PackageStatus {
+enum ExperienceStatus {
   DRAFT
+  PENDING_REVIEW
+  PENDING_TRIPPER_REVIEW
   ACTIVE
   INACTIVE
   ARCHIVED
@@ -384,6 +454,45 @@ enum BlogFormat {
   MIXED
 }
 
+enum NotificationType {
+  EXPERIENCE_APPROVED
+  EXPERIENCE_REJECTED
+  EXPERIENCE_PENDING_TRIPPER_REVIEW
+  BOOKING_CONFIRMED
+  BOOKING_REVEALED
+  BOOKING_COMPLETED
+  BOOKING_CANCELLED
+  PAYMENT_RECEIVED
+}
+
+enum NotificationAudience {
+  TRIPPER
+  CLIENT
+  ADMIN
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+model Notification {
+  id       String               @id @default(cuid())
+  userId   String
+  type     NotificationType
+  audience NotificationAudience
+  isRead   Boolean              @default(false)
+  title    String
+  body     String?
+  metadata Json?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
 // ============================================================================
 // WAITLIST (marketing gate – early access signup)
 // ============================================================================
@@ -400,13 +509,16 @@ model WaitlistEntry {
 }
 
 model XsedNotificationSignup {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  locale    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String    @id @default(cuid())
+  email          String    @unique
+  locale         String?
+  timezone       String?
+  lastNotifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([email])
   @@index([createdAt])
+  @@index([lastNotifiedAt])
   @@map("xsed_notification_signups")
 }

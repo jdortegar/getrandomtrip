@@ -46,7 +46,7 @@ For pages that use client-side hooks (`useSession`, `useContext`, etc.):
 
 ```typescript
 // In a server component layout or route segment config
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 ```
 
 Or create a server component layout:
@@ -68,7 +68,7 @@ For API routes using `headers()` or `getServerSession()`:
 
 ```typescript
 // src/app/api/tripper/packages/route.ts
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   // ... route handler

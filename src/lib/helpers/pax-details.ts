@@ -1,4 +1,4 @@
-import type { PaxDetails } from '@/lib/types/PaxDetails';
+import type { PaxDetails } from "@/lib/types/PaxDetails";
 
 export const DEFAULT_PAX_DETAILS: PaxDetails = {
   adults: 1,
@@ -37,25 +37,31 @@ export function getFixedPaxDetailsForTravelType(
   travelType: string,
 ): PaxDetails | null {
   const t = travelType.trim().toLowerCase();
-  if (t === 'solo') return FIXED_PAX_SOLO;
-  if (t === 'couple') return FIXED_PAX_COUPLE_LIKE;
-  if (t === 'group') return FIXED_PAX_GROUP;
+  if (t === "solo") return FIXED_PAX_SOLO;
+  if (t === "couple") return FIXED_PAX_COUPLE_LIKE;
+  if (t === "group") return FIXED_PAX_GROUP;
   return null;
 }
 
 /** True when the user may change adults / minors / rooms on checkout. */
-export function isTravelersPartyEditable(travelType: string | undefined): boolean {
-  if (travelType == null || travelType === '') return true;
+export function isTravelersPartyEditable(
+  travelType: string | undefined,
+): boolean {
+  if (travelType == null || travelType === "") return true;
   return getFixedPaxDetailsForTravelType(travelType) == null;
 }
 
 export function parsePaxDetails(value: unknown): PaxDetails | null {
-  if (value == null || typeof value !== 'object') return null;
+  if (value == null || typeof value !== "object") return null;
   const o = value as Record<string, unknown>;
   const adults = Number(o.adults);
   const minors = Number(o.minors);
   const rooms = Number(o.rooms);
-  if (!Number.isFinite(adults) || !Number.isFinite(minors) || !Number.isFinite(rooms)) {
+  if (
+    !Number.isFinite(adults) ||
+    !Number.isFinite(minors) ||
+    !Number.isFinite(rooms)
+  ) {
     return null;
   }
   const a = Math.floor(adults);

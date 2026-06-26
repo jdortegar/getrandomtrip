@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, use } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
@@ -84,16 +84,50 @@ function getInitialStepFromParams(params: URLSearchParams): {
   return { tabId: "preferences", sectionId: "filters" };
 }
 
+interface TripperJourneyContext {
+  name: string;
+  avatarUrl: string | null;
+  location: string | null;
+  allowedTypes: string[];
+  allowedLevelsByType: Record<string, string[]>;
+}
+
 function JourneyPageContent({ locale }: { locale?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState("budget");
   const [openSectionId, setOpenSectionId] = useState("travel-type");
+  const [tripperContext, setTripperContext] =
+    useState<TripperJourneyContext | null>(null);
   const hasSyncedJourneyStateFromUrl = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const resolvedLocale = hasLocale(locale) ? locale : "es";
+
+  // Fetch tripper context when the journey URL includes ?tripper=<slug>
+  useEffect(() => {
+    const tripperSlug = searchParams.get("tripper");
+    if (!tripperSlug) {
+      setTripperContext(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/trippers/${encodeURIComponent(tripperSlug)}/journey-context`)
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json() as Promise<TripperJourneyContext>;
+      })
+      .then((data) => {
+        if (!cancelled) setTripperContext(data);
+      })
+      .catch(() => {
+        if (!cancelled) setTripperContext(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams]);
 
   useEffect(() => {
     getDictionary(resolvedLocale).then(setDict);
@@ -170,6 +204,15 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={journey.hero.subtitle}
         title={journey.hero.title}
+        tripperBadge={
+          tripperContext
+            ? {
+                name: tripperContext.name,
+                avatarUrl: tripperContext.avatarUrl,
+                location: tripperContext.location,
+              }
+            : undefined
+        }
         videoSrc="/videos/hero-video-1.mp4"
       />
 
@@ -195,6 +238,8 @@ function JourneyPageContent({ locale }: { locale?: string }) {
             <JourneyMainContent
               activeTab={activeTab}
               addonLabels={journey.addons}
+              allowedLevelsByType={tripperContext?.allowedLevelsByType}
+              allowedTypes={tripperContext?.allowedTypes}
               detailsStepLabels={journey.detailsStep}
               localizedExcuses={journey.excuses}
               localizedRefineOptions={journey.refineDetailOptions}
@@ -204,6 +249,15 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               onTabChange={handleTabChange}
               openSectionId={openSectionId}
               preferencesStepLabels={journey.preferencesStep}
+              tripperBadge={
+                tripperContext
+                  ? {
+                      name: tripperContext.name,
+                      avatarUrl: tripperContext.avatarUrl,
+                    }
+                  : undefined
+              }
+              tripperSlug={searchParams.get("tripper") ?? undefined}
             />
           </div>
 
@@ -225,8 +279,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               filterFeePaxLine: journey.checkout.filterFeePaxLine,
               perPersonSectionTitle: journey.checkout.perPersonSectionTitle,
               subtotalPerPersonLabel: journey.checkout.subtotalPerPersonLabel,
-              summaryHeroPriceCaption:
-                journey.checkout.summaryHeroPriceCaption,
+              summaryHeroPriceCaption: journey.checkout.summaryHeroPriceCaption,
               totalLabel: journey.checkout.totalLabel,
             }}
           />
@@ -236,11 +289,10 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   );
 }
 
-export default function JourneyPage({
-  params,
-}: {
-  params?: { locale?: string };
+export default function JourneyPage(props: {
+  params?: Promise<{ locale?: string }>;
 }) {
+  const params = use(props.params ?? Promise.resolve({ locale: undefined }));
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <JourneyPageContent locale={params?.locale} />

@@ -58,14 +58,14 @@ interface PaymentsApiResponse {
 }
 
 function toIsoDate(value: unknown): string {
-  if (value == null || value === '') return '';
+  if (value == null || value === "") return "";
   const date = new Date(String(value));
-  if (Number.isNaN(date.getTime())) return '';
+  if (Number.isNaN(date.getTime())) return "";
   return date.toISOString();
 }
 
 function toNumber(value: unknown): number {
-  if (typeof value === 'number') return value;
+  if (typeof value === "number") return value;
   const numberValue = Number(value);
   if (Number.isNaN(numberValue)) return 0;
   return numberValue;
@@ -75,12 +75,12 @@ function addonsFromApiJson(raw: unknown): Array<{ id: string; qty: number }> {
   if (!Array.isArray(raw)) return [];
   const out: Array<{ id: string; qty: number }> = [];
   for (const item of raw) {
-    if (!item || typeof item !== 'object') continue;
+    if (!item || typeof item !== "object") continue;
     const o = item as Record<string, unknown>;
-    const id = String(o.id ?? '');
+    const id = String(o.id ?? "");
     if (!id) continue;
     const qty =
-      typeof o.qty === 'number' && Number.isFinite(o.qty)
+      typeof o.qty === "number" && Number.isFinite(o.qty)
         ? o.qty
         : Number(o.qty) || 1;
     out.push({ id, qty });
@@ -109,17 +109,18 @@ export function mapTripFromApi(raw: unknown): Trip {
       ? String(trip.accommodationType)
       : undefined,
     addons: addonsFromApiJson(trip.addons),
-    actualDestination: (trip.actualDestination as string | null | undefined) ?? null,
+    actualDestination:
+      (trip.actualDestination as string | null | undefined) ?? null,
     arrivePref: trip.arrivePref ? String(trip.arrivePref) : undefined,
     avoidDestinations: stringArrayFromApi(trip.avoidDestinations),
-    city: String(trip.originCity ?? ''),
+    city: String(trip.originCity ?? ""),
     climate: trip.climate ? String(trip.climate) : undefined,
-    country: String(trip.originCountry ?? ''),
+    country: String(trip.originCountry ?? ""),
     customerRating: (trip.customerRating as number | null | undefined) ?? null,
     departPref: trip.departPref ? String(trip.departPref) : undefined,
     endDate: toIsoDate(trip.endDate),
-    id: String(trip.id ?? ''),
-    level: String(trip.level ?? ''),
+    id: String(trip.id ?? ""),
+    level: String(trip.level ?? ""),
     maxTravelTime: trip.maxTravelTime ? String(trip.maxTravelTime) : undefined,
     nights: (() => {
       const n = toNumber(trip.nights);
@@ -127,22 +128,24 @@ export function mapTripFromApi(raw: unknown): Trip {
     })(),
     pax,
     startDate: toIsoDate(trip.startDate),
-    status: String(trip.status ?? ''),
+    status: String(trip.status ?? ""),
     totalTripUsd,
     transport: trip.transport ? String(trip.transport) : undefined,
-    type: String(trip.type ?? ''),
+    type: String(trip.type ?? ""),
     payment: payment
       ? {
           amount: paymentAmount,
-          createdAt: payment.createdAt ? toIsoDate(payment.createdAt) : undefined,
-          status: String(payment.status ?? ''),
+          createdAt: payment.createdAt
+            ? toIsoDate(payment.createdAt)
+            : undefined,
+          status: String(payment.status ?? ""),
         }
       : undefined,
   };
 }
 
 export async function getTrips(): Promise<Trip[]> {
-  const response = await fetch('/api/trips');
+  const response = await fetch("/api/trips");
   const data = (await response.json()) as TripsApiResponse;
   if (data.error) throw new Error(data.error);
 
@@ -151,7 +154,7 @@ export async function getTrips(): Promise<Trip[]> {
 }
 
 export async function getPayments(): Promise<Payment[]> {
-  const response = await fetch('/api/payments');
+  const response = await fetch("/api/payments");
   const data = (await response.json()) as PaymentsApiResponse;
   if (data.error) throw new Error(data.error);
 

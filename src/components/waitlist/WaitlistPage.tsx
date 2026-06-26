@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
 
 interface WaitlistDict {
   adminLoginLabel: string;
@@ -27,44 +27,44 @@ interface WaitlistPageProps {
 }
 
 export function WaitlistPage({ dict, onOpenLogin }: WaitlistPageProps) {
-  const [email, setEmail] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
     setIsLoading(true);
-    setStatus('idle');
+    setStatus("idle");
     try {
-      const res = await fetch('/api/waitlist', {
+      const res = await fetch("/api/waitlist", {
         body: JSON.stringify({
           email: email.trim(),
           lastName: lastName.trim(),
           name: name.trim(),
         }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       });
       if (res.ok) {
-        setStatus('success');
-        setEmail('');
-        setLastName('');
-        setName('');
+        setStatus("success");
+        setEmail("");
+        setLastName("");
+        setName("");
       } else {
-        setStatus('error');
+        setStatus("error");
       }
     } catch {
-      setStatus('error');
+      setStatus("error");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <section className="grid h-screen grid-cols-1 md:grid-cols-2">
+    <section className="grid h-screen grid-cols-1 lg:grid-cols-2 rt-container">
       <div className="flex min-w-0 items-center justify-center py-4 md:py-6">
         <img
           alt="RandomTrip"
@@ -80,7 +80,7 @@ export function WaitlistPage({ dict, onOpenLogin }: WaitlistPageProps) {
           <p className="mt-4 text-muted-foreground md:text-lg">
             {dict.subheadline}
           </p>
-          {status !== 'success' && (
+          {status !== "success" && (
             <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit}>
               <Input
                 className="w-full"
@@ -113,22 +113,22 @@ export function WaitlistPage({ dict, onOpenLogin }: WaitlistPageProps) {
                 size="lg"
                 type="submit"
               >
-                {isLoading ? '...' : dict.submitButton}
+                {isLoading ? "..." : dict.submitButton}
               </Button>
             </form>
           )}
-          {status === 'success' && (
+          {status === "success" && (
             <p className="mt-4 text-sm font-medium text-green-600 dark:text-green-400">
               {dict.successMessage}
             </p>
           )}
-          {status === 'error' && (
+          {status === "error" && (
             <p className="mt-4 text-sm font-medium text-destructive">
               Something went wrong. Please try again.
             </p>
           )}
           <Button
-            className="mt-8 underline normal-case font-barlow text-base"
+            className="mt-8 underline normal-case font-barlow text-base mx-auto"
             onClick={onOpenLogin}
             type="button"
             variant="link"

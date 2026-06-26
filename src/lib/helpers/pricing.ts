@@ -8,7 +8,7 @@ import {
   getPricePerPerson,
   type TravelerTypeSlug,
   type PriceLevelId,
-} from '@/lib/data/traveler-types';
+} from "@/lib/data/traveler-types";
 
 export type { TravelerTypeSlug, PriceLevelId };
 
@@ -16,11 +16,11 @@ export { getBasePricePerPerson, getPricePerPerson };
 
 /** Catalog-shaped object for code that still expects byTraveller[type][level].base. Keys: essenza, modo-explora, explora-plus, bivouac, atelier. */
 const CATALOG_LEVEL_KEYS = [
-  'essenza',
-  'modo-explora',
-  'explora-plus',
-  'bivouac',
-  'atelier',
+  "essenza",
+  "modo-explora",
+  "explora-plus",
+  "bivouac",
+  "atelier",
 ] as const;
 
 function buildVirtualCatalog(): Record<
@@ -28,12 +28,12 @@ function buildVirtualCatalog(): Record<
   Record<string, { base: number }>
 > {
   const types: TravelerTypeSlug[] = [
-    'solo',
-    'couple',
-    'family',
-    'group',
-    'honeymoon',
-    'paws',
+    "solo",
+    "couple",
+    "family",
+    "group",
+    "honeymoon",
+    "paws",
   ];
   const byTraveller: Record<string, Record<string, { base: number }>> = {};
   for (const type of types) {

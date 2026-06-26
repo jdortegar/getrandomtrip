@@ -24,7 +24,7 @@ export interface AvoidGridProps {
 
   originCountry?: string;
 
-  tripperPackageDestinations?: Array<{ city: string; country: string }>;
+  tripperExperienceDestinations?: Array<{ city: string; country: string }>;
 
   /** When false, destinations render as filter chips (same style as JourneyFiltersForm FilterSeg). */
   showImages?: boolean;
@@ -34,16 +34,16 @@ function filterOutPackageDestinations<
   T extends { city: string; country: string },
 >(
   cities: T[],
-  tripperPackageDestinations?: Array<{ city: string; country: string }>,
+  tripperExperienceDestinations?: Array<{ city: string; country: string }>,
 ): T[] {
   return cities.filter((city) => {
     if (
-      !tripperPackageDestinations ||
-      tripperPackageDestinations.length === 0
+      !tripperExperienceDestinations ||
+      tripperExperienceDestinations.length === 0
     ) {
       return true;
     }
-    const isPackageDestination = tripperPackageDestinations.some(
+    const isPackageDestination = tripperExperienceDestinations.some(
       (pkg) =>
         pkg.city.toLowerCase() === city.city.toLowerCase() &&
         pkg.country.toLowerCase() === city.country.toLowerCase(),
@@ -58,7 +58,7 @@ export default function AvoidGrid({
   originCity: originCityProp,
   originCountry: originCountryProp,
   showImages = true,
-  tripperPackageDestinations,
+  tripperExperienceDestinations,
 }: AvoidGridProps) {
   const [showSearch, setShowSearch] = useState(false);
   const [suggestions, setSuggestions] = useState<
@@ -86,7 +86,7 @@ export default function AvoidGrid({
           city: city.name,
           country: city.country,
         })),
-        tripperPackageDestinations,
+        tripperExperienceDestinations,
       );
       setSuggestions(chips);
       return;
@@ -108,7 +108,7 @@ export default function AvoidGrid({
       setSuggestions(
         filterOutPackageDestinations(
           citiesWithImages,
-          tripperPackageDestinations,
+          tripperExperienceDestinations,
         ),
       );
     }
@@ -119,7 +119,7 @@ export default function AvoidGrid({
     originCity,
     level,
     showImages,
-    tripperPackageDestinations,
+    tripperExperienceDestinations,
   ]);
 
   return (

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     await prisma.xsedNotificationSignup.upsert({
       create: parsed,
-      update: { locale: parsed.locale },
+      update: { locale: parsed.locale, timezone: parsed.timezone },
       where: { email: parsed.email },
     });
 

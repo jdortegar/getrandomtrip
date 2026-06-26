@@ -1,7 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface BreadcrumbItem {
   href?: string;
@@ -19,7 +19,10 @@ export default function Breadcrumb({ className, items }: BreadcrumbProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn('mb-8 flex items-center gap-2 text-sm text-neutral-600', className)}
+      className={cn(
+        "mb-8 flex items-center gap-2 text-sm text-neutral-600",
+        className,
+      )}
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;

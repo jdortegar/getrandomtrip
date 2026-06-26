@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface DraftPreferencesUrlValues {
   departPref: string | undefined;
@@ -39,20 +39,22 @@ export function useJourneyDraftPreferences(
   activeTab: string,
   urlValues: DraftPreferencesUrlValues,
 ): JourneyDraftPreferencesResult {
-  const [draftDepartPref, setDraftDepartPref] = useState<string>('any');
-  const [draftArrivePref, setDraftArrivePref] = useState<string>('any');
-  const [draftClimate, setDraftClimate] = useState<string>('any');
-  const [draftMaxTravelTime, setDraftMaxTravelTime] = useState<string>('no-limit');
-  const [draftAccommodationType, setDraftAccommodationType] = useState<string>('any');
+  const [draftDepartPref, setDraftDepartPref] = useState<string>("any");
+  const [draftArrivePref, setDraftArrivePref] = useState<string>("any");
+  const [draftClimate, setDraftClimate] = useState<string>("any");
+  const [draftMaxTravelTime, setDraftMaxTravelTime] =
+    useState<string>("no-limit");
+  const [draftAccommodationType, setDraftAccommodationType] =
+    useState<string>("any");
 
   // Sync URL -> draft when entering preferences step
   useEffect(() => {
-    if (activeTab === 'preferences') {
-      setDraftDepartPref(urlValues.departPref ?? 'any');
-      setDraftArrivePref(urlValues.arrivePref ?? 'any');
-      setDraftClimate(urlValues.climate ?? 'any');
-      setDraftMaxTravelTime(urlValues.maxTravelTime ?? 'no-limit');
-      setDraftAccommodationType(urlValues.accommodationType ?? 'any');
+    if (activeTab === "preferences") {
+      setDraftDepartPref(urlValues.departPref ?? "any");
+      setDraftArrivePref(urlValues.arrivePref ?? "any");
+      setDraftClimate(urlValues.climate ?? "any");
+      setDraftMaxTravelTime(urlValues.maxTravelTime ?? "no-limit");
+      setDraftAccommodationType(urlValues.accommodationType ?? "any");
     }
   }, [
     activeTab,
@@ -64,19 +66,23 @@ export function useJourneyDraftPreferences(
   ]);
 
   const effectiveDepartPref =
-    activeTab === 'preferences' ? draftDepartPref : (urlValues.departPref ?? 'any');
+    activeTab === "preferences"
+      ? draftDepartPref
+      : (urlValues.departPref ?? "any");
   const effectiveArrivePref =
-    activeTab === 'preferences' ? draftArrivePref : (urlValues.arrivePref ?? 'any');
+    activeTab === "preferences"
+      ? draftArrivePref
+      : (urlValues.arrivePref ?? "any");
   const effectiveClimate =
-    activeTab === 'preferences' ? draftClimate : (urlValues.climate ?? 'any');
+    activeTab === "preferences" ? draftClimate : (urlValues.climate ?? "any");
   const effectiveMaxTravelTime =
-    activeTab === 'preferences'
+    activeTab === "preferences"
       ? draftMaxTravelTime
-      : (urlValues.maxTravelTime ?? 'no-limit');
+      : (urlValues.maxTravelTime ?? "no-limit");
   const effectiveAccommodationType =
-    activeTab === 'preferences'
+    activeTab === "preferences"
       ? draftAccommodationType
-      : (urlValues.accommodationType ?? 'any');
+      : (urlValues.accommodationType ?? "any");
 
   return {
     draftDepartPref,

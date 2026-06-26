@@ -29,6 +29,7 @@
 Stores images as `{ type: 'image', url: string, caption?: string }` entries in `post.blocks`.
 
 **Structure:**
+
 ```
 [Panel card]
   h3: gallery.title
@@ -43,6 +44,7 @@ Stores images as `{ type: 'image', url: string, caption?: string }` entries in `
 ```
 
 **State additions:**
+
 - `galleryUploading: boolean` — true while any image is uploading (disables button)
 
 Gallery images are already wired into `post.blocks`; no new state slice needed beyond the existing `post.blocks`.
@@ -79,12 +81,12 @@ upload click → uploadImageFile(file) → url
 
 ## Component Boundaries
 
-| File | Change |
-|------|--------|
-| `BlogComposer.tsx` | Refactor + gallery block UI |
+| File                          | Change                                     |
+| ----------------------------- | ------------------------------------------ |
+| `BlogComposer.tsx`            | Refactor + gallery block UI                |
 | `src/lib/types/dictionary.ts` | Add `gallery` to `TripperBlogComposerDict` |
-| `src/dictionaries/es.json` | Add gallery strings |
-| `src/dictionaries/en.json` | Add gallery strings |
+| `src/dictionaries/es.json`    | Add gallery strings                        |
+| `src/dictionaries/en.json`    | Add gallery strings                        |
 
 No new files. No schema changes.
 

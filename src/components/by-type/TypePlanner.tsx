@@ -15,7 +15,8 @@ interface TypePlannerProps {
   onSelect?: (levelId: string) => void;
   selectedLevel?: string;
   type: TravelerTypeSlug;
-  itemsPerView?: number;
+  itemsPerView?: 2 | 3 | 4;
+  cardClassName?: string;
 }
 
 export default function TypePlanner({
@@ -27,6 +28,7 @@ export default function TypePlanner({
   selectedLevel: externalSelectedLevel,
   type,
   itemsPerView = 4,
+  cardClassName,
 }: TypePlannerProps) {
   const [internalSelectedLevel, setInternalSelectedLevel] = useState<
     string | null
@@ -41,7 +43,7 @@ export default function TypePlanner({
 
   const contentElement = (
     <div className="relative flex w-full flex-col">
-      <EmblaCarousel slidesPerView={itemsPerView}>
+      <EmblaCarousel slidesPerView={itemsPerView} overflow="both">
         {content.levels.map((level, index) => {
           // Alternate between light and dark variants
           const variant = index % 2 === 0 ? "light" : "dark";
@@ -49,7 +51,7 @@ export default function TypePlanner({
           const isFeatured = index === 2;
 
           return (
-            <div className="@container w-full min-w-0 py-3" key={level.id}>
+            <div className=" w-full min-w-0 py-3" key={level.id}>
               <LevelCard
                 featured={isFeatured}
                 level={level}
@@ -59,6 +61,7 @@ export default function TypePlanner({
                 selected={selectedLevel === level.id}
                 travelerType={type}
                 variant={variant}
+                className={cardClassName}
               />
             </div>
           );
@@ -87,10 +90,9 @@ export default function TypePlanner({
       subtitle={content.subtitle}
       title={content.title}
       id="type-planner"
+      fullWidth
     >
-      <div className="container mx-auto mt-12 flex justify-center overflow-x-visible px-4 md:px-20">
-        {contentElement}
-      </div>
+      {contentElement}
     </Section>
   );
 }

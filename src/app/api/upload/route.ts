@@ -6,13 +6,22 @@ import { authOptions } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const STORE_NAME = "user-media";
+const FEATURE_STORE: Record<string, string> = {
+  avatar: "user-avatars",
+  blog: "blog-media",
+  experience: "experience-media",
+};
+const DEFAULT_STORE = "user-media";
 
-function getBlobStore() {
-  return getStore(STORE_NAME, {
+function getBlobStore(feature?: string) {
+  const storeName = (feature && FEATURE_STORE[feature]) ?? DEFAULT_STORE;
+  return getStore(storeName, {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? { siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_AUTH_TOKEN }
+      ? {
+          siteID: process.env.NETLIFY_SITE_ID,
+          token: process.env.NETLIFY_AUTH_TOKEN,
+        }
       : {}),
   });
 }
@@ -30,9 +39,19 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Bad Request", { status: 400 });
   }
 
+  const feature = key.split("/")[1];
+
   try {
-    const store = getBlobStore();
-    const result = await store.getWithMetadata(key, { type: "blob" });
+    const store = getBlobStore(feature);
+    let result = await store.getWithMetadata(key, { type: "blob" });
+
+    // Blobs uploaded before the feature-store split all lived in user-media.
+    // Fall back to the legacy store so old URLs keep working.
+    if (!result && feature !== DEFAULT_STORE) {
+      const legacyStore = getBlobStore(undefined);
+      result = await legacyStore.getWithMetadata(key, { type: "blob" });
+    }
+
     if (!result) {
       return new NextResponse("Not Found", { status: 404 });
     }
@@ -44,7 +63,10 @@ export async function GET(request: NextRequest) {
 
     return new NextResponse(result.data, {
       headers: {
-        "Cache-Control": "public, max-age=31536000, immutable",
+        // private: the browser may cache, but the CDN must not.
+        // "public" was allowing Netlify's CDN to cache responses keyed only by path,
+        // causing different users' images to be served from the same CDN cache entry.
+        "Cache-Control": "private, max-age=86400",
         "Content-Type": contentType,
         "X-Content-Type-Options": "nosniff",
       },
@@ -72,12 +94,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const store = getBlobStore();
+    const store = getBlobStore(key.split("/")[1]);
     await store.delete(key);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[upload] DELETE", error);
-    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Blob storage unavailable" },
+      { status: 503 },
+    );
   }
 }
 
@@ -95,13 +120,24 @@ export async function POST(request: NextRequest) {
     }
 
     const rawFeature = formData.get("feature");
-    if (typeof rawFeature !== "string" || !/^[a-zA-Z0-9_-]{1,64}$/.test(rawFeature)) {
+    if (
+      typeof rawFeature !== "string" ||
+      !/^[a-zA-Z0-9_-]{1,64}$/.test(rawFeature)
+    ) {
       return NextResponse.json({ error: "Invalid feature" }, { status: 400 });
     }
 
     const rawExt = file.name.split(".").pop() ?? "bin";
     const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8) || "bin";
-    const key = `${session.user.id}/${rawFeature}/${crypto.randomUUID()}.${ext}`;
+    const baseName =
+      file.name
+        .replace(/\.[^.]+$/, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 60) || "file";
+    const filename = `${baseName}-${Date.now()}.${ext}`;
+    const key = `${session.user.id}/${rawFeature}/${filename}`;
 
     const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
     if (file.size > MAX_BYTES) {
@@ -118,19 +154,25 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (!ALLOWED_MIME_TYPES.has(file.type)) {
-      return NextResponse.json({ error: "Unsupported file type" }, { status: 415 });
+      return NextResponse.json(
+        { error: "Unsupported file type" },
+        { status: 415 },
+      );
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const contentType = file.type || "application/octet-stream";
 
-    const store = getBlobStore();
+    const store = getBlobStore(rawFeature);
     await store.set(key, arrayBuffer, { metadata: { contentType } });
 
-    const url = `${request.nextUrl.origin}/api/upload?key=${encodeURIComponent(key)}`;
+    const url = `/api/upload/${session.user.id}/${rawFeature}/${filename}`;
     return NextResponse.json({ url });
   } catch (error) {
     console.error("[upload] POST", error);
-    return NextResponse.json({ error: "Blob storage unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Blob storage unavailable" },
+      { status: 503 },
+    );
   }
 }

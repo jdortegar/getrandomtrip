@@ -23,7 +23,10 @@ export default function Paragraph({
       <div>
         <div className="prose prose-md md:max-w-3/4 mx-auto text-center border-gray-200 text-gray-700">
           {content.paragraphs.map((paragraph, index) => (
-            <p key={index} className="leading-relaxed mb-6 text-xl">
+            <p
+              key={index}
+              className="leading-relaxed mb-6 text-base md:text-xl"
+            >
               {paragraph}
             </p>
           ))}

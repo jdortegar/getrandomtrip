@@ -1,5 +1,5 @@
-export type BlogStatus = 'draft' | 'published';
-export type BlogFormat = 'article' | 'photo' | 'video' | 'mixed';
+export type BlogStatus = "draft" | "published";
+export type BlogFormat = "article" | "photo" | "video" | "mixed";
 
 export interface BlogPost {
   id: string;
@@ -11,12 +11,17 @@ export interface BlogPost {
   tagline?: string;
   content?: string | null;
   blocks: Array<
-    | { type: 'paragraph'; text: string }
-    | { type: 'image'; url: string; caption?: string }
-    | { type: 'video'; url: string; caption?: string }         // soporta mp4 u HLS
-    | { type: 'embed'; provider: 'youtube'|'vimeo'|'map'|'other'; url: string; title?: string }
-    | { type: 'quote'; text: string; cite?: string }
-    | { type: 'faq'; items: { question: string; answer: string }[] }
+    | { type: "paragraph"; text: string }
+    | { type: "image"; url: string; caption?: string }
+    | { type: "video"; url: string; caption?: string } // soporta mp4 u HLS
+    | {
+        type: "embed";
+        provider: "youtube" | "vimeo" | "map" | "other";
+        url: string;
+        title?: string;
+      }
+    | { type: "quote"; text: string; cite?: string }
+    | { type: "faq"; items: { question: string; answer: string }[] }
   >;
   faq?: { items: { question: string; answer: string }[] } | null;
   tags: string[];

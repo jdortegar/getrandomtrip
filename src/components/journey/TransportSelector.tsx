@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Bus, Plane, Ship, Train } from 'lucide-react';
-import { useCallback, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { normalizeTransportId } from '@/lib/helpers/transport';
+import { Bus, Plane, Ship, Train } from "lucide-react";
+import { useCallback, useState } from "react";
+import { cn } from "@/lib/utils";
+import { normalizeTransportId } from "@/lib/helpers/transport";
 
 export const TRANSPORT_ICONS: Record<string, typeof Plane> = {
   plane: Plane,
@@ -13,24 +13,24 @@ export const TRANSPORT_ICONS: Record<string, typeof Plane> = {
 };
 
 export const TRANSPORT_OPTIONS = [
-  { id: 'bus', label: 'Bus' },
-  { id: 'plane', label: 'Plane' },
-  { id: 'ship', label: 'Ship' },
-  { id: 'train', label: 'Train' },
+  { id: "bus", label: "Bus" },
+  { id: "plane", label: "Plane" },
+  { id: "ship", label: "Ship" },
+  { id: "train", label: "Train" },
 ] as const;
 
 export const DEFAULT_TRANSPORT_ORDER: string[] = [
-  'plane',
-  'train',
-  'bus',
-  'ship',
+  "bus",
+  "train",
+  "plane",
+  "ship",
 ];
 
 const DEFAULT_OPTION_LABELS: Record<string, string> = {
-  bus: 'Bus',
-  plane: 'Plane',
-  ship: 'Ship',
-  train: 'Train',
+  bus: "Bus",
+  plane: "Plane",
+  ship: "Ship",
+  train: "Train",
 };
 
 export interface TransportSelectorLabels {
@@ -46,20 +46,24 @@ interface TransportSelectorProps {
   value: string[];
 }
 
-function TransportSelector({ labels: labelsProp, onChange, value }: TransportSelectorProps) {
+function TransportSelector({
+  labels: labelsProp,
+  onChange,
+  value,
+}: TransportSelectorProps) {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const labels = {
     ariaPreferenceTemplate:
       labelsProp?.ariaPreferenceTemplate ??
-      '{label}, preferencia {position}. Arrastrar para reordenar.',
+      "{label}, preferencia {position}. Arrastrar para reordenar.",
     hintOrder:
       labelsProp?.hintOrder ??
-      'No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el destino podríamos usar otra opción de la lista.',
+      "No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el destino podríamos usar otra opción de la lista.",
     hintTransfers:
       labelsProp?.hintTransfers ??
-      'Tren y Barco podrían requerir traslados extra.',
+      "Tren y Barco podrían requerir traslados extra.",
     optionLabels: { ...DEFAULT_OPTION_LABELS, ...labelsProp?.optionLabels },
   };
 
@@ -74,9 +78,9 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
 
   const handleDragStart = useCallback((e: React.DragEvent, id: string) => {
     setDraggedId(id);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', id);
-    e.dataTransfer.setData('application/json', JSON.stringify({ id }));
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.setData("application/json", JSON.stringify({ id }));
   }, []);
 
   const handleDragEnd = useCallback(() => {
@@ -87,7 +91,7 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
   const handleDragOver = useCallback(
     (e: React.DragEvent, id: string) => {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
+      e.dataTransfer.dropEffect = "move";
       if (draggedId && draggedId !== id) setDragOverId(id);
     },
     [draggedId],
@@ -101,7 +105,7 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
     (e: React.DragEvent, targetId: string) => {
       e.preventDefault();
       setDragOverId(null);
-      const sourceId = e.dataTransfer.getData('text/plain');
+      const sourceId = e.dataTransfer.getData("text/plain");
       if (!sourceId || sourceId === targetId) return;
       const current = [...orderedOptions];
       const fromIndex = current.indexOf(sourceId);
@@ -115,6 +119,41 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
     [onChange, orderedOptions],
   );
 
+  const commitSwap = useCallback(
+    (sourceId: string, targetId: string) => {
+      if (!sourceId || sourceId === targetId) return;
+      const current = [...orderedOptions];
+      const fromIndex = current.indexOf(sourceId);
+      const toIndex = current.indexOf(targetId);
+      if (fromIndex === -1 || toIndex === -1) return;
+      current.splice(fromIndex, 1);
+      current.splice(toIndex, 0, sourceId);
+      onChange(current);
+    },
+    [onChange, orderedOptions],
+  );
+
+  const handleTouchStart = useCallback((_e: React.TouchEvent, id: string) => {
+    setDraggedId(id);
+  }, []);
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const card = el?.closest("[data-transport-id]");
+      const targetId = card?.getAttribute("data-transport-id") ?? null;
+      if (targetId && targetId !== draggedId) setDragOverId(targetId);
+    },
+    [draggedId],
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    if (draggedId && dragOverId) commitSwap(draggedId, dragOverId);
+    setDraggedId(null);
+    setDragOverId(null);
+  }, [commitSwap, draggedId, dragOverId]);
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-center gap-4">
@@ -126,20 +165,24 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
           const isDragging = draggedId === id;
           const isDragOver = dragOverId === id;
           const ariaLabel = labels.ariaPreferenceTemplate
-            .replace('{label}', option.label)
-            .replace('{position}', String(index + 1));
+            .replace("{label}", option.label)
+            .replace("{position}", String(index + 1));
           return (
-            <div className="flex min-w-[100px] flex-col items-center gap-2" key={id}>
+            <div
+              className="flex min-w-[100px] flex-col items-center gap-2"
+              data-transport-id={id}
+              key={id}
+            >
               <div
                 className={cn(
-                  'flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 px-5 py-4 transition-colors',
+                  "flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 px-5 py-4 transition-colors",
                   isFirst
-                    ? 'border-gray-800 bg-gray-800 text-white'
-                    : 'border-gray-300 bg-white text-gray-600',
+                    ? "border-gray-800 bg-gray-800 text-white"
+                    : "border-gray-300 bg-white text-gray-600",
                 )}
               >
                 <Icon
-                  className={isFirst ? 'text-white' : 'text-gray-500'}
+                  className={isFirst ? "text-white" : "text-gray-500"}
                   size={36}
                 />
                 <span className="text-center text-sm font-medium">
@@ -149,11 +192,11 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
               <div
                 aria-label={ariaLabel}
                 className={cn(
-                  'flex h-9 w-9 cursor-grab items-center justify-center rounded-md border-2 bg-white text-sm font-semibold text-gray-700 transition-colors active:cursor-grabbing',
-                  isDragging && 'opacity-50',
+                  "flex h-9 w-9 cursor-grab touch-none items-center justify-center rounded-md border-2 bg-white text-sm font-semibold text-gray-700 transition-colors active:cursor-grabbing",
+                  isDragging && "opacity-50",
                   isDragOver
-                    ? 'border-primary ring-2 ring-primary ring-offset-2'
-                    : 'border-gray-300',
+                    ? "border-primary ring-2 ring-primary ring-offset-2"
+                    : "border-gray-300",
                 )}
                 draggable
                 onDragEnd={handleDragEnd}
@@ -161,6 +204,9 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
                 onDragOver={(e) => handleDragOver(e, id)}
                 onDragStart={(e) => handleDragStart(e, id)}
                 onDrop={(e) => handleDrop(e, id)}
+                onTouchEnd={handleTouchEnd}
+                onTouchMove={handleTouchMove}
+                onTouchStart={(e) => handleTouchStart(e, id)}
                 role="button"
                 tabIndex={0}
                 title={ariaLabel}
@@ -171,9 +217,7 @@ function TransportSelector({ labels: labelsProp, onChange, value }: TransportSel
           );
         })}
       </div>
-      <p className="text-center text-sm text-gray-500">
-        {labels.hintOrder}
-      </p>
+      <p className="text-center text-sm text-gray-500">{labels.hintOrder}</p>
       <p className="text-center text-sm text-gray-500">
         {labels.hintTransfers}
       </p>

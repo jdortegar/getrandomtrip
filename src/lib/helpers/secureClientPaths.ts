@@ -14,8 +14,7 @@ function pathMatchesSecurePrefix(barePath: string, prefix: string): boolean {
 const SECURE_PATH_PREFIXES = [
   "/checkout",
   "/dashboard",
-  "/profile",
-  "/reveal-destination",
+  "/account",
   "/tripper",
   "/trips/",
 ] as const;
@@ -23,9 +22,10 @@ const SECURE_PATH_PREFIXES = [
 /**
  * @param pathname - Full pathname including optional locale prefix (e.g. `/en/dashboard`).
  */
-export function shouldRedirectHomeWhenLeavingAuthModal(pathname: string): boolean {
-  const bare =
-    pathWithoutLocale(pathname).split("?")[0]?.trim() || "/";
+export function shouldRedirectHomeWhenLeavingAuthModal(
+  pathname: string,
+): boolean {
+  const bare = pathWithoutLocale(pathname).split("?")[0]?.trim() || "/";
   return SECURE_PATH_PREFIXES.some((prefix) =>
     pathMatchesSecurePrefix(bare, prefix),
   );

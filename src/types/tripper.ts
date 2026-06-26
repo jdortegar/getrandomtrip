@@ -3,28 +3,28 @@
 // ============================================================================
 
 export type TravellerType =
-  | 'solo'
-  | 'couple'
-  | 'family'
-  | 'group'
-  | 'honeymoon'
-  | 'paws';
+  | "solo"
+  | "couple"
+  | "family"
+  | "group"
+  | "honeymoon"
+  | "paws";
 export type TierLevel =
-  | 'essenza'
-  | 'modo-explora'
-  | 'explora-plus'
-  | 'bivouac'
-  | 'atelier-getaway';
-export type UserRole = 'CLIENT' | 'TRIPPER' | 'ADMIN';
-export type OwnerType = 'CUSTOMER' | 'TRIPPER' | 'ADMIN';
+  | "essenza"
+  | "modo-explora"
+  | "explora-plus"
+  | "bivouac"
+  | "atelier-getaway";
+export type UserRole = "CLIENT" | "TRIPPER" | "ADMIN";
+export type OwnerType = "CUSTOMER" | "TRIPPER" | "ADMIN";
 export type RouteStatus =
-  | 'draft'
-  | 'in_review'
-  | 'needs_changes'
-  | 'approved'
-  | 'published'
-  | 'archived';
-export type TripperLevel = 'rookie' | 'pro' | 'elite';
+  | "draft"
+  | "in_review"
+  | "needs_changes"
+  | "approved"
+  | "published"
+  | "archived";
+export type TripperLevel = "rookie" | "pro" | "elite";
 
 // Tripper Route
 export interface TripperRoute {
@@ -51,7 +51,7 @@ export interface Earning {
   baseCommissionUSD: number;
   bonusUSD: number;
   totalUSD: number;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   payoutDate?: string;
 }
 
@@ -68,9 +68,9 @@ export interface TripperSessionExtras {
 }
 
 export interface TripperOwnExperienceListItem {
-  displayPrice: string;
   id: string;
   isActive: boolean;
+  status: ExperienceStatus;
   level: string;
   maxNights: number;
   maxPax: number;
@@ -78,7 +78,19 @@ export interface TripperOwnExperienceListItem {
   minPax: number;
   teaser: string;
   title: string;
-  type: string;
+  type: string[];
+}
+
+/** Public fields returned by listing queries (grids, home, GET /api/trippers). */
+export interface TripperListItem {
+  id: string;
+  name: string;
+  tripperSlug: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  location: string | null;
+  commission: number | null;
+  travelerType: string | null;
 }
 
 // Tripper Profile from Database
@@ -165,7 +177,7 @@ export interface TripperDashboardStats {
   totalBookings: number;
   monthlyRevenue: number;
   averageRating: number;
-  activePackages: number;
+  activeExperiences: number;
   totalClients: number;
   /** Percentage value, 0–100 (e.g. 12.5 means 12.5%). */
   conversionRate: number;
@@ -175,15 +187,21 @@ export interface RecentBooking {
   id: string;
   clientName: string;
   clientEmail: string;
-  packageName: string;
-  packageId?: string;
+  experienceName: string;
+  experienceId?: string;
   date: string;
   amount: number;
-  status: 'confirmed' | 'revealed' | 'completed' | 'pending' | 'cancelled';
-  paymentStatus: 'APPROVED' | 'COMPLETED' | 'PENDING' | 'FAILED' | 'REJECTED' | 'CANCELLED';
+  status: "confirmed" | "revealed" | "completed" | "pending" | "cancelled";
+  paymentStatus:
+    | "APPROVED"
+    | "COMPLETED"
+    | "PENDING"
+    | "FAILED"
+    | "REJECTED"
+    | "CANCELLED";
 }
 
-// ─── Package Types ────────────────────────────────────────────────────────────
+// ─── Experience Types ─────────────────────────────────────────────────────────
 
 export interface ExperienceHotel {
   name: string;
@@ -220,7 +238,7 @@ export interface ExperienceFormData {
   // Destination
   destinationCountry: string;
   destinationCity: string;
-  excuseKey: string;
+  excuseKey: string[];
 
   // Capacity
   minNights: number;
@@ -229,7 +247,7 @@ export interface ExperienceFormData {
   maxPax: number;
 
   // Pricing
-  basePriceUsd: number;
+  basePrice: number;
   displayPrice: string;
 
   // Matching (mirrors TripRequest filters)
@@ -254,19 +272,135 @@ export interface ExperienceFormData {
   // Visibility
   isActive: boolean;
   isFeatured: boolean;
+
+  // XSED Drop fields
+  titleInternal?: string | null;
+  slug?: string | null;
+  tripDate?: string | null;
+  revealAt?: string | null;
+  minSpots?: number | null;
+  maxSpots?: number | null;
+  currency?: string;
+  cancellationPolicy?: string | null;
+  weatherPolicy?: string | null;
+  accessibilityNotes?: string | null;
+  safetyNotes?: string | null;
+  revealCopy?: string | null;
+  preRevealCopy?: string | null;
+  packingHints?: string | null;
+  whatsappMessageTemplate?: string | null;
+  adminNotes?: string | null;
+  supplierNotes?: string | null;
 }
+
+// ─── Experience status union (mirrors Prisma enum) ────────────────────────────
+
+export type ExperienceStatus =
+  | "DRAFT"
+  | "PENDING_REVIEW"
+  | "PENDING_TRIPPER_REVIEW"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ARCHIVED";
+
+// ─── New experience form draft ────────────────────────────────────────────────
+
+export interface ItineraryDayEntry {
+  title: string;
+  description: string;
+  image: string | null;
+}
+
+export type DurationUnit = "min" | "hr" | "day";
+
+export interface DurationValue {
+  value: number;
+  unit: DurationUnit;
+}
+
+export interface ActivityEntry {
+  name: string;
+  durationRhythm: DurationValue | null;
+  description: string;
+  risks: string;
+  image: string | null;
+}
+
+export interface AccommodationEntry {
+  hotelName: string;
+  hotelStars: string;
+  hotelLocation: string;
+  hotelDays: string;
+  hotelLink: string;
+  referredLink: string;
+}
+
+export interface ExperienceFormDraft {
+  // About
+  status: ExperienceStatus;
+  title: string;
+  type: string[];
+  level: string;
+  teaser: string;
+  description: string;
+  heroImage: string;
+  tags: string[];
+  // Destination
+  destinationCountry: string;
+  destinationCity: string;
+  excuseKey: string[];
+  climate: string;
+  // Capacity
+  minPax: number;
+  maxPax: number;
+  minNights: number;
+  maxNights: number;
+  // Pricing — admin-set on approval, read-only for tripper
+  pricingByType?: Record<string, number> | null;
+  reviewNote?: string | null;
+  estimatedCost: string;
+  season: string[];
+  // Logistics
+  transport: string;
+  travelTime: string;
+  maxTravelTime: string;
+  departPref: string;
+  arrivePref: string;
+  accommodationType: string;
+  accommodations: AccommodationEntry[];
+  // Activities & itinerary
+  activities: ActivityEntry[];
+  itinerary: ItineraryDayEntry[];
+  inclusions: string[];
+  exclusions: string[];
+  createBlogPost: boolean;
+}
+
+export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
+  key: K,
+  value: ExperienceFormDraft[K],
+) => void;
 
 export interface ExperienceListItem {
   id: string;
   title: string;
-  type: string;
-  level: string;  
-  status: string;
+  type: string[];
+  level: string | null;
+  status: ExperienceStatus;
   isActive: boolean;
-  basePriceUsd: number;
-  displayPrice: string;
+  pricingByType?: Record<string, number> | null;
+  reviewNote?: string | null;
   destinationCountry: string;
   destinationCity: string;
+  minNights: number;
+  maxNights: number;
+  minPax: number;
+  maxPax: number;
   createdAt: string;
   updatedAt: string;
+  // Review copy fields
+  isReviewCopy?: boolean;
+  parentId?: string | null;
+  changedFields?: string[];
+  reviewLockedBy?: string | null;
 }

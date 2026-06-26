@@ -12,15 +12,15 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Modify | `src/lib/types/dictionary.ts` | Add `TripperBlogsDict` interface + `tripperBlogs` field to `MarketingDictionary` |
-| Modify | `src/dictionaries/es.json` | Add `tripperBlogs` key with ES strings |
-| Modify | `src/dictionaries/en.json` | Add `tripperBlogs` key with EN strings |
-| Create | `src/components/app/dashboard/tripper/BlogPostRow.tsx` | Single blog post row (thumbnail + content + actions) |
-| Create | `src/components/app/dashboard/tripper/BlogPostsList.tsx` | Panel wrapping the list + empty state + header CTA |
-| Create | `src/components/app/dashboard/tripper/BlogsPageClient.tsx` | Client shell — `useParams` for locale, renders HeaderHero + BlogPostsList |
-| Modify | `src/app/[locale]/dashboard/tripper/blogs/page.tsx` | Server component — getServerSession + Prisma fetch + renders BlogsPageClient |
+| Action | Path                                                       | Purpose                                                                          |
+| ------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Modify | `src/lib/types/dictionary.ts`                              | Add `TripperBlogsDict` interface + `tripperBlogs` field to `MarketingDictionary` |
+| Modify | `src/dictionaries/es.json`                                 | Add `tripperBlogs` key with ES strings                                           |
+| Modify | `src/dictionaries/en.json`                                 | Add `tripperBlogs` key with EN strings                                           |
+| Create | `src/components/app/dashboard/tripper/BlogPostRow.tsx`     | Single blog post row (thumbnail + content + actions)                             |
+| Create | `src/components/app/dashboard/tripper/BlogPostsList.tsx`   | Panel wrapping the list + empty state + header CTA                               |
+| Create | `src/components/app/dashboard/tripper/BlogsPageClient.tsx` | Client shell — `useParams` for locale, renders HeaderHero + BlogPostsList        |
+| Modify | `src/app/[locale]/dashboard/tripper/blogs/page.tsx`        | Server component — getServerSession + Prisma fetch + renders BlogsPageClient     |
 
 No `index.ts` barrel. `BlogPost` type from `src/types/blog.ts` — no new types needed.
 
@@ -29,6 +29,7 @@ No `index.ts` barrel. `BlogPost` type from `src/types/blog.ts` — no new types 
 ## Task 1: Add `TripperBlogsDict` to `src/lib/types/dictionary.ts`
 
 **Files:**
+
 - Modify: `src/lib/types/dictionary.ts`
 
 - [ ] **Step 1: Add `TripperBlogsDict` interface**
@@ -61,7 +62,7 @@ export interface TripperBlogsDict {
 Find `tripperDashboard: TripperDashboardDict;` inside `MarketingDictionary` (last field). Add the new field before it:
 
 ```ts
-  tripperBlogs: TripperBlogsDict;
+tripperBlogs: TripperBlogsDict;
 ```
 
 - [ ] **Step 3: Verify typecheck shows only expected errors**
@@ -74,6 +75,7 @@ Expected: errors about missing `tripperBlogs` key in JSON files only (will be fi
 ## Task 2: Add `tripperBlogs` key to both dictionaries
 
 **Files:**
+
 - Modify: `src/dictionaries/es.json`
 - Modify: `src/dictionaries/en.json`
 
@@ -137,37 +139,38 @@ Expected: No errors.
 ## Task 3: Create `BlogPostRow`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/BlogPostRow.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import Link from 'next/link';
-import { BookOpen, Edit, Eye } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import Img from '@/components/common/Img';
-import type { BlogPost } from '@/types/blog';
-import type { TripperBlogsDict } from '@/lib/types/dictionary';
+import Link from "next/link";
+import { BookOpen, Edit, Eye } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import Img from "@/components/common/Img";
+import type { BlogPost } from "@/types/blog";
+import type { TripperBlogsDict } from "@/lib/types/dictionary";
 
 interface BlogPostRowProps {
   post: BlogPost;
-  copy: TripperBlogsDict['row'];
+  copy: TripperBlogsDict["row"];
 }
 
 function StatusBadge({
   status,
   copy,
 }: {
-  status: BlogPost['status'];
-  copy: TripperBlogsDict['row'];
+  status: BlogPost["status"];
+  copy: TripperBlogsDict["row"];
 }) {
-  const isPublished = status === 'published';
+  const isPublished = status === "published";
   return (
     <span
       className={`px-2 py-0.5 text-xs rounded-full border ${
         isPublished
-          ? 'bg-green-100 text-green-800 border-green-200'
-          : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+          ? "bg-green-100 text-green-800 border-green-200"
+          : "bg-yellow-100 text-yellow-800 border-yellow-200"
       }`}
     >
       {isPublished ? copy.published : copy.draft}
@@ -178,16 +181,19 @@ function StatusBadge({
 export function BlogPostRow({ post, copy }: BlogPostRowProps) {
   const displayDate = post.publishedAt ?? post.updatedAt;
   const dateLabel = post.publishedAt
-    ? new Date(post.publishedAt).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
+    ? new Date(post.publishedAt).toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       })
-    : `${copy.updatedAt}: ${new Date(post.updatedAt).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })}`;
+    : `${copy.updatedAt}: ${new Date(post.updatedAt).toLocaleDateString(
+        "es-ES",
+        {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        },
+      )}`;
 
   return (
     <div className="flex items-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md p-3">
@@ -215,7 +221,9 @@ export function BlogPostRow({ post, copy }: BlogPostRowProps) {
           {post.title}
         </p>
         {post.subtitle && (
-          <p className="text-sm text-neutral-500 line-clamp-2">{post.subtitle}</p>
+          <p className="text-sm text-neutral-500 line-clamp-2">
+            {post.subtitle}
+          </p>
         )}
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-1">
@@ -241,7 +249,7 @@ export function BlogPostRow({ post, copy }: BlogPostRowProps) {
             {copy.edit}
           </Link>
         </Button>
-        {post.status === 'published' && (
+        {post.status === "published" && (
           <Button asChild size="sm" variant="ghost">
             <Link
               href={`/blog/${post.slug ?? post.id}`}
@@ -269,17 +277,18 @@ Expected: No errors.
 ## Task 4: Create `BlogPostsList`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/BlogPostsList.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-import Link from 'next/link';
-import { BookOpen, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { BlogPostRow } from '@/components/app/dashboard/tripper/BlogPostRow';
-import type { BlogPost } from '@/types/blog';
-import type { TripperBlogsDict } from '@/lib/types/dictionary';
+import Link from "next/link";
+import { BookOpen, Plus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { BlogPostRow } from "@/components/app/dashboard/tripper/BlogPostRow";
+import type { BlogPost } from "@/types/blog";
+import type { TripperBlogsDict } from "@/lib/types/dictionary";
 
 interface BlogPostsListProps {
   posts: BlogPost[];
@@ -291,7 +300,9 @@ export function BlogPostsList({ posts, copy }: BlogPostsListProps) {
     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-neutral-900">{copy.header.title}</h2>
+        <h2 className="text-xl font-semibold text-neutral-900">
+          {copy.header.title}
+        </h2>
         <Button asChild size="sm">
           <Link href="/dashboard/tripper/blogs/new">
             <Plus className="h-4 w-4" />
@@ -336,32 +347,33 @@ Expected: No errors.
 ## Task 5: Create `BlogsPageClient`
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/BlogsPageClient.tsx`
 
 - [ ] **Step 1: Create the file**
 
 ```tsx
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import Section from '@/components/layout/Section';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { BlogPostsList } from '@/components/app/dashboard/tripper/BlogPostsList';
-import type { BlogPost } from '@/types/blog';
-import esCopy from '@/dictionaries/es.json';
-import enCopy from '@/dictionaries/en.json';
+import { useParams } from "next/navigation";
+import Section from "@/components/layout/Section";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { BlogPostsList } from "@/components/app/dashboard/tripper/BlogPostsList";
+import type { BlogPost } from "@/types/blog";
+import esCopy from "@/dictionaries/es.json";
+import enCopy from "@/dictionaries/en.json";
 
 interface BlogsPageClientProps {
   posts: BlogPost[];
 }
 
 function getBlogsCopy(locale: string) {
-  return locale.startsWith('en') ? enCopy.tripperBlogs : esCopy.tripperBlogs;
+  return locale.startsWith("en") ? enCopy.tripperBlogs : esCopy.tripperBlogs;
 }
 
 export function BlogsPageClient({ posts }: BlogsPageClientProps) {
   const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const copy = getBlogsCopy(locale);
 
   return (
@@ -392,28 +404,29 @@ Expected: No errors.
 ## Task 6: Refactor `page.tsx` to server component
 
 **Files:**
+
 - Modify: `src/app/[locale]/dashboard/tripper/blogs/page.tsx`
 
 - [ ] **Step 1: Replace the entire file**
 
 ```tsx
-import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { BlogsPageClient } from '@/components/app/dashboard/tripper/BlogsPageClient';
-import type { BlogPost } from '@/types/blog';
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { BlogsPageClient } from "@/components/app/dashboard/tripper/BlogsPageClient";
+import type { BlogPost } from "@/types/blog";
 
 export default async function BlogsPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    redirect('/login');
+    redirect("/login");
   }
 
   const rawBlogs = await prisma.blogPost.findMany({
     where: { authorId: session.user.id },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     select: {
       id: true,
       authorId: true,
@@ -433,12 +446,12 @@ export default async function BlogsPage() {
 
   const posts: BlogPost[] = rawBlogs.map((blog) => ({
     ...blog,
-    status: blog.status.toLowerCase() as BlogPost['status'],
-    format: blog.format.toLowerCase() as BlogPost['format'],
+    status: blog.status.toLowerCase() as BlogPost["status"],
+    format: blog.format.toLowerCase() as BlogPost["format"],
     createdAt: blog.createdAt.toISOString(),
     updatedAt: blog.updatedAt.toISOString(),
     publishedAt: blog.publishedAt?.toISOString(),
-    blocks: blog.blocks as BlogPost['blocks'],
+    blocks: blog.blocks as BlogPost["blocks"],
   }));
 
   return <BlogsPageClient posts={posts} />;
@@ -455,6 +468,7 @@ Expected: No errors.
 Start dev server (`npm run dev`) and navigate to `/es/dashboard/tripper/blogs`.
 
 Check:
+
 - `HeaderHero` renders (no old `Hero` component)
 - Blog posts appear as horizontal rows (not grid cards)
 - Published post shows green badge + Edit + Ver buttons

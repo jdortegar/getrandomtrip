@@ -12,28 +12,29 @@
 
 ## File Map
 
-| Action | File | Responsibility |
-|--------|------|----------------|
-| **Create** | `src/lib/constants/packages.ts` | `EXCUSE_KEYS_BY_TYPE`, `MAX_NIGHTS_BY_LEVEL`, all select option arrays |
-| **Modify** | `prisma/schema.prisma` | Add 6 matching fields to Package model |
-| **Modify** | `src/types/tripper.ts` | Add `PackageHotel`, `PackageActivity`, `PackageItineraryDay`, `PackageFormData`, `PackageListItem` |
-| **Modify** | `src/lib/types/dictionary.ts` | Add `PackagesDict` interface, reference in `MarketingDictionary` |
-| **Modify** | `src/dictionaries/es.json` | Add `packages` section |
-| **Modify** | `src/dictionaries/en.json` | Add `packages` section |
-| **Modify** | `src/app/api/packages/route.ts` | Accept 6 new matching fields in POST |
-| **Modify** | `src/app/api/tripper/packages/[id]/route.ts` | Fix GET select (add 5 JSON + 6 matching fields); add 6 new fields to PATCH |
-| **Replace** | `src/app/[locale]/dashboard/tripper/packages/page.tsx` | Server component shell → passes data to `PackagesPageClient` |
-| **Replace** | `src/app/[locale]/dashboard/tripper/packages/new/page.tsx` | Server component shell → renders `PackageFormClient mode="create"` |
-| **Replace** | `src/app/[locale]/dashboard/tripper/packages/[id]/page.tsx` | Server component shell → fetches package, renders `PackageFormClient mode="edit"` |
-| **Create** | `src/components/app/dashboard/tripper/packages/PackagesPageClient.tsx` | "use client" list page UI |
-| **Create** | `src/components/app/dashboard/tripper/packages/PackageFormNav.tsx` | Sticky sidebar nav with section links |
-| **Create** | `src/components/app/dashboard/tripper/packages/PackageFormClient.tsx` | Shared create/edit form, all 10 sections |
+| Action      | File                                                                   | Responsibility                                                                                     |
+| ----------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Create**  | `src/lib/constants/packages.ts`                                        | `EXCUSE_KEYS_BY_TYPE`, `MAX_NIGHTS_BY_LEVEL`, all select option arrays                             |
+| **Modify**  | `prisma/schema.prisma`                                                 | Add 6 matching fields to Package model                                                             |
+| **Modify**  | `src/types/tripper.ts`                                                 | Add `PackageHotel`, `PackageActivity`, `PackageItineraryDay`, `PackageFormData`, `PackageListItem` |
+| **Modify**  | `src/lib/types/dictionary.ts`                                          | Add `PackagesDict` interface, reference in `MarketingDictionary`                                   |
+| **Modify**  | `src/dictionaries/es.json`                                             | Add `packages` section                                                                             |
+| **Modify**  | `src/dictionaries/en.json`                                             | Add `packages` section                                                                             |
+| **Modify**  | `src/app/api/packages/route.ts`                                        | Accept 6 new matching fields in POST                                                               |
+| **Modify**  | `src/app/api/tripper/packages/[id]/route.ts`                           | Fix GET select (add 5 JSON + 6 matching fields); add 6 new fields to PATCH                         |
+| **Replace** | `src/app/[locale]/dashboard/tripper/packages/page.tsx`                 | Server component shell → passes data to `PackagesPageClient`                                       |
+| **Replace** | `src/app/[locale]/dashboard/tripper/packages/new/page.tsx`             | Server component shell → renders `PackageFormClient mode="create"`                                 |
+| **Replace** | `src/app/[locale]/dashboard/tripper/packages/[id]/page.tsx`            | Server component shell → fetches package, renders `PackageFormClient mode="edit"`                  |
+| **Create**  | `src/components/app/dashboard/tripper/packages/PackagesPageClient.tsx` | "use client" list page UI                                                                          |
+| **Create**  | `src/components/app/dashboard/tripper/packages/PackageFormNav.tsx`     | Sticky sidebar nav with section links                                                              |
+| **Create**  | `src/components/app/dashboard/tripper/packages/PackageFormClient.tsx`  | Shared create/edit form, all 10 sections                                                           |
 
 ---
 
 ## Task 1: Constants file
 
 **Files:**
+
 - Create: `src/lib/constants/packages.ts`
 
 - [ ] **Step 1: Create the constants file**
@@ -42,127 +43,127 @@
 // src/lib/constants/packages.ts
 
 export const PACKAGE_TYPES = [
-  { value: 'couple', label: 'Pareja (BOND©)' },
-  { value: 'family', label: 'Familia (KIN©)' },
-  { value: 'group', label: 'Grupo (CREW©)' },
-  { value: 'solo', label: 'Solo (SOLUM©)' },
-  { value: 'honeymoon', label: 'Luna de Miel (NUPTIA©)' },
-  { value: 'paws', label: 'Con Mascotas (PAWS©)' },
+  { value: "couple", label: "Pareja (BOND©)" },
+  { value: "family", label: "Familia (KIN©)" },
+  { value: "group", label: "Grupo (CREW©)" },
+  { value: "solo", label: "Solo (SOLUM©)" },
+  { value: "honeymoon", label: "Luna de Miel (NUPTIA©)" },
+  { value: "paws", label: "Con Mascotas (PAWS©)" },
 ] as const;
 
 export const PACKAGE_LEVELS = [
-  { value: 'essenza', label: 'Essenza' },
-  { value: 'modo-explora', label: 'Modo Explora' },
-  { value: 'explora-plus', label: 'Explora+' },
-  { value: 'bivouac', label: 'Bivouac' },
-  { value: 'atelier-getaway', label: 'Atelier Getaway' },
+  { value: "essenza", label: "Essenza" },
+  { value: "modo-explora", label: "Modo Explora" },
+  { value: "explora-plus", label: "Explora+" },
+  { value: "bivouac", label: "Bivouac" },
+  { value: "atelier-getaway", label: "Atelier Getaway" },
 ] as const;
 
 export const PACKAGE_STATUSES = [
-  { value: 'DRAFT', label: 'Borrador' },
-  { value: 'ACTIVE', label: 'Activo' },
-  { value: 'INACTIVE', label: 'Inactivo' },
-  { value: 'ARCHIVED', label: 'Archivado' },
+  { value: "DRAFT", label: "Borrador" },
+  { value: "ACTIVE", label: "Activo" },
+  { value: "INACTIVE", label: "Inactivo" },
+  { value: "ARCHIVED", label: "Archivado" },
 ] as const;
 
 export const ACCOMMODATION_TYPES = [
-  { value: 'any', label: 'Indistinto' },
-  { value: 'hotel-style', label: 'Hotel' },
-  { value: 'home-style', label: 'Apartamento / Casa' },
-  { value: 'nature-escape', label: 'Naturaleza' },
-  { value: 'hybrid-hub', label: 'Híbrido' },
-  { value: 'glamping', label: 'Glamping' },
+  { value: "any", label: "Indistinto" },
+  { value: "hotel-style", label: "Hotel" },
+  { value: "home-style", label: "Apartamento / Casa" },
+  { value: "nature-escape", label: "Naturaleza" },
+  { value: "hybrid-hub", label: "Híbrido" },
+  { value: "glamping", label: "Glamping" },
 ] as const;
 
 export const TRANSPORT_MODES = [
-  { value: 'any', label: 'Indistinto' },
-  { value: 'plane', label: 'Avión' },
-  { value: 'bus', label: 'Bus' },
-  { value: 'train', label: 'Tren' },
-  { value: 'ship', label: 'Barco / Ferry' },
+  { value: "any", label: "Indistinto" },
+  { value: "plane", label: "Avión" },
+  { value: "bus", label: "Bus" },
+  { value: "train", label: "Tren" },
+  { value: "ship", label: "Barco / Ferry" },
 ] as const;
 
 export const CLIMATE_OPTIONS = [
-  { value: 'any', label: 'Indistinto' },
-  { value: 'warm', label: 'Cálido' },
-  { value: 'cold', label: 'Frío' },
-  { value: 'mild', label: 'Templado' },
+  { value: "any", label: "Indistinto" },
+  { value: "warm", label: "Cálido" },
+  { value: "cold", label: "Frío" },
+  { value: "mild", label: "Templado" },
 ] as const;
 
 export const MAX_TRAVEL_TIME_OPTIONS = [
-  { value: 'no-limit', label: 'Sin límite' },
-  { value: '3h', label: 'Hasta 3 horas' },
-  { value: '5h', label: 'Hasta 5 horas' },
-  { value: '8h', label: 'Hasta 8 horas' },
+  { value: "no-limit", label: "Sin límite" },
+  { value: "3h", label: "Hasta 3 horas" },
+  { value: "5h", label: "Hasta 5 horas" },
+  { value: "8h", label: "Hasta 8 horas" },
 ] as const;
 
 export const TIME_PREFERENCES = [
-  { value: 'any', label: 'Indistinto' },
-  { value: 'morning', label: 'Mañana' },
-  { value: 'afternoon', label: 'Tarde' },
-  { value: 'night', label: 'Noche' },
+  { value: "any", label: "Indistinto" },
+  { value: "morning", label: "Mañana" },
+  { value: "afternoon", label: "Tarde" },
+  { value: "night", label: "Noche" },
 ] as const;
 
 export const EXCUSE_KEYS_BY_TYPE: Record<string, string[]> = {
   couple: [
-    'Escapada Romántica',
-    'Dúo de Aventura',
-    'Foodie Lovers',
-    'Cultura & Tradición',
-    'Wellness Retreat',
-    'Celebraciones',
-    'Playa & Dunas',
-    'Escapada Urbana',
+    "Escapada Romántica",
+    "Dúo de Aventura",
+    "Foodie Lovers",
+    "Cultura & Tradición",
+    "Wellness Retreat",
+    "Celebraciones",
+    "Playa & Dunas",
+    "Escapada Urbana",
   ],
   solo: [
-    'Get Lost',
-    'Búsqueda Interior',
-    'Aventura & Desafío',
-    'Exploración Cultural',
-    'Fotografía & Narrativa Visual',
-    'Literatura Arte & Talleres Locales',
-    'Música & Sonidos',
-    'Tribe Encounters',
+    "Get Lost",
+    "Búsqueda Interior",
+    "Aventura & Desafío",
+    "Exploración Cultural",
+    "Fotografía & Narrativa Visual",
+    "Literatura Arte & Talleres Locales",
+    "Música & Sonidos",
+    "Tribe Encounters",
   ],
   family: [
-    'Aventura en familia',
-    'Naturaleza & fauna',
-    'Cultura & tradiciones',
-    'Playas & dunas',
-    'Graduaciones & celebraciones',
-    'Escapadas Madre-hij@ / Padre-hij@',
+    "Aventura en familia",
+    "Naturaleza & fauna",
+    "Cultura & tradiciones",
+    "Playas & dunas",
+    "Graduaciones & celebraciones",
+    "Escapadas Madre-hij@ / Padre-hij@",
   ],
   honeymoon: [],
   paws: [
-    'Senderos & Naturaleza',
-    'Playas Dog-Friendly',
-    'Ciudades Pet Lovers',
-    'Aventura Outdoor',
-    'Relax & Bienestar',
-    'Escapadas Gastronómicas',
-    'Trips Rurales & Granja',
-    'Dog Events & Comunidades',
+    "Senderos & Naturaleza",
+    "Playas Dog-Friendly",
+    "Ciudades Pet Lovers",
+    "Aventura Outdoor",
+    "Relax & Bienestar",
+    "Escapadas Gastronómicas",
+    "Trips Rurales & Granja",
+    "Dog Events & Comunidades",
   ],
   group: [
-    'Narradores Visuales',
-    'Yoga & Bienestar',
-    'Religioso o Espiritual',
-    'Gastronómico',
-    'Historias & Fantasía',
-    'Naturaleza & Aventura',
-    'Amigos',
-    'Negocios',
-    'Estudiantes',
-    'Música & Festivales',
+    "Narradores Visuales",
+    "Yoga & Bienestar",
+    "Religioso o Espiritual",
+    "Gastronómico",
+    "Historias & Fantasía",
+    "Naturaleza & Aventura",
+    "Amigos",
+    "Negocios",
+    "Estudiantes",
+    "Música & Festivales",
   ],
 };
 
 export const MAX_NIGHTS_BY_LEVEL: Record<string, number | null> = {
-  'essenza': 2,
-  'modo-explora': 3,
-  'explora-plus': 4,
-  'bivouac': 5,
-  'atelier-getaway': null,
+  essenza: 2,
+  "modo-explora": 3,
+  "explora-plus": 4,
+  bivouac: 5,
+  "atelier-getaway": null,
 };
 ```
 
@@ -178,6 +179,7 @@ git commit -m "feat: add packages constants (excuse keys, level limits, select o
 ## Task 2: Schema migration — add 6 matching fields
 
 **Files:**
+
 - Modify: `prisma/schema.prisma:121-177`
 
 - [ ] **Step 1: Add 6 fields to the Package model**
@@ -238,6 +240,7 @@ git commit -m "feat: add 6 matching fields to Package schema (accommodationType,
 ## Task 3: Types — add package-specific types to tripper.ts
 
 **Files:**
+
 - Modify: `src/types/tripper.ts`
 
 - [ ] **Step 1: Read the current file to find the insertion point**
@@ -358,6 +361,7 @@ git commit -m "feat: add PackageFormData, PackageListItem, and JSON sub-types to
 ## Task 4: i18n — PackagesDict interface + dictionary strings
 
 **Files:**
+
 - Modify: `src/lib/types/dictionary.ts`
 - Modify: `src/dictionaries/es.json`
 - Modify: `src/dictionaries/en.json`
@@ -738,6 +742,7 @@ git commit -m "feat: add PackagesDict interface and i18n strings for packages fl
 ## Task 5: Fix API — GET bug + add 6 new fields to GET/PATCH/POST
 
 **Files:**
+
 - Modify: `src/app/api/tripper/packages/[id]/route.ts`
 - Modify: `src/app/api/packages/route.ts`
 
@@ -833,6 +838,7 @@ git commit -m "fix: add missing JSON fields to GET select; add 6 matching fields
 ## Task 6: PackagesPageClient component
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/packages/PackagesPageClient.tsx`
 
 - [ ] **Step 1: Create the list page client component**
@@ -871,7 +877,8 @@ export default function PackagesPageClient({
 
   const filtered = useMemo(() => {
     return packages.filter((pkg) => {
-      const statusMatch = selectedStatus === "all" || pkg.status === selectedStatus;
+      const statusMatch =
+        selectedStatus === "all" || pkg.status === selectedStatus;
       const levelMatch = selectedLevel === "all" || pkg.level === selectedLevel;
       return statusMatch && levelMatch;
     });
@@ -913,7 +920,9 @@ export default function PackagesPageClient({
         >
           <option value="all">{copy.filters.allStatuses}</option>
           {(["ACTIVE", "DRAFT", "INACTIVE", "ARCHIVED"] as const).map((s) => (
-            <option key={s} value={s}>{copy.status[s]}</option>
+            <option key={s} value={s}>
+              {copy.status[s]}
+            </option>
           ))}
         </select>
 
@@ -924,7 +933,9 @@ export default function PackagesPageClient({
         >
           <option value="all">{copy.filters.allLevels}</option>
           {levels.map((l) => (
-            <option key={l} value={l}>{l}</option>
+            <option key={l} value={l}>
+              {l}
+            </option>
           ))}
         </select>
       </div>
@@ -934,7 +945,9 @@ export default function PackagesPageClient({
         {filtered.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-sm text-neutral-500 mb-4">
-              {packages.length === 0 ? copy.emptyState.noPackages : copy.emptyState.noMatch}
+              {packages.length === 0
+                ? copy.emptyState.noPackages
+                : copy.emptyState.noMatch}
             </p>
             {packages.length === 0 && (
               <Button asChild size="sm">
@@ -970,16 +983,25 @@ export default function PackagesPageClient({
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map((pkg) => (
-                  <tr key={pkg.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={pkg.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-5 py-4">
-                      <div className="text-sm font-medium text-neutral-900">{pkg.title}</div>
+                      <div className="text-sm font-medium text-neutral-900">
+                        {pkg.title}
+                      </div>
                       <div className="text-xs text-neutral-500">
                         {pkg.destinationCity}, {pkg.destinationCountry}
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <div className="text-sm text-neutral-700 capitalize">{pkg.type}</div>
-                      <div className="text-xs text-neutral-500 capitalize">{pkg.level}</div>
+                      <div className="text-sm text-neutral-700 capitalize">
+                        {pkg.type}
+                      </div>
+                      <div className="text-xs text-neutral-500 capitalize">
+                        {pkg.level}
+                      </div>
                     </td>
                     <td className="px-5 py-4">
                       <span
@@ -987,21 +1009,25 @@ export default function PackagesPageClient({
                           STATUS_COLORS[pkg.status] ?? STATUS_COLORS.DRAFT
                         }`}
                       >
-                        {copy.status[pkg.status as keyof typeof copy.status] ?? pkg.status}
+                        {copy.status[pkg.status as keyof typeof copy.status] ??
+                          pkg.status}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
-                      {pkg.displayPrice || `USD ${pkg.basePriceUsd.toLocaleString()}`}
+                      {pkg.displayPrice ||
+                        `USD ${pkg.basePriceUsd.toLocaleString()}`}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-500">
                       {new Date(pkg.updatedAt).toLocaleDateString(
                         locale.startsWith("en") ? "en-US" : "es-ES",
-                        { day: "numeric", month: "short", year: "numeric" }
+                        { day: "numeric", month: "short", year: "numeric" },
                       )}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <Button asChild variant="ghost" size="sm">
-                        <Link href={`${basePath}/${pkg.id}`}>{copy.table.edit}</Link>
+                        <Link href={`${basePath}/${pkg.id}`}>
+                          {copy.table.edit}
+                        </Link>
                       </Button>
                     </td>
                   </tr>
@@ -1036,6 +1062,7 @@ git commit -m "feat: add PackagesPageClient list component with filters and tabl
 ## Task 7: Replace packages/page.tsx with server component
 
 **Files:**
+
 - Replace: `src/app/[locale]/dashboard/tripper/packages/page.tsx`
 
 - [ ] **Step 1: Replace the page with a server component**
@@ -1133,6 +1160,7 @@ git commit -m "feat: convert packages list page to server component"
 ## Task 8: PackageFormNav component
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/packages/PackageFormNav.tsx`
 
 - [ ] **Step 1: Create the sidebar nav component**
@@ -1186,7 +1214,7 @@ export default function PackageFormNav({
             }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                 isActive ? "bg-neutral-900" : "bg-neutral-300"
               }`}
             />
@@ -1196,7 +1224,12 @@ export default function PackageFormNav({
       })}
 
       <div className="pt-4 space-y-2 border-t border-gray-100 mt-2">
-        <Button type="submit" className="w-full" disabled={loading} form="package-form">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={loading}
+          form="package-form"
+        >
           {loading ? "..." : submitLabel}
         </Button>
         <Button
@@ -1226,6 +1259,7 @@ git commit -m "feat: add PackageFormNav sticky sidebar with section links and sa
 ## Task 9: PackageFormClient — sections 1–4 (Básico, Destino, Capacidad & Precio, Compatibilidad)
 
 **Files:**
+
 - Create: `src/components/app/dashboard/tripper/packages/PackageFormClient.tsx`
 
 - [ ] **Step 1: Create PackageFormClient with sections 1–4**
@@ -1412,11 +1446,12 @@ export default function PackageFormClient({
 
   const maxNightsLimit = MAX_NIGHTS_BY_LEVEL[form.level] ?? null;
   const excuseOptions = EXCUSE_KEYS_BY_TYPE[form.type] ?? [];
-  const showExcuse =
-    form.level === "explora-plus" || form.level === "bivouac";
+  const showExcuse = form.level === "explora-plus" || form.level === "bivouac";
 
-  const set = <K extends keyof PackageFormData>(key: K, value: PackageFormData[K]) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const set = <K extends keyof PackageFormData>(
+    key: K,
+    value: PackageFormData[K],
+  ) => setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleTypeChange = (value: string) => {
     setForm((prev) => ({ ...prev, type: value, excuseKey: "" }));
@@ -1427,7 +1462,7 @@ export default function PackageFormClient({
 
     if (maxNightsLimit !== null && form.maxNights > maxNightsLimit) {
       toast.error(
-        copy.fields.maxNightsHint.replace("{n}", String(maxNightsLimit))
+        copy.fields.maxNightsHint.replace("{n}", String(maxNightsLimit)),
       );
       return;
     }
@@ -1451,7 +1486,7 @@ export default function PackageFormClient({
 
       if (res.ok) {
         toast.success(
-          mode === "create" ? "Paquete creado" : "Cambios guardados"
+          mode === "create" ? "Paquete creado" : "Cambios guardados",
         );
         router.push(basePath);
       } else {
@@ -1483,7 +1518,9 @@ export default function PackageFormClient({
           Tripper OS
         </p>
         <h1 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase">
-          {mode === "create" ? copy.createTitle : (initialData?.title?.toUpperCase() ?? copy.editTitle)}
+          {mode === "create"
+            ? copy.createTitle
+            : (initialData?.title?.toUpperCase() ?? copy.editTitle)}
         </h1>
       </div>
 
@@ -1497,13 +1534,18 @@ export default function PackageFormClient({
           mode={mode}
           loading={loading}
           onCancel={() => router.push(basePath)}
-          submitLabel={loading ? copy.saving : mode === "create" ? copy.createSubmit : copy.editSubmit}
+          submitLabel={
+            loading
+              ? copy.saving
+              : mode === "create"
+                ? copy.createSubmit
+                : copy.editSubmit
+          }
           cancelLabel={copy.cancel}
         />
 
         {/* Form sections */}
         <form id="package-form" onSubmit={handleSubmit} className="space-y-6">
-
           {/* Section 1: Básico */}
           <div
             id="section-basic"
@@ -1537,7 +1579,9 @@ export default function PackageFormClient({
                     required
                   >
                     {PACKAGE_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -1552,7 +1596,9 @@ export default function PackageFormClient({
                     required
                   >
                     {PACKAGE_LEVELS.map((l) => (
-                      <option key={l.value} value={l.value}>{l.label}</option>
+                      <option key={l.value} value={l.value}>
+                        {l.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -1567,7 +1613,9 @@ export default function PackageFormClient({
                     className={fieldClass}
                   >
                     {PACKAGE_STATUSES.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -1609,7 +1657,8 @@ export default function PackageFormClient({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>
-                    {copy.fields.country} <span className="text-red-500">*</span>
+                    {copy.fields.country}{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={form.destinationCountry}
@@ -1641,7 +1690,9 @@ export default function PackageFormClient({
                   >
                     <option value="">— Seleccionar excusa —</option>
                     {excuseOptions.map((key) => (
-                      <option key={key} value={key}>{key}</option>
+                      <option key={key} value={key}>
+                        {key}
+                      </option>
                     ))}
                   </select>
                   <p className={hintClass}>{copy.fields.excuseKeyHint}</p>
@@ -1666,7 +1717,9 @@ export default function PackageFormClient({
                     type="number"
                     min={1}
                     value={form.minNights}
-                    onChange={(e) => set("minNights", parseInt(e.target.value) || 1)}
+                    onChange={(e) =>
+                      set("minNights", parseInt(e.target.value) || 1)
+                    }
                   />
                 </div>
                 <div>
@@ -1676,11 +1729,16 @@ export default function PackageFormClient({
                     min={1}
                     max={maxNightsLimit ?? undefined}
                     value={form.maxNights}
-                    onChange={(e) => set("maxNights", parseInt(e.target.value) || 1)}
+                    onChange={(e) =>
+                      set("maxNights", parseInt(e.target.value) || 1)
+                    }
                   />
                   {maxNightsLimit !== null && (
                     <p className={hintClass}>
-                      {copy.fields.maxNightsHint.replace("{n}", String(maxNightsLimit))}
+                      {copy.fields.maxNightsHint.replace(
+                        "{n}",
+                        String(maxNightsLimit),
+                      )}
                     </p>
                   )}
                 </div>
@@ -1690,7 +1748,9 @@ export default function PackageFormClient({
                     type="number"
                     min={1}
                     value={form.minPax}
-                    onChange={(e) => set("minPax", parseInt(e.target.value) || 1)}
+                    onChange={(e) =>
+                      set("minPax", parseInt(e.target.value) || 1)
+                    }
                   />
                 </div>
                 <div>
@@ -1699,26 +1759,34 @@ export default function PackageFormClient({
                     type="number"
                     min={1}
                     value={form.maxPax}
-                    onChange={(e) => set("maxPax", parseInt(e.target.value) || 1)}
+                    onChange={(e) =>
+                      set("maxPax", parseInt(e.target.value) || 1)
+                    }
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>{copy.fields.basePriceUsd}</label>
+                  <label className={labelClass}>
+                    {copy.fields.basePriceUsd}
+                  </label>
                   <Input
                     type="number"
                     min={0}
                     step={0.01}
                     value={form.basePriceUsd}
-                    onChange={(e) => set("basePriceUsd", parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      set("basePriceUsd", parseFloat(e.target.value) || 0)
+                    }
                     placeholder="0.00"
                   />
                   <p className={hintClass}>{copy.fields.basePriceUsdHint}</p>
                 </div>
                 <div>
-                  <label className={labelClass}>{copy.fields.displayPrice}</label>
+                  <label className={labelClass}>
+                    {copy.fields.displayPrice}
+                  </label>
                   <Input
                     value={form.displayPrice}
                     onChange={(e) => set("displayPrice", e.target.value)}
@@ -1738,16 +1806,42 @@ export default function PackageFormClient({
             <h2 className="text-lg font-semibold text-neutral-900 mb-1">
               {copy.sections.compatibility}
             </h2>
-            <p className="text-xs text-neutral-500 mb-4">{copy.fields.compatibilityHint}</p>
+            <p className="text-xs text-neutral-500 mb-4">
+              {copy.fields.compatibilityHint}
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {(
                 [
-                  { key: "accommodationType", opts: ACCOMMODATION_TYPES, label: copy.fields.accommodationType },
-                  { key: "transport", opts: TRANSPORT_MODES, label: copy.fields.transport },
-                  { key: "climate", opts: CLIMATE_OPTIONS, label: copy.fields.climate },
-                  { key: "maxTravelTime", opts: MAX_TRAVEL_TIME_OPTIONS, label: copy.fields.maxTravelTime },
-                  { key: "departPref", opts: TIME_PREFERENCES, label: copy.fields.departPref },
-                  { key: "arrivePref", opts: TIME_PREFERENCES, label: copy.fields.arrivePref },
+                  {
+                    key: "accommodationType",
+                    opts: ACCOMMODATION_TYPES,
+                    label: copy.fields.accommodationType,
+                  },
+                  {
+                    key: "transport",
+                    opts: TRANSPORT_MODES,
+                    label: copy.fields.transport,
+                  },
+                  {
+                    key: "climate",
+                    opts: CLIMATE_OPTIONS,
+                    label: copy.fields.climate,
+                  },
+                  {
+                    key: "maxTravelTime",
+                    opts: MAX_TRAVEL_TIME_OPTIONS,
+                    label: copy.fields.maxTravelTime,
+                  },
+                  {
+                    key: "departPref",
+                    opts: TIME_PREFERENCES,
+                    label: copy.fields.departPref,
+                  },
+                  {
+                    key: "arrivePref",
+                    opts: TIME_PREFERENCES,
+                    label: copy.fields.arrivePref,
+                  },
                 ] as const
               ).map(({ key, opts, label }) => (
                 <div key={key}>
@@ -1758,7 +1852,9 @@ export default function PackageFormClient({
                     className={fieldClass}
                   >
                     {opts.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -1794,6 +1890,7 @@ git commit -m "feat: add PackageFormClient sections 1-4 (Básico, Destino, Capac
 ## Task 10: PackageFormClient — sections 5–10 (JSON editors + Tags/Media + Visibility)
 
 **Files:**
+
 - Modify: `src/components/app/dashboard/tripper/packages/PackageFormClient.tsx`
 
 - [ ] **Step 1: Add sections 5–10 inside the form, after the section-compatibility div**
@@ -2244,6 +2341,7 @@ git commit -m "feat: add PackageFormClient sections 5-10 (JSON editors, tags, me
 ## Task 11: Server page shells — new + [id]
 
 **Files:**
+
 - Replace: `src/app/[locale]/dashboard/tripper/packages/new/page.tsx`
 - Replace: `src/app/[locale]/dashboard/tripper/packages/[id]/page.tsx`
 
@@ -2372,8 +2470,12 @@ export default async function EditPackagePage({
     hotels: Array.isArray(pkg.hotels) ? (pkg.hotels as any[]) : [],
     activities: Array.isArray(pkg.activities) ? (pkg.activities as any[]) : [],
     itinerary: Array.isArray(pkg.itinerary) ? (pkg.itinerary as any[]) : [],
-    inclusions: Array.isArray(pkg.inclusions) ? (pkg.inclusions as string[]) : [],
-    exclusions: Array.isArray(pkg.exclusions) ? (pkg.exclusions as string[]) : [],
+    inclusions: Array.isArray(pkg.inclusions)
+      ? (pkg.inclusions as string[])
+      : [],
+    exclusions: Array.isArray(pkg.exclusions)
+      ? (pkg.exclusions as string[])
+      : [],
     tags: pkg.tags,
     highlights: pkg.highlights,
     isActive: pkg.isActive,
@@ -2442,6 +2544,7 @@ npm run dev
 ```
 
 Open `http://localhost:3010/es/dashboard/tripper/packages`. Verify:
+
 1. Page loads with dashboard header (no Hero, no GlassCard)
 2. Packages table shows (or empty state)
 3. "Nuevo Paquete" button navigates to the form

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import { enUS, es } from 'react-day-picker/locale';
-import { cn } from '@/lib/utils';
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { enUS, es } from "react-day-picker/locale";
+import { cn } from "@/lib/utils";
 
 function formatDateParam(date: Date) {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
 function parseDateParam(value: string | undefined) {
   if (!value) return undefined;
-  const [y, m, d] = value.split('-').map(Number);
+  const [y, m, d] = value.split("-").map(Number);
   if (!y || !m || !d) return undefined;
   return new Date(y, m - 1, d);
 }
@@ -26,23 +26,29 @@ function addDays(date: Date, days: number): Date {
 }
 
 function calendarDayTime(date: Date): number {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ).getTime();
 }
 
-function isStrictlyBetween(date: Date, rangeFrom: Date, rangeTo: Date): boolean {
+function isStrictlyBetween(
+  date: Date,
+  rangeFrom: Date,
+  rangeTo: Date,
+): boolean {
   const t = calendarDayTime(date);
-  return (
-    t > calendarDayTime(rangeFrom) && t < calendarDayTime(rangeTo)
-  );
+  return t > calendarDayTime(rangeFrom) && t < calendarDayTime(rangeTo);
 }
 
 function dayPickerLocaleFromDocument() {
   try {
     const localeCode =
-      typeof document !== 'undefined'
-        ? document.documentElement.lang?.slice(0, 2) ?? 'es'
-        : 'es';
-    return localeCode === 'en' ? enUS : es;
+      typeof document !== "undefined"
+        ? (document.documentElement.lang?.slice(0, 2) ?? "es")
+        : "es";
+    return localeCode === "en" ? enUS : es;
   } catch {
     return es;
   }
@@ -83,12 +89,11 @@ export function JourneyDatesPicker({
 
   const labels = {
     availableFromHint:
-      labelsProp?.availableFromHint ??
-      'Fechas disponibles a partir de 7 días.',
-    clearAll: labelsProp?.clearAll ?? 'Borrar todo',
-    confirmDates: labelsProp?.confirmDates ?? 'Confirmar fechas',
-    daysLabel: labelsProp?.daysLabel ?? 'días',
-    nightsLabel: labelsProp?.nightsLabel ?? 'noches',
+      labelsProp?.availableFromHint ?? "Fechas disponibles a partir de 7 días.",
+    clearAll: labelsProp?.clearAll ?? "Borrar todo",
+    confirmDates: labelsProp?.confirmDates ?? "Confirmar fechas",
+    daysLabel: labelsProp?.daysLabel ?? "días",
+    nightsLabel: labelsProp?.nightsLabel ?? "noches",
   };
 
   const dayPickerLocale = dayPickerLocaleFromDocument();
@@ -120,7 +125,7 @@ export function JourneyDatesPicker({
         <div
           aria-label={`${tripNights + 1} ${labels.daysLabel}, ${tripNights} ${labels.nightsLabel}`}
           className={cn(
-            'inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-1.5 text-sm text-white shadow-sm',
+            "inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-1.5 text-sm text-white shadow-sm",
           )}
         >
           <span className="font-semibold">
@@ -135,11 +140,11 @@ export function JourneyDatesPicker({
       <div className="mt-4 rounded-lg border border-gray-300 bg-white p-4 text-center">
         <DayPicker
           classNames={{
-            chevron: 'fill-primary',
-            day: 'text-gray-500',
+            chevron: "fill-primary",
+            day: "text-gray-500",
             selected:
-              'bg-primary border-primary text-white rounded-full rounded-r-none',
-            today: 'border-primary',
+              "bg-primary border-primary text-white rounded-full rounded-r-none",
+            today: "border-primary",
           }}
           locale={dayPickerLocale}
           mode="single"
@@ -152,17 +157,14 @@ export function JourneyDatesPicker({
           }}
           modifiersClassNames={{
             journey_end:
-              'bg-primary border-primary text-white rounded-full rounded-l-none',
-            journey_middle:
-              'bg-primary border-primary rounded-none text-white',
+              "bg-primary border-primary text-white rounded-full rounded-l-none",
+            journey_middle: "bg-primary border-primary rounded-none text-white",
           }}
           numberOfMonths={2}
           onSelect={handleSelect}
           selected={from}
         />
-        <p className="mt-2 text-sm text-gray-500">
-          {labels.availableFromHint}
-        </p>
+        <p className="mt-2 text-sm text-gray-500">{labels.availableFromHint}</p>
       </div>
       {/*
       <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">

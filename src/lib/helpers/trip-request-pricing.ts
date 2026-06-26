@@ -1,6 +1,6 @@
-import { getBasePricePerPerson } from '@/lib/data/traveler-types';
-import type { PaymentTotalsInput } from '@/lib/helpers/payment-totals';
-import type { AddonSelection, Filters } from '@/store/slices/journeyStore';
+import { getBasePricePerPerson } from "@/lib/data/traveler-types";
+import type { PaymentTotalsInput } from "@/lib/helpers/payment-totals";
+import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 
 /** Optional fields present on Prisma `TripRequest` list items (dashboard / GET /api/trips). */
 export interface TripRequestPricingFields {
@@ -21,23 +21,23 @@ export interface TripRequestPricingFields {
 }
 
 function coercePrefAny(raw: string | undefined): string {
-  const v = (raw ?? '').trim().toLowerCase();
-  if (!v || v === 'any' || v === 'indistinto') return 'any';
+  const v = (raw ?? "").trim().toLowerCase();
+  if (!v || v === "any" || v === "indistinto") return "any";
   return String(raw).trim();
 }
 
 function coerceMaxTravel(raw: string | undefined): string {
-  const v = (raw ?? '').trim().toLowerCase();
-  if (!v || v === 'no-limit' || v === 'sin-limite' || v === 'sin_limite') {
-    return 'no-limit';
+  const v = (raw ?? "").trim().toLowerCase();
+  if (!v || v === "no-limit" || v === "sin-limite" || v === "sin_limite") {
+    return "no-limit";
   }
   return String(raw).trim();
 }
 
 function coerceTransport(raw: string | undefined): string {
-  const v = (raw ?? '').trim().toLowerCase();
-  if (!v || v === 'avion') return 'plane';
-  return String(raw).trim() || 'plane';
+  const v = (raw ?? "").trim().toLowerCase();
+  if (!v || v === "avion") return "plane";
+  return String(raw).trim() || "plane";
 }
 
 /**
@@ -73,7 +73,7 @@ export function paymentTotalsInputFromTripRequest(
       ? trip.addons.map((a) => ({
           id: String(a.id),
           qty:
-            typeof a.qty === 'number' && Number.isFinite(a.qty)
+            typeof a.qty === "number" && Number.isFinite(a.qty)
               ? a.qty
               : Number(a.qty) || 1,
         }))

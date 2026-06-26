@@ -1,10 +1,10 @@
-import { getPricePerPerson } from '@/lib/data/traveler-types';
-import { calculatePaymentTotals } from '@/lib/helpers/payment-totals';
-import { paymentTotalsInputFromTripRequest } from '@/lib/helpers/trip-request-pricing';
-import { getFixedPaxDetailsForTravelType } from '@/lib/helpers/pax-details';
-import { getLevelById } from '@/lib/utils/experiencesData';
-import { getCardForType } from '@/lib/utils/traveler-card';
-import type { Trip } from '@/lib/utils/trips';
+import { getPricePerPerson } from "@/lib/data/traveler-types";
+import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
+import { paymentTotalsInputFromTripRequest } from "@/lib/helpers/trip-request-pricing";
+import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
+import { getLevelById } from "@/lib/utils/experiencesData";
+import { getCardForType } from "@/lib/utils/traveler-card";
+import type { Trip } from "@/lib/utils/trips";
 
 function normalizeTripTypeSlug(type: string): string {
   return type.trim().toLowerCase();
@@ -20,7 +20,10 @@ function effectivePaxForCatalogPricing(trip: Trip): number {
   return Math.max(1, trip.pax);
 }
 
-export function getTripDisplayUsd(trip: Trip): { amount: number; isEstimate: boolean } {
+export function getTripDisplayUsd(trip: Trip): {
+  amount: number;
+  isEstimate: boolean;
+} {
   if (trip.totalTripUsd > 0) {
     return { amount: trip.totalTripUsd, isEstimate: false };
   }
@@ -90,7 +93,11 @@ export function getTripPriceParts(trip: Trip): {
 export function getTripExperienceDisplay(
   trip: Trip,
   locale: string,
-): { levelName: string; travelerTypeTitle: string; typeImageSrc: string | null } {
+): {
+  levelName: string;
+  travelerTypeTitle: string;
+  typeImageSrc: string | null;
+} {
   const travelerType = normalizeTripTypeSlug(trip.type);
   const card = getCardForType(travelerType, locale);
   const level = getLevelById(travelerType, trip.level, locale);

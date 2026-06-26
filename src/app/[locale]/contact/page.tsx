@@ -4,11 +4,10 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import HeaderHero from "@/components/journey/HeaderHero";
 
-type LocaleParams = { params: { locale?: string | string[] } };
+type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
+export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
+  const params = await props.params;
   const raw = params?.locale;
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const dict = await getDictionary(hasLocale(locale) ? locale : "es");
@@ -24,7 +23,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function ContactPage({ params }: LocaleParams) {
+export default async function ContactPage(props: LocaleParams) {
+  const params = await props.params;
   const raw = params?.locale;
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const dict = await getDictionary(hasLocale(locale) ? locale : "es");

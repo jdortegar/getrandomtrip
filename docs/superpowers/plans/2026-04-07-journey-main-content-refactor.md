@@ -12,21 +12,22 @@
 
 ## Files
 
-| Action | Path | Responsibility |
-|---|---|---|
-| Modify | `src/lib/helpers/journey.ts` | Add label getters, reset-param consts, step-logic helpers |
-| Create | `src/hooks/useJourneySearchParams.ts` | Read + normalize all 16 journey URL params |
-| Create | `src/hooks/useJourneyDraftDetails.ts` | Draft state + sync/flush effects for details tab |
-| Create | `src/hooks/useJourneyDraftPreferences.ts` | Draft state + sync effect for preferences tab |
-| Create | `src/hooks/useJourneyAccordion.ts` | Controlled/uncontrolled accordion + auto-open effect |
-| Create | `src/components/journey/JourneyActionBar.tsx` | Clear All / Continue / Checkout button bar |
-| Modify | `src/components/journey/JourneyMainContent.tsx` | Consume all new pieces; remove extracted logic |
+| Action | Path                                            | Responsibility                                            |
+| ------ | ----------------------------------------------- | --------------------------------------------------------- |
+| Modify | `src/lib/helpers/journey.ts`                    | Add label getters, reset-param consts, step-logic helpers |
+| Create | `src/hooks/useJourneySearchParams.ts`           | Read + normalize all 16 journey URL params                |
+| Create | `src/hooks/useJourneyDraftDetails.ts`           | Draft state + sync/flush effects for details tab          |
+| Create | `src/hooks/useJourneyDraftPreferences.ts`       | Draft state + sync effect for preferences tab             |
+| Create | `src/hooks/useJourneyAccordion.ts`              | Controlled/uncontrolled accordion + auto-open effect      |
+| Create | `src/components/journey/JourneyActionBar.tsx`   | Clear All / Continue / Checkout button bar                |
+| Modify | `src/components/journey/JourneyMainContent.tsx` | Consume all new pieces; remove extracted logic            |
 
 ---
 
 ## Task 1: Add helpers to `src/lib/helpers/journey.ts`
 
 **Files:**
+
 - Modify: `src/lib/helpers/journey.ts`
 
 - [ ] **Step 1: Add imports and types**
@@ -34,7 +35,7 @@
 Append to the top of the imports block in `src/lib/helpers/journey.ts`:
 
 ```ts
-import { getLevelById } from '@/lib/utils/experiencesData';
+import { getLevelById } from "@/lib/utils/experiencesData";
 ```
 
 Then append the following exports after the existing `countOptionalFilters` function:
@@ -87,14 +88,17 @@ export function getRefineDetailsLabel(
     const option = options.find((o) => o.key === refineDetails[0]);
     return option?.label || oneSelectedStr;
   }
-  return countSelectedStr.replace('{count}', String(refineDetails.length));
+  return countSelectedStr.replace("{count}", String(refineDetails.length));
 }
 
 // ---------------------------------------------------------------------------
 // Reset-param constants
 // ---------------------------------------------------------------------------
 
-export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<string, string | undefined> = {
+export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<
+  string,
+  string | undefined
+> = {
   accommodationType: undefined,
   addons: undefined,
   arrivePref: undefined,
@@ -112,7 +116,10 @@ export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<string, string | undefine
   transportOrder: undefined,
 };
 
-export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<string, string | undefined> = {
+export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<
+  string,
+  string | undefined
+> = {
   accommodationType: undefined,
   addons: undefined,
   arrivePref: undefined,
@@ -150,8 +157,8 @@ export function getNextTab(
   hasExcuseStep: boolean,
 ): string | null {
   const tabs = hasExcuseStep
-    ? ['budget', 'excuse', 'details', 'preferences']
-    : ['budget', 'details', 'preferences'];
+    ? ["budget", "excuse", "details", "preferences"]
+    : ["budget", "details", "preferences"];
   const currentIndex = tabs.indexOf(activeTab);
   return currentIndex < tabs.length - 1 ? tabs[currentIndex + 1] : null;
 }
@@ -161,20 +168,20 @@ export function isStepComplete(
   v: JourneyStepValues,
 ): boolean {
   switch (activeTab) {
-    case 'budget':
+    case "budget":
       return Boolean(v.travelType && v.experience);
-    case 'excuse':
+    case "excuse":
       return Boolean(
         v.travelType && v.experience && (v.excuse || !v.hasExcuseStep),
       );
-    case 'details':
+    case "details":
       return Boolean(
         v.effectiveOriginCountry &&
-          v.effectiveOriginCity &&
-          v.effectiveStartDate &&
-          v.effectiveNights,
+        v.effectiveOriginCity &&
+        v.effectiveStartDate &&
+        v.effectiveNights,
       );
-    case 'preferences':
+    case "preferences":
       return Boolean(v.transport);
     default:
       return true;
@@ -184,13 +191,13 @@ export function isStepComplete(
 export function checkAllComplete(v: JourneyStepValues): boolean {
   return Boolean(
     v.travelType &&
-      v.experience &&
-      (v.excuse || !v.hasExcuseStep) &&
-      v.effectiveOriginCountry &&
-      v.effectiveOriginCity &&
-      v.effectiveStartDate &&
-      v.effectiveNights &&
-      v.transport,
+    v.experience &&
+    (v.excuse || !v.hasExcuseStep) &&
+    v.effectiveOriginCountry &&
+    v.effectiveOriginCity &&
+    v.effectiveStartDate &&
+    v.effectiveNights &&
+    v.transport,
   );
 }
 ```
@@ -215,22 +222,23 @@ git commit -m "feat: add label getters, reset params, and step-logic helpers to 
 ## Task 2: Create `src/hooks/useJourneySearchParams.ts`
 
 **Files:**
+
 - Create: `src/hooks/useJourneySearchParams.ts`
 
 - [ ] **Step 1: Create the hook**
 
 ```ts
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import type { ReadonlyURLSearchParams } from 'next/navigation';
-import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
+import { useMemo } from "react";
+import type { ReadonlyURLSearchParams } from "next/navigation";
+import { DEFAULT_TRANSPORT_ORDER } from "@/components/journey/TransportSelector";
 import {
   isCompleteTransportOrderParam,
   normalizeMaxTravelTimeKey,
   normalizeTransportId,
   normalizeJourneyFilterValue,
-} from '@/lib/helpers/transport';
+} from "@/lib/helpers/transport";
 
 export interface JourneySearchParamsValues {
   travelType: string | undefined;
@@ -256,44 +264,44 @@ export function useJourneySearchParams(
   searchParams: ReadonlyURLSearchParams,
 ): JourneySearchParamsValues {
   const travelType = useMemo(
-    () => searchParams.get('travelType') || undefined,
+    () => searchParams.get("travelType") || undefined,
     [searchParams],
   );
   const experience = useMemo(
-    () => searchParams.get('experience') || undefined,
+    () => searchParams.get("experience") || undefined,
     [searchParams],
   );
   const excuse = useMemo(
-    () => searchParams.get('excuse') || undefined,
+    () => searchParams.get("excuse") || undefined,
     [searchParams],
   );
   const refineDetails = useMemo(() => {
-    const raw = searchParams.get('refineDetails');
+    const raw = searchParams.get("refineDetails");
     if (!raw) return [] as string[];
-    return raw.split(',').filter(Boolean);
+    return raw.split(",").filter(Boolean);
   }, [searchParams]);
   const originCountry = useMemo(
-    () => searchParams.get('originCountry') || '',
+    () => searchParams.get("originCountry") || "",
     [searchParams],
   );
   const originCity = useMemo(
-    () => searchParams.get('originCity') || '',
+    () => searchParams.get("originCity") || "",
     [searchParams],
   );
   const startDate = useMemo(
-    () => searchParams.get('startDate') || undefined,
+    () => searchParams.get("startDate") || undefined,
     [searchParams],
   );
   const nights = useMemo(() => {
-    const raw = searchParams.get('nights');
+    const raw = searchParams.get("nights");
     const parsed = raw ? Number(raw) : NaN;
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
   }, [searchParams]);
   const transportOrder = useMemo(() => {
-    const raw = searchParams.get('transportOrder');
+    const raw = searchParams.get("transportOrder");
     if (!raw) return DEFAULT_TRANSPORT_ORDER;
     const ids = raw
-      .split(',')
+      .split(",")
       .map((s) => s.trim())
       .map((id) => normalizeTransportId(id))
       .filter((id): id is string => Boolean(id));
@@ -301,32 +309,37 @@ export function useJourneySearchParams(
   }, [searchParams]);
   // transport is derived sequentially — must come after transportOrder
   const transport = isCompleteTransportOrderParam(
-    searchParams.get('transportOrder'),
+    searchParams.get("transportOrder"),
   )
     ? normalizeTransportId(transportOrder[0])
     : undefined;
   const departPref = useMemo(
-    () => normalizeJourneyFilterValue(searchParams.get('departPref')) || undefined,
+    () =>
+      normalizeJourneyFilterValue(searchParams.get("departPref")) || undefined,
     [searchParams],
   );
   const arrivePref = useMemo(
-    () => normalizeJourneyFilterValue(searchParams.get('arrivePref')) || undefined,
+    () =>
+      normalizeJourneyFilterValue(searchParams.get("arrivePref")) || undefined,
     [searchParams],
   );
   const maxTravelTime = useMemo(
-    () => normalizeMaxTravelTimeKey(searchParams.get('maxTravelTime')) || undefined,
+    () =>
+      normalizeMaxTravelTimeKey(searchParams.get("maxTravelTime")) || undefined,
     [searchParams],
   );
   const climate = useMemo(
-    () => normalizeJourneyFilterValue(searchParams.get('climate')) || undefined,
+    () => normalizeJourneyFilterValue(searchParams.get("climate")) || undefined,
     [searchParams],
   );
   const accommodationType = useMemo(
-    () => normalizeJourneyFilterValue(searchParams.get('accommodationType')) || undefined,
+    () =>
+      normalizeJourneyFilterValue(searchParams.get("accommodationType")) ||
+      undefined,
     [searchParams],
   );
   const addons = useMemo(
-    () => searchParams.get('addons') || undefined,
+    () => searchParams.get("addons") || undefined,
     [searchParams],
   );
 
@@ -369,21 +382,25 @@ git commit -m "feat: add useJourneySearchParams hook"
 ## Task 3: Create `src/hooks/useJourneyDraftDetails.ts`
 
 **Files:**
+
 - Create: `src/hooks/useJourneyDraftDetails.ts`
 
 **Key design decisions:**
+
 - `prevActiveTabRef` is internal — both the sync and flush effects share it here.
 - `updateQuery` is captured in a `useRef` to avoid it appearing in the flush effect's deps. `useQuerySync` returns a new function every render; including it in deps would re-fire the flush effect on every render, potentially double-flushing. The ref holds the latest version without causing extra effect runs.
 
 - [ ] **Step 1: Create the hook**
 
 ```ts
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
+import { useState, useEffect, useRef } from "react";
+import { DEFAULT_TRANSPORT_ORDER } from "@/components/journey/TransportSelector";
 
-type UpdateQuery = (patch: Record<string, string | string[] | undefined>) => void;
+type UpdateQuery = (
+  patch: Record<string, string | string[] | undefined>,
+) => void;
 
 interface DraftDetailsUrlValues {
   originCountry: string;
@@ -424,11 +441,15 @@ export function useJourneyDraftDetails(
   urlValues: DraftDetailsUrlValues,
   updateQuery: UpdateQuery,
 ): JourneyDraftDetailsResult {
-  const [draftOriginCountry, setDraftOriginCountry] = useState('');
-  const [draftOriginCity, setDraftOriginCity] = useState('');
-  const [draftStartDate, setDraftStartDate] = useState<string | undefined>(undefined);
+  const [draftOriginCountry, setDraftOriginCountry] = useState("");
+  const [draftOriginCity, setDraftOriginCity] = useState("");
+  const [draftStartDate, setDraftStartDate] = useState<string | undefined>(
+    undefined,
+  );
   const [draftNights, setDraftNights] = useState(1);
-  const [draftTransportOrder, setDraftTransportOrder] = useState<string[]>(DEFAULT_TRANSPORT_ORDER);
+  const [draftTransportOrder, setDraftTransportOrder] = useState<string[]>(
+    DEFAULT_TRANSPORT_ORDER,
+  );
 
   // Stable ref so the flush effect can call updateQuery without it being a dep.
   // useQuerySync returns a new function every render; listing it as a dep would
@@ -442,7 +463,7 @@ export function useJourneyDraftDetails(
 
   // Sync URL -> draft when entering details step
   useEffect(() => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       setDraftOriginCountry(urlValues.originCountry);
       setDraftOriginCity(urlValues.originCity);
       setDraftStartDate(urlValues.startDate);
@@ -461,7 +482,7 @@ export function useJourneyDraftDetails(
 
   // Flush draft -> URL when leaving details step
   useEffect(() => {
-    if (prevActiveTabRef.current === 'details' && activeTab !== 'details') {
+    if (prevActiveTabRef.current === "details" && activeTab !== "details") {
       updateQueryRef.current({
         nights: String(draftNights),
         originCity: draftOriginCity || undefined,
@@ -469,7 +490,7 @@ export function useJourneyDraftDetails(
         startDate: draftStartDate ?? undefined,
         transportOrder:
           draftTransportOrder.length === 4
-            ? draftTransportOrder.join(',')
+            ? draftTransportOrder.join(",")
             : undefined,
       });
     }
@@ -484,15 +505,15 @@ export function useJourneyDraftDetails(
   ]);
 
   const effectiveOriginCountry =
-    activeTab === 'details' ? draftOriginCountry : urlValues.originCountry;
+    activeTab === "details" ? draftOriginCountry : urlValues.originCountry;
   const effectiveOriginCity =
-    activeTab === 'details' ? draftOriginCity : urlValues.originCity;
+    activeTab === "details" ? draftOriginCity : urlValues.originCity;
   const effectiveStartDate =
-    activeTab === 'details' ? draftStartDate : urlValues.startDate;
+    activeTab === "details" ? draftStartDate : urlValues.startDate;
   const effectiveNights =
-    activeTab === 'details' ? draftNights : urlValues.nights;
+    activeTab === "details" ? draftNights : urlValues.nights;
   const effectiveTransportOrder =
-    activeTab === 'details' ? draftTransportOrder : urlValues.transportOrder;
+    activeTab === "details" ? draftTransportOrder : urlValues.transportOrder;
 
   return {
     draftOriginCountry,
@@ -532,6 +553,7 @@ git commit -m "feat: add useJourneyDraftDetails hook"
 ## Task 4: Create `src/hooks/useJourneyDraftPreferences.ts`
 
 **Files:**
+
 - Create: `src/hooks/useJourneyDraftPreferences.ts`
 
 **Note:** Preferences use a sync-on-enter pattern only (no flush-on-leave). Changes are committed explicitly via `handleSaveFilters` in the component.
@@ -539,9 +561,9 @@ git commit -m "feat: add useJourneyDraftDetails hook"
 - [ ] **Step 1: Create the hook**
 
 ```ts
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface DraftPreferencesUrlValues {
   departPref: string | undefined;
@@ -580,20 +602,22 @@ export function useJourneyDraftPreferences(
   activeTab: string,
   urlValues: DraftPreferencesUrlValues,
 ): JourneyDraftPreferencesResult {
-  const [draftDepartPref, setDraftDepartPref] = useState<string>('any');
-  const [draftArrivePref, setDraftArrivePref] = useState<string>('any');
-  const [draftClimate, setDraftClimate] = useState<string>('any');
-  const [draftMaxTravelTime, setDraftMaxTravelTime] = useState<string>('no-limit');
-  const [draftAccommodationType, setDraftAccommodationType] = useState<string>('any');
+  const [draftDepartPref, setDraftDepartPref] = useState<string>("any");
+  const [draftArrivePref, setDraftArrivePref] = useState<string>("any");
+  const [draftClimate, setDraftClimate] = useState<string>("any");
+  const [draftMaxTravelTime, setDraftMaxTravelTime] =
+    useState<string>("no-limit");
+  const [draftAccommodationType, setDraftAccommodationType] =
+    useState<string>("any");
 
   // Sync URL -> draft when entering preferences step
   useEffect(() => {
-    if (activeTab === 'preferences') {
-      setDraftDepartPref(urlValues.departPref ?? 'any');
-      setDraftArrivePref(urlValues.arrivePref ?? 'any');
-      setDraftClimate(urlValues.climate ?? 'any');
-      setDraftMaxTravelTime(urlValues.maxTravelTime ?? 'no-limit');
-      setDraftAccommodationType(urlValues.accommodationType ?? 'any');
+    if (activeTab === "preferences") {
+      setDraftDepartPref(urlValues.departPref ?? "any");
+      setDraftArrivePref(urlValues.arrivePref ?? "any");
+      setDraftClimate(urlValues.climate ?? "any");
+      setDraftMaxTravelTime(urlValues.maxTravelTime ?? "no-limit");
+      setDraftAccommodationType(urlValues.accommodationType ?? "any");
     }
   }, [
     activeTab,
@@ -605,19 +629,23 @@ export function useJourneyDraftPreferences(
   ]);
 
   const effectiveDepartPref =
-    activeTab === 'preferences' ? draftDepartPref : (urlValues.departPref ?? 'any');
+    activeTab === "preferences"
+      ? draftDepartPref
+      : (urlValues.departPref ?? "any");
   const effectiveArrivePref =
-    activeTab === 'preferences' ? draftArrivePref : (urlValues.arrivePref ?? 'any');
+    activeTab === "preferences"
+      ? draftArrivePref
+      : (urlValues.arrivePref ?? "any");
   const effectiveClimate =
-    activeTab === 'preferences' ? draftClimate : (urlValues.climate ?? 'any');
+    activeTab === "preferences" ? draftClimate : (urlValues.climate ?? "any");
   const effectiveMaxTravelTime =
-    activeTab === 'preferences'
+    activeTab === "preferences"
       ? draftMaxTravelTime
-      : (urlValues.maxTravelTime ?? 'no-limit');
+      : (urlValues.maxTravelTime ?? "no-limit");
   const effectiveAccommodationType =
-    activeTab === 'preferences'
+    activeTab === "preferences"
       ? draftAccommodationType
-      : (urlValues.accommodationType ?? 'any');
+      : (urlValues.accommodationType ?? "any");
 
   return {
     draftDepartPref,
@@ -657,15 +685,16 @@ git commit -m "feat: add useJourneyDraftPreferences hook"
 ## Task 5: Create `src/hooks/useJourneyAccordion.ts`
 
 **Files:**
+
 - Create: `src/hooks/useJourneyAccordion.ts`
 
 - [ ] **Step 1: Create the hook**
 
 ```ts
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
+import { useState, useEffect } from "react";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 
 export interface JourneyAccordionResult {
   accordionValue: string;
@@ -685,39 +714,44 @@ export function useJourneyAccordion(
   openSectionId: string | undefined,
   onOpenSection: ((sectionId: string) => void) | undefined,
 ): JourneyAccordionResult {
-  const [internalAccordion, setInternalAccordion] = useState<string>('');
-  const isControlled = openSectionId !== undefined && onOpenSection !== undefined;
-  const accordionValue = isControlled ? (openSectionId ?? '') : internalAccordion;
-  const setAccordionValue = isControlled ? onOpenSection! : setInternalAccordion;
+  const [internalAccordion, setInternalAccordion] = useState<string>("");
+  const isControlled =
+    openSectionId !== undefined && onOpenSection !== undefined;
+  const accordionValue = isControlled
+    ? (openSectionId ?? "")
+    : internalAccordion;
+  const setAccordionValue = isControlled
+    ? onOpenSection!
+    : setInternalAccordion;
 
   // Auto-open the first section of each tab when the tab changes
   useEffect(() => {
     if (
-      activeTab === 'budget' &&
-      accordionValue !== 'travel-type' &&
-      accordionValue !== 'experience'
+      activeTab === "budget" &&
+      accordionValue !== "travel-type" &&
+      accordionValue !== "experience"
     ) {
-      setAccordionValue('travel-type');
+      setAccordionValue("travel-type");
     } else if (
-      activeTab === 'excuse' &&
-      accordionValue !== 'excuse' &&
-      accordionValue !== 'refine-details'
+      activeTab === "excuse" &&
+      accordionValue !== "excuse" &&
+      accordionValue !== "refine-details"
     ) {
-      setAccordionValue('excuse');
+      setAccordionValue("excuse");
     } else if (
-      activeTab === 'details' &&
-      accordionValue !== 'dates' &&
-      accordionValue !== 'origin' &&
-      accordionValue !== 'transport'
+      activeTab === "details" &&
+      accordionValue !== "dates" &&
+      accordionValue !== "origin" &&
+      accordionValue !== "transport"
     ) {
-      setAccordionValue('origin');
+      setAccordionValue("origin");
     } else if (
-      activeTab === 'preferences' &&
-      accordionValue !== '' &&
-      accordionValue !== 'filters' &&
-      !(JOURNEY_ADDONS_ENABLED && accordionValue === 'addons')
+      activeTab === "preferences" &&
+      accordionValue !== "" &&
+      accordionValue !== "filters" &&
+      !(JOURNEY_ADDONS_ENABLED && accordionValue === "addons")
     ) {
-      setAccordionValue('filters');
+      setAccordionValue("filters");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, accordionValue]);
@@ -746,14 +780,15 @@ git commit -m "feat: add useJourneyAccordion hook"
 ## Task 6: Create `src/components/journey/JourneyActionBar.tsx`
 
 **Files:**
+
 - Create: `src/components/journey/JourneyActionBar.tsx`
 
 - [ ] **Step 1: Create the component**
 
 ```tsx
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/Button';
+import { Button } from "@/components/ui/Button";
 
 interface JourneyActionBarLabels {
   clearAll: string;
@@ -809,7 +844,7 @@ export function JourneyActionBar({
           size="md"
           variant="default"
         >
-          {isSavingAndRedirecting ? 'Guardando...' : labels.viewCheckout}
+          {isSavingAndRedirecting ? "Guardando..." : labels.viewCheckout}
         </Button>
       )}
     </div>
@@ -835,9 +870,11 @@ git commit -m "feat: add JourneyActionBar subcomponent"
 ## Task 7: Refactor `src/components/journey/JourneyMainContent.tsx`
 
 **Files:**
+
 - Modify: `src/components/journey/JourneyMainContent.tsx`
 
 **What is removed:**
+
 - 15 individual `useMemo(() => searchParams.get(...))` calls → replaced by `useJourneySearchParams`
 - 5 draft detail state vars + 2 effects + `prevActiveTabRef` → replaced by `useJourneyDraftDetails`
 - 5 draft preference state vars + 1 effect → replaced by `useJourneyDraftPreferences`
@@ -849,6 +886,7 @@ git commit -m "feat: add JourneyActionBar subcomponent"
 - Action bar JSX → replaced by `<JourneyActionBar />`
 
 **What stays:**
+
 - `handleGoToCheckout` (needs `locale`, `router`, `session`, `sessionStatus`)
 - `handleOriginCountryChange`, `handleOriginCityChange` (call both draft setters and `setPartial`)
 - All other event handlers (short glue code, not worth abstracting)
@@ -858,25 +896,25 @@ git commit -m "feat: add JourneyActionBar subcomponent"
 - [ ] **Step 1: Replace `JourneyMainContent.tsx` with the refactored version**
 
 ```tsx
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
-import BudgetStep from '@/components/journey/BudgetStep';
-import ExcuseStep from '@/components/journey/ExcuseStep';
-import { JourneyDetailsStep } from '@/components/journey/JourneyDetailsStep';
-import type { JourneyDetailsStepLabels } from '@/components/journey/JourneyDetailsStep';
-import { DEFAULT_TRANSPORT_ORDER } from '@/components/journey/TransportSelector';
-import { JourneyPreferencesStep } from '@/components/journey/JourneyPreferencesStep';
-import type { JourneyPreferencesStepLabels } from '@/components/journey/JourneyPreferencesStep';
-import { JourneyActionBar } from '@/components/journey/JourneyActionBar';
+import { useCallback, useMemo, useState } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import BudgetStep from "@/components/journey/BudgetStep";
+import ExcuseStep from "@/components/journey/ExcuseStep";
+import { JourneyDetailsStep } from "@/components/journey/JourneyDetailsStep";
+import type { JourneyDetailsStepLabels } from "@/components/journey/JourneyDetailsStep";
+import { DEFAULT_TRANSPORT_ORDER } from "@/components/journey/TransportSelector";
+import { JourneyPreferencesStep } from "@/components/journey/JourneyPreferencesStep";
+import type { JourneyPreferencesStepLabels } from "@/components/journey/JourneyPreferencesStep";
+import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
 import {
   getExcusesByTypeAndLevel,
   getExcuseOptions,
   getHasExcuseStep,
-} from '@/lib/helpers/excuse-helper';
+} from "@/lib/helpers/excuse-helper";
 import {
   buildTripRequestPayloadFromSearchParams,
   checkAllComplete,
@@ -888,17 +926,17 @@ import {
   isStepComplete,
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
   PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
-} from '@/lib/helpers/journey';
-import { useJourneyAccordion } from '@/hooks/useJourneyAccordion';
-import { useJourneyDraftDetails } from '@/hooks/useJourneyDraftDetails';
-import { useJourneyDraftPreferences } from '@/hooks/useJourneyDraftPreferences';
-import { useJourneySearchParams } from '@/hooks/useJourneySearchParams';
-import { useQuerySync } from '@/hooks/useQuerySync';
-import { useStore } from '@/store/store';
-import { useUserStore } from '@/store/slices/userStore';
-import { cn } from '@/lib/utils';
-import type { TravelerTypeSlug } from '@/lib/data/traveler-types';
-import { JOURNEY_ADDONS_ENABLED } from 'config/journey-features';
+} from "@/lib/helpers/journey";
+import { useJourneyAccordion } from "@/hooks/useJourneyAccordion";
+import { useJourneyDraftDetails } from "@/hooks/useJourneyDraftDetails";
+import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
+import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
+import { useQuerySync } from "@/hooks/useQuerySync";
+import { useStore } from "@/store/store";
+import { useUserStore } from "@/store/slices/userStore";
+import { cn } from "@/lib/utils";
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 
 interface JourneyMainContentLabels {
   clearAll: string;
@@ -982,7 +1020,7 @@ export default function JourneyMainContent({
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
   const { data: session, status: sessionStatus } = useSession();
   const [isSavingAndRedirecting, setIsSavingAndRedirecting] = useState(false);
   const updateQuery = useQuerySync();
@@ -1014,7 +1052,7 @@ export default function JourneyMainContent({
   );
 
   const hasExcuseStep = useMemo(
-    () => getHasExcuseStep(url.travelType ?? '', url.experience),
+    () => getHasExcuseStep(url.travelType ?? "", url.experience),
     [url.travelType, url.experience],
   );
 
@@ -1026,7 +1064,7 @@ export default function JourneyMainContent({
   const refineDetailsOptions = useMemo(() => {
     if (!url.excuse) return [];
     const options = getExcuseOptions(url.excuse);
-    const byType = localizedRefineOptions?.[url.travelType ?? ''];
+    const byType = localizedRefineOptions?.[url.travelType ?? ""];
     const localized = byType?.[url.excuse];
     if (!localized?.length) return options;
     return options.map((opt) => {
@@ -1050,9 +1088,9 @@ export default function JourneyMainContent({
   const scrollToActions = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        document.getElementById('journey-actions')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
+        document.getElementById("journey-actions")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
         });
       });
     });
@@ -1062,41 +1100,43 @@ export default function JourneyMainContent({
     const tripPayload = buildTripRequestPayloadFromSearchParams(searchParams);
     const { originCountry, originCity } = tripPayload;
     if (!originCountry || !originCity) {
-      toast.error('Completá ciudad y país de origen para continuar.');
+      toast.error("Completá ciudad y país de origen para continuar.");
       return;
     }
-    if (sessionStatus === 'loading') {
-      toast.info('Cargando sesión…');
+    if (sessionStatus === "loading") {
+      toast.info("Cargando sesión…");
       return;
     }
     if (!session?.user?.email) {
       const { openAuth } = useUserStore.getState();
-      openAuth('signin');
-      toast.info('Iniciá sesión para continuar al checkout.');
+      openAuth("signin");
+      toast.info("Iniciá sesión para continuar al checkout.");
       return;
     }
     setIsSavingAndRedirecting(true);
     try {
-      const res = await fetch('/api/trip-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/trip-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tripPayload),
       });
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 401) {
           const { openAuth } = useUserStore.getState();
-          openAuth('signin');
-          toast.info('Iniciá sesión para continuar al checkout.');
+          openAuth("signin");
+          toast.info("Iniciá sesión para continuar al checkout.");
         } else {
-          toast.error(data.error ?? 'No se pudo guardar el viaje. Intentá de nuevo.');
+          toast.error(
+            data.error ?? "No se pudo guardar el viaje. Intentá de nuevo.",
+          );
         }
         return;
       }
       router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
     } catch (err) {
-      console.error('Error saving trip:', err);
-      toast.error('Error de conexión. Intentá de nuevo.');
+      console.error("Error saving trip:", err);
+      toast.error("Error de conexión. Intentá de nuevo.");
     } finally {
       setIsSavingAndRedirecting(false);
     }
@@ -1104,22 +1144,25 @@ export default function JourneyMainContent({
 
   const handleTravelTypeSelect = (slug: string) => {
     updateQuery({ ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, travelType: slug });
-    setAccordionValue('experience');
+    setAccordionValue("experience");
   };
 
   const handleExperienceSelect = (levelId: string) => {
     updateQuery({ ...PARAMS_TO_RESET_AFTER_EXPERIENCE, experience: levelId });
     // NOTE: uses levelId (the just-selected value), not the memoized hasExcuseStep
     // which still reflects the previous experience value at this point.
-    const hasExcuseStepForSelection = getHasExcuseStep(url.travelType ?? '', levelId);
+    const hasExcuseStepForSelection = getHasExcuseStep(
+      url.travelType ?? "",
+      levelId,
+    );
     if (onTabChange)
-      onTabChange(hasExcuseStepForSelection ? 'excuse' : 'details');
-    setAccordionValue(hasExcuseStepForSelection ? 'excuse' : 'origin');
+      onTabChange(hasExcuseStepForSelection ? "excuse" : "details");
+    setAccordionValue(hasExcuseStepForSelection ? "excuse" : "origin");
   };
 
   const handleExcuseSelect = (excuseKey: string) => {
     updateQuery({ excuse: excuseKey, refineDetails: undefined });
-    setAccordionValue('refine-details');
+    setAccordionValue("refine-details");
   };
 
   const handleRefineDetailsSelect = (optionKey: string) => {
@@ -1132,14 +1175,14 @@ export default function JourneyMainContent({
     }
     updateQuery({
       refineDetails:
-        currentDetails.length > 0 ? currentDetails.join(',') : undefined,
+        currentDetails.length > 0 ? currentDetails.join(",") : undefined,
     });
   };
 
   const handleOriginCountryChange = (value: string) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftOriginCountry(value);
-      draftDetails.setDraftOriginCity('');
+      draftDetails.setDraftOriginCity("");
       draftDetails.setDraftStartDate(undefined);
       draftDetails.setDraftNights(1);
       draftDetails.setDraftTransportOrder(DEFAULT_TRANSPORT_ORDER);
@@ -1159,7 +1202,7 @@ export default function JourneyMainContent({
   };
 
   const handleOriginCityChange = (value: string) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftOriginCity(value);
       draftDetails.setDraftStartDate(undefined);
       draftDetails.setDraftNights(1);
@@ -1179,7 +1222,7 @@ export default function JourneyMainContent({
   };
 
   const handleStartDateChange = (value: string | undefined) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftStartDate(value);
     } else {
       updateQuery({ startDate: value });
@@ -1187,7 +1230,7 @@ export default function JourneyMainContent({
   };
 
   const handleNightsChange = (value: number) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftNights(value);
     } else {
       updateQuery({ nights: String(value) });
@@ -1195,47 +1238,51 @@ export default function JourneyMainContent({
   };
 
   const handleRangeChange = (startDate: string | undefined, nights: number) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftStartDate(startDate);
       draftDetails.setDraftNights(nights);
     } else {
-      updateQuery({ nights: String(nights), startDate: startDate ?? undefined });
+      updateQuery({
+        nights: String(nights),
+        startDate: startDate ?? undefined,
+      });
     }
   };
 
   const handleTransportOrderChange = (orderedIds: string[]) => {
-    if (activeTab === 'details') {
+    if (activeTab === "details") {
       draftDetails.setDraftTransportOrder(orderedIds);
     } else {
       updateQuery({
         transportOrder:
-          orderedIds.length === 4 ? orderedIds.join(',') : undefined,
+          orderedIds.length === 4 ? orderedIds.join(",") : undefined,
       });
     }
   };
 
   const handleDepartPrefChange = (value: string) => {
-    if (activeTab === 'preferences') draftPrefs.setDraftDepartPref(value);
+    if (activeTab === "preferences") draftPrefs.setDraftDepartPref(value);
     else updateQuery({ departPref: value });
   };
 
   const handleArrivePrefChange = (value: string) => {
-    if (activeTab === 'preferences') draftPrefs.setDraftArrivePref(value);
+    if (activeTab === "preferences") draftPrefs.setDraftArrivePref(value);
     else updateQuery({ arrivePref: value });
   };
 
   const handleMaxTravelTimeChange = (value: string) => {
-    if (activeTab === 'preferences') draftPrefs.setDraftMaxTravelTime(value);
+    if (activeTab === "preferences") draftPrefs.setDraftMaxTravelTime(value);
     else updateQuery({ maxTravelTime: value });
   };
 
   const handleClimateChange = (value: string) => {
-    if (activeTab === 'preferences') draftPrefs.setDraftClimate(value);
+    if (activeTab === "preferences") draftPrefs.setDraftClimate(value);
     else updateQuery({ climate: value });
   };
 
   const handleAccommodationTypeChange = (value: string) => {
-    if (activeTab === 'preferences') draftPrefs.setDraftAccommodationType(value);
+    if (activeTab === "preferences")
+      draftPrefs.setDraftAccommodationType(value);
     else updateQuery({ accommodationType: value });
   };
 
@@ -1247,32 +1294,32 @@ export default function JourneyMainContent({
       departPref: draftPrefs.draftDepartPref,
       maxTravelTime: draftPrefs.draftMaxTravelTime,
     });
-    setAccordionValue(JOURNEY_ADDONS_ENABLED ? 'addons' : '');
+    setAccordionValue(JOURNEY_ADDONS_ENABLED ? "addons" : "");
     scrollToActions();
   };
 
   const handleClearFilters = () => {
-    draftPrefs.setDraftAccommodationType('any');
-    draftPrefs.setDraftArrivePref('any');
-    draftPrefs.setDraftClimate('any');
-    draftPrefs.setDraftDepartPref('any');
-    draftPrefs.setDraftMaxTravelTime('no-limit');
+    draftPrefs.setDraftAccommodationType("any");
+    draftPrefs.setDraftArrivePref("any");
+    draftPrefs.setDraftClimate("any");
+    draftPrefs.setDraftDepartPref("any");
+    draftPrefs.setDraftMaxTravelTime("no-limit");
     updateQuery({
-      accommodationType: 'any',
-      arrivePref: 'any',
+      accommodationType: "any",
+      arrivePref: "any",
       avoidDestinations: undefined,
-      climate: 'any',
-      departPref: 'any',
-      maxTravelTime: 'no-limit',
+      climate: "any",
+      departPref: "any",
+      maxTravelTime: "no-limit",
     });
     setPartial({
       filters: {
         ...filters,
-        accommodationType: 'any',
-        arrivePref: 'any',
-        climate: 'any',
-        departPref: 'any',
-        maxTravelTime: 'no-limit',
+        accommodationType: "any",
+        arrivePref: "any",
+        climate: "any",
+        departPref: "any",
+        maxTravelTime: "no-limit",
       },
     });
   };
@@ -1304,16 +1351,16 @@ export default function JourneyMainContent({
       transportOrder: undefined,
       travelType: undefined,
     });
-    setAccordionValue('');
-    if (onTabChange) onTabChange('budget');
+    setAccordionValue("");
+    if (onTabChange) onTabChange("budget");
   };
 
   const handleContinue = () => {
     const nextTab = getNextTab(activeTab, hasExcuseStep);
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
-      if (nextTab === 'details') setAccordionValue('origin');
-      if (nextTab === 'preferences') setAccordionValue('filters');
+      if (nextTab === "details") setAccordionValue("origin");
+      if (nextTab === "preferences") setAccordionValue("filters");
       scrollToActions();
     }
   };
@@ -1324,7 +1371,7 @@ export default function JourneyMainContent({
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'budget':
+      case "budget":
         return (
           <BudgetStep
             accordionValue={accordionValue}
@@ -1356,7 +1403,7 @@ export default function JourneyMainContent({
             )}
           />
         );
-      case 'excuse':
+      case "excuse":
         if (!hasExcuseStep) return null;
         return (
           <ExcuseStep
@@ -1400,8 +1447,12 @@ export default function JourneyMainContent({
             }}
           />
         );
-      case 'details':
-        if (!url.travelType || !url.experience || (hasExcuseStep && !url.excuse)) {
+      case "details":
+        if (
+          !url.travelType ||
+          !url.experience ||
+          (hasExcuseStep && !url.excuse)
+        ) {
           return (
             <div className="py-12 text-center">
               <p className="text-gray-500">{labels.completeBudgetAndExcuse}</p>
@@ -1420,7 +1471,7 @@ export default function JourneyMainContent({
             onRangeChange={handleRangeChange}
             onStartDateChange={handleStartDateChange}
             onTransportOrderChange={handleTransportOrderChange}
-            openSectionId={accordionValue || 'origin'}
+            openSectionId={accordionValue || "origin"}
             originCity={draftDetails.effectiveOriginCity}
             originCountry={draftDetails.effectiveOriginCountry}
             startDate={draftDetails.effectiveStartDate}
@@ -1428,7 +1479,7 @@ export default function JourneyMainContent({
             travelType={url.travelType}
           />
         );
-      case 'preferences':
+      case "preferences":
         if (!url.originCountry || !url.originCity || !url.startDate) {
           return (
             <div className="py-12 text-center">
@@ -1463,7 +1514,7 @@ export default function JourneyMainContent({
             transport={url.transport}
           />
         );
-      case 'extras':
+      case "extras":
         return (
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900">
@@ -1480,7 +1531,7 @@ export default function JourneyMainContent({
   };
 
   return (
-    <div className={cn('flex-1 min-h-0 flex flex-col', className)}>
+    <div className={cn("flex-1 min-h-0 flex flex-col", className)}>
       <div className="flex-1" id="journey-actions">
         {renderContent()}
       </div>
@@ -1530,6 +1581,7 @@ git commit -m "refactor: decompose JourneyMainContent into hooks, helpers, and J
 ## Self-Review
 
 **Spec coverage:**
+
 - ✅ `useJourneySearchParams` — Task 2
 - ✅ `useJourneyDraftDetails` with `prevActiveTabRef` internal + `updateQuery` ref guard — Task 3
 - ✅ `useJourneyDraftPreferences` — Task 4
@@ -1544,6 +1596,7 @@ git commit -m "refactor: decompose JourneyMainContent into hooks, helpers, and J
 **Placeholder scan:** No TBDs, no "implement later", all code blocks are complete.
 
 **Type consistency:**
+
 - `JourneyStepValues` defined in Task 1, consumed in Task 7 via `stepValues` object — ✅
 - `JourneyDraftDetailsResult` setters used in Task 7 handlers — ✅
 - `JourneyDraftPreferencesResult` setters used in `handleClearFilters` and pref handlers — ✅

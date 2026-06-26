@@ -4,8 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import enCopy from "@/dictionaries/en.json";
-import esCopy from "@/dictionaries/es.json";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import SecureRoute from "@/components/auth/SecureRoute";
 import {
   AllTripsGrid,
@@ -16,6 +15,7 @@ import {
   UpcomingTripsPanel,
   type DashboardStats,
 } from "@/components/app/dashboard";
+import { NotificationsPanel } from "@/components/app/notifications/NotificationsPanel";
 
 function computeDashboardStats(
   mappedTrips: Trip[],
@@ -31,10 +31,8 @@ function computeDashboardStats(
   const ratingsTrips = mappedTrips.filter((t) => t.customerRating);
   const avgRating =
     ratingsTrips.length > 0
-      ? ratingsTrips.reduce(
-          (sum, t) => sum + (t.customerRating || 0),
-          0,
-        ) / ratingsTrips.length
+      ? ratingsTrips.reduce((sum, t) => sum + (t.customerRating || 0), 0) /
+        ratingsTrips.length
       : 0;
   return {
     totalTrips: mappedTrips.length,
@@ -49,7 +47,7 @@ import HeaderHero from "@/components/journey/HeaderHero";
 import { useUserStore } from "@/store/slices";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   getPayments,
   getTrips,
@@ -58,12 +56,11 @@ import {
 } from "@/lib/utils/trips";
 
 function DashboardContent() {
-  const params = useParams();
   const { data: session, status: sessionStatus } = useSession();
   const { user } = useUserStore();
   const router = useRouter();
-  const locale = (params?.locale as string) ?? "es";
-  const copy = locale.startsWith("en") ? enCopy.dashboard : esCopy.dashboard;
+  const locale = useLocale();
+  const copy = useDictionary((d) => d.dashboard);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -232,14 +229,6 @@ function DashboardContent() {
               />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <UpcomingTripsPanel
-                  copy={copy}
-                  getStatusColor={getStatusColor}
-                  getStatusLabel={getStatusLabel}
-                  locale={locale}
-                  trips={upcomingTrips}
-                />
-
                 {/* Sidebar */}
                 <div className="space-y-6">
                   <QuickActions copy={copy} />
@@ -248,7 +237,16 @@ function DashboardContent() {
                     payments={payments}
                     stats={stats}
                   />
+                  <NotificationsPanel />
                 </div>
+
+                <UpcomingTripsPanel
+                  copy={copy}
+                  getStatusColor={getStatusColor}
+                  getStatusLabel={getStatusLabel}
+                  locale={locale}
+                  trips={upcomingTrips}
+                />
               </div>
               <AllTripsGrid
                 copy={copy}

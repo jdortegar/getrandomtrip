@@ -1,7 +1,7 @@
-import type { AdminTripRequest } from '@/lib/admin/types';
-import { TripRequestsTableRow } from './TripRequestsTableRow';
+import type { AdminTripRequest } from "@/lib/admin/types";
+import { TripRequestsTableRow } from "./TripRequestsTableRow";
 
-const HEADERS = ['Traveler', 'Origin', 'Type / Level', 'Status', 'Payment', ''];
+const HEADERS = ["Traveler", "Origin", "Type / Level", "Status", "Payment", ""];
 
 interface TripRequestsTableProps {
   onEdit: (id: string) => void;
@@ -41,7 +41,9 @@ export function TripRequestsTable({
         </tbody>
       </table>
       {trips.length === 0 && (
-        <p className="py-10 text-center text-sm text-gray-400">No trips found.</p>
+        <p className="py-10 text-center text-sm text-gray-400">
+          No trips found.
+        </p>
       )}
     </div>
   );

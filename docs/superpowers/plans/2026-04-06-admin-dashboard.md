@@ -12,40 +12,41 @@
 
 ## File Map
 
-| File | Responsibility |
-|---|---|
-| `src/lib/admin/types.ts` | Shared types: `AdminTripRequest`, `StatusFilterValue`, etc. |
-| `src/lib/admin/trip-status.ts` | Status color maps, ordered flow, `countTripsByStatus` |
-| `src/lib/admin/format.ts` | `formatAdminDate`, `formatAdminAmount` |
-| `src/hooks/useTripRequests.ts` | Data fetch hook: `{ trips, loading, error, refresh }` |
-| `src/components/app/admin/StatusBadge.tsx` | Colored pill using status color maps |
-| `src/components/app/admin/AdminSidebarLink.tsx` | Single nav item (icon + label + optional badge) |
-| `src/components/app/admin/AdminSidebar.tsx` | 6-link sidebar using `usePathname` for active state |
-| `src/components/app/admin/AdminKPICard.tsx` | Single stat card (label + count) |
-| `src/components/app/admin/TripRequestsKPIStrip.tsx` | 4 KPI cards derived from trips list |
-| `src/components/app/admin/TripRequestsFilterBar.tsx` | Status filter pills + section title |
-| `src/components/app/admin/TripRequestDetails.tsx` | Read-only key/value trip detail rows |
-| `src/components/app/admin/TripStatusTimeline.tsx` | Status progress dots |
-| `src/components/app/admin/TripRequestsTableRow.tsx` | Single table row |
-| `src/components/app/admin/TripRequestsTable.tsx` | Table header + row map |
-| `src/components/app/admin/TripRequestSlideOver.tsx` | Edit panel: draft state + PATCH call |
-| `src/app/[locale]/dashboard/admin/AdminLayoutClient.tsx` | Client layout: SecureRoute + HeaderHero + flex shell |
-| `src/app/[locale]/dashboard/admin/layout.tsx` | Server layout shell (force-dynamic) |
-| `src/app/[locale]/dashboard/admin/page.tsx` | Trip Requests page (full rewrite) |
-| `src/app/[locale]/dashboard/admin/users/page.tsx` | Placeholder |
-| `src/app/[locale]/dashboard/admin/packages/page.tsx` | Placeholder |
-| `src/app/[locale]/dashboard/admin/payments/page.tsx` | Placeholder |
-| `src/app/[locale]/dashboard/admin/reviews/page.tsx` | Placeholder |
-| `src/app/[locale]/dashboard/admin/waitlist/page.tsx` | Placeholder |
-| `vitest.config.ts` | Test config (new) |
-| `src/lib/admin/__tests__/trip-status.test.ts` | Tests for `countTripsByStatus` |
-| `src/lib/admin/__tests__/format.test.ts` | Tests for `formatAdminDate`, `formatAdminAmount` |
+| File                                                     | Responsibility                                              |
+| -------------------------------------------------------- | ----------------------------------------------------------- |
+| `src/lib/admin/types.ts`                                 | Shared types: `AdminTripRequest`, `StatusFilterValue`, etc. |
+| `src/lib/admin/trip-status.ts`                           | Status color maps, ordered flow, `countTripsByStatus`       |
+| `src/lib/admin/format.ts`                                | `formatAdminDate`, `formatAdminAmount`                      |
+| `src/hooks/useTripRequests.ts`                           | Data fetch hook: `{ trips, loading, error, refresh }`       |
+| `src/components/app/admin/StatusBadge.tsx`               | Colored pill using status color maps                        |
+| `src/components/app/admin/AdminSidebarLink.tsx`          | Single nav item (icon + label + optional badge)             |
+| `src/components/app/admin/AdminSidebar.tsx`              | 6-link sidebar using `usePathname` for active state         |
+| `src/components/app/admin/AdminKPICard.tsx`              | Single stat card (label + count)                            |
+| `src/components/app/admin/TripRequestsKPIStrip.tsx`      | 4 KPI cards derived from trips list                         |
+| `src/components/app/admin/TripRequestsFilterBar.tsx`     | Status filter pills + section title                         |
+| `src/components/app/admin/TripRequestDetails.tsx`        | Read-only key/value trip detail rows                        |
+| `src/components/app/admin/TripStatusTimeline.tsx`        | Status progress dots                                        |
+| `src/components/app/admin/TripRequestsTableRow.tsx`      | Single table row                                            |
+| `src/components/app/admin/TripRequestsTable.tsx`         | Table header + row map                                      |
+| `src/components/app/admin/TripRequestSlideOver.tsx`      | Edit panel: draft state + PATCH call                        |
+| `src/app/[locale]/dashboard/admin/AdminLayoutClient.tsx` | Client layout: SecureRoute + HeaderHero + flex shell        |
+| `src/app/[locale]/dashboard/admin/layout.tsx`            | Server layout shell (force-dynamic)                         |
+| `src/app/[locale]/dashboard/admin/page.tsx`              | Trip Requests page (full rewrite)                           |
+| `src/app/[locale]/dashboard/admin/users/page.tsx`        | Placeholder                                                 |
+| `src/app/[locale]/dashboard/admin/packages/page.tsx`     | Placeholder                                                 |
+| `src/app/[locale]/dashboard/admin/payments/page.tsx`     | Placeholder                                                 |
+| `src/app/[locale]/dashboard/admin/reviews/page.tsx`      | Placeholder                                                 |
+| `src/app/[locale]/dashboard/admin/waitlist/page.tsx`     | Placeholder                                                 |
+| `vitest.config.ts`                                       | Test config (new)                                           |
+| `src/lib/admin/__tests__/trip-status.test.ts`            | Tests for `countTripsByStatus`                              |
+| `src/lib/admin/__tests__/format.test.ts`                 | Tests for `formatAdminDate`, `formatAdminAmount`            |
 
 ---
 
 ## Task 1: Vitest config + `trip-status.ts` utils
 
 **Files:**
+
 - Create: `vitest.config.ts`
 - Create: `src/lib/admin/trip-status.ts`
 - Create: `src/lib/admin/__tests__/trip-status.test.ts`
@@ -54,15 +55,15 @@
 
 ```ts
 // vitest.config.ts
-import path from 'path';
-import { defineConfig } from 'vitest/config';
+import path from "path";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
-    alias: { '@': path.resolve(__dirname, './src') },
+    alias: { "@": path.resolve(__dirname, "./src") },
   },
   test: {
-    environment: 'happy-dom',
+    environment: "happy-dom",
     globals: true,
   },
 });
@@ -71,6 +72,7 @@ export default defineConfig({
 - [ ] **Step 2: Update test script in `package.json`**
 
 Replace the `"test"` script line:
+
 ```json
 "test": "vitest run"
 ```
@@ -79,25 +81,25 @@ Replace the `"test"` script line:
 
 ```ts
 // src/lib/admin/__tests__/trip-status.test.ts
-import { describe, expect, it } from 'vitest';
-import { countTripsByStatus, TRIP_STATUS_FLOW } from '../trip-status';
+import { describe, expect, it } from "vitest";
+import { countTripsByStatus, TRIP_STATUS_FLOW } from "../trip-status";
 
-describe('TRIP_STATUS_FLOW', () => {
-  it('contains CONFIRMED before REVEALED before COMPLETED', () => {
-    const confirmed = TRIP_STATUS_FLOW.indexOf('CONFIRMED');
-    const revealed = TRIP_STATUS_FLOW.indexOf('REVEALED');
-    const completed = TRIP_STATUS_FLOW.indexOf('COMPLETED');
+describe("TRIP_STATUS_FLOW", () => {
+  it("contains CONFIRMED before REVEALED before COMPLETED", () => {
+    const confirmed = TRIP_STATUS_FLOW.indexOf("CONFIRMED");
+    const revealed = TRIP_STATUS_FLOW.indexOf("REVEALED");
+    const completed = TRIP_STATUS_FLOW.indexOf("COMPLETED");
     expect(confirmed).toBeLessThan(revealed);
     expect(revealed).toBeLessThan(completed);
   });
 });
 
-describe('countTripsByStatus', () => {
-  it('counts trips by status', () => {
+describe("countTripsByStatus", () => {
+  it("counts trips by status", () => {
     const trips = [
-      { status: 'CONFIRMED' as const },
-      { status: 'CONFIRMED' as const },
-      { status: 'REVEALED' as const },
+      { status: "CONFIRMED" as const },
+      { status: "CONFIRMED" as const },
+      { status: "REVEALED" as const },
     ];
     const counts = countTripsByStatus(trips);
     expect(counts.CONFIRMED).toBe(2);
@@ -105,8 +107,8 @@ describe('countTripsByStatus', () => {
     expect(counts.COMPLETED).toBe(0);
   });
 
-  it('ignores unknown statuses', () => {
-    const trips = [{ status: 'CONFIRMED' as const }];
+  it("ignores unknown statuses", () => {
+    const trips = [{ status: "CONFIRMED" as const }];
     const counts = countTripsByStatus(trips);
     expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(1);
   });
@@ -118,27 +120,28 @@ describe('countTripsByStatus', () => {
 ```bash
 npm test
 ```
+
 Expected: `Cannot find module '../trip-status'`
 
 - [ ] **Step 5: Create `src/lib/admin/trip-status.ts`**
 
 ```ts
 export type TripRequestStatus =
-  | 'DRAFT'
-  | 'SAVED'
-  | 'PENDING_PAYMENT'
-  | 'CONFIRMED'
-  | 'REVEALED'
-  | 'COMPLETED'
-  | 'CANCELLED';
+  | "DRAFT"
+  | "SAVED"
+  | "PENDING_PAYMENT"
+  | "CONFIRMED"
+  | "REVEALED"
+  | "COMPLETED"
+  | "CANCELLED";
 
 export const TRIP_STATUS_FLOW: TripRequestStatus[] = [
-  'DRAFT',
-  'SAVED',
-  'PENDING_PAYMENT',
-  'CONFIRMED',
-  'REVEALED',
-  'COMPLETED',
+  "DRAFT",
+  "SAVED",
+  "PENDING_PAYMENT",
+  "CONFIRMED",
+  "REVEALED",
+  "COMPLETED",
 ];
 
 export interface StatusColors {
@@ -148,29 +151,80 @@ export interface StatusColors {
 }
 
 export const TRIP_STATUS_COLORS: Record<TripRequestStatus, StatusColors> = {
-  CANCELLED:       { bg: 'bg-red-100',    border: 'border-red-200',    text: 'text-red-800'    },
-  COMPLETED:       { bg: 'bg-green-100',  border: 'border-green-200',  text: 'text-green-800'  },
-  CONFIRMED:       { bg: 'bg-green-100',  border: 'border-green-200',  text: 'text-green-800'  },
-  DRAFT:           { bg: 'bg-gray-100',   border: 'border-gray-200',   text: 'text-gray-700'   },
-  PENDING_PAYMENT: { bg: 'bg-yellow-100', border: 'border-yellow-200', text: 'text-yellow-800' },
-  REVEALED:        { bg: 'bg-blue-100',   border: 'border-blue-200',   text: 'text-blue-800'   },
-  SAVED:           { bg: 'bg-gray-100',   border: 'border-gray-200',   text: 'text-gray-700'   },
+  CANCELLED: {
+    bg: "bg-red-100",
+    border: "border-red-200",
+    text: "text-red-800",
+  },
+  COMPLETED: {
+    bg: "bg-green-100",
+    border: "border-green-200",
+    text: "text-green-800",
+  },
+  CONFIRMED: {
+    bg: "bg-green-100",
+    border: "border-green-200",
+    text: "text-green-800",
+  },
+  DRAFT: {
+    bg: "bg-gray-100",
+    border: "border-gray-200",
+    text: "text-gray-700",
+  },
+  PENDING_PAYMENT: {
+    bg: "bg-yellow-100",
+    border: "border-yellow-200",
+    text: "text-yellow-800",
+  },
+  REVEALED: {
+    bg: "bg-blue-100",
+    border: "border-blue-200",
+    text: "text-blue-800",
+  },
+  SAVED: {
+    bg: "bg-gray-100",
+    border: "border-gray-200",
+    text: "text-gray-700",
+  },
 };
 
 export const PAYMENT_STATUS_COLORS: Record<string, StatusColors> = {
-  APPROVED:   { bg: 'bg-green-100',  border: 'border-green-200',  text: 'text-green-800'  },
-  CANCELLED:  { bg: 'bg-gray-100',   border: 'border-gray-200',   text: 'text-gray-700'   },
-  COMPLETED:  { bg: 'bg-green-100',  border: 'border-green-200',  text: 'text-green-800'  },
-  FAILED:     { bg: 'bg-red-100',    border: 'border-red-200',    text: 'text-red-800'    },
-  PENDING:    { bg: 'bg-yellow-100', border: 'border-yellow-200', text: 'text-yellow-800' },
-  REFUNDED:   { bg: 'bg-gray-100',   border: 'border-gray-200',   text: 'text-gray-700'   },
+  APPROVED: {
+    bg: "bg-green-100",
+    border: "border-green-200",
+    text: "text-green-800",
+  },
+  CANCELLED: {
+    bg: "bg-gray-100",
+    border: "border-gray-200",
+    text: "text-gray-700",
+  },
+  COMPLETED: {
+    bg: "bg-green-100",
+    border: "border-green-200",
+    text: "text-green-800",
+  },
+  FAILED: { bg: "bg-red-100", border: "border-red-200", text: "text-red-800" },
+  PENDING: {
+    bg: "bg-yellow-100",
+    border: "border-yellow-200",
+    text: "text-yellow-800",
+  },
+  REFUNDED: {
+    bg: "bg-gray-100",
+    border: "border-gray-200",
+    text: "text-gray-700",
+  },
 };
 
 export function countTripsByStatus(
   trips: { status: TripRequestStatus }[],
 ): Record<TripRequestStatus, number> {
-  const all: TripRequestStatus[] = [...TRIP_STATUS_FLOW, 'CANCELLED'];
-  const counts = Object.fromEntries(all.map((s) => [s, 0])) as Record<TripRequestStatus, number>;
+  const all: TripRequestStatus[] = [...TRIP_STATUS_FLOW, "CANCELLED"];
+  const counts = Object.fromEntries(all.map((s) => [s, 0])) as Record<
+    TripRequestStatus,
+    number
+  >;
   for (const trip of trips) {
     if (trip.status in counts) counts[trip.status]++;
   }
@@ -183,6 +237,7 @@ export function countTripsByStatus(
 ```bash
 npm test
 ```
+
 Expected: all 3 tests pass.
 
 ---
@@ -190,6 +245,7 @@ Expected: all 3 tests pass.
 ## Task 2: `format.ts` utils
 
 **Files:**
+
 - Create: `src/lib/admin/format.ts`
 - Create: `src/lib/admin/__tests__/format.test.ts`
 
@@ -197,26 +253,28 @@ Expected: all 3 tests pass.
 
 ```ts
 // src/lib/admin/__tests__/format.test.ts
-import { describe, expect, it } from 'vitest';
-import { formatAdminAmount, formatAdminDate } from '../format';
+import { describe, expect, it } from "vitest";
+import { formatAdminAmount, formatAdminDate } from "../format";
 
-describe('formatAdminDate', () => {
-  it('formats an ISO date string', () => {
-    expect(formatAdminDate('2026-03-10T00:00:00.000Z')).toMatch(/Mar \d+, 2026/);
+describe("formatAdminDate", () => {
+  it("formats an ISO date string", () => {
+    expect(formatAdminDate("2026-03-10T00:00:00.000Z")).toMatch(
+      /Mar \d+, 2026/,
+    );
   });
 
-  it('returns em-dash for null', () => {
-    expect(formatAdminDate(null)).toBe('—');
+  it("returns em-dash for null", () => {
+    expect(formatAdminDate(null)).toBe("—");
   });
 });
 
-describe('formatAdminAmount', () => {
-  it('formats amount with currency prefix', () => {
-    expect(formatAdminAmount(450000, 'ARS')).toBe('ARS 450,000');
+describe("formatAdminAmount", () => {
+  it("formats amount with currency prefix", () => {
+    expect(formatAdminAmount(450000, "ARS")).toBe("ARS 450,000");
   });
 
-  it('formats small amounts without extra commas', () => {
-    expect(formatAdminAmount(100, 'USD')).toBe('USD 100');
+  it("formats small amounts without extra commas", () => {
+    expect(formatAdminAmount(100, "USD")).toBe("USD 100");
   });
 });
 ```
@@ -226,22 +284,23 @@ describe('formatAdminAmount', () => {
 ```bash
 npm test
 ```
+
 Expected: `Cannot find module '../format'`
 
 - [ ] **Step 3: Create `src/lib/admin/format.ts`**
 
 ```ts
 export function formatAdminDate(iso: string | null): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 }
 
 export function formatAdminAmount(amount: number, currency: string): string {
-  return `${currency} ${amount.toLocaleString('en-US')}`;
+  return `${currency} ${amount.toLocaleString("en-US")}`;
 }
 ```
 
@@ -250,6 +309,7 @@ export function formatAdminAmount(amount: number, currency: string): string {
 ```bash
 npm test
 ```
+
 Expected: all 5 tests pass.
 
 ---
@@ -257,17 +317,18 @@ Expected: all 5 tests pass.
 ## Task 3: Shared types
 
 **Files:**
+
 - Create: `src/lib/admin/types.ts`
 
 - [ ] **Step 1: Create types file**
 
 ```ts
 // src/lib/admin/types.ts
-import type { TripRequestStatus } from './trip-status';
+import type { TripRequestStatus } from "./trip-status";
 
 export type { TripRequestStatus };
 
-export type StatusFilterValue = TripRequestStatus | 'ALL';
+export type StatusFilterValue = TripRequestStatus | "ALL";
 
 export interface AdminTripPackage {
   excuseKey: string | null;
@@ -329,6 +390,7 @@ export interface AdminTripRequest {
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -336,36 +398,38 @@ Expected: exits 0.
 ## Task 4: `StatusBadge` component
 
 **Files:**
+
 - Create: `src/components/app/admin/StatusBadge.tsx`
 
 - [ ] **Step 1: Create component**
 
 ```tsx
 // src/components/app/admin/StatusBadge.tsx
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 import {
   PAYMENT_STATUS_COLORS,
   TRIP_STATUS_COLORS,
-} from '@/lib/admin/trip-status';
+} from "@/lib/admin/trip-status";
 
 interface StatusBadgeProps {
   status: string;
-  variant?: 'payment' | 'trip';
+  variant?: "payment" | "trip";
 }
 
 const FALLBACK = {
-  bg: 'bg-gray-100',
-  border: 'border-gray-200',
-  text: 'text-gray-700',
+  bg: "bg-gray-100",
+  border: "border-gray-200",
+  text: "text-gray-700",
 };
 
-export function StatusBadge({ status, variant = 'trip' }: StatusBadgeProps) {
-  const map = variant === 'payment' ? PAYMENT_STATUS_COLORS : TRIP_STATUS_COLORS;
+export function StatusBadge({ status, variant = "trip" }: StatusBadgeProps) {
+  const map =
+    variant === "payment" ? PAYMENT_STATUS_COLORS : TRIP_STATUS_COLORS;
   const colors = map[status] ?? FALLBACK;
   return (
     <span
       className={cn(
-        'inline-block rounded-full border px-2.5 py-0.5 text-xs font-bold',
+        "inline-block rounded-full border px-2.5 py-0.5 text-xs font-bold",
         colors.bg,
         colors.border,
         colors.text,
@@ -382,6 +446,7 @@ export function StatusBadge({ status, variant = 'trip' }: StatusBadgeProps) {
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -389,6 +454,7 @@ Expected: exits 0.
 ## Task 5: `AdminSidebarLink` + `AdminSidebar`
 
 **Files:**
+
 - Create: `src/components/app/admin/AdminSidebarLink.tsx`
 - Create: `src/components/app/admin/AdminSidebar.tsx`
 
@@ -396,9 +462,9 @@ Expected: exits 0.
 
 ```tsx
 // src/components/app/admin/AdminSidebarLink.tsx
-import Link from 'next/link';
-import type { LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AdminSidebarLinkProps {
   badge?: number;
@@ -418,10 +484,10 @@ export function AdminSidebarLink({
   return (
     <Link
       className={cn(
-        'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
+        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
         isActive
-          ? 'bg-gray-100 font-bold text-gray-900'
-          : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700',
+          ? "bg-gray-100 font-bold text-gray-900"
+          : "text-gray-500 hover:bg-gray-50 hover:text-gray-700",
       )}
       href={href}
     >
@@ -441,9 +507,9 @@ export function AdminSidebarLink({
 
 ```tsx
 // src/components/app/admin/AdminSidebar.tsx
-'use client';
+"use client";
 
-import { useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname } from "next/navigation";
 import {
   Briefcase,
   CreditCard,
@@ -451,31 +517,31 @@ import {
   Package,
   Star,
   Users,
-} from 'lucide-react';
-import { AdminSidebarLink } from './AdminSidebarLink';
+} from "lucide-react";
+import { AdminSidebarLink } from "./AdminSidebarLink";
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const params = useParams();
-  const locale = (params?.locale as string) ?? 'es';
+  const locale = (params?.locale as string) ?? "es";
 
   function base(path: string) {
     return `/${locale}/dashboard/admin${path}`;
   }
 
   function isActive(href: string) {
-    const root = base('');
+    const root = base("");
     if (href === root) return pathname === root;
     return pathname === href || pathname.startsWith(`${href}/`);
   }
 
   const links = [
-    { href: base(''),          icon: Briefcase,  label: 'Trip Requests' },
-    { href: base('/users'),    icon: Users,       label: 'Users'         },
-    { href: base('/packages'), icon: Package,     label: 'Packages'      },
-    { href: base('/payments'), icon: CreditCard,  label: 'Payments'      },
-    { href: base('/reviews'),  icon: Star,        label: 'Reviews'       },
-    { href: base('/waitlist'), icon: Mail,        label: 'Waitlist'      },
+    { href: base(""), icon: Briefcase, label: "Trip Requests" },
+    { href: base("/users"), icon: Users, label: "Users" },
+    { href: base("/packages"), icon: Package, label: "Packages" },
+    { href: base("/payments"), icon: CreditCard, label: "Payments" },
+    { href: base("/reviews"), icon: Star, label: "Reviews" },
+    { href: base("/waitlist"), icon: Mail, label: "Waitlist" },
   ];
 
   return (
@@ -507,6 +573,7 @@ export function AdminSidebar() {
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -514,6 +581,7 @@ Expected: exits 0.
 ## Task 6: Admin layout
 
 **Files:**
+
 - Create: `src/app/[locale]/dashboard/admin/AdminLayoutClient.tsx`
 - Create: `src/app/[locale]/dashboard/admin/layout.tsx`
 
@@ -521,11 +589,11 @@ Expected: exits 0.
 
 ```tsx
 // src/app/[locale]/dashboard/admin/AdminLayoutClient.tsx
-'use client';
+"use client";
 
-import SecureRoute from '@/components/auth/SecureRoute';
-import HeaderHero from '@/components/journey/HeaderHero';
-import { AdminSidebar } from '@/components/app/admin/AdminSidebar';
+import SecureRoute from "@/components/auth/SecureRoute";
+import HeaderHero from "@/components/journey/HeaderHero";
+import { AdminSidebar } from "@/components/app/admin/AdminSidebar";
 
 export default function AdminLayoutClient({
   children,
@@ -535,7 +603,7 @@ export default function AdminLayoutClient({
   return (
     <SecureRoute requiredRole="admin">
       <HeaderHero
-        className="!min-h-[30vh]"
+        className="min-h-[30vh]!"
         description="Manage trip requests, users, packages and payments."
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle="ADMIN DASHBOARD"
@@ -555,9 +623,9 @@ export default function AdminLayoutClient({
 
 ```tsx
 // src/app/[locale]/dashboard/admin/layout.tsx
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-import AdminLayoutClient from './AdminLayoutClient';
+import AdminLayoutClient from "./AdminLayoutClient";
 
 export default function AdminLayout({
   children,
@@ -573,6 +641,7 @@ export default function AdminLayout({
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -580,6 +649,7 @@ Expected: exits 0.
 ## Task 7: Placeholder section pages
 
 **Files:**
+
 - Create: `src/app/[locale]/dashboard/admin/users/page.tsx`
 - Create: `src/app/[locale]/dashboard/admin/packages/page.tsx`
 - Create: `src/app/[locale]/dashboard/admin/payments/page.tsx`
@@ -611,6 +681,7 @@ Use the same structure for `packages/page.tsx`, `payments/page.tsx`, `reviews/pa
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -618,16 +689,17 @@ Expected: exits 0.
 ## Task 8: `useTripRequests` hook
 
 **Files:**
+
 - Create: `src/hooks/useTripRequests.ts`
 
 - [ ] **Step 1: Create hook**
 
 ```ts
 // src/hooks/useTripRequests.ts
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import type { AdminTripRequest } from '@/lib/admin/types';
+import { useCallback, useEffect, useState } from "react";
+import type { AdminTripRequest } from "@/lib/admin/types";
 
 interface UseTripRequestsResult {
   error: string | null;
@@ -644,10 +716,13 @@ export function useTripRequests(): UseTripRequestsResult {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const res = await fetch('/api/admin/trip-requests');
-    const data = (await res.json()) as { error?: string; tripRequests?: AdminTripRequest[] };
+    const res = await fetch("/api/admin/trip-requests");
+    const data = (await res.json()) as {
+      error?: string;
+      tripRequests?: AdminTripRequest[];
+    };
     if (!res.ok) {
-      setError(data.error ?? 'Failed to load trip requests.');
+      setError(data.error ?? "Failed to load trip requests.");
       setLoading(false);
       return;
     }
@@ -668,6 +743,7 @@ export function useTripRequests(): UseTripRequestsResult {
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -675,6 +751,7 @@ Expected: exits 0.
 ## Task 9: `AdminKPICard` + `TripRequestsKPIStrip`
 
 **Files:**
+
 - Create: `src/components/app/admin/AdminKPICard.tsx`
 - Create: `src/components/app/admin/TripRequestsKPIStrip.tsx`
 
@@ -690,8 +767,12 @@ interface AdminKPICardProps {
 export function AdminKPICard({ count, label }: AdminKPICardProps) {
   return (
     <div className="rounded-xl bg-white p-3 shadow-sm ring-1 ring-gray-100">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">{label}</p>
-      <p className="mt-1 font-barlow-condensed text-2xl font-extrabold text-gray-900">{count}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+        {label}
+      </p>
+      <p className="mt-1 font-barlow-condensed text-2xl font-extrabold text-gray-900">
+        {count}
+      </p>
     </div>
   );
 }
@@ -701,9 +782,9 @@ export function AdminKPICard({ count, label }: AdminKPICardProps) {
 
 ```tsx
 // src/components/app/admin/TripRequestsKPIStrip.tsx
-import { countTripsByStatus } from '@/lib/admin/trip-status';
-import type { AdminTripRequest } from '@/lib/admin/types';
-import { AdminKPICard } from './AdminKPICard';
+import { countTripsByStatus } from "@/lib/admin/trip-status";
+import type { AdminTripRequest } from "@/lib/admin/types";
+import { AdminKPICard } from "./AdminKPICard";
 
 interface TripRequestsKPIStripProps {
   trips: AdminTripRequest[];
@@ -713,10 +794,10 @@ export function TripRequestsKPIStrip({ trips }: TripRequestsKPIStripProps) {
   const counts = countTripsByStatus(trips);
   return (
     <div className="grid grid-cols-4 gap-3 border-b border-gray-200 bg-gray-50 px-5 py-3">
-      <AdminKPICard label="Confirmed"  count={counts.CONFIRMED}       />
-      <AdminKPICard label="Pending"    count={counts.PENDING_PAYMENT} />
-      <AdminKPICard label="Revealed"   count={counts.REVEALED}        />
-      <AdminKPICard label="Completed"  count={counts.COMPLETED}       />
+      <AdminKPICard label="Confirmed" count={counts.CONFIRMED} />
+      <AdminKPICard label="Pending" count={counts.PENDING_PAYMENT} />
+      <AdminKPICard label="Revealed" count={counts.REVEALED} />
+      <AdminKPICard label="Completed" count={counts.COMPLETED} />
     </div>
   );
 }
@@ -727,6 +808,7 @@ export function TripRequestsKPIStrip({ trips }: TripRequestsKPIStripProps) {
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -734,22 +816,23 @@ Expected: exits 0.
 ## Task 10: `TripRequestsFilterBar`
 
 **Files:**
+
 - Create: `src/components/app/admin/TripRequestsFilterBar.tsx`
 
 - [ ] **Step 1: Create component**
 
 ```tsx
 // src/components/app/admin/TripRequestsFilterBar.tsx
-import { cn } from '@/lib/utils';
-import type { StatusFilterValue } from '@/lib/admin/types';
+import { cn } from "@/lib/utils";
+import type { StatusFilterValue } from "@/lib/admin/types";
 
 const FILTERS: { label: string; value: StatusFilterValue }[] = [
-  { label: 'All',       value: 'ALL'             },
-  { label: 'Pending',   value: 'PENDING_PAYMENT' },
-  { label: 'Confirmed', value: 'CONFIRMED'        },
-  { label: 'Revealed',  value: 'REVEALED'         },
-  { label: 'Completed', value: 'COMPLETED'        },
-  { label: 'Cancelled', value: 'CANCELLED'        },
+  { label: "All", value: "ALL" },
+  { label: "Pending", value: "PENDING_PAYMENT" },
+  { label: "Confirmed", value: "CONFIRMED" },
+  { label: "Revealed", value: "REVEALED" },
+  { label: "Completed", value: "COMPLETED" },
+  { label: "Cancelled", value: "CANCELLED" },
 ];
 
 interface TripRequestsFilterBarProps {
@@ -771,10 +854,10 @@ export function TripRequestsFilterBar({
           <button
             key={f.value}
             className={cn(
-              'rounded-full border px-3 py-1 text-xs font-semibold transition-colors',
+              "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
               activeFilter === f.value
-                ? 'border-gray-900 bg-gray-900 text-white'
-                : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300',
+                ? "border-gray-900 bg-gray-900 text-white"
+                : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300",
             )}
             onClick={() => onFilterChange(f.value)}
             type="button"
@@ -793,6 +876,7 @@ export function TripRequestsFilterBar({
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -800,6 +884,7 @@ Expected: exits 0.
 ## Task 11: `TripRequestDetails` + `TripStatusTimeline`
 
 **Files:**
+
 - Create: `src/components/app/admin/TripRequestDetails.tsx`
 - Create: `src/components/app/admin/TripStatusTimeline.tsx`
 
@@ -807,8 +892,8 @@ Expected: exits 0.
 
 ```tsx
 // src/components/app/admin/TripRequestDetails.tsx
-import { formatAdminDate, formatAdminAmount } from '@/lib/admin/format';
-import type { AdminTripRequest } from '@/lib/admin/types';
+import { formatAdminDate, formatAdminAmount } from "@/lib/admin/format";
+import type { AdminTripRequest } from "@/lib/admin/types";
 
 interface DetailRowProps {
   label: string;
@@ -859,17 +944,23 @@ export function TripRequestDetails({ trip }: TripRequestDetailsProps) {
 
 ```tsx
 // src/components/app/admin/TripStatusTimeline.tsx
-import { cn } from '@/lib/utils';
-import { TRIP_STATUS_FLOW } from '@/lib/admin/trip-status';
-import { formatAdminDate } from '@/lib/admin/format';
-import type { AdminTripRequest, TripRequestStatus } from '@/lib/admin/types';
+import { cn } from "@/lib/utils";
+import { TRIP_STATUS_FLOW } from "@/lib/admin/trip-status";
+import { formatAdminDate } from "@/lib/admin/format";
+import type { AdminTripRequest, TripRequestStatus } from "@/lib/admin/types";
 
-const TIMELINE_STATUSES: TripRequestStatus[] = ['CONFIRMED', 'REVEALED', 'COMPLETED'];
+const TIMELINE_STATUSES: TripRequestStatus[] = [
+  "CONFIRMED",
+  "REVEALED",
+  "COMPLETED",
+];
 
-const STATUS_DATE_FIELD: Partial<Record<TripRequestStatus, keyof AdminTripRequest>> = {
-  COMPLETED: 'completedAt',
-  CONFIRMED: 'updatedAt',
-  REVEALED:  'destinationRevealedAt',
+const STATUS_DATE_FIELD: Partial<
+  Record<TripRequestStatus, keyof AdminTripRequest>
+> = {
+  COMPLETED: "completedAt",
+  CONFIRMED: "updatedAt",
+  REVEALED: "destinationRevealedAt",
 };
 
 interface TripStatusTimelineProps {
@@ -877,7 +968,10 @@ interface TripStatusTimelineProps {
   trip: AdminTripRequest;
 }
 
-export function TripStatusTimeline({ currentStatus, trip }: TripStatusTimelineProps) {
+export function TripStatusTimeline({
+  currentStatus,
+  trip,
+}: TripStatusTimelineProps) {
   const currentIndex = TRIP_STATUS_FLOW.indexOf(currentStatus);
   return (
     <div className="px-4 py-3">
@@ -889,19 +983,21 @@ export function TripStatusTimeline({ currentStatus, trip }: TripStatusTimelinePr
           const statusIndex = TRIP_STATUS_FLOW.indexOf(status);
           const isPast = statusIndex <= currentIndex;
           const dateField = STATUS_DATE_FIELD[status];
-          const dateValue = dateField ? (trip[dateField] as string | null) : null;
+          const dateValue = dateField
+            ? (trip[dateField] as string | null)
+            : null;
           return (
             <div key={status} className="flex items-center gap-2">
               <div
                 className={cn(
-                  'h-2 w-2 shrink-0 rounded-full',
-                  isPast ? 'bg-green-500' : 'bg-gray-200',
+                  "h-2 w-2 shrink-0 rounded-full",
+                  isPast ? "bg-green-500" : "bg-gray-200",
                 )}
               />
               <span
                 className={cn(
-                  'text-xs font-semibold',
-                  isPast ? 'text-gray-700' : 'text-gray-400',
+                  "text-xs font-semibold",
+                  isPast ? "text-gray-700" : "text-gray-400",
                 )}
               >
                 {status}
@@ -925,6 +1021,7 @@ export function TripStatusTimeline({ currentStatus, trip }: TripStatusTimelinePr
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -932,6 +1029,7 @@ Expected: exits 0.
 ## Task 12: `TripRequestsTableRow` + `TripRequestsTable`
 
 **Files:**
+
 - Create: `src/components/app/admin/TripRequestsTableRow.tsx`
 - Create: `src/components/app/admin/TripRequestsTable.tsx`
 
@@ -939,9 +1037,9 @@ Expected: exits 0.
 
 ```tsx
 // src/components/app/admin/TripRequestsTableRow.tsx
-import { cn } from '@/lib/utils';
-import type { AdminTripRequest } from '@/lib/admin/types';
-import { StatusBadge } from './StatusBadge';
+import { cn } from "@/lib/utils";
+import type { AdminTripRequest } from "@/lib/admin/types";
+import { StatusBadge } from "./StatusBadge";
 
 interface TripRequestsTableRowProps {
   isSelected: boolean;
@@ -957,8 +1055,8 @@ export function TripRequestsTableRow({
   return (
     <tr
       className={cn(
-        'border-b border-gray-100 last:border-0',
-        isSelected && 'border-l-2 border-l-gray-900 bg-blue-50',
+        "border-b border-gray-100 last:border-0",
+        isSelected && "border-l-2 border-l-gray-900 bg-blue-50",
       )}
     >
       <td className="px-4 py-2.5">
@@ -988,7 +1086,7 @@ export function TripRequestsTableRow({
           onClick={() => onEdit(trip.id)}
           type="button"
         >
-          {isSelected ? 'editing' : 'Edit'}
+          {isSelected ? "editing" : "Edit"}
         </button>
       </td>
     </tr>
@@ -1000,10 +1098,10 @@ export function TripRequestsTableRow({
 
 ```tsx
 // src/components/app/admin/TripRequestsTable.tsx
-import type { AdminTripRequest } from '@/lib/admin/types';
-import { TripRequestsTableRow } from './TripRequestsTableRow';
+import type { AdminTripRequest } from "@/lib/admin/types";
+import { TripRequestsTableRow } from "./TripRequestsTableRow";
 
-const HEADERS = ['Traveler', 'Origin', 'Type / Level', 'Status', 'Payment', ''];
+const HEADERS = ["Traveler", "Origin", "Type / Level", "Status", "Payment", ""];
 
 interface TripRequestsTableProps {
   onEdit: (id: string) => void;
@@ -1043,7 +1141,9 @@ export function TripRequestsTable({
         </tbody>
       </table>
       {trips.length === 0 && (
-        <p className="py-10 text-center text-sm text-gray-400">No trips found.</p>
+        <p className="py-10 text-center text-sm text-gray-400">
+          No trips found.
+        </p>
       )}
     </div>
   );
@@ -1055,6 +1155,7 @@ export function TripRequestsTable({
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -1062,31 +1163,32 @@ Expected: exits 0.
 ## Task 13: `TripRequestSlideOver`
 
 **Files:**
+
 - Create: `src/components/app/admin/TripRequestSlideOver.tsx`
 
 - [ ] **Step 1: Create component**
 
 ```tsx
 // src/components/app/admin/TripRequestSlideOver.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { FormField, FormSelectField } from '@/components/ui/FormField';
-import type { AdminTripRequest, TripRequestStatus } from '@/lib/admin/types';
-import { StatusBadge } from './StatusBadge';
-import { TripRequestDetails } from './TripRequestDetails';
-import { TripStatusTimeline } from './TripStatusTimeline';
+import { useState } from "react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
+import type { AdminTripRequest, TripRequestStatus } from "@/lib/admin/types";
+import { StatusBadge } from "./StatusBadge";
+import { TripRequestDetails } from "./TripRequestDetails";
+import { TripStatusTimeline } from "./TripStatusTimeline";
 
 const STATUS_OPTIONS: TripRequestStatus[] = [
-  'DRAFT',
-  'SAVED',
-  'PENDING_PAYMENT',
-  'CONFIRMED',
-  'REVEALED',
-  'COMPLETED',
-  'CANCELLED',
+  "DRAFT",
+  "SAVED",
+  "PENDING_PAYMENT",
+  "CONFIRMED",
+  "REVEALED",
+  "COMPLETED",
+  "CANCELLED",
 ];
 
 interface Draft {
@@ -1106,7 +1208,7 @@ export function TripRequestSlideOver({
   trip,
 }: TripRequestSlideOverProps) {
   const [draft, setDraft] = useState<Draft>({
-    actualDestination: trip.actualDestination ?? '',
+    actualDestination: trip.actualDestination ?? "",
     status: trip.status,
   });
   const [saving, setSaving] = useState(false);
@@ -1118,8 +1220,8 @@ export function TripRequestSlideOver({
         actualDestination: draft.actualDestination,
         status: draft.status,
       }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'PATCH',
+      headers: { "Content-Type": "application/json" },
+      method: "PATCH",
     });
     setSaving(false);
     if (res.ok) {
@@ -1181,7 +1283,10 @@ export function TripRequestSlideOver({
           id="slide-status"
           label="Trip Status"
           onChange={(e) =>
-            setDraft((d) => ({ ...d, status: e.target.value as TripRequestStatus }))
+            setDraft((d) => ({
+              ...d,
+              status: e.target.value as TripRequestStatus,
+            }))
           }
           value={draft.status}
         >
@@ -1205,7 +1310,7 @@ export function TripRequestSlideOver({
           type="button"
           variant="default"
         >
-          {saving ? 'Saving...' : 'Save Changes'}
+          {saving ? "Saving..." : "Save Changes"}
         </Button>
         <Button onClick={onClose} size="sm" type="button" variant="secondary">
           Cancel
@@ -1221,6 +1326,7 @@ export function TripRequestSlideOver({
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 ---
@@ -1228,34 +1334,35 @@ Expected: exits 0.
 ## Task 14: Rewrite `page.tsx`
 
 **Files:**
+
 - Modify: `src/app/[locale]/dashboard/admin/page.tsx`
 
 - [ ] **Step 1: Replace entire file**
 
 ```tsx
 // src/app/[locale]/dashboard/admin/page.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import { TripRequestsFilterBar } from '@/components/app/admin/TripRequestsFilterBar';
-import { TripRequestsKPIStrip } from '@/components/app/admin/TripRequestsKPIStrip';
-import { TripRequestsTable } from '@/components/app/admin/TripRequestsTable';
-import { TripRequestSlideOver } from '@/components/app/admin/TripRequestSlideOver';
-import { useTripRequests } from '@/hooks/useTripRequests';
-import type { AdminTripRequest, StatusFilterValue } from '@/lib/admin/types';
+import { useState } from "react";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { TripRequestsFilterBar } from "@/components/app/admin/TripRequestsFilterBar";
+import { TripRequestsKPIStrip } from "@/components/app/admin/TripRequestsKPIStrip";
+import { TripRequestsTable } from "@/components/app/admin/TripRequestsTable";
+import { TripRequestSlideOver } from "@/components/app/admin/TripRequestSlideOver";
+import { useTripRequests } from "@/hooks/useTripRequests";
+import type { AdminTripRequest, StatusFilterValue } from "@/lib/admin/types";
 
 function applyFilter(
   trips: AdminTripRequest[],
   filter: StatusFilterValue,
 ): AdminTripRequest[] {
-  if (filter === 'ALL') return trips;
+  if (filter === "ALL") return trips;
   return trips.filter((t) => t.status === filter);
 }
 
 export default function AdminTripRequestsPage() {
   const { error, loading, refresh, trips } = useTripRequests();
-  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>('ALL');
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("ALL");
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
 
   const visibleTrips = applyFilter(trips, statusFilter);
@@ -1266,9 +1373,7 @@ export default function AdminTripRequestsPage() {
   if (loading) return <LoadingSpinner />;
 
   if (error) {
-    return (
-      <div className="p-8 text-center text-sm text-red-600">{error}</div>
-    );
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
   }
 
   return (
@@ -1304,6 +1409,7 @@ export default function AdminTripRequestsPage() {
 ```bash
 npm run typecheck
 ```
+
 Expected: exits 0.
 
 - [ ] **Step 3: Run tests**
@@ -1311,6 +1417,7 @@ Expected: exits 0.
 ```bash
 npm test
 ```
+
 Expected: all 5 tests pass.
 
 - [ ] **Step 4: Verify in browser**
@@ -1322,6 +1429,7 @@ npm run dev
 Navigate to `http://localhost:3010/es/dashboard/admin` (sign in as admin first).
 
 Verify:
+
 - Navbar + HeaderHero appear full-width
 - Sidebar renders with 6 links, "Trip Requests" active
 - KPI strip shows counts

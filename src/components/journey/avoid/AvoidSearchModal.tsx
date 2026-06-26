@@ -1,16 +1,16 @@
-'use client';
-import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { useSearchParams } from 'next/navigation';
-import { useQuerySync } from '@/hooks/useQuerySync';
-import { Button } from '@/components/ui/Button';
-import Badge from '@/components/badge';
-import CitySearchSelector from './CitySearchSelector';
-import type { AvoidCity } from '@/lib/helpers/avoid-cities';
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { useSearchParams } from "next/navigation";
+import { useQuerySync } from "@/hooks/useQuerySync";
+import { Button } from "@/components/ui/Button";
+import Badge from "@/components/badge";
+import CitySearchSelector from "./CitySearchSelector";
+import type { AvoidCity } from "@/lib/helpers/avoid-cities";
 import {
   avoidCityLabelsEqual,
   canonicalAvoidCityLabel,
-} from '@/lib/helpers/avoid-destinations';
+} from "@/lib/helpers/avoid-destinations";
 
 export interface AvoidSearchModalLabels {
   addButton: string;
@@ -35,7 +35,7 @@ export default function AvoidSearchModal({
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
   const [mounted, setMounted] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [local, setLocal] = useState<string[]>([]);
 
   useEffect(() => {
@@ -43,10 +43,10 @@ export default function AvoidSearchModal({
   }, []);
 
   const current = useMemo(() => {
-    const raw = searchParams.get('avoidDestinations');
+    const raw = searchParams.get("avoidDestinations");
     return raw
       ? raw
-          .split(',')
+          .split(",")
           .map((s) => s.trim())
           .filter(Boolean)
       : [];
@@ -55,7 +55,7 @@ export default function AvoidSearchModal({
   // Reset al abrir
   useEffect(() => {
     if (open) {
-      setQuery('');
+      setQuery("");
       setLocal([]);
     }
   }, [open]);
@@ -65,8 +65,8 @@ export default function AvoidSearchModal({
   const max = 15;
   const totalCount = current.length + local.length;
   const selectedCountText = labels.selectedCountTemplate
-    .replace('{count}', String(totalCount))
-    .replace('{max}', String(max));
+    .replace("{count}", String(totalCount))
+    .replace("{max}", String(max));
 
   const add = (rawLabel: string) => {
     const label = canonicalAvoidCityLabel(rawLabel);
@@ -74,12 +74,12 @@ export default function AvoidSearchModal({
     const pool = [...current, ...local];
     const exists = pool.some((n) => avoidCityLabelsEqual(n, label));
     if (exists) {
-      setQuery('');
+      setQuery("");
       return;
     }
     if (pool.length >= max) return;
     setLocal((prev) => [...prev, label]);
-    setQuery('');
+    setQuery("");
   };
 
   const handleCitySelect = (city: AvoidCity) => {
@@ -87,9 +87,7 @@ export default function AvoidSearchModal({
   };
 
   const removeLocal = (name: string) => {
-    setLocal((prev) =>
-      prev.filter((n) => !avoidCityLabelsEqual(n, name)),
-    );
+    setLocal((prev) => prev.filter((n) => !avoidCityLabelsEqual(n, name)));
   };
 
   const save = () => {
@@ -108,7 +106,7 @@ export default function AvoidSearchModal({
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       add(query);
     }
@@ -119,7 +117,7 @@ export default function AvoidSearchModal({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       <div
         aria-hidden
         className="absolute inset-0 bg-black/50"
