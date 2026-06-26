@@ -23,7 +23,7 @@ const copy = {
     nightsLabel: "Noches:",
     departureDateLabel: "Fecha de salida:",
     subtext:
-      "Recibirás más detalles a medida que se acerque la fecha. ¡Gracias por confiar en GetRandomTrip!",
+      "Recibirás más detalles a medida que se acerque la fecha. ¡Gracias por confiar en GetRandomtrip!",
     cta: "VER MI VIAJE",
   },
   en: {
@@ -35,7 +35,7 @@ const copy = {
     nightsLabel: "Nights:",
     departureDateLabel: "Departure date:",
     subtext:
-      "You'll receive more details as the date approaches. Thank you for trusting GetRandomTrip!",
+      "You'll receive more details as the date approaches. Thank you for trusting GetRandomtrip!",
     cta: "VIEW MY TRIP",
   },
 };

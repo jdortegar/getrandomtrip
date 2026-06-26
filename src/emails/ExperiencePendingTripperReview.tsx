@@ -16,7 +16,7 @@ const copy = {
       `El admin propuso cambios para tu experiencia "${title}". Revisalos ahora.`,
     heading: "Revisión de experiencia",
     body: (tripperName: string, title: string) =>
-      `Hola ${tripperName}, el equipo de GetRandomTrip revisó tu experiencia "${title}" y tiene cambios propuestos para que los revises.`,
+      `Hola ${tripperName}, el equipo de GetRandomtrip revisó tu experiencia "${title}" y tiene cambios propuestos para que los revises.`,
     changedFieldsLabel: "Campos modificados:",
     subtext:
       "Podés aprobar o rechazar los cambios desde tu panel de tripper. Si rechazás, la experiencia vuelve a estado borrador para que la edites.",
@@ -27,7 +27,7 @@ const copy = {
       `Admin proposed changes for your experience "${title}". Review them now.`,
     heading: "Experience Review",
     body: (tripperName: string, title: string) =>
-      `Hi ${tripperName}, the GetRandomTrip team reviewed your experience "${title}" and has proposed some changes for your review.`,
+      `Hi ${tripperName}, the GetRandomtrip team reviewed your experience "${title}" and has proposed some changes for your review.`,
     changedFieldsLabel: "Modified fields:",
     subtext:
       "You can approve or reject the changes from your tripper dashboard. If you reject, the experience returns to draft status for you to edit.",
