@@ -2,10 +2,18 @@
 
 import { usePathname } from "next/navigation";
 import { PageHeading } from "@/components/layout/PageHeading";
-import { useDictionary } from "@/hooks/useDictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 export function TripperPageHeading() {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  const locale = useLocale();
+  // Normalize: strip locale prefix so base() comparisons work for both
+  // default locale (rewrite, no prefix) and non-default (redirect, has prefix).
+  const pathname = rawPathname.startsWith(`/${locale}/`)
+    ? rawPathname.slice(locale.length + 1)
+    : rawPathname === `/${locale}`
+      ? "/"
+      : rawPathname;
   const headings = useDictionary((d) => d.tripperDashboard.pageHeadings);
 
   function base(path: string) {

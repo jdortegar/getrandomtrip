@@ -22,8 +22,15 @@ import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnre
 import type { User } from "@/types/core";
 
 export function TripperNavTabs() {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
   const locale = useLocale();
+  // Normalize: strip locale prefix so comparisons work for both default (rewrite,
+  // no prefix in browser) and non-default (redirect, prefix in browser) locales.
+  const pathname = rawPathname.startsWith(`/${locale}/`)
+    ? rawPathname.slice(locale.length + 1)
+    : rawPathname === `/${locale}`
+      ? "/"
+      : rawPathname;
   const copy = useDictionary((d) => d.tripperDashboard.quickActions);
   const storeUser = useStore((s) => s.user);
   const { data: session } = useSession();
