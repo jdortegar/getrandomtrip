@@ -6,12 +6,11 @@ import { useSession } from "next-auth/react";
 import { useUserStore } from "@/store/slices/userStore";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
-import { PageHeading } from "@/components/layout/PageHeading";
 import { TripperDashboardSkeleton } from "@/components/app/dashboard/tripper/TripperDashboardSkeleton";
 import { TripperStatsGrid } from "@/components/app/dashboard/tripper/TripperStatsGrid";
 import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBookingsList";
-import { TripperNavTabs } from "@/components/app/dashboard/tripper/TripperNavTabs";
-import { NotificationsPanel } from "@/components/app/notifications/NotificationsPanel";
+import { TripperKeyMetrics } from "@/components/app/dashboard/tripper/TripperKeyMetrics";
+import { TripperQuickActions } from "@/components/app/dashboard/tripper/TripperQuickActions";
 import type { TripperDashboardStats, RecentBooking } from "@/types/tripper";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
@@ -85,8 +84,9 @@ function TripperContent() {
                   locale={locale}
                 />
               </div>
-              <div>
-                <NotificationsPanel audience="TRIPPER" />
+              <div className="space-y-6">
+                <TripperKeyMetrics stats={stats} copy={copy.keyMetrics} />
+                <TripperQuickActions copy={copy.quickActions} locale={locale} />
               </div>
             </div>
           </div>

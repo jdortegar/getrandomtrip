@@ -2,15 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import { PageHeading } from "@/components/layout/PageHeading";
-import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useDictionary } from "@/hooks/useDictionary";
 
 export function TripperPageHeading() {
   const pathname = usePathname();
-  const locale = useLocale();
   const headings = useDictionary((d) => d.tripperDashboard.pageHeadings);
 
   function base(path: string) {
-    return `/${locale}/dashboard/tripper${path}`;
+    return `/dashboard/tripper${path}`;
   }
 
   function resolve() {
@@ -25,6 +24,8 @@ export function TripperPageHeading() {
     if (pathname.startsWith(base("/earnings"))) return headings.earnings;
     if (pathname.startsWith(base("/reviews"))) return headings.reviews;
     if (pathname.startsWith(base("/blogs"))) return headings.blogs;
+    if (pathname.startsWith(base("/notifications"))) return headings.notifications;
+    if (pathname.startsWith("/dashboard/admin/xsed")) return headings.newDrop;
     return headings.dashboard;
   }
 
