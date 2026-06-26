@@ -14,6 +14,8 @@
     "ariaLabelTripbuddy": "Ir a North IA (TripBuddy)",
     "ariaLabelBitacoras": "Ir a Off the Record: Bitácoras del Continente",
     "ariaLabelXsed": "Ir a XSED",
+    "ariaLabelContact": "Ir a la página de contacto",
+    "labelContact": "Contacto",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Abrir menú de navegación",
     "search": "Buscar",
@@ -24,10 +26,11 @@
   "navbarProfile": {
     "ariaOpenProfileMenu": "Abrir menú de perfil",
     "dashboard": "Bitácoras de Viajes",
-    "editProfile": "Editar perfil",
+    "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Panel de Admin"
+    "adminDashboard": "Panel de Admin",
+    "newDrop": "Nuevo Drop"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -40,8 +43,338 @@
       "payments": "Pagos",
       "reviews": "Reseñas",
       "waitlist": "Lista de espera",
-      "xsedNotifications": "Avisos XSED"
+      "xsed": "Drops XSED",
+      "xsedNotifications": "Notificaciones XSED"
     }
+  },
+  "adminXsed": {
+    "list": {
+      "dropsCount": "{n} drops XSED",
+      "newDrop": "Nuevo drop",
+      "filterAllStatuses": "Todos los estados",
+      "empty": "No se encontraron drops XSED.",
+      "errorLoad": "Error al cargar los drops XSED",
+      "confirmDelete": "¿Eliminar este drop XSED? Esta acción no se puede deshacer.",
+      "columns": {
+        "title": "Título",
+        "slug": "Slug",
+        "status": "Estado",
+        "destination": "Destino",
+        "tripDate": "Fecha del viaje",
+        "revealAt": "Revelar el",
+        "basePrice": "Precio/persona",
+        "spots": "Cupos",
+        "sold": "Vendidos",
+        "cancellation": "Cancelación",
+        "weather": "Clima",
+        "accessibility": "Accesibilidad",
+        "safety": "Seguridad",
+        "revealCopy": "Texto revelación",
+        "preRevealCopy": "Texto pre-revelación",
+        "packingHints": "Consejos equipaje",
+        "whatsappMsg": "Mensaje WhatsApp",
+        "adminNotes": "Notas admin",
+        "supplierNotes": "Notas proveedor",
+        "created": "Creado",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "edit": "Editar",
+        "activate": "Activar",
+        "deactivate": "Desactivar",
+        "archive": "Archivar",
+        "delete": "Eliminar",
+        "deleting": "Eliminando…"
+      }
+    },
+    "form": {
+      "eyebrow": "Admin",
+      "title": "Nuevo Drop XSED",
+      "back": "Volver",
+      "submit": "Crear drop",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "titleEdit": "Editar Drop XSED",
+      "submitEdit": "Guardar cambios",
+      "toastCreated": "Drop creado",
+      "toastUpdated": "Drop actualizado",
+      "toastError": "Algo salió mal",
+      "sections": {
+        "basic": "Info básica",
+        "location": "Ubicación",
+        "dates": "Fechas",
+        "pricing": "Precio y capacidad",
+        "guest": "Contenido para el viajero",
+        "reveal": "Misterio / revelación",
+        "internal": "Interno",
+        "benefits": "Beneficios"
+      },
+      "fields": {
+        "titleInternal": "Título (interno)",
+        "teaser": "Teaser público",
+        "slug": "Slug",
+        "slugHint": "Identificador URL, ej: patagonia-2026",
+        "status": "Estado",
+        "heroImage": "URL imagen principal",
+        "destinationCity": "Ciudad de destino",
+        "destinationCountry": "País de destino",
+        "tripDate": "Fecha del viaje",
+        "revealAt": "Revelar el",
+        "basePrice": "Precio por persona",
+        "currency": "Moneda",
+        "currencyHint": "ej: USD, ARS",
+        "minSpots": "Cupos mínimos",
+        "maxSpots": "Cupos máximos",
+        "inclusions": "Incluido",
+        "exclusions": "No incluido",
+        "cancellationPolicy": "Política de cancelación",
+        "weatherPolicy": "Política climática",
+        "accessibilityNotes": "Notas de accesibilidad",
+        "safetyNotes": "Notas de seguridad",
+        "revealCopy": "Texto de revelación",
+        "preRevealCopy": "Texto pre-revelación",
+        "packingHints": "Consejos de equipaje",
+        "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
+        "adminNotes": "Notas del admin",
+        "supplierNotes": "Notas del proveedor"
+      }
+    },
+    "benefits": {
+      "saveFirst": "Guardá el drop primero y luego volvé a gestionar los beneficios.",
+      "add": "Agregar beneficio",
+      "empty": "Sin beneficios aún.",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "unnamed": "Beneficio sin nombre",
+      "types": {
+        "ACCOMMODATION": "Alojamiento",
+        "DINNER": "Cena",
+        "ACTIVITY": "Actividad"
+      },
+      "confirmationStatus": {
+        "PENDING": "Pendiente",
+        "CONFIRMED": "Confirmado",
+        "CANCELLED": "Cancelado"
+      },
+      "fields": {
+        "type": "Tipo",
+        "name": "Nombre",
+        "sortOrder": "Orden",
+        "providerName": "Proveedor",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Provincia / Región",
+        "googleMapsUrl": "URL de Google Maps",
+        "customerVisibleNotes": "Notas para el viajero",
+        "internalNotes": "Notas internas",
+        "confirmationStatus": "Estado de confirmación",
+        "reservationCode": "Código de reserva",
+        "photos": "Fotos"
+      }
+    }
+  },
+  "adminExperienceReview": {
+    "back": "Volver a experiencias",
+    "approve": "Aprobar y publicar",
+    "reject": "Rechazar",
+    "confirmReject": "Confirmar rechazo",
+    "cancel": "Cancelar",
+    "noteLabel": "Nota para el tripper",
+    "notePlaceholder": "Explicá qué necesita cambiar...",
+    "notifTitle": "El admin propuso cambios en tu experiencia",
+    "notifBody": "Revisá los cambios propuestos para \"{title}\".",
+    "priceSection": "Precio por persona (USD)",
+    "editExperience": "Editar experiencia",
+    "sendToTripper": "Enviar al tripper para revisión",
+    "discardChanges": "Descartar cambios",
+    "lockedBannerTitle": "Bloqueado para edición",
+    "lockedBannerBody": "Otro admin está editando esta experiencia en este momento.",
+    "errorApprove": "No se pudo aprobar. Intentá de nuevo.",
+    "errorReject": "No se pudo rechazar. Intentá de nuevo.",
+    "errorStartEdit": "No se pudo iniciar la edición. Intentá de nuevo.",
+    "errorLocked": "Bloqueado por otro admin ({name}). Actualizá la página para ver el estado.",
+    "errorSendToTripper": "No se pudo enviar al tripper. Intentá de nuevo.",
+    "errorDiscard": "No se pudieron descartar los cambios. Intentá de nuevo."
+  },
+  "tripperExperienceReviewCopy": {
+    "approve": "Aprobar y aplicar",
+    "reject": "Rechazar cambios",
+    "errorApprove": "No se pudieron aplicar los cambios. Intentá de nuevo.",
+    "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
+  },
+  "adminPages": {
+    "payments": {
+      "count": "{n} pagos",
+      "errorLoad": "Error al cargar los pagos",
+      "empty": "No se encontraron pagos.",
+      "columns": {
+        "paymentId": "ID de pago",
+        "traveler": "Viajero",
+        "amount": "Monto",
+        "status": "Estado",
+        "provider": "Proveedor",
+        "created": "Creado"
+      }
+    },
+    "experiences": {
+      "count": "{n} experiencias",
+      "errorLoad": "Error al cargar las experiencias",
+      "empty": "No se encontraron experiencias.",
+      "columns": {
+        "experience": "Experiencia",
+        "tripper": "Tripper",
+        "status": "Estado",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "status": {
+        "active": "Activa",
+        "inactive": "Inactiva",
+        "featured": "Destacada",
+        "normal": "Normal",
+        "pendingReview": "En revisión"
+      },
+      "actions": {
+        "disable": "Desactivar",
+        "enable": "Activar",
+        "unfeature": "Quitar destaque",
+        "feature": "Destacar"
+      },
+      "tabs": {
+        "all": "Todas",
+        "pending": "Pendientes de revisión"
+      },
+      "review": {
+        "title": "Revisar experiencia",
+        "infoHeading": "Información",
+        "pricingHeading": "Precio por tipo (por persona)",
+        "pricePlaceholder": "USD",
+        "approve": "Aprobar y publicar",
+        "reject": "Rechazar",
+        "noteLabel": "Nota para el tripper",
+        "notePlaceholder": "Explicá qué cambiar...",
+        "close": "Cerrar",
+        "errorApprove": "No se pudo aprobar",
+        "errorReject": "No se pudo rechazar",
+        "errorPricing": "Completá el precio de cada tipo"
+      }
+    },
+    "reviews": {
+      "count": "{n} reseñas",
+      "errorLoad": "Error al cargar las reseñas",
+      "empty": "No se encontraron reseñas.",
+      "columns": {
+        "traveler": "Viajero",
+        "review": "Reseña",
+        "rating": "Calificación",
+        "status": "Estado",
+        "created": "Creado",
+        "actions": "Acciones"
+      },
+      "status": {
+        "approved": "Aprobada",
+        "pending": "Pendiente",
+        "public": "Pública",
+        "private": "Privada"
+      },
+      "actions": {
+        "unapprove": "Rechazar",
+        "approve": "Aprobar",
+        "hide": "Ocultar",
+        "publish": "Publicar"
+      }
+    },
+    "waitlist": {
+      "count": "{n} entradas en lista de espera",
+      "errorLoad": "Error al cargar la lista de espera",
+      "empty": "No se encontraron entradas en la lista de espera.",
+      "columns": {
+        "name": "Nombre",
+        "email": "Email",
+        "joined": "Se unió",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "delete": "Eliminar",
+        "deleting": "Eliminando…"
+      }
+    },
+    "xsedNotifications": {
+      "count": "{n} notificaciones XSED",
+      "errorLoad": "Error al cargar las notificaciones XSED",
+      "empty": "No se encontraron notificaciones XSED.",
+      "columns": {
+        "email": "Email",
+        "locale": "Idioma",
+        "joined": "Se unió",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "delete": "Eliminar",
+        "deleting": "Eliminando…"
+      }
+    }
+  },
+  "xsedUnavailable": {
+    "heading": "Este DROP está agotado",
+    "subheading": "Los drops de XSED se abren los domingos de 16 a 20hs.",
+    "notifyLabel": "Avisame del próximo",
+    "backLabel": "Ver escapadas anteriores"
+  },
+  "xsedBook": {
+    "hero": {
+      "brand": "XSED",
+      "description": "Completá tu información de salida para confirmar tu XSED.",
+      "fallbackImage": "/images/xsed-hero.jpg",
+      "label": "RESERVÁ TU ESCAPE",
+      "progressLabel": "Progreso",
+      "subtitle": "X SUERTE,<br/>ES DOMINGO",
+      "videoSrc": "/videos/hero-xsed.mp4"
+    },
+    "actionBar": {
+      "clearAll": "Limpiar todo",
+      "next": "Siguiente",
+      "viewCheckout": "COMPRAR XSED"
+    },
+    "contentTabs": [
+      {
+        "id": "details",
+        "label": "Origen",
+        "substeps": [
+          {
+            "id": "origin",
+            "title": "Destino",
+            "description": "País y ciudad donde empieza tu escapada."
+          }
+        ]
+      },
+      {
+        "id": "pax",
+        "label": "Viajeros",
+        "substeps": [
+          {
+            "id": "pax",
+            "title": "Cantidad de personas",
+            "description": "Viajeros que realizan la escapada."
+          }
+        ]
+      }
+    ],
+    "pax": {
+      "label": "Personas",
+      "countOne": "{count} persona",
+      "countOther": "{count} personas"
+    }
+  },
+  "xsedDropsPage": {
+    "title": "BITÁCORA DE ESCAPADAS",
+    "titleHighlight": "XSED",
+    "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
+    "filterDate": "Fecha",
+    "filterOrderBy": "Ordenar por",
+    "loadMore": "VER MÁS"
   },
   "xsedPage": {
     "meta": {
@@ -53,19 +386,20 @@
     "hero": {
       "title": "XSED",
       "subtitle": "X SUERTE<br/>ES DOMINGO",
+      "dropNumberLabel": "Nº {number}",
       "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> única a menos de 300km de tu casa.<br/>Solo 10 cupos liberados cada domingo por país.",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
       "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
       "invalidEmailMessage": "Ingresá un email válido.",
-      "inputLabel": "Email Address",
+      "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
       "submitLabel": "UNIRME A LA LISTA DE ESPERA",
       "submitAriaLabel": "Unirme a la lista de espera de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.<br/>Si parpadeás, te quedás fuera.",
-      "fallbackImage": "/images/hero-image-1.jpeg",
-      "videoSrc": "/videos/hero-video-1.mp4"
+      "fallbackImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4"
     },
     "iconText": {
       "items": [
@@ -83,6 +417,113 @@
           "icon": "escape",
           "title": "El escape",
           "description": "El sábado tomás tu auto. <strong>Llegás a un destino a menos de 300km de tu casa.</strong> Incluye la noche de hotel, la cena del sábado, el desayuno del domingo y una experiencia local curada."
+        }
+      ]
+    },
+    "countdown": {
+      "title": "COMPRÁ TU",
+      "titleHighlight": "XSED Nº{number}",
+      "subtitle": "Unite a la lista de espera — no te quedes sin el tuyo.",
+      "openSubtitle": "La pasarela está abierta. Quedan pocos lugares.",
+      "nextDropLabel": "NEXT DROP",
+      "windowOpenLabel": "ABIERTO AHORA",
+      "windowClosingLabel": "HASTA LAS",
+      "daysLabel": "DÍAS",
+      "hoursLabel": "HRS",
+      "minLabel": "MIN",
+      "secLabel": "SEG",
+      "soldLabel": "Vendidos {sold}/{total}",
+      "ctaLabel": "COMPRAR XSED",
+      "ctaHref": "/journey"
+    },
+    "testimonials": {
+      "eyebrow": "Opiniones de viajeros",
+      "title": "EL VEREDICTO",
+      "subtitle": "Tu próximo XSED está a un solo click de distancia. No lo pienses más.",
+      "viewFullReviewLabel": "Ver opinión completa"
+    },
+    "dropGrid": {
+      "eyebrow": "DROPS ANTERIORES",
+      "title": "BITÁCORA DE ESCAPADAS BY",
+      "titleHighlight": "XSED",
+      "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
+      "ctaLabel": "VER TODAS",
+      "ctaHref": "/xsed/drops"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
+      "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
+      "inputLabel": "Email",
+      "inputPlaceholder": "Ingresa tu email",
+      "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
+      "submitAriaLabel": "Notificarme del próximo drop de XSED",
+      "submittingLabel": "SUMANDO...",
+      "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
+      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
+      "invalidEmailMessage": "Ingresá un email válido."
+    },
+    "faq": {
+      "eyebrow": "FAQ'S",
+      "title": "PREGUNTAS DESTACADAS",
+      "description": "Más de 1.000 Trippers compartiendo experiencias! Descubrí viajes exclusivos, curados a no más de 300Km de distancia.",
+      "items": [
+        {
+          "question": "¿Qué día empieza mi escapada?",
+          "answer": "Tu escapada XSED comienza el sábado. Recibirás las instrucciones el jueves anterior con 48 horas de anticipación."
+        },
+        {
+          "question": "¿Puedo elegir el tipo de lugar? (Playa, Hotel, Cabaña)",
+          "answer": "Podés indicar preferencias generales en el brief (entorno natural, ciudad, costa), pero el destino exacto es siempre una sorpresa curada por nuestro equipo."
+        },
+        {
+          "question": "¿Qué pasa si tengo que cambiar la fecha?",
+          "answer": "Podés reagendar hasta 7 días antes del XSED. Contactanos por soporte y te ayudamos a mover tu cupo al siguiente disponible."
+        },
+        {
+          "question": "¿Qué incluye?",
+          "answer": "Incluye 1 noche de alojamiento, cena del sábado, desayuno del domingo y una experiencia local curada. El transporte hasta el destino corre por tu cuenta."
+        }
+      ]
+    }
+  },
+  "faqPage": {
+    "hero": {
+      "eyebrow": "FAQ's",
+      "title": "PREGUNTAS FRECUENTES",
+      "description": "Todo lo que necesitás saber antes de dar el salto."
+    },
+    "meta": {
+      "title": "Preguntas Frecuentes | Randomtrip",
+      "description": "Todo lo que necesitás saber antes de dar el salto: cómo funciona, qué incluye y cómo reagendar tu viaje sorpresa.",
+      "openGraphTitle": "FAQ | Randomtrip — Preguntas Frecuentes",
+      "openGraphDescription": "Respondemos todo: cómo funciona el viaje sorpresa, qué podés elegir y cómo reagendar."
+    },
+    "block": {
+      "eyebrow": "FAQ's",
+      "title": "Preguntas destacadas",
+      "description": "Todo lo que necesitás saber antes de dar el salto.",
+      "items": [
+        {
+          "question": "¿Cómo doy el primer paso para mi viaje sorpresa?",
+          "answer": "Completás un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
+        },
+        {
+          "question": "¿Qué es lo que puedo elegir?",
+          "answer": "Elegís el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
+        },
+        {
+          "question": "¿Qué pasa si tengo que cambiar la fecha?",
+          "answer": "Podés reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
+        },
+        {
+          "question": "¿Qué incluye?",
+          "answer": "Alojamiento, actividades curadas y acompañamiento logístico. Los vuelos o traslados desde tu origen se gestionan por separado."
+        },
+        {
+          "question": "¿Cómo diseñamos tu viaje?",
+          "answer": "Tu Tripper cruza tu brief con su conocimiento del destino y arma un itinerario con ritmo, sorpresa y coherencia emocional."
         }
       ]
     }
@@ -192,6 +633,10 @@
           "id": "topTrippers",
           "label": "Top Trippers",
           "href": "/trippers"
+        },
+        {
+          "id": "xsed",
+          "label": "XSED"
         }
       ],
       "title": "Puntos de Partida",
@@ -227,7 +672,15 @@
           "description": "Aventuras con tu mascota."
         }
       ],
-      "trippersHref": "/trippers"
+      "trippersHref": "/trippers",
+      "xsedIntro": {
+        "eyebrow": "XSED | X SUERTE ES DOMINGO",
+        "title": "Una experiencia nueva todos los domingos",
+        "description": "1 noche, cada domingo, un lugar nuevo, una comida y una vivencia única por país.",
+        "ctaLabel": "CONOCER MÁS",
+        "ctaHref": "/xsed",
+        "backgroundImage": "/images/xsed-hero.jpg"
+      }
     },
     "blog": {
       "carouselSlideAriaLabel": "Ir al slide {0}",
@@ -245,6 +698,21 @@
       "subtitle": "Tu próximo recuerdo inolvidable está a un solo click de distancia. No lo pienses más.",
       "title": "Lo que dicen sobre RandomTrip",
       "viewFullReviewLabel": "Ver opinión completa"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
+      "eyebrow": "XSED",
+      "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
+      "inputLabel": "Email",
+      "inputPlaceholder": "Email",
+      "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
+      "submitAriaLabel": "Notificarme del próximo drop de XSED",
+      "submittingLabel": "SUMANDO...",
+      "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
+      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
+      "invalidEmailMessage": "Ingresá un email válido."
     }
   },
   "experiences": {
@@ -274,6 +742,11 @@
       "subtitle": "NUESTROS TRIPPERS",
       "title": "Nuestros Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
+    },
+    "grid": {
+      "searchCardTitle": "Buscá tu Tripper",
+      "searchCardDescription": "Encontrá el experto perfecto para tu aventura.",
+      "searchCardCta": "Explorar Trippers"
     }
   },
   "blogPage": {
@@ -309,6 +782,10 @@
       "description": "¿Con quién vas a escribir tu próxima historia?",
       "subtitle": "PUNTO DE <span style=\"color: #F2C53D\">PARTIDA</span>"
     },
+    "tripperBadge": {
+      "curatedBy": "VIAJE CURADO POR",
+      "byTripper": "BY TRIPPER"
+    },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [
       {
@@ -322,7 +799,7 @@
           },
           {
             "id": "experience",
-            "title": "EXPERIENCIA",
+            "title": "Experiencia",
             "description": "Lo único que definís acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros."
           }
         ]
@@ -395,6 +872,10 @@
       "experienceLabel": "Experiencia",
       "experiencePlaceholder": "Qué quiero de mi viaje",
       "experienceStepDescription": "Selecciona el nivel de experiencia que más se adapte a tu presupuesto y preferencias.",
+      "selectTravelTypeFirst": "Primero selecciona un tipo de viaje.",
+      "noTripperExperiences": "No hay experiencias disponibles para este tripper.",
+      "noLevelsAvailable": "No hay experiencias disponibles para este tipo de viaje.",
+      "browseGeneralExperiences": "Ver experiencias generales",
       "extrasTabDescription": "Agrega extras a tu viaje.",
       "extrasTabTitle": "Extras",
       "next": "Siguiente",
@@ -1570,6 +2051,11 @@
       "importantNote3": "2-3 filtros: USD 18 c/u.",
       "importantNote4": "4+ filtros: USD 25 c/u.",
       "importantTitle": "IMPORTANTE",
+      "xsedImportantTitle": "QUÉ INCLUYE",
+      "xsedImportantNote1": "Roadtrip de hasta 300 km desde tu ciudad de salida.",
+      "xsedImportantNote2": "1 noche de hotel, cena del sábado y desayuno del domingo incluidos.",
+      "xsedImportantNote3": "Experiencia local sorpresa incluida.",
+      "xsedImportantNote4": "Destino revelado 48 horas antes de la salida.",
       "monthsShort": [
         "ene",
         "feb",
@@ -1700,7 +2186,16 @@
       "ctaReveal": "Descubrir mi destino",
       "ctaBackToJourney": "Volver al viaje",
       "ctaHome": "Ir al inicio",
-      "ctaMyTrips": "Ir a mis viajes"
+      "ctaMyTrips": "Ir a mis viajes",
+      "calendarEventDescription": "Tu escapada sorpresa GetRandomTrip. Destino revelado 48 horas antes de la salida.",
+      "xsedTitle": "Ya tenés tu XSED",
+      "xsedBody": "Recibirás un correo con todo lo que necesitás para tu escapada.",
+      "xsedTripTypeLabel": "Tipo de viaje",
+      "xsedExperienceLabel": "Experiencia XSED Drop",
+      "xsedReferenceLabel": "Número de referencia de compra",
+      "xsedPerPerson": "/persona",
+      "xsedDownloadCta": "Descargar XSED",
+      "receiptLink": "Ver recibo"
     }
   },
   "paymentFailure": {
@@ -2103,48 +2598,70 @@
       "title": "¿Listo para soltar el control y ganar libertad?"
     },
     "curators": {
+      "eyebrow": "Equipo multidisciplinario",
       "items": [
         {
-          "bio": "Diseña itinerarios que conectan con lo local: talleres, mesas compartidas y rituales auténticos.",
-          "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Ana García",
-          "role": "Inmersión Cultural"
+          "bio": "Fundador y visionario detrás de GetRandomTrip. Diseña cada experiencia con la obsesión de quien sabe que el viaje perfecto no se elige, se descubre.",
+          "img": "/images/about-us-santiago.png",
+          "linkedin": "#",
+          "name": "Santiago Senega",
+          "role": "Founder",
+          "tagline": "Diseña cada experiencia como si fuera la única que importa."
         },
         {
-          "bio": "Busca el punto justo entre adrenalina y seguridad. Trekking, cielos abiertos y micro-retos controlados.",
-          "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Carlos Mendoza",
-          "role": "Aventura & Aire Libre"
+          "bio": "Tecnología y producto. Construye los sistemas que hacen posible la serendipia a escala sin perder el alma del detalle.",
+          "img": "/images/about-us-david.png",
+          "linkedin": "#",
+          "name": "David Ortega",
+          "role": "Tech & Product",
+          "tagline": "Puente entre el producto, la tecnología y la experiencia del usuario."
         },
         {
-          "bio": "Cura spaces con diseño, calma y atención plena. Silencio, spa, música baja, servicio impecable.",
-          "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Sofía Rossi",
-          "role": "Lujo & Bienestar"
+          "bio": "Operaciones y logística. Convierte cada itinerario en una coreografía impecable que sucede entre bambalinas.",
+          "img": "/images/about-us-rodrigo.png",
+          "linkedin": "#",
+          "name": "Rodrigo S. Benítez",
+          "role": "Operations",
+          "tagline": "Transforma la logística en arte invisible."
+        },
+        {
+          "bio": "Diseño y marca. Da forma visual al mundo de GetRandomTrip, cuidando cada píxel como si fuera parte del paisaje.",
+          "img": "/images/about-us-carla.png",
+          "linkedin": "#",
+          "name": "Carla C. J Vázquez",
+          "role": "Design",
+          "tagline": "Da forma visual a mundos que aún no existen."
         }
       ],
-      "sectionTitle": "Conocé a los curadores"
+      "sectionTitle": "Quiénes somos",
+      "subtitle": "Somos un equipo que mezcla creatividad, logística y obsesión por el detalle para crear viajes que no sabías que necesitabas."
     },
     "faq": {
+      "description": "Todo lo que necesitás saber antes de dar el salto.",
+      "eyebrow": "FAQ's",
       "items": [
         {
-          "q": "¿Qué compro exactamente si el destino es sorpresa?",
-          "a": "Comprás un resultado emocional: alivio de la elección y descubrimiento guiado. El destino y la logística quedan en nuestras manos (con tus límites claros)."
+          "question": "¿Cómo doy el primer paso para mi viaje sorpresa?",
+          "answer": "Completás un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
         },
         {
-          "q": "¿Cómo trabajan la seguridad?",
-          "a": "Evaluación de riesgos por destino, partners verificados, cobertura y protocolos de comunicación 24/7."
+          "question": "¿Qué es lo que puedo elegir?",
+          "answer": "Elegís el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
         },
         {
-          "q": "¿Puedo rechazar actividades?",
-          "a": "Sí. El brief define no-go's. En destino, mantenemos flexibilidad sin romper la narrativa del viaje."
+          "question": "¿Qué pasa si tengo que cambiar la fecha?",
+          "answer": "Podés reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
         },
         {
-          "q": "¿Qué pasa si no me gusta la sorpresa?",
-          "a": "Iteramos. Tomamos tu feedback y ajustamos para el siguiente. Nuestro NPS y tasa de recompra guían la mejora."
+          "question": "¿Qué incluye?",
+          "answer": "Alojamiento, actividades curadas y acompañamiento logístico. Los vuelos o traslados desde tu origen se gestionan por separado."
+        },
+        {
+          "question": "¿Cómo diseñamos tu viaje?",
+          "answer": "Tu Tripper cruza tu brief con su conocimiento del destino y arma un itinerario con ritmo, sorpresa y coherencia emocional."
         }
       ],
-      "sectionTitle": "Preguntas frecuentes"
+      "title": "Preguntas destacadas"
     },
     "founder": {
       "imageAlt": "Fundador de Randomtrip",
@@ -2153,13 +2670,15 @@
       "sectionTitle": "Historia del fundador"
     },
     "hero": {
-      "ctaPhilosophy": "Nuestra filosofía",
-      "ctaPrimary": "GETRANDOMTRIP!",
-      "ctaPrimaryAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
-      "description": "El lujo no es elegir entre 500 opciones. Es no tener que elegir. Diseñamos serendipia segura para que vivas lo que importa.",
-      "eyebrow": "Nosotros",
-      "subtitle": "Arquitectura de la confianza",
-      "title": "Arquitectura de la confianza"
+      "primaryCta": {
+        "ariaLabel": "Ir a la sección 'Nuestra filosofía'",
+        "href": "#philosophy",
+        "text": "Nuestra filosofía"
+      },
+      "subtitle": "El lujo no es elegir entre 500 opciones. Es no tener que elegir.\n Diseñamos serendipia segura para que vivas lo que importa.",
+      "eyebrow": "Arquitectura de la confianza",
+      "fallbackImage": "/images/about-us.png",
+      "title": "Nosotros"
     },
     "meta": {
       "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
@@ -2203,16 +2722,19 @@
       "footnote": "* Objetivos del plan de marca. Actualizaremos métricas vivas en el dashboard.",
       "items": [
         {
-          "value": "NPS 65+*",
-          "label": "Meta pública y seguimiento continuo."
+          "value": "+*",
+          "label": "Meta pública y seguimiento continuo.",
+          "prefix": "NPS 65"
         },
         {
-          "value": "55%+",
-          "label": "Adopción de upsells (bienestar, experiencias)."
+          "value": "%+",
+          "label": "Adopción de upsells (bienestar, experiencias).",
+          "prefix": "55"
         },
         {
-          "value": "20%+",
-          "label": "Tasa de recompra objetivo."
+          "value": "%+",
+          "label": "Tasa de recompra objetivo.",
+          "prefix": "20"
         }
       ],
       "sectionTitle": "Confianza en números"
@@ -2233,6 +2755,13 @@
         }
       ],
       "sectionTitle": "Por qué confiar en Randomtrip"
+    },
+    "presentTrippers": {
+      "ctaHref": "/trippers",
+      "ctaLabel": "Explorar Trippers",
+      "eyebrow": "Dale forma a tu aventura",
+      "subtitle": "Curadores de —",
+      "title": "Conocé a los Trippers"
     }
   },
   "notFound": {
@@ -2270,15 +2799,41 @@
     }
   },
   "profile": {
-    "actionsAria": "Acciones de perfil",
+    "actionsAria": "Acciones de cuenta",
     "hero": {
-      "title": "Mi Perfil",
+      "title": "Mi Cuenta",
       "subtitle": "Gestiona tu cuenta y preferencias"
     },
     "header": {
       "userFallback": "Usuario",
       "emailFallback": "usuario@email.com",
       "badgeActiveTraveler": "Viajero Activo"
+    },
+    "nav": {
+      "summary": "Resumen",
+      "personal": "Datos personales",
+      "travelDocs": "Documentos de viaje",
+      "preferences": "Preferencias de viaje",
+      "payments": "Métodos de pago",
+      "security": "Seguridad",
+      "tripperProfile": "Perfil público",
+      "tripperOs": "Tripper OS"
+    },
+    "sections": {
+      "summary": "Resumen",
+      "travelDocs": "Documentos de viaje",
+      "payments": "Métodos de pago",
+      "security": "Seguridad",
+      "tripperProfile": "Perfil público de Tripper",
+      "tripperOs": "Tripper OS"
+    },
+    "comingSoon": "Próximamente",
+    "comingSoonDescription": "Esta sección estará disponible próximamente.",
+    "tripperSections": {
+      "publicProfileDescription": "Tu perfil público es lo que ven los clientes. Mantenerlo actualizado mejora tu visibilidad.",
+      "publicProfileCta": "Ver y editar perfil público",
+      "tripperOsDescription": "Accede al panel de operaciones para gestionar paquetes, viajes y clientes.",
+      "tripperOsCta": "Ir a Tripper OS"
     },
     "buttons": {
       "editProfile": "Editar Perfil",
@@ -2289,7 +2844,7 @@
       "modalCancel": "Cancelar",
       "modalSave": "Guardar Cambios"
     },
-    "personalSectionTitle": "Información Personal",
+    "personalSectionTitle": "Datos Personales",
     "preferencesSectionTitle": "Preferencias de Viaje",
     "labels": {
       "email": "Email",
@@ -2355,7 +2910,12 @@
     "sectionManageTrip": "Destino y estado",
     "destinationLabel": "Destino revelado",
     "destinationHelp": "Define el destino real de esta reserva. Al guardar se actualiza o borra el valor guardado.",
+    "destinationDerivedNote": "Se deriva automáticamente de la experiencia asignada",
     "destinationPlaceholder": "ej. Lisboa, Portugal",
+    "experienceSectionTitle": "Asignar experiencia",
+    "experienceLabel": "Experiencia",
+    "experiencePlaceholder": "Seleccionar experiencia…",
+    "noTripperNotice": "No hay tripper atribuido — asignación de experiencia no disponible",
     "statusLabel": "Estado del viaje",
     "sectionTimeline": "Hitos de cumplimiento",
     "sectionDanger": "Zona de riesgo",
@@ -2515,11 +3075,49 @@
       "title": "Tripper OS",
       "description": "Gestiona tus paquetes de viaje y clientes"
     },
+    "pageHeadings": {
+      "dashboard": {
+        "title": "Tripper OS",
+        "description": "Gestiona tus paquetes de viaje y clientes"
+      },
+      "experiences": {
+        "title": "Experiencias",
+        "description": "Tus paquetes de viaje"
+      },
+      "experiencesNew": {
+        "title": "Crear experiencia",
+        "description": "Tripper OS"
+      },
+      "experiencesEdit": {
+        "title": "Editar experiencia",
+        "description": "Tripper OS"
+      },
+      "earnings": {
+        "title": "Ganancias",
+        "description": "Tu historial de ingresos"
+      },
+      "reviews": {
+        "title": "Reseñas & NPS",
+        "description": "Lo que dicen tus viajeros"
+      },
+      "blogs": {
+        "title": "Mis Posts",
+        "description": "Gestiona tu blog y comparte tus experiencias"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "description": "Tus últimas notificaciones"
+      },
+      "newDrop": {
+        "title": "Nuevo Drop",
+        "description": "Creá un nuevo drop XSED"
+      }
+    },
     "stats": {
       "totalBookings": "Reservas Totales",
       "monthlyRevenue": "Ingresos Mensuales",
       "averageRating": "Rating Promedio",
-      "activePackages": "Paquetes Activos"
+      "activeExperiences": "Paquetes Activos"
     },
     "recentBookings": {
       "title": "Reservas Recientes",
@@ -2528,7 +3126,7 @@
     },
     "quickActions": {
       "title": "Acciones Rápidas",
-      "createExperience": "Crear Experiencia",
+      "createExperience": "Nueva Experiencia",
       "createExperienceSub": "Nueva oferta de viaje",
       "earnings": "Ver Ganancias",
       "earningsSub": "Análisis detallado",
@@ -2536,18 +3134,25 @@
       "reviewsSub": "Ver feedback",
       "blogs": "Mis Posts",
       "blogsSub": "Gestionar blog",
+      "experiences": "Mis Experiencias",
+      "experiencesSub": "Ver todas las experiencias",
       "settings": "Configuración",
-      "settingsSub": "Ajustes del perfil"
+      "settingsSub": "Ajustes del perfil",
+      "dashboard": "Mi Dashboard",
+      "createDrop": "Nuevo Drop",
+      "notifications": "Notificaciones"
     },
     "keyMetrics": {
       "title": "Métricas Clave",
       "totalClients": "Clientes Totales",
       "conversionRate": "Tasa de Conversión",
-      "growth": "Crecimiento"
+      "growth": "Crecimiento",
+      "sectionEyebrow": "Este mes",
+      "sectionTitle": "Tu rendimiento"
     },
-    "packages": {
+    "experiences": {
       "title": "Mis Paquetes",
-      "newPackage": "Nuevo Paquete",
+      "newExperience": "Nuevo Paquete",
       "empty": "No tienes paquetes activos aún",
       "emptyCta": "Crear tu primer paquete",
       "viewAll": "Ver todos →"
@@ -2644,13 +3249,15 @@
       "emptyTitle": "No tienes viajes proximos",
       "newTrip": "Nuevo Viaje",
       "title": "Proximos Viajes",
-      "viewDetails": "Ver Detalles"
+      "viewDetails": "Ver Detalles",
+      "revealCountdown": "Cuenta Regresiva",
+      "revealDestination": "Ver Destino"
     }
   },
-  "packages": {
+  "tripperExperiences": {
     "title": "MIS EXPERIENCIAS",
     "description": "Gestiona tus ofertas de viaje y mantén tu catálogo actualizado.",
-    "newPackage": "Nueva Experiencia",
+    "newExperience": "Nueva Experiencia",
     "back": "Volver a Mis Experiencias",
     "filters": {
       "allTypes": "Todos los tipos",
@@ -2664,10 +3271,14 @@
       "status": "Estado",
       "price": "Precio / persona",
       "updated": "Actualizado",
-      "edit": "Editar"
+      "duration": "Duración",
+      "capacity": "Capacidad",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta experiencia? Esta acción no se puede deshacer."
     },
     "emptyState": {
-      "noPackages": "Aún no tienes experiencias.",
+      "noExperiences": "Aún no tienes experiencias.",
       "noMatch": "Ninguna experiencia coincide con los filtros.",
       "createFirst": "Crear mi primera experiencia"
     },
@@ -2675,18 +3286,77 @@
       "ACTIVE": "Activo",
       "DRAFT": "Borrador",
       "INACTIVE": "Inactivo",
-      "ARCHIVED": "Archivado"
+      "ARCHIVED": "Archivado",
+      "PENDING_REVIEW": "En revisión",
+      "PENDING_TRIPPER_REVIEW": "Revisión del tripper"
     },
     "form": {
       "createTitle": "CREAR EXPERIENCIA",
       "editTitle": "EDITAR EXPERIENCIA",
       "createSubmit": "Crear Experiencia",
+      "requiredFieldsLabel": "Campos requeridos",
+      "actionBar": {
+        "clearAll": "Borrar todo",
+        "back": "Volver a experiencias",
+        "next": "Siguiente",
+        "submit": "Crear experiencia",
+        "saveDraft": "Guardar borrador",
+        "submitForReview": "Enviar a revisión"
+      },
       "editSubmit": "Guardar Cambios",
       "cancel": "Cancelar",
       "saving": "Guardando...",
+      "saved": "Guardado",
+      "errorSave": "Error al guardar",
       "nav": {
-        "sections": "Secciones"
+        "sections": "Secciones",
+        "progress": "Progreso"
       },
+      "contentTabs": [
+        {
+          "id": "about",
+          "label": "Sobre la experiencia",
+          "substeps": [
+            {
+              "id": "experience",
+              "title": "Experiencia",
+              "description": "Información del nombre y el tipo de experiencia, el nivel y con quién puede realizarse."
+            },
+            {
+              "id": "destination",
+              "title": "Destino",
+              "description": "Ciudad y país y cuál es la excusa."
+            }
+          ]
+        },
+        {
+          "id": "logistics",
+          "label": "Logística y alojamiento",
+          "substeps": [
+            {
+              "id": "accommodation",
+              "title": "Logística y alojamiento",
+              "description": "Lugares, hotel, estadias sugeridas, si no lo incluis Randomtrip encontrará la mejor opción."
+            }
+          ]
+        },
+        {
+          "id": "activities",
+          "label": "Actividades e Itinerario",
+          "substeps": [
+            {
+              "id": "activities-list",
+              "title": "Actividades",
+              "description": "Actividades sugeridas"
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerario",
+              "description": "Por día, evitar frases que suelen sonar \"trip turístico\" como: postales únicas, destinos soñados, todo incluido, entre otras."
+            }
+          ]
+        }
+      ],
       "sections": {
         "basic": "Básico",
         "destination": "Destino",
@@ -2696,52 +3366,99 @@
         "activities": "Actividades",
         "itinerary": "Itinerario",
         "inclusions": "Incluye / No incluye",
-        "tagsMedia": "Tags, Highlights & Media",
-        "visibility": "Visibilidad"
+        "policies": "Políticas & Comunicación"
       },
       "fields": {
         "title": "Título",
-        "type": "Tipo de viaje",
+        "titlePlaceholder": "Escribir titular de la experiencia",
+        "type": "Tipo de experiencia",
+        "typePlaceholder": "Seleccionar tipo...",
+        "typeHint": "Puede elegir 1 o +",
         "level": "Nivel",
         "status": "Estado",
         "teaser": "Teaser",
         "teaserHint": "Descripción corta que aparece en las tarjetas (máx. 150 caracteres)",
         "description": "Descripción completa",
+        "descriptionPlaceholder": "Descripción de la experiencia completa",
         "country": "País de destino",
-        "city": "Ciudad de destino",
+        "countryPlaceholder": "Ej: Argentina",
+        "city": "Ciudad",
+        "cityPlaceholder": "Ej: Buenos Aires",
         "excuseKey": "Excusa del viaje",
+        "excuseKeyPlaceholder": "Seleccioná una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
-        "minNights": "Noches mínimas",
+        "minNights": "Duración recomendada",
+        "minNightsHint": "{nights} Noches / {days} Días",
         "maxNights": "Noches máximas",
         "maxNightsHint": "Este nivel admite máx. {n} noches",
         "minPax": "Viajeros mínimos",
         "maxPax": "Viajeros máximos",
-        "basePriceUsd": "Precio base por persona (USD)",
-        "basePriceUsdHint": "Precio por persona, en dólares",
+        "basePrice": "Precio base por persona",
+        "basePriceHint": "Precio por persona, en la moneda configurada",
         "displayPrice": "Precio de visualización",
         "displayPriceHint": "Texto libre que aparece en la tarjeta pública. Ej: Desde USD 450",
+        "estimatedCost": "Costo estimado por persona",
+        "season": "Meses sugeridos para viajar",
+        "seasonPlaceholder": "Seleccionar meses",
+        "seasonHint": "Meses recomendados para realizar el viaje",
+        "pricingDescription": "Proveedores sugeridos, costos y sugerencia de temporada.",
         "accommodationType": "Tipo de alojamiento",
         "transport": "Transporte principal",
+        "suggestedTransport": "Transporte sugerido",
+        "estimatedTravelTime": "Tiempo estimado de traslado",
         "climate": "Clima del destino",
         "maxTravelTime": "Tiempo máximo de viaje",
         "departPref": "Preferencia de salida",
         "arrivePref": "Preferencia de llegada",
         "compatibilityHint": "Estos campos ayudan al algoritmo a hacer matching con solicitudes de clientes.",
         "hotelName": "Nombre del hotel",
+        "hotelNamePlaceholder": "Ej: Four Seasons...",
+        "hotelLink": "Link Hotel",
+        "hotelLinkPlaceholder": "https://...",
+        "referredLink": "Código / Link de referido",
+        "referredLinkPlaceholder": "Ej: ABC123 o https://...",
         "hotelStars": "Estrellas",
         "hotelLocation": "Ubicación",
+        "hotelDays": "Días sugeridos en el alojamiento",
+        "hotelDaysPlaceholder": "Ej: 1",
+        "starsHint": "Hasta 5 estrellas.",
+        "addAccommodation": "Agregar otro alojamiento",
+        "removeAccommodation": "Quitar",
+        "starsPlaceholder": "Elegir cantidad de estrellas",
+        "starSingular": "estrella",
+        "starPlural": "estrellas",
         "hotelCheckIn": "Check-in",
         "hotelCheckOut": "Check-out",
         "addHotel": "Agregar Hotel",
         "noHotels": "No has agregado hoteles aún.",
         "activityName": "Nombre de la actividad",
+        "activityNamePlaceholder": "Ej: Boutique....",
         "activityDuration": "Duración",
-        "activityDesc": "Descripción",
+        "activityDurationRhythm": "Duración estimada y ritmo",
+        "activityDurationPlaceholder": "Ej: 3 hs. con ritmo tranquilo",
+        "durationUnitMin": "min",
+        "durationUnitHr": "hr",
+        "durationUnitDay": "día",
+        "durationHintMin": "minutos",
+        "durationHintHr": "horas",
+        "durationHintDay": "días",
+        "activityDesc": "Descripción de la actividad",
+        "activityDescPlaceholder": "Ej: en la actividad podrás montar a caballo.....",
+        "activityRisks": "Riesgos o Advertencias",
+        "activityRisksPlaceholder": "Ej: cuidados que deberían tener....",
+        "activityLabel": "Actividad",
         "addActivity": "Agregar Actividad",
+        "addAnotherActivity": "Agregar otra actividad",
+        "removeActivity": "Quitar",
         "noActivities": "No has agregado actividades aún.",
-        "itineraryTitle": "Título del día",
+        "itineraryTitle": "Titulo del día",
+        "itineraryTitlePlaceholder": "Ej: primer día en la colina",
         "itineraryDesc": "Descripción del día",
+        "itineraryDescPlaceholder": "Ej: el primer día fuimos a la colina llamada \"Viva lava\"",
+        "dayLabel": "Día",
         "addDay": "Agregar Día",
+        "addAnotherDay": "Agregar otro día",
+        "removeDay": "Quitar",
         "noItinerary": "No has agregado días al itinerario aún.",
         "inclusions": "¿Qué incluye?",
         "addInclusion": "Agregar inclusión",
@@ -2749,14 +3466,58 @@
         "addExclusion": "Agregar exclusión",
         "tags": "Tags",
         "tagInput": "Nuevo tag (Enter para agregar)",
-        "highlights": "Highlights",
-        "highlightInput": "Nuevo highlight (Enter para agregar)",
-        "heroImage": "Imagen hero (URL)",
-        "heroImageHint": "URL de la imagen principal de la experiencia",
+        "heroImage": "Imagen hero",
+        "heroImageHint": "Imagen principal que aparece en la tarjeta de la experiencia",
+        "activityImageLabel": "Imagen de la actividad",
+        "dayImageLabel": "Imagen del día",
+        "uploadImage": "Subir imagen",
+        "uploading": "Subiendo…",
+        "removeImage": "Quitar",
+        "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
+        "entryImageSizeHint": "Mínimo 800 × 600 px recomendado",
+        "imageTooSmall": "Imagen demasiado pequeña",
+        "copyrightHint": "Las imágenes deben ser propias o con derechos *",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",
-        "isFeaturedHint": "Aparece en la sección destacada"
+        "isFeaturedHint": "Aparece en la sección destacada",
+        "titleInternal": "Título interno",
+        "slug": "Slug (URL)",
+        "slugHint": "Se usa en la URL pública. Solo letras, números y guiones.",
+        "tripDate": "Fecha del drop",
+        "revealAt": "Fecha de reveal",
+        "currency": "Moneda",
+        "currencyHint": "Ej: USD, ARS, EUR",
+        "minSpots": "Cupos mínimos",
+        "maxSpots": "Cupos máximos",
+        "cancellationPolicy": "Política de cancelación",
+        "weatherPolicy": "Política clima/condiciones",
+        "accessibilityNotes": "Notas de accesibilidad",
+        "safetyNotes": "Notas de seguridad",
+        "revealCopy": "Texto post-reveal",
+        "preRevealCopy": "Texto pre-reveal",
+        "packingHints": "Qué llevar",
+        "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
+        "adminNotes": "Notas admin",
+        "supplierNotes": "Notas proveedor",
+        "statusLabel": "Estado",
+        "statusDraft": "Borrador",
+        "statusActive": "Activo",
+        "createBlogPost": "Crear entrada de blog",
+        "createBlogPostHint": "Se generará un borrador con el contenido de la experiencia"
+      },
+      "review": {
+        "pendingTitle": "En revisión",
+        "pendingBody": "Tu experiencia está siendo revisada. No podés hacer cambios hasta recibir una respuesta.",
+        "rejectedTitle": "Cambios solicitados",
+        "rejectedDismiss": "Entendido",
+        "submitError": "Faltan campos obligatorios"
+      },
+      "statusBadge": {
+        "pendingReview": "En revisión"
+      },
+      "changedFieldsBanner": {
+        "prefix": "El admin propuso cambios en: "
       }
     }
   },
@@ -2896,6 +3657,10 @@
       "admin": "ADMIN",
       "cancel": "Cancelar",
       "clientBase": "CLIENT (base)",
+      "confirmDelete": "¿Confirmar eliminación?",
+      "delete": "Eliminar usuario",
+      "deleteError": "No se pudo eliminar el usuario",
+      "deleting": "Eliminando…",
       "errorFallback": "No se pudo actualizar el rol",
       "roleSection": "Roles",
       "saveChanges": "Guardar cambios",
@@ -2949,5 +3714,76 @@
       },
       "submit": "Enviar"
     }
+  },
+  "notifications": {
+    "pageTitle": "Notificaciones",
+    "emptyState": "No tenés notificaciones todavía.",
+    "markRead": "Marcar como leída",
+    "unreadBadge": "Sin leer",
+    "types": {
+      "EXPERIENCE_APPROVED": "Experiencia aprobada",
+      "EXPERIENCE_REJECTED": "Experiencia rechazada",
+      "BOOKING_CONFIRMED": "Reserva confirmada",
+      "BOOKING_REVEALED": "Destino revelado",
+      "BOOKING_COMPLETED": "Viaje completado",
+      "BOOKING_CANCELLED": "Reserva cancelada",
+      "PAYMENT_RECEIVED": "Pago recibido"
+    }
+  },
+  "tripReview": {
+    "buttonLabel": "Dejar reseña",
+    "title": "¿Cómo fue tu viaje?",
+    "ratingLabel": "Tu calificación",
+    "feedbackPlaceholder": "Contanos sobre tu experiencia...",
+    "submit": "Enviar reseña",
+    "cancel": "Cancelar",
+    "success": "¡Gracias por tu reseña!",
+    "emailHintTitle": "Dejá tu reseña",
+    "emailHint": "Revisá tu correo — te enviamos un enlace para calificar tu experiencia."
+  },
+  "tripItinerary": {
+    "title": "Itinerario del viaje",
+    "backToTrip": "Volver al viaje",
+    "day": "Día",
+    "emptyTitle": "Tu itinerario está siendo preparado",
+    "emptyDescription": "Una vez que tu tripper asigne la experiencia, verás el itinerario completo aquí.",
+    "noExperience": "Aún no hay una experiencia asignada a este viaje.",
+    "inclusions": "Incluye",
+    "exclusions": "No incluye"
+  },
+  "tripReveal": {
+    "pageTitle": "Tu Destino Sorpresa",
+    "pageDescription": "El suspenso es parte de la aventura",
+    "countdownTitle": "Tu destino se revela en...",
+    "countdownSubtitle": "Estamos preparando todo para tu viaje. Quedan pocas horas para descubrir a dónde vas.",
+    "daysLabel": "Días",
+    "hoursLabel": "Horas",
+    "minutesLabel": "Minutos",
+    "secondsLabel": "Segundos",
+    "pendingAssignment": "Tu destino está siendo preparado con mucho cuidado. ¡Ya casi es hora!",
+    "revealedEyebrow": "Tu destino revelado",
+    "revealedTitle": "¡Tu destino ha sido revelado!",
+    "revealedSubtitle": "Preparate para vivir una experiencia increíble.",
+    "viewItinerary": "Ver Itinerario",
+    "notFoundTitle": "Viaje no encontrado",
+    "notFoundDescription": "El viaje que buscás no existe o no tenés permiso para verlo.",
+    "backToDashboard": "Volver al Dashboard",
+    "revealCountdown": "Cuenta Regresiva",
+    "revealDestination": "Ver Destino"
+  },
+  "reviewForm": {
+    "pageTitle": "¿Cómo fue tu viaje?",
+    "pageSubtitle": "Tu opinión nos ayuda a mejorar y a otros viajeros a elegir mejor.",
+    "ratingLabel": "Calificación",
+    "titleLabel": "Título (opcional)",
+    "titlePlaceholder": "Un resumen de tu experiencia",
+    "contentLabel": "Tu reseña",
+    "contentPlaceholder": "Contanos qué fue lo que más te gustó (y lo que mejorarías)…",
+    "submitButton": "Enviar reseña",
+    "successTitle": "¡Gracias por tu reseña!",
+    "successMessage": "Tu opinión fue enviada y está siendo revisada. Una vez aprobada, aparecerá en el perfil de tu tripper.",
+    "errorInvalidToken": "Este enlace no es válido o ya venció. Si creés que es un error, contactate con nosotros.",
+    "errorAlreadySubmitted": "Ya enviaste una reseña para este viaje. ¡Gracias por tu tiempo!",
+    "errorGeneric": "Ocurrió un error al enviar tu reseña. Por favor intentá de nuevo."
   }
 }
