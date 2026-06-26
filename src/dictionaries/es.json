@@ -3146,7 +3146,9 @@
       "title": "Métricas Clave",
       "totalClients": "Clientes Totales",
       "conversionRate": "Tasa de Conversión",
-      "growth": "Crecimiento"
+      "growth": "Crecimiento",
+      "sectionEyebrow": "Este mes",
+      "sectionTitle": "Tu rendimiento"
     },
     "experiences": {
       "title": "Mis Paquetes",

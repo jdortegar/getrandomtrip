@@ -3146,7 +3146,9 @@
       "title": "Key Metrics",
       "totalClients": "Total Clients",
       "conversionRate": "Conversion Rate",
-      "growth": "Growth"
+      "growth": "Growth",
+      "sectionEyebrow": "This month",
+      "sectionTitle": "Your performance"
     },
     "experiences": {
       "title": "My Packages",

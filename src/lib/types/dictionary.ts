@@ -181,6 +181,8 @@ export interface TripperDashboardDict {
     totalClients: string;
     conversionRate: string;
     growth: string;
+    sectionEyebrow?: string;
+    sectionTitle?: string;
   };
   experiences: {
     title: string;
