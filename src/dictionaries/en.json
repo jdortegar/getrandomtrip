@@ -6,14 +6,16 @@
     "labelTripbuddy": "North IA",
     "labelBitacoras": "Off the Record",
     "labelExperiences": "Experiences",
-    "labelXsed": "XSED",
+    "labelXsed": "TGIS",
     "ariaLabelTrippers": "Go to Trippers page",
     "ariaLabelInspiration": "Go to inspiration section",
     "ariaLabelExperiences": "Go to Experiences",
     "ariaLabelNosotros": "Go to about us page",
     "ariaLabelTripbuddy": "Go to North IA (TripBuddy)",
     "ariaLabelBitacoras": "Go to Off the Record: Continent logs",
-    "ariaLabelXsed": "Go to XSED",
+    "ariaLabelXsed": "Go to TGIS",
+    "ariaLabelContact": "Go to contact page",
+    "labelContact": "Contact",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Open navigation menu",
     "search": "Search",
@@ -24,10 +26,11 @@
   "navbarProfile": {
     "ariaOpenProfileMenu": "Open profile menu",
     "dashboard": "Travel Logs",
-    "editProfile": "Edit profile",
+    "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
-    "adminDashboard": "Admin Dashboard"
+    "adminDashboard": "Admin Dashboard",
+    "newDrop": "New Drop"
   },
   "common": {
     "siteName": "Randomtrip"
@@ -40,19 +43,350 @@
       "payments": "Payments",
       "reviews": "Reviews",
       "waitlist": "Waitlist",
-      "xsedNotifications": "XSED Alerts"
+      "xsed": "TGIS Drops",
+      "xsedNotifications": "TGIS Notifications"
     }
+  },
+  "adminXsed": {
+    "list": {
+      "dropsCount": "{n} TGIS drops",
+      "newDrop": "New drop",
+      "filterAllStatuses": "All statuses",
+      "empty": "No TGIS drops found.",
+      "errorLoad": "Failed to load TGIS drops",
+      "confirmDelete": "Delete this TGIS drop? This cannot be undone.",
+      "columns": {
+        "title": "Title",
+        "slug": "Slug",
+        "status": "Status",
+        "destination": "Destination",
+        "tripDate": "Trip Date",
+        "revealAt": "Reveal At",
+        "basePrice": "Price/person",
+        "spots": "Spots",
+        "sold": "Sold",
+        "cancellation": "Cancellation",
+        "weather": "Weather",
+        "accessibility": "Accessibility",
+        "safety": "Safety",
+        "revealCopy": "Reveal copy",
+        "preRevealCopy": "Pre-reveal copy",
+        "packingHints": "Packing hints",
+        "whatsappMsg": "WhatsApp msg",
+        "adminNotes": "Admin notes",
+        "supplierNotes": "Supplier notes",
+        "created": "Created",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "archive": "Archive",
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      }
+    },
+    "form": {
+      "eyebrow": "Admin",
+      "title": "New TGIS Drop",
+      "back": "Back",
+      "submit": "Create drop",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "titleEdit": "Edit TGIS Drop",
+      "submitEdit": "Save changes",
+      "toastCreated": "Drop created",
+      "toastUpdated": "Drop updated",
+      "toastError": "Something went wrong",
+      "sections": {
+        "basic": "Basic info",
+        "location": "Location",
+        "dates": "Dates",
+        "pricing": "Pricing & capacity",
+        "guest": "Guest-facing content",
+        "reveal": "Mystery / reveal",
+        "internal": "Internal",
+        "benefits": "Benefits"
+      },
+      "fields": {
+        "titleInternal": "Title (internal)",
+        "teaser": "Public teaser",
+        "slug": "Slug",
+        "slugHint": "URL-friendly identifier, e.g. patagonia-2026",
+        "status": "Status",
+        "heroImage": "Hero image URL",
+        "destinationCity": "Destination city",
+        "destinationCountry": "Destination country",
+        "tripDate": "Trip date",
+        "revealAt": "Reveal at",
+        "basePrice": "Price per person",
+        "currency": "Currency",
+        "currencyHint": "e.g. USD, ARS",
+        "minSpots": "Min spots",
+        "maxSpots": "Max spots",
+        "inclusions": "Included",
+        "exclusions": "Not included",
+        "cancellationPolicy": "Cancellation policy",
+        "weatherPolicy": "Weather policy",
+        "accessibilityNotes": "Accessibility notes",
+        "safetyNotes": "Safety notes",
+        "revealCopy": "Reveal copy",
+        "preRevealCopy": "Pre-reveal copy",
+        "packingHints": "Packing hints",
+        "whatsappMessageTemplate": "WhatsApp message template",
+        "adminNotes": "Admin notes",
+        "supplierNotes": "Supplier notes"
+      }
+    },
+    "benefits": {
+      "saveFirst": "Save the drop first, then come back to manage benefits.",
+      "add": "Add benefit",
+      "empty": "No benefits yet.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "unnamed": "Unnamed benefit",
+      "types": {
+        "ACCOMMODATION": "Accommodation",
+        "DINNER": "Dinner",
+        "ACTIVITY": "Activity"
+      },
+      "confirmationStatus": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled"
+      },
+      "fields": {
+        "type": "Type",
+        "name": "Name",
+        "sortOrder": "Sort order",
+        "providerName": "Provider",
+        "address": "Address",
+        "city": "City",
+        "state": "State / Region",
+        "googleMapsUrl": "Google Maps URL",
+        "customerVisibleNotes": "Guest-facing notes",
+        "internalNotes": "Internal notes",
+        "confirmationStatus": "Confirmation status",
+        "reservationCode": "Reservation code",
+        "photos": "Photos"
+      }
+    }
+  },
+  "adminExperienceReview": {
+    "back": "Back to experiences",
+    "approve": "Approve & publish",
+    "reject": "Reject",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "noteLabel": "Note to tripper",
+    "notePlaceholder": "Explain what needs to change...",
+    "notifTitle": "Admin proposed changes to your experience",
+    "notifBody": "Review the proposed changes for \"{title}\".",
+    "priceSection": "Price per person (USD)",
+    "editExperience": "Edit experience",
+    "sendToTripper": "Send to tripper for review",
+    "discardChanges": "Discard changes",
+    "lockedBannerTitle": "Locked for editing",
+    "lockedBannerBody": "Another admin is currently editing this experience.",
+    "errorApprove": "Could not approve. Please try again.",
+    "errorReject": "Could not reject. Please try again.",
+    "errorStartEdit": "Could not start edit. Please try again.",
+    "errorLocked": "Locked by another admin ({name}). Refresh to see the latest lock status.",
+    "errorSendToTripper": "Could not send to tripper. Please try again.",
+    "errorDiscard": "Could not discard changes. Please try again."
+  },
+  "tripperExperienceReviewCopy": {
+    "approve": "Approve & apply",
+    "reject": "Reject changes",
+    "errorApprove": "Could not approve changes. Please try again.",
+    "errorReject": "Could not reject changes. Please try again."
+  },
+  "adminPages": {
+    "payments": {
+      "count": "{n} payments",
+      "errorLoad": "Failed to load payments",
+      "empty": "No payments found.",
+      "columns": {
+        "paymentId": "Payment ID",
+        "traveler": "Traveler",
+        "amount": "Amount",
+        "status": "Status",
+        "provider": "Provider",
+        "created": "Created"
+      }
+    },
+    "experiences": {
+      "count": "{n} experiences",
+      "errorLoad": "Failed to load experiences",
+      "empty": "No experiences found.",
+      "columns": {
+        "experience": "Experience",
+        "tripper": "Tripper",
+        "status": "Status",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "featured": "Featured",
+        "normal": "Normal",
+        "pendingReview": "Pending review"
+      },
+      "actions": {
+        "disable": "Disable",
+        "enable": "Enable",
+        "unfeature": "Unfeature",
+        "feature": "Feature"
+      },
+      "tabs": {
+        "all": "All",
+        "pending": "Pending review"
+      },
+      "review": {
+        "title": "Review experience",
+        "infoHeading": "Details",
+        "pricingHeading": "Price per type (per person)",
+        "pricePlaceholder": "USD",
+        "approve": "Approve & publish",
+        "reject": "Reject",
+        "noteLabel": "Note to tripper",
+        "notePlaceholder": "Explain what to change...",
+        "close": "Close",
+        "errorApprove": "Could not approve",
+        "errorReject": "Could not reject",
+        "errorPricing": "Set a price for every type"
+      }
+    },
+    "reviews": {
+      "count": "{n} reviews",
+      "errorLoad": "Failed to load reviews",
+      "empty": "No reviews found.",
+      "columns": {
+        "traveler": "Traveler",
+        "review": "Review",
+        "rating": "Rating",
+        "status": "Status",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "public": "Public",
+        "private": "Private"
+      },
+      "actions": {
+        "unapprove": "Unapprove",
+        "approve": "Approve",
+        "hide": "Hide",
+        "publish": "Publish"
+      }
+    },
+    "waitlist": {
+      "count": "{n} waitlist entries",
+      "errorLoad": "Failed to load waitlist",
+      "empty": "No waitlist entries found.",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      }
+    },
+    "xsedNotifications": {
+      "count": "{n} TGIS notification entries",
+      "errorLoad": "Failed to load TGIS notifications",
+      "empty": "No TGIS notification entries found.",
+      "columns": {
+        "email": "Email",
+        "locale": "Locale",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      }
+    }
+  },
+  "xsedUnavailable": {
+    "heading": "This DROP is sold out",
+    "subheading": "XSED drops open every Sunday from 4pm to 8pm.",
+    "notifyLabel": "Notify me about the next one",
+    "backLabel": "Browse past drops"
+  },
+  "xsedBook": {
+    "hero": {
+      "brand": "TGIS",
+      "description": "Fill in your departure information to confirm your TGIS.",
+      "fallbackImage": "/images/xsed-hero.jpg",
+      "label": "BOOK YOUR ESCAPE",
+      "progressLabel": "Progress",
+      "subtitle": "THANK GOD<br/>IT'S SUNDAY",
+      "videoSrc": "/videos/hero-xsed.mp4"
+    },
+    "actionBar": {
+      "clearAll": "Clear all",
+      "next": "Next",
+      "viewCheckout": "BUY TGIS"
+    },
+    "contentTabs": [
+      {
+        "id": "details",
+        "label": "Origin",
+        "substeps": [
+          {
+            "id": "origin",
+            "title": "Destination",
+            "description": "Country and city where your escape begins."
+          }
+        ]
+      },
+      {
+        "id": "pax",
+        "label": "Travelers",
+        "substeps": [
+          {
+            "id": "pax",
+            "title": "Number of travelers",
+            "description": "Travelers joining the escape."
+          }
+        ]
+      }
+    ],
+    "pax": {
+      "label": "Travelers",
+      "countOne": "{count} traveler",
+      "countOther": "{count} travelers"
+    }
+  },
+  "xsedDropsPage": {
+    "title": "ESCAPE LOG",
+    "titleHighlight": "TGIS",
+    "description": "What others lived. What you could live.",
+    "filterDate": "Date",
+    "filterOrderBy": "Order by",
+    "loadMore": "LOAD MORE"
   },
   "xsedPage": {
     "meta": {
-      "title": "XSED | Randomtrip",
-      "description": "X Luck is Sunday: one night, one dinner, and one surprise local experience close to home.",
-      "openGraphTitle": "XSED | Randomtrip",
-      "openGraphDescription": "Join the XSED waitlist and get notified before checkout opens every Sunday."
+      "title": "TGIS | Randomtrip",
+      "description": "Thank God It's Sunday: one night, one dinner, and one surprise local experience close to home.",
+      "openGraphTitle": "TGIS | Randomtrip",
+      "openGraphDescription": "Join the TGIS waitlist and get notified before checkout opens every Sunday."
     },
     "hero": {
-      "title": "XSED",
-      "subtitle": "X LUCK<br/>IS SUNDAY",
+      "title": "TGIS",
+      "subtitle": "THANK GOD<br/>IT'S SUNDAY",
+      "dropNumberLabel": "No. {number}",
       "tagline": "<strong>1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE</strong> less than 300km from home.",
       "availabilityNote": "Only 10 spots released every Sunday per country.",
       "errorMessage": "We could not add you to the list. Please try again.",
@@ -60,12 +394,12 @@
       "inputLabel": "Email Address",
       "inputPlaceholder": "Email Address",
       "submitLabel": "JOIN THE WAITLIST",
-      "submitAriaLabel": "Join the XSED waitlist",
+      "submitAriaLabel": "Join the TGIS waitlist",
       "submittingLabel": "JOINING...",
       "successMessage": "You are on the list. We will notify you before the next opening.",
       "helper": "We will notify you 10 minutes before checkout opens every Sunday. Blink, and you are out.",
-      "fallbackImage": "/images/hero-image-1.jpeg",
-      "videoSrc": "/videos/hero-video-1.mp4"
+      "fallbackImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4"
     },
     "iconText": {
       "items": [
@@ -83,6 +417,113 @@
           "icon": "escape",
           "title": "The escape",
           "description": "On Saturday, you take your car. <strong>You arrive at a destination less than 300km from home.</strong> It includes the hotel night, Saturday dinner, Sunday breakfast, and a curated local experience."
+        }
+      ]
+    },
+    "countdown": {
+      "title": "BUY YOUR",
+      "titleHighlight": "TGIS Nº{number}",
+      "subtitle": "Subscribe to the waitlist — don't miss yours.",
+      "openSubtitle": "The gateway is open. Only a few spots left.",
+      "nextDropLabel": "NEXT DROP",
+      "windowOpenLabel": "OPEN NOW",
+      "windowClosingLabel": "UNTIL",
+      "daysLabel": "DAYS",
+      "hoursLabel": "HRS",
+      "minLabel": "MIN",
+      "secLabel": "SEC",
+      "soldLabel": "{sold}/{total} sold",
+      "ctaLabel": "BUY TGIS",
+      "ctaHref": "/journey"
+    },
+    "testimonials": {
+      "eyebrow": "Traveler reviews",
+      "title": "THE VERDICT",
+      "subtitle": "Your next TGIS is just one click away. Stop overthinking it.",
+      "viewFullReviewLabel": "View full review"
+    },
+    "dropGrid": {
+      "eyebrow": "PREVIOUS DROPS",
+      "title": "ESCAPE LOG BY",
+      "titleHighlight": "TGIS",
+      "description": "What others lived. What you could live.",
+      "ctaLabel": "VIEW ALL",
+      "ctaHref": "/xsed/drops"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
+      "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE. WILL YOU BE ONE OF THEM?",
+      "helper": "We'll notify you 10 minutes before the gateway opens every Sunday. Blink and you're out.",
+      "inputLabel": "Email Address",
+      "inputPlaceholder": "Email Address",
+      "submitLabel": "NOTIFY ME OF THE NEXT DROP",
+      "submitAriaLabel": "Notify me of the next TGIS drop",
+      "submittingLabel": "JOINING...",
+      "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
+      "errorMessage": "We couldn't add you. Please try again.",
+      "invalidEmailMessage": "Please enter a valid email."
+    },
+    "faq": {
+      "eyebrow": "FAQ'S",
+      "title": "TOP QUESTIONS",
+      "description": "Over 1,000 Trippers sharing experiences! Discover exclusive trips, curated within 300km of your home.",
+      "items": [
+        {
+          "question": "What day does my escape start?",
+          "answer": "Your TGIS escape starts on Saturday. You'll receive instructions on Thursday, 48 hours in advance."
+        },
+        {
+          "question": "Can I choose the type of place? (Beach, Hotel, Cabin)",
+          "answer": "You can indicate general preferences in the brief (nature, city, coast), but the exact destination is always a curated surprise."
+        },
+        {
+          "question": "What if I need to change the date?",
+          "answer": "You can reschedule up to 7 days before your TGIS. Contact support and we'll move your spot to the next available drop."
+        },
+        {
+          "question": "What's included?",
+          "answer": "Includes 1 night accommodation, Saturday dinner, Sunday breakfast, and a curated local experience. Transportation to the destination is not included."
+        }
+      ]
+    }
+  },
+  "faqPage": {
+    "hero": {
+      "eyebrow": "FAQ's",
+      "title": "FREQUENTLY ASKED QUESTIONS",
+      "description": "Everything you need to know before taking the leap."
+    },
+    "meta": {
+      "title": "FAQ | Randomtrip",
+      "description": "Everything you need to know before taking the leap: how it works, what's included and how to reschedule your surprise trip.",
+      "openGraphTitle": "FAQ | Randomtrip — Frequently Asked Questions",
+      "openGraphDescription": "We answer everything: how the surprise trip works, what you can choose and how to reschedule."
+    },
+    "block": {
+      "eyebrow": "FAQ's",
+      "title": "Featured questions",
+      "description": "Everything you need to know before taking the leap.",
+      "items": [
+        {
+          "question": "How do I take the first step for my surprise trip?",
+          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
+        },
+        {
+          "question": "What can I choose?",
+          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
+        },
+        {
+          "question": "What happens if I need to change the date?",
+          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
+        },
+        {
+          "question": "What's included?",
+          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+        },
+        {
+          "question": "How do you design my trip?",
+          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
         }
       ]
     }
@@ -192,6 +633,10 @@
           "id": "topTrippers",
           "label": "Top Trippers",
           "href": "/en/trippers"
+        },
+        {
+          "id": "xsed",
+          "label": "TGIS"
         }
       ],
       "title": "Starting Points",
@@ -227,7 +672,15 @@
           "description": "Adventures with your pet."
         }
       ],
-      "trippersHref": "/en/trippers"
+      "trippersHref": "/en/trippers",
+      "xsedIntro": {
+        "eyebrow": "TGIS | THANK GOD IT'S SUNDAY",
+        "title": "A new experience every Sunday",
+        "description": "1 night, every Sunday, a new place, a meal and a unique local experience per country.",
+        "ctaLabel": "LEARN MORE",
+        "ctaHref": "/xsed",
+        "backgroundImage": "/images/xsed-hero.jpg"
+      }
     },
     "blog": {
       "carouselSlideAriaLabel": "Go to slide {0}",
@@ -243,8 +696,23 @@
     "testimonials": {
       "eyebrow": "Traveler reviews",
       "subtitle": "Your next unforgettable memory is just one click away. Don't think twice.",
-      "title": "What people say about RandomTrip",
+      "title": "What people say about Randomtrip",
       "viewFullReviewLabel": "View full review"
+    },
+    "xsedHero": {
+      "backgroundImage": "/images/hero-xsed.jpg",
+      "videoSrc": "/videos/hero-xsed.mp4",
+      "eyebrow": "TGIS",
+      "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
+      "helper": "We'll notify you 10 minutes before the gateway opens every Sunday.\nBlink and you're out.",
+      "inputLabel": "Email",
+      "inputPlaceholder": "Email",
+      "submitLabel": "NOTIFY ME OF THE NEXT DROP",
+      "submitAriaLabel": "Notify me of the next TGIS drop",
+      "submittingLabel": "JOINING...",
+      "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
+      "errorMessage": "We couldn't add you. Please try again.",
+      "invalidEmailMessage": "Please enter a valid email."
     }
   },
   "experiences": {
@@ -274,6 +742,11 @@
       "subtitle": "OUR TRIPPERS",
       "title": "Our Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
+    },
+    "grid": {
+      "searchCardTitle": "Find your Tripper",
+      "searchCardDescription": "Find the perfect expert for your adventure.",
+      "searchCardCta": "Explore Trippers"
     }
   },
   "blogPage": {
@@ -321,7 +794,7 @@
           },
           {
             "id": "experience",
-            "title": "EXPERIENCE",
+            "title": "Experience",
             "description": "The only thing you define here is the per-person budget for travel and accommodation. That's your ceiling. We take care of the rest."
           }
         ]
@@ -394,6 +867,10 @@
       "experienceLabel": "Experience",
       "experiencePlaceholder": "What I want from my trip",
       "experienceStepDescription": "Select the experience level that best fits your budget and preferences.",
+      "selectTravelTypeFirst": "Select a travel type first.",
+      "noTripperExperiences": "No experiences available for this tripper.",
+      "noLevelsAvailable": "No experience levels available for this trip type.",
+      "browseGeneralExperiences": "Explore general experiences",
       "extrasTabDescription": "Add extras to your trip.",
       "extrasTabTitle": "Extras",
       "next": "Next",
@@ -1569,6 +2046,11 @@
       "importantNote3": "2-3 filters: USD 18 each.",
       "importantNote4": "4+ filters: USD 25 each.",
       "importantTitle": "IMPORTANT",
+      "xsedImportantTitle": "WHAT'S INCLUDED",
+      "xsedImportantNote1": "Roadtrip up to 300 km from your origin city.",
+      "xsedImportantNote2": "1 night hotel, Saturday dinner and Sunday breakfast included.",
+      "xsedImportantNote3": "Surprise local activity included.",
+      "xsedImportantNote4": "Destination revealed 48 hours before departure.",
       "monthsShort": [
         "Jan",
         "Feb",
@@ -1680,6 +2162,10 @@
         "randomtripper": "Randomtripper"
       }
     },
+    "tripperBadge": {
+      "curatedBy": "TRIP CURATED BY",
+      "byTripper": "BY TRIPPER"
+    },
     "userNamePlaceholder": "User name"
   },
   "confirmation": {
@@ -1690,23 +2176,32 @@
     },
     "page": {
       "title": "Thank you for your purchase!",
-      "body": "Your GetRandomTrip surprise adventure is confirmed.",
+      "body": "Your GetRandomtrip surprise adventure is confirmed.",
       "messageApproved": "Payment approved. Your surprise trip is confirmed.",
       "messagePending": "Payment status: {status}. Check your email for confirmation.",
       "messageGeneric": "Thank you for your purchase. If you just paid, your trip is being confirmed.",
       "errorTitle": "Error loading order",
-      "metaDescription": "Your GetRandomTrip purchase is confirmed.",
+      "metaDescription": "Your GetRandomtrip purchase is confirmed.",
       "retry": "Retry",
       "ctaReveal": "Reveal my destination",
       "ctaBackToJourney": "Back to journey",
       "ctaHome": "Go to home",
-      "ctaMyTrips": "Go to my trips"
+      "ctaMyTrips": "Go to my trips",
+      "calendarEventDescription": "Your GetRandomtrip surprise escape. Destination revealed 48 hours before departure.",
+      "xsedTitle": "You've got your XSED",
+      "xsedBody": "You'll receive an email with everything you need for your escape.",
+      "xsedTripTypeLabel": "Trip type",
+      "xsedExperienceLabel": "XSED Drop Experience",
+      "xsedReferenceLabel": "Purchase reference number",
+      "xsedPerPerson": "/person",
+      "xsedDownloadCta": "Download XSED",
+      "receiptLink": "View receipt"
     }
   },
   "paymentFailure": {
     "title": "Payment rejected",
     "body": "The payment could not be completed. You can try again or choose another payment method.",
-    "metaDescription": "Payment was rejected. Try again on GetRandomTrip.",
+    "metaDescription": "Payment was rejected. Try again on GetRandomtrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">REJECTED</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
@@ -1716,7 +2211,7 @@
   "paymentPending": {
     "title": "Payment pending",
     "body": "Your payment is being processed. Check your email for confirmation.",
-    "metaDescription": "Your payment is pending. GetRandomTrip.",
+    "metaDescription": "Your payment is pending. GetRandomtrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
@@ -1753,10 +2248,10 @@
   },
   "legalCookies": {
     "meta": {
-      "description": "How GetRandomTrip uses cookies and similar technologies on our website and services.",
-      "openGraphDescription": "Cookie policy for GetRandomTrip.",
-      "openGraphTitle": "Cookie Policy | GetRandomTrip",
-      "title": "Cookie Policy | GetRandomTrip"
+      "description": "How GetRandomtrip uses cookies and similar technologies on our website and services.",
+      "openGraphDescription": "Cookie policy for GetRandomtrip.",
+      "openGraphTitle": "Cookie Policy | GetRandomtrip",
+      "title": "Cookie Policy | GetRandomtrip"
     },
     "hero": {
       "description": "Transparency about cookies and your choices.",
@@ -1767,7 +2262,7 @@
       {
         "title": "What this policy covers",
         "paragraphs": [
-          "This Cookie Policy explains how GetRandomTrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
+          "This Cookie Policy explains how GetRandomtrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
         ]
       },
       {
@@ -1778,7 +2273,7 @@
       },
       {
         "title": "Cookies we use",
-        "listIntro": "Depending on how you use GetRandomTrip, we may use:",
+        "listIntro": "Depending on how you use GetRandomtrip, we may use:",
         "listItems": [
           "Strictly necessary cookies: required for security, authentication, session continuity, load balancing, and fraud prevention (for example keeping you signed in or remembering your locale).",
           "Functional cookies: remember choices such as language, journey progress where designed into the product, and UI preferences.",
@@ -1820,10 +2315,10 @@
   },
   "legalPrivacy": {
     "meta": {
-      "description": "How GetRandomTrip collects, uses, and protects your personal data when you plan and book surprise trips.",
-      "openGraphDescription": "Privacy policy for GetRandomTrip travelers and trippers.",
-      "openGraphTitle": "Privacy Policy | GetRandomTrip",
-      "title": "Privacy Policy | GetRandomTrip"
+      "description": "How GetRandomtrip collects, uses, and protects your personal data when you plan and book surprise trips.",
+      "openGraphDescription": "Privacy policy for GetRandomtrip travelers and trippers.",
+      "openGraphTitle": "Privacy Policy | GetRandomtrip",
+      "title": "Privacy Policy | GetRandomtrip"
     },
     "hero": {
       "description": "Your privacy matters when you trust us with your trip.",
@@ -1834,7 +2329,7 @@
       {
         "title": "Who we are",
         "paragraphs": [
-          "GetRandomTrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
+          "GetRandomtrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
         ]
       },
       {
@@ -1900,7 +2395,7 @@
       {
         "title": "Children",
         "paragraphs": [
-          "GetRandomTrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
+          "GetRandomtrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
         ]
       },
       {
@@ -1919,13 +2414,13 @@
   },
   "legalRefund": {
     "meta": {
-      "description": "Refunds, cancellations, and chargebacks for GetRandomTrip purchases and surprise-travel experiences.",
-      "openGraphDescription": "Refund and cancellation policy for GetRandomTrip.",
-      "openGraphTitle": "Refund Policy | GetRandomTrip",
-      "title": "Refund Policy | GetRandomTrip"
+      "description": "Refunds, cancellations, and chargebacks for GetRandomtrip purchases and surprise-travel experiences.",
+      "openGraphDescription": "Refund and cancellation policy for GetRandomtrip.",
+      "openGraphTitle": "Refund Policy | GetRandomtrip",
+      "title": "Refund Policy | GetRandomtrip"
     },
     "hero": {
-      "description": "How refunds and cancellations work for trips purchased through GetRandomTrip.",
+      "description": "How refunds and cancellations work for trips purchased through GetRandomtrip.",
       "eyebrow": "LEGAL",
       "title": "Refund Policy"
     },
@@ -1933,13 +2428,13 @@
       {
         "title": "Overview",
         "paragraphs": [
-          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through GetRandomTrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
+          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through GetRandomtrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
         ]
       },
       {
         "title": "Nature of the service",
         "paragraphs": [
-          "Many GetRandomTrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
+          "Many GetRandomtrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
         ]
       },
       {
@@ -1952,7 +2447,7 @@
         ]
       },
       {
-        "title": "Changes or cancellations by the Tripper or GetRandomTrip",
+        "title": "Changes or cancellations by the Tripper or GetRandomtrip",
         "paragraphs": [
           "If a Tripper cannot deliver the experience due to force majeure, supplier failure, or operational reasons, we will offer a rescheduled date, a comparable alternative where feasible, or a refund of amounts paid for the undelivered portion, consistent with applicable law and the terms of sale."
         ]
@@ -1991,10 +2486,10 @@
   },
   "legalTerms": {
     "meta": {
-      "description": "Terms of Service for using GetRandomTrip to discover and book surprise-travel experiences.",
-      "openGraphDescription": "Terms of Service for GetRandomTrip.",
-      "openGraphTitle": "Terms of Service | GetRandomTrip",
-      "title": "Terms of Service | GetRandomTrip"
+      "description": "Terms of Service for using GetRandomtrip to discover and book surprise-travel experiences.",
+      "openGraphDescription": "Terms of Service for GetRandomtrip.",
+      "openGraphTitle": "Terms of Service | GetRandomtrip",
+      "title": "Terms of Service | GetRandomtrip"
     },
     "hero": {
       "description": "Rules for using our platform, booking trips, and working with Trippers.",
@@ -2005,13 +2500,13 @@
       {
         "title": "Agreement",
         "paragraphs": [
-          "By accessing or using GetRandomTrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
+          "By accessing or using GetRandomtrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
         ]
       },
       {
-        "title": "What GetRandomTrip provides",
+        "title": "What GetRandomtrip provides",
         "paragraphs": [
-          "GetRandomTrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; GetRandomTrip facilitates discovery, booking, communication, and payment processing."
+          "GetRandomtrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; GetRandomtrip facilitates discovery, booking, communication, and payment processing."
         ]
       },
       {
@@ -2026,7 +2521,7 @@
       },
       {
         "title": "Bookings, prices, and payments",
-        "listIntro": "When you purchase through GetRandomTrip:",
+        "listIntro": "When you purchase through GetRandomtrip:",
         "listItems": [
           "Prices are displayed in the currency shown at checkout unless stated otherwise.",
           "Payment is processed by Mercado Pago or another processor we designate; their terms and privacy policy also apply.",
@@ -2048,13 +2543,13 @@
       {
         "title": "Trippers and third parties",
         "paragraphs": [
-          "Trippers and local operators are independent parties. GetRandomTrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
+          "Trippers and local operators are independent parties. GetRandomtrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
         ]
       },
       {
         "title": "Intellectual property",
         "paragraphs": [
-          "Content on the Services (brand, design, text, graphics, video, software) is owned by GetRandomTrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
+          "Content on the Services (brand, design, text, graphics, video, software) is owned by GetRandomtrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
         ]
       },
       {
@@ -2066,13 +2561,13 @@
       {
         "title": "Limitation of liability",
         "paragraphs": [
-          "To the maximum extent permitted by applicable law, GetRandomTrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
+          "To the maximum extent permitted by applicable law, GetRandomtrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
         ]
       },
       {
         "title": "Indemnity",
         "paragraphs": [
-          "You will indemnify and hold harmless GetRandomTrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
+          "You will indemnify and hold harmless GetRandomtrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
         ]
       },
       {
@@ -2084,7 +2579,7 @@
       {
         "title": "Governing law and disputes",
         "paragraphs": [
-          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to GetRandomTrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
+          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to GetRandomtrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
         ]
       }
     ],
@@ -2103,48 +2598,70 @@
       "title": "Ready to let go of control and gain freedom?"
     },
     "curators": {
+      "eyebrow": "Multidisciplinary team",
       "items": [
         {
-          "bio": "Designs itineraries that connect with the local: workshops, shared tables and authentic rituals.",
-          "img": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Ana García",
-          "role": "Cultural Immersion"
+          "bio": "Founder and visionary behind GetRandomtrip. Designs every experience with the obsession of someone who knows the perfect trip isn't chosen — it's discovered.",
+          "img": "/images/about-us-santiago.png",
+          "linkedin": "#",
+          "name": "Santiago Senega",
+          "role": "Founder",
+          "tagline": "Designs every experience as if it were the only one that matters."
         },
         {
-          "bio": "Finds the sweet spot between adrenaline and safety. Trekking, open skies and controlled micro-challenges.",
-          "img": "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Carlos Mendoza",
-          "role": "Adventure & Outdoors"
+          "bio": "Technology and product. Builds the systems that make serendipity possible at scale without losing the soul of the detail.",
+          "img": "/images/about-us-david.png",
+          "linkedin": "#",
+          "name": "David Ortega",
+          "role": "Tech & Product",
+          "tagline": "Bridges product, technology and user experience."
         },
         {
-          "bio": "Curates spaces with design, calm and mindfulness. Silence, spa, low music, impeccable service.",
-          "img": "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-          "name": "Sofía Rossi",
-          "role": "Luxury & Wellness"
+          "bio": "Operations and logistics. Turns every itinerary into a flawless choreography that happens behind the scenes.",
+          "img": "/images/about-us-rodrigo.png",
+          "linkedin": "#",
+          "name": "Rodrigo S. Benítez",
+          "role": "Operations",
+          "tagline": "Transforms logistics into invisible art."
+        },
+        {
+          "bio": "Design and brand. Shapes the visual world of GetRandomtrip, tending to every pixel as if it were part of the landscape.",
+          "img": "/images/about-us-carla.png",
+          "linkedin": "#",
+          "name": "Carla C. J Vázquez",
+          "role": "Design",
+          "tagline": "Gives visual shape to worlds that don't exist yet."
         }
       ],
-      "sectionTitle": "Meet the curators"
+      "sectionTitle": "Who we are",
+      "subtitle": "We're a team that blends creativity, logistics and obsession for detail to craft trips you didn't know you needed."
     },
     "faq": {
+      "description": "Everything you need to know before taking the leap.",
+      "eyebrow": "FAQ's",
       "items": [
         {
-          "q": "What exactly am I buying if the destination is a surprise?",
-          "a": "You're buying an emotional outcome: relief from choice and guided discovery. Destination and logistics stay in our hands (with your limits clear)."
+          "question": "How do I take the first step for my surprise trip?",
+          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
         },
         {
-          "q": "How do you handle safety?",
-          "a": "Risk assessment per destination, verified partners, coverage and 24/7 communication protocols."
+          "question": "What can I choose?",
+          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
         },
         {
-          "q": "Can I decline activities?",
-          "a": "Yes. The brief defines no-go's. At destination, we keep flexibility without breaking the trip narrative."
+          "question": "What happens if I need to change the date?",
+          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
         },
         {
-          "q": "What if I don't like the surprise?",
-          "a": "We iterate. We take your feedback and adjust for the next one. Our NPS and repeat rate guide improvement."
+          "question": "What's included?",
+          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+        },
+        {
+          "question": "How do you design my trip?",
+          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
         }
       ],
-      "sectionTitle": "Frequently asked questions"
+      "title": "Featured questions"
     },
     "founder": {
       "imageAlt": "Randomtrip founder",
@@ -2153,13 +2670,15 @@
       "sectionTitle": "Founder story"
     },
     "hero": {
-      "ctaPhilosophy": "Our philosophy",
-      "ctaPrimary": "GETRANDOMTRIP!",
-      "ctaPrimaryAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
-      "description": "Luxury isn't choosing among 500 options. It's not having to choose. We design safe serendipity so you live what matters.",
-      "eyebrow": "About us",
-      "subtitle": "Architecture of trust",
-      "title": "Architecture of trust"
+      "primaryCta": {
+        "ariaLabel": "Go to 'Our philosophy' section",
+        "href": "#philosophy",
+        "text": "Our philosophy"
+      },
+      "subtitle": "Luxury isn't choosing from 500 options. It's not having to choose.\n We design safe serendipity so you live what matters.",
+      "eyebrow": "Architecture of trust",
+      "fallbackImage": "/images/about-us.png",
+      "title": "About Us"
     },
     "meta": {
       "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
@@ -2203,16 +2722,19 @@
       "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
       "items": [
         {
-          "value": "NPS 65+*",
-          "label": "Public goal and ongoing tracking."
+          "value": "+*",
+          "label": "Public goal and ongoing tracking.",
+          "prefix": "NPS 65"
         },
         {
-          "value": "55%+",
-          "label": "Upsell adoption (wellness, experiences)."
+          "value": "%+",
+          "label": "Upsell adoption (wellness, experiences).",
+          "prefix": "55"
         },
         {
-          "value": "20%+",
-          "label": "Target repeat rate."
+          "value": "%+",
+          "label": "Target repeat rate.",
+          "prefix": "20"
         }
       ],
       "sectionTitle": "Trust in numbers"
@@ -2233,6 +2755,13 @@
         }
       ],
       "sectionTitle": "Why trust Randomtrip"
+    },
+    "presentTrippers": {
+      "ctaHref": "/trippers",
+      "ctaLabel": "Explore Trippers",
+      "eyebrow": "Shape your adventure",
+      "subtitle": "Curated by —",
+      "title": "Meet the Trippers"
     }
   },
   "notFound": {
@@ -2243,8 +2772,8 @@
     "linkFamily": "Family",
     "linkSolo": "Solo trips",
     "linkTrippers": "Our Trippers",
-    "metaDescription": "The page you're looking for doesn't exist. Discover amazing destinations with RandomTrip.",
-    "metaTitle": "Page Not Found - RandomTrip",
+    "metaDescription": "The page you're looking for doesn't exist. Discover amazing destinations with Randomtrip.",
+    "metaTitle": "Page Not Found - Randomtrip",
     "needHelp": "Need help?",
     "subtitle": "The page you're looking for doesn't exist or has been moved. But don't worry, we have many amazing destinations waiting for you. Why not explore our adventures?",
     "tipLabel": "Tip:",
@@ -2253,7 +2782,7 @@
     "viewPackages": "View Packages"
   },
   "waitlist": {
-    "headline": "Get early access to RandomTrip's launch",
+    "headline": "Get early access to Randomtrip's launch",
     "subheadline": "Join the list and we'll notify you when we're ready.",
     "namePlaceholder": "First name",
     "lastNamePlaceholder": "Last name",
@@ -2270,15 +2799,41 @@
     }
   },
   "profile": {
-    "actionsAria": "Profile actions",
+    "actionsAria": "Account actions",
     "hero": {
-      "title": "My profile",
+      "title": "My Account",
       "subtitle": "Manage your account and preferences"
     },
     "header": {
       "userFallback": "User",
       "emailFallback": "user@email.com",
       "badgeActiveTraveler": "Active traveler"
+    },
+    "nav": {
+      "summary": "Summary",
+      "personal": "Personal data",
+      "travelDocs": "Travel documents",
+      "preferences": "Travel preferences",
+      "payments": "Payment methods",
+      "security": "Security",
+      "tripperProfile": "Public profile",
+      "tripperOs": "Tripper OS"
+    },
+    "sections": {
+      "summary": "Summary",
+      "travelDocs": "Travel documents",
+      "payments": "Payment methods",
+      "security": "Security",
+      "tripperProfile": "Tripper public profile",
+      "tripperOs": "Tripper OS"
+    },
+    "comingSoon": "Coming soon",
+    "comingSoonDescription": "This section will be available soon.",
+    "tripperSections": {
+      "publicProfileDescription": "Your public profile is what clients see when looking for trippers. Keeping it updated improves your visibility.",
+      "publicProfileCta": "View and edit public profile",
+      "tripperOsDescription": "Access the operations panel to manage packages, trips and clients.",
+      "tripperOsCta": "Go to Tripper OS"
     },
     "buttons": {
       "editProfile": "Edit profile",
@@ -2289,7 +2844,7 @@
       "modalCancel": "Cancel",
       "modalSave": "Save changes"
     },
-    "personalSectionTitle": "Personal information",
+    "personalSectionTitle": "Personal data",
     "preferencesSectionTitle": "Travel preferences",
     "labels": {
       "email": "Email",
@@ -2355,7 +2910,12 @@
     "sectionManageTrip": "Destination & status",
     "destinationLabel": "Revealed destination",
     "destinationHelp": "Set the real destination for this booking. Saving clears or updates the stored value.",
+    "destinationDerivedNote": "Automatically derived from the assigned experience",
     "destinationPlaceholder": "e.g. Lisbon, Portugal",
+    "experienceSectionTitle": "Assign experience",
+    "experienceLabel": "Experience",
+    "experiencePlaceholder": "Select experience…",
+    "noTripperNotice": "No tripper attributed — experience assignment unavailable",
     "statusLabel": "Trip status",
     "sectionTimeline": "Fulfillment milestones",
     "sectionDanger": "Danger zone",
@@ -2515,11 +3075,49 @@
       "title": "Tripper OS",
       "description": "Manage your travel packages and clients"
     },
+    "pageHeadings": {
+      "dashboard": {
+        "title": "Tripper OS",
+        "description": "Manage your travel packages and clients"
+      },
+      "experiences": {
+        "title": "Experiences",
+        "description": "Your travel packages"
+      },
+      "experiencesNew": {
+        "title": "Create experience",
+        "description": "Tripper OS"
+      },
+      "experiencesEdit": {
+        "title": "Edit experience",
+        "description": "Tripper OS"
+      },
+      "earnings": {
+        "title": "Earnings",
+        "description": "Your income history"
+      },
+      "reviews": {
+        "title": "Reviews & NPS",
+        "description": "What your travelers say"
+      },
+      "blogs": {
+        "title": "My Posts",
+        "description": "Manage your blog and share your experiences"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Your latest notifications"
+      },
+      "newDrop": {
+        "title": "New Drop",
+        "description": "Create a new XSED drop"
+      }
+    },
     "stats": {
       "totalBookings": "Total Bookings",
       "monthlyRevenue": "Monthly Revenue",
       "averageRating": "Average Rating",
-      "activePackages": "Active Packages"
+      "activeExperiences": "Active Packages"
     },
     "recentBookings": {
       "title": "Recent Bookings",
@@ -2528,7 +3126,9 @@
     },
     "quickActions": {
       "title": "Quick Actions",
-      "createExperience": "Create Experience",
+      "experiences": "My Experiences",
+      "experiencesSub": "View all experiences",
+      "createExperience": "New Experience",
       "createExperienceSub": "New travel offer",
       "earnings": "View Earnings",
       "earningsSub": "Detailed analytics",
@@ -2537,17 +3137,22 @@
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
       "settings": "Settings",
-      "settingsSub": "Profile settings"
+      "settingsSub": "Profile settings",
+      "dashboard": "My Dashboard",
+      "createDrop": "New Drop",
+      "notifications": "Notifications"
     },
     "keyMetrics": {
       "title": "Key Metrics",
       "totalClients": "Total Clients",
       "conversionRate": "Conversion Rate",
-      "growth": "Growth"
+      "growth": "Growth",
+      "sectionEyebrow": "This month",
+      "sectionTitle": "Your performance"
     },
-    "packages": {
+    "experiences": {
       "title": "My Packages",
-      "newPackage": "New Package",
+      "newExperience": "New Package",
       "empty": "You have no active packages yet",
       "emptyCta": "Create your first package",
       "viewAll": "View all →"
@@ -2644,13 +3249,15 @@
       "emptyTitle": "You have no upcoming trips",
       "newTrip": "New Trip",
       "title": "Upcoming Trips",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "revealCountdown": "Countdown",
+      "revealDestination": "View Destination"
     }
   },
-  "packages": {
+  "tripperExperiences": {
     "title": "MY EXPERIENCES",
     "description": "Manage your travel offers and keep your catalog up to date.",
-    "newPackage": "New Experience",
+    "newExperience": "New Experience",
     "back": "Back to My Experiences",
     "filters": {
       "allTypes": "All types",
@@ -2664,10 +3271,14 @@
       "status": "Status",
       "price": "Price / person",
       "updated": "Updated",
-      "edit": "Edit"
+      "duration": "Duration",
+      "capacity": "Capacity",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this experience? This action cannot be undone."
     },
     "emptyState": {
-      "noPackages": "You don't have any experiences yet.",
+      "noExperiences": "You don't have any experiences yet.",
       "noMatch": "No experiences match the current filters.",
       "createFirst": "Create my first experience"
     },
@@ -2675,18 +3286,77 @@
       "ACTIVE": "Active",
       "DRAFT": "Draft",
       "INACTIVE": "Inactive",
-      "ARCHIVED": "Archived"
+      "ARCHIVED": "Archived",
+      "PENDING_REVIEW": "Pending review",
+      "PENDING_TRIPPER_REVIEW": "Tripper reviewing"
     },
     "form": {
       "createTitle": "CREATE EXPERIENCE",
       "editTitle": "EDIT EXPERIENCE",
       "createSubmit": "Create Experience",
+      "requiredFieldsLabel": "Required fields",
+      "actionBar": {
+        "clearAll": "Clear all",
+        "back": "Back to experiences",
+        "next": "Next",
+        "submit": "Create experience",
+        "saveDraft": "Save draft",
+        "submitForReview": "Submit for review"
+      },
       "editSubmit": "Save Changes",
       "cancel": "Cancel",
       "saving": "Saving...",
+      "saved": "Saved",
+      "errorSave": "Error saving",
       "nav": {
-        "sections": "Sections"
+        "sections": "Sections",
+        "progress": "Progress"
       },
+      "contentTabs": [
+        {
+          "id": "about",
+          "label": "About the experience",
+          "substeps": [
+            {
+              "id": "experience",
+              "title": "Experience",
+              "description": "Name, type, level, and who can take the experience."
+            },
+            {
+              "id": "destination",
+              "title": "Destination",
+              "description": "City, country and what's the excuse."
+            }
+          ]
+        },
+        {
+          "id": "logistics",
+          "label": "Logistics & accommodation",
+          "substeps": [
+            {
+              "id": "accommodation",
+              "title": "Logistics & accommodation",
+              "description": "Hotels, stays and suggested days. If you leave it empty, Randomtrip will find the best option."
+            }
+          ]
+        },
+        {
+          "id": "activities",
+          "label": "Activities & Itinerary",
+          "substeps": [
+            {
+              "id": "activities-list",
+              "title": "Activities",
+              "description": "Suggested activities"
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerary",
+              "description": "Per day, avoid phrases that sound like a \"tourist trip\" such as: unique postcards, dream destinations, all inclusive, among others."
+            }
+          ]
+        }
+      ],
       "sections": {
         "basic": "Basic",
         "destination": "Destination",
@@ -2696,52 +3366,99 @@
         "activities": "Activities",
         "itinerary": "Itinerary",
         "inclusions": "Inclusions / Exclusions",
-        "tagsMedia": "Tags, Highlights & Media",
-        "visibility": "Visibility"
+        "policies": "Policies & Communication"
       },
       "fields": {
         "title": "Title",
-        "type": "Trip type",
+        "titlePlaceholder": "Write the experience title",
+        "type": "Experience type",
+        "typePlaceholder": "Select type...",
+        "typeHint": "You can choose 1 or more",
         "level": "Level",
         "status": "Status",
         "teaser": "Teaser",
         "teaserHint": "Short description shown on cards (max 150 characters)",
         "description": "Full description",
+        "descriptionPlaceholder": "Full experience description",
         "country": "Destination country",
-        "city": "Destination city",
+        "countryPlaceholder": "E.g.: Argentina",
+        "city": "City",
+        "cityPlaceholder": "E.g.: Buenos Aires",
         "excuseKey": "Trip excuse",
+        "excuseKeyPlaceholder": "Select an excuse",
         "excuseKeyHint": "The excuse the client uses to justify the trip",
-        "minNights": "Minimum nights",
+        "minNights": "Recommended duration",
+        "minNightsHint": "{nights} Nights / {days} Days",
         "maxNights": "Maximum nights",
         "maxNightsHint": "This level supports max {n} nights",
         "minPax": "Minimum travelers",
         "maxPax": "Maximum travelers",
-        "basePriceUsd": "Base price per person (USD)",
-        "basePriceUsdHint": "Price per person, in USD",
+        "basePrice": "Base price per person",
+        "basePriceHint": "Price per person, in the configured currency",
         "displayPrice": "Display price",
         "displayPriceHint": "Free text shown on the public card. E.g.: From USD 450",
+        "estimatedCost": "Estimated cost per person",
+        "season": "Suggested travel months",
+        "seasonPlaceholder": "Select months",
+        "seasonHint": "Recommended months to take the trip",
+        "pricingDescription": "Suggested providers, costs and season recommendation.",
         "accommodationType": "Accommodation type",
         "transport": "Main transport",
+        "suggestedTransport": "Suggested transport",
+        "estimatedTravelTime": "Estimated travel time",
         "climate": "Destination climate",
         "maxTravelTime": "Max travel time",
         "departPref": "Departure preference",
         "arrivePref": "Arrival preference",
         "compatibilityHint": "These fields help the matching algorithm pair your package with client requests.",
         "hotelName": "Hotel name",
+        "hotelNamePlaceholder": "E.g.: Four Seasons...",
+        "hotelLink": "Hotel link",
+        "hotelLinkPlaceholder": "https://...",
+        "referredLink": "Refer Code / Link",
+        "referredLinkPlaceholder": "e.g. ABC123 or https://...",
         "hotelStars": "Stars",
         "hotelLocation": "Location",
+        "hotelDays": "Suggested days at accommodation",
+        "hotelDaysPlaceholder": "E.g.: 1",
+        "starsHint": "Up to 5 stars.",
+        "addAccommodation": "Add another accommodation",
+        "removeAccommodation": "Remove",
+        "starsPlaceholder": "Choose number of stars",
+        "starSingular": "star",
+        "starPlural": "stars",
         "hotelCheckIn": "Check-in",
         "hotelCheckOut": "Check-out",
         "addHotel": "Add Hotel",
         "noHotels": "No hotels added yet.",
         "activityName": "Activity name",
+        "activityNamePlaceholder": "E.g.: Boutique....",
         "activityDuration": "Duration",
-        "activityDesc": "Description",
+        "activityDurationRhythm": "Estimated duration and pace",
+        "activityDurationPlaceholder": "E.g.: 3 hrs. at a relaxed pace",
+        "durationUnitMin": "min",
+        "durationUnitHr": "hr",
+        "durationUnitDay": "day",
+        "durationHintMin": "minutes",
+        "durationHintHr": "hours",
+        "durationHintDay": "days",
+        "activityDesc": "Activity description",
+        "activityDescPlaceholder": "E.g.: during the activity you will be able to ride a horse.....",
+        "activityRisks": "Risks or Warnings",
+        "activityRisksPlaceholder": "E.g.: precautions they should take....",
+        "activityLabel": "Activity",
         "addActivity": "Add Activity",
+        "addAnotherActivity": "Add another activity",
+        "removeActivity": "Remove",
         "noActivities": "No activities added yet.",
         "itineraryTitle": "Day title",
+        "itineraryTitlePlaceholder": "E.g.: first day on the hill",
         "itineraryDesc": "Day description",
+        "itineraryDescPlaceholder": "E.g.: on the first day we went to the hill called \"Viva lava\"",
+        "dayLabel": "Day",
         "addDay": "Add Day",
+        "addAnotherDay": "Add another day",
+        "removeDay": "Remove",
         "noItinerary": "No itinerary days added yet.",
         "inclusions": "What's included?",
         "addInclusion": "Add inclusion",
@@ -2749,14 +3466,58 @@
         "addExclusion": "Add exclusion",
         "tags": "Tags",
         "tagInput": "New tag (Enter to add)",
-        "highlights": "Highlights",
-        "highlightInput": "New highlight (Enter to add)",
-        "heroImage": "Hero image (URL)",
-        "heroImageHint": "URL of the experience's main image",
+        "heroImage": "Hero image",
+        "heroImageHint": "Main image displayed on the experience card",
+        "activityImageLabel": "Activity image",
+        "dayImageLabel": "Day image",
+        "uploadImage": "Upload image",
+        "uploading": "Uploading…",
+        "removeImage": "Remove",
+        "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
+        "entryImageSizeHint": "Minimum 800 × 600 px recommended",
+        "imageTooSmall": "Image too small",
+        "copyrightHint": "Images must be your own or royalty-free *",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",
-        "isFeaturedHint": "Appears in the featured section"
+        "isFeaturedHint": "Appears in the featured section",
+        "titleInternal": "Internal title",
+        "slug": "Slug (URL)",
+        "slugHint": "Used in the public URL. Letters, numbers and dashes only.",
+        "tripDate": "Drop date",
+        "revealAt": "Reveal date",
+        "currency": "Currency",
+        "currencyHint": "E.g.: USD, ARS, EUR",
+        "minSpots": "Min spots",
+        "maxSpots": "Max spots",
+        "cancellationPolicy": "Cancellation policy",
+        "weatherPolicy": "Weather/conditions policy",
+        "accessibilityNotes": "Accessibility notes",
+        "safetyNotes": "Safety notes",
+        "revealCopy": "Post-reveal text",
+        "preRevealCopy": "Pre-reveal text",
+        "packingHints": "What to pack",
+        "whatsappMessageTemplate": "WhatsApp message template",
+        "adminNotes": "Admin notes",
+        "supplierNotes": "Supplier notes",
+        "statusLabel": "Status",
+        "statusDraft": "Draft",
+        "statusActive": "Active",
+        "createBlogPost": "Create blog post",
+        "createBlogPostHint": "A draft will be created with the experience content"
+      },
+      "review": {
+        "pendingTitle": "Pending review",
+        "pendingBody": "Your experience is under review. You cannot make changes until you receive a response.",
+        "rejectedTitle": "Changes requested",
+        "rejectedDismiss": "Got it",
+        "submitError": "Required fields missing"
+      },
+      "statusBadge": {
+        "pendingReview": "Pending review"
+      },
+      "changedFieldsBanner": {
+        "prefix": "Admin proposed changes to: "
       }
     }
   },
@@ -2896,6 +3657,10 @@
       "admin": "ADMIN",
       "cancel": "Cancel",
       "clientBase": "CLIENT (base)",
+      "confirmDelete": "Confirm deletion?",
+      "delete": "Delete user",
+      "deleteError": "Failed to delete user",
+      "deleting": "Deleting…",
       "errorFallback": "Failed to update role",
       "roleSection": "Roles",
       "saveChanges": "Save changes",
@@ -2949,5 +3714,76 @@
       },
       "submit": "Send"
     }
+  },
+  "notifications": {
+    "pageTitle": "Notifications",
+    "emptyState": "You have no notifications yet.",
+    "markRead": "Mark as read",
+    "unreadBadge": "Unread",
+    "types": {
+      "EXPERIENCE_APPROVED": "Experience approved",
+      "EXPERIENCE_REJECTED": "Experience rejected",
+      "BOOKING_CONFIRMED": "Booking confirmed",
+      "BOOKING_REVEALED": "Destination revealed",
+      "BOOKING_COMPLETED": "Trip completed",
+      "BOOKING_CANCELLED": "Booking cancelled",
+      "PAYMENT_RECEIVED": "Payment received"
+    }
+  },
+  "tripReview": {
+    "buttonLabel": "Leave a review",
+    "title": "How was your trip?",
+    "ratingLabel": "Your rating",
+    "feedbackPlaceholder": "Tell us about your experience...",
+    "submit": "Submit review",
+    "cancel": "Cancel",
+    "success": "Thank you for your review!",
+    "emailHintTitle": "Leave a review",
+    "emailHint": "Check your email — we sent you a link to rate your experience."
+  },
+  "tripItinerary": {
+    "title": "Trip Itinerary",
+    "backToTrip": "Back to trip",
+    "day": "Day",
+    "emptyTitle": "Your itinerary is being prepared",
+    "emptyDescription": "Once your tripper assigns the experience, you'll see the full itinerary here.",
+    "noExperience": "No experience has been assigned to this trip yet.",
+    "inclusions": "Included",
+    "exclusions": "Not included"
+  },
+  "tripReveal": {
+    "pageTitle": "Your Mystery Destination",
+    "pageDescription": "The suspense is part of the adventure",
+    "countdownTitle": "Your destination is revealed in...",
+    "countdownSubtitle": "We're preparing everything for your trip. Just a few hours until you discover where you're going.",
+    "daysLabel": "Days",
+    "hoursLabel": "Hours",
+    "minutesLabel": "Minutes",
+    "secondsLabel": "Seconds",
+    "pendingAssignment": "Your destination is being carefully prepared. It's almost time!",
+    "revealedEyebrow": "Your destination revealed",
+    "revealedTitle": "Your destination has been revealed!",
+    "revealedSubtitle": "Get ready to live an incredible experience.",
+    "viewItinerary": "View Itinerary",
+    "notFoundTitle": "Trip not found",
+    "notFoundDescription": "The trip you're looking for doesn't exist or you don't have permission to view it.",
+    "backToDashboard": "Back to Dashboard",
+    "revealCountdown": "Countdown",
+    "revealDestination": "View Destination"
+  },
+  "reviewForm": {
+    "pageTitle": "How was your trip?",
+    "pageSubtitle": "Your feedback helps us improve and helps other travelers make better choices.",
+    "ratingLabel": "Rating",
+    "titleLabel": "Title (optional)",
+    "titlePlaceholder": "A summary of your experience",
+    "contentLabel": "Your review",
+    "contentPlaceholder": "Tell us what you loved most (and what could be improved)…",
+    "submitButton": "Submit review",
+    "successTitle": "Thank you for your review!",
+    "successMessage": "Your review has been submitted and is under review. Once approved, it will appear on your tripper's profile.",
+    "errorInvalidToken": "This link is invalid or has expired. If you think this is an error, please contact us.",
+    "errorAlreadySubmitted": "You have already submitted a review for this trip. Thank you for your time!",
+    "errorGeneric": "An error occurred while submitting your review. Please try again."
   }
 }

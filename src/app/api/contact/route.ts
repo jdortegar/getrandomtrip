@@ -41,7 +41,7 @@ function buildEmailHtml(payload: Required<ContactPayload>) {
       <body style="margin: 0; padding: 0; background: #f5f5f5;">
         <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827; margin: 0 auto; max-width: 640px; padding: 24px 12px;">
           <div style="background: #0f172a; border-radius: 12px 12px 0 0; padding: 20px; text-align: center;">
-            <img alt="GetRandomTrip" src="${logoUrl}" style="height: 42px; max-width: 220px; width: 100%;" />
+            <img alt="GetRandomtrip" src="${logoUrl}" style="height: 42px; max-width: 220px; width: 100%;" />
           </div>
           <div style="background: #ffffff; border-radius: 0 0 12px 12px; border: 1px solid #e5e7eb; border-top: 0; padding: 24px;">
             <h2 style="color: #111827; font-size: 24px; margin: 0 0 18px;">New contact form submission</h2>
@@ -84,7 +84,10 @@ export async function POST(req: Request) {
     const name = body.name?.trim();
 
     if (!email || !interest || !message || !name) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     await sendMail({
@@ -100,6 +103,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Contact API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

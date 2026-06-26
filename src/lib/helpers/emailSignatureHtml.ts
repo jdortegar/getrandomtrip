@@ -4,13 +4,13 @@
  */
 
 function joinSiteOrigin(origin: string, pathname: string): string {
-  const base = origin.replace(/\/$/, '');
-  const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  const base = origin.replace(/\/$/, "");
+  const path = pathname.startsWith("/") ? pathname : `/${pathname}`;
   return `${base}${path}`;
 }
 
 export function buildEmailSignatureOption1Html(siteOrigin: string): string {
-  const logoSrc = joinSiteOrigin(siteOrigin, '/assets/svg/email-sign.svg');
+  const logoSrc = joinSiteOrigin(siteOrigin, "/assets/svg/email-sign.svg");
   return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse">
         <tbody>
           <tr>
@@ -63,7 +63,7 @@ export function buildEmailSignatureOption1Html(siteOrigin: string): string {
             <td style="padding: 12px 0 0">
               <a href="https://getrandomtrip.com" style="text-decoration: none">
                 <img
-                  alt="GetRandomTrip"
+                  alt="GetRandomtrip"
                   border="0"
                   height="64"
                   src="${logoSrc}"
@@ -78,7 +78,10 @@ export function buildEmailSignatureOption1Html(siteOrigin: string): string {
 }
 
 export function buildEmailSignatureOption2Html(siteOrigin: string): string {
-  const logoSrc = joinSiteOrigin(siteOrigin, '/assets/logos/logo_getrandomtrip_1.png');
+  const logoSrc = joinSiteOrigin(
+    siteOrigin,
+    "/assets/logos/logo_getrandomtrip_1.png",
+  );
   return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse">
         <tbody>
           <tr>
@@ -135,7 +138,7 @@ export function buildEmailSignatureOption2Html(siteOrigin: string): string {
                     <td style="padding: 12px 0 0">
                       <a href="https://getrandomtrip.com" style="text-decoration: none">
                         <img
-                          alt="GetRandomTrip"
+                          alt="GetRandomtrip"
                           border="0"
                           height="64"
                           src="${logoSrc}"
