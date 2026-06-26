@@ -43,18 +43,12 @@ export function TripperNavTabs() {
   }
 
   function isActive(href: string, exact = false) {
-    if (exact) return pathname === href;
-    return pathname === href || pathname.startsWith(`${href}/`);
+    const slug = href.startsWith(`/${locale}`) ? href.slice(locale.length + 1) : href;
+    if (exact) return pathname === slug;
+    return pathname === slug || pathname.startsWith(`${slug}/`);
   }
 
   const tabs = [
-    {
-      href: base("/notifications"),
-      icon: Bell,
-      label: copy.notifications,
-      exact: false,
-      showUnreadDot: true,
-    },
     {
       href: base(""),
       icon: LayoutDashboard,
@@ -67,7 +61,6 @@ export function TripperNavTabs() {
       label: copy.experiences,
       exact: true,
     },
-    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
     {
       href: base("/experiences/new"),
       icon: Plus,
@@ -81,6 +74,7 @@ export function TripperNavTabs() {
       exact: false,
       adminOnly: true,
     },
+    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
     {
       href: base("/earnings"),
       icon: BarChart3,
@@ -88,7 +82,13 @@ export function TripperNavTabs() {
       exact: false,
     },
     { href: base("/reviews"), icon: Star, label: copy.reviews, exact: false },
-
+    {
+      href: base("/notifications"),
+      icon: Bell,
+      label: copy.notifications,
+      exact: false,
+      showUnreadDot: true,
+    },
     {
       href: `/${locale}/trippers/profile`,
       icon: Settings,

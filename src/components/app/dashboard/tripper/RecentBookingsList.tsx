@@ -35,12 +35,11 @@ export function RecentBookingsList({
   locale = "es",
 }: RecentBookingsListProps) {
   return (
-    <div>
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm font-barlow">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-neutral-500">
-            {copy.title}
-          </h2>
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold text-neutral-900">
+          {copy.title}
+        </h2>
           <Link
             href={pathForLocale(locale as Locale, "/dashboard/tripper")}
             className="text-xs font-medium text-light-blue hover:text-sky-700"
@@ -59,7 +58,7 @@ export function RecentBookingsList({
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-linear-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shrink-0">
+                  <div className="w-10 h-10 bg-light-blue rounded-full flex items-center justify-center text-white font-semibold shrink-0">
                     {booking.clientName.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -91,7 +90,6 @@ export function RecentBookingsList({
             ))
           )}
         </div>
-      </div>
     </div>
   );
 }

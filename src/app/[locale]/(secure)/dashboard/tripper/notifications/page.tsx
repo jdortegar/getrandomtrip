@@ -55,7 +55,6 @@ export default async function TripperNotificationsPage(props: {
   return (
     <Section>
       <div className="rt-container">
-        <h2 className="text-xl font-semibold text-neutral-900 mb-6">{dict.notifications.pageTitle}</h2>
         <NotificationsList
           initialNotifications={notifications}
           copy={dict.notifications}

@@ -97,8 +97,6 @@ export default function TripperEarningsPage() {
 
   return (
     <div className="space-y-6 p-8">
-      <h1 className="text-3xl font-bold text-neutral-800 mb-6">Ganancias</h1>
-
       <div className="p-4 bg-white rounded-2xl shadow">
         <h2 className="font-semibold mb-2">Ganancias (ciclo actual)</h2>
         {!current ? (

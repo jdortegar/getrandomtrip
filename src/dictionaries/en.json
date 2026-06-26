@@ -3097,12 +3097,20 @@
         "description": "Your income history"
       },
       "reviews": {
-        "title": "Reviews",
+        "title": "Reviews & NPS",
         "description": "What your travelers say"
       },
       "blogs": {
-        "title": "Blog",
-        "description": "Your articles and content"
+        "title": "My Posts",
+        "description": "Manage your blog and share your experiences"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Your latest notifications"
+      },
+      "newDrop": {
+        "title": "New Drop",
+        "description": "Create a new XSED drop"
       }
     },
     "stats": {

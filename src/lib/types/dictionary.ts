@@ -144,6 +144,8 @@ export interface TripperDashboardDict {
     earnings: { title: string; description: string };
     reviews: { title: string; description: string };
     blogs: { title: string; description: string };
+    notifications: { title: string; description: string };
+    newDrop: { title: string; description: string };
   };
   stats: {
     totalBookings: string;
