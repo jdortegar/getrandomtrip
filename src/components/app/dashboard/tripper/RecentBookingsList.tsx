@@ -11,14 +11,14 @@ interface RecentBookingsListProps {
   locale?: string;
 }
 
-function getStatusColor(status: string): string {
+function getStatusStyle(status: string) {
   if (status === "confirmed" || status === "completed") {
-    return "bg-green-100 text-green-800 border-green-200";
+    return { dot: "bg-green-500", badge: "bg-green-50 text-green-800 border-green-200" };
   }
   if (status === "revealed") {
-    return "bg-purple-100 text-purple-800 border-purple-200";
+    return { dot: "bg-purple-500", badge: "bg-purple-50 text-purple-800 border-purple-200" };
   }
-  return "bg-yellow-100 text-yellow-800 border-yellow-200";
+  return { dot: "bg-amber-400", badge: "bg-amber-50 text-amber-800 border-amber-200" };
 }
 
 function formatDate(dateString: string): string {
@@ -35,61 +35,93 @@ export function RecentBookingsList({
   locale = "es",
 }: RecentBookingsListProps) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-neutral-900">
-          {copy.title}
-        </h2>
-          <Link
-            href={pathForLocale(locale as Locale, "/dashboard/tripper")}
-            className="text-xs font-medium text-light-blue hover:text-sky-700"
-          >
-            {copy.viewAll}
-          </Link>
+    <section>
+      {/* Brand section header — eyebrow + condensed heading */}
+      <div className="mb-5 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+            Latest activity
+          </p>
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
+            {copy.title}
+          </h2>
         </div>
+        <Link
+          href={pathForLocale(locale as Locale, "/dashboard/tripper")}
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-light-blue hover:text-sky-700"
+        >
+          {copy.viewAll} →
+        </Link>
+      </div>
 
-        <div className="space-y-3">
-          {bookings.length === 0 ? (
-            <p className="text-center text-neutral-500 py-8">{copy.empty}</p>
-          ) : (
-            bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-light-blue rounded-full flex items-center justify-center text-white font-semibold shrink-0">
+      {/* Table */}
+      <div className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        {bookings.length === 0 ? (
+          <p className="py-12 text-center text-neutral-500">{copy.empty}</p>
+        ) : (
+          bookings.map((booking) => {
+            const s = getStatusStyle(booking.status);
+            return (
+              <div key={booking.id} className="px-6 py-[18px]">
+                {/* Mobile layout */}
+                <div className="flex items-center gap-4 md:hidden">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-light-blue text-base font-semibold text-white">
                     {booking.clientName.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="font-medium text-neutral-900">
-                      {booking.clientName}
-                    </p>
-                    <p className="text-sm text-neutral-600">
-                      {booking.experienceName}
-                    </p>
-                    <p className="text-xs text-neutral-500 flex items-center gap-1 mt-0.5">
-                      <Calendar className="h-3 w-3" />
-                      {formatDate(booking.date)}
-                    </p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-gray-900">{booking.clientName}</p>
+                    <p className="truncate text-sm text-neutral-500">{booking.experienceName}</p>
                   </div>
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${s.badge}`}
+                  >
+                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
+                    {copy[booking.status as keyof TripperDashboardDict["status"]] ?? booking.status}
+                  </span>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="font-semibold text-neutral-900">
+                <div className="mt-2 flex items-center gap-3 pl-14 md:hidden">
+                  <p className="flex items-center gap-1 text-[12px] text-neutral-400">
+                    <Calendar className="h-3 w-3 shrink-0" />
+                    {formatDate(booking.date)}
+                  </p>
+                  <p className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                    ${booking.amount.toLocaleString("es-AR")}
+                  </p>
+                </div>
+
+                {/* Desktop layout */}
+                <div
+                  className="hidden items-center gap-5 md:grid"
+                  style={{ gridTemplateColumns: "1fr 160px 120px 130px" }}
+                >
+                  <div className="flex min-w-0 items-center gap-4">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-light-blue text-lg font-semibold text-white">
+                      {booking.clientName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-gray-900">{booking.clientName}</p>
+                      <p className="truncate text-sm text-neutral-600">{booking.experienceName}</p>
+                    </div>
+                  </div>
+                  <p className="flex items-center gap-1.5 text-[13px] text-neutral-500">
+                    <Calendar className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                    {formatDate(booking.date)}
+                  </p>
+                  <p className="font-barlow-condensed text-[22px] font-bold leading-none text-gray-900">
                     ${booking.amount.toLocaleString("es-AR")}
                   </p>
                   <span
-                    className={`mt-1 inline-block px-2 py-0.5 text-xs rounded-full border ${getStatusColor(booking.status)}`}
+                    className={`inline-flex items-center gap-1.5 rounded-[6px] border px-3 py-[5px] text-[11px] font-semibold uppercase tracking-[0.08em] ${s.badge}`}
                   >
-                    {copy[
-                      booking.status as keyof TripperDashboardDict["status"]
-                    ] ?? booking.status}
+                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
+                    {copy[booking.status as keyof TripperDashboardDict["status"]] ?? booking.status}
                   </span>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-    </div>
+            );
+          })
+        )}
+      </div>
+    </section>
   );
 }
