@@ -2601,40 +2601,29 @@
       "eyebrow": "Multidisciplinary team",
       "items": [
         {
-          "bio": "Founder and visionary behind GetRandomtrip. Designs every experience with the obsession of someone who knows the perfect trip isn't chosen — it's discovered.",
+          "bio": "Designs the vision of Randomtrip: turning the surprise into a reliable, operable experience with soul.",
           "img": "/images/about-us-santiago.png",
           "linkedin": "#",
           "name": "Santiago Senega",
-          "role": "Founder",
-          "tagline": "Designs every experience as if it were the only one that matters."
+          "role": "Founder & CEO"
         },
         {
-          "bio": "Technology and product. Builds the systems that make serendipity possible at scale without losing the soul of the detail.",
+          "bio": "Builds the systems that make it possible to scale serendipity without losing clarity, speed, or premium experience.",
           "img": "/images/about-us-david.png",
           "linkedin": "#",
           "name": "David Ortega",
-          "role": "Tech & Product",
-          "tagline": "Bridges product, technology and user experience."
+          "role": "Co-Founder & CTO"
         },
         {
-          "bio": "Operations and logistics. Turns every itinerary into a flawless choreography that happens behind the scenes.",
-          "img": "/images/about-us-rodrigo.png",
-          "linkedin": "#",
-          "name": "Rodrigo S. Benítez",
-          "role": "Operations",
-          "tagline": "Transforms logistics into invisible art."
-        },
-        {
-          "bio": "Design and brand. Shapes the visual world of GetRandomtrip, tending to every pixel as if it were part of the landscape.",
+          "bio": "Shapes the visual universe of Randomtrip, making sure every interaction feels clear, human, and memorable.",
           "img": "/images/about-us-carla.png",
           "linkedin": "#",
           "name": "Carla C. J Vázquez",
-          "role": "Design",
-          "tagline": "Gives visual shape to worlds that don't exist yet."
+          "role": "Head UX / UI"
         }
       ],
       "sectionTitle": "Who we are",
-      "subtitle": "We're a team that blends creativity, logistics and obsession for detail to craft trips you didn't know you needed."
+      "subtitle": "We are a team of product, technology, operations, design and curation with a travel category: Controlled Wonder. We are not a traditional agency or OTA. We are a managed marketplace of surprise experiences, where every route combines human sensibility, operational technology, and local knowledge. The promise is simple: the destination can surprise you; the experience should not worry you."
     },
     "faq": {
       "description": "Everything you need to know before taking the leap.",
@@ -2665,8 +2654,8 @@
     },
     "founder": {
       "imageAlt": "Randomtrip founder",
-      "p1": "We were born to fight the analysis paralysis that holds back great trips. We turn the what if…? into let's go! with a system that protects your time and energy.",
-      "p2": "This isn't just an agency: it's a manifesto against routine and for well-designed wonder.",
+      "p1": "Randomtrip was born from a personal obsession of Santi Senega: to give travel back that mix of curiosity, wonder, and trust that is often lost among endless options, reviews, and logistical decisions.",
+      "p2": "As Founder & CEO, Santi designed Randomtrip from a simple idea: the surprise can be deeply exciting if it's well contained. The destination can remain hidden; the price, quality, operation, and support cannot. That tension between mystery and structure became the heart of Randomtrip: Designed Serendipity, or living the unexpected without improvising.",
       "sectionTitle": "Founder story"
     },
     "hero": {
@@ -2675,10 +2664,10 @@
         "href": "#philosophy",
         "text": "Our philosophy"
       },
-      "subtitle": "Luxury isn't choosing from 500 options. It's not having to choose.\n We design safe serendipity so you live what matters.",
+      "subtitle": "At Randomtrip the surprise is the destination, not the quality, price, or logistics. We combine technology, human curation, and local expertise to create trips with soul — safe and memorable.",
       "eyebrow": "Architecture of trust",
       "fallbackImage": "/images/about-us.png",
-      "title": "About Us"
+      "title": "Surprise trips, designed without improvising."
     },
     "meta": {
       "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
@@ -2688,8 +2677,8 @@
     },
     "philosophy": {
       "imageAlt": "Serendipity moments on a trip",
-      "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
-      "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
+      "p1": "We don't sell destinations. We design a different way of traveling. Randomtrip was born to free travelers from the fatigue of planning: too many open tabs, too many decisions before you even start.",
+      "p2": "Our answer is Designed Serendipity: experiences that feel spontaneous but are born from a rigorous structure. You define dates, budget, style, pace, and limits. We design the wonder within that framework. Living the unexpected, without improvising.",
       "pills": [
         "Emotional brief",
         "Invisible design",
@@ -2701,57 +2690,53 @@
       "items": [
         {
           "key": "01",
-          "title": "Feelings brief",
-          "description": "How you want to feel. Soft/hard boundaries. Red and green signals."
+          "title": "You set the limits",
+          "description": "Tell us when you travel, how much you want to invest, what style you're looking for, and what you don't want."
         },
         {
           "key": "02",
-          "title": "Invisible design",
-          "description": "We handle the logistics. You just receive signals and moments."
+          "title": "We curate the route",
+          "description": "We cross your signals with local expertise, real availability, provider quality, and operational logic."
         },
         {
           "key": "03",
-          "title": "Safe serendipity",
-          "description": "Curated surprises with backup and plan B. Freedom with a net."
+          "title": "We reveal just enough",
+          "description": "You receive key information at the right moment. The surprise remains; trust is never lost."
         }
       ],
       "sectionTitle": "How we design your trip",
       "stepLabel": "Step"
     },
     "trust": {
-      "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
       "items": [
         {
-          "value": "+*",
-          "label": "Public goal and ongoing tracking.",
-          "prefix": "NPS 65"
+          "title": "Clear pricing",
+          "description": "We define budget and conditions before designing. No microextras disguised as surprises."
         },
         {
-          "value": "%+",
-          "label": "Upsell adoption (wellness, experiences).",
-          "prefix": "55"
+          "title": "Validated providers",
+          "description": "We work with accommodations, experiences, and operators aligned with quality, safety, and service."
         },
         {
-          "value": "%+",
-          "label": "Target repeat rate.",
-          "prefix": "20"
+          "title": "Reveal with support",
+          "description": "The destination is revealed on time, with practical information and guidance so you just have to live it."
         }
       ],
-      "sectionTitle": "Trust in numbers"
+      "sectionTitle": "Trust in process"
     },
     "valueProps": {
       "items": [
         {
           "title": "Expert curation",
-          "copy": "Guides with impeccable taste and our own methodology. Less scroll, more living."
+          "copy": "Less searching, more traveling. We design every route with local expertise, real preferences, and our own methodology."
         },
         {
           "title": "Safety and transparency",
-          "copy": "Protocols, audited partners and clear communication before, during and after."
+          "copy": "The surprise is never where it matters: budget, limits, logistics, providers, and support are all clear from the start."
         },
         {
           "title": "Tripper community",
-          "copy": "Real stories, referrals and shared learnings that elevate every trip."
+          "copy": "Our Trippers aren't campaign influencers. They are local curators and partners who turn territorial knowledge into Routes with Soul."
         }
       ],
       "sectionTitle": "Why trust Randomtrip"

@@ -1809,8 +1809,7 @@ export interface MarketingDictionary {
       stepLabel: string;
     };
     trust: {
-      footnote: string;
-      items: Array<{ label: string; prefix?: string; value: string }>;
+      items: Array<{ title: string; description: string }>;
       sectionTitle: string;
     };
     presentTrippers: {
