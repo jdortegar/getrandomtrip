@@ -276,6 +276,7 @@ export interface DashboardDict {
 
 export interface TripperExperiencesDict {
   title: string;
+  eyebrow: string;
   description: string;
   newExperience: string;
   back: string;
@@ -283,6 +284,9 @@ export interface TripperExperiencesDict {
     allTypes: string;
     allStatuses: string;
     allLevels: string;
+    clearFilters: string;
+    of: string;
+    count: string;
   };
   table: {
     actions: string;
@@ -294,6 +298,8 @@ export interface TripperExperiencesDict {
     duration: string;
     capacity: string;
     edit: string;
+    publish: string;
+    unpublish: string;
     delete: string;
     deleteConfirm: string;
   };
@@ -910,11 +916,14 @@ export interface AdminPagesDict {
       actions: string;
     };
     status: {
-      active: string;
-      inactive: string;
+      ACTIVE: string;
+      DRAFT: string;
+      INACTIVE: string;
+      ARCHIVED: string;
+      PENDING_REVIEW: string;
+      PENDING_TRIPPER_REVIEW: string;
       featured: string;
       normal: string;
-      pendingReview: string;
     };
     actions: {
       disable: string;

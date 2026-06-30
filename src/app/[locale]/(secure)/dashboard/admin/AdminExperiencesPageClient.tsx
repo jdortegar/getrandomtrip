@@ -4,35 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
 import type { AdminExperience } from "@/lib/admin/types";
 import { useDictionary } from "@/hooks/useDictionary";
 
-const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-800 border-green-200",
-  INACTIVE: "bg-gray-100 text-gray-700 border-gray-200",
-  DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
-  PENDING_REVIEW: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  PENDING_TRIPPER_REVIEW: "bg-purple-100 text-purple-800 border-purple-200",
-  ARCHIVED: "bg-red-100 text-red-800 border-red-200",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  ACTIVE: "Active",
-  INACTIVE: "Inactive",
-  DRAFT: "Draft",
-  PENDING_REVIEW: "Pending review",
-  PENDING_TRIPPER_REVIEW: "Tripper reviewing",
-  ARCHIVED: "Archived",
-};
-
-function StatusBadge({ status }: { status: string }) {
-  const cls = STATUS_STYLES[status] ?? "bg-gray-100 text-gray-700 border-gray-200";
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}>
-      {STATUS_LABEL[status] ?? status}
-    </span>
-  );
-}
 
 type Tab = "all" | "pending";
 
@@ -203,7 +178,14 @@ export function AdminExperiencesPageClient() {
                       </p>
                     </td>
                     <td className="px-4 py-4">
-                      <StatusBadge status={item.status} />
+                      <ExperienceStatusBadge
+                        status={item.status}
+                        label={
+                          copy.status[
+                            item.status as keyof typeof copy.status
+                          ] ?? item.status
+                        }
+                      />
                       <p className="text-xs text-neutral-400 mt-1">
                         {item.isFeatured ? st.featured : st.normal}
                       </p>

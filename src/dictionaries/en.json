@@ -230,11 +230,14 @@
         "actions": "Actions"
       },
       "status": {
-        "active": "Active",
-        "inactive": "Inactive",
+        "ACTIVE": "Active",
+        "DRAFT": "Draft",
+        "INACTIVE": "Inactive",
+        "ARCHIVED": "Archived",
+        "PENDING_REVIEW": "Pending review",
+        "PENDING_TRIPPER_REVIEW": "Tripper reviewing",
         "featured": "Featured",
-        "normal": "Normal",
-        "pendingReview": "Pending review"
+        "normal": "Normal"
       },
       "actions": {
         "disable": "Disable",
@@ -3241,13 +3244,17 @@
   },
   "tripperExperiences": {
     "title": "MY EXPERIENCES",
+    "eyebrow": "Your catalog",
     "description": "Manage your travel offers and keep your catalog up to date.",
     "newExperience": "New Experience",
     "back": "Back to My Experiences",
     "filters": {
       "allTypes": "All types",
       "allStatuses": "All statuses",
-      "allLevels": "All levels"
+      "allLevels": "All levels",
+      "clearFilters": "Clear filters",
+      "of": "of",
+      "count": "experiences"
     },
     "table": {
       "actions": "Actions",
@@ -3259,6 +3266,8 @@
       "duration": "Duration",
       "capacity": "Capacity",
       "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
       "delete": "Delete",
       "deleteConfirm": "Delete this experience? This action cannot be undone."
     },
