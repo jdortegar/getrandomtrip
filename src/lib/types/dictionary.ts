@@ -107,13 +107,26 @@ export interface TripperBlogComposerDict {
 
 export interface TripperBlogsDict {
   composer: TripperBlogComposerDict;
-  empty: {
-    message: string;
-    cta: string;
+  description: string;
+  emptyState: {
+    createFirst: string;
+    noMatch: string;
+    noPosts: string;
   };
-  header: {
-    title: string;
-    description: string;
+  eyebrow: string;
+  filters: {
+    allFormats: string;
+    allStatuses: string;
+    allTravelTypes: string;
+    clearFilters: string;
+    count: string;
+    of: string;
+  };
+  format: {
+    article: string;
+    mixed: string;
+    photo: string;
+    video: string;
   };
   newPost: string;
   previewPage: {
@@ -122,13 +135,24 @@ export interface TripperBlogsDict {
     emptyBody: string;
     loadError: string;
   };
-  row: {
-    edit: string;
-    view: string;
-    published: string;
-    draft: string;
-    updatedAt: string;
+  status: {
+    DRAFT: string;
+    PUBLISHED: string;
   };
+  table: {
+    actions: string;
+    delete: string;
+    deleteConfirm: string;
+    edit: string;
+    format: string;
+    post: string;
+    publish: string;
+    status: string;
+    unpublish: string;
+    updated: string;
+    view: string;
+  };
+  title: string;
 }
 
 export interface TripperDashboardDict {
@@ -271,6 +295,58 @@ export interface DashboardDict {
     viewDetails: string;
     revealCountdown: string;
     revealDestination: string;
+  };
+}
+
+export interface TripperReviewsDict {
+  title: string;
+  eyebrow: string;
+  description: string;
+  kpis: {
+    averageRating: string;
+    detractorsCaption: string;
+    nps: string;
+    promoters: string;
+    totalReviews: string;
+  };
+  list: {
+    title: string;
+  };
+  emptyState: {
+    description: string;
+    title: string;
+  };
+}
+
+export interface TripperEarningsDict {
+  title: string;
+  eyebrow: string;
+  description: string;
+  exportCsv: string;
+  kpis: {
+    bookings: string;
+    currentCycle: string;
+    pendingPayout: string;
+    totalEarned: string;
+  };
+  status: {
+    paid: string;
+    pending: string;
+    processing: string;
+  };
+  table: {
+    base: string;
+    bonus: string;
+    bookings: string;
+    month: string;
+    payout: string;
+    status: string;
+    title: string;
+    total: string;
+  };
+  emptyState: {
+    description: string;
+    title: string;
   };
 }
 
@@ -993,9 +1069,14 @@ export interface AdminPagesDict {
 
 export interface NotificationsDict {
   pageTitle: string;
+  eyebrow: string;
+  description: string;
   emptyState: string;
+  emptyStateTitle: string;
   markRead: string;
+  markAllRead: string;
   unreadBadge: string;
+  unreadCount: string;
   types: Record<string, string>;
 }
 
@@ -2094,6 +2175,8 @@ export interface MarketingDictionary {
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
   tripperExperiences: TripperExperiencesDict;
+  tripperEarnings: TripperEarningsDict;
+  tripperReviews: TripperReviewsDict;
   unauthorized: UnauthorizedPageDict;
   notifications: NotificationsDict;
   tripReview: TripReviewDict;

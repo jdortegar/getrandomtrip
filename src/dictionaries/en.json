@@ -3035,13 +3035,44 @@
       "travelTypeLabel": "Traveler type",
       "unsaved": "Unsaved changes"
     },
-    "header": {
-      "title": "My Posts",
-      "description": "Manage your blog and share your experiences"
+    "title": "MY POSTS",
+    "eyebrow": "Your content",
+    "description": "Manage your blog and share your experiences",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allFormats": "All formats",
+      "allTravelTypes": "All types",
+      "clearFilters": "Clear filters",
+      "of": "of",
+      "count": "posts"
     },
-    "empty": {
-      "message": "You have no posts yet. Time to tell your first story!",
-      "cta": "Create my first post"
+    "format": {
+      "article": "Article",
+      "photo": "Photo",
+      "video": "Video",
+      "mixed": "Mixed"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published"
+    },
+    "table": {
+      "actions": "Actions",
+      "post": "Post",
+      "format": "Format",
+      "status": "Status",
+      "updated": "Updated",
+      "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "delete": "Delete",
+      "view": "View",
+      "deleteConfirm": "Delete this post? This action cannot be undone."
+    },
+    "emptyState": {
+      "noPosts": "You have no posts yet.",
+      "noMatch": "No posts match the filters.",
+      "createFirst": "Create my first post"
     },
     "newPost": "New Post",
     "previewPage": {
@@ -3049,13 +3080,6 @@
       "banner": "You are viewing a draft preview. The public post may look different.",
       "emptyBody": "This post has no body content yet.",
       "loadError": "Could not load this post for preview."
-    },
-    "row": {
-      "edit": "Edit",
-      "view": "View",
-      "published": "Published",
-      "draft": "Draft",
-      "updatedAt": "Updated"
     }
   },
   "tripperDashboard": {
@@ -3240,6 +3264,56 @@
       "viewDetails": "View Details",
       "revealCountdown": "Countdown",
       "revealDestination": "View Destination"
+    }
+  },
+  "tripperReviews": {
+    "title": "REVIEWS & NPS",
+    "eyebrow": "What your travelers say",
+    "description": "See your client reviews and your NPS score.",
+    "kpis": {
+      "averageRating": "Average rating",
+      "totalReviews": "Total reviews",
+      "nps": "NPS",
+      "promoters": "Promoters",
+      "detractorsCaption": "{count} detractors"
+    },
+    "list": {
+      "title": "Client reviews"
+    },
+    "emptyState": {
+      "title": "No reviews yet",
+      "description": "Reviews will show up here once clients complete their trips and rate their experience."
+    }
+  },
+  "tripperEarnings": {
+    "title": "MY EARNINGS",
+    "eyebrow": "Your income",
+    "description": "Review your commissions, bonuses, and payouts by month.",
+    "exportCsv": "Export CSV",
+    "kpis": {
+      "currentCycle": "Current cycle",
+      "totalEarned": "Total earned (6m)",
+      "pendingPayout": "Pending payout",
+      "bookings": "Bookings (6m)"
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "processing": "Processing"
+    },
+    "table": {
+      "title": "History (6 months)",
+      "month": "Month",
+      "bookings": "Bookings",
+      "base": "Base",
+      "bonus": "Bonus",
+      "total": "Total",
+      "status": "Status",
+      "payout": "Payout"
+    },
+    "emptyState": {
+      "title": "No earnings yet",
+      "description": "Once you complete bookings, your commissions will show up here."
     }
   },
   "tripperExperiences": {
@@ -3711,6 +3785,11 @@
   },
   "notifications": {
     "pageTitle": "Notifications",
+    "eyebrow": "Your activity",
+    "description": "Your latest notifications and alerts.",
+    "emptyStateTitle": "No notifications",
+    "markAllRead": "Mark all as read",
+    "unreadCount": "{count} unread",
     "emptyState": "You have no notifications yet.",
     "markRead": "Mark as read",
     "unreadBadge": "Unread",

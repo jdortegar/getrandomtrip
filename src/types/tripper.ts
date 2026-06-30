@@ -51,7 +51,7 @@ export interface Earning {
   baseCommissionUSD: number;
   bonusUSD: number;
   totalUSD: number;
-  status: "pending" | "paid";
+  status: "pending" | "paid" | "processing";
   payoutDate?: string;
 }
 

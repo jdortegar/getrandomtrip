@@ -3035,13 +3035,44 @@
       "travelTypeLabel": "Tipo de viajero",
       "unsaved": "Sin guardar"
     },
-    "header": {
-      "title": "Mis Posts",
-      "description": "Gestiona tu blog y comparte tus experiencias"
+    "title": "MIS POSTS",
+    "eyebrow": "Tu contenido",
+    "description": "Gestiona tu blog y comparte tus experiencias",
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allFormats": "Todos los formatos",
+      "allTravelTypes": "Todos los tipos",
+      "clearFilters": "Limpiar filtros",
+      "of": "de",
+      "count": "posts"
     },
-    "empty": {
-      "message": "Aún no tienes posts. ¡Es hora de contar tu primera historia!",
-      "cta": "Crear mi primer post"
+    "format": {
+      "article": "Artículo",
+      "photo": "Foto",
+      "video": "Video",
+      "mixed": "Mixto"
+    },
+    "status": {
+      "DRAFT": "Borrador",
+      "PUBLISHED": "Publicado"
+    },
+    "table": {
+      "actions": "Acciones",
+      "post": "Post",
+      "format": "Formato",
+      "status": "Estado",
+      "updated": "Actualizado",
+      "edit": "Editar",
+      "publish": "Publicar",
+      "unpublish": "Despublicar",
+      "delete": "Eliminar",
+      "view": "Ver",
+      "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer."
+    },
+    "emptyState": {
+      "noPosts": "Aún no tienes posts.",
+      "noMatch": "Ningún post coincide con los filtros.",
+      "createFirst": "Crear mi primer post"
     },
     "newPost": "Nuevo Post",
     "previewPage": {
@@ -3049,13 +3080,6 @@
       "banner": "Estás viendo una vista previa del borrador. El post público puede verse distinto.",
       "emptyBody": "Este post aún no tiene contenido en el cuerpo.",
       "loadError": "No se pudo cargar el post para la vista previa."
-    },
-    "row": {
-      "edit": "Editar",
-      "view": "Ver",
-      "published": "Publicado",
-      "draft": "Borrador",
-      "updatedAt": "Actualizado"
     }
   },
   "tripperDashboard": {
@@ -3240,6 +3264,56 @@
       "viewDetails": "Ver Detalles",
       "revealCountdown": "Cuenta Regresiva",
       "revealDestination": "Ver Destino"
+    }
+  },
+  "tripperReviews": {
+    "title": "RESEÑAS & NPS",
+    "eyebrow": "Lo que dicen tus viajeros",
+    "description": "Mira las reseñas de tus clientes y tu puntaje NPS.",
+    "kpis": {
+      "averageRating": "Rating promedio",
+      "totalReviews": "Total reseñas",
+      "nps": "NPS",
+      "promoters": "Promotores",
+      "detractorsCaption": "{count} detractores"
+    },
+    "list": {
+      "title": "Reseñas de clientes"
+    },
+    "emptyState": {
+      "title": "Aún no tienes reseñas",
+      "description": "Las reseñas aparecerán aquí cuando los clientes completen sus viajes y califiquen su experiencia."
+    }
+  },
+  "tripperEarnings": {
+    "title": "MIS GANANCIAS",
+    "eyebrow": "Tus ingresos",
+    "description": "Revisa tus comisiones, bonos y pagos por mes.",
+    "exportCsv": "Exportar CSV",
+    "kpis": {
+      "currentCycle": "Ciclo actual",
+      "totalEarned": "Total ganado (6m)",
+      "pendingPayout": "Pago pendiente",
+      "bookings": "Reservas (6m)"
+    },
+    "status": {
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "processing": "Procesando"
+    },
+    "table": {
+      "title": "Histórico (6 meses)",
+      "month": "Mes",
+      "bookings": "Reservas",
+      "base": "Base",
+      "bonus": "Bonus",
+      "total": "Total",
+      "status": "Estado",
+      "payout": "Pago"
+    },
+    "emptyState": {
+      "title": "Aún no hay ganancias",
+      "description": "Cuando completes reservas, tus comisiones aparecerán aquí."
     }
   },
   "tripperExperiences": {
@@ -3711,9 +3785,14 @@
   },
   "notifications": {
     "pageTitle": "Notificaciones",
+    "eyebrow": "Tu actividad",
+    "description": "Tus últimas notificaciones y alertas.",
     "emptyState": "No tenés notificaciones todavía.",
+    "emptyStateTitle": "Sin notificaciones",
     "markRead": "Marcar como leída",
+    "markAllRead": "Marcar todas como leídas",
     "unreadBadge": "Sin leer",
+    "unreadCount": "{count} sin leer",
     "types": {
       "EXPERIENCE_APPROVED": "Experiencia aprobada",
       "EXPERIENCE_REJECTED": "Experiencia rechazada",

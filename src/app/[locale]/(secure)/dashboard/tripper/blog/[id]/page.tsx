@@ -89,7 +89,7 @@ function EditBlogContent() {
           </div>
           <div className="py-12 text-center">
             <Button asChild variant="link">
-              <Link href={pathForLocale(locale as Locale, "/dashboard/tripper/blogs")}>
+              <Link href={pathForLocale(locale as Locale, "/dashboard/tripper/blog")}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {blogsCopy.composer.editNotFound.backToList}
               </Link>
