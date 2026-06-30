@@ -2176,18 +2176,18 @@
     },
     "page": {
       "title": "Thank you for your purchase!",
-      "body": "Your GetRandomtrip surprise adventure is confirmed.",
+      "body": "Your Randomtrip surprise adventure is confirmed.",
       "messageApproved": "Payment approved. Your surprise trip is confirmed.",
       "messagePending": "Payment status: {status}. Check your email for confirmation.",
       "messageGeneric": "Thank you for your purchase. If you just paid, your trip is being confirmed.",
       "errorTitle": "Error loading order",
-      "metaDescription": "Your GetRandomtrip purchase is confirmed.",
+      "metaDescription": "Your Randomtrip purchase is confirmed.",
       "retry": "Retry",
       "ctaReveal": "Reveal my destination",
       "ctaBackToJourney": "Back to journey",
       "ctaHome": "Go to home",
       "ctaMyTrips": "Go to my trips",
-      "calendarEventDescription": "Your GetRandomtrip surprise escape. Destination revealed 48 hours before departure.",
+      "calendarEventDescription": "Your Randomtrip surprise escape. Destination revealed 48 hours before departure.",
       "xsedTitle": "You've got your XSED",
       "xsedBody": "You'll receive an email with everything you need for your escape.",
       "xsedTripTypeLabel": "Trip type",
@@ -2201,7 +2201,7 @@
   "paymentFailure": {
     "title": "Payment rejected",
     "body": "The payment could not be completed. You can try again or choose another payment method.",
-    "metaDescription": "Payment was rejected. Try again on GetRandomtrip.",
+    "metaDescription": "Payment was rejected. Try again on Randomtrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">REJECTED</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
@@ -2211,7 +2211,7 @@
   "paymentPending": {
     "title": "Payment pending",
     "body": "Your payment is being processed. Check your email for confirmation.",
-    "metaDescription": "Your payment is pending. GetRandomtrip.",
+    "metaDescription": "Your payment is pending. Randomtrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
@@ -2248,10 +2248,10 @@
   },
   "legalCookies": {
     "meta": {
-      "description": "How GetRandomtrip uses cookies and similar technologies on our website and services.",
-      "openGraphDescription": "Cookie policy for GetRandomtrip.",
-      "openGraphTitle": "Cookie Policy | GetRandomtrip",
-      "title": "Cookie Policy | GetRandomtrip"
+      "description": "How Randomtrip uses cookies and similar technologies on our website and services.",
+      "openGraphDescription": "Cookie policy for Randomtrip.",
+      "openGraphTitle": "Cookie Policy | Randomtrip",
+      "title": "Cookie Policy | Randomtrip"
     },
     "hero": {
       "description": "Transparency about cookies and your choices.",
@@ -2262,7 +2262,7 @@
       {
         "title": "What this policy covers",
         "paragraphs": [
-          "This Cookie Policy explains how GetRandomtrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
+          "This Cookie Policy explains how Randomtrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
         ]
       },
       {
@@ -2273,7 +2273,7 @@
       },
       {
         "title": "Cookies we use",
-        "listIntro": "Depending on how you use GetRandomtrip, we may use:",
+        "listIntro": "Depending on how you use Randomtrip, we may use:",
         "listItems": [
           "Strictly necessary cookies: required for security, authentication, session continuity, load balancing, and fraud prevention (for example keeping you signed in or remembering your locale).",
           "Functional cookies: remember choices such as language, journey progress where designed into the product, and UI preferences.",
@@ -2315,10 +2315,10 @@
   },
   "legalPrivacy": {
     "meta": {
-      "description": "How GetRandomtrip collects, uses, and protects your personal data when you plan and book surprise trips.",
-      "openGraphDescription": "Privacy policy for GetRandomtrip travelers and trippers.",
-      "openGraphTitle": "Privacy Policy | GetRandomtrip",
-      "title": "Privacy Policy | GetRandomtrip"
+      "description": "How Randomtrip collects, uses, and protects your personal data when you plan and book surprise trips.",
+      "openGraphDescription": "Privacy policy for Randomtrip travelers and trippers.",
+      "openGraphTitle": "Privacy Policy | Randomtrip",
+      "title": "Privacy Policy | Randomtrip"
     },
     "hero": {
       "description": "Your privacy matters when you trust us with your trip.",
@@ -2329,7 +2329,7 @@
       {
         "title": "Who we are",
         "paragraphs": [
-          "GetRandomtrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
+          "Randomtrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
         ]
       },
       {
@@ -2395,7 +2395,7 @@
       {
         "title": "Children",
         "paragraphs": [
-          "GetRandomtrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
+          "Randomtrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
         ]
       },
       {
@@ -2414,13 +2414,13 @@
   },
   "legalRefund": {
     "meta": {
-      "description": "Refunds, cancellations, and chargebacks for GetRandomtrip purchases and surprise-travel experiences.",
-      "openGraphDescription": "Refund and cancellation policy for GetRandomtrip.",
-      "openGraphTitle": "Refund Policy | GetRandomtrip",
-      "title": "Refund Policy | GetRandomtrip"
+      "description": "Refunds, cancellations, and chargebacks for Randomtrip purchases and surprise-travel experiences.",
+      "openGraphDescription": "Refund and cancellation policy for Randomtrip.",
+      "openGraphTitle": "Refund Policy | Randomtrip",
+      "title": "Refund Policy | Randomtrip"
     },
     "hero": {
-      "description": "How refunds and cancellations work for trips purchased through GetRandomtrip.",
+      "description": "How refunds and cancellations work for trips purchased through Randomtrip.",
       "eyebrow": "LEGAL",
       "title": "Refund Policy"
     },
@@ -2428,13 +2428,13 @@
       {
         "title": "Overview",
         "paragraphs": [
-          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through GetRandomtrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
+          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through Randomtrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
         ]
       },
       {
         "title": "Nature of the service",
         "paragraphs": [
-          "Many GetRandomtrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
+          "Many Randomtrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
         ]
       },
       {
@@ -2447,7 +2447,7 @@
         ]
       },
       {
-        "title": "Changes or cancellations by the Tripper or GetRandomtrip",
+        "title": "Changes or cancellations by the Tripper or Randomtrip",
         "paragraphs": [
           "If a Tripper cannot deliver the experience due to force majeure, supplier failure, or operational reasons, we will offer a rescheduled date, a comparable alternative where feasible, or a refund of amounts paid for the undelivered portion, consistent with applicable law and the terms of sale."
         ]
@@ -2486,10 +2486,10 @@
   },
   "legalTerms": {
     "meta": {
-      "description": "Terms of Service for using GetRandomtrip to discover and book surprise-travel experiences.",
-      "openGraphDescription": "Terms of Service for GetRandomtrip.",
-      "openGraphTitle": "Terms of Service | GetRandomtrip",
-      "title": "Terms of Service | GetRandomtrip"
+      "description": "Terms of Service for using Randomtrip to discover and book surprise-travel experiences.",
+      "openGraphDescription": "Terms of Service for Randomtrip.",
+      "openGraphTitle": "Terms of Service | Randomtrip",
+      "title": "Terms of Service | Randomtrip"
     },
     "hero": {
       "description": "Rules for using our platform, booking trips, and working with Trippers.",
@@ -2500,13 +2500,13 @@
       {
         "title": "Agreement",
         "paragraphs": [
-          "By accessing or using GetRandomtrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
+          "By accessing or using Randomtrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
         ]
       },
       {
-        "title": "What GetRandomtrip provides",
+        "title": "What Randomtrip provides",
         "paragraphs": [
-          "GetRandomtrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; GetRandomtrip facilitates discovery, booking, communication, and payment processing."
+          "Randomtrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; Randomtrip facilitates discovery, booking, communication, and payment processing."
         ]
       },
       {
@@ -2521,7 +2521,7 @@
       },
       {
         "title": "Bookings, prices, and payments",
-        "listIntro": "When you purchase through GetRandomtrip:",
+        "listIntro": "When you purchase through Randomtrip:",
         "listItems": [
           "Prices are displayed in the currency shown at checkout unless stated otherwise.",
           "Payment is processed by Mercado Pago or another processor we designate; their terms and privacy policy also apply.",
@@ -2543,13 +2543,13 @@
       {
         "title": "Trippers and third parties",
         "paragraphs": [
-          "Trippers and local operators are independent parties. GetRandomtrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
+          "Trippers and local operators are independent parties. Randomtrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
         ]
       },
       {
         "title": "Intellectual property",
         "paragraphs": [
-          "Content on the Services (brand, design, text, graphics, video, software) is owned by GetRandomtrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
+          "Content on the Services (brand, design, text, graphics, video, software) is owned by Randomtrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
         ]
       },
       {
@@ -2561,13 +2561,13 @@
       {
         "title": "Limitation of liability",
         "paragraphs": [
-          "To the maximum extent permitted by applicable law, GetRandomtrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
+          "To the maximum extent permitted by applicable law, Randomtrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
         ]
       },
       {
         "title": "Indemnity",
         "paragraphs": [
-          "You will indemnify and hold harmless GetRandomtrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
+          "You will indemnify and hold harmless Randomtrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
         ]
       },
       {
@@ -2579,7 +2579,7 @@
       {
         "title": "Governing law and disputes",
         "paragraphs": [
-          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to GetRandomtrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
+          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to Randomtrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
         ]
       }
     ],

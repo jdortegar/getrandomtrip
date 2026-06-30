@@ -15,7 +15,7 @@ const copy = {
     preview: "¡Tu viaje fue completado! Esperamos que haya sido increíble.",
     heading: "¡Viaje completado!",
     body: (client: string) =>
-      `Hola ${client}, ¡tu aventura llegó a su fin! Esperamos que cada momento haya sido memorable y que hayas disfrutado al máximo tu experiencia GetRandomtrip.`,
+      `Hola ${client}, ¡tu aventura llegó a su fin! Esperamos que cada momento haya sido memorable y que hayas disfrutado al máximo tu experiencia Randomtrip.`,
     subtext:
       "Tu opinión nos importa mucho. ¿Qué tal si compartís tu experiencia con otros viajeros dejando una reseña?",
     cta: "DEJAR UNA RESEÑA",
@@ -24,7 +24,7 @@ const copy = {
     preview: "Your trip is complete! We hope it was incredible.",
     heading: "Trip completed!",
     body: (client: string) =>
-      `Hi ${client}, your adventure has come to an end! We hope every moment was memorable and that you fully enjoyed your GetRandomtrip experience.`,
+      `Hi ${client}, your adventure has come to an end! We hope every moment was memorable and that you fully enjoyed your Randomtrip experience.`,
     subtext:
       "Your opinion matters to us. How about sharing your experience with other travelers by leaving a review?",
     cta: "LEAVE A REVIEW",

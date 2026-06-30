@@ -12,19 +12,19 @@ const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
-    preview: "¡Tu experiencia fue aprobada! Ya está disponible en GetRandomtrip.",
+    preview: "¡Tu experiencia fue aprobada! Ya está disponible en Randomtrip.",
     heading: "¡Felicitaciones!",
     body: (tripper: string, title: string) =>
-      `Hola ${tripper}, tu experiencia "${title}" fue aprobada y ya está disponible para los viajeros en GetRandomtrip.`,
+      `Hola ${tripper}, tu experiencia "${title}" fue aprobada y ya está disponible para los viajeros en Randomtrip.`,
     subtext:
       "Los clientes ya pueden descubrirla y reservarla. ¡Gracias por compartir tu pasión por el viaje!",
     cta: "VER MIS EXPERIENCIAS",
   },
   en: {
-    preview: "Your experience was approved! It's now live on GetRandomtrip.",
+    preview: "Your experience was approved! It's now live on Randomtrip.",
     heading: "Congratulations!",
     body: (tripper: string, title: string) =>
-      `Hi ${tripper}, your experience "${title}" has been approved and is now live for travelers on GetRandomtrip.`,
+      `Hi ${tripper}, your experience "${title}" has been approved and is now live for travelers on Randomtrip.`,
     subtext:
       "Clients can now discover and book it. Thank you for sharing your passion for travel!",
     cta: "VIEW MY EXPERIENCES",

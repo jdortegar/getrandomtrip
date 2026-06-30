@@ -70,7 +70,7 @@ export default function EmailLayout({
             <Img
               src={`${BASE_URL}/assets/logos/logo_getrandomtrip_1.png`}
               width={160}
-              alt="GetRandomtrip"
+              alt="Randomtrip"
               style={{ display: "block", margin: "0 auto" }}
             />
           </Section>

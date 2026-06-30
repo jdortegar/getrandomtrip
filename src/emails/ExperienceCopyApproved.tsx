@@ -15,7 +15,7 @@ const copy = {
       `El tripper aprobó tus cambios para "${title}". La experiencia ya está activa.`,
     heading: "¡Cambios aprobados!",
     body: (adminName: string, tripperName: string, title: string) =>
-      `Hola ${adminName}, ${tripperName} aprobó los cambios que propusiste para la experiencia "${title}". La experiencia ya está activa en GetRandomtrip.`,
+      `Hola ${adminName}, ${tripperName} aprobó los cambios que propusiste para la experiencia "${title}". La experiencia ya está activa en Randomtrip.`,
     subtext:
       "Los clientes ya pueden descubrir y reservar esta experiencia.",
   },
@@ -24,7 +24,7 @@ const copy = {
       `The tripper approved your changes for "${title}". The experience is now live.`,
     heading: "Changes Approved!",
     body: (adminName: string, tripperName: string, title: string) =>
-      `Hi ${adminName}, ${tripperName} approved the changes you proposed for the experience "${title}". The experience is now live on GetRandomtrip.`,
+      `Hi ${adminName}, ${tripperName} approved the changes you proposed for the experience "${title}". The experience is now live on Randomtrip.`,
     subtext: "Clients can now discover and book this experience.",
   },
 };
