@@ -33,6 +33,10 @@ function normalizeAppRoleToken(
   return null;
 }
 
+export function getAppRoles(subject: RoleSubject): AppRole[] {
+  return appRolesFromSubject(subject);
+}
+
 function appRolesFromSubject(subject: RoleSubject): AppRole[] {
   if (!subject) return [];
 

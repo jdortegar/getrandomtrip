@@ -93,11 +93,11 @@ export function TripperSettingsHeroCard({
               style={{ backgroundImage: `url(${formData.heroImage})` }}
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-700">
+            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-gray-900 to-gray-700">
               <Camera className="h-16 w-16 text-white/30" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
           {isEditing && (
             <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity hover:bg-black/40 hover:opacity-100">
               <span className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-medium text-white">

@@ -1,6 +1,7 @@
 import { Calendar, DollarSign, Plane, Star } from "lucide-react";
-import type { DashboardCopy, DashboardStats } from "./types";
+import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import type { DashboardCopy, DashboardStats } from "./types";
 
 interface DashboardStatsGridProps {
   copy: DashboardCopy;
@@ -9,62 +10,72 @@ interface DashboardStatsGridProps {
 
 export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
   const statCards: Array<{
+    gold?: boolean;
     icon: LucideIcon;
-    iconClassName: string;
     key: string;
     label: string;
     value: string | number;
   }> = [
     {
       icon: Plane,
-      iconClassName: "text-light-blue",
       key: "total-trips",
       label: copy.stats.totalTrips,
       value: stats.totalTrips,
     },
     {
       icon: Calendar,
-      iconClassName: "text-light-blue",
       key: "upcoming-trips",
       label: copy.stats.upcomingTrips,
       value: stats.upcomingTrips,
     },
     {
       icon: DollarSign,
-      iconClassName: "text-light-blue",
       key: "total-spent",
       label: copy.stats.totalSpent,
       value: `$${(stats.totalSpent ?? 0).toFixed(0)}`,
     },
     {
+      gold: true,
       icon: Star,
-      iconClassName: "text-light-blue",
       key: "average-rating",
       label: copy.stats.averageRating,
-      value:
-        stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : "—",
+      value: stats.averageRating > 0 ? (stats.averageRating ?? 0).toFixed(1) : "—",
     },
   ];
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       {statCards.map((card) => {
         const Icon = card.icon;
         return (
           <div
-            className="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100"
+            className="flex flex-col gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200"
             key={card.key}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="mb-1 text-sm font-medium text-neutral-500">
-                  {card.label}
-                </p>
-                <p className="font-barlow-condensed font-bold text-4xl text-gray-900">
-                  {card.value}
-                </p>
-              </div>
-              <Icon className={`h-10 w-10 ${card.iconClassName}`} />
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                {card.label}
+              </p>
+              <span
+                className={cn(
+                  "grid h-10 w-10 shrink-0 place-items-center rounded-full",
+                  card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "h-5 w-5",
+                    card.gold ? "text-yellow-500" : "text-light-blue",
+                  )}
+                  strokeWidth={1.8}
+                />
+              </span>
+            </div>
+            <div className="flex items-stretch gap-3.5">
+              <span className="w-1 rounded-full bg-yellow-400" />
+              <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-neutral-900">
+                {card.value}
+              </p>
             </div>
           </div>
         );

@@ -25,7 +25,7 @@
   },
   "navbarProfile": {
     "ariaOpenProfileMenu": "Abrir menú de perfil",
-    "dashboard": "Bitácoras de Viajes",
+    "dashboard": "Panel de Control",
     "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
@@ -3236,6 +3236,63 @@
         "eyebrow": "Compartido con todos los roles",
         "heading": "Configuración de Cuenta"
       }
+    }
+  },
+  "clientDashboard": {
+    "home": {
+      "eyebrow": "Este mes",
+      "heading": "Tu resumen"
+    },
+    "nav": {
+      "dashboard": "Mi panel",
+      "trips": "Mis viajes",
+      "reviews": "Mis reseñas",
+      "notifications": "Notificaciones",
+      "settings": "Configuración"
+    },
+    "pageHeadings": {
+      "dashboard": {
+        "title": "Mi panel",
+        "description": "Resumen de tus estadísticas y pagos pendientes"
+      },
+      "trips": {
+        "title": "Mis viajes",
+        "description": "Próximas aventuras y viajes completados"
+      },
+      "reviews": {
+        "title": "Mis reseñas",
+        "description": "Valoraciones que dejaste en tus viajes"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "description": "Novedades sobre tus reservas y viajes"
+      },
+      "settings": {
+        "title": "Configuración",
+        "description": "Tu cuenta y preferencias de viaje"
+      }
+    },
+    "trips": {
+      "description": "Reservas próximas e historial de viajes completados",
+      "eyebrow": "Inventario",
+      "filterAll": "Todos",
+      "filterCompleted": "Completados",
+      "filterUpcoming": "Próximos",
+      "of": "de",
+      "title": "Todos tus viajes",
+      "tripsCount": "viajes"
+    },
+    "reviews": {
+      "eyebrow": "Valoraciones",
+      "title": "Tus reseñas",
+      "description": "Viajes completados que ya valoraste",
+      "kpis": {
+        "averageRating": "Promedio dado",
+        "totalReviewed": "Viajes valorados"
+      },
+      "listTitle": "Historial de valoraciones",
+      "emptyTitle": "Sin reseñas todavía",
+      "emptyDescription": "Cuando completes un viaje y dejes una valoración, aparecerá aquí."
     }
   },
   "dashboard": {

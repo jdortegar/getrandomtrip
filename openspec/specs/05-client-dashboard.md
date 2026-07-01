@@ -1,8 +1,87 @@
 # Feature Spec: Client Dashboard
 
 **Priority:** 5 — Post-booking client experience  
-**Routes:** `/dashboard`, `/dashboard/trips/[id]`, `/account`, `/trips/[id]` (redirect shim)  
-**Last audited:** 2026-06-22
+**Routes:** `/dashboard/client`, `/dashboard/client/trips`, `/dashboard/client/reviews`, `/dashboard/client/notifications`, `/dashboard/client/settings`, `/dashboard/trips/[id]`, `/account`, `/trips/[id]` (redirect shim)  
+**Last audited:** 2026-06-30
+
+---
+
+## Architecture: Tabbed Shell
+
+The client dashboard lives under `/dashboard/client/*` and uses the shared `DashboardRoleShell` — a horizontal tab strip driven by `clientNav` config. Legacy routes redirect:
+
+- `/dashboard` → `/dashboard/client`
+- `/dashboard/settings` → `/dashboard/client/settings`
+
+### Requirement: Client route segment
+
+The client dashboard SHALL live under `/dashboard/client/*`.
+
+| Tab | Route |
+|-----|-------|
+| Home | `/dashboard/client` |
+| My Trips | `/dashboard/client/trips` |
+| My Reviews | `/dashboard/client/reviews` |
+| Notifications | `/dashboard/client/notifications` |
+| Settings | `/dashboard/client/settings` |
+
+Trip detail pages remain at `/dashboard/trips/[id]/*` outside the client tab shell.
+
+### Requirement: Client home content
+
+The client home tab SHALL show a summary dashboard:
+- KPI stat cards (total trips, upcoming, completed, total spent, average rating)
+- Unpaid trips alert
+- Upcoming trips panel (max 3)
+- Quick actions
+
+The home tab SHALL NOT include the full trips grid or `HeaderHero`.
+
+### Requirement: Client trips tab
+
+The trips tab SHALL render the full trips grid for all paid/approved trips.
+
+### Requirement: Client reviews tab (v1)
+
+The reviews tab SHALL display:
+- KPIs: average rating given, trips reviewed count
+- List of completed trips where `customerRating` is set
+
+Data source: existing trips fetch (`getTrips()` or server equivalent).
+
+### Requirement: Client notifications tab
+
+The notifications tab SHALL list notifications with `audience=CLIENT`, ordered by `createdAt desc`.
+
+Clicking a notification with `tripRequestId` metadata SHALL navigate to `/dashboard/trips/[id]`.
+
+### Requirement: Client settings tab
+
+The settings tab SHALL render `AccountSettingsPanel` with `role="client"` inside the tab shell (no `HeaderHero`).
+
+---
+
+## Requirement: Strict segment guards
+
+Each dashboard role layout SHALL verify strict role membership:
+- `/dashboard/client/*` — any authenticated user with a known role
+- `/dashboard/tripper/*` — user MUST have `tripper` in `roles[]`
+- `/dashboard/admin/*` — user MUST have `admin` in `roles[]`
+
+Admin god-mode (`hasRoleAccess` promoting admin to all roles) SHALL NOT apply to dashboard layout guards.
+
+Redirect target SHALL follow priority: admin > tripper > client.
+
+---
+
+## Requirement: Navbar profile menu
+
+The navbar profile dropdown SHALL contain:
+- Dashboard → `/dashboard/client`
+- Tripper OS → `/dashboard/tripper` (if tripper role)
+- Admin → `/dashboard/admin` (if admin role)
+
+The "Edit profile" menu item SHALL be removed. Settings are accessed via dashboard tabs.
 
 ---
 
@@ -10,7 +89,11 @@
 
 What works end-to-end today:
 
-- **`/dashboard`** — Stats grid, `UnpaidTripsAlert` (pay/edit/delete actions), `UpcomingTripsPanel` (CONFIRMED + REVEALED trips, capped at 3), `FinancialSummary`, `NotificationsPanel`, `DashboardSkeleton`. All data from `/api/trips` + `/api/payments`.
+- **`/dashboard/client`** — Tabbed shell with 5 tabs (Home, My Trips, My Reviews, Notifications, Settings). Home shows KPI stat cards, `UnpaidTripsAlert`, `UpcomingTripsPanel` (max 3), quick actions.
+- **`/dashboard/client/trips`** — Full trips grid for all paid/approved trips.
+- **`/dashboard/client/reviews`** — KPI cards + list of completed trips with `customerRating`.
+- **`/dashboard/client/notifications`** — Notifications with `audience=CLIENT`; click navigates to trip detail.
+- **`/dashboard/client/settings`** — `AccountSettingsPanel` with `role="client"`.
 - **`/dashboard/trips/[id]`** — Fetches trip via `/api/trips/[id]` (ownership-gated). Renders logistics, filters, addons, pricing, payment info, trip timeline. Destination reveal toggle works for REVEALED/COMPLETED trips. Not-found state works.
 - **Trip delete** — Working via `DELETE /api/trips/[id]`, confirm dialog, optimistic state update.
 - **`/account`** — All tabs work: Resumen, Personal (name/email/phone/address), Preferences (traveler type + tags), Security (password change). Avatar upload backed by `/api/upload`. All edits hit real endpoints.
@@ -21,8 +104,8 @@ What works end-to-end today:
 ## User Flows
 
 **Post-booking flow:**
-1. Pay → `/checkout/success` → primary CTA links to `/dashboard` ✅ (fixed)
-2. `/dashboard` → see trip in Upcoming panel → click "Ver detalles" → `/dashboard/trips/[id]`
+1. Pay → `/checkout/success` → primary CTA links to `/dashboard/client` ✅
+2. `/dashboard/client` → see trip in Upcoming panel → click "Ver detalles" → `/dashboard/trips/[id]`
 3. View logistics (origin city, dates, traveler count, transport, filters, addons, pricing)
 4. Trip transitions to REVEALED → destination toggle appears → click to reveal → **no client notification is sent**
 5. "Ver Itinerario" button → links to `/${locale}/dashboard/trips/[id]/details` ✅ (fixed — route created)

@@ -2,7 +2,15 @@
 
 **Priority:** 3 — Content supply pipeline  
 **Routes:** `/dashboard/tripper`, `/dashboard/tripper/experiences/*`, `/dashboard/tripper/blogs/*`, `/dashboard/tripper/earnings`, `/dashboard/tripper/reviews`, `/dashboard/tripper/notifications`  
-**Last audited:** 2026-06-22
+**Last audited:** 2026-06-30
+
+---
+
+## Requirement: Tripper uses shared shell
+
+The tripper dashboard layout SHALL use the same shared `DashboardRoleShell` components as the client dashboard, driven by tripper nav/heading config (`tripperNav`, `tripperHeadings`).
+
+Existing tripper page content and routes SHALL remain unchanged. Visual parity with the pre-migration tripper dashboard SHALL be maintained.
 
 ---
 
