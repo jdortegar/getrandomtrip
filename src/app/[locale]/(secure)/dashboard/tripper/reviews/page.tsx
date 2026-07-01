@@ -40,6 +40,7 @@ export default async function TripperReviewsPage(props: {
     createdAt: new Date(review.createdAt).toISOString(),
     destination: review.destination,
     id: review.id,
+    isPublic: review.isPublic,
     packageTitle: review.packageTitle,
     rating: review.rating,
     title: review.title,

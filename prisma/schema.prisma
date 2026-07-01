@@ -463,6 +463,8 @@ enum NotificationType {
   BOOKING_COMPLETED
   BOOKING_CANCELLED
   PAYMENT_RECEIVED
+  REVIEW_SUBMITTED
+  REVIEW_APPROVED
 }
 
 enum NotificationAudience {

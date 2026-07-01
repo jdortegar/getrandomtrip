@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 // POST /api/reviews — public endpoint, token-based auth, no session required
 export async function POST(request: Request) {
@@ -18,7 +19,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Token is required" }, { status: 400 });
     }
 
-    // Lookup TripRequest by reviewToken
+    // Lookup TripRequest by reviewToken — include experience owner to derive
+    // tripperId for RandomTrips that use a tripper-owned experience.
     const tripRequest = await prisma.tripRequest.findUnique({
       where: { reviewToken: token },
       select: {
@@ -27,6 +29,12 @@ export async function POST(request: Request) {
         tripperId: true,
         reviewSubmittedAt: true,
         actualDestination: true,
+        experience: {
+          select: {
+            ownerId: true,
+            owner: { select: { roles: true } },
+          },
+        },
       },
     });
 
@@ -66,12 +74,40 @@ export async function POST(request: Request) {
       );
     }
 
-    // Transactionally create Review + update TripRequest.reviewSubmittedAt
+    // Derive effective tripperId: prefer TripRequest.tripperId; fall back to
+    // experience.ownerId when the owner is a TRIPPER (not ADMIN).
+    let effectiveTripperId = tripRequest.tripperId;
+    if (!effectiveTripperId && tripRequest.experience) {
+      const ownerIsTripper = tripRequest.experience.owner?.roles?.includes("TRIPPER");
+      if (ownerIsTripper) {
+        effectiveTripperId = tripRequest.experience.ownerId;
+      }
+    }
+
+    // Fetch tripper name for notification title (outside transaction — read-only)
+    const tripper = effectiveTripperId
+      ? await prisma.user.findUnique({
+          where: { id: effectiveTripperId },
+          select: { name: true },
+        })
+      : null;
+
+    const notificationTitle = tripper?.name
+      ? `Nueva reseña para ${tripper.name}`
+      : "Nueva reseña (RandomTrip)";
+
+    // Fetch all admin user ids for notifications
+    const admins = await prisma.user.findMany({
+      where: { roles: { has: "ADMIN" } },
+      select: { id: true },
+    });
+
+    // Transactionally create Review + update TripRequest + notify admins
     await prisma.$transaction(async (tx) => {
-      await tx.review.create({
+      const review = await tx.review.create({
         data: {
           userId: tripRequest.userId,
-          tripperId: tripRequest.tripperId ?? null,
+          tripperId: effectiveTripperId ?? null,
           tripRequestId: tripRequest.id,
           rating,
           title: title ?? undefined,
@@ -80,12 +116,26 @@ export async function POST(request: Request) {
           isApproved: false,
           isPublic: false,
         },
+        select: { id: true },
       });
 
       await tx.tripRequest.update({
         where: { id: tripRequest.id },
         data: { reviewSubmittedAt: new Date() },
       });
+
+      if (admins.length > 0) {
+        const notificationData: Prisma.NotificationCreateManyInput[] =
+          admins.map((admin) => ({
+            userId: admin.id,
+            type: "REVIEW_SUBMITTED" as const,
+            audience: "ADMIN" as const,
+            isRead: false,
+            title: notificationTitle,
+            metadata: { reviewId: review.id } as Prisma.InputJsonValue,
+          }));
+        await tx.notification.createMany({ data: notificationData });
+      }
     });
 
     return NextResponse.json({ success: true });

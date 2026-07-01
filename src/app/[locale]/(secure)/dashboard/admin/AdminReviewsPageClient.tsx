@@ -134,8 +134,12 @@ export function AdminReviewsPageClient() {
                     {review.rating}/5
                   </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-500">
-                    {review.isApproved ? st.approved : st.pending} ·{" "}
-                    {review.isPublic ? st.public : st.private}
+                    <span>{review.isApproved ? st.approved : st.pending}</span>
+                    {review.isApproved && (
+                      <span className="ml-1 text-neutral-400">
+                        · {review.isPublic ? st.public : st.private}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-500">
                     {review.tripperName ?? "Randomtrip"}
@@ -166,18 +170,21 @@ export function AdminReviewsPageClient() {
                       >
                         {review.isApproved ? act.unapprove : act.approve}
                       </button>
-                      <button
-                        className="cursor-pointer text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        disabled={savingId === review.id}
-                        onClick={() =>
-                          void updateReview(review.id, {
-                            isPublic: !review.isPublic,
-                          })
-                        }
-                        type="button"
-                      >
-                        {review.isPublic ? act.hide : act.publish}
-                      </button>
+                      {review.tripperName === null && review.isApproved && (
+                        <button
+                          className="cursor-pointer text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          disabled={savingId === review.id}
+                          onClick={() =>
+                            void updateReview(review.id, {
+                              isApproved: review.isApproved,
+                              isPublic: !review.isPublic,
+                            })
+                          }
+                          type="button"
+                        >
+                          {review.isPublic ? act.hide : act.publish}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

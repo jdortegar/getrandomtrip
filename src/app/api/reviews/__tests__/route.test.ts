@@ -7,6 +7,11 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     tripRequest: { findUnique: vi.fn(), update: vi.fn() },
     review: { create: vi.fn() },
+    notification: { createMany: vi.fn() },
+    user: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      findMany: vi.fn().mockResolvedValue([]),
+    },
     $transaction: vi.fn(),
   },
 }));
@@ -27,12 +32,16 @@ const baseTripRequest = {
   tripperId: "tripper-1",
   reviewToken: "valid-token-abc",
   reviewSubmittedAt: null,
+  experience: null,
 };
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 describe("POST /api/reviews", () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
+    // Re-apply defaults cleared by clearAllMocks
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   });
 
   it("returns 404 when token does not exist (Scenario 4.3)", async () => {

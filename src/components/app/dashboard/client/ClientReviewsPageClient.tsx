@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CheckCircle, Star } from "lucide-react";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
 import type { ClientDashboardDict } from "@/lib/types/dictionary";
 import { getTrips, type Trip } from "@/lib/utils/trips";
-import { cn } from "@/lib/utils";
 
 interface ClientReviewsPageClientProps {
   copy: ClientDashboardDict["reviews"];
@@ -41,21 +40,13 @@ export function ClientReviewsPageClient({
     };
   }, []);
 
-  const reviewedTrips = useMemo(
-    () =>
-      trips.filter(
-        (t) => t.status === "COMPLETED" && typeof t.customerRating === "number",
-      ),
-    [trips],
+  const completedWithToken = trips.filter(
+    (t) => t.status === "COMPLETED" && t.reviewToken,
   );
 
-  const averageRating = useMemo(() => {
-    if (reviewedTrips.length === 0) return 0;
-    return (
-      reviewedTrips.reduce((sum, t) => sum + (t.customerRating || 0), 0) /
-      reviewedTrips.length
-    );
-  }, [reviewedTrips]);
+  const pendingCount = completedWithToken.filter(
+    (t) => !t.reviewSubmittedAt,
+  ).length;
 
   if (loading) {
     return <DashboardSkeleton />;
@@ -76,18 +67,18 @@ export function ClientReviewsPageClient({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-            {copy.kpis.averageRating}
+            {copy.kpis.totalReviewed}
           </p>
           <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-gray-900">
-            {averageRating > 0 ? averageRating.toFixed(1) : "—"}
+            {completedWithToken.filter((t) => t.reviewSubmittedAt).length}
           </p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-            {copy.kpis.totalReviewed}
+            {copy.kpis.averageRating}
           </p>
           <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-gray-900">
-            {reviewedTrips.length}
+            {pendingCount > 0 ? pendingCount : "—"}
           </p>
         </div>
       </div>
@@ -98,7 +89,8 @@ export function ClientReviewsPageClient({
             {copy.listTitle}
           </h3>
         </div>
-        {reviewedTrips.length === 0 ? (
+
+        {completedWithToken.length === 0 ? (
           <div className="py-16 text-center">
             <Star className="mx-auto mb-4 h-12 w-12 text-neutral-300" />
             <p className="mb-2 text-sm font-semibold text-neutral-700">
@@ -108,29 +100,39 @@ export function ClientReviewsPageClient({
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {reviewedTrips.map((trip) => (
-              <li
-                key={trip.id}
-                className="flex items-center justify-between gap-4 px-5 py-4"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-neutral-900">
-                    {trip.type} · {trip.level}
-                  </p>
-                  <p className="mt-0.5 text-xs text-neutral-500">
-                    {new Date(trip.endDate).toLocaleDateString(dateLocale)}
-                  </p>
-                </div>
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700",
-                  )}
+            {completedWithToken.map((trip) => {
+              const submitted = Boolean(trip.reviewSubmittedAt);
+              return (
+                <li
+                  className="flex items-center justify-between gap-4 px-5 py-4"
+                  key={trip.id}
                 >
-                  <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                  {trip.customerRating?.toFixed(1)}
-                </span>
-              </li>
-            ))}
+                  <div>
+                    <p className="text-sm font-semibold text-neutral-900">
+                      {trip.type} · {trip.level}
+                    </p>
+                    <p className="mt-0.5 text-xs text-neutral-500">
+                      {new Date(trip.endDate).toLocaleDateString(dateLocale)}
+                    </p>
+                  </div>
+
+                  {submitted ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+                      <CheckCircle className="h-3.5 w-3.5" />
+                      Enviada
+                    </span>
+                  ) : (
+                    <a
+                      className="inline-flex items-center gap-1.5 rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold text-gray-900 transition-colors hover:bg-yellow-500"
+                      href={`/${locale}/review/${trip.reviewToken}`}
+                    >
+                      <Star className="h-3.5 w-3.5" />
+                      Dejar reseña
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
