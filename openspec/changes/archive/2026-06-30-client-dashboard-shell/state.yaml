@@ -1,0 +1,20 @@
+change: client-dashboard-shell
+status: archived
+artifact_store: openspec
+archived_at: "2026-06-30"
+phases:
+  explore: done
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+artifacts:
+  exploration: openspec/changes/client-dashboard-shell/exploration.md
+  proposal: openspec/changes/client-dashboard-shell/proposal.md
+  spec: openspec/changes/client-dashboard-shell/spec.md
+  design: openspec/changes/client-dashboard-shell/design.md
+  tasks: openspec/changes/client-dashboard-shell/tasks.md
+updated: 2026-06-30

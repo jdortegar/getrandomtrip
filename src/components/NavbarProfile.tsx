@@ -12,16 +12,12 @@ import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnre
 /** Minimal user shape for navbar (all optional). */
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
 
-const PROFILE_MENU_ITEM = {
-  href: "/dashboard/settings",
-};
-
 const TRIPPER_MENU_ITEM = {
   href: "/dashboard/tripper",
 };
 
 const DASHBOARD_MENU_ITEM = {
-  href: "/dashboard",
+  href: "/dashboard/client",
 };
 
 const ADMIN_MENU_ITEM = {
@@ -103,15 +99,6 @@ export function NavbarProfile({
           role="menu"
           className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
         >
-          <Link
-            className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-            href={PROFILE_MENU_ITEM.href}
-            onClick={close}
-            role="menuitem"
-          >
-            {labels.editProfile}
-          </Link>
-
           <Link
             className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
             href={DASHBOARD_MENU_ITEM.href}

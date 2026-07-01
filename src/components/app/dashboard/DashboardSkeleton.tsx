@@ -16,10 +16,10 @@ function StatCardSkeleton() {
 
 function PanelSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+    <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <Skeleton className="h-5 w-40" />
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="space-y-2 p-4 bg-gray-50 rounded-lg">
+        <div key={i} className="space-y-2 rounded-lg bg-gray-50 p-4">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-3 w-1/2" />
         </div>
@@ -28,7 +28,39 @@ function PanelSkeleton({ rows = 3 }: { rows?: number }) {
   );
 }
 
-export function DashboardSkeleton() {
+interface DashboardSkeletonProps {
+  variant?: "full" | "home" | "trips";
+}
+
+export function DashboardSkeleton({ variant = "full" }: DashboardSkeletonProps) {
+  if (variant === "home") {
+    return (
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+        <PanelSkeleton rows={2} />
+      </div>
+    );
+  }
+
+  if (variant === "trips") {
+    return (
+      <div className="space-y-8">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <PanelSkeleton rows={3} />
+        <PanelSkeleton rows={2} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Stats grid */}

@@ -5,16 +5,23 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const audienceParam = searchParams.get("audience");
+  const audience =
+    audienceParam === "CLIENT" || audienceParam === "TRIPPER"
+      ? audienceParam
+      : "TRIPPER";
+
   try {
     const count = await prisma.notification.count({
-      where: { userId: session.user.id, isRead: false, audience: "TRIPPER" },
+      where: { audience, isRead: false, userId: session.user.id },
     });
 
     return NextResponse.json({ count });

@@ -1,27 +1,19 @@
 export const dynamic = "force-dynamic";
 
-import SecureRouteWrapper from "@/components/auth/SecureRouteWrapper";
-import { TripperPageHeading } from "@/components/app/dashboard/tripper/TripperPageHeading";
-import { TripperNavTabs } from "@/components/app/dashboard/tripper/TripperNavTabs";
+import { StrictDashboardLayout } from "@/components/app/dashboard/shell/StrictDashboardLayout";
 
-export default function TripperLayout({
+export default async function TripperLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+
   return (
-    <SecureRouteWrapper requiredRole="tripper">
-      <>
-        <div className="bg-neutral-50 pt-8 sm:pt-16 pb-6 sm:pb-10">
-          <div className="rt-container">
-            <TripperPageHeading />
-          </div>
-          <div className="rt-container">
-            <TripperNavTabs />
-          </div>
-        </div>
-        {children}
-      </>
-    </SecureRouteWrapper>
+    <StrictDashboardLayout locale={locale} requiredRole="tripper" shellRole="tripper">
+      {children}
+    </StrictDashboardLayout>
   );
 }

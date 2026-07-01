@@ -25,7 +25,7 @@
   },
   "navbarProfile": {
     "ariaOpenProfileMenu": "Open profile menu",
-    "dashboard": "Travel Logs",
+    "dashboard": "Dashboard",
     "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
@@ -3236,6 +3236,63 @@
         "eyebrow": "Shared with all roles",
         "heading": "Account Settings"
       }
+    }
+  },
+  "clientDashboard": {
+    "home": {
+      "eyebrow": "This month",
+      "heading": "Your overview"
+    },
+    "nav": {
+      "dashboard": "My dashboard",
+      "trips": "My trips",
+      "reviews": "My reviews",
+      "notifications": "Notifications",
+      "settings": "Settings"
+    },
+    "pageHeadings": {
+      "dashboard": {
+        "title": "My dashboard",
+        "description": "Overview of your travel stats and pending payments"
+      },
+      "trips": {
+        "title": "My trips",
+        "description": "Upcoming adventures and your completed trips"
+      },
+      "reviews": {
+        "title": "My reviews",
+        "description": "Ratings you left on your trips"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Updates about your bookings and trips"
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Your account and travel preferences"
+      }
+    },
+    "trips": {
+      "description": "Upcoming bookings and completed travel history",
+      "eyebrow": "Inventory",
+      "filterAll": "All",
+      "filterCompleted": "Completed",
+      "filterUpcoming": "Upcoming",
+      "of": "of",
+      "title": "All your trips",
+      "tripsCount": "trips"
+    },
+    "reviews": {
+      "eyebrow": "Ratings",
+      "title": "Your reviews",
+      "description": "Completed trips you have rated",
+      "kpis": {
+        "averageRating": "Average given",
+        "totalReviewed": "Trips reviewed"
+      },
+      "listTitle": "Rating history",
+      "emptyTitle": "No reviews yet",
+      "emptyDescription": "When you complete a trip and leave a rating, it will show up here."
     }
   },
   "dashboard": {

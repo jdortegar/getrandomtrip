@@ -277,6 +277,49 @@ export interface TripperDashboardDict {
   };
 }
 
+export interface ClientDashboardDict {
+  home: {
+    eyebrow: string;
+    heading: string;
+  };
+  nav: {
+    dashboard: string;
+    notifications: string;
+    reviews: string;
+    settings: string;
+    trips: string;
+  };
+  pageHeadings: {
+    dashboard: { description: string; title: string };
+    notifications: { description: string; title: string };
+    reviews: { description: string; title: string };
+    settings: { description: string; title: string };
+    trips: { description: string; title: string };
+  };
+  reviews: {
+    description: string;
+    emptyDescription: string;
+    emptyTitle: string;
+    eyebrow: string;
+    kpis: {
+      averageRating: string;
+      totalReviewed: string;
+    };
+    listTitle: string;
+    title: string;
+  };
+  trips: {
+    description: string;
+    eyebrow: string;
+    filterAll: string;
+    filterCompleted: string;
+    filterUpcoming: string;
+    of: string;
+    title: string;
+    tripsCount: string;
+  };
+}
+
 export interface DashboardDict {
   allTrips: {
     emptyDestination: string;
@@ -2234,6 +2277,7 @@ export interface MarketingDictionary {
   };
   tripperBlogs: TripperBlogsDict;
   dashboard: DashboardDict;
+  clientDashboard: ClientDashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
   tripperExperiences: TripperExperiencesDict;

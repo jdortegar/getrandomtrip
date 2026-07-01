@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Calendar, CreditCard, MapPin } from "lucide-react";
-import { RowActions } from "@/components/common/RowActions";
+import { Calendar, CreditCard, MapPin, Pencil, Trash2 } from "lucide-react";
+import {
+  TableIconButton,
+  TableIconLink,
+} from "@/components/ui/TableIconButton";
 import Img from "@/components/common/Img";
-import { Button } from "@/components/ui/Button";
 import {
   getTripExperienceDisplay,
   getTripPriceParts,
+  formatTripReferenceTail,
 } from "@/lib/helpers/dashboard-trip-display";
-import { cn } from "@/lib/utils";
 import type { Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "./types";
 
@@ -34,7 +36,6 @@ function buildEditUrl(locale: string, trip: Trip): string {
 interface UnpaidTripsAlertProps {
   copy: DashboardCopy;
   locale: string;
-  /** Persist removal (e.g. DELETE /api/trips/:id) then update parent state. */
   onDelete: (tripId: string) => Promise<void>;
   trips: Trip[];
 }
@@ -62,110 +63,145 @@ export function UnpaidTripsAlert({
   }
 
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-      {/* Header */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <AlertCircle aria-hidden className="h-5 w-5 shrink-0 text-amber-700" />
-        <h2 className="text-xl font-semibold text-neutral-900">
+    <section>
+      {/* Section header */}
+      <div className="mb-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          {trips.length} pending
+        </p>
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
           {copy.unpaidTrips.title}
         </h2>
-        <span className="rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-semibold text-amber-950">
-          {trips.length}
-        </span>
-        <p className="w-full text-sm font-normal text-neutral-600">
-          {copy.unpaidTrips.message}
-        </p>
+        <p className="mt-2 text-sm text-neutral-500">{copy.unpaidTrips.message}</p>
       </div>
 
-      {/* Trip rows */}
-      <ul className="space-y-3">
-        {trips.map((trip) => {
-          const { isEstimate, perPerson, total } = getTripPriceParts(trip);
-          const { levelName, travelerTypeTitle, typeImageSrc } =
-            getTripExperienceDisplay(trip, locale);
-          const start = trip.startDate
-            ? new Date(trip.startDate).toLocaleDateString(dateLocale, {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-            : "—";
-          return (
-            <li key={trip.id}>
-              <div
-                className={cn(
-                  "flex items-center overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm",
-                  "transition-all duration-300 hover:shadow-md p-3",
-                )}
-              >
-                <div className="w-[100px] h-[120px] rounded-lg overflow-hidden">
-                  <Img
-                    alt={travelerTypeTitle}
-                    sizes="(max-width: 640px) 34vw, 160px"
-                    src={typeImageSrc!}
-                    className="object-cover h-full w-full"
-                  />
-                </div>
+      {/* Panel card */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        {/* Amber urgency stripe */}
+        <div className="h-1 bg-amber-400" />
 
-                {/* Trip info */}
-                <div className="min-w-0 flex-1 space-y-1 px-4 py-3 text-left">
-                  <p className="font-barlow text-lg font-bold leading-tight text-neutral-900 sm:text-xl">
-                    <span>{copy.unpaidTrips.travelTypeSection}</span>
-                    <span className="px-1.5 font-normal text-neutral-400">
-                      {copy.unpaidTrips.travelTypeTitleSeparator}
-                    </span>
-                    <span className="text-sky-600">{travelerTypeTitle}</span>
-                  </p>
-                  <p className="font-barlow text-sm font-normal text-neutral-500 sm:text-base">
-                    {copy.unpaidTrips.experienceSection}{" "}
-                    <span className="font-bold text-neutral-900">
-                      {levelName}
-                    </span>
-                  </p>
-                </div>
-                <div className="min-w-0 flex-1 space-y-1 px-4 py-3 text-left">
-                  <p className="pt-0.5 text-xs text-neutral-400">
-                    {copy.unpaidTrips.bookingRefLabel}:{" "}
-                    <span className="font-medium text-neutral-500">
-                      {trip.id}
-                    </span>
-                  </p>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-neutral-500">
-                    <span className="flex items-center gap-1">
-                      <MapPin aria-hidden className="h-3 w-3 shrink-0" />
-                      {trip.city}, {trip.country}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar aria-hidden className="h-3 w-3 shrink-0" />
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  Trip
+                </th>
+                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 sm:table-cell">
+                  Origin
+                </th>
+                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 md:table-cell">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    Date
+                  </span>
+                </th>
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  Amount
+                </th>
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {trips.map((trip) => {
+                const { total } = getTripPriceParts(trip);
+                const { levelName, travelerTypeTitle, typeImageSrc } =
+                  getTripExperienceDisplay(trip, locale);
+                const start = trip.startDate
+                  ? new Date(trip.startDate).toLocaleDateString(dateLocale, {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "—";
+                const ref = formatTripReferenceTail(trip.id);
+
+                return (
+                  <tr
+                    className="transition-colors hover:bg-gray-50"
+                    key={trip.id}
+                  >
+                    {/* Trip */}
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        {typeImageSrc && (
+                          <div className="hidden h-12 w-12 shrink-0 overflow-hidden rounded-lg sm:block">
+                            <Img
+                              alt={travelerTypeTitle}
+                              className="h-full w-full object-cover"
+                              sizes="48px"
+                              src={typeImageSrc}
+                            />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-neutral-900">
+                            {travelerTypeTitle}
+                          </p>
+                          <p className="mt-0.5 text-xs text-neutral-500">
+                            {levelName}
+                          </p>
+                          <p className="mt-1 font-mono text-[10px] text-neutral-400">
+                            …{ref}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Origin */}
+                    <td className="hidden px-5 py-4 sm:table-cell">
+                      <p className="flex items-center gap-1 text-sm text-neutral-700">
+                        <MapPin className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                        {trip.city}, {trip.country}
+                      </p>
+                    </td>
+
+                    {/* Date */}
+                    <td className="hidden px-5 py-4 text-sm text-neutral-500 md:table-cell">
                       {start}
-                    </span>
-                  </div>
-                </div>
+                    </td>
 
-                {/* Price + CTAs */}
-                <div className="flex shrink-0 flex-col items-end justify-center gap-2 px-4 py-3">
-                  <p className="font-barlow-condensed text-2xl font-bold text-neutral-900 sm:text-3xl">
-                    {usd(total)}
-                  </p>
-                  <div className="flex flex-wrap items-center justify-end gap-2">
-                    <Button asChild size="sm">
-                      <Link href={`/${locale}/checkout?tripId=${trip.id}`}>
-                        <CreditCard className="mr-1.5 h-3.5 w-3.5" />
-                        {copy.unpaidTrips.action}
-                      </Link>
-                    </Button>
-                    <RowActions
-                      deleteDisabled={deletingId === trip.id}
-                      editHref={buildEditUrl(locale, trip)}
-                      onDelete={() => handleDelete(trip.id)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+                    {/* Amount */}
+                    <td className="px-5 py-4">
+                      <p className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                        {usd(total)}
+                      </p>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-1.5">
+                        <TableIconLink
+                          href={`/${locale}/checkout?tripId=${trip.id}`}
+                          title={copy.unpaidTrips.action}
+                        >
+                          <CreditCard className="h-4 w-4" />
+                        </TableIconLink>
+                        <TableIconLink
+                          href={buildEditUrl(locale, trip)}
+                          title={copy.unpaidTrips.editAction}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </TableIconLink>
+                        <TableIconButton
+                          danger
+                          disabled={deletingId === trip.id}
+                          title={copy.unpaidTrips.deleteAction}
+                          onClick={() => handleDelete(trip.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </TableIconButton>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   );
 }

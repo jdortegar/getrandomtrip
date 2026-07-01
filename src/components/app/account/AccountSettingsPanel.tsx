@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
-  Briefcase,
   Calendar,
   Check,
   Clipboard,
@@ -18,6 +17,7 @@ import {
   Settings,
   Star,
   User,
+  type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -29,6 +29,7 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 import EmptyState from "@/components/profile/EmptyState";
 import { AccountSettingsTagList } from "@/components/app/account/AccountSettingsTagList";
 import { AccountSettingsPasswordField } from "@/components/app/account/AccountSettingsPasswordField";
+import { TabSelector } from "@/components/ui/TabSelector";
 import { cn } from "@/lib/utils";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary, type Dictionary } from "@/lib/i18n/dictionaries";
@@ -392,7 +393,7 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
       })
     : "";
 
-  const TABS: { id: TabId; label: string; Icon: React.ElementType }[] = [
+  const TABS: { id: TabId; label: string; Icon: LucideIcon }[] = [
     { id: "overview", label: p.nav.summary, Icon: User },
     { id: "personal", label: p.nav.personal, Icon: Pencil },
     { id: "preferences", label: p.nav.preferences, Icon: MapPin },
@@ -401,16 +402,10 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
     { id: "payments", label: p.nav.payments, Icon: CreditCard },
   ];
 
-  // Cross-link to the public tripper profile / Tripper OS — only relevant
-  // for client-side traveler accounts that also have the tripper role.
+  // Cross-link to Tripper OS for client accounts that also have the tripper role.
   const tripperNavLinks =
     role === "client" && isTripper
       ? [
-          {
-            href: pathForLocale(resolvedLocale, "/trippers/profile"),
-            label: p.nav.tripperProfile,
-            Icon: Briefcase,
-          },
           {
             href: pathForLocale(resolvedLocale, "/dashboard/tripper"),
             label: p.nav.tripperOs,
@@ -471,27 +466,17 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
 
   return (
     <div className="space-y-6">
-      {/* Horizontal tab bar */}
-      <div className="overflow-x-auto border-b-2 border-gray-200">
-        <div className="flex gap-1">
-          {TABS.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setActiveTab(id)}
-              className={cn(
-                "flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm transition-colors",
-                activeTab === id
-                  ? "border-light-blue font-semibold text-light-blue"
-                  : "border-transparent text-neutral-500 hover:text-neutral-700",
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <TabSelector
+        activeTab={activeTab}
+        layoutId="accountSettingsActiveTab"
+        onTabChange={(tab) => setActiveTab(tab as TabId)}
+        tabs={TABS.map(({ Icon, id, label }) => ({
+          icon: Icon,
+          id,
+          label,
+        }))}
+        variant="inline"
+      />
 
       {/* Overview */}
       {activeTab === "overview" && (
