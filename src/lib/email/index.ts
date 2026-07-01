@@ -1,6 +1,9 @@
 import AdminNewBooking, {
   subject as adminNewBookingSubject,
 } from "@/emails/AdminNewBooking";
+import ReviewApprovedForTripper, {
+  subjects as reviewApprovedSubjects,
+} from "@/emails/ReviewApprovedForTripper";
 import DestinationAssignmentReminder, {
   subjects as destinationAssignmentReminderSubjects,
 } from "@/emails/DestinationAssignmentReminder";
@@ -524,6 +527,52 @@ export function sendDestinationAssignmentReminder(tripRequestId: string): void {
       }
     } catch (err) {
       console.error("[email] sendDestinationAssignmentReminder:", err);
+    }
+  })();
+}
+
+export function sendReviewApprovedForTripper(
+  tripperId: string,
+  reviewId: string,
+): void {
+  void (async () => {
+    try {
+      const [tripper, review] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { email: true, name: true, locale: true },
+        }),
+        prisma.review.findUnique({
+          where: { id: reviewId },
+          select: { rating: true, content: true },
+        }),
+      ]);
+
+      if (!tripper?.email || !review) return;
+
+      const locale = resolveLocale(tripper.locale);
+      const BASE_URL = "https://getrandomtrip.com";
+      const dashboardUrl = `${BASE_URL}/${locale}/dashboard/tripper/reviews`;
+      const excerpt =
+        review.content.length > 200
+          ? `${review.content.slice(0, 200)}…`
+          : review.content;
+
+      await sendMail({
+        to: tripper.email,
+        subject: reviewApprovedSubjects[locale],
+        content: {
+          react: React.createElement(ReviewApprovedForTripper, {
+            dashboardUrl,
+            excerpt,
+            locale,
+            rating: review.rating,
+            tripperName: tripper.name ?? "",
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendReviewApprovedForTripper:", err);
     }
   })();
 }

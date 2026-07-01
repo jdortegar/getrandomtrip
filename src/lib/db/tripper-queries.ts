@@ -720,34 +720,10 @@ export async function getTripperEarnings(
  */
 export async function getTripperReviews(tripperId: string) {
   try {
-    // Get reviews from completed trips that used this tripper's packages
-    const completedTrips = await prisma.tripRequest.findMany({
-      where: {
-        experience: {
-          ownerId: tripperId,
-        },
-        status: "COMPLETED",
-        customerRating: {
-          not: null,
-        },
-      },
-      include: {
-        user: {
-          select: { id: true, name: true, avatarUrl: true },
-        },
-        experience: {
-          select: { id: true, title: true },
-        },
-      },
-      orderBy: { completedAt: "desc" },
-    });
-
-    // Also get reviews from the Review model filtered by tripperId
-    const generalReviews = await prisma.review.findMany({
+    const reviews = await prisma.review.findMany({
       where: {
         tripperId,
         isApproved: true,
-        isPublic: true,
       },
       include: {
         user: {
@@ -757,34 +733,22 @@ export async function getTripperReviews(tripperId: string) {
       orderBy: { createdAt: "desc" },
     });
 
-    // Calculate NPS (Net Promoter Score)
-    const ratings = completedTrips
-      .map((trip) => trip.customerRating)
-      .filter((r): r is number => r !== null);
+    const ratings = reviews.map((r) => r.rating);
+    const totalReviews = ratings.length;
 
     const promoters = ratings.filter((r) => r >= 4).length;
     const detractors = ratings.filter((r) => r <= 2).length;
-    const totalRatings = ratings.length;
     const nps =
-      totalRatings > 0 ? ((promoters - detractors) / totalRatings) * 100 : 0;
+      totalReviews > 0
+        ? ((promoters - detractors) / totalReviews) * 100
+        : 0;
 
-    // Merge legacy TripRequest reviews with Review model records
-    const legacyReviews = completedTrips.map((trip) => ({
-      id: trip.id,
-      userId: trip.user.id,
-      userName: trip.user.name,
-      userAvatar: trip.user.avatarUrl,
-      rating: trip.customerRating || 0,
-      title: `Viaje a ${trip.actualDestination || "Destino"}`,
-      content: trip.customerFeedback || "",
-      tripType: trip.type,
-      destination: trip.actualDestination || "",
-      packageTitle: trip.experience?.title || "",
-      createdAt: trip.completedAt || trip.updatedAt,
-      source: "legacy" as const,
-    }));
+    const averageRating =
+      totalReviews > 0
+        ? ratings.reduce((sum, r) => sum + r, 0) / totalReviews
+        : 0;
 
-    const modelReviews = generalReviews.map((review) => ({
+    const mapped = reviews.map((review) => ({
       id: review.id,
       userId: review.user.id,
       userName: review.user.name,
@@ -793,21 +757,16 @@ export async function getTripperReviews(tripperId: string) {
       title: review.title ?? "",
       content: review.content,
       tripType: "",
-      destination: "",
+      destination: review.destination ?? "",
       packageTitle: "",
       createdAt: review.createdAt,
-      source: "review_model" as const,
+      isPublic: review.isPublic,
     }));
 
-    const allReviews = [...legacyReviews, ...modelReviews];
-
     return {
-      reviews: allReviews,
-      averageRating:
-        ratings.length > 0
-          ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
-          : 0,
-      totalReviews: totalRatings,
+      reviews: mapped,
+      averageRating,
+      totalReviews,
       nps: Math.round(nps * 10) / 10,
       promoters,
       detractors,

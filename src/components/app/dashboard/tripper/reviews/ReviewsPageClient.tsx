@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageSquare, Star, ThumbsUp, TrendingUp } from "lucide-react";
+import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { TripperReviewsDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ export interface TripperReview {
   createdAt: string;
   destination: string;
   id: string;
+  isPublic: boolean;
   packageTitle: string;
   rating: number;
   title: string;
@@ -51,10 +53,44 @@ export function ReviewsPageClient({
   locale,
   nps,
   promoters,
-  reviews,
+  reviews: initialReviews,
   totalReviews,
 }: ReviewsPageClientProps) {
+  const [reviews, setReviews] = useState<TripperReview[]>(initialReviews);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
+
+  async function togglePublish(review: TripperReview) {
+    setTogglingId(review.id);
+    const nextValue = !review.isPublic;
+    // Optimistic update
+    setReviews((prev) =>
+      prev.map((r) => (r.id === review.id ? { ...r, isPublic: nextValue } : r)),
+    );
+    try {
+      const res = await fetch(`/api/tripper/reviews/${review.id}`, {
+        body: JSON.stringify({ isPublic: nextValue }),
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+      });
+      if (!res.ok) {
+        // Revert on failure
+        setReviews((prev) =>
+          prev.map((r) =>
+            r.id === review.id ? { ...r, isPublic: review.isPublic } : r,
+          ),
+        );
+      }
+    } catch {
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === review.id ? { ...r, isPublic: review.isPublic } : r,
+        ),
+      );
+    } finally {
+      setTogglingId(null);
+    }
+  }
 
   const kpis: KpiCard[] = [
     {
@@ -220,9 +256,24 @@ export function ReviewsPageClient({
                         {review.content}
                       </p>
                     )}
-                    <p className="mt-2 text-xs text-neutral-400">
-                      {formatDate(review.createdAt)}
-                    </p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <p className="text-xs text-neutral-400">
+                        {formatDate(review.createdAt)}
+                      </p>
+                      <button
+                        className={cn(
+                          "rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-50",
+                          review.isPublic
+                            ? "bg-green-100 text-green-700 hover:bg-green-200"
+                            : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
+                        )}
+                        disabled={togglingId === review.id}
+                        onClick={() => void togglePublish(review)}
+                        type="button"
+                      >
+                        {review.isPublic ? "Publicado" : "Publicar"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>

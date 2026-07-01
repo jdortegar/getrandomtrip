@@ -10,6 +10,8 @@ export interface Trip {
   customerRating?: number | null;
   departPref?: string;
   endDate: string;
+  reviewSubmittedAt?: string | null;
+  reviewToken?: string | null;
   id: string;
   level: string;
   maxTravelTime?: string;
@@ -118,6 +120,10 @@ export function mapTripFromApi(raw: unknown): Trip {
     country: String(trip.originCountry ?? ""),
     customerRating: (trip.customerRating as number | null | undefined) ?? null,
     departPref: trip.departPref ? String(trip.departPref) : undefined,
+    reviewSubmittedAt: trip.reviewSubmittedAt
+      ? toIsoDate(trip.reviewSubmittedAt)
+      : null,
+    reviewToken: (trip.reviewToken as string | null | undefined) ?? null,
     endDate: toIsoDate(trip.endDate),
     id: String(trip.id ?? ""),
     level: String(trip.level ?? ""),

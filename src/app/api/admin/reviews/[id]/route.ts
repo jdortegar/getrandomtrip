@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { sendReviewApprovedForTripper } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -29,25 +30,68 @@ export async function PATCH(
       isApproved?: unknown;
       isPublic?: unknown;
     };
-    const data: { isApproved?: boolean; isPublic?: boolean } = {};
-    if (typeof body.isApproved === "boolean") data.isApproved = body.isApproved;
-    if (typeof body.isPublic === "boolean") data.isPublic = body.isPublic;
-    if (!("isApproved" in data) && !("isPublic" in data)) {
+
+    if (typeof body.isApproved !== "boolean") {
       return NextResponse.json(
-        { error: "No valid fields to update" },
+        { error: "isApproved (boolean) is required" },
         { status: 400 },
       );
     }
 
-    const review = await prisma.review.update({
-      data,
-      select: {
-        id: true,
-        isApproved: true,
-        isPublic: true,
-      },
+    // Fetch current state to detect the false → true transition and check ownership
+    const existing = await prisma.review.findUnique({
+      select: { id: true, isApproved: true, tripperId: true },
       where: { id: params.id },
     });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Review not found" }, { status: 404 });
+    }
+
+    // isPublic is only admin-writable for platform reviews (tripperId: null).
+    // For tripper-owned reviews, isPublic is tripper-controlled.
+    if (typeof body.isPublic === "boolean" && existing.tripperId !== null) {
+      return NextResponse.json(
+        { error: "isPublic is controlled by the tripper for tripper reviews" },
+        { status: 403 },
+      );
+    }
+
+    const updateData: { isApproved: boolean; isPublic?: boolean } = {
+      isApproved: body.isApproved,
+    };
+
+    // Only apply isPublic for platform (tripperId: null) reviews
+    if (typeof body.isPublic === "boolean" && existing.tripperId === null) {
+      updateData.isPublic = body.isPublic;
+    }
+
+    const review = await prisma.review.update({
+      data: updateData,
+      select: { id: true, isApproved: true, isPublic: true, tripperId: true },
+      where: { id: params.id },
+    });
+
+    // Approval transition: notify tripper in-app + email (tripper reviews only)
+    const wasJustApproved = !existing.isApproved && body.isApproved;
+    if (wasJustApproved && review.tripperId) {
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: review.tripperId,
+            type: "REVIEW_APPROVED",
+            audience: "TRIPPER",
+            isRead: false,
+            title: "Tienes una nueva reseña aprobada",
+            metadata: { reviewId: review.id },
+          },
+        });
+      } catch (err) {
+        console.error("[admin/reviews/[id]] notification create:", err);
+      }
+
+      sendReviewApprovedForTripper(review.tripperId, review.id);
+    }
 
     return NextResponse.json({ review });
   } catch (error) {
