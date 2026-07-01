@@ -67,6 +67,29 @@ export interface TripperSessionExtras {
   tripperSlug?: string;
 }
 
+/** Editable form shape for the Tripper Settings page identity/profile cards. */
+export interface TripperSettingsFormState {
+  name: string;
+  email: string;
+  bio: string;
+  heroImage: string;
+  location: string;
+  tierLevel: string;
+  destinations: string[];
+  tripperSlug: string;
+  /** Fraction 0–1 (e.g. 0.15 means 15%). Admin-set, read-only in the UI. */
+  commission: number;
+  availableTypes: string[];
+}
+
+/** Stats shown on the Tripper Settings Hero card. */
+export interface TripperSettingsStats {
+  totalExperiences: number;
+  totalBookings: number;
+  averageRating: number;
+  totalReviews: number;
+}
+
 export interface TripperOwnExperienceListItem {
   id: string;
   isActive: boolean;

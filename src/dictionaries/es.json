@@ -2795,7 +2795,8 @@
     "header": {
       "userFallback": "Usuario",
       "emailFallback": "usuario@email.com",
-      "badgeActiveTraveler": "Viajero Activo"
+      "badgeActiveTraveler": "Viajero Activo",
+      "badgeTripper": "Tripper"
     },
     "nav": {
       "summary": "Resumen",
@@ -2834,6 +2835,10 @@
     },
     "personalSectionTitle": "Datos Personales",
     "preferencesSectionTitle": "Preferencias de Viaje",
+    "tagList": {
+      "addAriaLabel": "Agregar",
+      "removeAriaLabel": "Quitar"
+    },
     "labels": {
       "email": "Email",
       "name": "Nombre",
@@ -2844,9 +2849,12 @@
       "zipCode": "Código postal",
       "country": "País",
       "memberSince": "Miembro desde",
+      "totalTrips": "Viajes totales",
+      "avgRating": "Calificación prom.",
+      "addressSection": "Dirección",
       "travelerType": "Tipo de viajero",
-      "interests": "Intereses (separados por coma)",
-      "dislikes": "Evitar (separados por coma)"
+      "interests": "Intereses",
+      "dislikes": "Evitar"
     },
     "travelerTypes": {
       "selectPlaceholder": "Seleccionar...",
@@ -2867,8 +2875,8 @@
       "dislikes": "Evitar (separados por coma)",
       "namePlaceholder": "Tu nombre completo",
       "emailPlaceholder": "tu@email.com",
-      "interestsPlaceholder": "aventura, cultura, comida",
-      "dislikesPlaceholder": "multitudes, frío",
+      "interestsPlaceholder": "Ej: aventura",
+      "dislikesPlaceholder": "Ej: multitudes",
       "currentPassword": "Contraseña Actual",
       "newPassword": "Nueva Contraseña",
       "confirmPassword": "Confirmar Nueva Contraseña",
@@ -3174,6 +3182,60 @@
       "revealed": "Revelado",
       "completed": "Completado",
       "pending": "Pendiente"
+    },
+    "settingsProfile": {
+      "eyebrow": "Configuración de cuenta",
+      "heading": "Mi Perfil",
+      "hero": {
+        "editProfile": "Editar perfil",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando…",
+        "uploadHint": "Cambiar foto de portada",
+        "nameFallback": "Tripper",
+        "namePlaceholder": "Tu nombre",
+        "locationPlaceholder": "Ciudad, País",
+        "noLocation": "Sin ubicación definida",
+        "statsExperiences": "Experiencias",
+        "statsBookings": "Reservas",
+        "statsRating": "Rating",
+        "reviewsSuffix": "reseñas",
+        "imageTooLarge": "La imagen no puede superar 5 MB.",
+        "imageUploadError": "No se pudo subir la imagen"
+      },
+      "publicPresence": {
+        "eyebrow": "Tu marca",
+        "heading": "Presencia Pública",
+        "bioLabel": "Biografía",
+        "bioPlaceholder": "Contales a los viajeros quién sos...",
+        "bioEmpty": "Todavía no cargaste una biografía.",
+        "destinationsLabel": "Destinos",
+        "destinationsAddPlaceholder": "Agregar destino",
+        "travelerTypesLabel": "Tipos de viajero que aceptás",
+        "travelerTypesHelper": "Elegí los tipos de viajero para los que armás experiencias"
+      },
+      "publicUrl": {
+        "eyebrow": "Tu página pública",
+        "heading": "URL de Perfil",
+        "domainPrefix": "getrandomtrip.com/trippers/",
+        "slugPlaceholder": "tu-slug",
+        "copyLink": "Copiar enlace",
+        "copied": "¡Copiado!",
+        "openLink": "Abrir perfil público"
+      },
+      "account": {
+        "eyebrow": "Solo lectura",
+        "heading": "Cuenta",
+        "emailLabel": "Email",
+        "tierLabel": "Nivel de Tripper",
+        "commissionLabel": "Tasa de Comisión",
+        "adminSet": "Definido por el admin",
+        "commissionHelper": "Tu tasa de comisión la define el equipo de Randomtrip según tu nivel y desempeño."
+      },
+      "divider": {
+        "eyebrow": "Compartido con todos los roles",
+        "heading": "Configuración de Cuenta"
+      }
     }
   },
   "dashboard": {

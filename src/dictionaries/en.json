@@ -2795,7 +2795,8 @@
     "header": {
       "userFallback": "User",
       "emailFallback": "user@email.com",
-      "badgeActiveTraveler": "Active traveler"
+      "badgeActiveTraveler": "Active traveler",
+      "badgeTripper": "Tripper"
     },
     "nav": {
       "summary": "Summary",
@@ -2834,6 +2835,10 @@
     },
     "personalSectionTitle": "Personal data",
     "preferencesSectionTitle": "Travel preferences",
+    "tagList": {
+      "addAriaLabel": "Add",
+      "removeAriaLabel": "Remove"
+    },
     "labels": {
       "email": "Email",
       "name": "Name",
@@ -2844,9 +2849,12 @@
       "zipCode": "Postal code",
       "country": "Country",
       "memberSince": "Member since",
+      "totalTrips": "Total trips",
+      "avgRating": "Avg. rating",
+      "addressSection": "Address",
       "travelerType": "Traveler type",
-      "interests": "Interests (comma-separated)",
-      "dislikes": "Avoid (comma-separated)"
+      "interests": "Interests",
+      "dislikes": "Avoid"
     },
     "travelerTypes": {
       "selectPlaceholder": "Select…",
@@ -2867,8 +2875,8 @@
       "dislikes": "Avoid (comma-separated)",
       "namePlaceholder": "Your full name",
       "emailPlaceholder": "you@email.com",
-      "interestsPlaceholder": "adventure, culture, food",
-      "dislikesPlaceholder": "crowds, cold",
+      "interestsPlaceholder": "e.g. adventure",
+      "dislikesPlaceholder": "e.g. crowds",
       "currentPassword": "Current password",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
@@ -3174,6 +3182,60 @@
       "revealed": "Revealed",
       "completed": "Completed",
       "pending": "Pending"
+    },
+    "settingsProfile": {
+      "eyebrow": "Account settings",
+      "heading": "My Profile",
+      "hero": {
+        "editProfile": "Edit profile",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…",
+        "uploadHint": "Change cover photo",
+        "nameFallback": "Tripper",
+        "namePlaceholder": "Your name",
+        "locationPlaceholder": "City, Country",
+        "noLocation": "No location set",
+        "statsExperiences": "Experiences",
+        "statsBookings": "Bookings",
+        "statsRating": "Rating",
+        "reviewsSuffix": "reviews",
+        "imageTooLarge": "The image can't be larger than 5 MB.",
+        "imageUploadError": "Could not upload the image"
+      },
+      "publicPresence": {
+        "eyebrow": "Your brand",
+        "heading": "Public Presence",
+        "bioLabel": "Bio",
+        "bioPlaceholder": "Tell travelers about yourself...",
+        "bioEmpty": "No bio yet.",
+        "destinationsLabel": "Destinations",
+        "destinationsAddPlaceholder": "Add a destination",
+        "travelerTypesLabel": "Traveler types accepted",
+        "travelerTypesHelper": "Select the traveler types you build experiences for"
+      },
+      "publicUrl": {
+        "eyebrow": "Your public page",
+        "heading": "Profile URL",
+        "domainPrefix": "getrandomtrip.com/trippers/",
+        "slugPlaceholder": "your-slug",
+        "copyLink": "Copy link",
+        "copied": "Copied!",
+        "openLink": "Open public profile"
+      },
+      "account": {
+        "eyebrow": "Read-only",
+        "heading": "Account",
+        "emailLabel": "Email",
+        "tierLabel": "Tier Level",
+        "commissionLabel": "Commission Rate",
+        "adminSet": "Admin-set",
+        "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance."
+      },
+      "divider": {
+        "eyebrow": "Shared with all roles",
+        "heading": "Account Settings"
+      }
     }
   },
   "dashboard": {

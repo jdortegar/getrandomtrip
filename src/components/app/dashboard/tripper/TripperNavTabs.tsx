@@ -97,7 +97,7 @@ export function TripperNavTabs() {
       showUnreadDot: true,
     },
     {
-      href: `/${locale}/trippers/profile`,
+      href: `/${locale}/dashboard/tripper/settings`,
       icon: Settings,
       label: copy.settings,
       exact: false,

@@ -221,6 +221,60 @@ export interface TripperDashboardDict {
     completed: string;
     pending: string;
   };
+  settingsProfile: {
+    eyebrow: string;
+    heading: string;
+    hero: {
+      editProfile: string;
+      cancel: string;
+      save: string;
+      saving: string;
+      uploadHint: string;
+      nameFallback: string;
+      namePlaceholder: string;
+      locationPlaceholder: string;
+      noLocation: string;
+      statsExperiences: string;
+      statsBookings: string;
+      statsRating: string;
+      reviewsSuffix: string;
+      imageTooLarge: string;
+      imageUploadError: string;
+    };
+    publicPresence: {
+      eyebrow: string;
+      heading: string;
+      bioLabel: string;
+      bioPlaceholder: string;
+      bioEmpty: string;
+      destinationsLabel: string;
+      destinationsAddPlaceholder: string;
+      travelerTypesLabel: string;
+      travelerTypesHelper: string;
+    };
+    publicUrl: {
+      eyebrow: string;
+      heading: string;
+      domainPrefix: string;
+      slugPlaceholder: string;
+      copyLink: string;
+      copied: string;
+      openLink: string;
+    };
+    account: {
+      eyebrow: string;
+      heading: string;
+      emailLabel: string;
+      tierLabel: string;
+      commissionLabel: string;
+      adminSet: string;
+      commissionHelper: string;
+    };
+    divider: {
+      eyebrow: string;
+      heading: string;
+    };
+  };
 }
 
 export interface DashboardDict {
@@ -2009,6 +2063,7 @@ export interface MarketingDictionary {
     comingSoonDescription: string;
     header: {
       badgeActiveTraveler: string;
+      badgeTripper: string;
       emailFallback: string;
       userFallback: string;
     };
@@ -2017,6 +2072,8 @@ export interface MarketingDictionary {
       title: string;
     };
     labels: {
+      addressSection: string;
+      avgRating: string;
       city: string;
       country: string;
       dislikes: string;
@@ -2027,6 +2084,7 @@ export interface MarketingDictionary {
       phone: string;
       state: string;
       street: string;
+      totalTrips: string;
       travelerType: string;
       zipCode: string;
     };
@@ -2059,6 +2117,10 @@ export interface MarketingDictionary {
     };
     personalSectionTitle: string;
     preferencesSectionTitle: string;
+    tagList: {
+      addAriaLabel: string;
+      removeAriaLabel: string;
+    };
     sections: {
       summary: string;
       travelDocs: string;
