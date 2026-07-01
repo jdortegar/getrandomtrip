@@ -16,7 +16,7 @@ const copy = {
     preview: "Tu experiencia requiere ajustes antes de ser publicada.",
     heading: "Experiencia en revisión",
     body: (tripper: string, title: string) =>
-      `Hola ${tripper}, tu experiencia "${title}" requiere algunos ajustes antes de poder ser publicada en GetRandomTrip.`,
+      `Hola ${tripper}, tu experiencia "${title}" requiere algunos ajustes antes de poder ser publicada en Randomtrip.`,
     subtext:
       "Revisá la nota del revisor a continuación, realizá los cambios necesarios y volvé a enviarla para su aprobación.",
     reviewNoteLabel: "Nota del revisor:",
@@ -26,7 +26,7 @@ const copy = {
     preview: "Your experience needs some adjustments before it can be published.",
     heading: "Experience needs review",
     body: (tripper: string, title: string) =>
-      `Hi ${tripper}, your experience "${title}" needs some adjustments before it can be published on GetRandomTrip.`,
+      `Hi ${tripper}, your experience "${title}" needs some adjustments before it can be published on Randomtrip.`,
     subtext:
       "Please review the note below, make the necessary changes, and resubmit it for approval.",
     reviewNoteLabel: "Reviewer note:",

@@ -41,10 +41,10 @@ const navGroups = [
   {
     name: "Contenido",
     items: [
-      { name: "Mis Posts", href: "/dashboard/tripper/blogs", icon: Book },
+      { name: "Mis Posts", href: "/dashboard/tripper/blog", icon: Book },
       {
         name: "Crear Post",
-        href: "/dashboard/tripper/blogs/new",
+        href: "/dashboard/tripper/blog/new",
         icon: PlusCircle,
         isButton: true,
       },

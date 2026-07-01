@@ -138,7 +138,7 @@ export function AdminReviewsPageClient() {
                     {review.isPublic ? st.public : st.private}
                   </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-500">
-                    {review.tripperName ?? "RandomTrip"}
+                    {review.tripperName ?? "Randomtrip"}
                   </td>
                   <td className="px-4 py-3.5 text-xs text-neutral-400">
                     {review.tripRequestId ? (

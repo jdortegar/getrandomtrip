@@ -81,7 +81,7 @@ export function TripperNavTabs() {
       exact: false,
       adminOnly: true,
     },
-    { href: base("/blogs"), icon: BookOpen, label: copy.blogs, exact: false },
+    { href: base("/blog"), icon: BookOpen, label: copy.blogs, exact: false },
     {
       href: base("/earnings"),
       icon: BarChart3,
@@ -97,7 +97,7 @@ export function TripperNavTabs() {
       showUnreadDot: true,
     },
     {
-      href: `/${locale}/trippers/profile`,
+      href: `/${locale}/dashboard/tripper/settings`,
       icon: Settings,
       label: copy.settings,
       exact: false,

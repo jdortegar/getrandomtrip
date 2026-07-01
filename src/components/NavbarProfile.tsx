@@ -13,7 +13,7 @@ import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnre
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
 
 const PROFILE_MENU_ITEM = {
-  href: "/account",
+  href: "/dashboard/settings",
 };
 
 const TRIPPER_MENU_ITEM = {

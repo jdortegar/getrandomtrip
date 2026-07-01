@@ -116,7 +116,7 @@ export function TripperBlogPreviewClient() {
             {error ?? tripperBlogs.composer.editNotFound.descriptionFallback}
           </p>
           <Button asChild variant="secondary">
-            <Link href={pathForLocale(locale, "/dashboard/tripper/blogs")}>
+            <Link href={pathForLocale(locale, "/dashboard/tripper/blog")}>
               {tripperBlogs.composer.editNotFound.backToList}
             </Link>
           </Button>
@@ -143,7 +143,7 @@ export function TripperBlogPreviewClient() {
         {" · "}
         <Link
           className="font-medium underline underline-offset-2"
-          href={pathForLocale(locale, `/dashboard/tripper/blogs/${postId}`)}
+          href={pathForLocale(locale, `/dashboard/tripper/blog/${postId}`)}
         >
           {tripperBlogs.previewPage.backToEdit}
         </Link>

@@ -14,7 +14,6 @@ function pathMatchesSecurePrefix(barePath: string, prefix: string): boolean {
 const SECURE_PATH_PREFIXES = [
   "/checkout",
   "/dashboard",
-  "/account",
   "/tripper",
   "/trips/",
 ] as const;

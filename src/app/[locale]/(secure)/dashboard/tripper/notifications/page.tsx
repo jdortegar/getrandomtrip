@@ -6,7 +6,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import Section from "@/components/layout/Section";
-import { NotificationsList } from "@/components/app/notifications/NotificationsList";
+import { NotificationsPageClient } from "@/components/app/dashboard/tripper/notifications/NotificationsPageClient";
 import type { ClientNotification } from "@/types/notifications";
 import type { NotificationMetadata } from "@/types/notifications";
 
@@ -54,12 +54,11 @@ export default async function TripperNotificationsPage(props: {
 
   return (
     <Section>
-      <div className="rt-container">
-        <NotificationsList
-          initialNotifications={notifications}
-          copy={dict.notifications}
-        />
-      </div>
+      <NotificationsPageClient
+        copy={dict.notifications}
+        initialNotifications={notifications}
+        locale={locale}
+      />
     </Section>
   );
 }

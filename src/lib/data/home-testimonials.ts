@@ -1,7 +1,7 @@
 import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 
 export const HOME_TESTIMONIALS = {
-  title: "Lo que dicen sobre RandomTrip",
+  title: "Lo que dicen sobre Randomtrip",
   items: [
     {
       author: "Martín S.",

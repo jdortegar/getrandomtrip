@@ -63,7 +63,7 @@ export function buildEmailSignatureOption1Html(siteOrigin: string): string {
             <td style="padding: 12px 0 0">
               <a href="https://getrandomtrip.com" style="text-decoration: none">
                 <img
-                  alt="GetRandomTrip"
+                  alt="Randomtrip"
                   border="0"
                   height="64"
                   src="${logoSrc}"
@@ -138,7 +138,7 @@ export function buildEmailSignatureOption2Html(siteOrigin: string): string {
                     <td style="padding: 12px 0 0">
                       <a href="https://getrandomtrip.com" style="text-decoration: none">
                         <img
-                          alt="GetRandomTrip"
+                          alt="Randomtrip"
                           border="0"
                           height="64"
                           src="${logoSrc}"

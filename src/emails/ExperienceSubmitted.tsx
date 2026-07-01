@@ -15,7 +15,7 @@ const copy = {
     `Nueva experiencia enviada para revisión: "${title}"`,
   heading: "Nueva experiencia para revisar",
   body: (tripperName: string, title: string) =>
-    `El tripper ${tripperName} acaba de enviar la experiencia "${title}" para su revisión y publicación en GetRandomTrip.`,
+    `El tripper ${tripperName} acaba de enviar la experiencia "${title}" para su revisión y publicación en Randomtrip.`,
   subtext:
     "Ingresá al panel de administración para revisar los detalles y aprobar o rechazar la experiencia.",
   cta: "REVISAR EXPERIENCIA",

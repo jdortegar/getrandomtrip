@@ -11,19 +11,19 @@ const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
-    preview: "¡Bienvenido/a a GetRandomTrip! Tu próxima aventura te espera.",
+    preview: "¡Bienvenido/a a Randomtrip! Tu próxima aventura te espera.",
     heading: "¡Bienvenido/a!",
     body: (name: string) =>
-      `Hola ${name}, estamos muy contentos de que te hayas unido a GetRandomTrip. Somos la plataforma donde el destino es siempre una sorpresa.`,
+      `Hola ${name}, estamos muy contentos de que te hayas unido a Randomtrip. Somos la plataforma donde el destino es siempre una sorpresa.`,
     subtext:
       "Configurá tu viaje, contanos qué tipo de experiencia buscás, y nosotros nos encargamos del resto. ¡La aventura está a un paso!",
     cta: "EMPEZAR A PLANIFICAR",
   },
   en: {
-    preview: "Welcome to GetRandomTrip! Your next adventure awaits.",
+    preview: "Welcome to Randomtrip! Your next adventure awaits.",
     heading: "Welcome!",
     body: (name: string) =>
-      `Hi ${name}, we're thrilled to have you join GetRandomTrip. We're the platform where the destination is always a surprise.`,
+      `Hi ${name}, we're thrilled to have you join Randomtrip. We're the platform where the destination is always a surprise.`,
     subtext:
       "Set up your trip, tell us what kind of experience you're looking for, and we'll take care of the rest. Adventure is just one step away!",
     cta: "START PLANNING",
@@ -31,8 +31,8 @@ const copy = {
 };
 
 export const subjects = {
-  es: "¡Bienvenido/a a GetRandomTrip!",
-  en: "Welcome to GetRandomTrip!",
+  es: "¡Bienvenido/a a Randomtrip!",
+  en: "Welcome to Randomtrip!",
 };
 
 export default function WelcomeEmail({ name, locale }: WelcomeEmailProps) {

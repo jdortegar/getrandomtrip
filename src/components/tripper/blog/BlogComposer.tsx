@@ -245,7 +245,7 @@ export default function BlogComposer({
               ? copy.toasts.saveSuccessCreate
               : copy.toasts.publishSuccess,
           );
-          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${data.blog.id}`));
+          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blog/${data.blog.id}`));
         } else {
           const error = (await response.json()) as { error?: string };
           toast.error(
@@ -483,7 +483,7 @@ export default function BlogComposer({
         }
         onPreview={() => {
           if (!post.id) return;
-          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}/preview`));
+          router.push(pathForLocale(locale as Locale, `/dashboard/tripper/blog/${post.id}/preview`));
         }}
         onPublish={() => submitPost("published")}
         onTravelTypeChange={(value) =>

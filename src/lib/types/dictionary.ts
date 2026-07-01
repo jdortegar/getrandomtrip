@@ -107,13 +107,26 @@ export interface TripperBlogComposerDict {
 
 export interface TripperBlogsDict {
   composer: TripperBlogComposerDict;
-  empty: {
-    message: string;
-    cta: string;
+  description: string;
+  emptyState: {
+    createFirst: string;
+    noMatch: string;
+    noPosts: string;
   };
-  header: {
-    title: string;
-    description: string;
+  eyebrow: string;
+  filters: {
+    allFormats: string;
+    allStatuses: string;
+    allTravelTypes: string;
+    clearFilters: string;
+    count: string;
+    of: string;
+  };
+  format: {
+    article: string;
+    mixed: string;
+    photo: string;
+    video: string;
   };
   newPost: string;
   previewPage: {
@@ -122,13 +135,24 @@ export interface TripperBlogsDict {
     emptyBody: string;
     loadError: string;
   };
-  row: {
-    edit: string;
-    view: string;
-    published: string;
-    draft: string;
-    updatedAt: string;
+  status: {
+    DRAFT: string;
+    PUBLISHED: string;
   };
+  table: {
+    actions: string;
+    delete: string;
+    deleteConfirm: string;
+    edit: string;
+    format: string;
+    post: string;
+    publish: string;
+    status: string;
+    unpublish: string;
+    updated: string;
+    view: string;
+  };
+  title: string;
 }
 
 export interface TripperDashboardDict {
@@ -196,6 +220,60 @@ export interface TripperDashboardDict {
     revealed: string;
     completed: string;
     pending: string;
+  };
+  settingsProfile: {
+    eyebrow: string;
+    heading: string;
+    hero: {
+      editProfile: string;
+      cancel: string;
+      save: string;
+      saving: string;
+      uploadHint: string;
+      nameFallback: string;
+      namePlaceholder: string;
+      locationPlaceholder: string;
+      noLocation: string;
+      statsExperiences: string;
+      statsBookings: string;
+      statsRating: string;
+      reviewsSuffix: string;
+      imageTooLarge: string;
+      imageUploadError: string;
+    };
+    publicPresence: {
+      eyebrow: string;
+      heading: string;
+      bioLabel: string;
+      bioPlaceholder: string;
+      bioEmpty: string;
+      destinationsLabel: string;
+      destinationsAddPlaceholder: string;
+      travelerTypesLabel: string;
+      travelerTypesHelper: string;
+    };
+    publicUrl: {
+      eyebrow: string;
+      heading: string;
+      domainPrefix: string;
+      slugPlaceholder: string;
+      copyLink: string;
+      copied: string;
+      openLink: string;
+    };
+    account: {
+      eyebrow: string;
+      heading: string;
+      emailLabel: string;
+      tierLabel: string;
+      commissionLabel: string;
+      adminSet: string;
+      commissionHelper: string;
+    };
+    divider: {
+      eyebrow: string;
+      heading: string;
+    };
   };
 }
 
@@ -274,8 +352,61 @@ export interface DashboardDict {
   };
 }
 
+export interface TripperReviewsDict {
+  title: string;
+  eyebrow: string;
+  description: string;
+  kpis: {
+    averageRating: string;
+    detractorsCaption: string;
+    nps: string;
+    promoters: string;
+    totalReviews: string;
+  };
+  list: {
+    title: string;
+  };
+  emptyState: {
+    description: string;
+    title: string;
+  };
+}
+
+export interface TripperEarningsDict {
+  title: string;
+  eyebrow: string;
+  description: string;
+  exportCsv: string;
+  kpis: {
+    bookings: string;
+    currentCycle: string;
+    pendingPayout: string;
+    totalEarned: string;
+  };
+  status: {
+    paid: string;
+    pending: string;
+    processing: string;
+  };
+  table: {
+    base: string;
+    bonus: string;
+    bookings: string;
+    month: string;
+    payout: string;
+    status: string;
+    title: string;
+    total: string;
+  };
+  emptyState: {
+    description: string;
+    title: string;
+  };
+}
+
 export interface TripperExperiencesDict {
   title: string;
+  eyebrow: string;
   description: string;
   newExperience: string;
   back: string;
@@ -283,6 +414,9 @@ export interface TripperExperiencesDict {
     allTypes: string;
     allStatuses: string;
     allLevels: string;
+    clearFilters: string;
+    of: string;
+    count: string;
   };
   table: {
     actions: string;
@@ -294,6 +428,8 @@ export interface TripperExperiencesDict {
     duration: string;
     capacity: string;
     edit: string;
+    publish: string;
+    unpublish: string;
     delete: string;
     deleteConfirm: string;
   };
@@ -910,11 +1046,14 @@ export interface AdminPagesDict {
       actions: string;
     };
     status: {
-      active: string;
-      inactive: string;
+      ACTIVE: string;
+      DRAFT: string;
+      INACTIVE: string;
+      ARCHIVED: string;
+      PENDING_REVIEW: string;
+      PENDING_TRIPPER_REVIEW: string;
       featured: string;
       normal: string;
-      pendingReview: string;
     };
     actions: {
       disable: string;
@@ -984,9 +1123,14 @@ export interface AdminPagesDict {
 
 export interface NotificationsDict {
   pageTitle: string;
+  eyebrow: string;
+  description: string;
   emptyState: string;
+  emptyStateTitle: string;
   markRead: string;
+  markAllRead: string;
   unreadBadge: string;
+  unreadCount: string;
   types: Record<string, string>;
 }
 
@@ -1809,8 +1953,7 @@ export interface MarketingDictionary {
       stepLabel: string;
     };
     trust: {
-      footnote: string;
-      items: Array<{ label: string; prefix?: string; value: string }>;
+      items: Array<{ title: string; description: string }>;
       sectionTitle: string;
     };
     presentTrippers: {
@@ -1920,6 +2063,7 @@ export interface MarketingDictionary {
     comingSoonDescription: string;
     header: {
       badgeActiveTraveler: string;
+      badgeTripper: string;
       emailFallback: string;
       userFallback: string;
     };
@@ -1928,6 +2072,8 @@ export interface MarketingDictionary {
       title: string;
     };
     labels: {
+      addressSection: string;
+      avgRating: string;
       city: string;
       country: string;
       dislikes: string;
@@ -1938,6 +2084,7 @@ export interface MarketingDictionary {
       phone: string;
       state: string;
       street: string;
+      totalTrips: string;
       travelerType: string;
       zipCode: string;
     };
@@ -1970,6 +2117,10 @@ export interface MarketingDictionary {
     };
     personalSectionTitle: string;
     preferencesSectionTitle: string;
+    tagList: {
+      addAriaLabel: string;
+      removeAriaLabel: string;
+    };
     sections: {
       summary: string;
       travelDocs: string;
@@ -2086,6 +2237,8 @@ export interface MarketingDictionary {
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
   tripperExperiences: TripperExperiencesDict;
+  tripperEarnings: TripperEarningsDict;
+  tripperReviews: TripperReviewsDict;
   unauthorized: UnauthorizedPageDict;
   notifications: NotificationsDict;
   tripReview: TripReviewDict;

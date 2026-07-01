@@ -159,7 +159,7 @@ describe("POST /api/reviews", () => {
     );
   });
 
-  it("sets tripperId=null for RandomTrip (Scenario 4.9)", async () => {
+  it("sets tripperId=null for Randomtrip (Scenario 4.9)", async () => {
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       ...baseTripRequest,
       tripperId: null,

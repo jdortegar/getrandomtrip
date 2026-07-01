@@ -230,11 +230,14 @@
         "actions": "Actions"
       },
       "status": {
-        "active": "Active",
-        "inactive": "Inactive",
+        "ACTIVE": "Active",
+        "DRAFT": "Draft",
+        "INACTIVE": "Inactive",
+        "ARCHIVED": "Archived",
+        "PENDING_REVIEW": "Pending review",
+        "PENDING_TRIPPER_REVIEW": "Tripper reviewing",
         "featured": "Featured",
-        "normal": "Normal",
-        "pendingReview": "Pending review"
+        "normal": "Normal"
       },
       "actions": {
         "disable": "Disable",
@@ -696,7 +699,7 @@
     "testimonials": {
       "eyebrow": "Traveler reviews",
       "subtitle": "Your next unforgettable memory is just one click away. Don't think twice.",
-      "title": "What people say about RandomTrip",
+      "title": "What people say about Randomtrip",
       "viewFullReviewLabel": "View full review"
     },
     "xsedHero": {
@@ -2176,18 +2179,18 @@
     },
     "page": {
       "title": "Thank you for your purchase!",
-      "body": "Your GetRandomTrip surprise adventure is confirmed.",
+      "body": "Your Randomtrip surprise adventure is confirmed.",
       "messageApproved": "Payment approved. Your surprise trip is confirmed.",
       "messagePending": "Payment status: {status}. Check your email for confirmation.",
       "messageGeneric": "Thank you for your purchase. If you just paid, your trip is being confirmed.",
       "errorTitle": "Error loading order",
-      "metaDescription": "Your GetRandomTrip purchase is confirmed.",
+      "metaDescription": "Your Randomtrip purchase is confirmed.",
       "retry": "Retry",
       "ctaReveal": "Reveal my destination",
       "ctaBackToJourney": "Back to journey",
       "ctaHome": "Go to home",
       "ctaMyTrips": "Go to my trips",
-      "calendarEventDescription": "Your GetRandomTrip surprise escape. Destination revealed 48 hours before departure.",
+      "calendarEventDescription": "Your Randomtrip surprise escape. Destination revealed 48 hours before departure.",
       "xsedTitle": "You've got your XSED",
       "xsedBody": "You'll receive an email with everything you need for your escape.",
       "xsedTripTypeLabel": "Trip type",
@@ -2201,7 +2204,7 @@
   "paymentFailure": {
     "title": "Payment rejected",
     "body": "The payment could not be completed. You can try again or choose another payment method.",
-    "metaDescription": "Payment was rejected. Try again on GetRandomTrip.",
+    "metaDescription": "Payment was rejected. Try again on Randomtrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">REJECTED</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
@@ -2211,7 +2214,7 @@
   "paymentPending": {
     "title": "Payment pending",
     "body": "Your payment is being processed. Check your email for confirmation.",
-    "metaDescription": "Your payment is pending. GetRandomTrip.",
+    "metaDescription": "Your payment is pending. Randomtrip.",
     "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
@@ -2248,10 +2251,10 @@
   },
   "legalCookies": {
     "meta": {
-      "description": "How GetRandomTrip uses cookies and similar technologies on our website and services.",
-      "openGraphDescription": "Cookie policy for GetRandomTrip.",
-      "openGraphTitle": "Cookie Policy | GetRandomTrip",
-      "title": "Cookie Policy | GetRandomTrip"
+      "description": "How Randomtrip uses cookies and similar technologies on our website and services.",
+      "openGraphDescription": "Cookie policy for Randomtrip.",
+      "openGraphTitle": "Cookie Policy | Randomtrip",
+      "title": "Cookie Policy | Randomtrip"
     },
     "hero": {
       "description": "Transparency about cookies and your choices.",
@@ -2262,7 +2265,7 @@
       {
         "title": "What this policy covers",
         "paragraphs": [
-          "This Cookie Policy explains how GetRandomTrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
+          "This Cookie Policy explains how Randomtrip (we, us) uses cookies and similar technologies when you visit our website, use our journey flow, sign in, or complete a purchase. It should be read together with our Privacy Policy."
         ]
       },
       {
@@ -2273,7 +2276,7 @@
       },
       {
         "title": "Cookies we use",
-        "listIntro": "Depending on how you use GetRandomTrip, we may use:",
+        "listIntro": "Depending on how you use Randomtrip, we may use:",
         "listItems": [
           "Strictly necessary cookies: required for security, authentication, session continuity, load balancing, and fraud prevention (for example keeping you signed in or remembering your locale).",
           "Functional cookies: remember choices such as language, journey progress where designed into the product, and UI preferences.",
@@ -2315,10 +2318,10 @@
   },
   "legalPrivacy": {
     "meta": {
-      "description": "How GetRandomTrip collects, uses, and protects your personal data when you plan and book surprise trips.",
-      "openGraphDescription": "Privacy policy for GetRandomTrip travelers and trippers.",
-      "openGraphTitle": "Privacy Policy | GetRandomTrip",
-      "title": "Privacy Policy | GetRandomTrip"
+      "description": "How Randomtrip collects, uses, and protects your personal data when you plan and book surprise trips.",
+      "openGraphDescription": "Privacy policy for Randomtrip travelers and trippers.",
+      "openGraphTitle": "Privacy Policy | Randomtrip",
+      "title": "Privacy Policy | Randomtrip"
     },
     "hero": {
       "description": "Your privacy matters when you trust us with your trip.",
@@ -2329,7 +2332,7 @@
       {
         "title": "Who we are",
         "paragraphs": [
-          "GetRandomTrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
+          "Randomtrip operates a platform that connects travelers with independent trip curators (Trippers) who design and deliver surprise-travel experiences. This policy describes how we process personal data in that context."
         ]
       },
       {
@@ -2395,7 +2398,7 @@
       {
         "title": "Children",
         "paragraphs": [
-          "GetRandomTrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
+          "Randomtrip is not directed at children under 16 (or the age required in your jurisdiction). We do not knowingly collect data from children. Contact us if you believe a minor provided data so we can delete it."
         ]
       },
       {
@@ -2414,13 +2417,13 @@
   },
   "legalRefund": {
     "meta": {
-      "description": "Refunds, cancellations, and chargebacks for GetRandomTrip purchases and surprise-travel experiences.",
-      "openGraphDescription": "Refund and cancellation policy for GetRandomTrip.",
-      "openGraphTitle": "Refund Policy | GetRandomTrip",
-      "title": "Refund Policy | GetRandomTrip"
+      "description": "Refunds, cancellations, and chargebacks for Randomtrip purchases and surprise-travel experiences.",
+      "openGraphDescription": "Refund and cancellation policy for Randomtrip.",
+      "openGraphTitle": "Refund Policy | Randomtrip",
+      "title": "Refund Policy | Randomtrip"
     },
     "hero": {
-      "description": "How refunds and cancellations work for trips purchased through GetRandomTrip.",
+      "description": "How refunds and cancellations work for trips purchased through Randomtrip.",
       "eyebrow": "LEGAL",
       "title": "Refund Policy"
     },
@@ -2428,13 +2431,13 @@
       {
         "title": "Overview",
         "paragraphs": [
-          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through GetRandomTrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
+          "This Refund Policy explains how cancellation, refunds, and payment disputes work when you purchase experiences through Randomtrip. Specific offers may include additional terms shown at checkout; where they conflict, the checkout terms control for that purchase."
         ]
       },
       {
         "title": "Nature of the service",
         "paragraphs": [
-          "Many GetRandomTrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
+          "Many Randomtrip experiences are customized or date-specific (travel services, reservations, or curator time). Once key components are committed with suppliers, refunds may be limited. The surprise element does not remove your statutory consumer rights where they apply."
         ]
       },
       {
@@ -2447,7 +2450,7 @@
         ]
       },
       {
-        "title": "Changes or cancellations by the Tripper or GetRandomTrip",
+        "title": "Changes or cancellations by the Tripper or Randomtrip",
         "paragraphs": [
           "If a Tripper cannot deliver the experience due to force majeure, supplier failure, or operational reasons, we will offer a rescheduled date, a comparable alternative where feasible, or a refund of amounts paid for the undelivered portion, consistent with applicable law and the terms of sale."
         ]
@@ -2486,10 +2489,10 @@
   },
   "legalTerms": {
     "meta": {
-      "description": "Terms of Service for using GetRandomTrip to discover and book surprise-travel experiences.",
-      "openGraphDescription": "Terms of Service for GetRandomTrip.",
-      "openGraphTitle": "Terms of Service | GetRandomTrip",
-      "title": "Terms of Service | GetRandomTrip"
+      "description": "Terms of Service for using Randomtrip to discover and book surprise-travel experiences.",
+      "openGraphDescription": "Terms of Service for Randomtrip.",
+      "openGraphTitle": "Terms of Service | Randomtrip",
+      "title": "Terms of Service | Randomtrip"
     },
     "hero": {
       "description": "Rules for using our platform, booking trips, and working with Trippers.",
@@ -2500,13 +2503,13 @@
       {
         "title": "Agreement",
         "paragraphs": [
-          "By accessing or using GetRandomTrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
+          "By accessing or using Randomtrip websites, apps, or services (the Services), you agree to these Terms of Service. If you do not agree, do not use the Services. We may update these Terms; the updated version will be posted here, and continued use may constitute acceptance as allowed by law."
         ]
       },
       {
-        "title": "What GetRandomTrip provides",
+        "title": "What Randomtrip provides",
         "paragraphs": [
-          "GetRandomTrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; GetRandomTrip facilitates discovery, booking, communication, and payment processing."
+          "Randomtrip is a marketplace and technology layer that helps travelers express preferences and book surprise-travel experiences curated by independent Trippers. Unless stated otherwise, Trippers are responsible for designing and delivering the travel experience; Randomtrip facilitates discovery, booking, communication, and payment processing."
         ]
       },
       {
@@ -2521,7 +2524,7 @@
       },
       {
         "title": "Bookings, prices, and payments",
-        "listIntro": "When you purchase through GetRandomTrip:",
+        "listIntro": "When you purchase through Randomtrip:",
         "listItems": [
           "Prices are displayed in the currency shown at checkout unless stated otherwise.",
           "Payment is processed by Mercado Pago or another processor we designate; their terms and privacy policy also apply.",
@@ -2543,13 +2546,13 @@
       {
         "title": "Trippers and third parties",
         "paragraphs": [
-          "Trippers and local operators are independent parties. GetRandomTrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
+          "Trippers and local operators are independent parties. Randomtrip does not control every on-the-ground decision. Their performance is their responsibility subject to our Tripper agreements and consumer law. Carriers, hotels, and activity providers may have their own terms and conditions of carriage or stay."
         ]
       },
       {
         "title": "Intellectual property",
         "paragraphs": [
-          "Content on the Services (brand, design, text, graphics, video, software) is owned by GetRandomTrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
+          "Content on the Services (brand, design, text, graphics, video, software) is owned by Randomtrip or licensors. You receive a limited, non-exclusive license to use the Services for personal, non-commercial trip planning unless we agree otherwise in writing."
         ]
       },
       {
@@ -2561,13 +2564,13 @@
       {
         "title": "Limitation of liability",
         "paragraphs": [
-          "To the maximum extent permitted by applicable law, GetRandomTrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
+          "To the maximum extent permitted by applicable law, Randomtrip and its affiliates are not liable for indirect, incidental, special, consequential, or punitive damages, or for lost profits, data, or goodwill. Our aggregate liability arising out of these Terms or the Services is limited to the amount you paid for the specific booking giving rise to the claim in the twelve (12) months before the event, except where liability cannot be limited by law (including gross negligence or willful misconduct)."
         ]
       },
       {
         "title": "Indemnity",
         "paragraphs": [
-          "You will indemnify and hold harmless GetRandomTrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
+          "You will indemnify and hold harmless Randomtrip from claims, damages, losses, and expenses (including reasonable legal fees) arising from your misuse of the Services, violation of these Terms, or violation of third-party rights."
         ]
       },
       {
@@ -2579,7 +2582,7 @@
       {
         "title": "Governing law and disputes",
         "paragraphs": [
-          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to GetRandomTrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
+          "Unless mandatory consumer rules in your country require otherwise, these Terms are governed by the laws applicable to Randomtrip's operating entity without regard to conflict-of-law rules. Courts or arbitration in that jurisdiction may have exclusive venue, except where consumers have non-waivable rights to sue in their home courts."
         ]
       }
     ],
@@ -2601,40 +2604,29 @@
       "eyebrow": "Multidisciplinary team",
       "items": [
         {
-          "bio": "Founder and visionary behind GetRandomTrip. Designs every experience with the obsession of someone who knows the perfect trip isn't chosen — it's discovered.",
+          "bio": "Designs the vision of Randomtrip: turning the surprise into a reliable, operable experience with soul.",
           "img": "/images/about-us-santiago.png",
           "linkedin": "#",
           "name": "Santiago Senega",
-          "role": "Founder",
-          "tagline": "Designs every experience as if it were the only one that matters."
+          "role": "Founder & CEO"
         },
         {
-          "bio": "Technology and product. Builds the systems that make serendipity possible at scale without losing the soul of the detail.",
+          "bio": "Builds the systems that make it possible to scale serendipity without losing clarity, speed, or premium experience.",
           "img": "/images/about-us-david.png",
           "linkedin": "#",
           "name": "David Ortega",
-          "role": "Tech & Product",
-          "tagline": "Bridges product, technology and user experience."
+          "role": "Co-Founder & CTO"
         },
         {
-          "bio": "Operations and logistics. Turns every itinerary into a flawless choreography that happens behind the scenes.",
-          "img": "/images/about-us-rodrigo.png",
-          "linkedin": "#",
-          "name": "Rodrigo S. Benítez",
-          "role": "Operations",
-          "tagline": "Transforms logistics into invisible art."
-        },
-        {
-          "bio": "Design and brand. Shapes the visual world of GetRandomTrip, tending to every pixel as if it were part of the landscape.",
+          "bio": "Shapes the visual universe of Randomtrip, making sure every interaction feels clear, human, and memorable.",
           "img": "/images/about-us-carla.png",
           "linkedin": "#",
           "name": "Carla C. J Vázquez",
-          "role": "Design",
-          "tagline": "Gives visual shape to worlds that don't exist yet."
+          "role": "Head UX / UI"
         }
       ],
       "sectionTitle": "Who we are",
-      "subtitle": "We're a team that blends creativity, logistics and obsession for detail to craft trips you didn't know you needed."
+      "subtitle": "We are a team of product, technology, operations, design and curation with a travel category: Controlled Wonder. We are not a traditional agency or OTA. We are a managed marketplace of surprise experiences, where every route combines human sensibility, operational technology, and local knowledge. The promise is simple: the destination can surprise you; the experience should not worry you."
     },
     "faq": {
       "description": "Everything you need to know before taking the leap.",
@@ -2665,8 +2657,8 @@
     },
     "founder": {
       "imageAlt": "Randomtrip founder",
-      "p1": "We were born to fight the analysis paralysis that holds back great trips. We turn the what if…? into let's go! with a system that protects your time and energy.",
-      "p2": "This isn't just an agency: it's a manifesto against routine and for well-designed wonder.",
+      "p1": "Randomtrip was born from a personal obsession of Santi Senega: to give travel back that mix of curiosity, wonder, and trust that is often lost among endless options, reviews, and logistical decisions.",
+      "p2": "As Founder & CEO, Santi designed Randomtrip from a simple idea: the surprise can be deeply exciting if it's well contained. The destination can remain hidden; the price, quality, operation, and support cannot. That tension between mystery and structure became the heart of Randomtrip: Designed Serendipity, or living the unexpected without improvising.",
       "sectionTitle": "Founder story"
     },
     "hero": {
@@ -2675,10 +2667,10 @@
         "href": "#philosophy",
         "text": "Our philosophy"
       },
-      "subtitle": "Luxury isn't choosing from 500 options. It's not having to choose.\n We design safe serendipity so you live what matters.",
+      "subtitle": "At Randomtrip the surprise is the destination, not the quality, price, or logistics. We combine technology, human curation, and local expertise to create trips with soul — safe and memorable.",
       "eyebrow": "Architecture of trust",
       "fallbackImage": "/images/about-us.png",
-      "title": "About Us"
+      "title": "Surprise trips, designed without improvising."
     },
     "meta": {
       "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
@@ -2688,8 +2680,8 @@
     },
     "philosophy": {
       "imageAlt": "Serendipity moments on a trip",
-      "p1": "We don't sell a destination; we sell an emotional outcome. Our mission is to free your mind from analysis paralysis and guide you toward states like wonder, calm or connection.",
-      "p2": "We call it Designed Serendipity: safe, meticulously planned environments that feel spontaneous and transformative. You give up logistical control to gain real freedom.",
+      "p1": "We don't sell destinations. We design a different way of traveling. Randomtrip was born to free travelers from the fatigue of planning: too many open tabs, too many decisions before you even start.",
+      "p2": "Our answer is Designed Serendipity: experiences that feel spontaneous but are born from a rigorous structure. You define dates, budget, style, pace, and limits. We design the wonder within that framework. Living the unexpected, without improvising.",
       "pills": [
         "Emotional brief",
         "Invisible design",
@@ -2701,57 +2693,53 @@
       "items": [
         {
           "key": "01",
-          "title": "Feelings brief",
-          "description": "How you want to feel. Soft/hard boundaries. Red and green signals."
+          "title": "You set the limits",
+          "description": "Tell us when you travel, how much you want to invest, what style you're looking for, and what you don't want."
         },
         {
           "key": "02",
-          "title": "Invisible design",
-          "description": "We handle the logistics. You just receive signals and moments."
+          "title": "We curate the route",
+          "description": "We cross your signals with local expertise, real availability, provider quality, and operational logic."
         },
         {
           "key": "03",
-          "title": "Safe serendipity",
-          "description": "Curated surprises with backup and plan B. Freedom with a net."
+          "title": "We reveal just enough",
+          "description": "You receive key information at the right moment. The surprise remains; trust is never lost."
         }
       ],
       "sectionTitle": "How we design your trip",
       "stepLabel": "Step"
     },
     "trust": {
-      "footnote": "* Brand plan targets. We'll update live metrics on the dashboard.",
       "items": [
         {
-          "value": "+*",
-          "label": "Public goal and ongoing tracking.",
-          "prefix": "NPS 65"
+          "title": "Clear pricing",
+          "description": "We define budget and conditions before designing. No microextras disguised as surprises."
         },
         {
-          "value": "%+",
-          "label": "Upsell adoption (wellness, experiences).",
-          "prefix": "55"
+          "title": "Validated providers",
+          "description": "We work with accommodations, experiences, and operators aligned with quality, safety, and service."
         },
         {
-          "value": "%+",
-          "label": "Target repeat rate.",
-          "prefix": "20"
+          "title": "Reveal with support",
+          "description": "The destination is revealed on time, with practical information and guidance so you just have to live it."
         }
       ],
-      "sectionTitle": "Trust in numbers"
+      "sectionTitle": "Trust in process"
     },
     "valueProps": {
       "items": [
         {
           "title": "Expert curation",
-          "copy": "Guides with impeccable taste and our own methodology. Less scroll, more living."
+          "copy": "Less searching, more traveling. We design every route with local expertise, real preferences, and our own methodology."
         },
         {
           "title": "Safety and transparency",
-          "copy": "Protocols, audited partners and clear communication before, during and after."
+          "copy": "The surprise is never where it matters: budget, limits, logistics, providers, and support are all clear from the start."
         },
         {
           "title": "Tripper community",
-          "copy": "Real stories, referrals and shared learnings that elevate every trip."
+          "copy": "Our Trippers aren't campaign influencers. They are local curators and partners who turn territorial knowledge into Routes with Soul."
         }
       ],
       "sectionTitle": "Why trust Randomtrip"
@@ -2772,8 +2760,8 @@
     "linkFamily": "Family",
     "linkSolo": "Solo trips",
     "linkTrippers": "Our Trippers",
-    "metaDescription": "The page you're looking for doesn't exist. Discover amazing destinations with RandomTrip.",
-    "metaTitle": "Page Not Found - RandomTrip",
+    "metaDescription": "The page you're looking for doesn't exist. Discover amazing destinations with Randomtrip.",
+    "metaTitle": "Page Not Found - Randomtrip",
     "needHelp": "Need help?",
     "subtitle": "The page you're looking for doesn't exist or has been moved. But don't worry, we have many amazing destinations waiting for you. Why not explore our adventures?",
     "tipLabel": "Tip:",
@@ -2782,7 +2770,7 @@
     "viewPackages": "View Packages"
   },
   "waitlist": {
-    "headline": "Get early access to RandomTrip's launch",
+    "headline": "Get early access to Randomtrip's launch",
     "subheadline": "Join the list and we'll notify you when we're ready.",
     "namePlaceholder": "First name",
     "lastNamePlaceholder": "Last name",
@@ -2807,7 +2795,8 @@
     "header": {
       "userFallback": "User",
       "emailFallback": "user@email.com",
-      "badgeActiveTraveler": "Active traveler"
+      "badgeActiveTraveler": "Active traveler",
+      "badgeTripper": "Tripper"
     },
     "nav": {
       "summary": "Summary",
@@ -2846,6 +2835,10 @@
     },
     "personalSectionTitle": "Personal data",
     "preferencesSectionTitle": "Travel preferences",
+    "tagList": {
+      "addAriaLabel": "Add",
+      "removeAriaLabel": "Remove"
+    },
     "labels": {
       "email": "Email",
       "name": "Name",
@@ -2856,9 +2849,12 @@
       "zipCode": "Postal code",
       "country": "Country",
       "memberSince": "Member since",
+      "totalTrips": "Total trips",
+      "avgRating": "Avg. rating",
+      "addressSection": "Address",
       "travelerType": "Traveler type",
-      "interests": "Interests (comma-separated)",
-      "dislikes": "Avoid (comma-separated)"
+      "interests": "Interests",
+      "dislikes": "Avoid"
     },
     "travelerTypes": {
       "selectPlaceholder": "Select…",
@@ -2879,8 +2875,8 @@
       "dislikes": "Avoid (comma-separated)",
       "namePlaceholder": "Your full name",
       "emailPlaceholder": "you@email.com",
-      "interestsPlaceholder": "adventure, culture, food",
-      "dislikesPlaceholder": "crowds, cold",
+      "interestsPlaceholder": "e.g. adventure",
+      "dislikesPlaceholder": "e.g. crowds",
       "currentPassword": "Current password",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
@@ -3047,13 +3043,44 @@
       "travelTypeLabel": "Traveler type",
       "unsaved": "Unsaved changes"
     },
-    "header": {
-      "title": "My Posts",
-      "description": "Manage your blog and share your experiences"
+    "title": "MY POSTS",
+    "eyebrow": "Your content",
+    "description": "Manage your blog and share your experiences",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allFormats": "All formats",
+      "allTravelTypes": "All types",
+      "clearFilters": "Clear filters",
+      "of": "of",
+      "count": "posts"
     },
-    "empty": {
-      "message": "You have no posts yet. Time to tell your first story!",
-      "cta": "Create my first post"
+    "format": {
+      "article": "Article",
+      "photo": "Photo",
+      "video": "Video",
+      "mixed": "Mixed"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published"
+    },
+    "table": {
+      "actions": "Actions",
+      "post": "Post",
+      "format": "Format",
+      "status": "Status",
+      "updated": "Updated",
+      "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "delete": "Delete",
+      "view": "View",
+      "deleteConfirm": "Delete this post? This action cannot be undone."
+    },
+    "emptyState": {
+      "noPosts": "You have no posts yet.",
+      "noMatch": "No posts match the filters.",
+      "createFirst": "Create my first post"
     },
     "newPost": "New Post",
     "previewPage": {
@@ -3061,13 +3088,6 @@
       "banner": "You are viewing a draft preview. The public post may look different.",
       "emptyBody": "This post has no body content yet.",
       "loadError": "Could not load this post for preview."
-    },
-    "row": {
-      "edit": "Edit",
-      "view": "View",
-      "published": "Published",
-      "draft": "Draft",
-      "updatedAt": "Updated"
     }
   },
   "tripperDashboard": {
@@ -3162,6 +3182,60 @@
       "revealed": "Revealed",
       "completed": "Completed",
       "pending": "Pending"
+    },
+    "settingsProfile": {
+      "eyebrow": "Account settings",
+      "heading": "My Profile",
+      "hero": {
+        "editProfile": "Edit profile",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…",
+        "uploadHint": "Change cover photo",
+        "nameFallback": "Tripper",
+        "namePlaceholder": "Your name",
+        "locationPlaceholder": "City, Country",
+        "noLocation": "No location set",
+        "statsExperiences": "Experiences",
+        "statsBookings": "Bookings",
+        "statsRating": "Rating",
+        "reviewsSuffix": "reviews",
+        "imageTooLarge": "The image can't be larger than 5 MB.",
+        "imageUploadError": "Could not upload the image"
+      },
+      "publicPresence": {
+        "eyebrow": "Your brand",
+        "heading": "Public Presence",
+        "bioLabel": "Bio",
+        "bioPlaceholder": "Tell travelers about yourself...",
+        "bioEmpty": "No bio yet.",
+        "destinationsLabel": "Destinations",
+        "destinationsAddPlaceholder": "Add a destination",
+        "travelerTypesLabel": "Traveler types accepted",
+        "travelerTypesHelper": "Select the traveler types you build experiences for"
+      },
+      "publicUrl": {
+        "eyebrow": "Your public page",
+        "heading": "Profile URL",
+        "domainPrefix": "getrandomtrip.com/trippers/",
+        "slugPlaceholder": "your-slug",
+        "copyLink": "Copy link",
+        "copied": "Copied!",
+        "openLink": "Open public profile"
+      },
+      "account": {
+        "eyebrow": "Read-only",
+        "heading": "Account",
+        "emailLabel": "Email",
+        "tierLabel": "Tier Level",
+        "commissionLabel": "Commission Rate",
+        "adminSet": "Admin-set",
+        "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance."
+      },
+      "divider": {
+        "eyebrow": "Shared with all roles",
+        "heading": "Account Settings"
+      }
     }
   },
   "dashboard": {
@@ -3254,15 +3328,69 @@
       "revealDestination": "View Destination"
     }
   },
+  "tripperReviews": {
+    "title": "REVIEWS & NPS",
+    "eyebrow": "What your travelers say",
+    "description": "See your client reviews and your NPS score.",
+    "kpis": {
+      "averageRating": "Average rating",
+      "totalReviews": "Total reviews",
+      "nps": "NPS",
+      "promoters": "Promoters",
+      "detractorsCaption": "{count} detractors"
+    },
+    "list": {
+      "title": "Client reviews"
+    },
+    "emptyState": {
+      "title": "No reviews yet",
+      "description": "Reviews will show up here once clients complete their trips and rate their experience."
+    }
+  },
+  "tripperEarnings": {
+    "title": "MY EARNINGS",
+    "eyebrow": "Your income",
+    "description": "Review your commissions, bonuses, and payouts by month.",
+    "exportCsv": "Export CSV",
+    "kpis": {
+      "currentCycle": "Current cycle",
+      "totalEarned": "Total earned (6m)",
+      "pendingPayout": "Pending payout",
+      "bookings": "Bookings (6m)"
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "processing": "Processing"
+    },
+    "table": {
+      "title": "History (6 months)",
+      "month": "Month",
+      "bookings": "Bookings",
+      "base": "Base",
+      "bonus": "Bonus",
+      "total": "Total",
+      "status": "Status",
+      "payout": "Payout"
+    },
+    "emptyState": {
+      "title": "No earnings yet",
+      "description": "Once you complete bookings, your commissions will show up here."
+    }
+  },
   "tripperExperiences": {
     "title": "MY EXPERIENCES",
+    "eyebrow": "Your catalog",
     "description": "Manage your travel offers and keep your catalog up to date.",
     "newExperience": "New Experience",
     "back": "Back to My Experiences",
     "filters": {
       "allTypes": "All types",
       "allStatuses": "All statuses",
-      "allLevels": "All levels"
+      "allLevels": "All levels",
+      "clearFilters": "Clear filters",
+      "of": "of",
+      "count": "experiences"
     },
     "table": {
       "actions": "Actions",
@@ -3274,6 +3402,8 @@
       "duration": "Duration",
       "capacity": "Capacity",
       "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
       "delete": "Delete",
       "deleteConfirm": "Delete this experience? This action cannot be undone."
     },
@@ -3717,6 +3847,11 @@
   },
   "notifications": {
     "pageTitle": "Notifications",
+    "eyebrow": "Your activity",
+    "description": "Your latest notifications and alerts.",
+    "emptyStateTitle": "No notifications",
+    "markAllRead": "Mark all as read",
+    "unreadCount": "{count} unread",
     "emptyState": "You have no notifications yet.",
     "markRead": "Mark as read",
     "unreadBadge": "Unread",

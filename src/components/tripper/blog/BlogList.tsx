@@ -20,7 +20,7 @@ export default function BlogList({ posts }: BlogListProps) {
           <h2 className="text-xl font-semibold mb-2">Aún no tienes posts.</h2>
           <p className="mb-4">¡Es hora de contar tu primera historia!</p>
           <Link
-            href={pathForLocale(locale as Locale, "/dashboard/tripper/blogs/new")}
+            href={pathForLocale(locale as Locale, "/dashboard/tripper/blog/new")}
             className="rt-btn rt-btn--primary"
           >
             Crear mi primer post
@@ -67,13 +67,13 @@ export default function BlogList({ posts }: BlogListProps) {
               </div>
               <div className="flex space-x-3">
                 <Link
-                  href={pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}`)}
+                  href={pathForLocale(locale as Locale, `/dashboard/tripper/blog/${post.id}`)}
                   className="rt-btn rt-btn--secondary rt-btn--sm"
                 >
                   Editar
                 </Link>
                 <Link
-                  href={pathForLocale(locale as Locale, `/dashboard/tripper/blogs/${post.id}/preview`)}
+                  href={pathForLocale(locale as Locale, `/dashboard/tripper/blog/${post.id}/preview`)}
                   className="rt-btn rt-btn--ghost rt-btn--sm"
                 >
                   Previsualizar
