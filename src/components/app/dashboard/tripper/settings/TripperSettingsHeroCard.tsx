@@ -3,6 +3,7 @@
 import { Briefcase, Calendar, Camera, MapPin, Pencil, Shield, Star } from "lucide-react";
 import { useRef } from "react";
 import { Button } from "@/components/ui/Button";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 import type {
@@ -41,7 +42,6 @@ export function TripperSettingsHeroCard({
 }: TripperSettingsHeroCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const hasHeroImage = formData.heroImage.trim().length > 0;
-  const initial = (formData.name || copy.nameFallback).charAt(0).toUpperCase();
   const tierKey = (
     ["rookie", "pro", "elite"].includes(formData.tierLevel)
       ? formData.tierLevel
@@ -94,7 +94,7 @@ export function TripperSettingsHeroCard({
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-700">
-              <Camera className="h-16 w-16 text-white/10" />
+              <Camera className="h-16 w-16 text-white/30" />
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -150,8 +150,8 @@ export function TripperSettingsHeroCard({
 
         <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-4 p-6 md:flex-row md:items-end md:justify-between">
           <div className="flex items-end gap-4">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-light-blue text-3xl font-bold text-white ring-4 ring-white/20">
-              {initial}
+            <div className="shrink-0 rounded-full ring-4 ring-white/20">
+              <UserAvatar height={80} width={80} />
             </div>
             <div className="flex flex-col gap-2">
               {isEditing ? (

@@ -263,7 +263,7 @@ export default function TripperSettingsPage() {
       setFormData((prev) => ({ ...prev, heroImage: data.url as string }));
       setProfile((prev) => ({ ...prev, heroImage: data.url as string }));
       // Delete old blob (fire-and-forget)
-      if (oldHeroImage?.includes("/api/upload?key=")) {
+      if (oldHeroImage?.includes("/api/upload")) {
         void fetch(oldHeroImage, { method: "DELETE" }).catch(() => null);
       }
     } catch (error) {
