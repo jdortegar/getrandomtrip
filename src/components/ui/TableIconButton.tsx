@@ -50,15 +50,17 @@ export function TableIconButton({
 interface TableIconLinkProps {
   children: React.ReactNode;
   href: string;
+  onClick?: () => void;
   title: string;
 }
 
-export function TableIconLink({ children, href, title }: TableIconLinkProps) {
+export function TableIconLink({ children, href, onClick, title }: TableIconLinkProps) {
   return (
     <div className="group relative">
       <Link
         className={`${BASE} hover:border-gray-300 hover:bg-neutral-100 hover:text-neutral-900`}
         href={href}
+        onClick={onClick}
       >
         {children}
       </Link>
