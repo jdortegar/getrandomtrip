@@ -16,6 +16,7 @@ import type {
   ExperienceFormDraft,
   ExperienceFormDraftOnChange,
 } from "@/types/tripper";
+import type { FieldPeek } from "@/components/ui/field-peek";
 import type { ExperienceImageState } from "../NewExperienceShell";
 
 interface Props {
@@ -24,6 +25,8 @@ interface Props {
   onChange: ExperienceFormDraftOnChange;
   imageState: ExperienceImageState;
   changedFieldSet?: Set<string>;
+  /** Builds the peek toggle for an eligible field; `undefined` when peek is not available. */
+  peek?: (field: string) => FieldPeek | undefined;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
@@ -32,7 +35,7 @@ const MONTH_KEYS = [
   "01","02","03","04","05","06","07","08","09","10","11","12",
 ];
 
-export function AboutExperienceStep({ copy, form, onChange, imageState, changedFieldSet }: Props) {
+export function AboutExperienceStep({ copy, form, onChange, imageState, changedFieldSet, peek }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const { onHeroSelect, onHeroRemove } = imageState;
@@ -69,6 +72,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
             value={form.title}
             onChange={(e) => onChange("title", e.target.value)}
             className={ch("title")}
+            peek={peek?.("title")}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -128,6 +132,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
         value={form.teaser}
         onChange={(e) => onChange("teaser", e.target.value)}
         className={ch("teaser")}
+        peek={peek?.("teaser")}
       />
 
       {/* Row 4: Descripción completa */}
@@ -138,6 +143,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
         value={form.description}
         onChange={(e) => onChange("description", e.target.value)}
         className={ch("description")}
+        peek={peek?.("description")}
       />
 
       {/* Hero image — full-width banner upload */}

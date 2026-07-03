@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import type { RawEditorOptions } from "tinymce";
+import { PeekToggleButton, type FieldPeek } from "./field-peek";
+import { cn } from "@/lib/utils";
 
 type TinyInitBase = Omit<
   Partial<RawEditorOptions>,
@@ -34,6 +36,10 @@ interface RichTextInputProps {
   placeholder?: string;
   value: string;
   disabled?: boolean;
+  /** Opt-in "peek at original" toggle. Undefined by default — zero effect on other call sites. */
+  peek?: FieldPeek;
+  /** Applied to the outer wrapper — e.g. the changed-field amber ring. */
+  className?: string;
 }
 
 export function RichTextInput({
@@ -43,23 +49,58 @@ export function RichTextInput({
   placeholder,
   value,
   disabled,
+  peek,
+  className,
 }: RichTextInputProps) {
+  const isPeeking = !!peek?.active;
+  const isEmpty = isPeeking && !peek!.originalValue.trim();
+
   return (
     <div className="flex flex-col gap-2">
       <label className="block font-normal text-gray-600 text-base" htmlFor={id}>
         {label}
       </label>
-      <div className="rich-text-input bg-gray-100 rounded-xl overflow-hidden min-h-[200px]">
-        <Editor
-          apiKey="no-api-key"
-          id={id}
-          init={{ ...EDITOR_INIT, placeholder }}
-          licenseKey="gpl"
-          onEditorChange={onChange}
-          tinymceScriptSrc={TINYMCE_SCRIPT_SRC}
-          value={value}
-          disabled={disabled}
-        />
+      {/*
+        The toggle sits in this outer `relative` wrapper — a sibling of
+        whichever content renders below, not a descendant of TinyMCE's own
+        DOM — with an explicit z-index so it paints above TinyMCE's toolbar
+        even though the toolbar (added after mount, outside React's tree)
+        would otherwise occupy the same top-right corner without one.
+        Rounding/clipping lives on the INNER box, not here — the tooltip pops
+        up above the icon, and an `overflow-hidden` on this outer wrapper
+        would clip it before it can render.
+      */}
+      <div className={cn("relative", className)}>
+        {isPeeking ? (
+          // Static read-only preview of the tripper's original — deliberately
+          // NOT fed into the live TinyMCE instance. TinyMCE fires its own
+          // change event on programmatic setContent() too (its `changeEvents`
+          // list includes 'setcontent'), so swapping the controlled `value` to
+          // show the original would make TinyMCE's own React wrapper call
+          // `onEditorChange` and silently overwrite the admin's real edit with
+          // the original text. A separate static element has no write-back path.
+          <div
+            className={cn(
+              "min-h-[200px] rounded-xl bg-gray-100 px-6 py-4 font-barlow text-base leading-[1.5] text-neutral-400",
+              isEmpty ? "italic" : "line-through [&_*]:line-through",
+            )}
+            dangerouslySetInnerHTML={{ __html: isEmpty ? peek!.emptyLabel : peek!.originalValue }}
+          />
+        ) : (
+          <div className="rich-text-input min-h-[200px] rounded-xl overflow-hidden bg-gray-100">
+            <Editor
+              apiKey="no-api-key"
+              id={id}
+              init={{ ...EDITOR_INIT, placeholder }}
+              licenseKey="gpl"
+              onEditorChange={onChange}
+              tinymceScriptSrc={TINYMCE_SCRIPT_SRC}
+              value={value}
+              disabled={disabled}
+            />
+          </div>
+        )}
+        {peek ? <PeekToggleButton peek={peek} position="textarea" /> : null}
       </div>
     </div>
   );

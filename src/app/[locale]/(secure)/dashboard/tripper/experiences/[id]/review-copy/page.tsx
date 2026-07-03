@@ -118,6 +118,52 @@ export default async function ReviewCopyPage(props: {
     ? (copy.changedFields as string[])
     : [];
 
+  // Original (pristine, pre-admin-edit) content — mirrors copyDraft construction so the
+  // peek toggle can swap the displayed value back to the tripper's own original.
+  const originalDraft: ExperienceFormDraft = {
+    status: (original.status as string) as ExperienceFormDraft["status"],
+    title: original.title ?? "",
+    type: Array.isArray(original.type) ? original.type : [original.type].filter(Boolean),
+    level: original.level ?? "essenza",
+    teaser: original.teaser ?? "",
+    description: original.description ?? "",
+    heroImage: original.heroImage ?? "",
+    tags: Array.isArray(original.tags) ? original.tags : [],
+    destinationCountry: original.destinationCountry ?? "",
+    destinationCity: original.destinationCity ?? "",
+    excuseKey: Array.isArray(original.excuseKey) ? original.excuseKey : [],
+    climate: original.climate ?? "any",
+    minPax: original.minPax ?? 1,
+    maxPax: original.maxPax ?? 4,
+    minNights: original.minNights ?? 1,
+    maxNights: original.maxNights ?? 7,
+    pricingByType: (original.pricingByType as Record<string, number> | null) ?? null,
+    reviewNote: original.reviewNote ?? null,
+    estimatedCost: "",
+    season: Array.isArray(original.season) ? original.season : [],
+    transport: original.transport ?? "any",
+    travelTime: "",
+    maxTravelTime: original.maxTravelTime ?? "no-limit",
+    departPref: original.departPref ?? "any",
+    arrivePref: original.arrivePref ?? "any",
+    accommodationType: original.accommodationType ?? "any",
+    accommodations: (Array.isArray(original.hotels) && original.hotels.length > 0
+      ? original.hotels
+      : [{ hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "", hotelLink: "", referredLink: "" }]
+    ) as AccommodationEntry[],
+    activities: (Array.isArray(original.activities) && original.activities.length > 0
+      ? original.activities
+      : [{ name: "", durationRhythm: null, description: "", risks: "", image: null }]
+    ) as ActivityEntry[],
+    itinerary: (Array.isArray(original.itinerary) && original.itinerary.length > 0
+      ? original.itinerary
+      : [{ title: "", description: "", image: null }]
+    ) as ItineraryDayEntry[],
+    inclusions: Array.isArray(original.inclusions) ? (original.inclusions as string[]) : [],
+    exclusions: Array.isArray(original.exclusions) ? (original.exclusions as string[]) : [],
+    createBlogPost: false,
+  };
+
   const dict = await getDictionary(locale);
 
   return (
@@ -126,6 +172,7 @@ export default async function ReviewCopyPage(props: {
       locale={locale}
       userBadgeLabels={dict.journey.userBadge}
       copyDraft={copyDraft}
+      originalDraft={originalDraft}
       changedFields={changedFields}
       experienceId={params.id}
     />

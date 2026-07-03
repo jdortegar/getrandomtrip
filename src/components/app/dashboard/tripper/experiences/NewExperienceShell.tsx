@@ -6,6 +6,7 @@ import { AlertCircle, X } from "lucide-react";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
 import { ExperienceFormContent } from "./ExperienceFormContent";
+import { ReviewActionsBar } from "./ReviewActionsBar";
 import type { ExperienceFormDraft } from "@/types/tripper";
 import { isExperienceTabComplete } from "@/lib/helpers/experience-form";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
@@ -37,6 +38,8 @@ interface NewExperienceShellProps {
   adminCopyId?: string;
   /** Changed fields list; when provided, highlights those fields in the form. */
   changedFields?: string[];
+  /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
+  originalDraft?: ExperienceFormDraft;
 }
 
 const EMPTY_DRAFT: ExperienceFormDraft = {
@@ -108,6 +111,7 @@ export function NewExperienceShell({
   mode = "tripper",
   adminCopyId,
   changedFields,
+  originalDraft,
 }: NewExperienceShellProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -509,6 +513,14 @@ export function NewExperienceShell({
         userBadgeLabels={userBadgeLabels}
       />
 
+      {reviewActionsSlot && (
+        <ReviewActionsBar
+          changedFields={changedFields ?? []}
+          changedFieldsLabel={dict.changedFieldsBanner.prefix}
+          actionsSlot={reviewActionsSlot}
+        />
+      )}
+
       <div className="rt-container py-4 sm:py-8 scroll-mt-20" ref={contentRef}>
         {/* Rejection feedback banner */}
         {showRejectionBanner && (
@@ -573,6 +585,7 @@ export function NewExperienceShell({
               onSectionChange={handleSectionChange}
               tabs={effectiveTabs}
               changedFields={changedFields}
+              originalDraft={originalDraft}
             />
           </div>
         </div>

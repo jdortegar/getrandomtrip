@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import { DaysInput } from "@/components/ui/DaysInput";
+import type { FieldPeek } from "@/components/ui/field-peek";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   AccommodationEntry,
@@ -14,7 +15,8 @@ interface Props {
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
-  changedFieldSet?: Set<string>;
+  /** Per-entry, per-field "peek at original" toggle; undefined outside adminReadOnly review. */
+  peek?: (index: number, entryKey: keyof AccommodationEntry) => FieldPeek | undefined;
 }
 
 const EMPTY_ENTRY: AccommodationEntry = {
@@ -26,7 +28,7 @@ const EMPTY_ENTRY: AccommodationEntry = {
   referredLink: "",
 };
 
-export function LogisticsAccommodationStep({ copy, form, onChange, changedFieldSet }: Props) {
+export function LogisticsAccommodationStep({ copy, form, onChange, peek }: Props) {
   const { fields } = copy;
 
   function updateEntry(
@@ -51,13 +53,18 @@ export function LogisticsAccommodationStep({ copy, form, onChange, changedFieldS
     );
   }
 
+  // `peek` is only defined for a field when it individually differs from the
+  // original entry, so it doubles as the per-field changed-field indicator.
+  const ring = (index: number, key: keyof AccommodationEntry) =>
+    peek?.(index, key) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
+
   return (
     <div className="space-y-5">
       <p className="text-sm text-neutral-500 -mt-1">
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>
 
-      <div className={`space-y-6 ${changedFieldSet?.has("hotels") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
+      <div className="space-y-6">
         {form.accommodations.map((entry, index) => (
           <div key={index} className="space-y-4">
             {index > 0 && (
@@ -76,15 +83,19 @@ export function LogisticsAccommodationStep({ copy, form, onChange, changedFieldS
               </div>
             )}
 
-            {/* Row 1: Name | Hotel link | Referred link */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <FormField
-                id={`acc-hotel-name-${index}`}
-                label={fields.hotelName}
-                placeholder={fields.hotelNamePlaceholder}
-                value={entry.hotelName}
-                onChange={(e) => updateEntry(index, "hotelName", e.target.value)}
-              />
+            {/* Row 1: Hotel name (full width) */}
+            <FormField
+              id={`acc-hotel-name-${index}`}
+              label={fields.hotelName}
+              placeholder={fields.hotelNamePlaceholder}
+              value={entry.hotelName}
+              onChange={(e) => updateEntry(index, "hotelName", e.target.value)}
+              peek={peek?.(index, "hotelName")}
+              className={ring(index, "hotelName")}
+            />
+
+            {/* Row 2: Hotel link | Referred link */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 id={`acc-hotel-link-${index}`}
                 label={fields.hotelLink}
@@ -92,6 +103,8 @@ export function LogisticsAccommodationStep({ copy, form, onChange, changedFieldS
                 type="url"
                 value={entry.hotelLink}
                 onChange={(e) => updateEntry(index, "hotelLink", e.target.value)}
+                peek={peek?.(index, "hotelLink")}
+                className={ring(index, "hotelLink")}
               />
               <FormField
                 id={`acc-referred-link-${index}`}
@@ -102,6 +115,8 @@ export function LogisticsAccommodationStep({ copy, form, onChange, changedFieldS
                 onChange={(e) =>
                   updateEntry(index, "referredLink", e.target.value)
                 }
+                peek={peek?.(index, "referredLink")}
+                className={ring(index, "referredLink")}
               />
             </div>
 

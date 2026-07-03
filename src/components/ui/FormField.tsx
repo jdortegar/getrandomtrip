@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { ChevronDown, Eye, EyeOff } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { PeekToggleButton, resolvePeekDisplay, type FieldPeek } from "./field-peek";
 
 const formControlClass =
   "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base";
@@ -17,10 +18,15 @@ export interface FormFieldProps extends Omit<
 > {
   id: string;
   label: ReactNode;
+  /** Opt-in "peek at original" toggle. Undefined by default — zero effect on other call sites. */
+  peek?: FieldPeek;
 }
 
 export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
-  function FormField({ className, id, label, type, ...inputProps }, ref) {
+  function FormField(
+    { className, id, label, peek, placeholder, type, value, ...inputProps },
+    ref,
+  ) {
     const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
     const isPasswordField = type === "password";
     const resolvedType = isPasswordField
@@ -28,6 +34,9 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
         ? "text"
         : "password"
       : type;
+
+    const showPeek = !!peek && !isPasswordField;
+    const { displayValue, isEmpty } = resolvePeekDisplay(peek, value);
 
     return (
       <div className="flex flex-col gap-2">
@@ -38,12 +47,16 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
           <input
             className={cn(
               formControlClass,
-              isPasswordField && "pr-12",
+              (isPasswordField || showPeek) && "pr-12",
+              peek?.active && !isEmpty && "line-through",
+              isEmpty && "italic",
               className,
             )}
             id={id}
+            placeholder={isEmpty ? peek?.emptyLabel : placeholder}
             ref={ref}
             type={resolvedType}
+            value={displayValue}
             {...inputProps}
           />
           {isPasswordField ? (
@@ -60,6 +73,7 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
               )}
             </button>
           ) : null}
+          {showPeek ? <PeekToggleButton peek={peek} position="input" /> : null}
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type React from "react";
 import type { ReactNode } from "react";
 import { AlertCircle, Check, Loader2 } from "lucide-react";
@@ -20,6 +21,9 @@ import {
   getMissingFields,
   isExperienceTabComplete,
 } from "@/lib/helpers/experience-form";
+import { resolveFieldPeek, resolveEntryPeek } from "@/lib/helpers/experience-form-peek";
+import type { FieldPeek } from "@/components/ui/field-peek";
+import type { AccommodationEntry, ActivityEntry } from "@/types/tripper";
 import type { SaveStatus, ExperienceImageState } from "./NewExperienceShell";
 
 interface ExperienceFormContentProps {
@@ -43,6 +47,8 @@ interface ExperienceFormContentProps {
   tabs: TripperExperiencesDict["form"]["contentTabs"];
   /** Fields changed by admin edit; when provided, highlights those field labels. */
   changedFields?: string[];
+  /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
+  originalDraft?: ExperienceFormDraft;
 }
 
 
@@ -55,11 +61,14 @@ function resolveStepContent(
   imageState: ExperienceImageState,
   changedFieldSet?: Set<string>,
   isReadOnly?: boolean,
+  makePeek?: (field: string) => FieldPeek | undefined,
+  makeAccommodationPeek?: (index: number, entryKey: keyof AccommodationEntry) => FieldPeek | undefined,
+  makeActivityPeek?: (index: number, entryKey: keyof ActivityEntry) => FieldPeek | undefined,
 ): React.ReactNode {
   if (activeTab === "about") {
     if (substepId === "experience")
       return (
-        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} />
+        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} peek={makePeek} />
       );
     if (substepId === "destination")
       return (
@@ -69,12 +78,12 @@ function resolveStepContent(
   if (activeTab === "logistics") {
     if (substepId === "accommodation")
       return (
-        <LogisticsAccommodationStep copy={copy} form={form} onChange={onChange} changedFieldSet={changedFieldSet} />
+        <LogisticsAccommodationStep copy={copy} form={form} onChange={onChange} peek={makeAccommodationPeek} />
       );
   }
   if (activeTab === "activities") {
     if (substepId === "activities-list")
-      return <ActivitiesListStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} isReadOnly={isReadOnly} />;
+      return <ActivitiesListStep copy={copy} form={form} onChange={onChange} imageState={imageState} isReadOnly={isReadOnly} peek={makeActivityPeek} />;
     if (substepId === "itinerary")
       return <ItineraryStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} isReadOnly={isReadOnly} />;
   }
@@ -122,11 +131,71 @@ export function ExperienceFormContent({
   onSectionChange,
   tabs,
   changedFields,
+  originalDraft,
 }: ExperienceFormContentProps) {
   // Build a Set for fast lookup of changed field names
   const changedFieldSet = changedFields && changedFields.length > 0
     ? new Set(changedFields)
     : null;
+
+  // Per-field "peek at original" toggle state — display-only, never mutates `form`.
+  const [peekedFields, setPeekedFields] = useState<Set<string>>(new Set());
+  const togglePeek = (field: string) => {
+    setPeekedFields((prev) => {
+      const next = new Set(prev);
+      if (next.has(field)) next.delete(field);
+      else next.add(field);
+      return next;
+    });
+  };
+  const peekDictCopy = {
+    peekShowOriginal: copy.changedFieldsBanner.peekShowOriginal,
+    peekShowSuggestion: copy.changedFieldsBanner.peekShowSuggestion,
+    noContent: copy.changedFieldsBanner.noContent,
+  };
+  const makePeek = (field: string): FieldPeek | undefined =>
+    resolveFieldPeek({
+      field,
+      changedFieldSet,
+      originalDraft,
+      peekedFields,
+      onToggle: () => togglePeek(field),
+      copy: peekDictCopy,
+    });
+  const makeAccommodationPeek = (
+    index: number,
+    entryKey: keyof AccommodationEntry,
+  ): FieldPeek | undefined => {
+    const peekKey = `accommodations.${index}.${entryKey}`;
+    return resolveEntryPeek({
+      diffKey: "hotels",
+      changedFieldSet,
+      originalEntry: originalDraft?.accommodations[index],
+      entryKey,
+      currentValue: form.accommodations[index]?.[entryKey] ?? "",
+      peekKey,
+      peekedFields,
+      onToggle: () => togglePeek(peekKey),
+      copy: peekDictCopy,
+    });
+  };
+  const makeActivityPeek = (
+    index: number,
+    entryKey: keyof ActivityEntry,
+  ): FieldPeek | undefined => {
+    const peekKey = `activities.${index}.${entryKey}`;
+    return resolveEntryPeek({
+      diffKey: "activities",
+      changedFieldSet,
+      originalEntry: originalDraft?.activities[index],
+      entryKey,
+      currentValue: String(form.activities[index]?.[entryKey] ?? ""),
+      peekKey,
+      peekedFields,
+      onToggle: () => togglePeek(peekKey),
+      copy: peekDictCopy,
+    });
+  };
   if (activeTab === "admin-review" && adminReviewSlot) {
     return <>{adminReviewSlot}</>;
   }
@@ -146,16 +215,6 @@ export function ExperienceFormContent({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Changed-fields banner: shown in adminReadOnly mode when there are highlighted fields */}
-      {changedFieldSet && changedFieldSet.size > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <span className="mt-0.5 text-base leading-none">⚠</span>
-          <div>
-            <span className="font-semibold">{copy.changedFieldsBanner.prefix}</span>
-            <span>{[...changedFieldSet].join(", ")}</span>
-          </div>
-        </div>
-      )}
       <Accordion
         type="single"
         collapsible
@@ -176,6 +235,9 @@ export function ExperienceFormContent({
                 imageState,
                 changedFieldSet ?? undefined,
                 isReadOnly,
+                makePeek,
+                makeAccommodationPeek,
+                makeActivityPeek,
               )}
             </fieldset>
           </JourneyDropdown>
@@ -193,22 +255,9 @@ export function ExperienceFormContent({
       )}
 
       {isReadOnly ? (
-        reviewActionsSlot ? (
-          !isLastTab ? (
-            <JourneyActionBar
-              canContinue
-              isAllStepsComplete={false}
-              isSavingAndRedirecting={false}
-              labels={{ clearAll: "", next: copy.actionBar.next, viewCheckout: "" }}
-              onClearAll={() => { /* read-only */ }}
-              onContinue={onNext}
-              onGoToCheckout={() => { /* read-only */ }}
-              showClearAll={false}
-            />
-          ) : (
-            reviewActionsSlot
-          )
-        ) : (
+        // Approve/reject now live in the sticky `ReviewActionsBar` (NewExperienceShell),
+        // always reachable regardless of tab — nothing to render here in that case.
+        reviewActionsSlot ? null : (
           <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
             <div className="text-sm text-blue-800">
               <span className="font-medium">{copy.review.pendingTitle} — </span>
