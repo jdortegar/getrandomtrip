@@ -28,7 +28,7 @@ export function DurationInput({
   units,
   value,
 }: DurationInputProps) {
-  const [raw, setRaw] = React.useState(value ? String(value.value) : "");
+  const [raw, setRaw] = React.useState(String(value?.value ?? 0));
   const [unit, setUnit] = React.useState<DurationUnit>(value?.unit ?? "hr");
 
   const parsed = parseFloat(raw);

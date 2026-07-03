@@ -3704,7 +3704,10 @@
         "pendingReview": "En revisión"
       },
       "changedFieldsBanner": {
-        "prefix": "El admin propuso cambios en: "
+        "prefix": "El admin propuso cambios en: ",
+        "peekShowOriginal": "Ver contenido original",
+        "peekShowSuggestion": "Ver sugerencia del admin",
+        "noContent": "(sin contenido)"
       }
     }
   },
@@ -3912,6 +3915,8 @@
     "markAllRead": "Marcar todas como leídas",
     "unreadBadge": "Sin leer",
     "unreadCount": "{count} sin leer",
+    "actionView": "Ver",
+    "actionReview": "Revisar",
     "types": {
       "EXPERIENCE_APPROVED": "Experiencia aprobada",
       "EXPERIENCE_REJECTED": "Experiencia rechazada",

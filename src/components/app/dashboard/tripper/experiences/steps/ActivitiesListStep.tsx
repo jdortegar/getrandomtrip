@@ -8,6 +8,7 @@ import Image from "next/image";
 import { FormField } from "@/components/ui/FormField";
 import { DurationInput } from "@/components/ui/DurationInput";
 import { RichTextInput } from "@/components/ui/RichTextInput";
+import type { FieldPeek } from "@/components/ui/field-peek";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ActivityEntry,
@@ -22,8 +23,9 @@ interface Props {
   form: ExperienceFormDraft;
   onChange: ExperienceFormDraftOnChange;
   imageState: ExperienceImageState;
-  changedFieldSet?: Set<string>;
   isReadOnly?: boolean;
+  /** Per-entry, per-field "peek at original" toggle; undefined outside adminReadOnly review. */
+  peek?: (index: number, entryKey: keyof ActivityEntry) => FieldPeek | undefined;
 }
 
 const chipClass =
@@ -42,7 +44,7 @@ const EMPTY_ENTRY: ActivityEntry = {
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-export function ActivitiesListStep({ copy, form, onChange, imageState, changedFieldSet, isReadOnly }: Props) {
+export function ActivitiesListStep({ copy, form, onChange, imageState, isReadOnly, peek }: Props) {
   const { fields } = copy;
   const { onEntryImageSelect, onEntryImageRemove } = imageState;
 
@@ -91,13 +93,18 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, changedFi
     );
   }
 
+  // `peek` is only defined for a field when it individually differs from the
+  // original entry, so it doubles as the per-field changed-field indicator.
+  const ring = (index: number, key: keyof ActivityEntry) =>
+    peek?.(index, key) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
+
   return (
     <div className="space-y-5">
       <p className="text-sm text-neutral-500 -mt-1">
         {copy.contentTabs[2]?.substeps[0]?.description}
       </p>
 
-      <div className={`space-y-6 ${changedFieldSet?.has("activities") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
+      <div className="space-y-6">
         {form.activities.map((entry, index) => (
           <div key={index} className="space-y-4">
             {index > 0 && (
@@ -124,6 +131,8 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, changedFi
                 placeholder={fields.activityNamePlaceholder}
                 value={entry.name}
                 onChange={(e) => updateEntry(index, "name", e.target.value)}
+                peek={peek?.(index, "name")}
+                className={ring(index, "name")}
               />
               <DurationInput
                 id={`act-duration-${index}`}
@@ -142,6 +151,8 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, changedFi
               value={entry.description}
               onChange={(html) => updateEntry(index, "description", html)}
               disabled={isReadOnly}
+              peek={peek?.(index, "description")}
+              className={ring(index, "description")}
             />
 
             {/* Row 3: Risks */}
@@ -152,6 +163,8 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, changedFi
               value={entry.risks}
               onChange={(html) => updateEntry(index, "risks", html)}
               disabled={isReadOnly}
+              peek={peek?.(index, "risks")}
+              className={ring(index, "risks")}
             />
 
             {/* Row 4: Entry image upload tile */}

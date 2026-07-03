@@ -1,0 +1,14 @@
+change: experience-review-original-peek
+status: archived
+artifact_store: openspec
+phases:
+  explore: skipped
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+created: 2026-07-02
+archived: 2026-07-02

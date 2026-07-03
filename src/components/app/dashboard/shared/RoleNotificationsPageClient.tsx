@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, es as esLocale } from "date-fns/locale";
 import {
@@ -10,11 +9,14 @@ import {
   CheckCheck,
   CircleCheck,
   CircleX,
+  Eye,
+  GitCompare,
   Sparkles,
   Wallet,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { TableIconLink } from "@/components/ui/TableIconButton";
 import type { NotificationsDict } from "@/lib/types/dictionary";
 import type { ClientNotification } from "@/types/notifications";
 import { cn } from "@/lib/utils";
@@ -130,88 +132,86 @@ export function RoleNotificationsPageClient({
             {notifications.map((notification) => {
               const Icon = TYPE_ICONS[notification.type] ?? Bell;
               const isDanger = DANGER_TYPES.has(notification.type);
-              const { body, createdAt, id, isRead, title } = notification;
+              const { body, createdAt, id, isRead, title, type } = notification;
               const href = resolveHref(notification, locale);
+              const isReviewAction = type === "EXPERIENCE_PENDING_TRIPPER_REVIEW";
+              const actionLabel = isReviewAction ? copy.actionReview : copy.actionView;
+              const ActionIcon = isReviewAction ? GitCompare : Eye;
               const relativeTime = formatDistanceToNow(new Date(createdAt), {
                 addSuffix: true,
                 locale: dateFnsLocale,
               });
 
+              // Only rows without an explicit action fall back to click-to-mark-read;
+              // href-bearing rows navigate solely through the action button below,
+              // so the click target is never ambiguous.
+              const clickToMarkRead = !href && !isRead;
               const rowClassName = cn(
                 "flex items-start gap-4 px-5 py-4 transition-colors",
                 isRead ? "bg-white" : "bg-sky-50/40",
-                href || !isRead ? "cursor-pointer hover:bg-sky-50/70" : null,
+                clickToMarkRead ? "cursor-pointer hover:bg-sky-50/70" : null,
               );
-
-              const rowContent = (
-                <>
-                  <span
-                    className={cn(
-                      "grid h-9 w-9 shrink-0 place-items-center rounded-full",
-                      isDanger
-                        ? "bg-red-50 text-red-500"
-                        : "bg-light-blue/10 text-light-blue",
-                    )}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.8} />
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={cn(
-                        "text-sm leading-snug",
-                        isRead
-                          ? "font-normal text-neutral-700"
-                          : "font-semibold text-neutral-900",
-                      )}
-                    >
-                      {title}
-                    </p>
-                    {body && (
-                      <p className="mt-0.5 text-sm leading-snug text-neutral-500">
-                        {body}
-                      </p>
-                    )}
-                  </div>
-
-                  <span className="mt-0.5 shrink-0 whitespace-nowrap text-xs text-neutral-400">
-                    {relativeTime}
-                  </span>
-                </>
-              );
-
-              if (href) {
-                return (
-                  <li key={id}>
-                    <Link
-                      className={rowClassName}
-                      href={href}
-                      onClick={() => {
-                        if (!isRead) markRead(id);
-                      }}
-                    >
-                      {rowContent}
-                    </Link>
-                  </li>
-                );
-              }
 
               return (
                 <li key={id}>
                   <div
                     className={rowClassName}
-                    onClick={isRead ? undefined : () => markRead(id)}
+                    onClick={clickToMarkRead ? () => markRead(id) : undefined}
                     onKeyDown={
-                      isRead
-                        ? undefined
-                        : (e) => {
+                      clickToMarkRead
+                        ? (e) => {
                             if (e.key === "Enter" || e.key === " ") markRead(id);
                           }
+                        : undefined
                     }
-                    role={isRead ? undefined : "button"}
-                    tabIndex={isRead ? undefined : 0}
+                    role={clickToMarkRead ? "button" : undefined}
+                    tabIndex={clickToMarkRead ? 0 : undefined}
                   >
-                    {rowContent}
+                    <span
+                      className={cn(
+                        "grid h-9 w-9 shrink-0 place-items-center rounded-full",
+                        isDanger
+                          ? "bg-red-50 text-red-500"
+                          : "bg-light-blue/10 text-light-blue",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" strokeWidth={1.8} />
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className={cn(
+                          "text-sm leading-snug",
+                          isRead
+                            ? "font-normal text-neutral-700"
+                            : "font-semibold text-neutral-900",
+                        )}
+                      >
+                        {title}
+                      </p>
+                      {body && (
+                        <p className="mt-0.5 text-sm leading-snug text-neutral-500">
+                          {body}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <span className="whitespace-nowrap text-xs text-neutral-400">
+                        {relativeTime}
+                      </span>
+                      {href && (
+                        <TableIconLink
+                          href={href}
+                          title={actionLabel}
+                          onClick={() => {
+                            if (!isRead) markRead(id);
+                          }}
+                        >
+                          <ActionIcon className="h-4 w-4" />
+                        </TableIconLink>
+                      )}
+                    </div>
                   </div>
                 </li>
               );

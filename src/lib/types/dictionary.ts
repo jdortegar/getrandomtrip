@@ -519,6 +519,9 @@ export interface TripperExperiencesDict {
     };
     changedFieldsBanner: {
       prefix: string;
+      peekShowOriginal: string;
+      peekShowSuggestion: string;
+      noContent: string;
     };
     nav: {
       sections: string;
@@ -1174,6 +1177,8 @@ export interface NotificationsDict {
   markAllRead: string;
   unreadBadge: string;
   unreadCount: string;
+  actionView: string;
+  actionReview: string;
   types: Record<string, string>;
 }
 

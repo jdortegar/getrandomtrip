@@ -3704,7 +3704,10 @@
         "pendingReview": "Pending review"
       },
       "changedFieldsBanner": {
-        "prefix": "Admin proposed changes to: "
+        "prefix": "Admin proposed changes to: ",
+        "peekShowOriginal": "Click to see original content",
+        "peekShowSuggestion": "Click to see admin's suggestion",
+        "noContent": "(no content)"
       }
     }
   },
@@ -3912,6 +3915,8 @@
     "emptyState": "You have no notifications yet.",
     "markRead": "Mark as read",
     "unreadBadge": "Unread",
+    "actionView": "View",
+    "actionReview": "Review",
     "types": {
       "EXPERIENCE_APPROVED": "Experience approved",
       "EXPERIENCE_REJECTED": "Experience rejected",

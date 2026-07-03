@@ -22,6 +22,7 @@ interface TripperReviewCopyClientProps {
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
   copyDraft: ExperienceFormDraft;
+  originalDraft: ExperienceFormDraft;
   changedFields: string[];
   experienceId: string;
 }
@@ -31,6 +32,7 @@ export function TripperReviewCopyClient({
   locale,
   userBadgeLabels,
   copyDraft,
+  originalDraft,
   changedFields,
   experienceId,
 }: TripperReviewCopyClientProps) {
@@ -38,13 +40,14 @@ export function TripperReviewCopyClient({
   const params = useParams();
   const currentLocale = (params?.locale as string) ?? locale;
   const reviewCopyCopy = getReviewCopyCopy(currentLocale);
-  const [saving, setSaving] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"approve" | "reject" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const saving = pendingAction !== null;
 
   const backPath = `/${locale}/dashboard/tripper/experiences`;
 
   async function handleApprove() {
-    setSaving(true);
+    setPendingAction("approve");
     setError(null);
     try {
       const res = await fetch(
@@ -56,12 +59,12 @@ export function TripperReviewCopyClient({
       router.refresh();
     } catch {
       setError(reviewCopyCopy.errorApprove);
-      setSaving(false);
+      setPendingAction(null);
     }
   }
 
   async function handleReject() {
-    setSaving(true);
+    setPendingAction("reject");
     setError(null);
     try {
       const res = await fetch(
@@ -73,14 +76,14 @@ export function TripperReviewCopyClient({
       router.refresh();
     } catch {
       setError(reviewCopyCopy.errorReject);
-      setSaving(false);
+      setPendingAction(null);
     }
   }
 
   const reviewActions = (
-    <div className="flex flex-col gap-3">
-      {error && <p className="text-sm text-center text-red-600">{error}</p>}
-      <div className="flex items-center justify-center gap-4 pt-4 border-t border-gray-200">
+    <div className="flex flex-col items-end gap-1.5">
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      <div className="flex items-center gap-3">
         <Button
           size="sm"
           variant="outline"
@@ -88,7 +91,7 @@ export function TripperReviewCopyClient({
           disabled={saving}
           className="gap-2 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
         >
-          {saving ? (
+          {pendingAction === "reject" ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <X className="h-4 w-4" />
@@ -101,7 +104,7 @@ export function TripperReviewCopyClient({
           disabled={saving}
           className="gap-2"
         >
-          {saving ? (
+          {pendingAction === "approve" ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Check className="h-4 w-4" />
@@ -121,6 +124,7 @@ export function TripperReviewCopyClient({
       initialDraftId={experienceId}
       mode="adminReadOnly"
       changedFields={changedFields}
+      originalDraft={originalDraft}
       reviewActionsSlot={reviewActions}
     />
   );
