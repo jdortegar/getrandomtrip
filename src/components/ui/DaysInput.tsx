@@ -16,7 +16,7 @@ interface DaysInputProps {
 }
 
 export function DaysInput({ id, hintTemplate, label, value, onChange, className, inputClassName }: DaysInputProps) {
-  const [raw, setRaw] = useState(String(value));
+  const [raw, setRaw] = useState(String(value ?? 0));
 
   const days = Math.max(1, parseInt(raw, 10) || 1);
   const hint = hintTemplate
