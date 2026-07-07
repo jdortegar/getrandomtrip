@@ -1098,12 +1098,16 @@ export interface AdminPagesDict {
     };
   };
   experiences: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
+    emptyPending: string;
     columns: {
       experience: string;
       tripper: string;
+      typeLevel: string;
       status: string;
       updated: string;
       actions: string;
@@ -1123,6 +1127,7 @@ export interface AdminPagesDict {
       enable: string;
       unfeature: string;
       feature: string;
+      review: string;
     };
     tabs: {
       all: string;

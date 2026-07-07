@@ -269,12 +269,16 @@
       }
     },
     "experiences": {
+      "eyebrow": "Catálogo de la plataforma",
+      "title": "Experiencias",
       "count": "{n} experiencias",
       "errorLoad": "Error al cargar las experiencias",
       "empty": "No se encontraron experiencias.",
+      "emptyPending": "No hay experiencias pendientes de revisión.",
       "columns": {
         "experience": "Experiencia",
         "tripper": "Tripper",
+        "typeLevel": "Tipo / Nivel",
         "status": "Estado",
         "updated": "Actualizado",
         "actions": "Acciones"
@@ -293,7 +297,8 @@
         "disable": "Desactivar",
         "enable": "Activar",
         "unfeature": "Quitar destaque",
-        "feature": "Destacar"
+        "feature": "Destacar",
+        "review": "Revisar"
       },
       "tabs": {
         "all": "Todas",

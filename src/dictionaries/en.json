@@ -269,12 +269,16 @@
       }
     },
     "experiences": {
+      "eyebrow": "Platform catalog",
+      "title": "Experiences",
       "count": "{n} experiences",
       "errorLoad": "Failed to load experiences",
       "empty": "No experiences found.",
+      "emptyPending": "No experiences pending review.",
       "columns": {
         "experience": "Experience",
         "tripper": "Tripper",
+        "typeLevel": "Type / Level",
         "status": "Status",
         "updated": "Updated",
         "actions": "Actions"
@@ -293,7 +297,8 @@
         "disable": "Disable",
         "enable": "Enable",
         "unfeature": "Unfeature",
-        "feature": "Feature"
+        "feature": "Feature",
+        "review": "Review"
       },
       "tabs": {
         "all": "All",
