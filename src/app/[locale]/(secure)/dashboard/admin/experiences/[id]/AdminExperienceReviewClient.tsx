@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
 import type { ExperienceShellMode } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
-import { AdminReviewSlot } from "../../../AdminReviewSlot";
+import { AdminReviewSlot } from "../../AdminReviewSlot";
 import type { ExperienceFormDraft } from "@/types/tripper";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";

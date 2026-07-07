@@ -19,6 +19,28 @@ export function resolveClientNotificationHref(
   return null;
 }
 
+export function resolveAdminNotificationHref(
+  notification: ClientNotification,
+  locale: string,
+): string | null {
+  const { metadata } = notification;
+  if (!metadata) return null;
+
+  if ("reviewId" in metadata && metadata.reviewId) {
+    return pathForLocale(locale as Locale, "/dashboard/admin/reviews");
+  }
+
+  if ("tripRequestId" in metadata && metadata.tripRequestId) {
+    return pathForLocale(locale as Locale, "/dashboard/admin/trip-requests");
+  }
+
+  if ("experienceId" in metadata && metadata.experienceId) {
+    return pathForLocale(locale as Locale, "/dashboard/admin/experiences");
+  }
+
+  return null;
+}
+
 export function resolveTripperNotificationHref(
   notification: ClientNotification,
   locale: string,

@@ -35,8 +35,9 @@
   "common": {
     "siteName": "Randomtrip"
   },
-  "adminSidebar": {
-    "links": {
+  "adminDashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
       "tripRequests": "Trip Requests",
       "users": "Users",
       "experiences": "Experiences",
@@ -44,7 +45,54 @@
       "reviews": "Reviews",
       "waitlist": "Waitlist",
       "xsed": "TGIS Drops",
-      "xsedNotifications": "TGIS Notifications"
+      "xsedNotifications": "TGIS Notifications",
+      "notifications": "Notifications"
+    },
+    "pageHeadings": {
+      "home": {
+        "title": "Admin Dashboard",
+        "description": "Platform overview at a glance."
+      },
+      "tripRequests": {
+        "title": "Trip Requests",
+        "description": "Manage clients' trip requests."
+      },
+      "users": {
+        "title": "Users",
+        "description": "Manage platform users."
+      },
+      "experiences": {
+        "title": "Experiences",
+        "description": "Review and manage trippers' experiences."
+      },
+      "experiencesDetail": {
+        "title": "Experience Review",
+        "description": "Review the experience details before approving it."
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "View payments recorded on the platform."
+      },
+      "reviews": {
+        "title": "Reviews",
+        "description": "Moderate customer reviews."
+      },
+      "waitlist": {
+        "title": "Waitlist",
+        "description": "Manage the platform waitlist."
+      },
+      "xsedNew": {
+        "title": "New TGIS Drop",
+        "description": "Create or edit a TGIS drop."
+      },
+      "xsedNotifications": {
+        "title": "TGIS Notifications",
+        "description": "Manage TGIS drop notifications."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Reviews and trips waiting on your attention."
+      }
     }
   },
   "adminXsed": {

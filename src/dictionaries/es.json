@@ -35,8 +35,9 @@
   "common": {
     "siteName": "Randomtrip"
   },
-  "adminSidebar": {
-    "links": {
+  "adminDashboard": {
+    "nav": {
+      "dashboard": "Inicio",
       "tripRequests": "Solicitudes de viaje",
       "users": "Usuarios",
       "experiences": "Experiencias",
@@ -44,7 +45,54 @@
       "reviews": "Reseñas",
       "waitlist": "Lista de espera",
       "xsed": "Drops XSED",
-      "xsedNotifications": "Notificaciones XSED"
+      "xsedNotifications": "Notificaciones XSED",
+      "notifications": "Notificaciones"
+    },
+    "pageHeadings": {
+      "home": {
+        "title": "Panel de Admin",
+        "description": "Resumen general de la plataforma."
+      },
+      "tripRequests": {
+        "title": "Solicitudes de viaje",
+        "description": "Gestioná las solicitudes de viaje de los clientes."
+      },
+      "users": {
+        "title": "Usuarios",
+        "description": "Administrá los usuarios de la plataforma."
+      },
+      "experiences": {
+        "title": "Experiencias",
+        "description": "Revisá y gestioná las experiencias de los trippers."
+      },
+      "experiencesDetail": {
+        "title": "Revisión de experiencia",
+        "description": "Revisá los detalles de la experiencia antes de aprobarla."
+      },
+      "payments": {
+        "title": "Pagos",
+        "description": "Consultá los pagos registrados en la plataforma."
+      },
+      "reviews": {
+        "title": "Reseñas",
+        "description": "Moderá las reseñas de los clientes."
+      },
+      "waitlist": {
+        "title": "Lista de espera",
+        "description": "Gestioná la lista de espera de la plataforma."
+      },
+      "xsedNew": {
+        "title": "Nuevo drop XSED",
+        "description": "Creá o editá un drop XSED."
+      },
+      "xsedNotifications": {
+        "title": "Notificaciones XSED",
+        "description": "Gestioná las notificaciones de los drops XSED."
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "description": "Reseñas y viajes que esperan tu atención."
+      }
     }
   },
   "adminXsed": {

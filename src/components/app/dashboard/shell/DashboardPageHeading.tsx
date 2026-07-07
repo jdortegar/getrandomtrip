@@ -3,17 +3,19 @@
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { PageHeading } from "@/components/layout/PageHeading";
+import { resolveAdminPageHeading } from "@/components/app/dashboard/config/adminHeadings";
 import { resolveClientPageHeading } from "@/components/app/dashboard/config/clientHeadings";
 import { resolveTripperPageHeading } from "@/components/app/dashboard/config/tripperHeadings";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface DashboardPageHeadingProps {
-  role: "client" | "tripper";
+  role: "admin" | "client" | "tripper";
 }
 
 export function DashboardPageHeading({ role }: DashboardPageHeadingProps) {
   const rawPathname = usePathname();
   const locale = useLocale();
+  const adminHeadings = useDictionary((d) => d.adminDashboard.pageHeadings);
   const clientHeadings = useDictionary((d) => d.clientDashboard.pageHeadings);
   const tripperHeadings = useDictionary(
     (d) => d.tripperDashboard.pageHeadings,
@@ -29,8 +31,11 @@ export function DashboardPageHeading({ role }: DashboardPageHeadingProps) {
     if (role === "client") {
       return resolveClientPageHeading(pathname, clientHeadings);
     }
-    return resolveTripperPageHeading(pathname, tripperHeadings);
-  }, [clientHeadings, pathname, role, tripperHeadings]);
+    if (role === "tripper") {
+      return resolveTripperPageHeading(pathname, tripperHeadings);
+    }
+    return resolveAdminPageHeading(pathname, adminHeadings);
+  }, [adminHeadings, clientHeadings, pathname, role, tripperHeadings]);
 
   return (
     <PageHeading

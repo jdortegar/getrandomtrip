@@ -928,9 +928,11 @@ export interface XsedPageDict {
   };
 }
 
-export interface AdminSidebarDict {
-  links: {
+export interface AdminDashboardDict {
+  nav: {
+    dashboard: string;
     experiences: string;
+    notifications: string;
     payments: string;
     reviews: string;
     tripRequests: string;
@@ -938,6 +940,19 @@ export interface AdminSidebarDict {
     waitlist: string;
     xsed: string;
     xsedNotifications: string;
+  };
+  pageHeadings: {
+    experiences: { description: string; title: string };
+    experiencesDetail: { description: string; title: string };
+    home: { description: string; title: string };
+    notifications: { description: string; title: string };
+    payments: { description: string; title: string };
+    reviews: { description: string; title: string };
+    tripRequests: { description: string; title: string };
+    users: { description: string; title: string };
+    waitlist: { description: string; title: string };
+    xsedNew: { description: string; title: string };
+    xsedNotifications: { description: string; title: string };
   };
 }
 
@@ -1284,7 +1299,6 @@ export interface MarketingDictionary {
   common: {
     siteName: string;
   };
-  adminSidebar: AdminSidebarDict;
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
   adminExperienceReview: {
@@ -2282,6 +2296,7 @@ export interface MarketingDictionary {
   };
   tripperBlogs: TripperBlogsDict;
   dashboard: DashboardDict;
+  adminDashboard: AdminDashboardDict;
   clientDashboard: ClientDashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;

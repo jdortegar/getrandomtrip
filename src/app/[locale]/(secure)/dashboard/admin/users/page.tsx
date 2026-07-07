@@ -1,4 +1,4 @@
-import { AdminUsersPageClient } from "../../AdminUsersPageClient";
+import { AdminUsersPageClient } from "../AdminUsersPageClient";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 
