@@ -6,6 +6,7 @@ import { TripRequestsFilterBar } from "@/components/app/admin/TripRequestsFilter
 import { TripRequestsKPIStrip } from "@/components/app/admin/TripRequestsKPIStrip";
 import { TripRequestsTable } from "@/components/app/admin/TripRequestsTable";
 import { TripRequestModal } from "@/components/app/admin/TripRequestModal";
+import { useDictionary } from "@/hooks/useDictionary";
 import { useTripRequests } from "@/hooks/useTripRequests";
 import type { AdminTripRequest, StatusFilterValue } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
@@ -25,6 +26,7 @@ export interface AdminTripRequestsPageClientProps {
 export function AdminTripRequestsPageClient({
   dict,
 }: AdminTripRequestsPageClientProps) {
+  const pageCopy = useDictionary((d) => d.adminPages.tripRequests);
   const { error, loading, refresh, trips } = useTripRequests();
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("ALL");
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
@@ -41,19 +43,31 @@ export function AdminTripRequestsPageClient({
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="space-y-10">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          {pageCopy.eyebrow}
+        </p>
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          {pageCopy.title}
+        </h2>
+      </div>
+
+      <TripRequestsKPIStrip labels={dict.tripStatus} trips={trips} />
+
       <TripRequestsFilterBar
         activeFilter={statusFilter}
+        labels={{ all: pageCopy.filters.all, ...dict.tripStatus }}
         onFilterChange={setStatusFilter}
       />
-      <TripRequestsKPIStrip trips={trips} />
-      <div className="flex-1 overflow-y-auto">
-        <TripRequestsTable
-          onEdit={setSelectedTripId}
-          selectedId={selectedTripId}
-          trips={visibleTrips}
-        />
-      </div>
+
+      <TripRequestsTable
+        copy={pageCopy}
+        onEdit={setSelectedTripId}
+        selectedId={selectedTripId}
+        trips={visibleTrips}
+      />
+
       {selectedTrip ? (
         <TripRequestModal
           dict={dict}

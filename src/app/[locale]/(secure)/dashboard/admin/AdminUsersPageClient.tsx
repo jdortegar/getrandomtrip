@@ -6,6 +6,7 @@ import { DeleteUserModal } from "@/components/app/admin/DeleteUserModal";
 import { UserRoleModal } from "@/components/app/admin/UserRoleModal";
 import { UsersTable } from "@/components/app/admin/UsersTable";
 import type { AdminUser } from "@/components/app/admin/UsersTableRow";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface AdminUsersPageClientProps {
@@ -17,6 +18,8 @@ function withCount(template: string, count: number): string {
 }
 
 export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
+  const pageCopy = useDictionary((d) => d.adminPages.users);
+  const locale = useLocale();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,21 +66,31 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-gray-200 px-5 py-4">
-        <p className="text-xs text-neutral-500">
-          {withCount(copy.usersCount, users.length)}
+    <div className="space-y-10">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          {pageCopy.eyebrow}
         </p>
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          {pageCopy.title}
+        </h2>
       </div>
-      <div className="flex-1 overflow-y-auto">
-        <UsersTable
-          copy={copy}
-          onDelete={setDeleteTargetId}
-          onEdit={setSelectedUserId}
-          selectedId={selectedUserId}
-          users={users}
-        />
+
+      <div className="flex items-center justify-end">
+        <span className="text-[13px] text-neutral-400">
+          {withCount(copy.usersCount, users.length)}
+        </span>
       </div>
+
+      <UsersTable
+        copy={copy}
+        locale={locale}
+        onDelete={setDeleteTargetId}
+        onEdit={setSelectedUserId}
+        selectedId={selectedUserId}
+        users={users}
+      />
+
       {selectedUser && (
         <UserRoleModal
           copy={copy}

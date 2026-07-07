@@ -378,6 +378,27 @@
         "delete": "Eliminar",
         "deleting": "Eliminando…"
       }
+    },
+    "users": {
+      "eyebrow": "Cuentas de la plataforma",
+      "title": "Usuarios"
+    },
+    "tripRequests": {
+      "eyebrow": "Solicitudes de clientes",
+      "title": "Solicitudes de viaje",
+      "edit": "Editar",
+      "empty": "No se encontraron solicitudes de viaje.",
+      "filters": {
+        "all": "Todas"
+      },
+      "columns": {
+        "traveler": "Viajero",
+        "origin": "Origen",
+        "typeLevel": "Tipo / Nivel",
+        "status": "Estado",
+        "payment": "Pago",
+        "actions": "Acciones"
+      }
     }
   },
   "xsedUnavailable": {

@@ -1192,6 +1192,25 @@ export interface AdminPagesDict {
     columns: { email: string; locale: string; joined: string; actions: string };
     actions: { delete: string; deleting: string };
   };
+  users: {
+    eyebrow: string;
+    title: string;
+  };
+  tripRequests: {
+    eyebrow: string;
+    title: string;
+    edit: string;
+    empty: string;
+    filters: { all: string };
+    columns: {
+      traveler: string;
+      origin: string;
+      typeLevel: string;
+      status: string;
+      payment: string;
+      actions: string;
+    };
+  };
 }
 
 export interface NotificationsDict {

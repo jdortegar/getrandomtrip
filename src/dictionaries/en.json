@@ -378,6 +378,27 @@
         "delete": "Delete",
         "deleting": "Deleting…"
       }
+    },
+    "users": {
+      "eyebrow": "Platform accounts",
+      "title": "Users"
+    },
+    "tripRequests": {
+      "eyebrow": "Client requests",
+      "title": "Trip Requests",
+      "edit": "Edit",
+      "empty": "No trip requests found.",
+      "filters": {
+        "all": "All"
+      },
+      "columns": {
+        "traveler": "Traveler",
+        "origin": "Origin",
+        "typeLevel": "Type / Level",
+        "status": "Status",
+        "payment": "Payment",
+        "actions": "Actions"
+      }
     }
   },
   "xsedUnavailable": {
