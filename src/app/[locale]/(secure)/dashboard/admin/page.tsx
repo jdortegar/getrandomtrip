@@ -1,16 +1,28 @@
-import { redirect } from "next/navigation";
+import Section from "@/components/layout/Section";
 import { hasLocale } from "@/lib/i18n/config";
-import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { prisma } from "@/lib/prisma";
+import { computeAdminOverviewStats } from "@/lib/admin/overview";
+import { AdminHomeContent } from "./AdminHomeContent";
 
-// Interim redirect: the new admin overview/home content (stats + pending
-// actions) lands in a later slice (design.md slice 5). Trip-requests used to
-// render directly at this root; now that it has its own route, this page
-// forwards to it until the real overview page replaces this redirect.
 export default async function AdminHomePage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : "es";
+  const dict = await getDictionary(locale);
+  const { stats, pending } = await computeAdminOverviewStats(prisma);
 
-  redirect(pathForLocale(locale, "/dashboard/admin/trip-requests"));
+  return (
+    <Section className="py-10!">
+      <div className="rt-container text-left">
+        <AdminHomeContent
+          copy={dict.adminPages.home}
+          locale={locale}
+          pending={pending}
+          stats={stats}
+        />
+      </div>
+    </Section>
+  );
 }

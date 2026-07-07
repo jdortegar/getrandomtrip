@@ -253,6 +253,23 @@
     "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
   },
   "adminPages": {
+    "home": {
+      "eyebrow": "Resumen general",
+      "heading": "Panel de administración",
+      "stats": {
+        "tripsSold": "Viajes completados",
+        "earnings": "Ingresos brutos",
+        "waitlist": "Lista de espera",
+        "xsedSignups": "Suscriptores XSED"
+      },
+      "pending": {
+        "eyebrow": "Requiere atención",
+        "heading": "Acciones pendientes",
+        "experiencesReview": "Experiencias pendientes de revisión",
+        "tripsDestination": "Viajes que necesitan destino asignado",
+        "reviewsApproval": "Reseñas pendientes de aprobación"
+      }
+    },
     "payments": {
       "eyebrow": "Transacciones",
       "title": "Pagos",

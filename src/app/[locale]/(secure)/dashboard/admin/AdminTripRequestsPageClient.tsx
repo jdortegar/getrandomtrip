@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { TripRequestsFilterBar } from "@/components/app/admin/TripRequestsFilterBar";
 import { TripRequestsKPIStrip } from "@/components/app/admin/TripRequestsKPIStrip";
@@ -8,6 +9,7 @@ import { TripRequestsTable } from "@/components/app/admin/TripRequestsTable";
 import { TripRequestModal } from "@/components/app/admin/TripRequestModal";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useTripRequests } from "@/hooks/useTripRequests";
+import { resolveInitialStatusFilter } from "@/lib/admin/trip-status";
 import type { AdminTripRequest, StatusFilterValue } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
@@ -28,7 +30,10 @@ export function AdminTripRequestsPageClient({
 }: AdminTripRequestsPageClientProps) {
   const pageCopy = useDictionary((d) => d.adminPages.tripRequests);
   const { error, loading, refresh, trips } = useTripRequests();
-  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("ALL");
+  const searchParams = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(() =>
+    resolveInitialStatusFilter(searchParams.get("status")),
+  );
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
 
   const visibleTrips = applyFilter(trips, statusFilter);

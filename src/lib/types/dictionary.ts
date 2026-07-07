@@ -1082,6 +1082,23 @@ export interface AdminXsedDict {
 }
 
 export interface AdminPagesDict {
+  home: {
+    eyebrow: string;
+    heading: string;
+    stats: {
+      tripsSold: string;
+      earnings: string;
+      waitlist: string;
+      xsedSignups: string;
+    };
+    pending: {
+      eyebrow: string;
+      heading: string;
+      experiencesReview: string;
+      tripsDestination: string;
+      reviewsApproval: string;
+    };
+  };
   payments: {
     eyebrow: string;
     title: string;

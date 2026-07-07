@@ -253,6 +253,23 @@
     "errorReject": "Could not reject changes. Please try again."
   },
   "adminPages": {
+    "home": {
+      "eyebrow": "Overview",
+      "heading": "Admin dashboard",
+      "stats": {
+        "tripsSold": "Trips completed",
+        "earnings": "Gross earnings",
+        "waitlist": "Waitlist",
+        "xsedSignups": "XSED signups"
+      },
+      "pending": {
+        "eyebrow": "Needs attention",
+        "heading": "Pending actions",
+        "experiencesReview": "Experiences awaiting review",
+        "tripsDestination": "Trips needing destination assignment",
+        "reviewsApproval": "Reviews awaiting approval"
+      }
+    },
     "payments": {
       "eyebrow": "Transactions",
       "title": "Payments",
