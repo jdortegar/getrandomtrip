@@ -7,6 +7,6 @@ phases:
   spec: done
   design: done
   tasks: done
-  apply: in-progress
+  apply: in-progress # 2 of 5 slices done (Phase 1 + Phase 2)
   verify: pending
   archive: pending

@@ -254,6 +254,8 @@
   },
   "adminPages": {
     "payments": {
+      "eyebrow": "Transactions",
+      "title": "Payments",
       "count": "{n} payments",
       "errorLoad": "Failed to load payments",
       "empty": "No payments found.",
@@ -313,6 +315,8 @@
       }
     },
     "reviews": {
+      "eyebrow": "Moderation",
+      "title": "Reviews",
       "count": "{n} reviews",
       "errorLoad": "Failed to load reviews",
       "empty": "No reviews found.",
@@ -321,6 +325,8 @@
         "review": "Review",
         "rating": "Rating",
         "status": "Status",
+        "tripper": "Tripper",
+        "tripId": "Trip ID",
         "created": "Created",
         "actions": "Actions"
       },
@@ -334,10 +340,14 @@
         "unapprove": "Unapprove",
         "approve": "Approve",
         "hide": "Hide",
-        "publish": "Publish"
+        "publish": "Publish",
+        "showMore": "Show more",
+        "showLess": "Show less"
       }
     },
     "waitlist": {
+      "eyebrow": "Subscribers",
+      "title": "Waitlist",
       "count": "{n} waitlist entries",
       "errorLoad": "Failed to load waitlist",
       "empty": "No waitlist entries found.",
@@ -353,6 +363,8 @@
       }
     },
     "xsedNotifications": {
+      "eyebrow": "TGIS subscribers",
+      "title": "TGIS Notifications",
       "count": "{n} TGIS notification entries",
       "errorLoad": "Failed to load TGIS notifications",
       "empty": "No TGIS notification entries found.",

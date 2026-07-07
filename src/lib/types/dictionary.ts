@@ -1083,6 +1083,8 @@ export interface AdminXsedDict {
 
 export interface AdminPagesDict {
   payments: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
@@ -1142,6 +1144,8 @@ export interface AdminPagesDict {
     };
   };
   reviews: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
@@ -1150,6 +1154,8 @@ export interface AdminPagesDict {
       review: string;
       rating: string;
       status: string;
+      tripper: string;
+      tripId: string;
       created: string;
       actions: string;
     };
@@ -1164,9 +1170,13 @@ export interface AdminPagesDict {
       approve: string;
       hide: string;
       publish: string;
+      showMore: string;
+      showLess: string;
     };
   };
   waitlist: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
@@ -1174,6 +1184,8 @@ export interface AdminPagesDict {
     actions: { delete: string; deleting: string };
   };
   xsedNotifications: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;

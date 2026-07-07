@@ -254,6 +254,8 @@
   },
   "adminPages": {
     "payments": {
+      "eyebrow": "Transacciones",
+      "title": "Pagos",
       "count": "{n} pagos",
       "errorLoad": "Error al cargar los pagos",
       "empty": "No se encontraron pagos.",
@@ -313,6 +315,8 @@
       }
     },
     "reviews": {
+      "eyebrow": "Moderación",
+      "title": "Reseñas",
       "count": "{n} reseñas",
       "errorLoad": "Error al cargar las reseñas",
       "empty": "No se encontraron reseñas.",
@@ -321,6 +325,8 @@
         "review": "Reseña",
         "rating": "Calificación",
         "status": "Estado",
+        "tripper": "Tripper",
+        "tripId": "ID de viaje",
         "created": "Creado",
         "actions": "Acciones"
       },
@@ -334,10 +340,14 @@
         "unapprove": "Rechazar",
         "approve": "Aprobar",
         "hide": "Ocultar",
-        "publish": "Publicar"
+        "publish": "Publicar",
+        "showMore": "Ver más",
+        "showLess": "Ver menos"
       }
     },
     "waitlist": {
+      "eyebrow": "Suscriptores",
+      "title": "Lista de espera",
       "count": "{n} entradas en lista de espera",
       "errorLoad": "Error al cargar la lista de espera",
       "empty": "No se encontraron entradas en la lista de espera.",
@@ -353,6 +363,8 @@
       }
     },
     "xsedNotifications": {
+      "eyebrow": "Suscriptores XSED",
+      "title": "Notificaciones XSED",
       "count": "{n} notificaciones XSED",
       "errorLoad": "Error al cargar las notificaciones XSED",
       "empty": "No se encontraron notificaciones XSED.",
