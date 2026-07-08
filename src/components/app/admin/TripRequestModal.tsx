@@ -47,6 +47,7 @@ interface TripRequestModalProps {
   onClose: () => void;
   onSaved: () => void;
   open: boolean;
+  paymentStatusLabels: Record<string, string>;
   trip: AdminTripRequest;
 }
 
@@ -55,6 +56,7 @@ export function TripRequestModal({
   onClose,
   onSaved,
   open,
+  paymentStatusLabels,
   trip,
 }: TripRequestModalProps) {
   const [draft, setDraft] = useState<Draft>({
@@ -169,12 +171,20 @@ export function TripRequestModal({
           <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
             {trip.type}
           </span>
-          <StatusBadge status={trip.status} variant="trip" />
+          <StatusBadge
+            label={statusLabel(trip.status)}
+            status={trip.status}
+            variant="trip"
+          />
           <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
             {trip.level}
           </span>
           {trip.payment ? (
-            <StatusBadge status={trip.payment.status} variant="payment" />
+            <StatusBadge
+              label={paymentStatusLabels[trip.payment.status] ?? trip.payment.status}
+              status={trip.payment.status}
+              variant="payment"
+            />
           ) : null}
         </div>
 
@@ -256,7 +266,7 @@ export function TripRequestModal({
           ) : null}
           {!deleteConfirming ? (
             <Button
-              className="border-red-800 text-red-800 hover:bg-red-50"
+              className="border-red-200 text-red-600 hover:bg-red-50"
               disabled={deleting}
               onClick={() => setDeleteConfirming(true)}
               size="sm"
@@ -277,7 +287,6 @@ export function TripRequestModal({
               </p>
               <div className="flex flex-wrap justify-end gap-2">
                 <Button
-                  
                   disabled={deleting}
                   onClick={() => {
                     setDeleteConfirming(false);
@@ -290,7 +299,6 @@ export function TripRequestModal({
                   {dict.deleteCancel}
                 </Button>
                 <Button
-                  
                   disabled={deleting}
                   onClick={() => void handleDelete()}
                   size="sm"
@@ -307,7 +315,6 @@ export function TripRequestModal({
 
       <DialogFooter className="shrink-0 border-t border-gray-200 px-6 py-4 sm:justify-end">
         <Button
-          
           disabled={saving}
           onClick={onClose}
           size="sm"
@@ -317,7 +324,6 @@ export function TripRequestModal({
           {dict.cancel}
         </Button>
         <Button
-          
           disabled={saving}
           onClick={() => void handleSave()}
           size="sm"

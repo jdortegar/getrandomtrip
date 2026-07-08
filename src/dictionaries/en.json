@@ -35,16 +35,54 @@
   "common": {
     "siteName": "Randomtrip"
   },
-  "adminSidebar": {
-    "links": {
+  "adminDashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
       "tripRequests": "Trip Requests",
-      "users": "Users",
+      "settings": "Settings",
       "experiences": "Experiences",
       "payments": "Payments",
       "reviews": "Reviews",
-      "waitlist": "Waitlist",
-      "xsed": "TGIS Drops",
-      "xsedNotifications": "TGIS Notifications"
+      "xsed": "New TGIS Drop",
+      "notifications": "Notifications"
+    },
+    "pageHeadings": {
+      "home": {
+        "title": "Admin Dashboard",
+        "description": "Platform overview at a glance."
+      },
+      "tripRequests": {
+        "title": "Trip Requests",
+        "description": "Manage clients' trip requests."
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Manage users, waitlist, and TGIS notification signups."
+      },
+      "experiences": {
+        "title": "Experiences",
+        "description": "Review and manage trippers' experiences."
+      },
+      "experiencesDetail": {
+        "title": "Experience Review",
+        "description": "Review the experience details before approving it."
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "View payments recorded on the platform."
+      },
+      "reviews": {
+        "title": "Reviews",
+        "description": "Moderate customer reviews."
+      },
+      "xsedNew": {
+        "title": "New TGIS Drop",
+        "description": "Create or edit a TGIS drop."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Reviews and trips waiting on your attention."
+      }
     }
   },
   "adminXsed": {
@@ -205,7 +243,26 @@
     "errorReject": "Could not reject changes. Please try again."
   },
   "adminPages": {
+    "home": {
+      "eyebrow": "Overview",
+      "heading": "Admin dashboard",
+      "stats": {
+        "tripsSold": "Trips completed",
+        "earnings": "Gross earnings",
+        "waitlist": "Waitlist",
+        "xsedSignups": "TGIS signups"
+      },
+      "pending": {
+        "eyebrow": "Needs attention",
+        "heading": "Pending actions",
+        "experiencesReview": "Experiences awaiting review",
+        "tripsDestination": "Trips needing destination assignment",
+        "reviewsApproval": "Reviews awaiting approval"
+      }
+    },
     "payments": {
+      "eyebrow": "Transactions",
+      "title": "Payments",
       "count": "{n} payments",
       "errorLoad": "Failed to load payments",
       "empty": "No payments found.",
@@ -219,12 +276,16 @@
       }
     },
     "experiences": {
+      "eyebrow": "Platform catalog",
+      "title": "Experiences",
       "count": "{n} experiences",
       "errorLoad": "Failed to load experiences",
       "empty": "No experiences found.",
+      "emptyPending": "No experiences pending review.",
       "columns": {
         "experience": "Experience",
         "tripper": "Tripper",
+        "typeLevel": "Type / Level",
         "status": "Status",
         "updated": "Updated",
         "actions": "Actions"
@@ -243,7 +304,8 @@
         "disable": "Disable",
         "enable": "Enable",
         "unfeature": "Unfeature",
-        "feature": "Feature"
+        "feature": "Feature",
+        "review": "Review"
       },
       "tabs": {
         "all": "All",
@@ -265,6 +327,8 @@
       }
     },
     "reviews": {
+      "eyebrow": "Moderation",
+      "title": "Reviews",
       "count": "{n} reviews",
       "errorLoad": "Failed to load reviews",
       "empty": "No reviews found.",
@@ -273,6 +337,8 @@
         "review": "Review",
         "rating": "Rating",
         "status": "Status",
+        "tripper": "Tripper",
+        "tripId": "Trip ID",
         "created": "Created",
         "actions": "Actions"
       },
@@ -286,7 +352,9 @@
         "unapprove": "Unapprove",
         "approve": "Approve",
         "hide": "Hide",
-        "publish": "Publish"
+        "publish": "Publish",
+        "showMore": "Show more",
+        "showLess": "Show less"
       }
     },
     "waitlist": {
@@ -318,11 +386,37 @@
         "delete": "Delete",
         "deleting": "Deleting…"
       }
+    },
+    "settings": {
+      "eyebrow": "Configuration",
+      "heading": "Settings",
+      "tabs": {
+        "users": "Users",
+        "waitlist": "Waitlist",
+        "xsedNotifications": "TGIS Notifications"
+      }
+    },
+    "tripRequests": {
+      "eyebrow": "Client requests",
+      "title": "Trip Requests",
+      "edit": "Edit",
+      "empty": "No trip requests found.",
+      "filters": {
+        "all": "All"
+      },
+      "columns": {
+        "traveler": "Traveler",
+        "origin": "Origin",
+        "typeLevel": "Type / Level",
+        "status": "Status",
+        "payment": "Payment",
+        "actions": "Actions"
+      }
     }
   },
   "xsedUnavailable": {
     "heading": "This DROP is sold out",
-    "subheading": "XSED drops open every Sunday from 4pm to 8pm.",
+    "subheading": "TGIS drops open every Sunday from 4pm to 8pm.",
     "notifyLabel": "Notify me about the next one",
     "backLabel": "Browse past drops"
   },
@@ -2191,13 +2285,13 @@
       "ctaHome": "Go to home",
       "ctaMyTrips": "Go to my trips",
       "calendarEventDescription": "Your Randomtrip surprise escape. Destination revealed 48 hours before departure.",
-      "xsedTitle": "You've got your XSED",
+      "xsedTitle": "You've got your TGIS",
       "xsedBody": "You'll receive an email with everything you need for your escape.",
       "xsedTripTypeLabel": "Trip type",
-      "xsedExperienceLabel": "XSED Drop Experience",
+      "xsedExperienceLabel": "TGIS Drop Experience",
       "xsedReferenceLabel": "Purchase reference number",
       "xsedPerPerson": "/person",
-      "xsedDownloadCta": "Download XSED",
+      "xsedDownloadCta": "Download TGIS",
       "receiptLink": "View receipt"
     }
   },
@@ -3130,7 +3224,7 @@
       },
       "newDrop": {
         "title": "New Drop",
-        "description": "Create a new XSED drop"
+        "description": "Create a new TGIS drop"
       }
     },
     "stats": {
@@ -3159,7 +3253,6 @@
       "settings": "Settings",
       "settingsSub": "Profile settings",
       "dashboard": "My Dashboard",
-      "createDrop": "New Drop",
       "notifications": "Notifications"
     },
     "keyMetrics": {
@@ -3856,6 +3949,11 @@
       "saveChanges": "Save changes",
       "saving": "Saving…",
       "tripper": "TRIPPER"
+    },
+    "roles": {
+      "ADMIN": "Admin",
+      "CLIENT": "Client",
+      "TRIPPER": "Tripper"
     },
     "usersCount": "{count} users"
   },

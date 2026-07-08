@@ -1,49 +1,71 @@
 import type { AdminTripRequest } from "@/lib/admin/types";
+import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { TripRequestsTableRow } from "./TripRequestsTableRow";
 
-const HEADERS = ["Traveler", "Origin", "Type / Level", "Status", "Payment", ""];
+type TripRequestsCopy = MarketingDictionary["adminPages"]["tripRequests"];
 
 interface TripRequestsTableProps {
+  copy: TripRequestsCopy;
   onEdit: (id: string) => void;
+  paymentStatusLabels: Record<string, string>;
   selectedId: string | null;
   trips: AdminTripRequest[];
+  tripStatusLabels: Record<string, string>;
 }
 
 export function TripRequestsTable({
+  copy,
   onEdit,
+  paymentStatusLabels,
   selectedId,
   trips,
+  tripStatusLabels,
 }: TripRequestsTableProps) {
+  const cols = copy.columns;
+  const headers = [
+    cols.traveler,
+    cols.origin,
+    cols.typeLevel,
+    cols.status,
+    cols.payment,
+    cols.actions,
+  ];
   return (
-    <div className="mx-5 my-4 overflow-hidden rounded-xl bg-white shadow-sm border border-gray-200">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-200">
-            {HEADERS.map((h) => (
-              <th
-                key={h}
-                className="px-4 py-3 text-left text-sm font-medium text-neutral-600 last:text-right"
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {trips.map((trip) => (
-            <TripRequestsTableRow
-              key={trip.id}
-              isSelected={selectedId === trip.id}
-              onEdit={onEdit}
-              trip={trip}
-            />
-          ))}
-        </tbody>
-      </table>
-      {trips.length === 0 && (
-        <p className="py-10 text-center text-sm text-gray-400">
-          No trips found.
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      {trips.length === 0 ? (
+        <p className="py-16 text-center text-sm text-neutral-500">
+          {copy.empty}
         </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                {headers.map((h) => (
+                  <th
+                    className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500"
+                    key={h}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {trips.map((trip) => (
+                <TripRequestsTableRow
+                  editTitle={copy.edit}
+                  isSelected={selectedId === trip.id}
+                  key={trip.id}
+                  onEdit={onEdit}
+                  paymentStatusLabels={paymentStatusLabels}
+                  trip={trip}
+                  tripStatusLabels={tripStatusLabels}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

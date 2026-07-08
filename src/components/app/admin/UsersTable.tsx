@@ -4,6 +4,7 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface UsersTableProps {
   copy: MarketingDictionary["adminUsers"];
+  locale: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   selectedId: string | null;
@@ -12,6 +13,7 @@ interface UsersTableProps {
 
 export function UsersTable({
   copy,
+  locale,
   onDelete,
   onEdit,
   selectedId,
@@ -25,35 +27,41 @@ export function UsersTable({
     copy.headers.actions,
   ];
   return (
-    <div className="mx-5 my-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="border-b border-gray-200">
-            {headers.map((h) => (
-              <th
-                key={h}
-                className="px-4 py-3 text-left text-sm font-medium text-neutral-600 "
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <UsersTableRow
-              copy={copy}
-              key={user.id}
-              isSelected={selectedId === user.id}
-              onDelete={onDelete}
-              onEdit={onEdit}
-              user={user}
-            />
-          ))}
-        </tbody>
-      </table>
-      {users.length === 0 && (
-        <p className="py-10 text-center text-sm text-gray-400">{copy.empty}</p>
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      {users.length === 0 ? (
+        <p className="py-16 text-center text-sm text-neutral-500">
+          {copy.empty}
+        </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                {headers.map((h) => (
+                  <th
+                    className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500"
+                    key={h}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {users.map((user) => (
+                <UsersTableRow
+                  copy={copy}
+                  isSelected={selectedId === user.id}
+                  key={user.id}
+                  locale={locale}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                  user={user}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

@@ -197,7 +197,6 @@ export interface TripperDashboardDict {
     blogsSub: string;
     settings: string;
     settingsSub: string;
-    createDrop: string;
     notifications: string;
   };
   keyMetrics: {
@@ -928,16 +927,27 @@ export interface XsedPageDict {
   };
 }
 
-export interface AdminSidebarDict {
-  links: {
+export interface AdminDashboardDict {
+  nav: {
+    dashboard: string;
     experiences: string;
+    notifications: string;
     payments: string;
     reviews: string;
+    settings: string;
     tripRequests: string;
-    users: string;
-    waitlist: string;
     xsed: string;
-    xsedNotifications: string;
+  };
+  pageHeadings: {
+    experiences: { description: string; title: string };
+    experiencesDetail: { description: string; title: string };
+    home: { description: string; title: string };
+    notifications: { description: string; title: string };
+    payments: { description: string; title: string };
+    reviews: { description: string; title: string };
+    settings: { description: string; title: string };
+    tripRequests: { description: string; title: string };
+    xsedNew: { description: string; title: string };
   };
 }
 
@@ -1067,7 +1077,26 @@ export interface AdminXsedDict {
 }
 
 export interface AdminPagesDict {
+  home: {
+    eyebrow: string;
+    heading: string;
+    stats: {
+      tripsSold: string;
+      earnings: string;
+      waitlist: string;
+      xsedSignups: string;
+    };
+    pending: {
+      eyebrow: string;
+      heading: string;
+      experiencesReview: string;
+      tripsDestination: string;
+      reviewsApproval: string;
+    };
+  };
   payments: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
@@ -1081,12 +1110,16 @@ export interface AdminPagesDict {
     };
   };
   experiences: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
+    emptyPending: string;
     columns: {
       experience: string;
       tripper: string;
+      typeLevel: string;
       status: string;
       updated: string;
       actions: string;
@@ -1106,6 +1139,7 @@ export interface AdminPagesDict {
       enable: string;
       unfeature: string;
       feature: string;
+      review: string;
     };
     tabs: {
       all: string;
@@ -1127,6 +1161,8 @@ export interface AdminPagesDict {
     };
   };
   reviews: {
+    eyebrow: string;
+    title: string;
     count: string;
     errorLoad: string;
     empty: string;
@@ -1135,6 +1171,8 @@ export interface AdminPagesDict {
       review: string;
       rating: string;
       status: string;
+      tripper: string;
+      tripId: string;
       created: string;
       actions: string;
     };
@@ -1149,6 +1187,8 @@ export interface AdminPagesDict {
       approve: string;
       hide: string;
       publish: string;
+      showMore: string;
+      showLess: string;
     };
   };
   waitlist: {
@@ -1164,6 +1204,30 @@ export interface AdminPagesDict {
     empty: string;
     columns: { email: string; locale: string; joined: string; actions: string };
     actions: { delete: string; deleting: string };
+  };
+  settings: {
+    eyebrow: string;
+    heading: string;
+    tabs: {
+      users: string;
+      waitlist: string;
+      xsedNotifications: string;
+    };
+  };
+  tripRequests: {
+    eyebrow: string;
+    title: string;
+    edit: string;
+    empty: string;
+    filters: { all: string };
+    columns: {
+      traveler: string;
+      origin: string;
+      typeLevel: string;
+      status: string;
+      payment: string;
+      actions: string;
+    };
   };
 }
 
@@ -1284,7 +1348,6 @@ export interface MarketingDictionary {
   common: {
     siteName: string;
   };
-  adminSidebar: AdminSidebarDict;
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
   adminExperienceReview: {
@@ -2236,6 +2299,11 @@ export interface MarketingDictionary {
       saving: string;
       tripper: string;
     };
+    roles: {
+      ADMIN: string;
+      CLIENT: string;
+      TRIPPER: string;
+    };
     usersCount: string;
   };
   adminTripEditModal: {
@@ -2282,6 +2350,7 @@ export interface MarketingDictionary {
   };
   tripperBlogs: TripperBlogsDict;
   dashboard: DashboardDict;
+  adminDashboard: AdminDashboardDict;
   clientDashboard: ClientDashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;

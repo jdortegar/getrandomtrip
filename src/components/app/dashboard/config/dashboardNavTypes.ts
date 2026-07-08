@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-export type NotificationAudience = "CLIENT" | "TRIPPER";
+export type NotificationAudience = "CLIENT" | "TRIPPER" | "ADMIN";
 
 export interface DashboardNavTabItem {
   audience?: NotificationAudience;

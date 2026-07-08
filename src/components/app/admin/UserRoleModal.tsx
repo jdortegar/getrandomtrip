@@ -113,13 +113,18 @@ export function UserRoleModal({
             {copy.modal.roleSection}
           </p>
           <label className="flex items-center gap-2 text-sm text-neutral-700">
-            <input checked className="h-4 w-4" disabled type="checkbox" />
+            <input
+              checked
+              className="h-4 w-4 accent-light-blue"
+              disabled
+              type="checkbox"
+            />
             <span>{copy.modal.clientBase}</span>
           </label>
           <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               checked={roles.includes("TRIPPER")}
-              className="h-4 w-4"
+              className="h-4 w-4 accent-light-blue"
               onChange={() => {
                 setRoles((prev) =>
                   withMembershipToggled(
@@ -136,7 +141,7 @@ export function UserRoleModal({
           <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               checked={roles.includes("ADMIN")}
-              className="h-4 w-4"
+              className="h-4 w-4 accent-light-blue"
               onChange={() => {
                 setRoles((prev) =>
                   withMembershipToggled(prev, "ADMIN", !prev.includes("ADMIN")),

@@ -1,6 +1,7 @@
 export type NotificationMetadata =
   | { experienceId: string }
   | { tripRequestId: string }
+  | { reviewId: string }
   | null;
 
 export interface ClientNotification {

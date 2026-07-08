@@ -1,13 +1,23 @@
 export const dynamic = "force-dynamic";
 
-import SecureRouteWrapper from "@/components/auth/SecureRouteWrapper";
+import { StrictDashboardLayout } from "@/components/app/dashboard/shell/StrictDashboardLayout";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+
   return (
-    <SecureRouteWrapper requiredRole="admin">{children}</SecureRouteWrapper>
+    <StrictDashboardLayout
+      locale={locale}
+      requiredRole="admin"
+      shellRole="admin"
+    >
+      {children}
+    </StrictDashboardLayout>
   );
 }

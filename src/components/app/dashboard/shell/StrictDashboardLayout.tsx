@@ -14,7 +14,7 @@ interface StrictDashboardLayoutProps {
   children: React.ReactNode;
   locale: string;
   requiredRole: DashboardRole;
-  shellRole?: "client" | "tripper";
+  shellRole?: "admin" | "client" | "tripper";
 }
 
 export async function StrictDashboardLayout({
@@ -44,8 +44,10 @@ export async function StrictDashboardLayout({
     redirect(getDefaultDashboardPath(roles, locale));
   }
 
-  const resolvedShellRole =
-    shellRole ?? (requiredRole === "tripper" ? "tripper" : "client");
+  // `requiredRole` and `shellRole` share the exact same type (DashboardRole),
+  // so defaulting to `requiredRole` is always correct — no per-role
+  // special-casing needed, and it stays correct if a 4th role is ever added.
+  const resolvedShellRole = shellRole ?? requiredRole;
 
   return (
     <>

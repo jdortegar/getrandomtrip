@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Check, Eye, EyeOff, X } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { AdminReview } from "@/lib/admin/types";
-import { useDictionary } from "@/hooks/useDictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 export function AdminReviewsPageClient() {
   const copy = useDictionary((d) => d.adminPages.reviews);
+  const locale = useLocale();
+  const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,137 +70,189 @@ export function AdminReviewsPageClient() {
   const act = copy.actions;
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-gray-200 px-5 py-4">
-        <p className="text-xs text-neutral-500">
-          {copy.count.replace("{n}", String(reviews.length))}
+    <div className="space-y-10">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          {copy.eyebrow}
         </p>
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          {copy.title}
+        </h2>
       </div>
-      <div className="flex-1 overflow-y-auto">
-        <div className="mx-5 my-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-gray-200">
-                {[
-                  cols.traveler,
-                  cols.review,
-                  cols.rating,
-                  cols.status,
-                  "Tripper",
-                  "Trip ID",
-                  cols.created,
-                  cols.actions,
-                ].map((h) => (
-                  <th
-                    className="px-4 py-3 text-left text-sm font-medium text-neutral-600"
-                    key={h}
-                  >
-                    {h}
+
+      <div className="flex items-center justify-end">
+        <span className="text-[13px] text-neutral-400">
+          {copy.count.replace("{n}", String(reviews.length))}
+        </span>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        {reviews.length === 0 ? (
+          <p className="py-16 text-center text-sm text-neutral-500">
+            {copy.empty}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.traveler}
                   </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {reviews.map((review) => (
-                <tr
-                  className="border-b border-gray-100 last:border-0"
-                  key={review.id}
-                >
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    <p>{review.user.name}</p>
-                    <p className="text-xs text-neutral-500">
-                      {review.user.email}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700 max-w-xs">
-                    {review.title && (
-                      <p className="font-medium mb-0.5">{review.title}</p>
-                    )}
-                    <p className={`text-xs text-neutral-600 ${expandedId === review.id ? "" : "line-clamp-2"}`}>
-                      {review.content}
-                    </p>
-                    {review.content.length > 120 && (
-                      <button
-                        className="text-xs text-neutral-400 hover:text-neutral-700 mt-0.5"
-                        onClick={() => setExpandedId(expandedId === review.id ? null : review.id)}
-                        type="button"
-                      >
-                        {expandedId === review.id ? "Show less" : "Show more"}
-                      </button>
-                    )}
-                    {review.destination && (
-                      <p className="text-xs text-neutral-400 mt-1">
-                        {review.destination}
-                      </p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3.5 text-sm text-neutral-700">
-                    {review.rating}/5
-                  </td>
-                  <td className="px-4 py-3.5 text-xs text-neutral-500">
-                    <span>{review.isApproved ? st.approved : st.pending}</span>
-                    {review.isApproved && (
-                      <span className="ml-1 text-neutral-400">
-                        · {review.isPublic ? st.public : st.private}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3.5 text-xs text-neutral-500">
-                    {review.tripperName ?? "Randomtrip"}
-                  </td>
-                  <td className="px-4 py-3.5 text-xs text-neutral-400">
-                    {review.tripRequestId ? (
-                      <span title={review.tripRequestId}>
-                        {review.tripRequestId.slice(0, 8)}…
-                      </span>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-4 py-3.5 text-xs text-neutral-400">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <div className="flex gap-3">
-                      <button
-                        className="cursor-pointer text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        disabled={savingId === review.id}
-                        onClick={() =>
-                          void updateReview(review.id, {
-                            isApproved: !review.isApproved,
-                          })
-                        }
-                        type="button"
-                      >
-                        {review.isApproved ? act.unapprove : act.approve}
-                      </button>
-                      {review.tripperName === null && review.isApproved && (
-                        <button
-                          className="cursor-pointer text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                          disabled={savingId === review.id}
-                          onClick={() =>
-                            void updateReview(review.id, {
-                              isApproved: review.isApproved,
-                              isPublic: !review.isPublic,
-                            })
-                          }
-                          type="button"
-                        >
-                          {review.isPublic ? act.hide : act.publish}
-                        </button>
-                      )}
-                    </div>
-                  </td>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.review}
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.rating}
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.status}
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.tripper}
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.tripId}
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.created}
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.actions}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {reviews.length === 0 && (
-            <p className="py-10 text-center text-sm text-gray-400">
-              {copy.empty}
-            </p>
-          )}
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {reviews.map((review) => {
+                  const isBusy = savingId === review.id;
+                  return (
+                    <tr
+                      className="transition-colors hover:bg-gray-50"
+                      key={review.id}
+                    >
+                      <td className="px-5 py-4">
+                        <p className="text-sm font-semibold text-neutral-900">
+                          {review.user.name}
+                        </p>
+                        <p className="mt-0.5 text-xs text-neutral-500">
+                          {review.user.email}
+                        </p>
+                      </td>
+                      <td className="max-w-xs px-5 py-4 text-sm text-neutral-700">
+                        {review.title && (
+                          <p className="mb-0.5 font-medium">{review.title}</p>
+                        )}
+                        <p
+                          className={`text-xs text-neutral-600 ${expandedId === review.id ? "" : "line-clamp-2"}`}
+                        >
+                          {review.content}
+                        </p>
+                        {review.content.length > 120 && (
+                          <button
+                            className="mt-0.5 text-xs text-neutral-400 hover:text-neutral-700"
+                            onClick={() =>
+                              setExpandedId(
+                                expandedId === review.id ? null : review.id,
+                              )
+                            }
+                            type="button"
+                          >
+                            {expandedId === review.id
+                              ? act.showLess
+                              : act.showMore}
+                          </button>
+                        )}
+                        {review.destination && (
+                          <p className="mt-1 text-xs text-neutral-400">
+                            {review.destination}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 text-sm text-neutral-700">
+                        {review.rating}/5
+                      </td>
+                      <td className="px-5 py-4">
+                        <span
+                          className={`rounded-[6px] border px-2 py-0.5 text-[11px] font-medium ${
+                            review.isApproved
+                              ? "border-green-200 bg-green-50 text-green-700"
+                              : "border-amber-200 bg-amber-50 text-amber-700"
+                          }`}
+                        >
+                          {review.isApproved ? st.approved : st.pending}
+                        </span>
+                        {review.isApproved && (
+                          <span className="ml-1.5 text-xs text-neutral-400">
+                            {review.isPublic ? st.public : st.private}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 text-sm text-neutral-500">
+                        {review.tripperName ?? "Randomtrip"}
+                      </td>
+                      <td className="px-5 py-4 text-xs text-neutral-400">
+                        {review.tripRequestId ? (
+                          <span title={review.tripRequestId}>
+                            {review.tripRequestId.slice(0, 8)}…
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="px-5 py-4 text-sm text-neutral-500">
+                        {new Date(review.createdAt).toLocaleDateString(
+                          dateLocale,
+                          { day: "numeric", month: "short", year: "numeric" },
+                        )}
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-1.5">
+                          <TableIconButton
+                            danger={review.isApproved}
+                            disabled={isBusy}
+                            onClick={() =>
+                              void updateReview(review.id, {
+                                isApproved: !review.isApproved,
+                              })
+                            }
+                            title={
+                              review.isApproved ? act.unapprove : act.approve
+                            }
+                          >
+                            {review.isApproved ? (
+                              <X className="h-4 w-4" />
+                            ) : (
+                              <Check className="h-4 w-4" />
+                            )}
+                          </TableIconButton>
+                          {review.tripperName === null &&
+                            review.isApproved && (
+                              <TableIconButton
+                                disabled={isBusy}
+                                onClick={() =>
+                                  void updateReview(review.id, {
+                                    isApproved: review.isApproved,
+                                    isPublic: !review.isPublic,
+                                  })
+                                }
+                                title={review.isPublic ? act.hide : act.publish}
+                              >
+                                {review.isPublic ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                              </TableIconButton>
+                            )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

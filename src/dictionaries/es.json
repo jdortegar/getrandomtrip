@@ -35,16 +35,54 @@
   "common": {
     "siteName": "Randomtrip"
   },
-  "adminSidebar": {
-    "links": {
+  "adminDashboard": {
+    "nav": {
+      "dashboard": "Inicio",
       "tripRequests": "Solicitudes de viaje",
-      "users": "Usuarios",
+      "settings": "Configuración",
       "experiences": "Experiencias",
       "payments": "Pagos",
       "reviews": "Reseñas",
-      "waitlist": "Lista de espera",
-      "xsed": "Drops XSED",
-      "xsedNotifications": "Notificaciones XSED"
+      "xsed": "Nuevo XSED Drop",
+      "notifications": "Notificaciones"
+    },
+    "pageHeadings": {
+      "home": {
+        "title": "Panel de Admin",
+        "description": "Resumen general de la plataforma."
+      },
+      "tripRequests": {
+        "title": "Solicitudes de viaje",
+        "description": "Gestioná las solicitudes de viaje de los clientes."
+      },
+      "settings": {
+        "title": "Configuración",
+        "description": "Gestioná usuarios, lista de espera y suscripciones a notificaciones TGIS."
+      },
+      "experiences": {
+        "title": "Experiencias",
+        "description": "Revisá y gestioná las experiencias de los trippers."
+      },
+      "experiencesDetail": {
+        "title": "Revisión de experiencia",
+        "description": "Revisá los detalles de la experiencia antes de aprobarla."
+      },
+      "payments": {
+        "title": "Pagos",
+        "description": "Consultá los pagos registrados en la plataforma."
+      },
+      "reviews": {
+        "title": "Reseñas",
+        "description": "Moderá las reseñas de los clientes."
+      },
+      "xsedNew": {
+        "title": "Nuevo XSED drop",
+        "description": "Creá o editá un XSED drop."
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "description": "Reseñas y viajes que esperan tu atención."
+      }
     }
   },
   "adminXsed": {
@@ -90,12 +128,12 @@
     },
     "form": {
       "eyebrow": "Admin",
-      "title": "Nuevo Drop XSED",
+      "title": "Nuevo XSED Drop",
       "back": "Volver",
       "submit": "Crear drop",
       "saving": "Guardando…",
       "cancel": "Cancelar",
-      "titleEdit": "Editar Drop XSED",
+      "titleEdit": "Editar XSED Drop",
       "submitEdit": "Guardar cambios",
       "toastCreated": "Drop creado",
       "toastUpdated": "Drop actualizado",
@@ -205,7 +243,26 @@
     "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
   },
   "adminPages": {
+    "home": {
+      "eyebrow": "Resumen general",
+      "heading": "Panel de administración",
+      "stats": {
+        "tripsSold": "Viajes completados",
+        "earnings": "Ingresos brutos",
+        "waitlist": "Lista de espera",
+        "xsedSignups": "Suscriptores XSED"
+      },
+      "pending": {
+        "eyebrow": "Requiere atención",
+        "heading": "Acciones pendientes",
+        "experiencesReview": "Experiencias pendientes de revisión",
+        "tripsDestination": "Viajes que necesitan destino asignado",
+        "reviewsApproval": "Reseñas pendientes de aprobación"
+      }
+    },
     "payments": {
+      "eyebrow": "Transacciones",
+      "title": "Pagos",
       "count": "{n} pagos",
       "errorLoad": "Error al cargar los pagos",
       "empty": "No se encontraron pagos.",
@@ -219,12 +276,16 @@
       }
     },
     "experiences": {
+      "eyebrow": "Catálogo de la plataforma",
+      "title": "Experiencias",
       "count": "{n} experiencias",
       "errorLoad": "Error al cargar las experiencias",
       "empty": "No se encontraron experiencias.",
+      "emptyPending": "No hay experiencias pendientes de revisión.",
       "columns": {
         "experience": "Experiencia",
         "tripper": "Tripper",
+        "typeLevel": "Tipo / Nivel",
         "status": "Estado",
         "updated": "Actualizado",
         "actions": "Acciones"
@@ -243,7 +304,8 @@
         "disable": "Desactivar",
         "enable": "Activar",
         "unfeature": "Quitar destaque",
-        "feature": "Destacar"
+        "feature": "Destacar",
+        "review": "Revisar"
       },
       "tabs": {
         "all": "Todas",
@@ -265,6 +327,8 @@
       }
     },
     "reviews": {
+      "eyebrow": "Moderación",
+      "title": "Reseñas",
       "count": "{n} reseñas",
       "errorLoad": "Error al cargar las reseñas",
       "empty": "No se encontraron reseñas.",
@@ -273,6 +337,8 @@
         "review": "Reseña",
         "rating": "Calificación",
         "status": "Estado",
+        "tripper": "Tripper",
+        "tripId": "ID de viaje",
         "created": "Creado",
         "actions": "Acciones"
       },
@@ -286,7 +352,9 @@
         "unapprove": "Rechazar",
         "approve": "Aprobar",
         "hide": "Ocultar",
-        "publish": "Publicar"
+        "publish": "Publicar",
+        "showMore": "Ver más",
+        "showLess": "Ver menos"
       }
     },
     "waitlist": {
@@ -317,6 +385,32 @@
       "actions": {
         "delete": "Eliminar",
         "deleting": "Eliminando…"
+      }
+    },
+    "settings": {
+      "eyebrow": "Configuración",
+      "heading": "Configuración",
+      "tabs": {
+        "users": "Usuarios",
+        "waitlist": "Lista de espera",
+        "xsedNotifications": "Notificaciones TGIS"
+      }
+    },
+    "tripRequests": {
+      "eyebrow": "Solicitudes de clientes",
+      "title": "Solicitudes de viaje",
+      "edit": "Editar",
+      "empty": "No se encontraron solicitudes de viaje.",
+      "filters": {
+        "all": "Todas"
+      },
+      "columns": {
+        "traveler": "Viajero",
+        "origin": "Origen",
+        "typeLevel": "Tipo / Nivel",
+        "status": "Estado",
+        "payment": "Pago",
+        "actions": "Acciones"
       }
     }
   },
@@ -3159,7 +3253,6 @@
       "settings": "Configuración",
       "settingsSub": "Ajustes del perfil",
       "dashboard": "Mi Dashboard",
-      "createDrop": "Nuevo Drop",
       "notifications": "Notificaciones"
     },
     "keyMetrics": {
@@ -3856,6 +3949,11 @@
       "saveChanges": "Guardar cambios",
       "saving": "Guardando…",
       "tripper": "TRIPPER"
+    },
+    "roles": {
+      "ADMIN": "Admin",
+      "CLIENT": "Cliente",
+      "TRIPPER": "Tripper"
     },
     "usersCount": "{count} usuarios"
   },
