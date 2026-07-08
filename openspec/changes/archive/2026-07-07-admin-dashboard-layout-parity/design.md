@@ -34,7 +34,7 @@ const tabs =
 `DashboardPageHeading` gains `if (role === "admin") return resolveAdminPageHeading(pathname, adminHeadings);`.
 `StrictDashboardLayout`: `resolvedShellRole` fallback unchanged; admin passes explicit `shellRole="admin"`. No `audience` change to `DashboardNavTabItem` (admin tabs need no unread dot).
 
-`buildAdminNavTabs(copy, locale)` → `DashboardNavTabItem[]` (mirrors `buildTripperNavTabs`, `base = /dashboard/admin{path}`), 9 tabs:
+`buildAdminNavTabs(copy, locale)` → `DashboardNavTabItem[]` (mirrors `buildTripperNavTabs`, `base = /dashboard/admin{path}`), 10 tabs:
 
 | # | label key | href | icon | exact |
 |---|---|---|---|---|
@@ -48,9 +48,9 @@ const tabs =
 | 8 | xsed | `/xsed/new` | `Compass` | |
 | 9 | xsedNotifications | `/xsed-notifications` | `Bell` | |
 
-(Tab count is **9**, not the proposal's 8 — the new home tab is added and trip-requests moves off root. `packages` route has no sidebar link today and gets none. `xsed` targets `/xsed/new` since no `/xsed` index page exists.)
+(Tab count is **10**, not the proposal's 8 — the new home tab is added, trip-requests moves off root, and the Notifications tab is added. `packages` route has no sidebar link today and gets none. `xsed` targets `/xsed/new` since no `/xsed` index page exists.)
 
-Dictionary additions (`adminDashboard` section, es+en + `AdminDashboardDict` in `dictionary.ts`): `nav.{dashboard,tripRequests,users,experiences,payments,reviews,waitlist,xsed,xsedNotifications}`, `pageHeadings.{home,tripRequests,users,experiences,experiencesDetail,payments,reviews,waitlist,xsedNotifications,xsedNew}` (each `{title,description}`), `home.{eyebrow,heading, stats.{tripsSold,earnings,waitlist,xsedSignups}, pending.{eyebrow,heading,experiencesReview,tripsDestination,reviewsApproval,allClear}}`. Remove `adminSidebar` keys when the sidebar is deleted.
+Dictionary additions (`adminDashboard` section, es+en + `AdminDashboardDict` in `dictionary.ts`): `nav.{dashboard,tripRequests,users,experiences,payments,reviews,waitlist,xsed,xsedNotifications,notifications}`, `pageHeadings.{home,tripRequests,users,experiences,experiencesDetail,payments,reviews,waitlist,xsedNotifications,xsedNew,notifications}` (each `{title,description}`), `home.{eyebrow,heading, stats.{tripsSold,earnings,waitlist,xsedSignups}, pending.{eyebrow,heading,experiencesReview,tripsDestination,reviewsApproval,allClear}}`. Remove `adminSidebar` keys when the sidebar is deleted.
 
 ## Overview Queries (server component, `Promise.all`)
 ```ts
@@ -134,6 +134,6 @@ No data/schema/API change (overview reads only). Chained by slice; each reverts 
 
 ## Open Questions
 - [ ] Spec requires non-admin redirect to `/dashboard`, but the shared `StrictDashboardLayout` redirects via `getDefaultDashboardPath` (role's default dashboard). Confirm the shared guard's behavior is acceptable, or special-case the admin redirect target.
-- [ ] Tab-count contract mismatch: `specs/dashboard-shell` scenario asserts the bar "lists all 8 admin sections", but adding the new overview home tab makes **9** tabs (home + 8 sections). Reconcile before `sdd-verify` — either update the spec scenario to 9, or treat home as one of the 8 (dropping a separate section tab). Recommend updating the scenario to 9.
+- [ ] Tab-count contract mismatch: `specs/dashboard-shell` scenario asserts the bar "lists all 8 admin sections", but adding the new overview home tab makes **10** tabs (home + 8 sections + notifications). Reconcile before `sdd-verify` — either update the spec scenario to 10, or treat home as one of the 8 (dropping a separate section tab). Recommend updating the scenario to 10.
 - [ ] `xsed` nav tab targets `/xsed/new` (no `/xsed` index exists) — confirm this is the intended destination vs. a new xsed index.
 - [ ] `packages` route (`(shell)/packages`) has no nav entry today and gets none — confirm it can stay unlinked (or is dead and removable in a follow-up).

@@ -1,6 +1,7 @@
 change: admin-dashboard-layout-parity
-status: proposal
+status: archive
 created: 2026-07-06
+archived: 2026-07-07
 artifact_store: openspec
 phases:
   proposal: done
@@ -8,5 +9,5 @@ phases:
   design: done
   tasks: done
   apply: done # all 5 slices complete (Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 5); manual QA items deferred
-  verify: pending
-  archive: pending
+  verify: done
+  archive: done
