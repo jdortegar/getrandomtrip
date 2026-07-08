@@ -7,7 +7,6 @@ import {
   Plus,
   Settings,
   Star,
-  Zap,
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -16,14 +15,13 @@ import type { DashboardNavTabItem } from "@/components/app/dashboard/config/dash
 
 export function buildTripperNavTabs(
   copy: TripperDashboardDict["quickActions"],
-  isAdmin: boolean,
   locale: Locale,
 ): DashboardNavTabItem[] {
   function base(path: string) {
     return pathForLocale(locale, `/dashboard/tripper${path}`);
   }
 
-  const tabs: DashboardNavTabItem[] = [
+  return [
     {
       exact: true,
       href: base(""),
@@ -69,14 +67,4 @@ export function buildTripperNavTabs(
       label: copy.settings,
     },
   ];
-
-  if (isAdmin) {
-    tabs.splice(3, 0, {
-      href: pathForLocale(locale, "/dashboard/admin/xsed/new"),
-      icon: Zap,
-      label: copy.createDrop,
-    });
-  }
-
-  return tabs;
 }

@@ -16,76 +16,76 @@ export const TRIP_STATUS_FLOW: TripRequestStatus[] = [
   "COMPLETED",
 ];
 
+/** Badge colors in the shared rounded-[6px] + dot shape (see StatusBadge, ExperienceStatusBadge). */
 export interface StatusColors {
-  bg: string;
-  border: string;
-  text: string;
+  badge: string;
+  dot: string;
 }
 
 export const TRIP_STATUS_COLORS: Record<TripRequestStatus, StatusColors> = {
-  CANCELLED: {
-    bg: "bg-red-100",
-    border: "border-red-200",
-    text: "text-red-800",
-  },
+  CANCELLED: { badge: "bg-red-50 text-red-800 border-red-200", dot: "bg-red-500" },
   COMPLETED: {
-    bg: "bg-green-100",
-    border: "border-green-200",
-    text: "text-green-800",
+    badge: "bg-green-50 text-green-800 border-green-200",
+    dot: "bg-green-500",
   },
   CONFIRMED: {
-    bg: "bg-green-100",
-    border: "border-green-200",
-    text: "text-green-800",
+    badge: "bg-green-50 text-green-800 border-green-200",
+    dot: "bg-green-500",
   },
   DRAFT: {
-    bg: "bg-gray-100",
-    border: "border-gray-200",
-    text: "text-gray-700",
+    badge: "bg-gray-50 text-gray-700 border-gray-200",
+    dot: "bg-gray-400",
   },
   PENDING_PAYMENT: {
-    bg: "bg-yellow-100",
-    border: "border-yellow-200",
-    text: "text-yellow-800",
+    badge: "bg-amber-50 text-amber-800 border-amber-200",
+    dot: "bg-amber-400",
   },
   REVEALED: {
-    bg: "bg-blue-100",
-    border: "border-blue-200",
-    text: "text-blue-800",
+    badge: "bg-sky-50 text-sky-800 border-sky-200",
+    dot: "bg-sky-500",
   },
   SAVED: {
-    bg: "bg-gray-100",
-    border: "border-gray-200",
-    text: "text-gray-700",
+    badge: "bg-gray-50 text-gray-700 border-gray-200",
+    dot: "bg-gray-400",
   },
 };
 
 export const PAYMENT_STATUS_COLORS: Record<string, StatusColors> = {
   APPROVED: {
-    bg: "bg-green-100",
-    border: "border-green-200",
-    text: "text-green-800",
+    badge: "bg-green-50 text-green-800 border-green-200",
+    dot: "bg-green-500",
   },
   CANCELLED: {
-    bg: "bg-gray-100",
-    border: "border-gray-200",
-    text: "text-gray-700",
+    badge: "bg-gray-50 text-gray-700 border-gray-200",
+    dot: "bg-gray-400",
   },
   COMPLETED: {
-    bg: "bg-green-100",
-    border: "border-green-200",
-    text: "text-green-800",
+    badge: "bg-green-50 text-green-800 border-green-200",
+    dot: "bg-green-500",
   },
-  FAILED: { bg: "bg-red-100", border: "border-red-200", text: "text-red-800" },
+  FAILED: { badge: "bg-red-50 text-red-800 border-red-200", dot: "bg-red-500" },
   PENDING: {
-    bg: "bg-yellow-100",
-    border: "border-yellow-200",
-    text: "text-yellow-800",
+    badge: "bg-amber-50 text-amber-800 border-amber-200",
+    dot: "bg-amber-400",
   },
   REFUNDED: {
-    bg: "bg-gray-100",
-    border: "border-gray-200",
-    text: "text-gray-700",
+    badge: "bg-gray-50 text-gray-700 border-gray-200",
+    dot: "bg-gray-400",
+  },
+};
+
+export const USER_ROLE_COLORS: Record<"ADMIN" | "CLIENT" | "TRIPPER", StatusColors> = {
+  ADMIN: {
+    badge: "bg-purple-50 text-purple-800 border-purple-200",
+    dot: "bg-purple-500",
+  },
+  CLIENT: {
+    badge: "bg-blue-50 text-blue-800 border-blue-200",
+    dot: "bg-blue-500",
+  },
+  TRIPPER: {
+    badge: "bg-green-50 text-green-800 border-green-200",
+    dot: "bg-green-500",
   },
 };
 

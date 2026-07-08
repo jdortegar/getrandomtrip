@@ -47,6 +47,7 @@ interface TripRequestModalProps {
   onClose: () => void;
   onSaved: () => void;
   open: boolean;
+  paymentStatusLabels: Record<string, string>;
   trip: AdminTripRequest;
 }
 
@@ -55,6 +56,7 @@ export function TripRequestModal({
   onClose,
   onSaved,
   open,
+  paymentStatusLabels,
   trip,
 }: TripRequestModalProps) {
   const [draft, setDraft] = useState<Draft>({
@@ -169,12 +171,20 @@ export function TripRequestModal({
           <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
             {trip.type}
           </span>
-          <StatusBadge status={trip.status} variant="trip" />
+          <StatusBadge
+            label={statusLabel(trip.status)}
+            status={trip.status}
+            variant="trip"
+          />
           <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
             {trip.level}
           </span>
           {trip.payment ? (
-            <StatusBadge status={trip.payment.status} variant="payment" />
+            <StatusBadge
+              label={paymentStatusLabels[trip.payment.status] ?? trip.payment.status}
+              status={trip.payment.status}
+              variant="payment"
+            />
           ) : null}
         </div>
 

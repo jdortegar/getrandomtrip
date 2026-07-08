@@ -4,11 +4,9 @@ import {
   Compass,
   CreditCard,
   LayoutDashboard,
-  Mail,
-  Megaphone,
   Package,
+  Settings,
   Star,
-  Users,
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -36,11 +34,6 @@ export function buildAdminNavTabs(
       label: copy.tripRequests,
     },
     {
-      href: base("/users"),
-      icon: Users,
-      label: copy.users,
-    },
-    {
       href: base("/experiences"),
       icon: Package,
       label: copy.experiences,
@@ -56,11 +49,6 @@ export function buildAdminNavTabs(
       label: copy.reviews,
     },
     {
-      href: base("/waitlist"),
-      icon: Mail,
-      label: copy.waitlist,
-    },
-    {
       // Points at the /xsed index (which redirects to /xsed/new) rather than
       // /xsed/new directly, so the tab's active-match prefix ("/xsed/") also
       // covers /xsed/[id]/edit — matching the old sidebar's behavior.
@@ -69,16 +57,16 @@ export function buildAdminNavTabs(
       label: copy.xsed,
     },
     {
-      href: base("/xsed-notifications"),
-      icon: Megaphone,
-      label: copy.xsedNotifications,
-    },
-    {
       audience: "ADMIN",
       href: base("/notifications"),
       icon: Bell,
       label: copy.notifications,
       showUnreadDot: true,
+    },
+    {
+      href: base("/settings"),
+      icon: Settings,
+      label: copy.settings,
     },
   ];
 }

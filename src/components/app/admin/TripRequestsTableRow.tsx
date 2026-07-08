@@ -8,14 +8,18 @@ interface TripRequestsTableRowProps {
   editTitle: string;
   isSelected: boolean;
   onEdit: (id: string) => void;
+  paymentStatusLabels: Record<string, string>;
   trip: AdminTripRequest;
+  tripStatusLabels: Record<string, string>;
 }
 
 export function TripRequestsTableRow({
   editTitle,
   isSelected,
   onEdit,
+  paymentStatusLabels,
   trip,
+  tripStatusLabels,
 }: TripRequestsTableRowProps) {
   return (
     <tr
@@ -38,11 +42,19 @@ export function TripRequestsTableRow({
         <p className="mt-0.5 text-xs text-neutral-500">{trip.level}</p>
       </td>
       <td className="px-5 py-4">
-        <StatusBadge status={trip.status} variant="trip" />
+        <StatusBadge
+          label={tripStatusLabels[trip.status] ?? trip.status}
+          status={trip.status}
+          variant="trip"
+        />
       </td>
       <td className="px-5 py-4">
         {trip.payment ? (
-          <StatusBadge status={trip.payment.status} variant="payment" />
+          <StatusBadge
+            label={paymentStatusLabels[trip.payment.status] ?? trip.payment.status}
+            status={trip.payment.status}
+            variant="payment"
+          />
         ) : (
           <span className="text-xs text-neutral-400">—</span>
         )}

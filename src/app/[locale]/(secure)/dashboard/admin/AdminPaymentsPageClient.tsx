@@ -8,6 +8,9 @@ import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 export function AdminPaymentsPageClient() {
   const copy = useDictionary((d) => d.adminPages.payments);
+  const paymentStatusLabels: Record<string, string> = useDictionary(
+    (d) => d.dashboard.paymentStatus,
+  );
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
 
@@ -111,7 +114,11 @@ export function AdminPaymentsPageClient() {
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <StatusBadge status={payment.status} variant="payment" />
+                      <StatusBadge
+                        label={paymentStatusLabels[payment.status] ?? payment.status}
+                        status={payment.status}
+                        variant="payment"
+                      />
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {payment.provider}

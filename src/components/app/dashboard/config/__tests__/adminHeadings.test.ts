@@ -5,14 +5,12 @@ import type { AdminDashboardDict } from "@/lib/types/dictionary";
 const headings: AdminDashboardDict["pageHeadings"] = {
   home: { title: "Home", description: "Home desc" },
   tripRequests: { title: "Trip Requests", description: "TR desc" },
-  users: { title: "Users", description: "Users desc" },
+  settings: { title: "Settings", description: "Settings desc" },
   experiences: { title: "Experiences", description: "Exp desc" },
   experiencesDetail: { title: "Experience Detail", description: "Detail desc" },
   payments: { title: "Payments", description: "Payments desc" },
   reviews: { title: "Reviews", description: "Reviews desc" },
-  waitlist: { title: "Waitlist", description: "Waitlist desc" },
   xsedNew: { title: "New Drop", description: "New drop desc" },
-  xsedNotifications: { title: "TGIS Notifications", description: "Notif desc" },
   notifications: { title: "Notifications", description: "Notifications desc" },
 };
 
@@ -29,10 +27,10 @@ describe("resolveAdminPageHeading", () => {
     ).toEqual(headings.tripRequests);
   });
 
-  it("resolves users", () => {
-    expect(resolveAdminPageHeading("/dashboard/admin/users", headings)).toEqual(
-      headings.users,
-    );
+  it("resolves settings", () => {
+    expect(
+      resolveAdminPageHeading("/dashboard/admin/settings", headings),
+    ).toEqual(headings.settings);
   });
 
   it("resolves the experiences list but not the review detail", () => {
@@ -47,19 +45,13 @@ describe("resolveAdminPageHeading", () => {
     ).toEqual(headings.experiencesDetail);
   });
 
-  it("resolves payments, reviews, waitlist, xsedNotifications", () => {
+  it("resolves payments and reviews", () => {
     expect(resolveAdminPageHeading("/dashboard/admin/payments", headings)).toEqual(
       headings.payments,
     );
     expect(resolveAdminPageHeading("/dashboard/admin/reviews", headings)).toEqual(
       headings.reviews,
     );
-    expect(resolveAdminPageHeading("/dashboard/admin/waitlist", headings)).toEqual(
-      headings.waitlist,
-    );
-    expect(
-      resolveAdminPageHeading("/dashboard/admin/xsed-notifications", headings),
-    ).toEqual(headings.xsedNotifications);
   });
 
   it("resolves the xsed wizard routes to xsedNew", () => {

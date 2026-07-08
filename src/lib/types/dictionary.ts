@@ -197,7 +197,6 @@ export interface TripperDashboardDict {
     blogsSub: string;
     settings: string;
     settingsSub: string;
-    createDrop: string;
     notifications: string;
   };
   keyMetrics: {
@@ -935,11 +934,9 @@ export interface AdminDashboardDict {
     notifications: string;
     payments: string;
     reviews: string;
+    settings: string;
     tripRequests: string;
-    users: string;
-    waitlist: string;
     xsed: string;
-    xsedNotifications: string;
   };
   pageHeadings: {
     experiences: { description: string; title: string };
@@ -948,11 +945,9 @@ export interface AdminDashboardDict {
     notifications: { description: string; title: string };
     payments: { description: string; title: string };
     reviews: { description: string; title: string };
+    settings: { description: string; title: string };
     tripRequests: { description: string; title: string };
-    users: { description: string; title: string };
-    waitlist: { description: string; title: string };
     xsedNew: { description: string; title: string };
-    xsedNotifications: { description: string; title: string };
   };
 }
 
@@ -1197,8 +1192,6 @@ export interface AdminPagesDict {
     };
   };
   waitlist: {
-    eyebrow: string;
-    title: string;
     count: string;
     errorLoad: string;
     empty: string;
@@ -1206,17 +1199,20 @@ export interface AdminPagesDict {
     actions: { delete: string; deleting: string };
   };
   xsedNotifications: {
-    eyebrow: string;
-    title: string;
     count: string;
     errorLoad: string;
     empty: string;
     columns: { email: string; locale: string; joined: string; actions: string };
     actions: { delete: string; deleting: string };
   };
-  users: {
+  settings: {
     eyebrow: string;
-    title: string;
+    heading: string;
+    tabs: {
+      users: string;
+      waitlist: string;
+      xsedNotifications: string;
+    };
   };
   tripRequests: {
     eyebrow: string;
@@ -2302,6 +2298,11 @@ export interface MarketingDictionary {
       saveChanges: string;
       saving: string;
       tripper: string;
+    };
+    roles: {
+      ADMIN: string;
+      CLIENT: string;
+      TRIPPER: string;
     };
     usersCount: string;
   };

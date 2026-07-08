@@ -209,7 +209,7 @@ Shape: `rounded-[6px]` with a colored dot — never `rounded-full`. Dict keys mu
 | `INACTIVE`              | red-50      | red-800     | red-200     | red-500     |
 | `ARCHIVED`              | neutral-50  | neutral-600 | neutral-200 | neutral-400 |
 
-Trip status badges (booking flow) use the older `rounded-full` pill style — these are separate and not replaced by this component.
+Admin trip/payment status badges and user-role badges use `<StatusBadge>` from `@/components/app/admin/StatusBadge` (`variant="trip" | "payment" | "role"`), which renders the same `rounded-[6px]` + dot shape as `ExperienceStatusBadge` — colors are defined in `src/lib/admin/trip-status.ts`. Always pass a translated `label`; never render the raw enum `status` as text.
 
 ---
 

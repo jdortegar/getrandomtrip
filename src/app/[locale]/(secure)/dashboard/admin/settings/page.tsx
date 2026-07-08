@@ -1,9 +1,9 @@
 import Section from "@/components/layout/Section";
-import { AdminUsersPageClient } from "../AdminUsersPageClient";
+import { AdminSettingsPageClient } from "../AdminSettingsPageClient";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 
-export default async function AdminUsersPage(props: {
+export default async function AdminSettingsPage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const params = await props.params;
@@ -12,7 +12,7 @@ export default async function AdminUsersPage(props: {
   return (
     <Section className="py-10!">
       <div className="rt-container text-left">
-        <AdminUsersPageClient copy={dict.adminUsers} />
+        <AdminSettingsPageClient copy={dict.adminUsers} />
       </div>
     </Section>
   );

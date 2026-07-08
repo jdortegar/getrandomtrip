@@ -9,13 +9,10 @@ export function resolveAdminPageHeading(
     return `/dashboard/admin${path}`;
   }
 
-  if (pathname.startsWith(base("/xsed-notifications"))) {
-    return headings.xsedNotifications;
-  }
   if (pathname.startsWith(base("/notifications"))) return headings.notifications;
   if (pathname.startsWith(base("/xsed"))) return headings.xsedNew;
   if (pathname.startsWith(base("/trip-requests"))) return headings.tripRequests;
-  if (pathname.startsWith(base("/users"))) return headings.users;
+  if (pathname.startsWith(base("/settings"))) return headings.settings;
   if (pathname.match(new RegExp(`^${base("/experiences/")}.+`))) {
     return headings.experiencesDetail;
   }
@@ -27,6 +24,5 @@ export function resolveAdminPageHeading(
   }
   if (pathname.startsWith(base("/payments"))) return headings.payments;
   if (pathname.startsWith(base("/reviews"))) return headings.reviews;
-  if (pathname.startsWith(base("/waitlist"))) return headings.waitlist;
   return headings.home;
 }

@@ -29,6 +29,9 @@ export function AdminTripRequestsPageClient({
   dict,
 }: AdminTripRequestsPageClientProps) {
   const pageCopy = useDictionary((d) => d.adminPages.tripRequests);
+  const paymentStatusLabels: Record<string, string> = useDictionary(
+    (d) => d.dashboard.paymentStatus,
+  );
   const { error, loading, refresh, trips } = useTripRequests();
   const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(() =>
@@ -69,8 +72,10 @@ export function AdminTripRequestsPageClient({
       <TripRequestsTable
         copy={pageCopy}
         onEdit={setSelectedTripId}
+        paymentStatusLabels={paymentStatusLabels}
         selectedId={selectedTripId}
         trips={visibleTrips}
+        tripStatusLabels={dict.tripStatus}
       />
 
       {selectedTrip ? (
@@ -79,6 +84,7 @@ export function AdminTripRequestsPageClient({
           onClose={() => setSelectedTripId(null)}
           onSaved={refresh}
           open
+          paymentStatusLabels={paymentStatusLabels}
           trip={selectedTrip}
         />
       ) : null}

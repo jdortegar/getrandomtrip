@@ -39,13 +39,11 @@
     "nav": {
       "dashboard": "Inicio",
       "tripRequests": "Solicitudes de viaje",
-      "users": "Usuarios",
+      "settings": "Configuración",
       "experiences": "Experiencias",
       "payments": "Pagos",
       "reviews": "Reseñas",
-      "waitlist": "Lista de espera",
-      "xsed": "Drops XSED",
-      "xsedNotifications": "Notificaciones XSED",
+      "xsed": "Nuevo XSED Drop",
       "notifications": "Notificaciones"
     },
     "pageHeadings": {
@@ -57,9 +55,9 @@
         "title": "Solicitudes de viaje",
         "description": "Gestioná las solicitudes de viaje de los clientes."
       },
-      "users": {
-        "title": "Usuarios",
-        "description": "Administrá los usuarios de la plataforma."
+      "settings": {
+        "title": "Configuración",
+        "description": "Gestioná usuarios, lista de espera y suscripciones a notificaciones TGIS."
       },
       "experiences": {
         "title": "Experiencias",
@@ -77,17 +75,9 @@
         "title": "Reseñas",
         "description": "Moderá las reseñas de los clientes."
       },
-      "waitlist": {
-        "title": "Lista de espera",
-        "description": "Gestioná la lista de espera de la plataforma."
-      },
       "xsedNew": {
-        "title": "Nuevo drop XSED",
-        "description": "Creá o editá un drop XSED."
-      },
-      "xsedNotifications": {
-        "title": "Notificaciones XSED",
-        "description": "Gestioná las notificaciones de los drops XSED."
+        "title": "Nuevo XSED drop",
+        "description": "Creá o editá un XSED drop."
       },
       "notifications": {
         "title": "Notificaciones",
@@ -138,12 +128,12 @@
     },
     "form": {
       "eyebrow": "Admin",
-      "title": "Nuevo Drop XSED",
+      "title": "Nuevo XSED Drop",
       "back": "Volver",
       "submit": "Crear drop",
       "saving": "Guardando…",
       "cancel": "Cancelar",
-      "titleEdit": "Editar Drop XSED",
+      "titleEdit": "Editar XSED Drop",
       "submitEdit": "Guardar cambios",
       "toastCreated": "Drop creado",
       "toastUpdated": "Drop actualizado",
@@ -368,8 +358,6 @@
       }
     },
     "waitlist": {
-      "eyebrow": "Suscriptores",
-      "title": "Lista de espera",
       "count": "{n} entradas en lista de espera",
       "errorLoad": "Error al cargar la lista de espera",
       "empty": "No se encontraron entradas en la lista de espera.",
@@ -385,8 +373,6 @@
       }
     },
     "xsedNotifications": {
-      "eyebrow": "Suscriptores XSED",
-      "title": "Notificaciones XSED",
       "count": "{n} notificaciones XSED",
       "errorLoad": "Error al cargar las notificaciones XSED",
       "empty": "No se encontraron notificaciones XSED.",
@@ -401,9 +387,14 @@
         "deleting": "Eliminando…"
       }
     },
-    "users": {
-      "eyebrow": "Cuentas de la plataforma",
-      "title": "Usuarios"
+    "settings": {
+      "eyebrow": "Configuración",
+      "heading": "Configuración",
+      "tabs": {
+        "users": "Usuarios",
+        "waitlist": "Lista de espera",
+        "xsedNotifications": "Notificaciones TGIS"
+      }
     },
     "tripRequests": {
       "eyebrow": "Solicitudes de clientes",
@@ -3262,7 +3253,6 @@
       "settings": "Configuración",
       "settingsSub": "Ajustes del perfil",
       "dashboard": "Mi Dashboard",
-      "createDrop": "Nuevo Drop",
       "notifications": "Notificaciones"
     },
     "keyMetrics": {
@@ -3959,6 +3949,11 @@
       "saveChanges": "Guardar cambios",
       "saving": "Guardando…",
       "tripper": "TRIPPER"
+    },
+    "roles": {
+      "ADMIN": "Admin",
+      "CLIENT": "Cliente",
+      "TRIPPER": "Tripper"
     },
     "usersCount": "{count} usuarios"
   },

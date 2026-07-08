@@ -39,13 +39,11 @@
     "nav": {
       "dashboard": "Dashboard",
       "tripRequests": "Trip Requests",
-      "users": "Users",
+      "settings": "Settings",
       "experiences": "Experiences",
       "payments": "Payments",
       "reviews": "Reviews",
-      "waitlist": "Waitlist",
-      "xsed": "TGIS Drops",
-      "xsedNotifications": "TGIS Notifications",
+      "xsed": "New TGIS Drop",
       "notifications": "Notifications"
     },
     "pageHeadings": {
@@ -57,9 +55,9 @@
         "title": "Trip Requests",
         "description": "Manage clients' trip requests."
       },
-      "users": {
-        "title": "Users",
-        "description": "Manage platform users."
+      "settings": {
+        "title": "Settings",
+        "description": "Manage users, waitlist, and TGIS notification signups."
       },
       "experiences": {
         "title": "Experiences",
@@ -77,17 +75,9 @@
         "title": "Reviews",
         "description": "Moderate customer reviews."
       },
-      "waitlist": {
-        "title": "Waitlist",
-        "description": "Manage the platform waitlist."
-      },
       "xsedNew": {
         "title": "New TGIS Drop",
         "description": "Create or edit a TGIS drop."
-      },
-      "xsedNotifications": {
-        "title": "TGIS Notifications",
-        "description": "Manage TGIS drop notifications."
       },
       "notifications": {
         "title": "Notifications",
@@ -260,7 +250,7 @@
         "tripsSold": "Trips completed",
         "earnings": "Gross earnings",
         "waitlist": "Waitlist",
-        "xsedSignups": "XSED signups"
+        "xsedSignups": "TGIS signups"
       },
       "pending": {
         "eyebrow": "Needs attention",
@@ -368,8 +358,6 @@
       }
     },
     "waitlist": {
-      "eyebrow": "Subscribers",
-      "title": "Waitlist",
       "count": "{n} waitlist entries",
       "errorLoad": "Failed to load waitlist",
       "empty": "No waitlist entries found.",
@@ -385,8 +373,6 @@
       }
     },
     "xsedNotifications": {
-      "eyebrow": "TGIS subscribers",
-      "title": "TGIS Notifications",
       "count": "{n} TGIS notification entries",
       "errorLoad": "Failed to load TGIS notifications",
       "empty": "No TGIS notification entries found.",
@@ -401,9 +387,14 @@
         "deleting": "Deleting…"
       }
     },
-    "users": {
-      "eyebrow": "Platform accounts",
-      "title": "Users"
+    "settings": {
+      "eyebrow": "Configuration",
+      "heading": "Settings",
+      "tabs": {
+        "users": "Users",
+        "waitlist": "Waitlist",
+        "xsedNotifications": "TGIS Notifications"
+      }
     },
     "tripRequests": {
       "eyebrow": "Client requests",
@@ -425,7 +416,7 @@
   },
   "xsedUnavailable": {
     "heading": "This DROP is sold out",
-    "subheading": "XSED drops open every Sunday from 4pm to 8pm.",
+    "subheading": "TGIS drops open every Sunday from 4pm to 8pm.",
     "notifyLabel": "Notify me about the next one",
     "backLabel": "Browse past drops"
   },
@@ -2294,13 +2285,13 @@
       "ctaHome": "Go to home",
       "ctaMyTrips": "Go to my trips",
       "calendarEventDescription": "Your Randomtrip surprise escape. Destination revealed 48 hours before departure.",
-      "xsedTitle": "You've got your XSED",
+      "xsedTitle": "You've got your TGIS",
       "xsedBody": "You'll receive an email with everything you need for your escape.",
       "xsedTripTypeLabel": "Trip type",
-      "xsedExperienceLabel": "XSED Drop Experience",
+      "xsedExperienceLabel": "TGIS Drop Experience",
       "xsedReferenceLabel": "Purchase reference number",
       "xsedPerPerson": "/person",
-      "xsedDownloadCta": "Download XSED",
+      "xsedDownloadCta": "Download TGIS",
       "receiptLink": "View receipt"
     }
   },
@@ -3233,7 +3224,7 @@
       },
       "newDrop": {
         "title": "New Drop",
-        "description": "Create a new XSED drop"
+        "description": "Create a new TGIS drop"
       }
     },
     "stats": {
@@ -3262,7 +3253,6 @@
       "settings": "Settings",
       "settingsSub": "Profile settings",
       "dashboard": "My Dashboard",
-      "createDrop": "New Drop",
       "notifications": "Notifications"
     },
     "keyMetrics": {
@@ -3959,6 +3949,11 @@
       "saveChanges": "Save changes",
       "saving": "Saving…",
       "tripper": "TRIPPER"
+    },
+    "roles": {
+      "ADMIN": "Admin",
+      "CLIENT": "Client",
+      "TRIPPER": "Tripper"
     },
     "usersCount": "{count} users"
   },

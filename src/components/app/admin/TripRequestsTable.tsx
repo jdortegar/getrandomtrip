@@ -7,15 +7,19 @@ type TripRequestsCopy = MarketingDictionary["adminPages"]["tripRequests"];
 interface TripRequestsTableProps {
   copy: TripRequestsCopy;
   onEdit: (id: string) => void;
+  paymentStatusLabels: Record<string, string>;
   selectedId: string | null;
   trips: AdminTripRequest[];
+  tripStatusLabels: Record<string, string>;
 }
 
 export function TripRequestsTable({
   copy,
   onEdit,
+  paymentStatusLabels,
   selectedId,
   trips,
+  tripStatusLabels,
 }: TripRequestsTableProps) {
   const cols = copy.columns;
   const headers = [
@@ -54,7 +58,9 @@ export function TripRequestsTable({
                   isSelected={selectedId === trip.id}
                   key={trip.id}
                   onEdit={onEdit}
+                  paymentStatusLabels={paymentStatusLabels}
                   trip={trip}
+                  tripStatusLabels={tripStatusLabels}
                 />
               ))}
             </tbody>

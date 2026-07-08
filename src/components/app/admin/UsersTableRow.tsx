@@ -1,7 +1,8 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { TableIconButton } from "@/components/ui/TableIconButton";
-import { cn } from "@/lib/utils";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
+import { cn } from "@/lib/utils";
+import { StatusBadge } from "./StatusBadge";
 
 export type UserRole = "CLIENT" | "TRIPPER" | "ADMIN";
 
@@ -14,12 +15,6 @@ export interface AdminUser {
   roles: UserRole[];
   tripperSlug: string | null;
 }
-
-const ROLE_COLORS: Record<UserRole, string> = {
-  ADMIN: "bg-purple-100 text-purple-800 border-purple-200",
-  CLIENT: "bg-blue-100 text-blue-800 border-blue-200",
-  TRIPPER: "bg-green-100 text-green-800 border-green-200",
-};
 
 interface UsersTableRowProps {
   copy: MarketingDictionary["adminUsers"];
@@ -54,15 +49,12 @@ export function UsersTableRow({
       <td className="px-5 py-4">
         <div className="flex flex-wrap gap-1">
           {displayRoles.map((r) => (
-            <span
-              className={cn(
-                "rounded-full border px-2 py-0.5 text-xs font-medium",
-                ROLE_COLORS[r],
-              )}
+            <StatusBadge
               key={r}
-            >
-              {r}
-            </span>
+              label={copy.roles[r]}
+              status={r}
+              variant="role"
+            />
           ))}
         </div>
       </td>

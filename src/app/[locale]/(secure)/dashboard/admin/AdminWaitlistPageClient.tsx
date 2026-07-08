@@ -63,15 +63,6 @@ export function AdminWaitlistPageClient() {
 
   return (
     <div className="space-y-10">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
-          {copy.eyebrow}
-        </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
-          {copy.title}
-        </h2>
-      </div>
-
       <div className="flex items-center justify-end">
         <span className="text-[13px] text-neutral-400">
           {copy.count.replace("{n}", String(entries.length))}
