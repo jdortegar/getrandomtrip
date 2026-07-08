@@ -10,6 +10,10 @@ import { TripperSettingsHeroCard } from "@/components/app/dashboard/tripper/sett
 import { TripperSettingsPublicPresenceCard } from "@/components/app/dashboard/tripper/settings/TripperSettingsPublicPresenceCard";
 import { TripperSettingsPublicUrlCard } from "@/components/app/dashboard/tripper/settings/TripperSettingsPublicUrlCard";
 import { TripperSettingsAccountCard } from "@/components/app/dashboard/tripper/settings/TripperSettingsAccountCard";
+import {
+  TripperViewToggle,
+  type TripperProfileViewMode,
+} from "@/components/app/dashboard/tripper/settings/TripperViewToggle";
 import { useUserStore } from "@/store/slices/userStore";
 import type { User } from "@/store/slices/userStore";
 import type { SessionUser } from "@/lib/types/SessionUser";
@@ -55,6 +59,7 @@ export default function TripperSettingsPage() {
   const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
   const [dict, setDict] = useState<Dictionary | null>(null);
+  const [viewMode, setViewMode] = useState<TripperProfileViewMode>("tripper");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);
@@ -278,72 +283,73 @@ export default function TripperSettingsPage() {
     <Section className="py-10!">
       <div className="rt-container text-left">
         <div className="space-y-10">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
-              {copy.eyebrow}
-            </p>
-            <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
-              {copy.heading}
-            </h1>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+                {copy.eyebrow}
+              </p>
+              <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                {copy.heading}
+              </h1>
+            </div>
+            <TripperViewToggle
+              copy={copy.viewToggle}
+              onChange={setViewMode}
+              value={viewMode}
+            />
           </div>
 
-          <TripperSettingsHeroCard
-            copy={copy.hero}
-            formData={formData}
-            isEditing={isEditing}
-            isSaving={isSaving}
-            isUploadingHeroImage={isUploadingHeroImage}
-            onCancel={cancelEdit}
-            onChange={setFormData}
-            onEdit={openEdit}
-            onSave={handleSave}
-            onUploadHeroImage={handleUploadHeroImage}
-            stats={stats}
-            tierLabels={tierLabels}
-          />
-
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <TripperSettingsPublicPresenceCard
-                copy={copy.publicPresence}
+          {viewMode === "tripper" && (
+            <>
+              <TripperSettingsHeroCard
+                copy={copy.hero}
                 formData={formData}
                 isEditing={isEditing}
+                isSaving={isSaving}
+                isUploadingHeroImage={isUploadingHeroImage}
+                onCancel={cancelEdit}
                 onChange={setFormData}
-                tagListCopy={dict.profile.tagList}
-                travelerTypesCopy={dict.profile.travelerTypes}
-              />
-            </div>
-            <div className="flex flex-col gap-6">
-              <TripperSettingsPublicUrlCard
-                copy={copy.publicUrl}
-                isEditing={isEditing}
-                locale={locale}
-                onSlugChange={(slug) =>
-                  setFormData((prev) => ({ ...prev, tripperSlug: slug }))
-                }
-                slug={formData.tripperSlug}
-              />
-              <TripperSettingsAccountCard
-                commission={formData.commission}
-                copy={copy.account}
-                email={formData.email}
+                onEdit={openEdit}
+                onSave={handleSave}
+                onUploadHeroImage={handleUploadHeroImage}
+                stats={stats}
                 tierLabels={tierLabels}
-                tierLevel={formData.tierLevel}
               />
-            </div>
-          </div>
 
-          <div className="border-t border-gray-200 pt-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
-              {copy.divider.eyebrow}
-            </p>
-            <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
-              {copy.divider.heading}
-            </h2>
-            <div className="mt-6">
-              <AccountSettingsPanel role="tripper" />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                  <TripperSettingsPublicPresenceCard
+                    copy={copy.publicPresence}
+                    formData={formData}
+                    isEditing={isEditing}
+                    onChange={setFormData}
+                    tagListCopy={dict.profile.tagList}
+                    travelerTypesCopy={dict.profile.travelerTypes}
+                  />
+                </div>
+                <div className="flex flex-col gap-6">
+                  <TripperSettingsPublicUrlCard
+                    copy={copy.publicUrl}
+                    isEditing={isEditing}
+                    locale={locale}
+                    onSlugChange={(slug) =>
+                      setFormData((prev) => ({ ...prev, tripperSlug: slug }))
+                    }
+                    slug={formData.tripperSlug}
+                  />
+                  <TripperSettingsAccountCard
+                    commission={formData.commission}
+                    copy={copy.account}
+                    email={formData.email}
+                    tierLabels={tierLabels}
+                    tierLevel={formData.tierLevel}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {viewMode === "traveler" && <AccountSettingsPanel role="tripper" />}
         </div>
       </div>
     </Section>

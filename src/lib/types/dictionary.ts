@@ -223,6 +223,11 @@ export interface TripperDashboardDict {
   settingsProfile: {
     eyebrow: string;
     heading: string;
+    viewToggle: {
+      prefix: string;
+      traveler: string;
+      tripper: string;
+    };
     hero: {
       editProfile: string;
       cancel: string;
@@ -269,10 +274,6 @@ export interface TripperDashboardDict {
       adminSet: string;
       commissionHelper: string;
     };
-    divider: {
-      eyebrow: string;
-      heading: string;
-    };
   };
 }
 
@@ -294,6 +295,10 @@ export interface ClientDashboardDict {
     reviews: { description: string; title: string };
     settings: { description: string; title: string };
     trips: { description: string; title: string };
+  };
+  settingsProfile: {
+    eyebrow: string;
+    heading: string;
   };
   reviews: {
     description: string;

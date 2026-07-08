@@ -2764,7 +2764,7 @@
       "subtitle": "At Randomtrip the surprise is the destination, not the quality, price, or logistics. We combine technology, human curation, and local expertise to create trips with soul — safe and memorable.",
       "eyebrow": "Architecture of trust",
       "fallbackImage": "/images/about-us.png",
-      "title": "Surprise trips, designed without improvising."
+      "title": "About Us"
     },
     "meta": {
       "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
@@ -3250,8 +3250,8 @@
       "reviewsSub": "View feedback",
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
-      "settings": "Settings",
-      "settingsSub": "Profile settings",
+      "settings": "My Profile",
+      "settingsSub": "Manage your profile",
       "dashboard": "My Dashboard",
       "notifications": "Notifications"
     },
@@ -3279,6 +3279,11 @@
     "settingsProfile": {
       "eyebrow": "Account settings",
       "heading": "My Profile",
+      "viewToggle": {
+        "prefix": "As ",
+        "traveler": "Traveler",
+        "tripper": "Tripper"
+      },
       "hero": {
         "editProfile": "Edit profile",
         "cancel": "Cancel",
@@ -3324,10 +3329,6 @@
         "commissionLabel": "Commission Rate",
         "adminSet": "Admin-set",
         "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance."
-      },
-      "divider": {
-        "eyebrow": "Shared with all roles",
-        "heading": "Account Settings"
       }
     }
   },
@@ -3341,7 +3342,7 @@
       "trips": "My trips",
       "reviews": "My reviews",
       "notifications": "Notifications",
-      "settings": "Settings"
+      "settings": "My Profile"
     },
     "pageHeadings": {
       "dashboard": {
@@ -3361,9 +3362,13 @@
         "description": "Updates about your bookings and trips"
       },
       "settings": {
-        "title": "Settings",
+        "title": "My Profile",
         "description": "Your account and travel preferences"
       }
+    },
+    "settingsProfile": {
+      "eyebrow": "Account settings",
+      "heading": "My Profile"
     },
     "trips": {
       "description": "Upcoming bookings and completed travel history",

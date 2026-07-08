@@ -121,13 +121,21 @@ export function TripperSettingsHeroCard({
 
         <div className="absolute right-4 top-4 z-10 flex gap-2">
           {!isEditing ? (
-            <Button onClick={onEdit} size="sm" type="button" variant="white">
+            <Button
+              aria-label={copy.editProfile}
+              className="px-2.5 sm:px-6"
+              onClick={onEdit}
+              size="sm"
+              type="button"
+              variant="white"
+            >
               <Pencil className="h-4 w-4" />
-              {copy.editProfile}
+              <span className="hidden sm:inline">{copy.editProfile}</span>
             </Button>
           ) : (
             <>
               <Button
+                className="px-3 sm:px-6"
                 onClick={onCancel}
                 size="sm"
                 type="button"
@@ -136,7 +144,7 @@ export function TripperSettingsHeroCard({
                 {copy.cancel}
               </Button>
               <Button
-                className="border-gray-900 bg-gray-900 hover:bg-gray-800 hover:border-gray-800"
+                className="border-gray-900 bg-gray-900 px-3 hover:border-gray-800 hover:bg-gray-800 sm:px-6"
                 disabled={isSaving}
                 onClick={onSave}
                 size="sm"

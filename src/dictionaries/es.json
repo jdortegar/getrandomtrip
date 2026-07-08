@@ -2764,7 +2764,7 @@
       "subtitle": "En Randomtrip la sorpresa es el destino, no la calidad, el precio ni la logística. Combinamos tecnología, curaduría humana y criterio local para crear viajes con alma, seguros y memorables.",
       "eyebrow": "Arquitectura de la confianza",
       "fallbackImage": "/images/about-us.png",
-      "title": "Viajes sorpresa, diseñados sin improvisar."
+      "title": "Nosotros"
     },
     "meta": {
       "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
@@ -3250,8 +3250,8 @@
       "blogsSub": "Gestionar blog",
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
-      "settings": "Configuración",
-      "settingsSub": "Ajustes del perfil",
+      "settings": "Mi Perfil",
+      "settingsSub": "Gestioná tu perfil",
       "dashboard": "Mi Dashboard",
       "notifications": "Notificaciones"
     },
@@ -3279,6 +3279,11 @@
     "settingsProfile": {
       "eyebrow": "Configuración de cuenta",
       "heading": "Mi Perfil",
+      "viewToggle": {
+        "prefix": "Como ",
+        "traveler": "Viajero",
+        "tripper": "Tripper"
+      },
       "hero": {
         "editProfile": "Editar perfil",
         "cancel": "Cancelar",
@@ -3324,10 +3329,6 @@
         "commissionLabel": "Tasa de Comisión",
         "adminSet": "Definido por el admin",
         "commissionHelper": "Tu tasa de comisión la define el equipo de Randomtrip según tu nivel y desempeño."
-      },
-      "divider": {
-        "eyebrow": "Compartido con todos los roles",
-        "heading": "Configuración de Cuenta"
       }
     }
   },
@@ -3341,7 +3342,7 @@
       "trips": "Mis viajes",
       "reviews": "Mis reseñas",
       "notifications": "Notificaciones",
-      "settings": "Configuración"
+      "settings": "Mi Perfil"
     },
     "pageHeadings": {
       "dashboard": {
@@ -3361,9 +3362,13 @@
         "description": "Novedades sobre tus reservas y viajes"
       },
       "settings": {
-        "title": "Configuración",
+        "title": "Mi Perfil",
         "description": "Tu cuenta y preferencias de viaje"
       }
+    },
+    "settingsProfile": {
+      "eyebrow": "Configuración de cuenta",
+      "heading": "Mi Perfil"
     },
     "trips": {
       "description": "Reservas próximas e historial de viajes completados",
