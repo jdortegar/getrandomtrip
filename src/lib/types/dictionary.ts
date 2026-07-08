@@ -236,6 +236,7 @@ export interface TripperDashboardDict {
       uploadHint: string;
       nameFallback: string;
       namePlaceholder: string;
+      nicknameHint: string;
       locationPlaceholder: string;
       noLocation: string;
       statsExperiences: string;

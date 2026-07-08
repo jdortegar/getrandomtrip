@@ -3292,6 +3292,7 @@
         "uploadHint": "Change cover photo",
         "nameFallback": "Tripper",
         "namePlaceholder": "Your name",
+        "nicknameHint": "This is what clients will see instead of your account name",
         "locationPlaceholder": "City, Country",
         "noLocation": "No location set",
         "statsExperiences": "Experiences",

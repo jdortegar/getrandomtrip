@@ -33,6 +33,7 @@ function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
     destinations: extras.destinations ?? [],
     heroImage: extras.heroImage ?? "",
     location: extras.location ?? "",
+    nickname: extras.nickname ?? "",
     tierLevel: extras.tierLevel ?? "",
     tripperSlug: extras.tripperSlug ?? "",
   };
@@ -40,6 +41,7 @@ function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
 
 const EMPTY_FORM: TripperSettingsFormState = {
   name: "",
+  nickname: "",
   email: "",
   bio: "",
   heroImage: "",
@@ -72,6 +74,7 @@ export default function TripperSettingsPage() {
     destinations: [],
     heroImage: "",
     location: "",
+    nickname: "",
     tierLevel: "",
     tripperSlug: "",
   });
@@ -205,6 +208,7 @@ export default function TripperSettingsPage() {
           bio: formData.bio,
           heroImage: formData.heroImage,
           location: formData.location,
+          nickname: formData.nickname,
           tierLevel: formData.tierLevel,
           destinations: formData.destinations,
           tripperSlug: formData.tripperSlug,
@@ -226,6 +230,7 @@ export default function TripperSettingsPage() {
             bio: nextProfile.bio,
             heroImage: nextProfile.heroImage,
             location: nextProfile.location,
+            nickname: nextProfile.nickname,
             tierLevel: nextProfile.tierLevel,
             destinations: nextProfile.destinations,
             tripperSlug: nextProfile.tripperSlug,

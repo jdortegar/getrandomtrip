@@ -29,6 +29,7 @@ export async function getTripperBySlug(
       select: {
         id: true,
         name: true,
+        nickname: true,
         email: true,
         avatarUrl: true,
         roles: true,
@@ -61,10 +62,11 @@ export async function getTripperBySlug(
 
     const availableTypes = [...new Set(packages.flatMap((pkg) => pkg.type))];
 
-    const { roles, ...tripperRest } = tripper;
+    const { roles, nickname, ...tripperRest } = tripper;
 
     return {
       ...tripperRest,
+      name: nickname || tripper.name,
       avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
       role: primaryRoleFromMembership(roles),
       tripperSlug: tripper.tripperSlug,

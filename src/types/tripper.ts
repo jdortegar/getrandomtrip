@@ -63,6 +63,7 @@ export interface TripperSessionExtras {
   destinations?: string[];
   heroImage?: string;
   location?: string;
+  nickname?: string;
   tierLevel?: string;
   tripperSlug?: string;
 }
@@ -70,6 +71,7 @@ export interface TripperSessionExtras {
 /** Editable form shape for the Tripper Settings page identity/profile cards. */
 export interface TripperSettingsFormState {
   name: string;
+  nickname: string;
   email: string;
   bio: string;
   heroImage: string;

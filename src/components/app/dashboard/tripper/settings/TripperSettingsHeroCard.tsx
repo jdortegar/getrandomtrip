@@ -163,18 +163,21 @@ export function TripperSettingsHeroCard({
             </div>
             <div className="flex flex-col gap-2">
               {isEditing ? (
-                <input
-                  className="w-full max-w-xs border-b-2 border-white/40 bg-transparent font-barlow-condensed text-3xl font-extrabold uppercase text-white outline-none placeholder:text-white/50 focus:border-white"
-                  onChange={(e) =>
-                    onChange({ ...formData, name: e.target.value })
-                  }
-                  placeholder={copy.namePlaceholder}
-                  type="text"
-                  value={formData.name}
-                />
+                <>
+                  <input
+                    className="w-full max-w-xs border-b-2 border-white/40 bg-transparent font-barlow-condensed text-3xl font-extrabold uppercase text-white outline-none placeholder:text-white/50 focus:border-white"
+                    onChange={(e) =>
+                      onChange({ ...formData, nickname: e.target.value })
+                    }
+                    placeholder={formData.name || copy.namePlaceholder}
+                    type="text"
+                    value={formData.nickname}
+                  />
+                  <p className="text-xs text-white/70">{copy.nicknameHint}</p>
+                </>
               ) : (
                 <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-white">
-                  {formData.name || copy.nameFallback}
+                  {formData.nickname || formData.name || copy.nameFallback}
                 </h2>
               )}
               <div className="flex flex-wrap items-center gap-2">

@@ -35,6 +35,7 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
+  nickname       String? // Public display name shown to clients instead of the legal name, if set
   bio            String? // Tripper biography/description
   heroImage      String? // Hero banner image
   location       String? // Tripper location
