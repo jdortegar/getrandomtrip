@@ -25,7 +25,7 @@
   },
   "navbarProfile": {
     "ariaOpenProfileMenu": "Open profile menu",
-    "dashboard": "Dashboard",
+    "dashboard": "Travel logs",
     "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
@@ -3787,7 +3787,7 @@
         "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
         "entryImageSizeHint": "Minimum 800 × 600 px recommended",
         "imageTooSmall": "Image too small",
-        "copyrightHint": "Images must be your own or royalty-free *",
+        "copyrightHint": "Only use images you own or are licensed to use.",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",

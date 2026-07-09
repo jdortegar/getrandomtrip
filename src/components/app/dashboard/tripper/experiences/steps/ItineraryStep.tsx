@@ -145,6 +145,7 @@ export function ItineraryStep({ copy, form, onChange, imageState, changedFieldSe
                 )}
               </div>
               <p className="text-xs text-neutral-400">{fields.entryImageSizeHint}</p>
+              <p className="text-xs text-neutral-400">{fields.copyrightHint}</p>
               <input
                 ref={(el) => { dayImageRefs.current[index] = el; }}
                 type="file"

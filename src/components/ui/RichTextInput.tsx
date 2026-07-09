@@ -15,8 +15,8 @@ const TINYMCE_SCRIPT_SRC = "/tinymce/tinymce.min.js";
 
 const EDITOR_INIT: TinyInitBase = {
   autoresize_bottom_margin: 16,
-  autoresize_min_height: 200,
   branding: false,
+  min_height: 200,
   content_style:
     "@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap'); .mce-content-body { background: #f3f4f6; color: #1a1a1a; font-family: 'Barlow', ui-sans-serif, system-ui, sans-serif; font-size: 16px; font-weight: 400; line-height: 1.5; margin: 0; padding: 16px 24px !important; } .mce-content-body p { margin: 0; } .mce-content-body[data-mce-placeholder]::before { font-size: 16px; line-height: 1.5; left: 24px !important; top: 16px !important; }",
   menubar: false,
@@ -26,6 +26,7 @@ const EDITOR_INIT: TinyInitBase = {
   toolbar: "bold italic | bullist numlist | removeformat",
   toolbar_location: "top",
   toolbar_mode: "wrap",
+  toolbar_sticky: true,
   width: "100%",
 };
 
@@ -87,7 +88,19 @@ export function RichTextInput({
             dangerouslySetInnerHTML={{ __html: isEmpty ? peek!.emptyLabel : peek!.originalValue }}
           />
         ) : (
-          <div className="rich-text-input min-h-[200px] rounded-xl overflow-hidden bg-gray-100">
+          <div
+            className={cn(
+              "rich-text-input min-h-[200px] rounded-xl bg-gray-100",
+              // Clip only the content/iframe area (.tox-edit-area), a sibling
+              // of the toolbar (.tox-editor-header) — NOT the .tox-tinymce
+              // root. Any overflow-hidden ancestor of the toolbar would
+              // disable toolbar_sticky (position: sticky requires every
+              // ancestor up to its scroll container to have overflow:
+              // visible).
+              "[&_.tox-editor-header]:rounded-t-xl",
+              "[&_.tox-edit-area]:overflow-hidden [&_.tox-edit-area]:rounded-b-xl",
+            )}
+          >
             <Editor
               apiKey="no-api-key"
               id={id}

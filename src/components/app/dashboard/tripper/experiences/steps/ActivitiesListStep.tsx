@@ -205,6 +205,7 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, isReadOnl
                 )}
               </div>
               <p className="text-xs text-neutral-400">{fields.entryImageSizeHint}</p>
+              <p className="text-xs text-neutral-400">{fields.copyrightHint}</p>
               <input
                 ref={(el) => { entryImageRefs.current[index] = el; }}
                 type="file"
