@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Calendar, Clock, Eye, MapPin, Plane, Plus, Sparkles } from "lucide-react";
+import { Calendar, Clock, Eye, MapPin, Plane, Plus, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -230,6 +230,19 @@ export function ClientTripsTable({
                               <Sparkles className="h-4 w-4" />
                             </TableIconLink>
                           )}
+                          {trip.status === "COMPLETED" &&
+                            trip.reviewToken &&
+                            !trip.reviewSubmittedAt && (
+                              <TableIconLink
+                                href={pathForLocale(
+                                  locale as Locale,
+                                  `/review/${trip.reviewToken}`,
+                                )}
+                                title={copy.upcomingTrips.writeReview}
+                              >
+                                <Star className="h-4 w-4" />
+                              </TableIconLink>
+                            )}
                           <TableIconLink
                             href={pathForLocale(
                               locale as Locale,

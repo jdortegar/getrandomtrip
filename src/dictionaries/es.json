@@ -3505,7 +3505,8 @@
       "title": "Proximos Viajes",
       "viewDetails": "Ver Detalles",
       "revealCountdown": "Cuenta Regresiva",
-      "revealDestination": "Ver Destino"
+      "revealDestination": "Ver Destino",
+      "writeReview": "Dejar Reseña"
     }
   },
   "tripperReviews": {

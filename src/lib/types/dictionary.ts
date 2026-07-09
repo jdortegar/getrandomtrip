@@ -411,6 +411,7 @@ export interface DashboardDict {
     viewDetails: string;
     revealCountdown: string;
     revealDestination: string;
+    writeReview: string;
   };
 }
 

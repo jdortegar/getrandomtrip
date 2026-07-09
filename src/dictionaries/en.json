@@ -3505,7 +3505,8 @@
       "title": "Upcoming Trips",
       "viewDetails": "View Details",
       "revealCountdown": "Countdown",
-      "revealDestination": "View Destination"
+      "revealDestination": "View Destination",
+      "writeReview": "Write a Review"
     }
   },
   "tripperReviews": {
