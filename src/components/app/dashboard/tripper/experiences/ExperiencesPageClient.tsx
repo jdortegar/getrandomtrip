@@ -5,6 +5,7 @@ import { useState, useTransition, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
@@ -20,6 +21,18 @@ import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 
 const SELECT_CLASS =
   "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
+
+/** Splits a "...{{title}}..." template and renders the interpolated part in bold. */
+function renderBoldTitleMessage(template: string, title: string) {
+  const [before, after] = template.split("{{title}}");
+  return (
+    <>
+      {before}
+      <strong className="font-semibold text-gray-900">{title}</strong>
+      {after}
+    </>
+  );
+}
 
 interface ExperiencesPageClientProps {
   experiences: ExperienceListItem[];
@@ -38,6 +51,8 @@ export default function ExperiencesPageClient({
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Holds the id of the experience the user wants to delete. null = modal closed.
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
 
@@ -68,9 +83,18 @@ export default function ExperiencesPageClient({
   });
 
   const basePath = `/${locale}/dashboard/tripper/experiences`;
+  const deleteTargetExperience = experiences.find(
+    (e) => e.id === deleteTargetId,
+  );
 
   function handleDelete(id: string) {
-    if (!confirm(copy.table.deleteConfirm)) return;
+    setDeleteTargetId(id);
+  }
+
+  function confirmDelete() {
+    if (!deleteTargetId) return;
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
     setDeletingId(id);
     startTransition(async () => {
       try {
@@ -373,6 +397,28 @@ export default function ExperiencesPageClient({
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        open={deleteTargetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTargetId(null);
+        }}
+        onConfirm={confirmDelete}
+        isConfirming={isPending}
+        icon={Trash2}
+        tone="danger"
+        title={copy.table.deleteTitle}
+        description={
+          deleteTargetExperience
+            ? renderBoldTitleMessage(
+                copy.table.deleteConfirmMessage,
+                deleteTargetExperience.title,
+              )
+            : null
+        }
+        cancelLabel={copy.form.cancel}
+        confirmLabel={copy.table.delete}
+      />
     </div>
   );
 }

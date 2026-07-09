@@ -3586,7 +3586,8 @@
       "publish": "Publicar",
       "unpublish": "Despublicar",
       "delete": "Eliminar",
-      "deleteConfirm": "¿Eliminar esta experiencia? Esta acción no se puede deshacer."
+      "deleteTitle": "¿Eliminar experiencia?",
+      "deleteConfirmMessage": "Estás por eliminar {{title}}. Esta acción no se puede deshacer."
     },
     "emptyState": {
       "noExperiences": "Aún no tienes experiencias.",

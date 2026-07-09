@@ -494,7 +494,9 @@ export interface TripperExperiencesDict {
     publish: string;
     unpublish: string;
     delete: string;
-    deleteConfirm: string;
+    deleteTitle: string;
+    /** Interpolated with {{title}} — the experience's name, rendered bold. */
+    deleteConfirmMessage: string;
   };
   emptyState: {
     noExperiences: string;

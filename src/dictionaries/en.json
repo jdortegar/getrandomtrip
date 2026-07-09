@@ -3586,7 +3586,8 @@
       "publish": "Publish",
       "unpublish": "Unpublish",
       "delete": "Delete",
-      "deleteConfirm": "Delete this experience? This action cannot be undone."
+      "deleteTitle": "Delete experience?",
+      "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone."
     },
     "emptyState": {
       "noExperiences": "You don't have any experiences yet.",
