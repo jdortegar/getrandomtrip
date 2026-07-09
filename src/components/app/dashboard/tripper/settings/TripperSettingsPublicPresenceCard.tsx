@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { AccountSettingsTagList } from "@/components/app/account/AccountSettingsTagList";
+import { TripperSettingsSocialLinks } from "@/components/app/dashboard/tripper/settings/TripperSettingsSocialLinks";
 import { cn } from "@/lib/utils";
 import type { TripperDashboardDict, MarketingDictionary } from "@/lib/types/dictionary";
 import type { TripperSettingsFormState } from "@/types/tripper";
@@ -108,12 +109,29 @@ export function TripperSettingsPublicPresenceCard({
       </div>
 
       <div>
+        <p className="mb-2 text-sm font-medium text-neutral-500">
+          {copy.socialLinksLabel}
+        </p>
+        <TripperSettingsSocialLinks
+          copy={{
+            addNetwork: copy.socialLinksAdd,
+            noLinks: copy.socialLinksEmpty,
+          }}
+          isEditing={isEditing}
+          links={formData.socialLinks ?? []}
+          onChange={(links) => onChange({ ...formData, socialLinks: links })}
+        />
+      </div>
+
+      <div>
         <p className="mb-1 text-sm font-medium text-neutral-500">
           {copy.travelerTypesLabel}
         </p>
-        <p className="mb-2 text-xs text-neutral-400">
-          {copy.travelerTypesHelper}
-        </p>
+        {!isEditing && (
+          <p className="mb-2 text-xs text-neutral-400">
+            {copy.travelerTypesHelper}
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {TRAVELER_TYPE_KEYS.map((key) => {
             const active = formData.availableTypes.includes(key);

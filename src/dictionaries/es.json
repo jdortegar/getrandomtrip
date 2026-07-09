@@ -25,7 +25,7 @@
   },
   "navbarProfile": {
     "ariaOpenProfileMenu": "Abrir menú de perfil",
-    "dashboard": "Panel de Control",
+    "dashboard": "Bitácora de viajes",
     "editProfile": "Mi cuenta",
     "signOut": "Cerrar sesión",
     "tripperOs": "Tripper OS",
@@ -2764,7 +2764,7 @@
       "subtitle": "En Randomtrip la sorpresa es el destino, no la calidad, el precio ni la logística. Combinamos tecnología, curaduría humana y criterio local para crear viajes con alma, seguros y memorables.",
       "eyebrow": "Arquitectura de la confianza",
       "fallbackImage": "/images/about-us.png",
-      "title": "Viajes sorpresa, diseñados sin improvisar."
+      "title": "Nosotros"
     },
     "meta": {
       "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
@@ -2908,7 +2908,9 @@
       "payments": "Métodos de pago",
       "security": "Seguridad",
       "tripperProfile": "Perfil público de Tripper",
-      "tripperOs": "Tripper OS"
+      "tripperOs": "Tripper OS",
+      "nationalId": "Documento nacional",
+      "passport": "Pasaporte"
     },
     "comingSoon": "Próximamente",
     "comingSoonDescription": "Esta sección estará disponible próximamente.",
@@ -2948,7 +2950,15 @@
       "addressSection": "Dirección",
       "travelerType": "Tipo de viajero",
       "interests": "Intereses",
-      "dislikes": "Evitar"
+      "dislikes": "Evitar",
+      "idNumber": "Número de documento",
+      "issuingCountry": "País emisor",
+      "expiryDate": "Fecha de vencimiento",
+      "passportNumber": "Número de pasaporte",
+      "approvedVisas": "Visas aprobadas",
+      "approvedVisasHelper": "Países y regiones para los que actualmente tienes una visa válida.",
+      "noVisas": "Sin visas registradas.",
+      "searchVisa": "Buscar país o región…"
     },
     "travelerTypes": {
       "selectPlaceholder": "Seleccionar...",
@@ -3248,10 +3258,11 @@
       "reviewsSub": "Ver feedback",
       "blogs": "Mis Posts",
       "blogsSub": "Gestionar blog",
+      "newPost": "Nuevo Post",
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
-      "settings": "Configuración",
-      "settingsSub": "Ajustes del perfil",
+      "settings": "Mi Perfil",
+      "settingsSub": "Gestioná tu perfil",
       "dashboard": "Mi Dashboard",
       "notifications": "Notificaciones"
     },
@@ -3279,6 +3290,11 @@
     "settingsProfile": {
       "eyebrow": "Configuración de cuenta",
       "heading": "Mi Perfil",
+      "viewToggle": {
+        "prefix": "Como ",
+        "traveler": "Viajero",
+        "tripper": "Tripper"
+      },
       "hero": {
         "editProfile": "Editar perfil",
         "cancel": "Cancelar",
@@ -3287,6 +3303,7 @@
         "uploadHint": "Cambiar foto de portada",
         "nameFallback": "Tripper",
         "namePlaceholder": "Tu nombre",
+        "nicknameHint": "Así te verán tus clientes, en vez de tu nombre de cuenta",
         "locationPlaceholder": "Ciudad, País",
         "noLocation": "Sin ubicación definida",
         "statsExperiences": "Experiencias",
@@ -3304,6 +3321,9 @@
         "bioEmpty": "Todavía no cargaste una biografía.",
         "destinationsLabel": "Destinos",
         "destinationsAddPlaceholder": "Agregar destino",
+        "socialLinksLabel": "Redes sociales",
+        "socialLinksEmpty": "Sin redes sociales agregadas.",
+        "socialLinksAdd": "Agregar red",
         "travelerTypesLabel": "Tipos de viajero que aceptás",
         "travelerTypesHelper": "Elegí los tipos de viajero para los que armás experiencias"
       },
@@ -3323,11 +3343,17 @@
         "tierLabel": "Nivel de Tripper",
         "commissionLabel": "Tasa de Comisión",
         "adminSet": "Definido por el admin",
-        "commissionHelper": "Tu tasa de comisión la define el equipo de Randomtrip según tu nivel y desempeño."
-      },
-      "divider": {
-        "eyebrow": "Compartido con todos los roles",
-        "heading": "Configuración de Cuenta"
+        "commissionHelper": "Tu tasa de comisión la define el equipo de Randomtrip según tu nivel y desempeño.",
+        "tierWanderer": "Wanderer",
+        "tierScout": "Scout",
+        "tierNavigator": "Navigator",
+        "tierPioneer": "Pioneer",
+        "tierLuminary": "Luminary",
+        "tierWandererDescription": "Empezando tu camino como Tripper",
+        "tierScoutDescription": "Construyendo tus primeras experiencias",
+        "tierNavigatorDescription": "Calidad consistente, reputación en crecimiento",
+        "tierPioneerDescription": "Tripper consolidado, muy bien calificado",
+        "tierLuminaryDescription": "Estatus élite — lo mejor de lo mejor"
       }
     }
   },
@@ -3341,7 +3367,7 @@
       "trips": "Mis viajes",
       "reviews": "Mis reseñas",
       "notifications": "Notificaciones",
-      "settings": "Configuración"
+      "settings": "Mi Perfil"
     },
     "pageHeadings": {
       "dashboard": {
@@ -3361,9 +3387,13 @@
         "description": "Novedades sobre tus reservas y viajes"
       },
       "settings": {
-        "title": "Configuración",
+        "title": "Mi Perfil",
         "description": "Tu cuenta y preferencias de viaje"
       }
+    },
+    "settingsProfile": {
+      "eyebrow": "Configuración de cuenta",
+      "heading": "Mi Perfil"
     },
     "trips": {
       "description": "Reservas próximas e historial de viajes completados",
@@ -3475,7 +3505,8 @@
       "title": "Proximos Viajes",
       "viewDetails": "Ver Detalles",
       "revealCountdown": "Cuenta Regresiva",
-      "revealDestination": "Ver Destino"
+      "revealDestination": "Ver Destino",
+      "writeReview": "Dejar Reseña"
     }
   },
   "tripperReviews": {
@@ -3555,7 +3586,8 @@
       "publish": "Publicar",
       "unpublish": "Despublicar",
       "delete": "Eliminar",
-      "deleteConfirm": "¿Eliminar esta experiencia? Esta acción no se puede deshacer."
+      "deleteTitle": "¿Eliminar experiencia?",
+      "deleteConfirmMessage": "Estás por eliminar {{title}}. Esta acción no se puede deshacer."
     },
     "emptyState": {
       "noExperiences": "Aún no tienes experiencias.",
@@ -3756,7 +3788,7 @@
         "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
         "entryImageSizeHint": "Mínimo 800 × 600 px recomendado",
         "imageTooSmall": "Imagen demasiado pequeña",
-        "copyrightHint": "Las imágenes deben ser propias o con derechos *",
+        "copyrightHint": "Usá solo imágenes de tu propiedad o con licencia de uso.",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",

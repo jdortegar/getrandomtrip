@@ -195,6 +195,7 @@ export interface TripperDashboardDict {
     reviewsSub: string;
     blogs: string;
     blogsSub: string;
+    newPost: string;
     settings: string;
     settingsSub: string;
     notifications: string;
@@ -223,6 +224,11 @@ export interface TripperDashboardDict {
   settingsProfile: {
     eyebrow: string;
     heading: string;
+    viewToggle: {
+      prefix: string;
+      traveler: string;
+      tripper: string;
+    };
     hero: {
       editProfile: string;
       cancel: string;
@@ -231,6 +237,7 @@ export interface TripperDashboardDict {
       uploadHint: string;
       nameFallback: string;
       namePlaceholder: string;
+      nicknameHint: string;
       locationPlaceholder: string;
       noLocation: string;
       statsExperiences: string;
@@ -248,6 +255,9 @@ export interface TripperDashboardDict {
       bioEmpty: string;
       destinationsLabel: string;
       destinationsAddPlaceholder: string;
+      socialLinksLabel: string;
+      socialLinksEmpty: string;
+      socialLinksAdd: string;
       travelerTypesLabel: string;
       travelerTypesHelper: string;
     };
@@ -268,10 +278,16 @@ export interface TripperDashboardDict {
       commissionLabel: string;
       adminSet: string;
       commissionHelper: string;
-    };
-    divider: {
-      eyebrow: string;
-      heading: string;
+      tierWanderer: string;
+      tierScout: string;
+      tierNavigator: string;
+      tierPioneer: string;
+      tierLuminary: string;
+      tierWandererDescription: string;
+      tierScoutDescription: string;
+      tierNavigatorDescription: string;
+      tierPioneerDescription: string;
+      tierLuminaryDescription: string;
     };
   };
 }
@@ -294,6 +310,10 @@ export interface ClientDashboardDict {
     reviews: { description: string; title: string };
     settings: { description: string; title: string };
     trips: { description: string; title: string };
+  };
+  settingsProfile: {
+    eyebrow: string;
+    heading: string;
   };
   reviews: {
     description: string;
@@ -391,6 +411,7 @@ export interface DashboardDict {
     viewDetails: string;
     revealCountdown: string;
     revealDestination: string;
+    writeReview: string;
   };
 }
 
@@ -473,7 +494,9 @@ export interface TripperExperiencesDict {
     publish: string;
     unpublish: string;
     delete: string;
-    deleteConfirm: string;
+    deleteTitle: string;
+    /** Interpolated with {{title}} — the experience's name, rendered bold. */
+    deleteConfirmMessage: string;
   };
   emptyState: {
     noExperiences: string;
@@ -2198,6 +2221,14 @@ export interface MarketingDictionary {
       totalTrips: string;
       travelerType: string;
       zipCode: string;
+      idNumber: string;
+      issuingCountry: string;
+      expiryDate: string;
+      passportNumber: string;
+      approvedVisas: string;
+      approvedVisasHelper: string;
+      noVisas: string;
+      searchVisa: string;
     };
     modal: {
       confirmPassword: string;
@@ -2239,6 +2270,8 @@ export interface MarketingDictionary {
       security: string;
       tripperProfile: string;
       tripperOs: string;
+      nationalId: string;
+      passport: string;
     };
     toasts: {
       nameRequired: string;

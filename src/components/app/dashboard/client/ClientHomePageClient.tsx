@@ -8,6 +8,7 @@ import {
   type DashboardStats,
 } from "@/components/app/dashboard";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
+import { UpcomingTripsList } from "@/components/app/dashboard/client/UpcomingTripsList";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 import {
   getPayments,
@@ -147,6 +148,8 @@ export function ClientHomePageClient({
         onDelete={handleTripDelete}
         trips={unpaidTrips}
       />
+
+      <UpcomingTripsList copy={copy} locale={locale} trips={trips} />
     </div>
   );
 }

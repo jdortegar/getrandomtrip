@@ -25,7 +25,7 @@
   },
   "navbarProfile": {
     "ariaOpenProfileMenu": "Open profile menu",
-    "dashboard": "Dashboard",
+    "dashboard": "Travel logs",
     "editProfile": "My account",
     "signOut": "Sign out",
     "tripperOs": "Tripper OS",
@@ -2764,7 +2764,7 @@
       "subtitle": "At Randomtrip the surprise is the destination, not the quality, price, or logistics. We combine technology, human curation, and local expertise to create trips with soul — safe and memorable.",
       "eyebrow": "Architecture of trust",
       "fallbackImage": "/images/about-us.png",
-      "title": "Surprise trips, designed without improvising."
+      "title": "About Us"
     },
     "meta": {
       "description": "Learn about the philosophy, founder story and curating team behind Randomtrip. Designed serendipity with safety and impeccable taste.",
@@ -2908,7 +2908,9 @@
       "payments": "Payment methods",
       "security": "Security",
       "tripperProfile": "Tripper public profile",
-      "tripperOs": "Tripper OS"
+      "tripperOs": "Tripper OS",
+      "nationalId": "National ID",
+      "passport": "Passport"
     },
     "comingSoon": "Coming soon",
     "comingSoonDescription": "This section will be available soon.",
@@ -2948,7 +2950,15 @@
       "addressSection": "Address",
       "travelerType": "Traveler type",
       "interests": "Interests",
-      "dislikes": "Avoid"
+      "dislikes": "Avoid",
+      "idNumber": "ID Number",
+      "issuingCountry": "Issuing Country",
+      "expiryDate": "Expiry Date",
+      "passportNumber": "Passport Number",
+      "approvedVisas": "Approved Visas",
+      "approvedVisasHelper": "Countries and regions for which you currently hold a valid visa.",
+      "noVisas": "No visas on file.",
+      "searchVisa": "Search country or region…"
     },
     "travelerTypes": {
       "selectPlaceholder": "Select…",
@@ -3250,8 +3260,9 @@
       "reviewsSub": "View feedback",
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
-      "settings": "Settings",
-      "settingsSub": "Profile settings",
+      "newPost": "New Post",
+      "settings": "My Profile",
+      "settingsSub": "Manage your profile",
       "dashboard": "My Dashboard",
       "notifications": "Notifications"
     },
@@ -3279,6 +3290,11 @@
     "settingsProfile": {
       "eyebrow": "Account settings",
       "heading": "My Profile",
+      "viewToggle": {
+        "prefix": "As ",
+        "traveler": "Traveler",
+        "tripper": "Tripper"
+      },
       "hero": {
         "editProfile": "Edit profile",
         "cancel": "Cancel",
@@ -3287,6 +3303,7 @@
         "uploadHint": "Change cover photo",
         "nameFallback": "Tripper",
         "namePlaceholder": "Your name",
+        "nicknameHint": "This is what clients will see instead of your account name",
         "locationPlaceholder": "City, Country",
         "noLocation": "No location set",
         "statsExperiences": "Experiences",
@@ -3304,6 +3321,9 @@
         "bioEmpty": "No bio yet.",
         "destinationsLabel": "Destinations",
         "destinationsAddPlaceholder": "Add a destination",
+        "socialLinksLabel": "Social links",
+        "socialLinksEmpty": "No social links added.",
+        "socialLinksAdd": "Add network",
         "travelerTypesLabel": "Traveler types accepted",
         "travelerTypesHelper": "Select the traveler types you build experiences for"
       },
@@ -3323,11 +3343,17 @@
         "tierLabel": "Tier Level",
         "commissionLabel": "Commission Rate",
         "adminSet": "Admin-set",
-        "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance."
-      },
-      "divider": {
-        "eyebrow": "Shared with all roles",
-        "heading": "Account Settings"
+        "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance.",
+        "tierWanderer": "Wanderer",
+        "tierScout": "Scout",
+        "tierNavigator": "Navigator",
+        "tierPioneer": "Pioneer",
+        "tierLuminary": "Luminary",
+        "tierWandererDescription": "Starting your journey as a Tripper",
+        "tierScoutDescription": "Building your first experiences",
+        "tierNavigatorDescription": "Consistent quality, growing reputation",
+        "tierPioneerDescription": "Established Tripper, highly rated",
+        "tierLuminaryDescription": "Elite status — the best of the best"
       }
     }
   },
@@ -3341,7 +3367,7 @@
       "trips": "My trips",
       "reviews": "My reviews",
       "notifications": "Notifications",
-      "settings": "Settings"
+      "settings": "My Profile"
     },
     "pageHeadings": {
       "dashboard": {
@@ -3361,9 +3387,13 @@
         "description": "Updates about your bookings and trips"
       },
       "settings": {
-        "title": "Settings",
+        "title": "My Profile",
         "description": "Your account and travel preferences"
       }
+    },
+    "settingsProfile": {
+      "eyebrow": "Account settings",
+      "heading": "My Profile"
     },
     "trips": {
       "description": "Upcoming bookings and completed travel history",
@@ -3475,7 +3505,8 @@
       "title": "Upcoming Trips",
       "viewDetails": "View Details",
       "revealCountdown": "Countdown",
-      "revealDestination": "View Destination"
+      "revealDestination": "View Destination",
+      "writeReview": "Write a Review"
     }
   },
   "tripperReviews": {
@@ -3555,7 +3586,8 @@
       "publish": "Publish",
       "unpublish": "Unpublish",
       "delete": "Delete",
-      "deleteConfirm": "Delete this experience? This action cannot be undone."
+      "deleteTitle": "Delete experience?",
+      "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone."
     },
     "emptyState": {
       "noExperiences": "You don't have any experiences yet.",
@@ -3756,7 +3788,7 @@
         "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
         "entryImageSizeHint": "Minimum 800 × 600 px recommended",
         "imageTooSmall": "Image too small",
-        "copyrightHint": "Images must be your own or royalty-free *",
+        "copyrightHint": "Only use images you own or are licensed to use.",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",

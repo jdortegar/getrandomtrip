@@ -35,6 +35,7 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
+  nickname       String? // Public display name shown to clients instead of the legal name, if set
   bio            String? // Tripper biography/description
   heroImage      String? // Hero banner image
   location       String? // Tripper location
@@ -58,6 +59,18 @@ model User {
    */
   phone   String?
   address Json?
+
+  // Travel documents
+  idNumber        String?
+  idCountry       String?
+  idExpiry        DateTime?
+  passportNumber  String?
+  passportCountry String?
+  passportExpiry  DateTime?
+  approvedVisas   String[] @default([])
+
+  /** Tripper's social links. Stores: [{ network: string, handle: string }] */
+  socialLinks Json? @default("[]")
 
   // Relations
   tripRequests          TripRequest[]    @relation("CustomerTripRequests")

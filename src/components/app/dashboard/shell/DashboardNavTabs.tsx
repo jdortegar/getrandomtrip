@@ -41,12 +41,13 @@ export function DashboardNavTabs({ tabs }: DashboardNavTabsProps) {
             <Link
               key={tab.href}
               className={cn(
-                "flex shrink-0 flex-col items-center justify-start gap-2 rounded-2xl px-3 pb-4 pt-3 text-center transition-all sm:gap-2.5 sm:pb-8 sm:pt-4",
+                "flex shrink-0 flex-col items-center justify-start gap-2 rounded-2xl px-3 pb-4 pt-3 text-center transition-all outline-none sm:gap-2.5 sm:pb-8 sm:pt-4",
+                "focus-visible:ring-2 focus-visible:ring-inset",
                 TAB_WIDTH,
                 TAB_MIN_HEIGHT,
                 active
-                  ? "bg-light-blue text-white shadow-md"
-                  : "bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:text-gray-700 hover:shadow-md",
+                  ? "bg-light-blue text-white shadow-md focus-visible:ring-white"
+                  : "bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:text-gray-700 hover:shadow-md focus-visible:ring-light-blue",
               )}
               href={tab.href}
             >

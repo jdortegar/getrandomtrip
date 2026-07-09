@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import EmptyState from "@/components/profile/EmptyState";
+import { AccountSettingsDocumentsTab } from "@/components/app/account/AccountSettingsDocumentsTab";
 import { AccountSettingsTagList } from "@/components/app/account/AccountSettingsTagList";
 import { AccountSettingsPasswordField } from "@/components/app/account/AccountSettingsPasswordField";
 import { TabSelector } from "@/components/ui/TabSelector";
@@ -887,14 +888,7 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
       )}
 
       {/* Documents */}
-      {activeTab === "documents" && (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold text-neutral-900">
-            {p.sections.travelDocs}
-          </h2>
-          <EmptyState subtitle={p.comingSoonDescription} title={p.comingSoon} />
-        </div>
-      )}
+      {activeTab === "documents" && <AccountSettingsDocumentsTab copy={p} />}
 
       {/* Payments */}
       {activeTab === "payments" && (
