@@ -24,6 +24,7 @@ export async function GET() {
         heroImage: true,
         location: true,
         nickname: true,
+        socialLinks: true,
         tierLevel: true,
         tripperSlug: true,
       },
@@ -33,7 +34,12 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({
+      user: {
+        ...user,
+        socialLinks: Array.isArray(user.socialLinks) ? user.socialLinks : [],
+      },
+    });
   } catch (error) {
     console.error("Error fetching tripper profile:", error);
     return NextResponse.json(
@@ -57,6 +63,7 @@ export async function PATCH(request: NextRequest) {
       heroImage,
       location,
       nickname,
+      socialLinks,
       tierLevel,
       destinations,
       tripperSlug,
@@ -108,6 +115,7 @@ export async function PATCH(request: NextRequest) {
         heroImage,
         location,
         nickname,
+        socialLinks,
         tierLevel,
         destinations,
         tripperSlug,
@@ -125,6 +133,7 @@ export async function PATCH(request: NextRequest) {
         heroImage: true,
         location: true,
         nickname: true,
+        socialLinks: true,
         tierLevel: true,
         destinations: true,
         tripperSlug: true,
@@ -136,7 +145,14 @@ export async function PATCH(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ user: updatedUser });
+    return NextResponse.json({
+      user: {
+        ...updatedUser,
+        socialLinks: Array.isArray(updatedUser.socialLinks)
+          ? updatedUser.socialLinks
+          : [],
+      },
+    });
   } catch (error) {
     console.error("Error updating tripper profile:", error);
     return NextResponse.json(

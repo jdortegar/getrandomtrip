@@ -3321,6 +3321,9 @@
         "bioEmpty": "No bio yet.",
         "destinationsLabel": "Destinations",
         "destinationsAddPlaceholder": "Add a destination",
+        "socialLinksLabel": "Social links",
+        "socialLinksEmpty": "No social links added.",
+        "socialLinksAdd": "Add network",
         "travelerTypesLabel": "Traveler types accepted",
         "travelerTypesHelper": "Select the traveler types you build experiences for"
       },

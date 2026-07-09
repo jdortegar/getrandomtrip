@@ -3321,6 +3321,9 @@
         "bioEmpty": "Todavía no cargaste una biografía.",
         "destinationsLabel": "Destinos",
         "destinationsAddPlaceholder": "Agregar destino",
+        "socialLinksLabel": "Redes sociales",
+        "socialLinksEmpty": "Sin redes sociales agregadas.",
+        "socialLinksAdd": "Agregar red",
         "travelerTypesLabel": "Tipos de viajero que aceptás",
         "travelerTypesHelper": "Elegí los tipos de viajero para los que armás experiencias"
       },

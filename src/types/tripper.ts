@@ -42,6 +42,21 @@ export const TRIPPER_TIER_ORDER: readonly TripperTierLevel[] = [
 ];
 export type TripperTierCopy = Record<TripperTierLevel, string>;
 
+export type SocialNetwork =
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "facebook"
+  | "twitter"
+  | "pinterest"
+  | "linkedin"
+  | "whatsapp";
+
+export interface SocialLink {
+  network: SocialNetwork;
+  handle: string;
+}
+
 // Tripper Route
 export interface TripperRoute {
   id: string;
@@ -80,6 +95,7 @@ export interface TripperSessionExtras {
   heroImage?: string;
   location?: string;
   nickname?: string;
+  socialLinks?: SocialLink[];
   tierLevel?: string;
   tripperSlug?: string;
 }
@@ -98,6 +114,7 @@ export interface TripperSettingsFormState {
   /** Fraction 0–1 (e.g. 0.15 means 15%). Admin-set, read-only in the UI. */
   commission: number;
   availableTypes: string[];
+  socialLinks: SocialLink[];
 }
 
 /** Stats shown on the Tripper Settings Hero card. */

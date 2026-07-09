@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { AccountSettingsTagList } from "@/components/app/account/AccountSettingsTagList";
+import { TripperSettingsSocialLinks } from "@/components/app/dashboard/tripper/settings/TripperSettingsSocialLinks";
 import { cn } from "@/lib/utils";
 import type { TripperDashboardDict, MarketingDictionary } from "@/lib/types/dictionary";
 import type { TripperSettingsFormState } from "@/types/tripper";
@@ -104,6 +105,21 @@ export function TripperSettingsPublicPresenceCard({
           onRemove={removeDestination}
           placeholder={copy.destinationsAddPlaceholder}
           removeAriaLabel={tagListCopy.removeAriaLabel}
+        />
+      </div>
+
+      <div>
+        <p className="mb-2 text-sm font-medium text-neutral-500">
+          {copy.socialLinksLabel}
+        </p>
+        <TripperSettingsSocialLinks
+          copy={{
+            addNetwork: copy.socialLinksAdd,
+            noLinks: copy.socialLinksEmpty,
+          }}
+          isEditing={isEditing}
+          links={formData.socialLinks ?? []}
+          onChange={(links) => onChange({ ...formData, socialLinks: links })}
         />
       </div>
 

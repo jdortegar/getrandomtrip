@@ -255,6 +255,9 @@ export interface TripperDashboardDict {
       bioEmpty: string;
       destinationsLabel: string;
       destinationsAddPlaceholder: string;
+      socialLinksLabel: string;
+      socialLinksEmpty: string;
+      socialLinksAdd: string;
       travelerTypesLabel: string;
       travelerTypesHelper: string;
     };
