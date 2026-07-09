@@ -195,6 +195,7 @@ export interface TripperDashboardDict {
     reviewsSub: string;
     blogs: string;
     blogsSub: string;
+    newPost: string;
     settings: string;
     settingsSub: string;
     notifications: string;
@@ -274,6 +275,16 @@ export interface TripperDashboardDict {
       commissionLabel: string;
       adminSet: string;
       commissionHelper: string;
+      tierWanderer: string;
+      tierScout: string;
+      tierNavigator: string;
+      tierPioneer: string;
+      tierLuminary: string;
+      tierWandererDescription: string;
+      tierScoutDescription: string;
+      tierNavigatorDescription: string;
+      tierPioneerDescription: string;
+      tierLuminaryDescription: string;
     };
   };
 }

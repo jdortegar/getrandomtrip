@@ -3,12 +3,18 @@
 import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
+import {
+  TRIPPER_TIER_ORDER,
+  type TripperTierCopy,
+  type TripperTierLevel,
+} from "@/types/tripper";
 
-const TIER_ORDER = ["rookie", "pro", "elite"] as const;
+const TIER_ORDER = TRIPPER_TIER_ORDER;
 
 interface TripperSettingsAccountCardProps {
   copy: TripperDashboardDict["settingsProfile"]["account"];
-  tierLabels: { rookie: string; pro: string; elite: string };
+  tierLabels: TripperTierCopy;
+  tierDescriptions: TripperTierCopy;
   email: string;
   tierLevel: string;
   /** Fraction 0–1 (e.g. 0.15 means 15%). */
@@ -27,15 +33,16 @@ function AdminSetBadge({ label }: { label: string }) {
 export function TripperSettingsAccountCard({
   copy,
   tierLabels,
+  tierDescriptions,
   email,
   tierLevel,
   commission,
 }: TripperSettingsAccountCardProps) {
   const tierKey = (
-    TIER_ORDER.includes(tierLevel as (typeof TIER_ORDER)[number])
+    TIER_ORDER.includes(tierLevel as TripperTierLevel)
       ? tierLevel
-      : "rookie"
-  ) as (typeof TIER_ORDER)[number];
+      : "wanderer"
+  ) as TripperTierLevel;
   const tierIndex = TIER_ORDER.indexOf(tierKey);
   const commissionPct = Math.round(commission * 100);
 
@@ -64,10 +71,13 @@ export function TripperSettingsAccountCard({
           </p>
           <AdminSetBadge label={copy.adminSet} />
         </div>
-        <p className="mb-2 text-sm font-semibold text-gray-900">
+        <p className="text-sm font-semibold text-gray-900">
           {tierLabels[tierKey]}
         </p>
-        <div className="flex gap-1">
+        <p className="mt-1 text-xs text-neutral-400">
+          {tierDescriptions[tierKey]}
+        </p>
+        <div className="mt-3 flex gap-1">
           {TIER_ORDER.map((key, i) => (
             <div
               className={cn(

@@ -3250,6 +3250,7 @@
       "reviewsSub": "View feedback",
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
+      "newPost": "New Post",
       "settings": "My Profile",
       "settingsSub": "Manage your profile",
       "dashboard": "My Dashboard",
@@ -3329,7 +3330,17 @@
         "tierLabel": "Tier Level",
         "commissionLabel": "Commission Rate",
         "adminSet": "Admin-set",
-        "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance."
+        "commissionHelper": "Your commission rate is set by the Randomtrip team based on your tier and performance.",
+        "tierWanderer": "Wanderer",
+        "tierScout": "Scout",
+        "tierNavigator": "Navigator",
+        "tierPioneer": "Pioneer",
+        "tierLuminary": "Luminary",
+        "tierWandererDescription": "Starting your journey as a Tripper",
+        "tierScoutDescription": "Building your first experiences",
+        "tierNavigatorDescription": "Consistent quality, growing reputation",
+        "tierPioneerDescription": "Established Tripper, highly rated",
+        "tierLuminaryDescription": "Elite status — the best of the best"
       }
     }
   },

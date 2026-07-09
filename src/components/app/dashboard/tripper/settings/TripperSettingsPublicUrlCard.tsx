@@ -57,20 +57,20 @@ export function TripperSettingsPublicUrlCard({
         </h2>
       </div>
 
-      <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
-        <span className="truncate text-sm text-neutral-500">
+      <div className="flex flex-col gap-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+        <span className="truncate font-mono text-[11px] text-neutral-400">
           {copy.domainPrefix}
         </span>
         {isEditing ? (
           <input
-            className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-gray-900 outline-none"
+            className="min-w-0 flex-1 bg-transparent text-lg font-bold text-light-blue outline-none"
             onChange={(e) => onSlugChange(slugify(e.target.value))}
             placeholder={copy.slugPlaceholder}
             type="text"
             value={slug}
           />
         ) : (
-          <span className="truncate text-sm font-semibold text-gray-900">
+          <span className="truncate text-lg font-bold text-light-blue">
             {slug}
           </span>
         )}
@@ -91,7 +91,7 @@ export function TripperSettingsPublicUrlCard({
           )}
           {copied ? copy.copied : copy.copyLink}
         </Button>
-        <Button asChild size="icon" variant="secondary">
+        <Button asChild className="h-11 w-11" size="icon" variant="secondary">
           <Link href={publicPath} title={copy.openLink}>
             <ExternalLink className="h-4 w-4" />
           </Link>

@@ -111,9 +111,11 @@ export function TripperSettingsPublicPresenceCard({
         <p className="mb-1 text-sm font-medium text-neutral-500">
           {copy.travelerTypesLabel}
         </p>
-        <p className="mb-2 text-xs text-neutral-400">
-          {copy.travelerTypesHelper}
-        </p>
+        {!isEditing && (
+          <p className="mb-2 text-xs text-neutral-400">
+            {copy.travelerTypesHelper}
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {TRAVELER_TYPE_KEYS.map((key) => {
             const active = formData.availableTypes.includes(key);

@@ -26,6 +26,22 @@ export type RouteStatus =
   | "archived";
 export type TripperLevel = "rookie" | "pro" | "elite";
 
+/** Tripper's own reputation tier (settings/profile) — distinct from TripperLevel, which is a route/package product level. */
+export type TripperTierLevel =
+  | "wanderer"
+  | "scout"
+  | "navigator"
+  | "pioneer"
+  | "luminary";
+export const TRIPPER_TIER_ORDER: readonly TripperTierLevel[] = [
+  "wanderer",
+  "scout",
+  "navigator",
+  "pioneer",
+  "luminary",
+];
+export type TripperTierCopy = Record<TripperTierLevel, string>;
+
 // Tripper Route
 export interface TripperRoute {
   id: string;

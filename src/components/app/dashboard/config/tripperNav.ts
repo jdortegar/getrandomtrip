@@ -6,6 +6,7 @@ import {
   LayoutList,
   Plus,
   Settings,
+  SquarePen,
   Star,
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
@@ -40,9 +41,15 @@ export function buildTripperNavTabs(
       label: copy.createExperience,
     },
     {
+      exact: true,
       href: base("/blog"),
       icon: BookOpen,
       label: copy.blogs,
+    },
+    {
+      href: base("/blog/new"),
+      icon: SquarePen,
+      label: copy.newPost,
     },
     {
       href: base("/earnings"),

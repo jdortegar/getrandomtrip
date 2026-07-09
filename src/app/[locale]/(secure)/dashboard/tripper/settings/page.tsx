@@ -23,6 +23,7 @@ import type {
   TripperSessionExtras,
   TripperSettingsFormState,
   TripperSettingsStats,
+  TripperTierCopy,
 } from "@/types/tripper";
 
 function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
@@ -177,10 +178,19 @@ export default function TripperSettingsPage() {
   }
 
   const copy = dict.tripperDashboard.settingsProfile;
-  const tierLabels = {
-    rookie: dict.tripperProfilePage.modal.tierRookie,
-    pro: dict.tripperProfilePage.modal.tierPro,
-    elite: dict.tripperProfilePage.modal.tierElite,
+  const tierLabels: TripperTierCopy = {
+    wanderer: copy.account.tierWanderer,
+    scout: copy.account.tierScout,
+    navigator: copy.account.tierNavigator,
+    pioneer: copy.account.tierPioneer,
+    luminary: copy.account.tierLuminary,
+  };
+  const tierDescriptions: TripperTierCopy = {
+    wanderer: copy.account.tierWandererDescription,
+    scout: copy.account.tierScoutDescription,
+    navigator: copy.account.tierNavigatorDescription,
+    pioneer: copy.account.tierPioneerDescription,
+    luminary: copy.account.tierLuminaryDescription,
   };
 
   function openEdit() {
@@ -288,7 +298,7 @@ export default function TripperSettingsPage() {
     <Section className="py-10!">
       <div className="rt-container text-left">
         <div className="space-y-10">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <div className="flex flex-row items-center justify-between gap-3 sm:gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
                 {copy.eyebrow}
@@ -321,8 +331,8 @@ export default function TripperSettingsPage() {
                 tierLabels={tierLabels}
               />
 
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+                <div>
                   <TripperSettingsPublicPresenceCard
                     copy={copy.publicPresence}
                     formData={formData}
@@ -346,6 +356,7 @@ export default function TripperSettingsPage() {
                     commission={formData.commission}
                     copy={copy.account}
                     email={formData.email}
+                    tierDescriptions={tierDescriptions}
                     tierLabels={tierLabels}
                     tierLevel={formData.tierLevel}
                   />

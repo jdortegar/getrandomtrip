@@ -3248,6 +3248,7 @@
       "reviewsSub": "Ver feedback",
       "blogs": "Mis Posts",
       "blogsSub": "Gestionar blog",
+      "newPost": "Nuevo Post",
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
       "settings": "Mi Perfil",
@@ -3329,7 +3330,17 @@
         "tierLabel": "Nivel de Tripper",
         "commissionLabel": "Tasa de Comisión",
         "adminSet": "Definido por el admin",
-        "commissionHelper": "Tu tasa de comisión la define el equipo de Randomtrip según tu nivel y desempeño."
+        "commissionHelper": "Tu tasa de comisión la define el equipo de Randomtrip según tu nivel y desempeño.",
+        "tierWanderer": "Wanderer",
+        "tierScout": "Scout",
+        "tierNavigator": "Navigator",
+        "tierPioneer": "Pioneer",
+        "tierLuminary": "Luminary",
+        "tierWandererDescription": "Empezando tu camino como Tripper",
+        "tierScoutDescription": "Construyendo tus primeras experiencias",
+        "tierNavigatorDescription": "Calidad consistente, reputación en crecimiento",
+        "tierPioneerDescription": "Tripper consolidado, muy bien calificado",
+        "tierLuminaryDescription": "Estatus élite — lo mejor de lo mejor"
       }
     }
   },
