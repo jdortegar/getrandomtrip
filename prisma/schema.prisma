@@ -60,6 +60,15 @@ model User {
   phone   String?
   address Json?
 
+  // Travel documents
+  idNumber        String?
+  idCountry       String?
+  idExpiry        DateTime?
+  passportNumber  String?
+  passportCountry String?
+  passportExpiry  DateTime?
+  approvedVisas   String[] @default([])
+
   // Relations
   tripRequests          TripRequest[]    @relation("CustomerTripRequests")
   attributedTripRequests TripRequest[]   @relation("TripperTripRequests")

@@ -2908,7 +2908,9 @@
       "payments": "Payment methods",
       "security": "Security",
       "tripperProfile": "Tripper public profile",
-      "tripperOs": "Tripper OS"
+      "tripperOs": "Tripper OS",
+      "nationalId": "National ID",
+      "passport": "Passport"
     },
     "comingSoon": "Coming soon",
     "comingSoonDescription": "This section will be available soon.",
@@ -2948,7 +2950,15 @@
       "addressSection": "Address",
       "travelerType": "Traveler type",
       "interests": "Interests",
-      "dislikes": "Avoid"
+      "dislikes": "Avoid",
+      "idNumber": "ID Number",
+      "issuingCountry": "Issuing Country",
+      "expiryDate": "Expiry Date",
+      "passportNumber": "Passport Number",
+      "approvedVisas": "Approved Visas",
+      "approvedVisasHelper": "Countries and regions for which you currently hold a valid visa.",
+      "noVisas": "No visas on file.",
+      "searchVisa": "Search country or region…"
     },
     "travelerTypes": {
       "selectPlaceholder": "Select…",

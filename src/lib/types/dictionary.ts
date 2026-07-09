@@ -2215,6 +2215,14 @@ export interface MarketingDictionary {
       totalTrips: string;
       travelerType: string;
       zipCode: string;
+      idNumber: string;
+      issuingCountry: string;
+      expiryDate: string;
+      passportNumber: string;
+      approvedVisas: string;
+      approvedVisasHelper: string;
+      noVisas: string;
+      searchVisa: string;
     };
     modal: {
       confirmPassword: string;
@@ -2256,6 +2264,8 @@ export interface MarketingDictionary {
       security: string;
       tripperProfile: string;
       tripperOs: string;
+      nationalId: string;
+      passport: string;
     };
     toasts: {
       nameRequired: string;
