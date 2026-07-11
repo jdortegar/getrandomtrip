@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 interface JourneyActionBarLabels {
   back?: string;
@@ -14,10 +15,14 @@ interface JourneyActionBarLabels {
 interface JourneyActionBarProps {
   backHref?: string;
   canContinue: boolean;
+  /** Overrides the root's margin/padding classes — default fits the journey/XSED flows. */
+  className?: string;
   isAllStepsComplete: boolean;
   isSavingAndRedirecting: boolean;
   isSavingDraft?: boolean;
   labels: JourneyActionBarLabels;
+  /** Jumps back in-page (e.g. to step 1) instead of navigating away. Takes priority over backHref. */
+  onBack?: () => void;
   onClearAll: () => void;
   onContinue: () => void;
   onGoToCheckout: () => void;
@@ -29,10 +34,12 @@ interface JourneyActionBarProps {
 export function JourneyActionBar({
   backHref,
   canContinue,
+  className,
   isAllStepsComplete,
   isSavingAndRedirecting,
   isSavingDraft,
   labels,
+  onBack,
   onClearAll,
   onContinue,
   onGoToCheckout,
@@ -40,8 +47,21 @@ export function JourneyActionBar({
   showClearAll,
 }: JourneyActionBarProps) {
   return (
-    <div className="flex items-center justify-center gap-4 sm:gap-10 mt-8 pt-6 border-t border-gray-200">
-      {backHref && labels.back ? (
+    <div
+      className={cn(
+        "flex items-center justify-center gap-4 sm:gap-10 mt-8 pt-6 border-t border-gray-200",
+        className,
+      )}
+    >
+      {onBack && labels.back ? (
+        <button
+          className="text-sm font-medium text-gray-900 underline hover:no-underline"
+          onClick={onBack}
+          type="button"
+        >
+          {labels.back}
+        </button>
+      ) : backHref && labels.back ? (
         <Link
           className="text-sm font-medium text-gray-900 underline hover:no-underline"
           href={backHref}

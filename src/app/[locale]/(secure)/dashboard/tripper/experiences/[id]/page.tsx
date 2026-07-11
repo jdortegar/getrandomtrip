@@ -37,6 +37,7 @@ export default async function EditExperiencePage(props: {
   }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
     pricingByType: Record<string, number> | null;
     reviewNote: string | null;
+    tripperNote: string | null;
   } | null;
 
   if (!pkg) {
@@ -62,6 +63,7 @@ export default async function EditExperiencePage(props: {
     maxNights: pkg.maxNights,
     pricingByType: (pkg.pricingByType as Record<string, number> | null) ?? null,
     reviewNote: pkg.reviewNote ?? null,
+    tripperNote: pkg.tripperNote ?? null,
     estimatedCost: "",
     season: Array.isArray(pkg.season) ? pkg.season : [],
     transport: pkg.transport,

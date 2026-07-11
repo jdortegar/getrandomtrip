@@ -58,6 +58,7 @@ export async function GET(
         maxPax: true,
         pricingByType: true,
         reviewNote: true,
+        tripperNote: true,
         heroImage: true,
         tags: true,
         excuseKey: true,
@@ -199,6 +200,7 @@ export async function PATCH(
       departPref,
       arrivePref,
       season,
+      tripperNote,
       // XSED fields
       titleInternal,
       slug,
@@ -286,6 +288,7 @@ export async function PATCH(
         departPref: departPref ?? "any",
         arrivePref: arrivePref ?? "any",
         season: Array.isArray(season) ? season : [],
+        tripperNote: tripperNote ?? null,
         titleInternal: titleInternal || null,
         slug: slug || null,
         tripDate: tripDate ? new Date(tripDate as string) : null,
