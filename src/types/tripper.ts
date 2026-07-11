@@ -416,6 +416,7 @@ export interface ExperienceFormDraft {
   // Pricing — admin-set on approval, read-only for tripper
   pricingByType?: Record<string, number> | null;
   reviewNote?: string | null;
+  tripperNote?: string | null;
   estimatedCost: string;
   season: string[];
   // Logistics

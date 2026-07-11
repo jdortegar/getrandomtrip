@@ -39,6 +39,10 @@ interface ExperienceFormContentProps {
   saveStatus: SaveStatus;
   onChange: ExperienceFormDraftOnChange;
   backHref?: string;
+  /** Jumps back to the first step instead of navigating away. Takes priority over backHref. */
+  onBack?: () => void;
+  /** Read-only stepper only — goes to the previous tab, not the first one. */
+  onPreviousStep?: () => void;
   onClearAll: () => void;
   onNext: () => void;
   onSubmit: () => void;
@@ -117,6 +121,8 @@ export function ExperienceFormContent({
   adminReviewSlot,
   reviewActionsSlot,
   backHref,
+  onBack,
+  onPreviousStep,
   copy,
   form,
   imageState,
@@ -256,8 +262,28 @@ export function ExperienceFormContent({
 
       {isReadOnly ? (
         // Approve/reject now live in the sticky `ReviewActionsBar` (NewExperienceShell),
-        // always reachable regardless of tab — nothing to render here in that case.
-        reviewActionsSlot ? null : (
+        // always reachable regardless of tab. Still need Next/Back to step
+        // through tabs while read-only — force isAllStepsComplete false so
+        // JourneyActionBar never swaps to the tripper-only "Submit for
+        // review" button, and hide Clear all (nothing to reset here).
+        reviewActionsSlot ? (
+          <JourneyActionBar
+            onBack={onPreviousStep}
+            canContinue
+            isAllStepsComplete={false}
+            isSavingAndRedirecting={false}
+            labels={{
+              back: copy.actionBar.previousStep,
+              clearAll: copy.actionBar.clearAll,
+              next: copy.actionBar.next,
+              viewCheckout: copy.actionBar.submitForReview,
+            }}
+            onClearAll={() => {}}
+            onContinue={onNext}
+            onGoToCheckout={() => {}}
+            showClearAll={false}
+          />
+        ) : (
           <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
             <div className="text-sm text-blue-800">
               <span className="font-medium">{copy.review.pendingTitle} — </span>
@@ -280,8 +306,12 @@ export function ExperienceFormContent({
 
           <JourneyActionBar
             backHref={backHref}
+            onBack={onBack}
             canContinue={canContinue}
-            isAllStepsComplete={isLastTab && allTabsComplete}
+            // Editable-but-not-tripper (adminEdit): reviewActionsSlot is present, but the
+            // real submit action lives in the sticky bar (Send to Tripper), not here — force
+            // "Next" so this button never turns into a tripper-only "Submit for review" dead end.
+            isAllStepsComplete={!reviewActionsSlot && isLastTab && allTabsComplete}
             isSavingAndRedirecting={isSubmitting}
             labels={{
               back: copy.actionBar.back,

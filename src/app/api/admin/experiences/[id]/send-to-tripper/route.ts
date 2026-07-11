@@ -16,7 +16,7 @@ import esCopy from "@/dictionaries/es.json";
 import enCopy from "@/dictionaries/en.json";
 
 export async function POST(
-  _request: Request,
+  request: Request,
   props: { params: Promise<{ id: string }> },
 ) {
   const params = await props.params;
@@ -35,6 +35,12 @@ export async function POST(
     if (!caller || !hasRoleAccess(caller, "admin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
+
+    const body = await request.json().catch(() => ({})) as { reviewNote?: unknown };
+    const reviewNote =
+      typeof body.reviewNote === "string" && body.reviewNote.trim()
+        ? body.reviewNote.trim()
+        : null;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const original = await (prisma.experience.findUnique as any)({
@@ -78,11 +84,11 @@ export async function POST(
     // Transactionally: store changedFields on copy, transition original, clear lock
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (prisma.$transaction as any)(async (tx: any) => {
-      // Update copy with changedFields
+      // Update copy with changedFields and the admin's note to the tripper
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (tx.experience.update as any)({
         where: { id: copy.id as string },
-        data: { changedFields },
+        data: { changedFields, reviewNote },
       });
 
       // Transition original to PENDING_TRIPPER_REVIEW and clear lock

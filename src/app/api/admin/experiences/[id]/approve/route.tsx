@@ -58,8 +58,12 @@ export async function POST(
       );
     }
 
-    const body = await request.json() as { pricingByType?: unknown };
+    const body = await request.json() as { pricingByType?: unknown; reviewNote?: unknown };
     const validation = validatePricingByType(body.pricingByType, experience.type);
+    const reviewNote =
+      typeof body.reviewNote === "string" && body.reviewNote.trim()
+        ? body.reviewNote.trim()
+        : null;
 
     if (!validation.ok) {
       return NextResponse.json(
@@ -93,7 +97,7 @@ export async function POST(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const finalResult = await (tx.experience.update as any)({
           where: { id: params.id },
-          data: { pricingByType: validation.value },
+          data: { pricingByType: validation.value, reviewNote },
         });
         // Hard-delete the copy
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,7 +113,7 @@ export async function POST(
           status: "ACTIVE",
           isActive: true,
           pricingByType: validation.value,
-          reviewNote: null,
+          reviewNote,
         },
       });
     }

@@ -40,6 +40,7 @@ export default async function AdminExperienceReviewPage(props: {
   }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
     pricingByType: Record<string, number> | null;
     reviewNote: string | null;
+    tripperNote: string | null;
     reviewLockedBy: string | null;
   } | null;
 
@@ -57,6 +58,7 @@ export default async function AdminExperienceReviewPage(props: {
   }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
     pricingByType: Record<string, number> | null;
     reviewNote: string | null;
+    tripperNote: string | null;
     reviewLockedBy: string | null;
   } | null;
 
@@ -92,6 +94,7 @@ export default async function AdminExperienceReviewPage(props: {
     maxNights: source.maxNights,
     pricingByType: ((source as typeof pkg).pricingByType as Record<string, number> | null) ?? null,
     reviewNote: ((source as typeof pkg).reviewNote) ?? null,
+    tripperNote: ((source as typeof pkg).tripperNote) ?? null,
     estimatedCost: "",
     season: Array.isArray(source.season) ? source.season : [],
     transport: source.transport,

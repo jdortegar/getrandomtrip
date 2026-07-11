@@ -7,6 +7,8 @@ interface ReviewActionsBarProps {
   changedFields: string[];
   changedFieldsLabel: string;
   actionsSlot: ReactNode;
+  /** Extra content stacked below the changed-fields summary (e.g. a note from the other party). */
+  leftSlot?: ReactNode;
 }
 
 /**
@@ -19,6 +21,7 @@ export function ReviewActionsBar({
   changedFields,
   changedFieldsLabel,
   actionsSlot,
+  leftSlot,
 }: ReviewActionsBarProps) {
   return (
     // Site `Navbar` is `sticky top-0 z-50 h-16` — offset below it (same
@@ -30,17 +33,18 @@ export function ReviewActionsBar({
       style={{ top: "var(--rt-header-h, 64px)" }}
     >
       <div className="rt-container flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
-        {changedFields.length > 0 ? (
-          <div className="flex items-start gap-3 text-sm text-amber-800">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-            <div>
-              <span className="font-semibold">{changedFieldsLabel}</span>{" "}
-              <span>{changedFields.join(", ")}</span>
+        <div className="flex min-w-0 flex-col gap-2">
+          {changedFields.length > 0 && (
+            <div className="flex items-start gap-3 text-sm text-amber-800">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+              <div>
+                <span className="font-semibold">{changedFieldsLabel}</span>{" "}
+                <span>{changedFields.join(", ")}</span>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div />
-        )}
+          )}
+          {leftSlot}
+        </div>
         <div className="shrink-0">{actionsSlot}</div>
       </div>
     </div>

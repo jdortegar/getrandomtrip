@@ -2,9 +2,18 @@
 
 import { useRef, useState, useMemo, useEffect, useCallback, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertCircle, X } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, X } from "lucide-react";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
+import {
+  Modal,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/Modal";
 import { ExperienceFormContent } from "./ExperienceFormContent";
 import { ReviewActionsBar } from "./ReviewActionsBar";
 import type { ExperienceFormDraft } from "@/types/tripper";
@@ -27,6 +36,8 @@ interface NewExperienceShellProps {
   adminReviewSlot?: ReactNode;
   /** Renders approve/reject actions in the form action area without adding the Admin tab. */
   reviewActionsSlot?: ReactNode;
+  /** Left side of the sticky review bar when there are no changed fields to show (e.g. tripper's note to admin). */
+  reviewLeftSlot?: ReactNode;
   dict: TripperExperiencesDict["form"];
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
@@ -61,6 +72,7 @@ const EMPTY_DRAFT: ExperienceFormDraft = {
   maxNights: 2,
   pricingByType: null,
   reviewNote: null,
+  tripperNote: null,
   estimatedCost: "",
   season: [],
   transport: "any",
@@ -106,6 +118,7 @@ const ADMIN_TAB: { id: string; label: string; substeps: { description: string; i
 export function NewExperienceShell({
   adminReviewSlot,
   reviewActionsSlot,
+  reviewLeftSlot,
   dict,
   locale,
   userBadgeLabels,
@@ -163,6 +176,8 @@ export function NewExperienceShell({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [submitError, setSubmitError] = useState<string[] | null>(null);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [submitNote, setSubmitNote] = useState("");
 
   // Derived read-only flag — controlled by mode, not status.
   // 'tripper': editable except when status is PENDING_REVIEW.
@@ -350,7 +365,17 @@ export function NewExperienceShell({
     const firstSubstep =
       effectiveTabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
-    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Deferred like handleSectionChange — scrolling synchronously targets the
+    // pre-accordion-animation layout, then the section's expand/collapse
+    // transition shifts the page under the user right after landing.
+    setTimeout(() => {
+      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
+  }
+
+  function handleBackToStart() {
+    const firstTab = effectiveTabs[0];
+    if (firstTab) handleTabChange(firstTab.id);
   }
 
   function handleStepClick(tabId: string, substepId?: string) {
@@ -360,7 +385,9 @@ export function NewExperienceShell({
     setOpenSectionId(
       substepId ?? effectiveTabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "",
     );
-    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => {
+      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
   }
 
   function handleSectionChange(sectionId: string) {
@@ -376,16 +403,29 @@ export function NewExperienceShell({
     if (nextTab) handleTabChange(nextTab.id);
   }
 
+  function handlePreviousStep() {
+    const currentIndex = effectiveTabs.findIndex((t) => t.id === activeTab);
+    const prevTab = effectiveTabs[currentIndex - 1];
+    if (prevTab) handleTabChange(prevTab.id);
+  }
+
   function handleClearAll() {
     setForm(EMPTY_DRAFT);
   }
 
-  async function handleSubmit() {
-    if (isSubmitting || isReadOnly) return;
+  function handleRequestSubmit() {
+    if (isSubmitting || isReadOnly || mode !== "tripper") return;
+    setSubmitNote(form.tripperNote ?? "");
+    setShowSubmitConfirm(true);
+  }
+
+  async function confirmSubmit() {
+    setShowSubmitConfirm(false);
     setIsSubmitting(true);
     setSubmitError(null);
+    setForm((prev) => ({ ...prev, tripperNote: submitNote }));
     try {
-      const finalForm = await flushPendingBlobs(form);
+      const finalForm = await flushPendingBlobs({ ...form, tripperNote: submitNote });
 
       // Ensure the draft is persisted first (create if new, update if existing)
       if (!draftIdRef.current) {
@@ -419,6 +459,7 @@ export function NewExperienceShell({
         const body = (await submitRes.json()) as { error?: string; missing?: string[] };
         if (submitRes.status === 422 && body.missing) {
           setSubmitError(body.missing);
+          setIsSubmitting(false);
           return;
         }
         throw new Error(body.error ?? "Submit failed");
@@ -446,10 +487,12 @@ export function NewExperienceShell({
         }
       }
 
+      // Stay in the loading state through navigation — router.push doesn't
+      // synchronously unmount this component, so resetting isSubmitting here
+      // would flash the button back to its idle label for a moment first.
       router.push(`/${locale}/dashboard/tripper/experiences`);
     } catch (err) {
       console.error(err);
-    } finally {
       setIsSubmitting(false);
     }
   }
@@ -524,9 +567,15 @@ export function NewExperienceShell({
     [effectiveTabs, form, visitedTabIds],
   );
 
-  // Rejection banner: shown when DRAFT + reviewNote exists + not dismissed
-  const showRejectionBanner =
-    form.status === "DRAFT" && !!form.reviewNote && !bannerDismissed;
+  // Review-note banner: rejection note (DRAFT) or approval note (ACTIVE), shown until dismissed.
+  // Tripper's own view only — reviewActionsSlot contexts (admin review, review-copy) already
+  // surface the note in the sticky bar's leftSlot, so this would just duplicate it.
+  const showReviewNoteBanner =
+    mode === "tripper" &&
+    !!form.reviewNote &&
+    !bannerDismissed &&
+    (form.status === "DRAFT" || form.status === "ACTIVE");
+  const isRejectionNote = form.status === "DRAFT";
 
   return (
     <div className="bg-gray-50">
@@ -545,23 +594,49 @@ export function NewExperienceShell({
           changedFields={changedFields ?? []}
           changedFieldsLabel={dict.changedFieldsBanner.prefix}
           actionsSlot={reviewActionsSlot}
+          leftSlot={reviewLeftSlot}
         />
       )}
 
       <div className="rt-container py-4 sm:py-8 scroll-mt-20" ref={contentRef}>
-        {/* Rejection feedback banner */}
-        {showRejectionBanner && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
-            <div className="flex-1 text-sm text-amber-800">
-              <p className="font-medium mb-1">Changes requested</p>
+        {/* Rejection / approval note banner */}
+        {showReviewNoteBanner && (
+          <div
+            className={cn(
+              "mb-6 flex items-start gap-3 rounded-xl border px-4 py-3",
+              isRejectionNote
+                ? "border-amber-200 bg-amber-50"
+                : "border-green-200 bg-green-50",
+            )}
+          >
+            {isRejectionNote ? (
+              <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-green-500" />
+            )}
+            <div
+              className={cn(
+                "flex-1 text-sm",
+                isRejectionNote ? "text-amber-800" : "text-green-800",
+              )}
+            >
+              <p className="font-medium mb-1">
+                {isRejectionNote
+                  ? dict.review.rejectedTitle
+                  : dict.review.approvedNoteTitle}
+              </p>
               <p>{form.reviewNote}</p>
             </div>
             <button
               type="button"
-              className="ml-auto shrink-0 text-amber-500 hover:text-amber-700"
+              className={cn(
+                "ml-auto shrink-0",
+                isRejectionNote
+                  ? "text-amber-500 hover:text-amber-700"
+                  : "text-green-500 hover:text-green-700",
+              )}
               onClick={() => setBannerDismissed(true)}
-              aria-label="Dismiss"
+              aria-label={dict.review.rejectedDismiss}
             >
               <X className="h-4 w-4" />
             </button>
@@ -597,7 +672,8 @@ export function NewExperienceShell({
               activeTab={activeTab}
               adminReviewSlot={adminReviewSlot}
               reviewActionsSlot={reviewActionsSlot}
-              backHref={initialDraftId ? `/${locale}/dashboard/tripper/experiences` : undefined}
+              onBack={handleBackToStart}
+              onPreviousStep={handlePreviousStep}
               copy={dict}
               form={form}
               imageState={imageState}
@@ -607,7 +683,7 @@ export function NewExperienceShell({
               onChange={handleChange}
               onClearAll={handleClearAll}
               onNext={handleNext}
-              onSubmit={handleSubmit}
+              onSubmit={handleRequestSubmit}
               openSectionId={openSectionId}
               onSectionChange={handleSectionChange}
               tabs={effectiveTabs}
@@ -617,6 +693,52 @@ export function NewExperienceShell({
           </div>
         </div>
       </div>
+
+      <Modal
+        open={showSubmitConfirm}
+        onOpenChange={setShowSubmitConfirm}
+        showCloseButton
+        className="max-w-md"
+      >
+        <DialogHeader>
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-light-blue/10">
+            <Check className="h-5 w-5 text-light-blue" />
+          </div>
+          <DialogTitle className="text-2xl font-bold text-gray-900">
+            {dict.submitConfirmTitle}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-neutral-500">
+            {dict.submitConfirmBody}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="mt-2 flex flex-col gap-1.5">
+          <label htmlFor="submit-note" className="text-sm font-medium text-gray-700">
+            {dict.tripperNoteLabel}{" "}
+            <span className="font-normal text-gray-400">{dict.tripperNoteOptional}</span>
+          </label>
+          <textarea
+            id="submit-note"
+            rows={3}
+            value={submitNote}
+            onChange={(e) => setSubmitNote(e.target.value)}
+            placeholder={dict.tripperNotePlaceholder}
+            disabled={isSubmitting}
+            className="flex w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none disabled:opacity-50"
+          />
+        </div>
+        <DialogFooter className="mt-6">
+          <Button
+            variant="secondary"
+            onClick={() => setShowSubmitConfirm(false)}
+            disabled={isSubmitting}
+          >
+            {dict.cancel}
+          </Button>
+          <Button onClick={() => void confirmSubmit()} disabled={isSubmitting}>
+            {isSubmitting ? dict.saving : dict.actionBar.submitForReview}
+          </Button>
+        </DialogFooter>
+      </Modal>
     </div>
   );
 }
