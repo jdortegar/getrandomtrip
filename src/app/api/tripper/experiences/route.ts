@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
         departPref: body.departPref,
         arrivePref: body.arrivePref,
         season: Array.isArray(body.season) ? body.season : [],
+        tripperNote: body.tripperNote || null,
       },
       select: { id: true },
     });

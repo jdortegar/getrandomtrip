@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
         maxNights: true,
         pricingByType: true,
         reviewNote: true,
+        tripperNote: true,
         updatedAt: true,
       },
     });

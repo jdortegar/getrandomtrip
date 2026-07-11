@@ -521,8 +521,15 @@ export interface TripperExperiencesDict {
     saved: string;
     errorSave: string;
     requiredFieldsLabel: string;
+    tripperNoteLabel: string;
+    tripperNoteOptional: string;
+    tripperNotePlaceholder: string;
+    tripperNoteHint: string;
+    submitConfirmTitle: string;
+    submitConfirmBody: string;
     actionBar: {
       back: string;
+      previousStep: string;
       clearAll: string;
       next: string;
       saveDraft: string;
@@ -533,6 +540,7 @@ export interface TripperExperiencesDict {
       pendingTitle: string;
       pendingBody: string;
       rejectedTitle: string;
+      approvedNoteTitle: string;
       rejectedDismiss: string;
       submitError: string;
     };
@@ -1381,6 +1389,9 @@ export interface MarketingDictionary {
     cancel: string;
     noteLabel: string;
     notePlaceholder: string;
+    noteOptional: string;
+    noteRequired: string;
+    tripperNoteLabel: string;
     notifTitle: string;
     notifBody: string;
     priceSection: string;
@@ -1389,6 +1400,14 @@ export interface MarketingDictionary {
     discardChanges: string;
     lockedBannerTitle: string;
     lockedBannerBody: string;
+    approveConfirmTitle: string;
+    approveConfirmBody: string;
+    approveNotePlaceholder: string;
+    rejectConfirmTitle: string;
+    rejectConfirmBody: string;
+    sendConfirmTitle: string;
+    sendConfirmBody: string;
+    sendNotePlaceholder: string;
     errorApprove: string;
     errorReject: string;
     errorStartEdit: string;

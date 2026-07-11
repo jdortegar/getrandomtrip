@@ -200,6 +200,8 @@ model Experience {
   pricingByType Json?
   // Editorial feedback from admin rejection; cleared on approval
   reviewNote   String? @db.Text
+  // Tripper's note to the admin at submission time (opposite direction of reviewNote)
+  tripperNote  String? @db.Text
 
   // Review copy fields (lazy copy mechanism for admin edit flow)
   isReviewCopy   Boolean  @default(false)

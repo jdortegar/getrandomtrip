@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, MessageSquare, X } from "lucide-react";
 import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
 import { Button } from "@/components/ui/Button";
 import esCopy from "@/dictionaries/es.json";
@@ -86,7 +86,7 @@ export function TripperReviewCopyClient({
       <div className="flex items-center gap-3">
         <Button
           size="sm"
-          variant="outline"
+          variant="secondary"
           onClick={() => void handleReject()}
           disabled={saving}
           className="gap-2 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
@@ -115,6 +115,16 @@ export function TripperReviewCopyClient({
     </div>
   );
 
+  const reviewLeftSlot = copyDraft.reviewNote ? (
+    <div className="flex items-start gap-2 text-sm text-amber-900">
+      <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+      <p className="truncate sm:whitespace-normal">
+        <span className="font-semibold">{dict.review.approvedNoteTitle}:</span>{" "}
+        {copyDraft.reviewNote}
+      </p>
+    </div>
+  ) : undefined;
+
   return (
     <NewExperienceShell
       dict={dict}
@@ -126,6 +136,7 @@ export function TripperReviewCopyClient({
       changedFields={changedFields}
       originalDraft={originalDraft}
       reviewActionsSlot={reviewActions}
+      reviewLeftSlot={reviewLeftSlot}
     />
   );
 }
