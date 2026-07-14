@@ -22,6 +22,7 @@ export interface BlogPost {
       }
     | { type: "quote"; text: string; cite?: string }
     | { type: "faq"; items: { question: string; answer: string }[] }
+    | { type: "section"; title: string; description: string }
   >;
   faq?: { items: { question: string; answer: string }[] } | null;
   tags: string[];
@@ -36,3 +37,27 @@ export interface BlogPost {
   updatedAt: string;
   publishedAt?: string;
 }
+
+/**
+ * Draft shape for the tabs + accordion "new blog post" shell
+ * (`NewBlogPostShell`). This is the flat, form-friendly representation
+ * edited in the UI — distinct from `BlogPost` (the API/DB shape).
+ * `buildBlogSubmitPayload` (src/lib/helpers/blog-form.ts) converts it into
+ * the POST/PATCH `/api/tripper/blogs` payload.
+ */
+export interface BlogFormDraft {
+  status: BlogStatus;
+  title: string;
+  subtitle: string;
+  coverUrl: string;
+  featureText: string;
+  featureAttribution: string;
+  sections: { title: string; description: string }[];
+  faq: { question: string; answer: string }[];
+  gallery: string[];
+}
+
+export type BlogFormDraftOnChange = <K extends keyof BlogFormDraft>(
+  key: K,
+  value: BlogFormDraft[K],
+) => void;

@@ -30,37 +30,15 @@ export interface LegalDocumentDict {
   sections: LegalDocumentSection[];
 }
 
+/**
+ * Only the loading/not-found states survive here — the rest of the old
+ * composer copy (body, cover, gallery, tags, publish/save labels, …) was
+ * retired along with `BlogComposer`/`BlogComposerSidebar`/`BlogRichTextEditor`
+ * when the create/edit flows moved to `NewBlogPostShell`
+ * (see `TripperBlogFormDict`). `editLoading`/`editNotFound` are still used by
+ * `blog/[id]/page.tsx` (fetch loading/error UI) and `TripperBlogPreviewClient`.
+ */
 export interface TripperBlogComposerDict {
-  addTagAria: string;
-  audienceUnsetLabel: string;
-  bodyLabel: string;
-  bodyPlaceholder: string;
-  breadcrumbCreate: string;
-  breadcrumbEdit: string;
-  createHero: {
-    description: string;
-    title: string;
-  };
-  cover: {
-    hint: string;
-    previewAlt: string;
-    remove: string;
-    title: string;
-    upload: string;
-    uploading: string;
-  };
-  gallery: {
-    captionPlaceholder: string;
-    hint: string;
-    removeAria: string;
-    title: string;
-    upload: string;
-    uploading: string;
-  };
-  editHero: {
-    descriptionFallback: string;
-    titleFallback: string;
-  };
   editLoading: {
     description: string;
     title: string;
@@ -70,39 +48,73 @@ export interface TripperBlogComposerDict {
     descriptionFallback: string;
     title: string;
   };
-  excuseKeyLabel: string;
-  formatArticle: string;
-  formatLabel: string;
-  formatMixed: string;
-  formatPhoto: string;
-  formatVideo: string;
-  preview: string;
-  publish: string;
-  publishing: string;
-  save: string;
+}
+
+export interface TripperBlogFormDict {
+  nav: {
+    progress: string;
+  };
   saving: string;
-  settingsTitle: string;
-  statusDraft: string;
-  statusLabel: string;
-  statusPublished: string;
-  subtitlePlaceholder: string;
-  tagPlaceholder: string;
-  tagsLabel: string;
-  titlePlaceholder: string;
+  saved: string;
+  errorSave: string;
+  requiredFieldsLabel: string;
+  actionBar: {
+    back: string;
+    clearAll: string;
+    next: string;
+    finish: string;
+  };
+  contentTabs: Array<{
+    id: string;
+    label: string;
+    substeps: Array<{
+      description: string;
+      id: string;
+      title: string;
+    }>;
+  }>;
+  fields: {
+    title: string;
+    titlePlaceholder: string;
+    subtitle: string;
+    subtitlePlaceholder: string;
+    coverImage: string;
+    coverImageHint: string;
+    uploadImage: string;
+    uploading: string;
+    removeImage: string;
+    statusLabel: string;
+    statusDraft: string;
+    statusPublished: string;
+    featureText: string;
+    featureTextPlaceholder: string;
+    featureAttribution: string;
+    featureAttributionPlaceholder: string;
+    sectionTitle: string;
+    sectionTitlePlaceholder: string;
+    sectionDescription: string;
+    sectionDescriptionPlaceholder: string;
+    sectionLabel: string;
+    addSection: string;
+    removeSection: string;
+    faqQuestion: string;
+    faqQuestionPlaceholder: string;
+    faqAnswer: string;
+    faqAnswerPlaceholder: string;
+    faqLabel: string;
+    addFaq: string;
+    removeFaq: string;
+    galleryHint: string;
+    addImage: string;
+    removeImageAria: string;
+    imageTooLarge: string;
+  };
   toasts: {
-    genericPublishError: string;
-    genericSaveError: string;
-    publishError: string;
-    publishSuccess: string;
-    saveError: string;
-    saveSuccessCreate: string;
-    saveSuccessEdit: string;
     titleRequired: string;
     uploadError: string;
     fileTooLarge: string;
+    saveError: string;
   };
-  travelTypeLabel: string;
-  unsaved: string;
 }
 
 export interface TripperBlogsDict {
@@ -122,6 +134,7 @@ export interface TripperBlogsDict {
     count: string;
     of: string;
   };
+  form: TripperBlogFormDict;
   format: {
     article: string;
     mixed: string;
