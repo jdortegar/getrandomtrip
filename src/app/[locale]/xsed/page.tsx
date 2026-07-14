@@ -6,11 +6,11 @@ import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { MultiColumnIconText } from "@/components/app/xsed/MultiColumnIconText";
 import Testimonials from "@/components/Testimonials/Testimonials";
-import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import { DropGrid } from "@/components/app/xsed/DropGrid";
 import { getCurrentXsedDrop, getXsedDropsForGrid } from "@/lib/data/xsed";
+import { getAllXsedTestimonials } from "@/lib/xsed/get-xsed-drop-testimonials";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -44,6 +44,7 @@ export default async function XsedPage(props: LocaleParams) {
     normalizedLocale,
   );
   const gridDrops = allGridDrops.slice(0, 5);
+  const xsedTestimonials = await getAllXsedTestimonials();
 
   return (
     <>
@@ -74,7 +75,7 @@ export default async function XsedPage(props: LocaleParams) {
         eyebrow={dict.xsedPage.testimonials.eyebrow}
         viewFullReviewLabel={dict.xsedPage.testimonials.viewFullReviewLabel}
         featureColor="#D97E4A"
-        testimonials={XSED_TESTIMONIALS}
+        testimonials={xsedTestimonials}
       />
     </>
   );

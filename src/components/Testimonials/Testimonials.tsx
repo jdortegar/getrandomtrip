@@ -26,6 +26,11 @@ export default function Testimonials({
   featureColor,
 }: TestimonialsProps) {
   const dict = useDictionary((d) => d.xsedPage.testimonials);
+
+  // No real, DB-backed reviews to show — hide the whole section instead of
+  // rendering an empty heading or falling back to placeholder content.
+  if (!testimonials || testimonials.length === 0) return null;
+
   const resolvedTitle = title ?? dict.title;
   const resolvedSubtitle = subtitle ?? dict.subtitle;
   const resolvedEyebrow = eyebrow ?? dict.eyebrow;
