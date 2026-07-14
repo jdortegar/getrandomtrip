@@ -11,6 +11,7 @@ import {
   getAllTravelerTypePaths,
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
+import { getReviewsForTripType } from "@/lib/db/tripper-queries";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
@@ -64,6 +65,7 @@ export default async function TravelerTypePage(props: {
 
   const dict = await getDictionary(locale);
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
+  const testimonials = await getReviewsForTripType(typeData.meta.slug);
   const blogHref = pathForLocale(locale, "/blog");
   const viewAll = typeData.blog.viewAll
     ? {
@@ -105,10 +107,7 @@ export default async function TravelerTypePage(props: {
         labelText={inspirationBanner.labelText}
         title={inspirationBanner.title}
       />
-      <Testimonials
-        testimonials={typeData.testimonials.items}
-        title={typeData.testimonials.title}
-      />
+      <Testimonials testimonials={testimonials} title={typeData.testimonials.title} />
     </main>
   );
 }

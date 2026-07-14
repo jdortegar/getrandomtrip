@@ -6,10 +6,11 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
-import BlogComposer from "@/components/tripper/blog/BlogComposer";
+import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlogPostShell";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/blog";
+import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
 import { ArrowLeft } from "lucide-react";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -19,6 +20,7 @@ function EditBlogContent() {
   const params = useParams();
   const locale = useLocale();
   const blogsCopy = useDictionary((d) => d.tripperBlogs);
+  const userBadgeLabels = useDictionary((d) => d.journey.userBadge);
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<Partial<BlogPost> | null>(null);
@@ -105,16 +107,14 @@ function EditBlogContent() {
   }
 
   return (
-    <Section>
-      <div className="mx-auto max-w-full">
-        <BlogComposer
-          copy={blogsCopy.composer}
-          key={post.id}
-          mode="edit"
-          post={post}
-        />
-      </div>
-    </Section>
+    <NewBlogPostShell
+      dict={blogsCopy.form}
+      initialDraft={mapBlogPostToDraft(post)}
+      initialDraftId={post.id}
+      key={post.id}
+      locale={locale}
+      userBadgeLabels={userBadgeLabels}
+    />
   );
 }
 

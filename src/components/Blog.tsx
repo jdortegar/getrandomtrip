@@ -5,9 +5,13 @@ import BlogViewAllCard from "@/components/BlogViewAllCard";
 import Section from "@/components/layout/Section";
 import type { BlogPost, BlogViewAll } from "@/lib/data/shared/blog-types";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import EmblaCarousel from "./EmblaCarousel/EmblaCarousel";
 
 interface BlogProps {
+  className?: string;
+  /** Overrides the left column's background — defaults to white so the carousel never bleeds through. */
+  paneClassName?: string;
   eyebrow?: string;
   subtitle?: string;
   title: string;
@@ -17,6 +21,8 @@ interface BlogProps {
 }
 
 export default function Blog({
+  className,
+  paneClassName = "bg-white",
   eyebrow,
   subtitle,
   title,
@@ -25,10 +31,15 @@ export default function Blog({
   viewAll,
 }: BlogProps) {
   return (
-    <Section id={id} fullWidth className="pt-24!">
+    <Section id={id} fullWidth className={cn("pt-24!", className)}>
       <div className="relative flex flex-col gap-12 lg:flex-row lg:rt-container">
-        {/* Left Column - Full-height white panel so carousel never bleeds through */}
-        <aside className="relative flex w-full flex-col items-center justify-center bg-white py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left rt-container lg:p-0!">
+        {/* Left Column */}
+        <aside
+          className={cn(
+            "relative flex w-full flex-col items-center justify-center py-12 lg:w-1/3 lg:items-start lg:justify-center lg:text-left rt-container lg:p-0!",
+            paneClassName,
+          )}
+        >
           {eyebrow && (
             <motion.div
               className="text-base font-bold uppercase tracking-[6px] text-light-blue md:text-lg md:tracking-[9px]"

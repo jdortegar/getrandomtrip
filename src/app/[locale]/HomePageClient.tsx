@@ -7,7 +7,6 @@ import Blog from "@/components/Blog";
 import { ExplorationSection } from "@/components/landing/exploration";
 import Testimonials from "@/components/Testimonials/Testimonials";
 import { BLOG_CONSTANTS } from "@/lib/data/constants/blog";
-import { HOME_TESTIMONIALS } from "@/lib/data/home-testimonials";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import type { TripperListItem } from "@/types/tripper";
@@ -42,7 +41,7 @@ export function HomePageClient({ trippers, testimonials }: HomePageClientProps) 
         subtitle={home.testimonials.subtitle}
         title={home.testimonials.title}
         viewFullReviewLabel={home.testimonials.viewFullReviewLabel}
-        testimonials={testimonials?.length ? testimonials : HOME_TESTIMONIALS.items}
+        testimonials={testimonials ?? []}
       />
     </main>
   );

@@ -68,7 +68,7 @@ export default function BlogPostHero({
       <div className="absolute inset-0 bg-black/50" />
 
       {/* Content – left-aligned, bottom-weighted */}
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-6 pb-12 pt-16 text-left text-white md:px-10">
+      <div className="relative z-10 rt-container pb-12 pt-16 text-left text-white">
         <p
           className="mb-2 font-bold text-sm uppercase tracking-[0.4em] md:text-base"
           style={{ color: BLOG_EYEBROW_COLOR }}

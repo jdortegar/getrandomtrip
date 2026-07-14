@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         id: true,
         userId: true,
         tripperId: true,
+        type: true,
         reviewSubmittedAt: true,
         actualDestination: true,
         experience: {
@@ -109,6 +110,7 @@ export async function POST(request: Request) {
           userId: tripRequest.userId,
           tripperId: effectiveTripperId ?? null,
           tripRequestId: tripRequest.id,
+          tripType: tripRequest.type,
           rating,
           title: title ?? undefined,
           content,

@@ -3085,36 +3085,6 @@
   },
   "tripperBlogs": {
     "composer": {
-      "addTagAria": "Add tag",
-      "audienceUnsetLabel": "Not specified",
-      "bodyLabel": "Body",
-      "bodyPlaceholder": "Write your article body…",
-      "breadcrumbCreate": "Tripper OS / Create post",
-      "breadcrumbEdit": "Tripper OS / Edit post",
-      "createHero": {
-        "title": "Create new post",
-        "description": "Share your travel stories and tips"
-      },
-      "cover": {
-        "hint": "JPG, PNG, or WebP. Shown as the main image for the post.",
-        "previewAlt": "Cover image preview",
-        "remove": "Remove image",
-        "title": "Cover image",
-        "upload": "Upload image",
-        "uploading": "Uploading…"
-      },
-      "gallery": {
-        "captionPlaceholder": "Add a caption…",
-        "hint": "Add photos for your post's carousel.",
-        "removeAria": "Remove image",
-        "title": "Photo gallery",
-        "upload": "Upload photos",
-        "uploading": "Uploading…"
-      },
-      "editHero": {
-        "descriptionFallback": "Edit your story",
-        "titleFallback": "Edit post"
-      },
       "editLoading": {
         "description": "Fetching post details…",
         "title": "Loading post"
@@ -3123,40 +3093,115 @@
         "backToList": "Back to my posts",
         "descriptionFallback": "This post is unavailable or you do not have access.",
         "title": "Post not found"
+      }
+    },
+    "form": {
+      "nav": {
+        "progress": "Progress"
       },
-      "excuseKeyLabel": "Travel excuse",
-      "formatArticle": "Article",
-      "formatLabel": "Format",
-      "formatMixed": "Mixed",
-      "formatPhoto": "Photo",
-      "formatVideo": "Video",
-      "preview": "Preview",
-      "publish": "Publish",
-      "publishing": "Publishing…",
-      "save": "Save draft",
       "saving": "Saving…",
-      "settingsTitle": "Post settings",
-      "statusDraft": "Draft",
-      "statusLabel": "Status",
-      "statusPublished": "Published",
-      "subtitlePlaceholder": "Subtitle (optional)",
-      "tagPlaceholder": "Add a tag",
-      "tagsLabel": "Tags",
-      "titlePlaceholder": "Post title",
+      "saved": "Saved",
+      "errorSave": "Error saving",
+      "requiredFieldsLabel": "Required fields",
+      "actionBar": {
+        "back": "Back",
+        "clearAll": "Clear all",
+        "next": "Next",
+        "finish": "Finish"
+      },
+      "contentTabs": [
+        {
+          "id": "general",
+          "label": "General",
+          "substeps": [
+            {
+              "id": "title-image",
+              "title": "Title & Image",
+              "description": "The title and cover image are the first thing your readers see."
+            },
+            {
+              "id": "feature-quote",
+              "title": "Feature quote",
+              "description": "A phrase or quote that captures the spirit of the post."
+            }
+          ]
+        },
+        {
+          "id": "content",
+          "label": "Content",
+          "substeps": [
+            {
+              "id": "sections",
+              "title": "Sections",
+              "description": "Organize the body of the post into sections with a title and description."
+            }
+          ]
+        },
+        {
+          "id": "faq",
+          "label": "FAQ",
+          "substeps": [
+            {
+              "id": "faq",
+              "title": "Frequently asked questions",
+              "description": "Answer your readers' most common questions."
+            }
+          ]
+        },
+        {
+          "id": "gallery",
+          "label": "Gallery",
+          "substeps": [
+            {
+              "id": "gallery",
+              "title": "Images",
+              "description": "Add photos for your post's carousel."
+            }
+          ]
+        }
+      ],
+      "fields": {
+        "title": "Title",
+        "titlePlaceholder": "Post title",
+        "subtitle": "Subtitle",
+        "subtitlePlaceholder": "Subtitle (optional)",
+        "coverImage": "Cover image",
+        "coverImageHint": "JPG, PNG or WebP. Shown as the post's main image.",
+        "uploadImage": "Upload image",
+        "uploading": "Uploading…",
+        "removeImage": "Remove image",
+        "statusLabel": "Status",
+        "statusDraft": "Draft",
+        "statusPublished": "Published",
+        "featureText": "Feature quote",
+        "featureTextPlaceholder": "A phrase that captures your experience…",
+        "featureAttribution": "Attribution",
+        "featureAttributionPlaceholder": "Who said it? (optional)",
+        "sectionTitle": "Section title",
+        "sectionTitlePlaceholder": "Title",
+        "sectionDescription": "Description",
+        "sectionDescriptionPlaceholder": "Tell this part of the story…",
+        "sectionLabel": "Section",
+        "addSection": "Add section",
+        "removeSection": "Remove section",
+        "faqQuestion": "Question",
+        "faqQuestionPlaceholder": "What do you want to answer?",
+        "faqAnswer": "Answer",
+        "faqAnswerPlaceholder": "Write the answer…",
+        "faqLabel": "Question",
+        "addFaq": "Add question",
+        "removeFaq": "Remove question",
+        "galleryHint": "Add photos for your post's carousel.",
+        "addImage": "Upload photos",
+        "removeImageAria": "Remove image",
+        "imageTooLarge": "Image must be under 10 MB."
+      },
       "toasts": {
-        "genericPublishError": "Could not publish the post",
-        "genericSaveError": "Could not save the post",
-        "publishError": "Publish failed",
-        "publishSuccess": "Post published",
-        "saveError": "Save failed",
-        "saveSuccessCreate": "Draft saved",
-        "saveSuccessEdit": "Post updated",
         "titleRequired": "Title is required",
         "uploadError": "Image upload failed",
-        "fileTooLarge": "Image must be under 10 MB."
-      },
-      "travelTypeLabel": "Traveler type",
-      "unsaved": "Unsaved changes"
+        "fileTooLarge": "Image must be under 10 MB.",
+        "saveError": "Could not save"
+      }
     },
     "title": "MY POSTS",
     "eyebrow": "Your content",

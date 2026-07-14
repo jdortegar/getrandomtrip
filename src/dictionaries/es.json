@@ -3085,36 +3085,6 @@
   },
   "tripperBlogs": {
     "composer": {
-      "addTagAria": "Añadir etiqueta",
-      "audienceUnsetLabel": "Sin especificar",
-      "bodyLabel": "Contenido",
-      "bodyPlaceholder": "Escribe el cuerpo del artículo…",
-      "breadcrumbCreate": "Tripper OS / Crear post",
-      "breadcrumbEdit": "Tripper OS / Editar post",
-      "createHero": {
-        "title": "Crear nuevo post",
-        "description": "Comparte tus experiencias y consejos de viaje"
-      },
-      "cover": {
-        "hint": "JPG, PNG o WebP. Se muestra como imagen principal del post.",
-        "previewAlt": "Vista previa de la imagen de portada",
-        "remove": "Quitar imagen",
-        "title": "Imagen de portada",
-        "upload": "Subir imagen",
-        "uploading": "Subiendo…"
-      },
-      "gallery": {
-        "captionPlaceholder": "Añadir descripción…",
-        "hint": "Añade fotos para el carrusel de tu publicación.",
-        "removeAria": "Eliminar imagen",
-        "title": "Galería de fotos",
-        "upload": "Subir fotos",
-        "uploading": "Subiendo…"
-      },
-      "editHero": {
-        "descriptionFallback": "Modifica tu contenido",
-        "titleFallback": "Editar post"
-      },
       "editLoading": {
         "description": "Obteniendo información del post…",
         "title": "Cargando post"
@@ -3123,40 +3093,115 @@
         "backToList": "Volver a mis posts",
         "descriptionFallback": "El post no está disponible o no tienes permiso para verlo.",
         "title": "Post no encontrado"
+      }
+    },
+    "form": {
+      "nav": {
+        "progress": "Progreso"
       },
-      "excuseKeyLabel": "Excusa del viaje",
-      "formatArticle": "Artículo",
-      "formatLabel": "Formato",
-      "formatMixed": "Mixto",
-      "formatPhoto": "Foto",
-      "formatVideo": "Video",
-      "preview": "Previsualizar",
-      "publish": "Publicar",
-      "publishing": "Publicando…",
-      "save": "Guardar borrador",
       "saving": "Guardando…",
-      "settingsTitle": "Ajustes del post",
-      "statusDraft": "Borrador",
-      "statusLabel": "Estado",
-      "statusPublished": "Publicado",
-      "subtitlePlaceholder": "Subtítulo (opcional)",
-      "tagPlaceholder": "Añadir etiqueta",
-      "tagsLabel": "Etiquetas",
-      "titlePlaceholder": "Título del post",
+      "saved": "Guardado",
+      "errorSave": "Error al guardar",
+      "requiredFieldsLabel": "Campos requeridos",
+      "actionBar": {
+        "back": "Volver",
+        "clearAll": "Borrar todo",
+        "next": "Siguiente",
+        "finish": "Terminar"
+      },
+      "contentTabs": [
+        {
+          "id": "general",
+          "label": "General",
+          "substeps": [
+            {
+              "id": "title-image",
+              "title": "Título & Imagen",
+              "description": "El título y la imagen de portada son lo primero que ven tus lectores."
+            },
+            {
+              "id": "feature-quote",
+              "title": "Texto destacado",
+              "description": "Una frase o cita que resuma el espíritu del post."
+            }
+          ]
+        },
+        {
+          "id": "content",
+          "label": "Contenido",
+          "substeps": [
+            {
+              "id": "sections",
+              "title": "Secciones",
+              "description": "Organizá el cuerpo del post en secciones con título y descripción."
+            }
+          ]
+        },
+        {
+          "id": "faq",
+          "label": "Preguntas",
+          "substeps": [
+            {
+              "id": "faq",
+              "title": "Preguntas frecuentes",
+              "description": "Respondé las dudas más comunes de tus lectores."
+            }
+          ]
+        },
+        {
+          "id": "gallery",
+          "label": "Galería",
+          "substeps": [
+            {
+              "id": "gallery",
+              "title": "Imágenes",
+              "description": "Sumá fotos para el carrusel de tu publicación."
+            }
+          ]
+        }
+      ],
+      "fields": {
+        "title": "Título",
+        "titlePlaceholder": "Título del post",
+        "subtitle": "Subtítulo",
+        "subtitlePlaceholder": "Subtítulo (opcional)",
+        "coverImage": "Imagen de portada",
+        "coverImageHint": "JPG, PNG o WebP. Se muestra como imagen principal del post.",
+        "uploadImage": "Subir imagen",
+        "uploading": "Subiendo…",
+        "removeImage": "Quitar imagen",
+        "statusLabel": "Estado",
+        "statusDraft": "Borrador",
+        "statusPublished": "Publicado",
+        "featureText": "Texto destacado",
+        "featureTextPlaceholder": "Una frase que resuma tu experiencia…",
+        "featureAttribution": "Atribución",
+        "featureAttributionPlaceholder": "¿Quién lo dijo? (opcional)",
+        "sectionTitle": "Título de la sección",
+        "sectionTitlePlaceholder": "Título",
+        "sectionDescription": "Descripción",
+        "sectionDescriptionPlaceholder": "Contá esta parte de la historia…",
+        "sectionLabel": "Sección",
+        "addSection": "Añadir sección",
+        "removeSection": "Quitar sección",
+        "faqQuestion": "Pregunta",
+        "faqQuestionPlaceholder": "¿Qué querés responder?",
+        "faqAnswer": "Respuesta",
+        "faqAnswerPlaceholder": "Escribí la respuesta…",
+        "faqLabel": "Pregunta",
+        "addFaq": "Añadir pregunta",
+        "removeFaq": "Quitar pregunta",
+        "galleryHint": "Añadí fotos para el carrusel de tu publicación.",
+        "addImage": "Subir fotos",
+        "removeImageAria": "Eliminar imagen",
+        "imageTooLarge": "La imagen no puede superar 10 MB."
+      },
       "toasts": {
-        "genericPublishError": "Error al publicar el post",
-        "genericSaveError": "Error al guardar el post",
-        "publishError": "No se pudo publicar",
-        "publishSuccess": "Post publicado",
-        "saveError": "No se pudo guardar",
-        "saveSuccessCreate": "Borrador guardado",
-        "saveSuccessEdit": "Post actualizado",
         "titleRequired": "El título es obligatorio",
         "uploadError": "No se pudo subir la imagen",
-        "fileTooLarge": "La imagen no puede superar 10 MB."
-      },
-      "travelTypeLabel": "Tipo de viajero",
-      "unsaved": "Sin guardar"
+        "fileTooLarge": "La imagen no puede superar 10 MB.",
+        "saveError": "No se pudo guardar"
+      }
     },
     "title": "MIS POSTS",
     "eyebrow": "Tu contenido",

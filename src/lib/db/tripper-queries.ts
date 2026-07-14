@@ -13,6 +13,7 @@ import type {
   TripperProfile,
 } from "@/types/tripper";
 import type { TestimonialData } from "@/components/Testimonials/types";
+import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
 
 /**
  * Get tripper profile by slug
@@ -909,6 +910,34 @@ export async function getTripperPublishedBlogs(
   }
 }
 
+/** Approved and public reviews left by travelers of a given trip type ('solo', 'family', etc). */
+export async function getReviewsForTripType(
+  tripType: string,
+): Promise<TestimonialData[]> {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { isApproved: true, isPublic: true, tripType },
+      orderBy: { createdAt: "desc" },
+      take: 9,
+      select: {
+        content: true,
+        destination: true,
+        tripRequest: { select: { originCountry: true } },
+        user: { select: { name: true } },
+      },
+    });
+
+    return reviews.map((r) => ({
+      author: formatReviewerAuthor(r.user.name),
+      country: r.tripRequest?.originCountry ?? "",
+      quote: r.content,
+    }));
+  } catch (error) {
+    console.error("Error fetching trip type testimonials:", error);
+    return [];
+  }
+}
+
 export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
   try {
     const reviews = await prisma.review.findMany({
@@ -924,7 +953,7 @@ export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
     });
 
     return reviews.map((r) => ({
-      author: r.user.name ?? "Viajero",
+      author: formatReviewerAuthor(r.user.name),
       country: r.tripRequest?.originCountry ?? "",
       quote: r.content,
     }));
