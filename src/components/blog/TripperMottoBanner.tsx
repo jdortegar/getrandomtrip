@@ -6,6 +6,8 @@ import Section from "@/components/layout/Section";
 import { cn } from "@/lib/utils";
 
 interface TripperMottoBannerProps {
+  /** Overrides the auto-built "name, specialization" line, e.g. a post's own featureAttribution. */
+  attributionOverride?: string;
   authorName: string;
   authorSlug: string;
   avatarUrl: string;
@@ -16,6 +18,7 @@ interface TripperMottoBannerProps {
 }
 
 export default function TripperMottoBanner({
+  attributionOverride,
   authorName,
   authorSlug,
   avatarUrl,
@@ -24,9 +27,11 @@ export default function TripperMottoBanner({
   motto,
   specialization,
 }: TripperMottoBannerProps) {
-  const attribution = specialization?.trim()
-    ? `${authorName.toUpperCase()}, ${specialization.toUpperCase()}`
-    : authorName.toUpperCase();
+  const attribution = attributionOverride?.trim()
+    ? attributionOverride.toUpperCase()
+    : specialization?.trim()
+      ? `${authorName.toUpperCase()}, ${specialization.toUpperCase()}`
+      : authorName.toUpperCase();
 
   return (
     <Section

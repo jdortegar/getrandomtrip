@@ -1,11 +1,11 @@
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPublicDropEntries, getCurrentXsedDrop } from "@/lib/data/xsed";
-import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 import { AllDropsGrid } from "@/components/app/xsed/AllDropsGrid";
 import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
 import { CountDown } from "@/components/app/xsed/CountDown";
 import Testimonials from "@/components/Testimonials/Testimonials";
+import { getAllXsedTestimonials } from "@/lib/xsed/get-xsed-drop-testimonials";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -23,6 +23,7 @@ export default async function XsedDropsPage(props: LocaleParams) {
     6,
     currentDrop?.id,
   );
+  const xsedTestimonials = await getAllXsedTestimonials();
 
   return (
     <>
@@ -46,7 +47,7 @@ export default async function XsedDropsPage(props: LocaleParams) {
           useForm={true}
         />
       ) : null}
-      <Testimonials featureColor="#D97E4A" testimonials={XSED_TESTIMONIALS} />
+      <Testimonials featureColor="#D97E4A" testimonials={xsedTestimonials} />
     </>
   );
 }

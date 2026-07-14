@@ -30,7 +30,15 @@ interface BlogPost {
   tagline?: string;
   coverUrl: string | null;
   content: string | null;
-  blocks?: Array<{ type: string; url?: string; caption?: string }>;
+  blocks?: Array<{
+    type: string;
+    url?: string;
+    caption?: string;
+    title?: string;
+    description?: string;
+    text?: string;
+    cite?: string;
+  }>;
   faq?: { items?: { question: string; answer: string }[] } | null;
   tags: string[];
   format: string;
@@ -241,6 +249,17 @@ function BlogDetailContent() {
   })();
   const faqItems = faqFromSchema ?? [];
 
+  // `blocks` is the source of truth going forward (see buildBlogSubmitPayload
+  // in src/lib/helpers/blog-form.ts). Posts authored before this migration
+  // have no `section` blocks — their content lives only in the flat
+  // `blog.content` HTML string, so we fall back to rendering that as a
+  // single block when there are no sections to split around the FAQ.
+  const sectionBlocks = (blog.blocks ?? []).filter((b) => b.type === "section");
+  const quoteBlock = (blog.blocks ?? []).find((b) => b.type === "quote");
+  const hasSectionBlocks = sectionBlocks.length > 0;
+  const firstSection = sectionBlocks[0];
+  const remainingSections = sectionBlocks.slice(1);
+
   return (
     <>
       <BlogPostHero
@@ -263,30 +282,58 @@ function BlogDetailContent() {
           ]}
         />
 
-        {/* Main content */}
-        <BlogArticle
-          content={blog.content}
-          emptyMessage="Este post aún no tiene contenido."
-          title={blog.title}
-        />
+        {/* First section, or the legacy flattened content for pre-migration
+            posts. Title is never re-rendered here — BlogPostHero already
+            shows it. The feature quote is not rendered inline — it goes in
+            TripperMottoBanner below instead. */}
+        {hasSectionBlocks ? (
+          <BlogArticle
+            content={firstSection.description ?? null}
+            headingLevel="h2"
+            showTitle={!!firstSection.title}
+            title={firstSection.title ?? ""}
+          />
+        ) : (
+          <BlogArticle
+            content={blog.content}
+            emptyMessage="Este post aún no tiene contenido."
+            showTitle={false}
+            title={blog.title}
+          />
+        )}
 
         <FaqSection items={faqItems} />
-      </Section>
-      <LightboxCarousel images={carouselImages} className="" />
 
-      {blog.author.motto && (
+        {/* Remaining sections, if any, follow the FAQ */}
+        {remainingSections.map((section, index) => (
+          <BlogArticle
+            className="mt-10"
+            content={section.description ?? null}
+            headingLevel="h2"
+            key={index}
+            showTitle={!!section.title}
+            title={section.title ?? ""}
+          />
+        ))}
+      </Section>
+      <LightboxCarousel images={carouselImages} className="bg-gray-50" />
+
+      {(quoteBlock?.text || blog.author.motto) && (
         <TripperMottoBanner
+          attributionOverride={quoteBlock?.cite}
           authorName={blog.author.name}
           authorSlug={blog.author.slug}
           avatarUrl={blog.author.avatarUrl}
           backgroundImageUrl={blog.coverUrl ?? ""}
-          motto={blog.author.motto}
+          motto={quoteBlock?.text || blog.author.motto || ""}
           specialization={blog.author.specialization}
         />
       )}
 
       {authorPosts.length > 0 && (
         <Blog
+          className="bg-gray-50"
+          paneClassName="bg-gray-50"
           eyebrow="EXPLORA"
           id="more-posts"
           posts={authorPosts}

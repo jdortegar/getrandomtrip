@@ -170,6 +170,25 @@ export async function findCompletedXsedTripRequestsForTestimonials(
   });
 }
 
+/**
+ * Completed trip requests with feedback across ALL XSED drops (not one
+ * specific experience) — used for the general /xsed landing pages.
+ */
+export async function findAllCompletedXsedTripRequestsForTestimonials() {
+  return prisma.tripRequest.findMany({
+    where: {
+      status: "COMPLETED",
+      customerFeedback: { not: null },
+      experience: { type: { has: "XSED" } },
+    },
+    orderBy: { completedAt: "desc" },
+    take: 24,
+    include: {
+      user: { select: { name: true, avatarUrl: true } },
+    },
+  });
+}
+
 function parseDropNumber(slug: string | null): number {
   if (!slug) return 0;
   const parsed = Number.parseInt(slug, 10);

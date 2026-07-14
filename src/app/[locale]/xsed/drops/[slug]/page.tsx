@@ -5,7 +5,6 @@ import { XsedDropBody } from "@/components/app/xsed/XsedDropBody";
 import LightboxCarousel from "@/components/media/LightboxCarousel";
 import Breadcrumb from "@/components/navigation/Breadcrumb";
 import Section from "@/components/layout/Section";
-import { XSED_TESTIMONIALS } from "@/lib/data/xsed-testimonials";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import {
@@ -72,9 +71,6 @@ export default async function XsedInternalPage({ params }: Props) {
     backgroundImage: heroImage,
   };
 
-  const testimonials =
-    dropTestimonials.length > 0 ? dropTestimonials : XSED_TESTIMONIALS;
-
   return (
     <>
       <XsedInternalHero content={heroContent} hero={dict.xsedPage.hero} />
@@ -96,7 +92,7 @@ export default async function XsedInternalPage({ params }: Props) {
         eyebrow={dict.xsedPage.testimonials.eyebrow}
         viewFullReviewLabel={dict.xsedPage.testimonials.viewFullReviewLabel}
         featureColor="#D97E4A"
-        testimonials={testimonials}
+        testimonials={dropTestimonials}
       />
     </>
   );

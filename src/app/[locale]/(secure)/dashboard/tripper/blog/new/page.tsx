@@ -1,44 +1,39 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { hasLocale } from "@/lib/i18n/config";
+import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlogPostShell";
 
-import SecureRoute from "@/components/auth/SecureRoute";
-import Section from "@/components/layout/Section";
-import BlogComposer from "@/components/tripper/blog/BlogComposer";
-import type { BlogPost } from "@/types/blog";
-import { useDictionary } from "@/hooks/useDictionary";
+export default async function NewBlogPostPage(props: {
+  params: Promise<{ locale: string }>;
+}) {
+  const params = await props.params;
+  const locale = hasLocale(params.locale) ? params.locale : "es";
+  const session = await getServerSession(authOptions);
 
-function CreateBlogContent() {
-  const blogsCopy = useDictionary((d) => d.tripperBlogs);
+  if (!session?.user?.id) {
+    redirect(`/${locale}/login`);
+  }
 
-  const initialPost: Partial<BlogPost> = {
-    blocks: [],
-    content: "",
-    id: "new",
-    status: "draft",
-    subtitle: "",
-    title: "",
-  };
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, roles: true },
+  });
+
+  if (!user || !hasRoleAccess(user, "tripper")) {
+    redirect(`/${locale}/dashboard`);
+  }
+
+  const dict = await getDictionary(locale);
 
   return (
-    <>
-      <Section>
-        <div className="mx-auto max-w-full">
-          <BlogComposer
-            copy={blogsCopy.composer}
-            mode="create"
-            post={initialPost}
-          />
-        </div>
-      </Section>
-    </>
+    <NewBlogPostShell
+      dict={dict.tripperBlogs.form}
+      locale={locale}
+      userBadgeLabels={dict.journey.userBadge}
+    />
   );
 }
-
-function CreateBlogPage() {
-  return (
-    <SecureRoute requiredRole="tripper">
-      <CreateBlogContent />
-    </SecureRoute>
-  );
-}
-
-export default CreateBlogPage;
