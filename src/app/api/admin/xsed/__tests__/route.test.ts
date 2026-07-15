@@ -64,7 +64,7 @@ describe("POST /api/admin/xsed", () => {
   it("returns 401 when there is no active session", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     const mod = (await import("../route")) as RouteModule;
-    const res = await mod.POST(makePostRequest({ teaser: "A mystery trip" }));
+    const res = await mod.POST(makePostRequest({ titleInternal: "A mystery trip" }));
     expect(res.status).toBe(401);
   });
 
@@ -76,7 +76,7 @@ describe("POST /api/admin/xsed", () => {
       mockClientUser("user-client-1"),
     );
     const mod = (await import("../route")) as RouteModule;
-    const res = await mod.POST(makePostRequest({ teaser: "A mystery trip" }));
+    const res = await mod.POST(makePostRequest({ titleInternal: "A mystery trip" }));
     expect(res.status).toBe(403);
   });
 
@@ -93,7 +93,7 @@ describe("POST /api/admin/xsed", () => {
       status: "DRAFT",
     });
     const mod = (await import("../route")) as RouteModule;
-    const res = await mod.POST(makePostRequest({ teaser: "Escape the city" }));
+    const res = await mod.POST(makePostRequest({ titleInternal: "Escape the city" }));
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body).toHaveProperty("id", "new-xsed-id");
@@ -117,7 +117,7 @@ describe("POST /api/admin/xsed", () => {
     });
     const mod = (await import("../route")) as RouteModule;
     const tripDate = "2025-06-07T12:00:00.000Z";
-    const res = await mod.POST(makePostRequest({ teaser: "drop", tripDate }));
+    const res = await mod.POST(makePostRequest({ titleInternal: "drop", tripDate }));
     expect(res.status).toBe(201);
 
     const createCall = (prisma.experience.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
@@ -140,7 +140,7 @@ describe("POST /api/admin/xsed", () => {
     const mod = (await import("../route")) as RouteModule;
     const tripDate = "2025-06-07T12:00:00.000Z";
     const revealAt = "2025-06-05T08:00:00.000Z"; // custom, NOT tripDate-48h
-    const res = await mod.POST(makePostRequest({ teaser: "drop", tripDate, revealAt }));
+    const res = await mod.POST(makePostRequest({ titleInternal: "drop", tripDate, revealAt }));
     expect(res.status).toBe(201);
 
     const createCall = (prisma.experience.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
@@ -163,7 +163,7 @@ describe("POST /api/admin/xsed", () => {
     );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(
-      makePostRequest({ teaser: "drop", slug: "2025-01-05-madrid" }),
+      makePostRequest({ titleInternal: "drop", slug: "2025-01-05-madrid" }),
     );
     expect(res.status).toBe(409);
     const body = await res.json();

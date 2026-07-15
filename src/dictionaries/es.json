@@ -107,12 +107,7 @@
         "weather": "Clima",
         "accessibility": "Accesibilidad",
         "safety": "Seguridad",
-        "revealCopy": "Texto revelación",
-        "preRevealCopy": "Texto pre-revelación",
         "packingHints": "Consejos equipaje",
-        "whatsappMsg": "Mensaje WhatsApp",
-        "adminNotes": "Notas admin",
-        "supplierNotes": "Notas proveedor",
         "created": "Creado",
         "updated": "Actualizado",
         "actions": "Acciones"
@@ -132,12 +127,53 @@
       "back": "Volver",
       "submit": "Crear drop",
       "saving": "Guardando…",
+      "saved": "Guardado",
+      "saveError": "Error al guardar",
       "cancel": "Cancelar",
       "titleEdit": "Editar XSED Drop",
       "submitEdit": "Guardar cambios",
       "toastCreated": "Drop creado",
       "toastUpdated": "Drop actualizado",
       "toastError": "Algo salió mal",
+      "nav": {
+        "progress": "Progreso"
+      },
+      "actionBar": {
+        "clearAll": "Limpiar",
+        "next": "Siguiente",
+        "viewCheckout": "Guardar drop"
+      },
+      "contentTabs": [
+        {
+          "id": "main",
+          "label": "General",
+          "substeps": [
+            { "id": "identity", "title": "Experiencia", "description": "" }
+          ]
+        },
+        {
+          "id": "content",
+          "label": "Contenido",
+          "substeps": [
+            { "id": "sections", "title": "Secciones", "description": "" }
+          ]
+        },
+        {
+          "id": "gallery",
+          "label": "Galería",
+          "substeps": [
+            { "id": "images", "title": "Imágenes", "description": "" }
+          ]
+        },
+        {
+          "id": "logistics",
+          "label": "Logística",
+          "substeps": [
+            { "id": "accommodation", "title": "Alojamiento", "description": "" },
+            { "id": "activities", "title": "Actividades", "description": "" }
+          ]
+        }
+      ],
       "sections": {
         "basic": "Info básica",
         "location": "Ubicación",
@@ -150,32 +186,76 @@
       },
       "fields": {
         "titleInternal": "Título (interno)",
-        "teaser": "Teaser público",
+        "titleInternalPlaceholder": "Ej: fin de semana misterioso en Buenos Aires",
         "slug": "Slug",
         "slugHint": "Identificador URL, ej: patagonia-2026",
         "status": "Estado",
-        "heroImage": "URL imagen principal",
+        "statusActive": "Activo",
+        "statusDraft": "Borrador",
+        "heroImage": "Imagen principal",
+        "uploadImage": "Subir imagen",
         "destinationCity": "Ciudad de destino",
+        "destinationCityPlaceholder": "Buscar ciudad...",
         "destinationCountry": "País de destino",
+        "destinationCountryPlaceholder": "Buscar país...",
+        "destinationHiddenHint": "Oculto para los clientes hasta la revelación.",
         "tripDate": "Fecha del viaje",
         "revealAt": "Revelar el",
-        "basePrice": "Precio por persona",
         "currency": "Moneda",
         "currencyHint": "ej: USD, ARS",
         "minSpots": "Cupos mínimos",
         "maxSpots": "Cupos máximos",
         "inclusions": "Incluido",
         "exclusions": "No incluido",
-        "cancellationPolicy": "Política de cancelación",
-        "weatherPolicy": "Política climática",
-        "accessibilityNotes": "Notas de accesibilidad",
-        "safetyNotes": "Notas de seguridad",
-        "revealCopy": "Texto de revelación",
-        "preRevealCopy": "Texto pre-revelación",
-        "packingHints": "Consejos de equipaje",
-        "whatsappMessageTemplate": "Plantilla mensaje WhatsApp",
-        "adminNotes": "Notas del admin",
-        "supplierNotes": "Notas del proveedor"
+        "accommodation": {
+          "hotelName": "Nombre del hotel *",
+          "hotelNamePlaceholder": "Ej: Boutique...",
+          "hotelStars": "Estrellas *",
+          "hotelStarsPlaceholder": "Seleccionar",
+          "hotelStarsHint": "Categoría del alojamiento",
+          "hotelStarsSingular": "estrella",
+          "hotelStarsPlural": "estrellas",
+          "hotelLocation": "Ubicación *",
+          "hotelLocationPlaceholder": "Buscar location...",
+          "hotelDays": "Noches",
+          "hotelDaysPlaceholder": "Ej: 1"
+        },
+        "activities": {
+          "name": "Actividad",
+          "namePlaceholder": "Ej: City tour...",
+          "duration": "Duración",
+          "durationUnits": {
+            "min": { "label": "min", "hint": "minutos" },
+            "hr": { "label": "hr", "hint": "horas" },
+            "day": { "label": "día", "hint": "días" }
+          },
+          "description": "Descripción",
+          "descriptionPlaceholder": "Ej: en la actividad podrás montar a caballo...",
+          "risks": "Cuidados",
+          "risksPlaceholder": "Ej: cuidados que deberían tener...",
+          "activityLabel": "Actividad",
+          "remove": "Eliminar",
+          "addActivity": "Agregar actividad"
+        },
+        "sections": {
+          "sectionLabel": "Sección",
+          "sectionTitle": "Título de la sección",
+          "sectionTitlePlaceholder": "Ej: El hotel",
+          "sectionBody": "Contenido",
+          "sectionBodyPlaceholder": "Contanos los detalles de esta sección...",
+          "addSection": "Agregar sección",
+          "removeSection": "Eliminar",
+          "photoCredit": "Crédito de la foto",
+          "photoCreditPlaceholder": "PH by...",
+          "addPhoto": "Agregar foto",
+          "removePhoto": "Eliminar foto"
+        },
+        "gallery": {
+          "hint": "Subí las fotos que se van a mostrar en la galería pública del drop.",
+          "addImage": "Agregar imagen",
+          "uploading": "Subiendo…",
+          "removeImageAria": "Eliminar imagen"
+        }
       }
     },
     "benefits": {
@@ -316,7 +396,8 @@
         "enable": "Activar",
         "unfeature": "Quitar destaque",
         "feature": "Destacar",
-        "review": "Revisar"
+        "review": "Revisar",
+        "edit": "Editar"
       },
       "tabs": {
         "all": "Todas",

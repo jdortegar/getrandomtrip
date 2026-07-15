@@ -101,7 +101,7 @@ describe("PUT /api/admin/xsed/[id]", () => {
   beforeEach(() => vi.resetAllMocks());
   afterEach(() => vi.resetModules());
 
-  it("updates teaser only and leaves other fields unchanged (partial update)", async () => {
+  it("updates titleInternal only and leaves other fields unchanged (partial update)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession());
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
     const existingDrop = {
@@ -111,17 +111,21 @@ describe("PUT /api/admin/xsed/[id]", () => {
       ownerId: "admin-1",
       destinationCity: "Madrid",
       destinationCountry: "Spain",
-      teaser: "Old text",
+      titleInternal: "Old title",
     };
     (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(existingDrop);
-    const updatedDrop = { ...existingDrop, teaser: "New text" };
+    const updatedDrop = { ...existingDrop, titleInternal: "New title" };
     (prisma.experience.update as ReturnType<typeof vi.fn>).mockResolvedValue(updatedDrop);
 
     const mod = (await import("../route")) as RouteModule;
-    const res = await mod.PUT(makeRequest("PUT", { teaser: "New text" }), routeParams);
+    const res = await mod.PUT(makeRequest("PUT", { titleInternal: "New title" }), routeParams);
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.drop.teaser).toBe("New text");
+    expect(body.drop.titleInternal).toBe("New title");
+
+    const updateCall = (prisma.experience.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.titleInternal).toBe("New title");
+    expect(updateCall.data.title).toBe("New title");
   });
 
   it("does NOT overwrite type and ownerId even when supplied in the payload", async () => {

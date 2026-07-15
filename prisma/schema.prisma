@@ -234,6 +234,13 @@ model Experience {
   whatsappMessageTemplate String?   @db.Text
   adminNotes              String?   @db.Text
   supplierNotes           String?   @db.Text
+  // XSED drop content: repeatable sections, each with a title, rich-text body,
+  // and photos (each with a freeform credit caption). Replaces the old
+  // preRevealCopy/revealCopy free-text fields for XSED authoring.
+  sections                Json?
+  // XSED drop public gallery image URLs (multi-upload grid), independent of
+  // the per-benefit photos already stored on hotels/activities.
+  gallery                 String[]  @default([])
 
   // Season hint (e.g. 'Alta', 'Baja', 'any')
   season String[] @default([])

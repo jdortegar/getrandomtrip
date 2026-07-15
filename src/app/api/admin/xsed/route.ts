@@ -84,38 +84,29 @@ export async function POST(req: Request): Promise<NextResponse> {
     const body = await req.json();
 
     const {
-      teaser,
       titleInternal,
       heroImage,
       tripDate,
       revealAt: revealAtRaw,
       maxSpots,
       minSpots,
-      basePrice,
-      isFeatured,
       destinationCity,
       destinationCountry,
-      preRevealCopy,
-      revealCopy,
-      packingHints,
-      accessibilityNotes,
-      safetyNotes,
-      cancellationPolicy,
-      weatherPolicy,
-      whatsappMessageTemplate,
       hotels,
       activities,
-      adminNotes,
-      supplierNotes,
+      sections,
+      gallery,
     } = body ?? {};
 
     // Auto-generate slug as the next drop number
     const dropCount = await prisma.experience.count({ where: { type: { has: "XSED" } } });
     const autoSlug = String(dropCount + 1);
 
-    // Derive title/description from provided fields
-    const title = (titleInternal as string | undefined) || (teaser as string | undefined) || "";
-    const description = (teaser as string | undefined) || "";
+    // title/description are required (non-nullable) columns shared with the
+    // tripper Experience model. XSED authoring no longer has a `teaser`
+    // field — titleInternal is the sole source for both.
+    const title = (titleInternal as string | undefined) || "";
+    const description = "";
 
     // Compute revealAt: use supplied value if present, otherwise auto-calc from tripDate
     let revealAtDate: Date | null = null;
@@ -134,7 +125,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           status: "DRAFT",
           title,
           description,
-          teaser: (teaser as string | undefined) ?? "",
+          teaser: "",
           heroImage: (heroImage as string | undefined) ?? "",
           destinationCity: (destinationCity as string | undefined) ?? "",
           destinationCountry: (destinationCountry as string | undefined) ?? "",
@@ -144,20 +135,10 @@ export async function POST(req: Request): Promise<NextResponse> {
           revealAt: revealAtDate,
           maxSpots: maxSpots != null ? Number(maxSpots) : 10,
           minSpots: minSpots != null ? Number(minSpots) : 2,
-          basePrice: basePrice != null ? Number(basePrice) : 250,
-          isFeatured: Boolean(isFeatured ?? false),
-          preRevealCopy: (preRevealCopy as string | undefined) || null,
-          revealCopy: (revealCopy as string | undefined) || null,
-          packingHints: (packingHints as string | undefined) || null,
-          accessibilityNotes: (accessibilityNotes as string | undefined) || null,
-          safetyNotes: (safetyNotes as string | undefined) || null,
-          cancellationPolicy: (cancellationPolicy as string | undefined) || null,
-          weatherPolicy: (weatherPolicy as string | undefined) || null,
-          whatsappMessageTemplate: (whatsappMessageTemplate as string | undefined) || null,
           hotels: safeJsonParse(hotels),
           activities: safeJsonParse(activities),
-          adminNotes: (adminNotes as string | undefined) || null,
-          supplierNotes: (supplierNotes as string | undefined) || null,
+          sections: safeJsonParse(sections),
+          gallery: Array.isArray(gallery) ? (gallery as string[]) : [],
         },
       });
 
