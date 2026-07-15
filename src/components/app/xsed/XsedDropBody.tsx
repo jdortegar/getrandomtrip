@@ -31,17 +31,19 @@ function SectionImages({
   return (
     <div className={`mt-6 grid gap-3 ${gridClass}`}>
       {images.map((img, i) => (
-        <div
-          key={i}
-          className="relative overflow-hidden rounded-xl aspect-video"
-        >
-          <Image
-            alt={img.caption ?? ""}
-            className="object-cover aspect-video"
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            src={img.url}
-          />
+        <div key={i} className="flex flex-col gap-1.5">
+          <div className="relative overflow-hidden rounded-xl aspect-video">
+            <Image
+              alt={img.caption ?? ""}
+              className="object-cover aspect-video"
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              src={img.url}
+            />
+          </div>
+          {img.caption && (
+            <span className="text-xs text-neutral-400">{img.caption}</span>
+          )}
         </div>
       ))}
     </div>
