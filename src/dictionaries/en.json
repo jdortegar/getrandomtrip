@@ -107,12 +107,7 @@
         "weather": "Weather",
         "accessibility": "Accessibility",
         "safety": "Safety",
-        "revealCopy": "Reveal copy",
-        "preRevealCopy": "Pre-reveal copy",
         "packingHints": "Packing hints",
-        "whatsappMsg": "WhatsApp msg",
-        "adminNotes": "Admin notes",
-        "supplierNotes": "Supplier notes",
         "created": "Created",
         "updated": "Updated",
         "actions": "Actions"
@@ -132,12 +127,53 @@
       "back": "Back",
       "submit": "Create drop",
       "saving": "Saving…",
+      "saved": "Saved",
+      "saveError": "Save failed",
       "cancel": "Cancel",
       "titleEdit": "Edit TGIS Drop",
       "submitEdit": "Save changes",
       "toastCreated": "Drop created",
       "toastUpdated": "Drop updated",
       "toastError": "Something went wrong",
+      "nav": {
+        "progress": "Progress"
+      },
+      "actionBar": {
+        "clearAll": "Clear all",
+        "next": "Next",
+        "viewCheckout": "Save drop"
+      },
+      "contentTabs": [
+        {
+          "id": "main",
+          "label": "General",
+          "substeps": [
+            { "id": "identity", "title": "Experience", "description": "" }
+          ]
+        },
+        {
+          "id": "content",
+          "label": "Content",
+          "substeps": [
+            { "id": "sections", "title": "Sections", "description": "" }
+          ]
+        },
+        {
+          "id": "gallery",
+          "label": "Gallery",
+          "substeps": [
+            { "id": "images", "title": "Images", "description": "" }
+          ]
+        },
+        {
+          "id": "logistics",
+          "label": "Logistics",
+          "substeps": [
+            { "id": "accommodation", "title": "Accommodation", "description": "" },
+            { "id": "activities", "title": "Activities", "description": "" }
+          ]
+        }
+      ],
       "sections": {
         "basic": "Basic info",
         "location": "Location",
@@ -150,32 +186,76 @@
       },
       "fields": {
         "titleInternal": "Title (internal)",
-        "teaser": "Public teaser",
+        "titleInternalPlaceholder": "E.g. Buenos Aires mystery weekend",
         "slug": "Slug",
         "slugHint": "URL-friendly identifier, e.g. patagonia-2026",
         "status": "Status",
-        "heroImage": "Hero image URL",
+        "statusActive": "Active",
+        "statusDraft": "Draft",
+        "heroImage": "Hero image",
+        "uploadImage": "Upload image",
         "destinationCity": "Destination city",
+        "destinationCityPlaceholder": "Search city...",
         "destinationCountry": "Destination country",
+        "destinationCountryPlaceholder": "Search country...",
+        "destinationHiddenHint": "Hidden from clients until reveal.",
         "tripDate": "Trip date",
         "revealAt": "Reveal at",
-        "basePrice": "Price per person",
         "currency": "Currency",
         "currencyHint": "e.g. USD, ARS",
         "minSpots": "Min spots",
         "maxSpots": "Max spots",
         "inclusions": "Included",
         "exclusions": "Not included",
-        "cancellationPolicy": "Cancellation policy",
-        "weatherPolicy": "Weather policy",
-        "accessibilityNotes": "Accessibility notes",
-        "safetyNotes": "Safety notes",
-        "revealCopy": "Reveal copy",
-        "preRevealCopy": "Pre-reveal copy",
-        "packingHints": "Packing hints",
-        "whatsappMessageTemplate": "WhatsApp message template",
-        "adminNotes": "Admin notes",
-        "supplierNotes": "Supplier notes"
+        "accommodation": {
+          "hotelName": "Hotel name *",
+          "hotelNamePlaceholder": "E.g. Boutique...",
+          "hotelStars": "Stars *",
+          "hotelStarsPlaceholder": "Select",
+          "hotelStarsHint": "Accommodation category",
+          "hotelStarsSingular": "star",
+          "hotelStarsPlural": "stars",
+          "hotelLocation": "Location *",
+          "hotelLocationPlaceholder": "Search location...",
+          "hotelDays": "Nights",
+          "hotelDaysPlaceholder": "E.g. 1"
+        },
+        "activities": {
+          "name": "Activity",
+          "namePlaceholder": "E.g. City tour...",
+          "duration": "Duration",
+          "durationUnits": {
+            "min": { "label": "min", "hint": "minutes" },
+            "hr": { "label": "hr", "hint": "hours" },
+            "day": { "label": "day", "hint": "days" }
+          },
+          "description": "Description",
+          "descriptionPlaceholder": "E.g. you'll get to ride a horse during this activity...",
+          "risks": "Safety notes",
+          "risksPlaceholder": "E.g. safety considerations guests should be aware of...",
+          "activityLabel": "Activity",
+          "remove": "Remove",
+          "addActivity": "Add activity"
+        },
+        "sections": {
+          "sectionLabel": "Section",
+          "sectionTitle": "Section title",
+          "sectionTitlePlaceholder": "E.g. The hotel",
+          "sectionBody": "Content",
+          "sectionBodyPlaceholder": "Tell us the details of this section...",
+          "addSection": "Add section",
+          "removeSection": "Remove",
+          "photoCredit": "Photo credit",
+          "photoCreditPlaceholder": "PH by...",
+          "addPhoto": "Add photo",
+          "removePhoto": "Remove photo"
+        },
+        "gallery": {
+          "hint": "Upload the photos that will show in the drop's public gallery.",
+          "addImage": "Add image",
+          "uploading": "Uploading…",
+          "removeImageAria": "Remove image"
+        }
       }
     },
     "benefits": {
@@ -316,7 +396,8 @@
         "enable": "Enable",
         "unfeature": "Unfeature",
         "feature": "Feature",
-        "review": "Review"
+        "review": "Review",
+        "edit": "Edit"
       },
       "tabs": {
         "all": "All",

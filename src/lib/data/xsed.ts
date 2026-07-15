@@ -61,57 +61,38 @@ const xsedDetailSelect = {
   minSpots: true,
   inclusions: true,
   exclusions: true,
-  hotels: true,
-  activities: true,
   cancellationPolicy: true,
   weatherPolicy: true,
   accessibilityNotes: true,
   safetyNotes: true,
-  revealCopy: true,
-  preRevealCopy: true,
   packingHints: true,
+  sections: true,
+  gallery: true,
 } as const;
 
 export type XsedExperienceDetail = Prisma.ExperienceGetPayload<{
   select: typeof xsedDetailSelect;
 }>;
 
-export interface XsedDropBenefit {
-  id: string;
-  type: "ACCOMMODATION" | "DINNER" | "ACTIVITY";
-  sortOrder: number;
-  name: string | null;
-  providerName: string | null;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  googleMapsUrl: string | null;
-  customerVisibleNotes: string | null;
-  internalNotes: string | null;
-  confirmationStatus: "PENDING" | "CONFIRMED" | "CANCELLED";
-  reservationCode: string | null;
-  photos: {
-    id: string;
-    url: string;
-    altText: string | null;
-    type: string;
-    sortOrder: number;
-  }[];
+export interface XsedDropSectionPhoto {
+  url: string;
+  credit: string;
 }
 
-export function parseDropBenefits(
-  hotels: Prisma.JsonValue | null,
-  activities: Prisma.JsonValue | null,
-): XsedDropBenefit[] {
-  const hotelItems = Array.isArray(hotels)
-    ? (hotels as unknown as XsedDropBenefit[])
-    : [];
-  const activityItems = Array.isArray(activities)
-    ? (activities as unknown as XsedDropBenefit[])
-    : [];
-  return [...hotelItems, ...activityItems].sort(
-    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
-  );
+export interface XsedDropSection {
+  title: string;
+  body: string;
+  photos: XsedDropSectionPhoto[];
+}
+
+/**
+ * Parses the `sections` Json column into the public-page narrative body
+ * structure. Replaces the old `parseDropBenefits(hotels, activities)`
+ * derivation — the admin XSED authoring form no longer feeds hotels/
+ * activities into the public body, it authors `sections` directly.
+ */
+export function parseDropSections(sections: Prisma.JsonValue | null): XsedDropSection[] {
+  return Array.isArray(sections) ? (sections as unknown as XsedDropSection[]) : [];
 }
 
 export async function findUpcomingActiveXsedExperiences(
@@ -231,7 +212,10 @@ function toDropEntry(drop: XsedListRow, locale: string): DropEntry {
     number: parseDropNumber(drop.slug),
     slug: drop.slug ?? "",
     soldOut: isCapacitySoldOut || isStatusSoldOut,
-    title: drop.teaser ?? drop.titleInternal ?? "",
+    // titleInternal is the primary source going forward — the admin XSED
+    // authoring form no longer has a `teaser` field. teaser is kept as a
+    // fallback only for drops authored before this migration.
+    title: drop.titleInternal || drop.teaser || "",
   };
 }
 

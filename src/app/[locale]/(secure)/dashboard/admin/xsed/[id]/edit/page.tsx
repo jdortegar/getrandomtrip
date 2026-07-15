@@ -2,7 +2,13 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { prisma } from "@/lib/prisma";
-import type { AccommodationEntry, ActivityEntry, XsedDropDraft, XsedDropStatus } from "@/types/xsed";
+import type {
+  AccommodationEntry,
+  ActivityEntry,
+  XsedDropDraft,
+  XsedDropStatus,
+  XsedSection,
+} from "@/types/xsed";
 import { EMPTY_XSED_DRAFT } from "@/types/xsed";
 import { XsedDropShell } from "@/components/app/dashboard/admin/xsed/XsedDropShell";
 
@@ -32,25 +38,16 @@ export default async function EditXsedDropPage(props: {
     ...EMPTY_XSED_DRAFT,
     status: (drop.status as XsedDropStatus) ?? "DRAFT",
     titleInternal: drop.titleInternal ?? "",
-    teaser: drop.teaser ?? "",
     heroImage: drop.heroImage ?? "",
     tripDate: toDateInput(drop.tripDate),
-    basePrice: drop.basePrice ?? EMPTY_XSED_DRAFT.basePrice,
-    isFeatured: drop.isFeatured ?? false,
     destinationCity: drop.destinationCity ?? "",
     destinationCountry: drop.destinationCountry ?? "",
-    preRevealCopy: drop.preRevealCopy ?? "",
-    revealCopy: drop.revealCopy ?? "",
-    packingHints: drop.packingHints ?? "",
-    accessibilityNotes: drop.accessibilityNotes ?? "",
-    safetyNotes: drop.safetyNotes ?? "",
-    cancellationPolicy: drop.cancellationPolicy ?? "",
-    weatherPolicy: drop.weatherPolicy ?? "",
-    whatsappMessageTemplate: drop.whatsappMessageTemplate ?? "",
     hotels: Array.isArray(drop.hotels) ? (drop.hotels as unknown as AccommodationEntry[]) : EMPTY_XSED_DRAFT.hotels,
     activities: Array.isArray(drop.activities) ? (drop.activities as unknown as ActivityEntry[]) : EMPTY_XSED_DRAFT.activities,
-    adminNotes: drop.adminNotes ?? "",
-    supplierNotes: drop.supplierNotes ?? "",
+    sections: Array.isArray(drop.sections) && drop.sections.length > 0
+      ? (drop.sections as unknown as XsedSection[])
+      : EMPTY_XSED_DRAFT.sections,
+    gallery: Array.isArray(drop.gallery) ? (drop.gallery as string[]) : [],
   };
 
   return (

@@ -28,7 +28,7 @@ export default async function XsedDropsPage(props: LocaleParams) {
   return (
     <>
       <XsedInternalHero
-        content={{}}
+        content={{ videoSrc: dict.xsedPage.hero.videoSrc }}
         dropsPage={dict.xsedDropsPage}
         hero={dict.xsedPage.hero}
       />

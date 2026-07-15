@@ -4,23 +4,29 @@ import { useRef, useState } from "react";
 import { Loader2, X, ImagePlus } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import Img from "@/components/common/Img";
+import CountrySelector from "@/components/journey/CountrySelector";
+import CitySelector from "@/components/journey/CitySelector";
+import type { AdminXsedDict } from "@/lib/types/dictionary";
 import type { XsedDropDraft } from "@/types/xsed";
 
 interface Props {
   form: XsedDropDraft;
   onChange: (patch: Partial<XsedDropDraft>) => void;
+  copy: AdminXsedDict["form"]["fields"];
 }
 
 function HeroImageUpload({
   label,
   hint,
   value,
+  uploadLabel,
   onAdd,
   onRemove,
 }: {
   label: string;
   hint?: string;
   value: string;
+  uploadLabel: string;
   onAdd: (url: string) => void;
   onRemove: () => void;
 }) {
@@ -52,7 +58,7 @@ function HeroImageUpload({
         <div className="relative w-full h-52 rounded-xl overflow-hidden border border-gray-200 group">
           <Img
             src={value}
-            alt="Hero"
+            alt={label}
             width={900}
             height={208}
             className="object-cover w-full h-full"
@@ -78,7 +84,7 @@ function HeroImageUpload({
           ) : (
             <ImagePlus className="h-6 w-6" />
           )}
-          <span className="text-sm">{uploading ? "…" : "Upload image"}</span>
+          <span className="text-sm">{uploading ? "…" : uploadLabel}</span>
         </button>
       )}
 
@@ -98,38 +104,76 @@ function HeroImageUpload({
   );
 }
 
-export function XsedIdentityStep({ form, onChange }: Props) {
+export function XsedIdentityStep({ form, onChange, copy }: Props) {
   const isActive = form.status === "ACTIVE";
+  const [countryCode, setCountryCode] = useState("");
 
   return (
     <div className="space-y-5">
       <FormField
         id="xsed-titleInternal"
-        label="Title (internal)"
-        placeholder="e.g. Buenos Aires mystery weekend"
+        label={copy.titleInternal}
+        placeholder={copy.titleInternalPlaceholder}
         type="text"
         value={form.titleInternal}
         onChange={(e) => onChange({ titleInternal: e.target.value })}
       />
 
-      <FormField
-        id="xsed-teaser"
-        label="Teaser"
-        placeholder="One-line mystery hint shown before reveal"
-        type="text"
-        value={form.teaser}
-        onChange={(e) => onChange({ teaser: e.target.value })}
-      />
-
       <HeroImageUpload
-        label="Hero image"
+        label={copy.heroImage}
+        uploadLabel={copy.uploadImage}
         value={form.heroImage}
         onAdd={(url) => onChange({ heroImage: url })}
         onRemove={() => onChange({ heroImage: "" })}
       />
 
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          id="xsed-tripDate"
+          label={copy.tripDate}
+          type="date"
+          value={form.tripDate}
+          onChange={(e) => onChange({ tripDate: e.target.value })}
+        />
+      </div>
+
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="flex flex-1 flex-col gap-2">
+          <label className="block font-normal text-gray-600 text-base">
+            {copy.destinationCountry}
+          </label>
+          <CountrySelector
+            value={form.destinationCountry}
+            onChange={(name, code) => {
+              setCountryCode(code);
+              onChange({ destinationCountry: name, destinationCity: "" });
+            }}
+            placeholder={copy.destinationCountryPlaceholder}
+            size="lg"
+            className="bg-gray-100 border-0 rounded-xl placeholder:text-gray-400 text-gray-900"
+          />
+        </div>
+
+        <div className="flex flex-1 flex-col gap-2">
+          <label className="block font-normal text-gray-600 text-base">
+            {copy.destinationCity}
+          </label>
+          <CitySelector
+            value={form.destinationCity}
+            countryCode={countryCode}
+            onChange={(city) => onChange({ destinationCity: city })}
+            placeholder={copy.destinationCityPlaceholder}
+            size="lg"
+            className="bg-gray-100 border-0 rounded-xl placeholder:text-gray-400 text-gray-900"
+          />
+        </div>
+      </div>
+      <p className="text-xs text-neutral-400 -mt-3">
+        {copy.destinationHiddenHint}
+      </p>
+
       <div className="flex items-center justify-between">
-        <span className="block font-normal text-gray-600 text-base">Status</span>
+        <span className="block font-normal text-gray-600 text-base">{copy.status}</span>
         <button
           type="button"
           role="switch"
@@ -153,30 +197,9 @@ export function XsedIdentityStep({ form, onChange }: Props) {
           <span
             className={`text-xs font-medium ${isActive ? "text-green-600" : "text-gray-400"}`}
           >
-            {isActive ? "Active" : "Draft"}
+            {isActive ? copy.statusActive : copy.statusDraft}
           </span>
         </button>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <input
-          checked={form.isFeatured}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          id="xsed-isFeatured"
-          onChange={(e) => onChange({ isFeatured: e.target.checked })}
-          type="checkbox"
-        />
-        <div>
-          <label
-            className="text-sm font-medium text-neutral-500 cursor-pointer"
-            htmlFor="xsed-isFeatured"
-          >
-            Featured drop
-          </label>
-          <p className="text-xs text-neutral-400">
-            Show on homepage / promoted slots
-          </p>
-        </div>
       </div>
     </div>
   );

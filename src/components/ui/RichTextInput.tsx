@@ -23,7 +23,7 @@ const EDITOR_INIT: TinyInitBase = {
   plugins: "autoresize lists",
   promotion: false,
   resize: false,
-  toolbar: "bold italic | bullist numlist | removeformat",
+  toolbar: "bold italic | bullist numlist | blockquote | removeformat",
   toolbar_location: "top",
   toolbar_mode: "wrap",
   toolbar_sticky: true,

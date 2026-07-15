@@ -115,7 +115,6 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
 
     // Build update data — never overwrite type or ownerId
     const {
-      teaser,
       titleInternal,
       heroImage,
       slug,
@@ -123,32 +122,19 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
       revealAt: revealAtRaw,
       maxSpots,
       minSpots,
-      basePrice,
-      isFeatured,
       destinationCity,
       destinationCountry,
-      preRevealCopy,
-      revealCopy,
-      packingHints,
-      accessibilityNotes,
-      safetyNotes,
-      cancellationPolicy,
-      weatherPolicy,
-      whatsappMessageTemplate,
       hotels,
       activities,
-      adminNotes,
-      supplierNotes,
+      sections,
+      gallery,
       status,
     } = body;
 
-    // Re-derive title/description
+    // Re-derive title. XSED authoring no longer has a `teaser` field —
+    // titleInternal is the sole source (description stays whatever it was).
     const title =
-      (titleInternal as string | undefined) || (teaser as string | undefined)
-        ? ((titleInternal as string | undefined) || (teaser as string | undefined) || "")
-        : undefined;
-    const description =
-      teaser !== undefined ? ((teaser as string | undefined) ?? "") : undefined;
+      titleInternal !== undefined ? ((titleInternal as string | undefined) || "") : undefined;
 
     // Compute revealAt
     let revealAtDate: Date | null | undefined;
@@ -162,8 +148,6 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
       const updateData: Record<string, unknown> = {};
       if (status !== undefined) updateData.status = status;
       if (title !== undefined) updateData.title = title;
-      if (description !== undefined) updateData.description = description;
-      if (teaser !== undefined) updateData.teaser = teaser ?? "";
       if (heroImage !== undefined) updateData.heroImage = heroImage ?? "";
       if (destinationCity !== undefined) updateData.destinationCity = destinationCity ?? "";
       if (destinationCountry !== undefined) updateData.destinationCountry = destinationCountry ?? "";
@@ -173,20 +157,10 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
       if (revealAtDate !== undefined) updateData.revealAt = revealAtDate;
       if (maxSpots !== undefined) updateData.maxSpots = maxSpots != null ? Number(maxSpots) : null;
       if (minSpots !== undefined) updateData.minSpots = minSpots != null ? Number(minSpots) : null;
-      if (basePrice !== undefined) updateData.basePrice = basePrice != null ? Number(basePrice) : null;
-      if (isFeatured !== undefined) updateData.isFeatured = Boolean(isFeatured);
-      if (preRevealCopy !== undefined) updateData.preRevealCopy = (preRevealCopy as string | undefined) || null;
-      if (revealCopy !== undefined) updateData.revealCopy = (revealCopy as string | undefined) || null;
-      if (packingHints !== undefined) updateData.packingHints = (packingHints as string | undefined) || null;
-      if (accessibilityNotes !== undefined) updateData.accessibilityNotes = (accessibilityNotes as string | undefined) || null;
-      if (safetyNotes !== undefined) updateData.safetyNotes = (safetyNotes as string | undefined) || null;
-      if (cancellationPolicy !== undefined) updateData.cancellationPolicy = (cancellationPolicy as string | undefined) || null;
-      if (weatherPolicy !== undefined) updateData.weatherPolicy = (weatherPolicy as string | undefined) || null;
-      if (whatsappMessageTemplate !== undefined) updateData.whatsappMessageTemplate = (whatsappMessageTemplate as string | undefined) || null;
       if (hotels !== undefined) updateData.hotels = safeJsonParse(hotels);
       if (activities !== undefined) updateData.activities = safeJsonParse(activities);
-      if (adminNotes !== undefined) updateData.adminNotes = (adminNotes as string | undefined) || null;
-      if (supplierNotes !== undefined) updateData.supplierNotes = (supplierNotes as string | undefined) || null;
+      if (sections !== undefined) updateData.sections = safeJsonParse(sections);
+      if (gallery !== undefined) updateData.gallery = Array.isArray(gallery) ? (gallery as string[]) : [];
 
       const updated = await prisma.experience.update({
         where: { id },

@@ -13,14 +13,10 @@ import type { XsedDropDraft } from "@/types/xsed";
 import { EMPTY_XSED_DRAFT } from "@/types/xsed";
 import type { AdminXsedDict } from "@/lib/types/dictionary";
 import { XsedIdentityStep } from "./steps/XsedIdentityStep";
-import { XsedDatesStep } from "./steps/XsedDatesStep";
-import { XsedLocationStep } from "./steps/XsedLocationStep";
-import { XsedRevealStep } from "./steps/XsedRevealStep";
-import { XsedPoliciesStep } from "./steps/XsedPoliciesStep";
+import { XsedSectionsStep } from "./steps/XsedSectionsStep";
+import { XsedGalleryStep } from "./steps/XsedGalleryStep";
 import { XsedAccommodationStep } from "./steps/XsedAccommodationStep";
 import { XsedActivitiesStep } from "./steps/XsedActivitiesStep";
-import { XsedBenefitsStep } from "./steps/XsedBenefitsStep";
-import { XsedNotesStep } from "./steps/XsedNotesStep";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
@@ -34,43 +30,11 @@ interface XsedDropShellProps {
 const AUTOSAVE_DELAY_MS = 2000;
 const SAVED_RESET_MS = 3000;
 
-const XSED_TABS = [
-  {
-    id: "main",
-    label: "General",
-    substeps: [
-      { id: "identity", title: "Identidad", description: "" },
-      { id: "dates", title: "Fecha & Precio", description: "" },
-    ],
-  },
-  {
-    id: "destination",
-    label: "Destino",
-    substeps: [{ id: "location", title: "Ubicación", description: "" }],
-  },
-  {
-    id: "content",
-    label: "Contenido",
-    substeps: [
-      { id: "reveal", title: "Reveal", description: "" },
-      { id: "policies", title: "Políticas", description: "" },
-      { id: "accommodation", title: "Alojamiento", description: "" },
-      { id: "activities", title: "Actividades", description: "" },
-    ],
-  },
-  {
-    id: "logistics",
-    label: "Logística",
-    substeps: [
-      { id: "benefits", title: "Beneficios & WhatsApp", description: "" },
-    ],
-  },
-  {
-    id: "internal",
-    label: "Interno",
-    substeps: [{ id: "notes", title: "Notas", description: "" }],
-  },
-];
+// Tabs with no required fields are vacuously "complete" from the start —
+// gate their checkmark on visitation too, mirroring NewBlogPostShell's
+// OPTIONAL_TABS_REQUIRE_VISIT so a fresh draft doesn't show every tab
+// checked before the admin has even opened it.
+const OPTIONAL_TABS_REQUIRE_VISIT = new Set(["content", "gallery", "logistics"]);
 
 // Dummy labels — JourneyContentNavigation requires this prop but hideProfile=true hides the badge.
 const DUMMY_USER_BADGE_LABELS = {
@@ -89,9 +53,12 @@ const DUMMY_USER_BADGE_LABELS = {
 function isXsedTabComplete(tabId: string, form: XsedDropDraft): boolean {
   switch (tabId) {
     case "main":
-      return !!(form.titleInternal.trim() && form.tripDate);
-    case "destination":
-      return !!(form.destinationCity.trim() && form.destinationCountry.trim());
+      return !!(
+        form.titleInternal.trim() &&
+        form.tripDate &&
+        form.destinationCity.trim() &&
+        form.destinationCountry.trim()
+      );
     default:
       return true;
   }
@@ -102,39 +69,42 @@ function resolveXsedStepContent(
   substepId: string,
   form: XsedDropDraft,
   onChange: (patch: Partial<XsedDropDraft>) => void,
+  dict: AdminXsedDict["form"],
 ): React.ReactNode {
   if (activeTab === "main") {
     if (substepId === "identity")
-      return <XsedIdentityStep form={form} onChange={onChange} />;
-    if (substepId === "dates")
-      return <XsedDatesStep form={form} onChange={onChange} />;
-  }
-  if (activeTab === "destination") {
-    if (substepId === "location")
-      return <XsedLocationStep form={form} onChange={onChange} />;
+      return <XsedIdentityStep copy={dict.fields} form={form} onChange={onChange} />;
   }
   if (activeTab === "content") {
-    if (substepId === "reveal")
-      return <XsedRevealStep form={form} onChange={onChange} />;
-    if (substepId === "policies")
-      return <XsedPoliciesStep form={form} onChange={onChange} />;
-    if (substepId === "accommodation")
-      return <XsedAccommodationStep form={form} onChange={onChange} />;
-    if (substepId === "activities")
-      return <XsedActivitiesStep form={form} onChange={onChange} />;
+    if (substepId === "sections")
+      return (
+        <XsedSectionsStep copy={dict.fields.sections} form={form} onChange={onChange} />
+      );
+  }
+  if (activeTab === "gallery") {
+    if (substepId === "images")
+      return <XsedGalleryStep copy={dict.fields.gallery} form={form} onChange={onChange} />;
   }
   if (activeTab === "logistics") {
-    if (substepId === "benefits")
-      return <XsedBenefitsStep form={form} onChange={onChange} />;
-  }
-  if (activeTab === "internal") {
-    if (substepId === "notes")
-      return <XsedNotesStep form={form} onChange={onChange} />;
+    if (substepId === "accommodation")
+      return (
+        <XsedAccommodationStep copy={dict.fields.accommodation} form={form} onChange={onChange} />
+      );
+    if (substepId === "activities")
+      return (
+        <XsedActivitiesStep copy={dict.fields.activities} form={form} onChange={onChange} />
+      );
   }
   return null;
 }
 
-function SaveIndicator({ status }: { status: SaveStatus }) {
+function SaveIndicator({
+  status,
+  labels,
+}: {
+  status: SaveStatus;
+  labels: { saving: string; saved: string; error: string };
+}) {
   if (status === "idle") return null;
   return (
     <div className="flex items-center gap-1.5 text-xs text-gray-400">
@@ -142,26 +112,37 @@ function SaveIndicator({ status }: { status: SaveStatus }) {
       {status === "saved" && <Check className="h-3 w-3 text-green-500" />}
       {status === "error" && <AlertCircle className="h-3 w-3 text-red-400" />}
       <span>
-        {status === "saving" && "Guardando..."}
-        {status === "saved" && "Guardado"}
-        {status === "error" && "Error al guardar"}
+        {status === "saving" && labels.saving}
+        {status === "saved" && labels.saved}
+        {status === "error" && labels.error}
       </span>
     </div>
   );
 }
 
 export function XsedDropShell({
+  dict,
   locale,
   initialDraft,
   initialDraftId,
 }: XsedDropShellProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState(XSED_TABS[0]?.id ?? "main");
+  const tabs = dict.contentTabs;
+  const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "main");
   const [openSectionId, setOpenSectionId] = useState(
-    XSED_TABS[0]?.substeps[0]?.id ?? "",
+    tabs[0]?.substeps[0]?.id ?? "",
   );
   const [form, setForm] = useState<XsedDropDraft>(
     initialDraft ?? EMPTY_XSED_DRAFT,
+  );
+  // Editing an existing drop means the admin already went through the whole
+  // flow once — mark every tab as visited so optional tabs (content, gallery,
+  // logistics) show their checkmark immediately instead of only after being
+  // opened.
+  const [visitedTabIds, setVisitedTabIds] = useState<Set<string>>(() =>
+    initialDraft
+      ? new Set(tabs.map((t) => t.id))
+      : new Set([tabs[0]?.id ?? "main"]),
   );
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [saveError, setSaveError] = useState<string | undefined>(undefined);
@@ -255,52 +236,58 @@ export function XsedDropShell({
   }
 
   function handleNext() {
-    const currentIndex = XSED_TABS.findIndex((t) => t.id === activeTab);
-    const nextTab = XSED_TABS[currentIndex + 1];
+    const currentIndex = tabs.findIndex((t) => t.id === activeTab);
+    const nextTab = tabs[currentIndex + 1];
     if (!nextTab) return;
     handleTabChange(nextTab.id);
   }
 
-  function canNavigateTo(targetTabId: string): boolean {
-    const targetIndex = XSED_TABS.findIndex((t) => t.id === targetTabId);
-    const currentIndex = XSED_TABS.findIndex((t) => t.id === activeTab);
-    if (targetIndex <= currentIndex) return true;
-    for (let i = 0; i < targetIndex; i++) {
-      if (!isXsedTabComplete(XSED_TABS[i]!.id, form)) return false;
-    }
+  // Unlike NewExperienceShell/NewBlogPostShell, XSED tab navigation is always
+  // free — admins can jump to any tab regardless of completion state. Only
+  // the "Siguiente" button (via JourneyActionBar's canContinue below) is
+  // gated on the active tab's completeness.
+  function canNavigateTo(): boolean {
     return true;
   }
 
   function handleTabChange(tabId: string) {
-    if (!canNavigateTo(tabId)) return;
+    if (!canNavigateTo()) return;
     setActiveTab(tabId);
+    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     const firstSubstep =
-      XSED_TABS.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
+      tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
     contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function handleStepClick(tabId: string, substepId?: string) {
-    if (!canNavigateTo(tabId)) return;
+    if (!canNavigateTo()) return;
     setActiveTab(tabId);
+    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     setOpenSectionId(
       substepId ??
-        XSED_TABS.find((t) => t.id === tabId)?.substeps[0]?.id ??
+        tabs.find((t) => t.id === tabId)?.substeps[0]?.id ??
         "",
     );
   }
 
-  const navTabs = XSED_TABS.map((t) => ({ id: t.id, label: t.label }));
+  const navTabs = tabs.map((t) => ({ id: t.id, label: t.label }));
   const completedTabIds = useMemo(
     () =>
-      XSED_TABS.filter((t) => isXsedTabComplete(t.id, form)).map((t) => t.id),
-    [form],
+      tabs
+        .filter((t) => {
+          if (!isXsedTabComplete(t.id, form)) return false;
+          if (OPTIONAL_TABS_REQUIRE_VISIT.has(t.id)) return visitedTabIds.has(t.id);
+          return true;
+        })
+        .map((t) => t.id),
+    [tabs, form, visitedTabIds],
   );
 
-  const currentTab = XSED_TABS.find((t) => t.id === activeTab);
-  const isLastTab = XSED_TABS[XSED_TABS.length - 1]?.id === activeTab;
-  const allTabsComplete = XSED_TABS.every((t) => isXsedTabComplete(t.id, form));
-  const hasValues = !!(form.titleInternal || form.teaser);
+  const currentTab = tabs.find((t) => t.id === activeTab);
+  const isLastTab = tabs[tabs.length - 1]?.id === activeTab;
+  const allTabsComplete = tabs.every((t) => isXsedTabComplete(t.id, form));
+  const hasValues = !!form.titleInternal;
 
   return (
     <div className="bg-gray-50">
@@ -322,9 +309,9 @@ export function XsedDropShell({
               activeSubstepId={openSectionId}
               completedTabIds={completedTabIds}
               addonsComingSoonLabel=""
-              progressLabel="Progreso"
+              progressLabel={dict.nav.progress}
               onStepClick={handleStepClick}
-              tabs={XSED_TABS}
+              tabs={tabs}
             />
           </div>
 
@@ -351,6 +338,7 @@ export function XsedDropShell({
                         substep.id,
                         form,
                         handleChange,
+                        dict,
                       )}
                     </JourneyDropdown>
                   ))}
@@ -365,7 +353,14 @@ export function XsedDropShell({
 
                 <div className="relative">
                   <div className="absolute left-0 bottom-3">
-                    <SaveIndicator status={saveStatus} />
+                    <SaveIndicator
+                      status={saveStatus}
+                      labels={{
+                        saving: dict.saving,
+                        saved: dict.saved,
+                        error: dict.saveError,
+                      }}
+                    />
                   </div>
 
                   <JourneyActionBar
@@ -373,9 +368,9 @@ export function XsedDropShell({
                     isAllStepsComplete={isLastTab && allTabsComplete}
                     isSavingAndRedirecting={isSubmitting}
                     labels={{
-                      clearAll: "Limpiar",
-                      next: "Siguiente",
-                      viewCheckout: "Guardar drop",
+                      clearAll: dict.actionBar.clearAll,
+                      next: dict.actionBar.next,
+                      viewCheckout: dict.actionBar.viewCheckout,
                     }}
                     onClearAll={() => setForm(EMPTY_XSED_DRAFT)}
                     onContinue={handleNext}
