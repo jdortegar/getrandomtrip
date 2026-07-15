@@ -3,12 +3,14 @@
 import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import { DurationInput } from "@/components/ui/DurationInput";
+import type { AdminXsedDict } from "@/lib/types/dictionary";
 import type { ActivityEntry, XsedDropDraft } from "@/types/xsed";
 import type { DurationValue } from "@/types/tripper";
 
 interface Props {
   form: XsedDropDraft;
   onChange: (patch: Partial<XsedDropDraft>) => void;
+  copy: AdminXsedDict["form"]["fields"]["activities"];
 }
 
 const EMPTY_ENTRY: ActivityEntry = {
@@ -19,16 +21,16 @@ const EMPTY_ENTRY: ActivityEntry = {
   image: null,
 };
 
-const DURATION_UNITS = [
-  { value: "min" as const, label: "min", hint: "minutos" },
-  { value: "hr" as const, label: "hr", hint: "horas" },
-  { value: "day" as const, label: "día", hint: "días" },
-];
-
 const textareaClass =
   "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[100px]";
 
-export function XsedActivitiesStep({ form, onChange }: Props) {
+export function XsedActivitiesStep({ form, onChange, copy }: Props) {
+  const durationUnits = [
+    { value: "min" as const, ...copy.durationUnits.min },
+    { value: "hr" as const, ...copy.durationUnits.hr },
+    { value: "day" as const, ...copy.durationUnits.day },
+  ];
+
   function updateEntry<K extends keyof ActivityEntry>(index: number, key: K, value: ActivityEntry[K]) {
     const updated = form.activities.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
@@ -52,7 +54,7 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                 <span className="text-sm text-neutral-500">
-                  Actividad {index + 1}
+                  {copy.activityLabel} {index + 1}
                 </span>
                 <button
                   type="button"
@@ -60,7 +62,7 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
                   className="flex items-center gap-1 text-xs text-neutral-400 hover:text-red-500 transition-colors"
                 >
                   <X className="h-3.5 w-3.5" />
-                  Eliminar
+                  {copy.remove}
                 </button>
               </div>
             )}
@@ -70,20 +72,20 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
                 id={`xsed-act-name-${index}`}
                 label={
                   <>
-                    <span className="font-semibold text-gray-800">Actividad</span>{" "}
+                    <span className="font-semibold text-gray-800">{copy.name}</span>{" "}
                     <span className="text-red-500">*</span>
                   </>
                 }
-                placeholder="Ej: City tour..."
+                placeholder={copy.namePlaceholder}
                 value={entry.name}
                 onChange={(e) => updateEntry(index, "name", e.target.value)}
               />
 
               <DurationInput
                 id={`xsed-act-duration-${index}`}
-                label={<span className="font-semibold text-gray-800">Duración</span>}
+                label={<span className="font-semibold text-gray-800">{copy.duration}</span>}
                 value={entry.durationRhythm}
-                units={DURATION_UNITS}
+                units={durationUnits}
                 onChange={(v: DurationValue) => updateEntry(index, "durationRhythm", v)}
               />
             </div>
@@ -93,12 +95,12 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
                 className="block font-semibold text-gray-800 text-base"
                 htmlFor={`xsed-act-desc-${index}`}
               >
-                Descripción
+                {copy.description}
               </label>
               <textarea
                 id={`xsed-act-desc-${index}`}
                 className={textareaClass}
-                placeholder="Ej: en la actividad podrás montar a caballo..."
+                placeholder={copy.descriptionPlaceholder}
                 value={entry.description}
                 onChange={(e) => updateEntry(index, "description", e.target.value)}
               />
@@ -109,12 +111,12 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
                 className="block font-semibold text-gray-800 text-base"
                 htmlFor={`xsed-act-risks-${index}`}
               >
-                Cuidados
+                {copy.risks}
               </label>
               <textarea
                 id={`xsed-act-risks-${index}`}
                 className={textareaClass}
-                placeholder="Ej: cuidados que deberían tener..."
+                placeholder={copy.risksPlaceholder}
                 value={entry.risks}
                 onChange={(e) => updateEntry(index, "risks", e.target.value)}
               />
@@ -128,7 +130,7 @@ export function XsedActivitiesStep({ form, onChange }: Props) {
         onClick={addEntry}
         className="w-full rounded-xl border border-dashed border-gray-300 py-4 text-sm text-neutral-500 hover:border-gray-400 hover:text-neutral-700 transition-colors"
       >
-        + Agregar actividad
+        + {copy.addActivity}
       </button>
     </div>
   );

@@ -1017,12 +1017,7 @@ export interface AdminXsedDict {
       weather: string;
       accessibility: string;
       safety: string;
-      revealCopy: string;
-      preRevealCopy: string;
       packingHints: string;
-      whatsappMsg: string;
-      adminNotes: string;
-      supplierNotes: string;
       created: string;
       updated: string;
       actions: string;
@@ -1044,10 +1039,29 @@ export interface AdminXsedDict {
     submit: string;
     submitEdit: string;
     saving: string;
+    saved: string;
+    saveError: string;
     cancel: string;
     toastCreated: string;
     toastUpdated: string;
     toastError: string;
+    nav: {
+      progress: string;
+    };
+    actionBar: {
+      clearAll: string;
+      next: string;
+      viewCheckout: string;
+    };
+    contentTabs: Array<{
+      id: string;
+      label: string;
+      substeps: Array<{
+        description: string;
+        id: string;
+        title: string;
+      }>;
+    }>;
     sections: {
       basic: string;
       location: string;
@@ -1060,32 +1074,76 @@ export interface AdminXsedDict {
     };
     fields: {
       titleInternal: string;
-      teaser: string;
+      titleInternalPlaceholder: string;
       slug: string;
       slugHint: string;
       status: string;
+      statusActive: string;
+      statusDraft: string;
       heroImage: string;
+      uploadImage: string;
       destinationCity: string;
+      destinationCityPlaceholder: string;
       destinationCountry: string;
+      destinationCountryPlaceholder: string;
+      destinationHiddenHint: string;
       tripDate: string;
       revealAt: string;
-      basePrice: string;
       currency: string;
       currencyHint: string;
       minSpots: string;
       maxSpots: string;
       inclusions: string;
       exclusions: string;
-      cancellationPolicy: string;
-      weatherPolicy: string;
-      accessibilityNotes: string;
-      safetyNotes: string;
-      revealCopy: string;
-      preRevealCopy: string;
-      packingHints: string;
-      whatsappMessageTemplate: string;
-      adminNotes: string;
-      supplierNotes: string;
+      accommodation: {
+        hotelName: string;
+        hotelNamePlaceholder: string;
+        hotelStars: string;
+        hotelStarsPlaceholder: string;
+        hotelStarsHint: string;
+        hotelStarsSingular: string;
+        hotelStarsPlural: string;
+        hotelLocation: string;
+        hotelLocationPlaceholder: string;
+        hotelDays: string;
+        hotelDaysPlaceholder: string;
+      };
+      activities: {
+        name: string;
+        namePlaceholder: string;
+        duration: string;
+        durationUnits: {
+          min: { label: string; hint: string };
+          hr: { label: string; hint: string };
+          day: { label: string; hint: string };
+        };
+        description: string;
+        descriptionPlaceholder: string;
+        risks: string;
+        risksPlaceholder: string;
+        activityLabel: string;
+        remove: string;
+        addActivity: string;
+      };
+      sections: {
+        sectionLabel: string;
+        sectionTitle: string;
+        sectionTitlePlaceholder: string;
+        sectionBody: string;
+        sectionBodyPlaceholder: string;
+        addSection: string;
+        removeSection: string;
+        photoCredit: string;
+        photoCreditPlaceholder: string;
+        addPhoto: string;
+        removePhoto: string;
+      };
+      gallery: {
+        hint: string;
+        addImage: string;
+        uploading: string;
+        removeImageAria: string;
+      };
     };
   };
   benefits: {
@@ -1184,6 +1242,7 @@ export interface AdminPagesDict {
       unfeature: string;
       feature: string;
       review: string;
+      edit: string;
     };
     tabs: {
       all: string;

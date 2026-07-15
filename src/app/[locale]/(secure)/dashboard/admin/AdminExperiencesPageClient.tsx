@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, Star, StarOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Pencil, Star, StarOff } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
 import { ExperienceTypePills } from "@/components/common/ExperienceTypePills";
@@ -239,6 +239,14 @@ export function AdminExperiencesPageClient() {
                           </TableIconLink>
                         ) : (
                           <div className="flex items-center gap-1.5">
+                            {item.type.includes("XSED") && (
+                              <TableIconLink
+                                href={`/${locale}/dashboard/admin/xsed/${item.id}/edit`}
+                                title={act.edit}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </TableIconLink>
+                            )}
                             <TableIconButton
                               disabled={isBusy}
                               onClick={() =>

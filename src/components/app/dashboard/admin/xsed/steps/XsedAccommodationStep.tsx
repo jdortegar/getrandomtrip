@@ -1,26 +1,21 @@
 "use client";
 
-import { MapPin, Search, X } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { ACCOMMODATION_TYPES } from "@/lib/constants/packages";
+import type { AdminXsedDict } from "@/lib/types/dictionary";
 import type { AccommodationEntry, XsedDropDraft } from "@/types/xsed";
 
 interface Props {
   form: XsedDropDraft;
   onChange: (patch: Partial<XsedDropDraft>) => void;
+  copy: AdminXsedDict["form"]["fields"]["accommodation"];
 }
 
 const STAR_OPTIONS = [1, 2, 3, 4, 5];
-const EMPTY_ENTRY: AccommodationEntry = {
-  hotelName: "",
-  hotelStars: "",
-  hotelLocation: "",
-  hotelDays: "",
-  hotelLink: "",
-  referredLink: "",
-};
 
-export function XsedAccommodationStep({ form, onChange }: Props) {
+// XSED drops are single-night — always exactly one accommodation entry, no
+// add/remove repeater like the tripper experience form has.
+export function XsedAccommodationStep({ form, onChange, copy }: Props) {
   function updateEntry(index: number, key: keyof AccommodationEntry, value: string) {
     const updated = form.hotels.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
@@ -28,55 +23,16 @@ export function XsedAccommodationStep({ form, onChange }: Props) {
     onChange({ hotels: updated });
   }
 
-  function addEntry() {
-    onChange({ hotels: [...form.hotels, { ...EMPTY_ENTRY }] });
-  }
-
-  function removeEntry(index: number) {
-    onChange({ hotels: form.hotels.filter((_, i) => i !== index) });
-  }
-
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-4 mb-2">
-        <FormSelectField
-          id="xsed-acc-type"
-          label="Tipo de alojamiento"
-          value={form.accommodationType ?? "any"}
-          onChange={(e) => onChange({ accommodationType: e.target.value })}
-        >
-          {ACCOMMODATION_TYPES.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </FormSelectField>
-      </div>
-
       <div className="space-y-4">
         {form.hotels.map((entry, index) => (
           <div key={index} className="space-y-4">
-            {index > 0 && (
-              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <span className="text-sm text-neutral-500">
-                  Alojamiento {index + 1}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeEntry(index)}
-                  className="flex items-center gap-1 text-xs text-neutral-400 hover:text-red-500 transition-colors"
-                >
-                  <X className="h-3.5 w-3.5" />
-                  Eliminar
-                </button>
-              </div>
-            )}
-
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 id={`xsed-hotel-name-${index}`}
-                label="Nombre del hotel *"
-                placeholder="Ej: Boutique..."
+                label={copy.hotelName}
+                placeholder={copy.hotelNamePlaceholder}
                 value={entry.hotelName}
                 onChange={(e) => updateEntry(index, "hotelName", e.target.value)}
               />
@@ -84,18 +40,18 @@ export function XsedAccommodationStep({ form, onChange }: Props) {
               <div className="flex flex-col gap-2">
                 <FormSelectField
                   id={`xsed-hotel-stars-${index}`}
-                  label="Estrellas *"
+                  label={copy.hotelStars}
                   value={entry.hotelStars}
                   onChange={(e) => updateEntry(index, "hotelStars", e.target.value)}
                 >
-                  <option value="">Seleccionar</option>
+                  <option value="">{copy.hotelStarsPlaceholder}</option>
                   {STAR_OPTIONS.map((n) => (
                     <option key={n} value={String(n)}>
-                      {n} {n === 1 ? "estrella" : "estrellas"}
+                      {n} {n === 1 ? copy.hotelStarsSingular : copy.hotelStarsPlural}
                     </option>
                   ))}
                 </FormSelectField>
-                <p className="text-xs text-neutral-400">Categoría del alojamiento</p>
+                <p className="text-xs text-neutral-400">{copy.hotelStarsHint}</p>
               </div>
             </div>
 
@@ -105,13 +61,13 @@ export function XsedAccommodationStep({ form, onChange }: Props) {
                   className="block font-normal text-gray-600 text-base"
                   htmlFor={`xsed-hotel-location-${index}`}
                 >
-                  Ubicación *
+                  {copy.hotelLocation}
                 </label>
                 <div className="relative">
                   <input
                     id={`xsed-hotel-location-${index}`}
                     className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 pr-16 rounded-xl text-gray-900 w-full text-base"
-                    placeholder="Buscar location..."
+                    placeholder={copy.hotelLocationPlaceholder}
                     value={entry.hotelLocation}
                     onChange={(e) => updateEntry(index, "hotelLocation", e.target.value)}
                   />
@@ -124,8 +80,8 @@ export function XsedAccommodationStep({ form, onChange }: Props) {
 
               <FormField
                 id={`xsed-hotel-days-${index}`}
-                label="Noches"
-                placeholder="Ej: 1"
+                label={copy.hotelDays}
+                placeholder={copy.hotelDaysPlaceholder}
                 type="text"
                 inputMode="numeric"
                 value={entry.hotelDays}
@@ -137,14 +93,6 @@ export function XsedAccommodationStep({ form, onChange }: Props) {
           </div>
         ))}
       </div>
-
-      <button
-        type="button"
-        onClick={addEntry}
-        className="w-full rounded-xl border border-dashed border-gray-300 py-4 text-sm text-neutral-500 hover:border-gray-400 hover:text-neutral-700 transition-colors"
-      >
-        + Agregar alojamiento
-      </button>
     </div>
   );
 }
