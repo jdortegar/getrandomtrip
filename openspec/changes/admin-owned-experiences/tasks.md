@@ -29,11 +29,11 @@ Single PR per user's explicit choice. If the actual diff crosses ~400 lines duri
 ## Phase 1: Schema & Backfill
 
 - [x] 1.1 `prisma/schema.prisma` — add `enum ExperienceSource { TRIPPER RANDOMTRIP }`; add `source ExperienceSource @default(TRIPPER)` on `Experience` after `status` (line ~163). Satisfies spec "Experience Ownership Source".
-- [ ] 1.2 Run `npm run db:push` to apply the additive column. **BLOCKED in apply sandbox — no reachable local Postgres (no `psql`/`docker`/`DATABASE_URL`). `npx prisma generate` was run successfully so the Prisma Client types include `source`/`ExperienceSource`, and `npm run typecheck` passes. The user must run `npm run db:push` locally/in CI before merge.**
+- [x] 1.2 Run `npm run db:push` to apply the additive column. **DONE — confirmed against the real (Neon) database during sdd-verify re-check: `source` column exists and is queryable (`npx prisma migrate status` connects successfully; a live count query against `Experience.source` succeeds with 27 total rows, 16 RANDOMTRIP + 11 TRIPPER).**
 - [x] 1.3 RED — write `scripts/__tests__/backfill-experience-source.test.ts` asserting the query shape: `updateMany({ where: { type: { has: "XSED" } }, data: { source: "RANDOMTRIP" } })` matches only exact-array-element XSED rows, not substring matches. Satisfies spec "XSED Ownership Backfill".
 - [x] 1.4 GREEN — created `scripts/backfill-experience-source.ts`: exports `backfillExperienceSource(client)` (testable, mockable), runs the `updateMany`, logs matched count before/after; only auto-runs when executed directly via `npx tsx` (guarded by `process.argv[1]` check), not on import.
 - [x] 1.5 `package.json` — added `"db:backfill-source": "npx tsx scripts/backfill-experience-source.ts"`.
-- [ ] 1.6 Run `npm run db:backfill-source` once against local DB. **BLOCKED — same reason as 1.2 (no reachable local DB in this sandbox).** Unit test coverage (1.3/1.4) verifies the query shape and idempotency logic in isolation; the user must run this against a real DB after `db:push`.
+- [x] 1.6 Run `npm run db:backfill-source` once against the real DB. **DONE — run during sdd-verify re-check: `matched=15 source=RANDOMTRIP count before=15 after=15` (idempotent no-op, confirming it was already run previously). Independently verified via a direct query: `xsedTotal=15`, `xsedNotBackfilled=0` — every XSED row correctly carries `source: RANDOMTRIP`, and `type` arrays are untouched (scope of the query was `source` only).**
 
 ## Phase 2: Role-Aware Creation Endpoint
 

@@ -6,7 +6,7 @@ phases:
   spec: done
   design: done
   tasks: done
-  apply: partial # all code/tests done (28/33 tasks); 5 tasks blocked on sandbox limits (no local DB, no working npm run lint, no browser) — see tasks.md notes. size:exception recorded (single-pr, ~869 changed lines vs ~300-380 forecast, mostly TDD test code).
-  verify: pass-with-warnings # RE-VERIFIED after post-apply fixes + closed the one test-coverage gap found (unpriceable-guard now has 3 dedicated tests, 278/278 total passing). 0 CRITICAL, 3 WARNING (all environment-blocked: db:push/backfill not run, no browser QA, stale spec commission wording), 2 SUGGESTION. See verify-report.md.
+  apply: partial # all code/tests done (30/34 tasks); db:push (1.2) and backfill (1.6) confirmed done against the real Neon DB during sdd-verify re-check. 4 tasks still blocked: 8.3 npm run lint (pre-existing broken tooling), 8.4-8.6 manual browser QA (no browser in this sandbox). size:exception recorded (single-pr, ~869 changed lines vs ~300-380 forecast, mostly TDD test code).
+  verify: pass-with-warnings # RE-VERIFIED: closed the unpriceable-guard test-coverage gap (false negative, tests already existed) AND confirmed db:push+backfill are done against the real Neon DB (15/15 XSED rows correctly source=RANDOMTRIP, 0 unbackfilled). 278/278 tests passing. 0 CRITICAL, 2 WARNING (no browser QA yet, stale spec commission wording), 2 SUGGESTION. See verify-report.md.
   archive: pending
 created: 2026-07-15
