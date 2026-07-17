@@ -12,6 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { getExperienceCompleteness } from "@/lib/helpers/experience-form";
 import type { ExperienceFormDraft } from "@/types/tripper";
 import { sendExperienceSubmitted } from "@/lib/email";
+import { getBasePricePerPerson } from "@/lib/data/traveler-types";
 
 export async function POST(
   _request: Request,
@@ -30,7 +31,8 @@ export async function POST(
       select: { id: true, roles: true },
     });
 
-    if (!user || !hasRoleAccess(user, "tripper")) {
+    const isAdmin = hasRoleAccess(user, "admin");
+    if (!user || (!hasRoleAccess(user, "tripper") && !isAdmin)) {
       return NextResponse.json(
         { error: "Forbidden - Tripper access only" },
         { status: 403 },
@@ -39,12 +41,18 @@ export async function POST(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const experience = await (prisma.experience.findFirst as any)({
-      where: { id: params.id, ownerId: user.id },
+      where: { id: params.id },
     }) as (ExperienceFormDraft & {
-      id: string; ownerId: string; activities: unknown;
+      id: string; ownerId: string; activities: unknown; source: "TRIPPER" | "RANDOMTRIP";
     }) | null;
 
-    if (!experience) {
+    // Owner may always submit their own row. An admin may additionally publish
+    // any RANDOMTRIP (admin-owned) row regardless of who created it — never
+    // for TRIPPER rows, which stay behind the tripper-review pipeline.
+    const isOwner = experience?.ownerId === user.id;
+    const isAdminOnRandomtrip = isAdmin && experience?.source === "RANDOMTRIP";
+
+    if (!experience || (!isOwner && !isAdminOnRandomtrip)) {
       return NextResponse.json(
         { error: "Experience not found or access denied" },
         { status: 404 },
@@ -104,7 +112,38 @@ export async function POST(
       );
     }
 
-    // Transition to PENDING_REVIEW and clean up any INACTIVE copy from a prior rejection
+    // RANDOMTRIP (admin-created) rows auto-publish straight to ACTIVE, skipping
+    // PENDING_REVIEW; TRIPPER rows keep the existing review pipeline.
+    const isRandomtrip = experience.source === "RANDOMTRIP";
+    const targetStatus = isRandomtrip ? "ACTIVE" : "PENDING_REVIEW";
+
+    // RANDOMTRIP rows skip admin review (where pricingByType is normally set),
+    // so derive it here from the same fixed-config preset the admin review
+    // pre-fills — no commission add-on.
+    const pricingByType = isRandomtrip
+      ? Object.fromEntries(
+          (Array.isArray(experience.type) ? experience.type : [])
+            .filter((t) => t !== "XSED")
+            .map((t) => [t, getBasePricePerPerson(t, experience.level)]),
+        )
+      : undefined;
+
+    // Guard: a RANDOMTRIP row auto-publishes with no human review step, so it
+    // must never go ACTIVE unpriced (e.g. the type selector allows picking
+    // "XSED" in the generic wizard, leaving no non-XSED type to derive a price
+    // from) or priced at 0 (an unrecognized type/level combo).
+    if (
+      isRandomtrip &&
+      (Object.keys(pricingByType!).length === 0 ||
+        Object.values(pricingByType!).some((price) => price <= 0))
+    ) {
+      return NextResponse.json(
+        { error: "unpriceable", message: "No priceable type/level combination selected" },
+        { status: 422 },
+      );
+    }
+
+    // Transition status and clean up any INACTIVE copy from a prior rejection
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updated = await (prisma.$transaction as any)(async (tx: any) => {
       // Delete any INACTIVE review copy for this experience (from a prior rejection cycle)
@@ -127,14 +166,17 @@ export async function POST(
       return (tx.experience.update as any)({
         where: { id: params.id },
         data: {
-          status: "PENDING_REVIEW",
+          status: targetStatus,
           reviewNote: null,
+          ...(pricingByType && { pricingByType }),
         },
-        select: { id: true, status: true },
+        select: { id: true, status: true, pricingByType: true },
       });
-    }) as { id: string; status: string };
+    }) as { id: string; status: string; pricingByType: Record<string, number> | null };
 
-    sendExperienceSubmitted(updated.id, user.id);
+    if (targetStatus === "PENDING_REVIEW") {
+      sendExperienceSubmitted(updated.id, user.id);
+    }
 
     return NextResponse.json({ experience: updated });
   } catch (error) {

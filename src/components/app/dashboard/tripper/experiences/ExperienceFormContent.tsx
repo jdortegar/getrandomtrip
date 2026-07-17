@@ -46,6 +46,8 @@ interface ExperienceFormContentProps {
   onClearAll: () => void;
   onNext: () => void;
   onSubmit: () => void;
+  /** False hides the finalize CTA even on the last complete tab (e.g. an already-ACTIVE adminCreate row with nothing left to publish). Defaults to true. */
+  canFinalize?: boolean;
   openSectionId: string;
   onSectionChange: (id: string) => void;
   tabs: TripperExperiencesDict["form"]["contentTabs"];
@@ -133,6 +135,7 @@ export function ExperienceFormContent({
   onClearAll,
   onNext,
   onSubmit,
+  canFinalize = true,
   openSectionId,
   onSectionChange,
   tabs,
@@ -311,7 +314,7 @@ export function ExperienceFormContent({
             // Editable-but-not-tripper (adminEdit): reviewActionsSlot is present, but the
             // real submit action lives in the sticky bar (Send to Tripper), not here — force
             // "Next" so this button never turns into a tripper-only "Submit for review" dead end.
-            isAllStepsComplete={!reviewActionsSlot && isLastTab && allTabsComplete}
+            isAllStepsComplete={!reviewActionsSlot && isLastTab && allTabsComplete && canFinalize}
             isSavingAndRedirecting={isSubmitting}
             labels={{
               back: copy.actionBar.back,

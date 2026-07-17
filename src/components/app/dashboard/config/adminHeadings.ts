@@ -13,6 +13,7 @@ export function resolveAdminPageHeading(
   if (pathname.startsWith(base("/xsed"))) return headings.xsedNew;
   if (pathname.startsWith(base("/trip-requests"))) return headings.tripRequests;
   if (pathname.startsWith(base("/settings"))) return headings.settings;
+  if (pathname.startsWith(base("/experiences/new"))) return headings.experiencesNew;
   if (pathname.match(new RegExp(`^${base("/experiences/")}.+`))) {
     return headings.experiencesDetail;
   }

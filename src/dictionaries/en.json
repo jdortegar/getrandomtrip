@@ -41,6 +41,7 @@
       "tripRequests": "Trip Requests",
       "settings": "Settings",
       "experiences": "Experiences",
+      "newExperience": "New Experience",
       "payments": "Payments",
       "reviews": "Reviews",
       "xsed": "New TGIS Drop",
@@ -63,6 +64,10 @@
         "title": "Experiences",
         "description": "Review and manage trippers' experiences."
       },
+      "experiencesNew": {
+        "title": "New Experience",
+        "description": "Create a generic experience published by RandomTrip."
+      },
       "experiencesDetail": {
         "title": "Experience Review",
         "description": "Review the experience details before approving it."
@@ -83,6 +88,15 @@
         "title": "Notifications",
         "description": "Reviews and trips waiting on your attention."
       }
+    },
+    "newExperience": {
+      "submitLabel": "Publish",
+      "confirmTitle": "Publish this experience?",
+      "confirmBody": "It will go live immediately as a RandomTrip experience, skipping review."
+    },
+    "editExperience": {
+      "confirmTitle": "Save these changes?",
+      "confirmBody": "The changes will apply immediately to the published experience."
     }
   },
   "adminXsed": {
@@ -3764,6 +3778,7 @@
       "saving": "Saving...",
       "saved": "Saved",
       "errorSave": "Error saving",
+      "errorSubmit": "Could not publish the experience",
       "nav": {
         "sections": "Sections",
         "progress": "Progress"

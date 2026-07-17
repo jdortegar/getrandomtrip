@@ -440,6 +440,18 @@ export type ExperienceFormDraftOnChange = <K extends keyof ExperienceFormDraft>(
   value: ExperienceFormDraft[K],
 ) => void;
 
+/**
+ * Extra scalar fields read directly off an Experience row for the admin
+ * RANDOMTRIP edit page — `findFirst` is cast through `any` there (sidesteps
+ * Prisma's generated select-narrowing), so these are re-annotated by hand.
+ */
+export interface ExperienceRandomtripEditFields {
+  pricingByType: Record<string, number> | null;
+  reviewNote: string | null;
+  tripperNote: string | null;
+  source: "TRIPPER" | "RANDOMTRIP";
+}
+
 export interface ExperienceListItem {
   id: string;
   title: string;

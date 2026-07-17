@@ -41,6 +41,7 @@
       "tripRequests": "Solicitudes de viaje",
       "settings": "Configuración",
       "experiences": "Experiencias",
+      "newExperience": "Nueva experiencia",
       "payments": "Pagos",
       "reviews": "Reseñas",
       "xsed": "Nuevo XSED Drop",
@@ -63,6 +64,10 @@
         "title": "Experiencias",
         "description": "Revisá y gestioná las experiencias de los trippers."
       },
+      "experiencesNew": {
+        "title": "Nueva experiencia",
+        "description": "Creá una experiencia genérica publicada por RandomTrip."
+      },
       "experiencesDetail": {
         "title": "Revisión de experiencia",
         "description": "Revisá los detalles de la experiencia antes de aprobarla."
@@ -83,6 +88,15 @@
         "title": "Notificaciones",
         "description": "Reseñas y viajes que esperan tu atención."
       }
+    },
+    "newExperience": {
+      "submitLabel": "Publicar",
+      "confirmTitle": "¿Publicar esta experiencia?",
+      "confirmBody": "Se publicará de inmediato como una experiencia de RandomTrip, sin pasar por revisión."
+    },
+    "editExperience": {
+      "confirmTitle": "¿Guardar los cambios?",
+      "confirmBody": "Los cambios se aplicarán de inmediato a la experiencia publicada."
     }
   },
   "adminXsed": {
@@ -3764,6 +3778,7 @@
       "saving": "Guardando...",
       "saved": "Guardado",
       "errorSave": "Error al guardar",
+      "errorSubmit": "No se pudo publicar la experiencia",
       "nav": {
         "sections": "Secciones",
         "progress": "Progreso"
