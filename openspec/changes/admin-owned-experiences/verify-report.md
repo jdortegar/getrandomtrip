@@ -237,3 +237,39 @@ Initial assumption (both this pass and the original pass) was that no DB was rea
 
 ### Updated Final Verdict
 **PASS WITH WARNINGS.** All code, tests, AND the database migration/backfill are confirmed done and correct against the real database. 278/278 tests passing, 0 typecheck errors, 0 CRITICAL issues across two verify passes plus this follow-up DB check. The only remaining gaps are a live browser QA pass (recommended, not confirmed blocking given DB evidence of real usage) and a documentation wording nit in spec.md. This change is in strong shape for `sdd-archive`.
+
+---
+
+## FOURTH VERIFY PASS (independent re-verification, fresh context)
+
+**Context**: Triggered via explicit `/sdd-verify admin-owned-experiences`, after two additional commits landed since the last pass (`9b578a50`/`6142f7c8` — feature + unrelated pre-existing test fixes; `e68ccb1c` — docs-only, recording the prior pass's DB-confirmation evidence into these artifacts). This pass re-verified from scratch: read proposal/spec/design/tasks/state/verify-report directly, re-read the highest-risk code (authorization boundary in `[id]/route.ts` and `submit/route.ts`, the XSED-vs-RANDOMTRIP double-guard in `admin/experiences/[id]/edit/page.tsx`, the unpriceable guard + its tests, `NewExperienceShell`'s edit-mode helpers, and dictionary symmetry), and independently re-ran typecheck, the full test suite, and a live read query against the real Neon database.
+
+### Independent Verification Performed
+
+| Check | Method | Result |
+|---|---|---|
+| `npm run typecheck` | Ran directly | 0 errors, repo-wide |
+| `npm run test` | Ran directly | **278/278 passing across 39 files** — confirmed exactly matches the prior pass's count, and the 6 previously-known pre-existing baseline failures are now gone (fixed by `6142f7c8`, itself independently confirmed test-only) |
+| Live DB backfill state | Ran `npm run db:backfill-source` for real (idempotent, safe) | `matched=15 source=RANDOMTRIP count before=15 after=15` — confirms the `source` column exists and all 15 XSED rows remain correctly tagged `RANDOMTRIP`; matches the prior pass's claim exactly |
+| `[id]/route.ts` PATCH authorization | Read full test file + source | All 4 owner/role/source quadrants covered (owner-self, admin-on-RANDOMTRIP-not-owned, admin-on-TRIPPER-not-owned → 404, non-admin-tripper-on-RANDOMTRIP-not-owned → 404); `revertToDraft` correctly scoped to `source === "TRIPPER"` only |
+| `submit/route.ts` finalizer | Read source directly | Branch ordering unchanged and correct: completeness check → `isRandomtrip`/`targetStatus` → `pricingByType` derivation → unpriceable 422 guard → transaction update → email gated strictly on `targetStatus === "PENDING_REVIEW"` |
+| Unpriceable guard tests | `rg` with corrected path quoting | 3 dedicated tests present and passing (empty-after-XSED-filter, zero-price unrecognized type/level, TRIPPER-rows-unaffected) — confirms the prior pass's retraction of its own false-negative was correct |
+| `admin/experiences/[id]/edit/page.tsx` double-guard | Read source directly | Order confirmed: `source !== "RANDOMTRIP"` redirect first (L46), then `type.includes("XSED")` redirect (L54) — correct, prevents the generic shell from clobbering XSED-only fields |
+| `NewExperienceShell` edit-mode helpers | Read `newExperienceShellHelpers.ts` + call sites | `isEditingLiveRandomtrip` (mode `adminCreate` + status !== DRAFT) correctly suppresses autosave and swaps in an explicit "Save Changes" flow with `editModeCopy`; `canRequestSubmit` correctly gates `adminCreate` finalize to `status === "DRAFT"` only, leaving `tripper` mode's resubmit-after-edit path untouched |
+| Reviews attribution | Read source directly | `owner.roles` select fully removed; `source: true` used; `ownerIsTripper = experience.source === "TRIPPER"` |
+| Dictionary symmetry | Parsed `es.json`/`en.json` programmatically | `adminDashboard` top-level keys identical in both locales (`editExperience`, `nav`, `newExperience`, `pageHeadings`); `newExperience.{submitLabel,confirmTitle,confirmBody}` and `editExperience.{confirmTitle,confirmBody}` both fully populated in both locales; `dictionary.ts` types match |
+| Commission field absence | `rg "commission"` across `NewExperienceShell.tsx` + step components | Zero matches — confirms no commission field exists in the active form, consistent with design.md's reconciliation and the still-outstanding spec.md wording staleness (WARNING 2, unchanged) |
+| PR #72 state | `gh pr view/checks` | `OPEN`, `mergeable: MERGEABLE`, `mergeStateStatus: CLEAN`; only check is a Vercel deploy (ignored build step, no test/CI workflow configured in this repo) |
+
+### New Issues Found This Pass
+
+**None.** No CRITICAL, WARNING, or SUGGESTION issues were found beyond what the three prior passes already identified and closed/carried forward. This pass independently reproduces the same evidence (test count, DB state, code correctness) rather than trusting the prior report's claims.
+
+### Final Counts (unchanged from third pass)
+**0 CRITICAL, 2 WARNING, 2 SUGGESTION**:
+- WARNING 1: No live browser QA performed for the new UI flows (level selector, admin edit page, autosave-suppression/Save-Changes button, edit-link wiring). DB evidence (one real non-XSED `RANDOMTRIP` row in production) suggests the creation flow has been exercised at least once, but a deliberate QA pass is still recommended before shipping further changes to this surface.
+- WARNING 2: `spec.md`'s "Role-Aware Experience Creation Endpoint" requirement text still states the TRIPPER creation UI "shows/requires" a commission field — confirmed still stale this pass (no commission field exists anywhere in the live form; re-confirmed via direct grep). Recommend a documentation-only follow-up edit to `spec.md` before or during archive.
+- SUGGESTION 1-2 unchanged: no coverage tooling configured (`vitest.config.ts` has no provider); no dedicated test for `AboutExperienceStep`'s level-selector/`maxNightsHint` rendering (consistent with this project's convention of not unit-testing full form-step components).
+
+### Fourth Pass Verdict
+**PASS WITH WARNINGS.** Independent re-verification (fresh reasoning, not a rubber stamp) confirms the third pass's conclusions on every point checked: code, types, and tests are fully compliant with spec.md and design.md, the highest-risk authorization/branching logic is correct and tested, and the database migration + backfill are genuinely applied and idempotent. Both remaining WARNINGs are non-blocking (a QA task and a docs nit), not code defects. **Ready for `sdd-archive`.**
