@@ -190,6 +190,78 @@ describe("POST /api/reviews", () => {
     );
   });
 
+  it("attributes tripperId from experience.ownerId when source is TRIPPER (Scenario: Tripper-sourced experience attributes owner)", async () => {
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...baseTripRequest,
+      tripperId: null,
+      experience: { ownerId: "t1", source: "TRIPPER" },
+    });
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (fn: (tx: typeof prisma) => Promise<unknown>) => fn(prisma),
+    );
+    (prisma.review.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "review-1" });
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.POST(
+      makePostRequest({ token: "valid-token-abc", rating: 5, content: "Great!" }),
+    );
+
+    expect(prisma.review.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tripperId: "t1" }),
+      }),
+    );
+  });
+
+  it("attributes no tripper (tripperId: null) when source is RANDOMTRIP, even if owner.roles includes TRIPPER (Scenario: RandomTrip-sourced experience attributes no tripper)", async () => {
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...baseTripRequest,
+      tripperId: null,
+      // owner.roles is intentionally absent from the select now — source is
+      // the sole signal — but even a stale/mocked owner.roles must not
+      // resurrect attribution.
+      experience: { ownerId: "t1", source: "RANDOMTRIP", owner: { roles: ["TRIPPER"] } },
+    });
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (fn: (tx: typeof prisma) => Promise<unknown>) => fn(prisma),
+    );
+    (prisma.review.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "review-1" });
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.POST(
+      makePostRequest({ token: "valid-token-abc", rating: 5, content: "Great!" }),
+    );
+
+    expect(prisma.review.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tripperId: null }),
+      }),
+    );
+  });
+
+  it("uses TripRequest.tripperId directly and does not consult experience.source when tripperId is non-null (Scenario: Existing tripperId path unaffected)", async () => {
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...baseTripRequest,
+      tripperId: "tripper-direct",
+      experience: { ownerId: "t1", source: "RANDOMTRIP" },
+    });
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (fn: (tx: typeof prisma) => Promise<unknown>) => fn(prisma),
+    );
+    (prisma.review.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "review-1" });
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.POST(
+      makePostRequest({ token: "valid-token-abc", rating: 5, content: "Great!" }),
+    );
+
+    expect(prisma.review.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tripperId: "tripper-direct" }),
+      }),
+    );
+  });
+
   it("works without auth header (Scenario 4.10 — public endpoint)", async () => {
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(baseTripRequest);
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(

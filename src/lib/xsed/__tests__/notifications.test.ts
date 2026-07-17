@@ -12,6 +12,7 @@ describe("parseXsedNotificationBody", () => {
     ).toEqual({
       email: "traveler@example.com",
       locale: "en",
+      timezone: null,
     });
   });
 
@@ -33,6 +34,7 @@ describe("parseXsedNotificationBody", () => {
     ).toEqual({
       email: "traveler@example.com",
       locale: null,
+      timezone: null,
     });
   });
 });

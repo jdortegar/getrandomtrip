@@ -142,13 +142,17 @@ export async function PATCH(
     const experienceId = params.id;
 
     const existingExperience = await prisma.experience.findFirst({
-      where: {
-        id: experienceId,
-        ownerId: user.id,
-      },
+      where: { id: experienceId },
     });
 
-    if (!existingExperience) {
+    // Owner may always edit their own row. An admin may additionally edit
+    // any RANDOMTRIP (admin-owned) row regardless of who created it — admins
+    // never get this bypass for TRIPPER rows, which stay behind the review flow.
+    const isOwner = existingExperience?.ownerId === user.id;
+    const isAdminOnRandomtrip =
+      hasRoleAccess(user, "admin") && existingExperience?.source === "RANDOMTRIP";
+
+    if (!existingExperience || (!isOwner && !isAdminOnRandomtrip)) {
       return NextResponse.json(
         { error: "Experience not found or access denied" },
         { status: 404 },
@@ -254,7 +258,13 @@ export async function PATCH(
       !eq(climate ?? "any", existingExperience.climate) ||
       !eq(accommodationType ?? "any", existingExperience.accommodationType);
 
-    const revertToDraft = existingExperience.status === "ACTIVE" && contentChanged;
+    // RANDOMTRIP rows skip review entirely (see admin-owned-experiences design),
+    // so editing a live one must not silently unpublish it — only TRIPPER rows
+    // revert to DRAFT on content change, forcing a re-review.
+    const revertToDraft =
+      existingExperience.status === "ACTIVE" &&
+      contentChanged &&
+      existingExperience.source === "TRIPPER";
 
     const updatedExperience = await prisma.experience.update({
       where: { id: experienceId },

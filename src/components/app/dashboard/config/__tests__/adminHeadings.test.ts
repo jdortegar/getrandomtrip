@@ -7,6 +7,7 @@ const headings: AdminDashboardDict["pageHeadings"] = {
   tripRequests: { title: "Trip Requests", description: "TR desc" },
   settings: { title: "Settings", description: "Settings desc" },
   experiences: { title: "Experiences", description: "Exp desc" },
+  experiencesNew: { title: "New Experience", description: "New exp desc" },
   experiencesDetail: { title: "Experience Detail", description: "Detail desc" },
   payments: { title: "Payments", description: "Payments desc" },
   reviews: { title: "Reviews", description: "Reviews desc" },
@@ -43,6 +44,12 @@ describe("resolveAdminPageHeading", () => {
     expect(
       resolveAdminPageHeading("/dashboard/admin/experiences/abc123", headings),
     ).toEqual(headings.experiencesDetail);
+  });
+
+  it("resolves the New Experience heading, distinct from the review detail heading", () => {
+    expect(
+      resolveAdminPageHeading("/dashboard/admin/experiences/new", headings),
+    ).toEqual(headings.experiencesNew);
   });
 
   it("resolves payments and reviews", () => {

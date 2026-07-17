@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getTripperExperiences } from "@/lib/db/tripper-queries";
 import { prisma } from "@/lib/prisma";
 import type { ExperienceFormDraft } from "@/types/tripper";
@@ -63,11 +63,16 @@ export async function POST(request: NextRequest) {
 
     const body = (await request.json()) as ExperienceFormDraft;
 
+    // source is server-derived from the caller's role only — never trusted
+    // from the request body (ExperienceFormDraft has no `source` field).
+    const isAdmin = getAppRoles(user).includes("admin");
+
     const experience = await prisma.experience.create({
       data: {
         ownerId: user.id,
         createdById: user.id,
         status: "DRAFT",
+        source: isAdmin ? "RANDOMTRIP" : "TRIPPER",
         type: Array.isArray(body.type) ? body.type : [body.type].filter(Boolean),
         level: body.level || null,
         excuseKey: Array.isArray(body.excuseKey) ? body.excuseKey : [],

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         experience: {
           select: {
             ownerId: true,
-            owner: { select: { roles: true } },
+            source: true,
           },
         },
       },
@@ -76,10 +76,11 @@ export async function POST(request: Request) {
     }
 
     // Derive effective tripperId: prefer TripRequest.tripperId; fall back to
-    // experience.ownerId when the owner is a TRIPPER (not ADMIN).
+    // experience.ownerId when the experience's immutable source is TRIPPER
+    // (RANDOMTRIP-sourced experiences attribute no tripper commission).
     let effectiveTripperId = tripRequest.tripperId;
     if (!effectiveTripperId && tripRequest.experience) {
-      const ownerIsTripper = tripRequest.experience.owner?.roles?.includes("TRIPPER");
+      const ownerIsTripper = tripRequest.experience.source === "TRIPPER";
       if (ownerIsTripper) {
         effectiveTripperId = tripRequest.experience.ownerId;
       }

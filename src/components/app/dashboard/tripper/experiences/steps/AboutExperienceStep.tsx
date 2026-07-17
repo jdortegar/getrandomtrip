@@ -5,12 +5,17 @@ import { useParams } from "next/navigation";
 import { Check, ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { FormField } from "@/components/ui/FormField";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { validateImageSize } from "@/lib/utils/validateImageSize";
 import { DaysInput } from "@/components/ui/DaysInput";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
-import { getExperienceTypes, getExcuseOptionsForType } from "@/lib/constants/packages";
+import {
+  getExperienceTypes,
+  getExcuseOptionsForType,
+  EXPERIENCE_LEVELS,
+  MAX_NIGHTS_BY_LEVEL,
+} from "@/lib/constants/packages";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
   ExperienceFormDraft,
@@ -56,14 +61,20 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
     ),
   }));
 
+  const maxNightsAllowed = MAX_NIGHTS_BY_LEVEL[form.level];
+  const maxNightsHint =
+    maxNightsAllowed != null
+      ? copy.fields.maxNightsHint.replace("{n}", String(maxNightsAllowed))
+      : null;
+
   return (
     <div className="space-y-5">
       <p className="text-sm text-neutral-500 -mt-1">
         {copy.contentTabs[0]?.substeps[0]?.description}
       </p>
 
-      {/* Row 1: Título (wide) + Tipo de experiencia */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Row 1: Título (wide) + Tipo de experiencia + Nivel */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="col-span-2">
           <FormField
             id="exp-title"
@@ -87,18 +98,36 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
           />
           <p className="text-xs text-neutral-400">{copy.fields.typeHint}</p>
         </div>
+        <FormSelectField
+          id="exp-level"
+          label={<>{copy.fields.level}{req}</>}
+          className={ch("level")}
+          value={form.level}
+          onChange={(e) => onChange("level", e.target.value)}
+        >
+          {EXPERIENCE_LEVELS.map((level) => (
+            <option key={level.value} value={level.value}>
+              {level.label}
+            </option>
+          ))}
+        </FormSelectField>
       </div>
 
       {/* Row 2: Duración + Meses + Excusa */}
       <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-4">
-        <DaysInput
-          id="exp-min-nights"
-          hintTemplate={copy.fields.minNightsHint}
-          label={copy.fields.minNights}
-          value={form.minNights + 1}
-          onChange={(days) => onChange("minNights", days - 1)}
-          inputClassName={ch("minNights")}
-        />
+        <div className="flex flex-col gap-1">
+          <DaysInput
+            id="exp-min-nights"
+            hintTemplate={copy.fields.minNightsHint}
+            label={copy.fields.minNights}
+            value={form.minNights + 1}
+            onChange={(days) => onChange("minNights", days - 1)}
+            inputClassName={ch("minNights")}
+          />
+          {maxNightsHint && (
+            <p className="text-xs text-neutral-400">{maxNightsHint}</p>
+          )}
+        </div>
 
         <MultiSelectInput
           id="exp-season"

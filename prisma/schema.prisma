@@ -161,6 +161,7 @@ model Experience {
   id      String           @id @default(cuid())
   ownerId String // Tripper who created this experience
   status  ExperienceStatus @default(DRAFT)
+  source  ExperienceSource @default(TRIPPER) // immutable ownership signal, server-derived at create
 
   // Experience metadata — type also accepts 'XSED' for Sunday drops
   type  String[] // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
@@ -445,6 +446,11 @@ enum ExperienceStatus {
   ACTIVE
   INACTIVE
   ARCHIVED
+}
+
+enum ExperienceSource {
+  TRIPPER
+  RANDOMTRIP
 }
 
 enum PaymentStatus {

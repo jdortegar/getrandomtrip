@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
           },
         },
         status: true,
+        source: true,
         title: true,
         type: true,
         level: true,

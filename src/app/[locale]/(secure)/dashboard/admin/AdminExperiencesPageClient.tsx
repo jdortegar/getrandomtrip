@@ -239,13 +239,22 @@ export function AdminExperiencesPageClient() {
                           </TableIconLink>
                         ) : (
                           <div className="flex items-center gap-1.5">
-                            {item.type.includes("XSED") && (
+                            {item.type.includes("XSED") ? (
                               <TableIconLink
                                 href={`/${locale}/dashboard/admin/xsed/${item.id}/edit`}
                                 title={act.edit}
                               >
                                 <Pencil className="h-4 w-4" />
                               </TableIconLink>
+                            ) : (
+                              item.source === "RANDOMTRIP" && (
+                                <TableIconLink
+                                  href={`/${locale}/dashboard/admin/experiences/${item.id}/edit`}
+                                  title={act.edit}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </TableIconLink>
+                              )
                             )}
                             <TableIconButton
                               disabled={isBusy}
