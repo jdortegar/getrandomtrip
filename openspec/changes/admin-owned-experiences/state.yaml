@@ -7,6 +7,6 @@ phases:
   design: done
   tasks: done
   apply: partial # all code/tests done (28/33 tasks); 5 tasks blocked on sandbox limits (no local DB, no working npm run lint, no browser) — see tasks.md notes. size:exception recorded (single-pr, ~869 changed lines vs ~300-380 forecast, mostly TDD test code).
-  verify: pass-with-warnings # RE-VERIFIED after post-apply fixes (nav exact-tab, level selector, RANDOMTRIP admin-auth boundary, admin edit page double-guard, autosave suppression, unpriceable pricing guard, domain-type extraction). 0 CRITICAL, 4 WARNING (1 new: unpriceable-guard untested), 2 SUGGESTION. See verify-report.md.
+  verify: pass-with-warnings # RE-VERIFIED after post-apply fixes + closed the one test-coverage gap found (unpriceable-guard now has 3 dedicated tests, 278/278 total passing). 0 CRITICAL, 3 WARNING (all environment-blocked: db:push/backfill not run, no browser QA, stale spec commission wording), 2 SUGGESTION. See verify-report.md.
   archive: pending
 created: 2026-07-15

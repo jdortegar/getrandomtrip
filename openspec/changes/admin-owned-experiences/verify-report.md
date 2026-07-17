@@ -186,3 +186,24 @@ Coverage analysis skipped — no coverage tool detected/configured (`vitest.conf
 
 ### Addendum Verdict
 **PASS WITH WARNINGS** (unchanged verdict, updated counts: 0 CRITICAL, 4 WARNING, 2 SUGGESTION combined across both passes). The additional post-apply work is implemented correctly, including the two highest-consequence areas explicitly called out (authorization boundary, XSED double-guard) — both independently re-verified via direct code read and existing automated tests. The one net-new gap (unpriceable-guard test coverage) does not block functionality and does not indicate a code defect, but should be closed before archive to keep this project's Strict TDD discipline intact.
+
+---
+
+## CORRECTION (same re-verify pass, follow-up check)
+
+The addendum above reported WARNING #4 ("unpriceable" 422 guard has zero test coverage) based on a `rg` search that returned no matches. Re-checked with corrected shell quoting (the original search's unquoted `[id]` path segment was mis-parsed as a glob character class by the shell, silently matching nothing) — the test file `src/app/api/tripper/experiences/[id]/submit/__tests__/route.test.ts` in fact contains 3 dedicated tests for this exact guard:
+- `returns 422 'unpriceable' when a RANDOMTRIP row's only type is XSED (nothing left to price after filtering)`
+- `returns 422 'unpriceable' when a RANDOMTRIP row's type/level combo prices at 0 (unrecognized type)`
+- `does not apply the unpriceable guard to TRIPPER rows (pricingByType is admin-set later during review, not derived here)`
+
+Ran this file in isolation: **18/18 passing**. Ran the full suite: **278/278 passing across 39 files** (up from 275 — these 3 tests were already present in the working tree, my first pass's search tooling just failed to find them). `npm run typecheck` re-confirmed 0 errors.
+
+**WARNING #4 is retracted.** It was a false negative in my own verification tooling, not a gap in the codebase. Item 6 (pricing safety guard) is fully implemented AND fully tested.
+
+### Corrected Final Counts
+**0 CRITICAL, 3 WARNING, 2 SUGGESTION** (down from the addendum's 4 WARNING):
+- WARNING 1-3 unchanged from the original pass: `db:push`/backfill not run against a real DB (still genuinely blocked — no `psql`/`docker` reachable in this sandbox), no live browser QA performed, stale `spec.md` commission wording.
+- SUGGESTION 1-2 unchanged: no coverage tooling configured; no dedicated test for the level-selector/maxNightsHint UI (consistent with project convention, non-blocking).
+
+### Final Verdict
+**PASS WITH WARNINGS.** All code-completable work for this change — including every item raised in this re-verify pass — is implemented correctly and fully tested (278/278 passing, 0 typecheck errors). The 3 remaining WARNINGs are all genuine environment/infra blockers (no reachable database, no browser) or a documentation nit, none of which are code defects. This change is ready for archive once `db:push` + the backfill script are run against a real database outside this sandbox, and a live QA pass is done before shipping to production.

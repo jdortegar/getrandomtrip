@@ -21,7 +21,7 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    experience: { create: vi.fn(), findMany: vi.fn() },
+    experience: { create: vi.fn(), findMany: vi.fn(), count: vi.fn() },
   },
 }));
 
@@ -55,6 +55,8 @@ function makePostRequest(body: Record<string, unknown>): Request {
 describe("POST /api/admin/xsed", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // Auto-slug numbering — count value is irrelevant to every test below.
+    (prisma.experience.count as ReturnType<typeof vi.fn>).mockResolvedValue(0);
   });
 
   afterEach(() => {
@@ -98,9 +100,9 @@ describe("POST /api/admin/xsed", () => {
     const body = await res.json();
     expect(body).toHaveProperty("id", "new-xsed-id");
 
-    // Verify the prisma call sets type=XSED and ownerId
+    // Verify the prisma call sets type=[XSED] (array field) and ownerId
     const createCall = (prisma.experience.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(createCall.data.type).toBe("XSED");
+    expect(createCall.data.type).toEqual(["XSED"]);
     expect(createCall.data.ownerId).toBe("admin-1");
     expect(createCall.data.status).toBe("DRAFT");
   });
