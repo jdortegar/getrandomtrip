@@ -20,6 +20,14 @@ import type { ExperienceFormDraft } from "@/types/tripper";
 import { isExperienceTabComplete } from "@/lib/helpers/experience-form";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
+import {
+  canRequestSubmit,
+  isEditingLiveRandomtrip as computeIsEditingLiveRandomtrip,
+  resolveFinalizeCopy,
+  resolvePublishRedirectPath,
+  shouldShowTripperNoteField,
+  type FinalizeCopy,
+} from "./newExperienceShellHelpers";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
@@ -30,7 +38,11 @@ export interface ExperienceImageState {
   onEntryImageRemove: (field: "activities" | "itinerary", index: number) => void;
 }
 
-export type ExperienceShellMode = "tripper" | "adminEdit" | "adminReadOnly";
+export type ExperienceShellMode =
+  | "tripper"
+  | "adminCreate"
+  | "adminEdit"
+  | "adminReadOnly";
 
 interface NewExperienceShellProps {
   adminReviewSlot?: ReactNode;
@@ -51,6 +63,10 @@ interface NewExperienceShellProps {
   changedFields?: string[];
   /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
   originalDraft?: ExperienceFormDraft;
+  /** Overrides the finalize CTA label + confirm-modal copy (e.g. adminCreate's "Publish"). Falls back to tripper defaults. */
+  finalizeCopy?: FinalizeCopy;
+  /** Confirm-modal copy used instead of `finalizeCopy` when editing an already-live RANDOMTRIP row (see isEditingLiveRandomtrip) — CTA label stays dict.editSubmit ("Save Changes"). */
+  editModeCopy?: { confirmTitle: string; confirmBody: string };
 }
 
 const EMPTY_DRAFT: ExperienceFormDraft = {
@@ -128,6 +144,8 @@ export function NewExperienceShell({
   adminCopyId,
   changedFields,
   originalDraft,
+  finalizeCopy,
+  editModeCopy,
 }: NewExperienceShellProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -176,6 +194,7 @@ export function NewExperienceShell({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [submitError, setSubmitError] = useState<string[] | null>(null);
+  const [submitFailed, setSubmitFailed] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [submitNote, setSubmitNote] = useState("");
 
@@ -186,6 +205,12 @@ export function NewExperienceShell({
   const isReadOnly =
     mode === "adminReadOnly" ||
     (mode === "tripper" && (form.status === "PENDING_REVIEW" || form.status === "PENDING_TRIPPER_REVIEW"));
+
+  // Editing an already-published RANDOMTRIP row (adminCreate mode, status !== DRAFT):
+  // there is no staging/review copy for this flow, so autosave must not silently
+  // patch the live public row on every keystroke. Edits are only persisted on an
+  // explicit "Save Changes" click instead of the debounced autosave loop.
+  const isEditingLiveRandomtrip = computeIsEditingLiveRandomtrip(mode, form.status);
 
   // Blob URL → File map for pending uploads (blob URLs live in form state directly)
   const pendingFilesRef = useRef<Map<string, File>>(new Map());
@@ -333,11 +358,12 @@ export function NewExperienceShell({
       return;
     }
     if (isReadOnly) return; // no autosave while pending review
+    if (isEditingLiveRandomtrip) return; // live row — only explicit "Save Changes" persists
     if (!draftIdRef.current && !form.title.trim()) return;
     setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [form, persistDraft, isReadOnly]);
+  }, [form, persistDraft, isReadOnly, isEditingLiveRandomtrip]);
 
   // Keep URL in sync with active tab+section so reloads restore position
   useEffect(() => {
@@ -413,8 +439,11 @@ export function NewExperienceShell({
     setForm(EMPTY_DRAFT);
   }
 
+  const canFinalize = canRequestSubmit(mode, isSubmitting, isReadOnly, form.status);
+  const canSaveChanges = isEditingLiveRandomtrip && !isSubmitting && !isReadOnly;
+
   function handleRequestSubmit() {
-    if (isSubmitting || isReadOnly || mode !== "tripper") return;
+    if (!canFinalize && !canSaveChanges) return;
     setSubmitNote(form.tripperNote ?? "");
     setShowSubmitConfirm(true);
   }
@@ -423,6 +452,7 @@ export function NewExperienceShell({
     setShowSubmitConfirm(false);
     setIsSubmitting(true);
     setSubmitError(null);
+    setSubmitFailed(false);
     setForm((prev) => ({ ...prev, tripperNote: submitNote }));
     try {
       const finalForm = await flushPendingBlobs({ ...form, tripperNote: submitNote });
@@ -447,6 +477,15 @@ export function NewExperienceShell({
           },
         );
         if (!res.ok) throw new Error("Failed to save draft");
+      }
+
+      // Editing an already-live RANDOMTRIP row: the PATCH above already
+      // persisted the changes. There is no PENDING_REVIEW step to enter —
+      // /submit would 409 since the row isn't DRAFT — so this IS the save
+      // action; skip straight to the redirect.
+      if (isEditingLiveRandomtrip) {
+        router.push(resolvePublishRedirectPath(mode, locale));
+        return;
       }
 
       // Submit for review
@@ -490,9 +529,10 @@ export function NewExperienceShell({
       // Stay in the loading state through navigation — router.push doesn't
       // synchronously unmount this component, so resetting isSubmitting here
       // would flash the button back to its idle label for a moment first.
-      router.push(`/${locale}/dashboard/tripper/experiences`);
+      router.push(resolvePublishRedirectPath(mode, locale));
     } catch (err) {
       console.error(err);
+      setSubmitFailed(true);
       setIsSubmitting(false);
     }
   }
@@ -577,6 +617,29 @@ export function NewExperienceShell({
     (form.status === "DRAFT" || form.status === "ACTIVE");
   const isRejectionNote = form.status === "DRAFT";
 
+  // Finalize CTA label + confirm-modal copy — falls back to the tripper
+  // defaults unless an override (e.g. adminCreate's "Publish") is passed.
+  // Editing an already-live RANDOMTRIP row swaps in "Save Changes" copy
+  // instead — there is nothing left to "publish".
+  const resolvedFinalizeCopy =
+    isEditingLiveRandomtrip && editModeCopy
+      ? {
+          submitLabel: dict.editSubmit,
+          confirmTitle: editModeCopy.confirmTitle,
+          confirmBody: editModeCopy.confirmBody,
+        }
+      : resolveFinalizeCopy(dict, finalizeCopy);
+  const effectiveDict = finalizeCopy
+    ? {
+        ...dict,
+        actionBar: {
+          ...dict.actionBar,
+          submitForReview: resolvedFinalizeCopy.submitLabel,
+        },
+      }
+    : dict;
+  const showTripperNoteField = shouldShowTripperNoteField(mode);
+
   return (
     <div className="bg-gray-50">
       <JourneyContentNavigation
@@ -643,14 +706,22 @@ export function NewExperienceShell({
           </div>
         )}
 
-        {/* Submit error banner */}
+        {/* Submit error banner — missing required fields (422) */}
         {submitError && submitError.length > 0 && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
             <div className="text-sm text-red-800">
-              <span className="font-medium">Required fields missing: </span>
+              <span className="font-medium">{dict.requiredFieldsLabel}: </span>
               {submitError.join(", ")}
             </div>
+          </div>
+        )}
+
+        {/* Submit error banner — generic failure (network/500) */}
+        {submitFailed && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-red-500" />
+            <div className="text-sm text-red-800">{dict.errorSubmit}</div>
           </div>
         )}
 
@@ -674,7 +745,7 @@ export function NewExperienceShell({
               reviewActionsSlot={reviewActionsSlot}
               onBack={handleBackToStart}
               onPreviousStep={handlePreviousStep}
-              copy={dict}
+              copy={effectiveDict}
               form={form}
               imageState={imageState}
               isReadOnly={isReadOnly}
@@ -684,6 +755,7 @@ export function NewExperienceShell({
               onClearAll={handleClearAll}
               onNext={handleNext}
               onSubmit={handleRequestSubmit}
+              canFinalize={canFinalize || canSaveChanges}
               openSectionId={openSectionId}
               onSectionChange={handleSectionChange}
               tabs={effectiveTabs}
@@ -705,27 +777,29 @@ export function NewExperienceShell({
             <Check className="h-5 w-5 text-light-blue" />
           </div>
           <DialogTitle className="text-2xl font-bold text-gray-900">
-            {dict.submitConfirmTitle}
+            {resolvedFinalizeCopy.confirmTitle}
           </DialogTitle>
           <DialogDescription className="text-sm text-neutral-500">
-            {dict.submitConfirmBody}
+            {resolvedFinalizeCopy.confirmBody}
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-2 flex flex-col gap-1.5">
-          <label htmlFor="submit-note" className="text-sm font-medium text-gray-700">
-            {dict.tripperNoteLabel}{" "}
-            <span className="font-normal text-gray-400">{dict.tripperNoteOptional}</span>
-          </label>
-          <textarea
-            id="submit-note"
-            rows={3}
-            value={submitNote}
-            onChange={(e) => setSubmitNote(e.target.value)}
-            placeholder={dict.tripperNotePlaceholder}
-            disabled={isSubmitting}
-            className="flex w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none disabled:opacity-50"
-          />
-        </div>
+        {showTripperNoteField && (
+          <div className="mt-2 flex flex-col gap-1.5">
+            <label htmlFor="submit-note" className="text-sm font-medium text-gray-700">
+              {dict.tripperNoteLabel}{" "}
+              <span className="font-normal text-gray-400">{dict.tripperNoteOptional}</span>
+            </label>
+            <textarea
+              id="submit-note"
+              rows={3}
+              value={submitNote}
+              onChange={(e) => setSubmitNote(e.target.value)}
+              placeholder={dict.tripperNotePlaceholder}
+              disabled={isSubmitting}
+              className="flex w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none disabled:opacity-50"
+            />
+          </div>
+        )}
         <DialogFooter className="mt-6">
           <Button
             variant="secondary"
@@ -735,7 +809,7 @@ export function NewExperienceShell({
             {dict.cancel}
           </Button>
           <Button onClick={() => void confirmSubmit()} disabled={isSubmitting}>
-            {isSubmitting ? dict.saving : dict.actionBar.submitForReview}
+            {isSubmitting ? dict.saving : resolvedFinalizeCopy.submitLabel}
           </Button>
         </DialogFooter>
       </Modal>

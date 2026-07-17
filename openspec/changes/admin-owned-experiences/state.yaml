@@ -1,0 +1,12 @@
+change: admin-owned-experiences
+status: verify
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: partial # all code/tests done (28/33 tasks); 5 tasks blocked on sandbox limits (no local DB, no working npm run lint, no browser) — see tasks.md notes. size:exception recorded (single-pr, ~869 changed lines vs ~300-380 forecast, mostly TDD test code).
+  verify: pass-with-warnings # RE-VERIFIED after post-apply fixes (nav exact-tab, level selector, RANDOMTRIP admin-auth boundary, admin edit page double-guard, autosave suppression, unpriceable pricing guard, domain-type extraction). 0 CRITICAL, 4 WARNING (1 new: unpriceable-guard untested), 2 SUGGESTION. See verify-report.md.
+  archive: pending
+created: 2026-07-15

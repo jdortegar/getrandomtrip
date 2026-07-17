@@ -533,6 +533,7 @@ export interface TripperExperiencesDict {
     saving: string;
     saved: string;
     errorSave: string;
+    errorSubmit: string;
     requiredFieldsLabel: string;
     tripperNoteLabel: string;
     tripperNoteOptional: string;
@@ -975,6 +976,7 @@ export interface AdminDashboardDict {
   nav: {
     dashboard: string;
     experiences: string;
+    newExperience: string;
     notifications: string;
     payments: string;
     reviews: string;
@@ -984,6 +986,7 @@ export interface AdminDashboardDict {
   };
   pageHeadings: {
     experiences: { description: string; title: string };
+    experiencesNew: { description: string; title: string };
     experiencesDetail: { description: string; title: string };
     home: { description: string; title: string };
     notifications: { description: string; title: string };
@@ -992,6 +995,15 @@ export interface AdminDashboardDict {
     settings: { description: string; title: string };
     tripRequests: { description: string; title: string };
     xsedNew: { description: string; title: string };
+  };
+  newExperience: {
+    submitLabel: string;
+    confirmTitle: string;
+    confirmBody: string;
+  };
+  editExperience: {
+    confirmTitle: string;
+    confirmBody: string;
   };
 }
 

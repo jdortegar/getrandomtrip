@@ -5,6 +5,7 @@ import {
   CreditCard,
   LayoutDashboard,
   Package,
+  PackagePlus,
   Settings,
   Star,
 } from "lucide-react";
@@ -34,9 +35,15 @@ export function buildAdminNavTabs(
       label: copy.tripRequests,
     },
     {
+      exact: true,
       href: base("/experiences"),
       icon: Package,
       label: copy.experiences,
+    },
+    {
+      href: base("/experiences/new"),
+      icon: PackagePlus,
+      label: copy.newExperience,
     },
     {
       href: base("/payments"),

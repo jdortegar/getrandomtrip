@@ -73,6 +73,7 @@ export interface AdminExperience {
   isFeatured: boolean;
   owner: AdminExperienceOwner;
   status: string;
+  source: "TRIPPER" | "RANDOMTRIP";
   title: string;
   type: string[];
   level: string | null;
