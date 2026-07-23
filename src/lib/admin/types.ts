@@ -96,6 +96,37 @@ export interface AdminExperience {
   reviewLockedBy?: string | null;
 }
 
+export interface AdminBlogAuthor {
+  email: string;
+  id: string;
+  name: string;
+}
+
+export interface AdminBlog {
+  id: string;
+  title: string;
+  slug: string | null;
+  subtitle: string | null;
+  tagline: string | null;
+  coverUrl: string | null;
+  status: string;
+  format: string;
+  tags: string[];
+  travelType: string | null;
+  excuseKey: string | null;
+  author: AdminBlogAuthor;
+  reviewNote: string | null;
+  tripperNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+  // Review copy fields
+  isReviewCopy?: boolean;
+  parentId?: string | null;
+  changedFields?: string[];
+  reviewLockedBy?: string | null;
+}
+
 export interface AdminPayment {
   amount: number;
   createdAt: string;

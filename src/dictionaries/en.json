@@ -45,9 +45,18 @@
       "payments": "Payments",
       "reviews": "Reviews",
       "xsed": "New TGIS Drop",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "blog": "Blog"
     },
     "pageHeadings": {
+      "blog": {
+        "title": "Blog",
+        "description": "Moderate posts submitted by trippers."
+      },
+      "blogDetail": {
+        "title": "Post review",
+        "description": "Review the post before approving it."
+      },
       "home": {
         "title": "Admin Dashboard",
         "description": "Platform overview at a glance."
@@ -347,6 +356,44 @@
     "errorApprove": "Could not approve changes. Please try again.",
     "errorReject": "Could not reject changes. Please try again."
   },
+  "adminBlogReview": {
+    "back": "Back to blog",
+    "approve": "Approve & publish",
+    "reject": "Reject",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "noteLabel": "Note to tripper",
+    "notePlaceholder": "Explain what needs to change...",
+    "noteOptional": "(optional)",
+    "noteRequired": "(required)",
+    "tripperNoteLabel": "Note from tripper",
+    "editPost": "Edit post",
+    "sendToTripper": "Send to tripper for review",
+    "discardChanges": "Discard changes",
+    "lockedBannerTitle": "Locked for editing",
+    "lockedBannerBody": "Another admin is currently editing this post.",
+    "approveConfirmTitle": "Approve & publish?",
+    "approveConfirmBody": "This post will go live immediately.",
+    "approveNotePlaceholder": "Nice work, congrats on the approval, etc…",
+    "rejectConfirmTitle": "Reject post?",
+    "rejectConfirmBody": "It goes back to Draft for the tripper to revise.",
+    "sendConfirmTitle": "Send to tripper for review?",
+    "sendConfirmBody": "The tripper will see the changes you made and can approve or reject them.",
+    "sendNotePlaceholder": "Explain what you changed and why…",
+    "errorApprove": "Could not approve. Please try again.",
+    "errorReject": "Could not reject. Please try again.",
+    "errorStartEdit": "Could not start edit. Please try again.",
+    "errorLocked": "Locked by another admin ({name}). Refresh to see the latest lock status.",
+    "errorSendToTripper": "Could not send to tripper. Please try again.",
+    "errorDiscard": "Could not discard changes. Please try again."
+  },
+  "tripperBlogReviewCopy": {
+    "approve": "Approve & apply",
+    "reject": "Reject changes",
+    "noteLabel": "Admin's note",
+    "errorApprove": "Could not apply changes. Please try again.",
+    "errorReject": "Could not reject changes. Please try again."
+  },
   "adminPages": {
     "home": {
       "eyebrow": "Overview",
@@ -430,6 +477,34 @@
         "errorApprove": "Could not approve",
         "errorReject": "Could not reject",
         "errorPricing": "Set a price for every type"
+      }
+    },
+    "blog": {
+      "eyebrow": "Moderation",
+      "title": "Blog",
+      "count": "{n} posts",
+      "errorLoad": "Failed to load posts",
+      "empty": "No posts found.",
+      "emptyPending": "No posts pending review.",
+      "columns": {
+        "post": "Post",
+        "tripper": "Tripper",
+        "status": "Status",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PENDING_REVIEW": "Pending review",
+        "PENDING_TRIPPER_REVIEW": "Tripper reviewing",
+        "PUBLISHED": "Published"
+      },
+      "actions": {
+        "review": "Review"
+      },
+      "tabs": {
+        "all": "All",
+        "pending": "Pending review"
       }
     },
     "reviews": {
@@ -3197,12 +3272,30 @@
       "saving": "Saving…",
       "saved": "Saved",
       "errorSave": "Error saving",
+      "errorSubmit": "Could not publish the post",
       "requiredFieldsLabel": "Required fields",
+      "cancel": "Cancel",
+      "submitConfirmTitle": "Submit for review?",
+      "submitConfirmBody": "Your post will be locked while the admin reviews it. Add anything they should know.",
+      "tripperNoteLabel": "Note to admin",
+      "tripperNoteOptional": "(optional)",
+      "tripperNotePlaceholder": "Anything the reviewer should know about this post…",
+      "tripperNoteHint": "Visible to the admin reviewing this post.",
+      "changedFieldsBanner": {
+        "prefix": "Admin proposed changes to: ",
+        "peekShowOriginal": "Click to see original content",
+        "peekShowSuggestion": "Click to see admin's suggestion",
+        "noContent": "(no content)"
+      },
+      "review": {
+        "pendingTitle": "Pending review",
+        "pendingBody": "Your post is under review. You cannot make changes until you receive a response."
+      },
       "actionBar": {
         "back": "Back",
         "clearAll": "Clear all",
         "next": "Next",
-        "finish": "Finish"
+        "submitForReview": "Submit for review"
       },
       "contentTabs": [
         {
@@ -3317,6 +3410,8 @@
     },
     "status": {
       "DRAFT": "Draft",
+      "PENDING_REVIEW": "Pending review",
+      "PENDING_TRIPPER_REVIEW": "Tripper reviewing",
       "PUBLISHED": "Published"
     },
     "table": {
@@ -3330,7 +3425,15 @@
       "unpublish": "Unpublish",
       "delete": "Delete",
       "view": "View",
+      "reviewChanges": "Review changes",
+      "waitingReview": "Awaiting review",
       "deleteConfirm": "Delete this post? This action cannot be undone."
+    },
+    "unpublishConfirm": {
+      "title": "Unpublish this post",
+      "body": "The post will stop showing on your public profile. You can publish it again whenever you want.",
+      "cancel": "Cancel",
+      "confirm": "Unpublish"
     },
     "emptyState": {
       "noPosts": "You have no posts yet.",

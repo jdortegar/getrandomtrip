@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { resolveAdminNotificationHref } from "../notificationHrefs";
+import {
+  resolveAdminNotificationHref,
+  resolveTripperNotificationHref,
+} from "../notificationHrefs";
 import type { ClientNotification } from "@/types/notifications";
 
 function makeNotification(
@@ -54,5 +57,60 @@ describe("resolveAdminNotificationHref", () => {
   it("returns null when there is no metadata", () => {
     const notification = makeNotification({ metadata: null });
     expect(resolveAdminNotificationHref(notification, "es")).toBeNull();
+  });
+});
+
+describe("resolveTripperNotificationHref", () => {
+  it("links a BLOG_PENDING_TRIPPER_REVIEW notification to the review-copy page", () => {
+    const notification = makeNotification({
+      type: "BLOG_PENDING_TRIPPER_REVIEW",
+      metadata: { blogId: "b1" },
+    });
+    expect(resolveTripperNotificationHref(notification, "es")).toBe(
+      "/dashboard/tripper/blog/b1/review-copy",
+    );
+  });
+
+  it("links a BLOG_APPROVED/BLOG_REJECTED notification to the plain edit page, not review-copy", () => {
+    const approved = makeNotification({
+      type: "BLOG_APPROVED",
+      metadata: { blogId: "b1" },
+    });
+    expect(resolveTripperNotificationHref(approved, "es")).toBe(
+      "/dashboard/tripper/blog/b1",
+    );
+
+    const rejected = makeNotification({
+      type: "BLOG_REJECTED",
+      metadata: { blogId: "b1" },
+    });
+    expect(resolveTripperNotificationHref(rejected, "es")).toBe(
+      "/dashboard/tripper/blog/b1",
+    );
+  });
+
+  it("links an EXPERIENCE_PENDING_TRIPPER_REVIEW notification to the experience review-copy page", () => {
+    const notification = makeNotification({
+      type: "EXPERIENCE_PENDING_TRIPPER_REVIEW",
+      metadata: { experienceId: "e1" },
+    });
+    expect(resolveTripperNotificationHref(notification, "es")).toBe(
+      "/dashboard/tripper/experiences/e1/review-copy",
+    );
+  });
+
+  it("prefixes the href with the locale for non-default locales", () => {
+    const notification = makeNotification({
+      type: "BLOG_PENDING_TRIPPER_REVIEW",
+      metadata: { blogId: "b1" },
+    });
+    expect(resolveTripperNotificationHref(notification, "en")).toBe(
+      "/en/dashboard/tripper/blog/b1/review-copy",
+    );
+  });
+
+  it("returns null when there is no metadata", () => {
+    const notification = makeNotification({ metadata: null });
+    expect(resolveTripperNotificationHref(notification, "es")).toBeNull();
   });
 });

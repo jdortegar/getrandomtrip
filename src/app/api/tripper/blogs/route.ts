@@ -31,9 +31,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch blogs from database
+    // Fetch blogs from database. Review copies (isReviewCopy: true) share
+    // authorId with the original and must never appear in the tripper's own
+    // list — they only surface on admin review surfaces until resolved.
     const blogs = await prisma.blogPost.findMany({
-      where: { authorId: user.id },
+      where: { authorId: user.id, isReviewCopy: false },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest) {
         excuseKey: true,
         format: true,
         status: true,
+        isActive: true,
         seo: true,
         createdAt: true,
         updatedAt: true,
@@ -108,7 +111,9 @@ export async function POST(request: NextRequest) {
       faq,
       tags,
       format,
-      status,
+      // status is intentionally NOT accepted from the client — every new post
+      // starts DRAFT and only transitions via the guarded submit/approve
+      // endpoints, same as PATCH.
       coverUrl,
       seo,
       travelType,
@@ -120,9 +125,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    // Convert string enums to uppercase for Prisma
-    const blogStatus =
-      status?.toUpperCase() === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
     const blogFormat = format?.toUpperCase() || "ARTICLE";
     const formatMap: Record<string, "ARTICLE" | "PHOTO" | "VIDEO" | "MIXED"> = {
       article: "ARTICLE",
@@ -165,10 +167,8 @@ export async function POST(request: NextRequest) {
         excuseKey: excuseKeyValue,
         travelType: travelTypeValue,
         format: prismaFormat,
-        status: blogStatus,
         coverUrl: coverUrl || null,
         seo: seo || null,
-        publishedAt: blogStatus === "PUBLISHED" ? new Date() : null,
       },
       select: {
         id: true,
@@ -185,6 +185,7 @@ export async function POST(request: NextRequest) {
         excuseKey: true,
         format: true,
         status: true,
+        isActive: true,
         seo: true,
         createdAt: true,
         updatedAt: true,

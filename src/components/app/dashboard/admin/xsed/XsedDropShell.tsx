@@ -152,6 +152,11 @@ export function XsedDropShell({
   const draftIdRef = useRef<string | null>(initialDraftId ?? null);
   const isFirstRender = useRef(true);
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Autosave is for the "new" drop flow only — opening an existing drop
+  // (admin's edit page) turns it off entirely; edits only persist on an
+  // explicit finalize click, same as NewExperienceShell/NewBlogPostShell.
+  const isEditingExisting = !!initialDraftId;
   const contentRef = useRef<HTMLDivElement>(null);
 
   const persistDraft = useCallback(async (snapshot: XsedDropDraft) => {
@@ -192,12 +197,13 @@ export function XsedDropShell({
       isFirstRender.current = false;
       return;
     }
+    if (isEditingExisting) return; // editing an existing drop — only an explicit finalize click persists
     // In create mode, wait until titleInternal has something
     if (!draftIdRef.current && !form.titleInternal.trim()) return;
     setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [form, persistDraft]);
+  }, [form, persistDraft, isEditingExisting]);
 
   function handleChange(patch: Partial<XsedDropDraft>) {
     setForm((prev) => {

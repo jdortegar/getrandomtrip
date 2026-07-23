@@ -45,9 +45,18 @@
       "payments": "Pagos",
       "reviews": "Reseñas",
       "xsed": "Nuevo XSED Drop",
-      "notifications": "Notificaciones"
+      "notifications": "Notificaciones",
+      "blog": "Blog"
     },
     "pageHeadings": {
+      "blog": {
+        "title": "Blog",
+        "description": "Moderá los posts enviados por los trippers."
+      },
+      "blogDetail": {
+        "title": "Revisión de post",
+        "description": "Revisá el post antes de aprobarlo."
+      },
       "home": {
         "title": "Panel de Admin",
         "description": "Resumen general de la plataforma."
@@ -347,6 +356,44 @@
     "errorApprove": "No se pudieron aplicar los cambios. Intentá de nuevo.",
     "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
   },
+  "adminBlogReview": {
+    "back": "Volver al blog",
+    "approve": "Aprobar y publicar",
+    "reject": "Rechazar",
+    "confirmReject": "Confirmar rechazo",
+    "cancel": "Cancelar",
+    "noteLabel": "Nota para el tripper",
+    "notePlaceholder": "Explicá qué necesita cambiar...",
+    "noteOptional": "(opcional)",
+    "noteRequired": "(obligatorio)",
+    "tripperNoteLabel": "Nota del tripper",
+    "editPost": "Editar post",
+    "sendToTripper": "Enviar al tripper para revisión",
+    "discardChanges": "Descartar cambios",
+    "lockedBannerTitle": "Bloqueado para edición",
+    "lockedBannerBody": "Otro admin está editando este post en este momento.",
+    "approveConfirmTitle": "¿Aprobar y publicar?",
+    "approveConfirmBody": "Este post se publicará de inmediato.",
+    "approveNotePlaceholder": "Buen trabajo, felicitaciones por la aprobación, etc…",
+    "rejectConfirmTitle": "¿Rechazar post?",
+    "rejectConfirmBody": "Vuelve a Borrador para que el tripper lo revise.",
+    "sendConfirmTitle": "¿Enviar al tripper para revisión?",
+    "sendConfirmBody": "El tripper verá los cambios que hiciste y podrá aprobarlos o rechazarlos.",
+    "sendNotePlaceholder": "Explicá qué cambiaste y por qué…",
+    "errorApprove": "No se pudo aprobar. Intentá de nuevo.",
+    "errorReject": "No se pudo rechazar. Intentá de nuevo.",
+    "errorStartEdit": "No se pudo iniciar la edición. Intentá de nuevo.",
+    "errorLocked": "Bloqueado por otro admin ({name}). Actualizá la página para ver el estado.",
+    "errorSendToTripper": "No se pudo enviar al tripper. Intentá de nuevo.",
+    "errorDiscard": "No se pudieron descartar los cambios. Intentá de nuevo."
+  },
+  "tripperBlogReviewCopy": {
+    "approve": "Aprobar y aplicar",
+    "reject": "Rechazar cambios",
+    "noteLabel": "Nota del admin",
+    "errorApprove": "No se pudieron aplicar los cambios. Intentá de nuevo.",
+    "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
+  },
   "adminPages": {
     "home": {
       "eyebrow": "Resumen general",
@@ -430,6 +477,34 @@
         "errorApprove": "No se pudo aprobar",
         "errorReject": "No se pudo rechazar",
         "errorPricing": "Completá el precio de cada tipo"
+      }
+    },
+    "blog": {
+      "eyebrow": "Moderación",
+      "title": "Blog",
+      "count": "{n} posts",
+      "errorLoad": "Error al cargar los posts",
+      "empty": "No se encontraron posts.",
+      "emptyPending": "No hay posts pendientes de revisión.",
+      "columns": {
+        "post": "Post",
+        "tripper": "Tripper",
+        "status": "Estado",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "status": {
+        "DRAFT": "Borrador",
+        "PENDING_REVIEW": "En revisión",
+        "PENDING_TRIPPER_REVIEW": "En revisión (tripper)",
+        "PUBLISHED": "Publicado"
+      },
+      "actions": {
+        "review": "Revisar"
+      },
+      "tabs": {
+        "all": "Todos",
+        "pending": "Pendientes de revisión"
       }
     },
     "reviews": {
@@ -3197,12 +3272,30 @@
       "saving": "Guardando…",
       "saved": "Guardado",
       "errorSave": "Error al guardar",
+      "errorSubmit": "No se pudo publicar el post",
       "requiredFieldsLabel": "Campos requeridos",
+      "cancel": "Cancelar",
+      "submitConfirmTitle": "¿Enviar a revisión?",
+      "submitConfirmBody": "Tu post quedará bloqueado mientras el admin lo revisa. Agregá lo que necesite saber.",
+      "tripperNoteLabel": "Nota para el admin",
+      "tripperNoteOptional": "(opcional)",
+      "tripperNotePlaceholder": "Cualquier cosa que el revisor deba saber sobre este post…",
+      "tripperNoteHint": "Visible para el admin que revise este post.",
+      "changedFieldsBanner": {
+        "prefix": "El admin propuso cambios en: ",
+        "peekShowOriginal": "Ver contenido original",
+        "peekShowSuggestion": "Ver sugerencia del admin",
+        "noContent": "(sin contenido)"
+      },
+      "review": {
+        "pendingTitle": "En revisión",
+        "pendingBody": "Tu post está siendo revisado. No podés hacer cambios hasta recibir una respuesta."
+      },
       "actionBar": {
         "back": "Volver",
         "clearAll": "Borrar todo",
         "next": "Siguiente",
-        "finish": "Terminar"
+        "submitForReview": "Enviar a revisión"
       },
       "contentTabs": [
         {
@@ -3317,6 +3410,8 @@
     },
     "status": {
       "DRAFT": "Borrador",
+      "PENDING_REVIEW": "En revisión",
+      "PENDING_TRIPPER_REVIEW": "En revisión (tripper)",
       "PUBLISHED": "Publicado"
     },
     "table": {
@@ -3330,7 +3425,15 @@
       "unpublish": "Despublicar",
       "delete": "Eliminar",
       "view": "Ver",
+      "reviewChanges": "Ver cambios",
+      "waitingReview": "Esperando revisión",
       "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer."
+    },
+    "unpublishConfirm": {
+      "title": "Despublicar este post",
+      "body": "El post dejará de verse en tu perfil público. Podés volver a publicarlo cuando quieras.",
+      "cancel": "Cancelar",
+      "confirm": "Despublicar"
     },
     "emptyState": {
       "noPosts": "Aún no tienes posts.",

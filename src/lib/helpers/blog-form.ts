@@ -3,6 +3,24 @@ import type { BlogFormDraft, BlogPost } from "@/types/blog";
 type BlogBlock = BlogPost["blocks"][number];
 
 /**
+ * Submission completeness gate for the tripper "submit for review" action.
+ * Mirrors `getExperienceCompleteness` — pure function, no DOM/client deps.
+ * The server maps the DB row into this shape before calling (subtitle/tags/
+ * faq/gallery/sections are optional and not checked here).
+ */
+export function getBlogCompleteness(
+  draft: Pick<BlogFormDraft, "title" | "coverUrl"> & { content?: string | null },
+): { complete: boolean; missing: string[] } {
+  const missing: string[] = [];
+
+  if (!draft.title?.trim()) missing.push("title");
+  if (!draft.coverUrl?.trim()) missing.push("coverUrl");
+  if (!draft.content?.trim()) missing.push("content");
+
+  return { complete: missing.length === 0, missing };
+}
+
+/**
  * Tabs with no required fields are vacuously "complete" — see
  * NewBlogPostShell's completedTabIds for how this pairs with visitedTabIds
  * so an untouched optional tab doesn't show a checkmark prematurely.
@@ -12,6 +30,15 @@ export function isBlogTabComplete(tabId: string, draft: BlogFormDraft): boolean 
     case "general":
       return !!(draft.title.trim() && draft.coverUrl.trim());
     case "content":
+      // `content` (submitted to the server) is built from the feature quote
+      // AND these sections — a post with only a Feature Quote and no
+      // sections is a valid, submittable post, so both must be checked here
+      // or the wizard never reveals the submit action despite the server
+      // accepting it.
+      return (
+        !!draft.featureText.trim() ||
+        draft.sections.some((s) => s.title.trim() || s.description.trim())
+      );
     case "faq":
     case "gallery":
       return true;
@@ -107,6 +134,7 @@ export function buildBlogSubmitPayload(draft: BlogFormDraft) {
     blocks,
     faq: nonEmptyFaq.length > 0 ? { items: nonEmptyFaq } : null,
     status: draft.status,
+    tripperNote: draft.tripperNote ?? null,
   };
 }
 
@@ -138,7 +166,13 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
     title: b.title,
     description: b.description,
   }));
-  if (sections.length === 0) {
+  // Legacy-content fallback only applies to genuinely pre-migration posts
+  // (no blocks at all — flat `content` HTML from the old BlogComposer). A
+  // post with blocks but zero sections (e.g. a quote-only post) must NOT
+  // fall into this branch — `post.content` is itself synthesized from the
+  // quote block, so stuffing it into a phantom section would duplicate the
+  // quote text on every re-edit.
+  if (sections.length === 0 && blocks.length === 0) {
     const legacyContent = post.content?.trim();
     sections = [{ title: "", description: legacyContent ?? "" }];
   }
@@ -155,5 +189,6 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
     sections,
     faq: faqItems && faqItems.length > 0 ? faqItems : [{ question: "", answer: "" }],
     gallery: imageBlocks.map((b) => b.url),
+    tripperNote: post.tripperNote ?? null,
   };
 }

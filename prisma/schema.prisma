@@ -376,6 +376,7 @@ model BlogPost {
   id       String     @id @default(cuid())
   authorId String // Tripper who created this blog post
   status   BlogStatus @default(DRAFT)
+  isActive Boolean    @default(true) // visibility toggle, decoupled from status — mirrors Experience.isActive
   format   BlogFormat @default(ARTICLE)
 
   // Basic info
@@ -406,6 +407,15 @@ model BlogPost {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
+
+  // Review pipeline (tripper submit -> admin moderation -> review-copy)
+  reviewNote     String?  @db.Text // admin editorial feedback; cleared on approve/submit
+  tripperNote    String?  @db.Text // tripper note to admin at submission
+  isReviewCopy   Boolean  @default(false) // true on lazy admin-edit copies
+  parentId       String? // FK to original post (copy rows only); bare string, no relation
+  reviewLockedBy String? // admin id holding the edit soft-lock
+  changedFields  String[] @default([]) // fields the admin changed (copy -> tripper diff)
+  isDiscarded    Boolean  @default(false) // rejected-copy tombstone
 
   // Relations
   author User @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
@@ -472,6 +482,8 @@ enum PaymentStatus {
 
 enum BlogStatus {
   DRAFT
+  PENDING_REVIEW
+  PENDING_TRIPPER_REVIEW
   PUBLISHED
 }
 
@@ -486,6 +498,9 @@ enum NotificationType {
   EXPERIENCE_APPROVED
   EXPERIENCE_REJECTED
   EXPERIENCE_PENDING_TRIPPER_REVIEW
+  BLOG_APPROVED
+  BLOG_REJECTED
+  BLOG_PENDING_TRIPPER_REVIEW
   BOOKING_CONFIRMED
   BOOKING_REVEALED
   BOOKING_COMPLETED

@@ -22,6 +22,7 @@ import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 import {
   canRequestSubmit,
+  isEditingExisting as computeIsEditingExisting,
   isEditingLiveRandomtrip as computeIsEditingLiveRandomtrip,
   resolveFinalizeCopy,
   resolvePublishRedirectPath,
@@ -212,6 +213,13 @@ export function NewExperienceShell({
   // explicit "Save Changes" click instead of the debounced autosave loop.
   const isEditingLiveRandomtrip = computeIsEditingLiveRandomtrip(mode, form.status);
 
+  // Autosave is for the "new" creation flow only — any page opened against an
+  // existing row (tripper's own edit page, admin's RANDOMTRIP edit page) turns
+  // it off entirely, regardless of status, so edits only persist on an explicit
+  // finalize/save click. adminEdit (review-copy editing) is a different, nested
+  // flow and keeps its own always-on autosave.
+  const isEditingExisting = computeIsEditingExisting(mode, !!initialDraftId);
+
   // Blob URL → File map for pending uploads (blob URLs live in form state directly)
   const pendingFilesRef = useRef<Map<string, File>>(new Map());
 
@@ -358,12 +366,12 @@ export function NewExperienceShell({
       return;
     }
     if (isReadOnly) return; // no autosave while pending review
-    if (isEditingLiveRandomtrip) return; // live row — only explicit "Save Changes" persists
+    if (isEditingExisting) return; // editing an existing row — only an explicit finalize/save click persists
     if (!draftIdRef.current && !form.title.trim()) return;
     setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [form, persistDraft, isReadOnly, isEditingLiveRandomtrip]);
+  }, [form, persistDraft, isReadOnly, isEditingExisting]);
 
   // Keep URL in sync with active tab+section so reloads restore position
   useEffect(() => {
