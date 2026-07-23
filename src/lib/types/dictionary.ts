@@ -57,12 +57,30 @@ export interface TripperBlogFormDict {
   saving: string;
   saved: string;
   errorSave: string;
+  errorSubmit: string;
   requiredFieldsLabel: string;
+  cancel: string;
+  submitConfirmTitle: string;
+  submitConfirmBody: string;
+  tripperNoteLabel: string;
+  tripperNoteOptional: string;
+  tripperNotePlaceholder: string;
+  tripperNoteHint: string;
+  changedFieldsBanner: {
+    prefix: string;
+    peekShowOriginal: string;
+    peekShowSuggestion: string;
+    noContent: string;
+  };
+  review: {
+    pendingTitle: string;
+    pendingBody: string;
+  };
   actionBar: {
     back: string;
     clearAll: string;
     next: string;
-    finish: string;
+    submitForReview: string;
   };
   contentTabs: Array<{
     id: string;
@@ -83,9 +101,6 @@ export interface TripperBlogFormDict {
     uploadImage: string;
     uploading: string;
     removeImage: string;
-    statusLabel: string;
-    statusDraft: string;
-    statusPublished: string;
     featureText: string;
     featureTextPlaceholder: string;
     featureAttribution: string;
@@ -150,6 +165,8 @@ export interface TripperBlogsDict {
   };
   status: {
     DRAFT: string;
+    PENDING_REVIEW: string;
+    PENDING_TRIPPER_REVIEW: string;
     PUBLISHED: string;
   };
   table: {
@@ -160,12 +177,20 @@ export interface TripperBlogsDict {
     format: string;
     post: string;
     publish: string;
+    reviewChanges: string;
     status: string;
     unpublish: string;
     updated: string;
     view: string;
+    waitingReview: string;
   };
   title: string;
+  unpublishConfirm: {
+    title: string;
+    body: string;
+    cancel: string;
+    confirm: string;
+  };
 }
 
 export interface TripperDashboardDict {
@@ -974,6 +999,7 @@ export interface XsedPageDict {
 
 export interface AdminDashboardDict {
   nav: {
+    blog: string;
     dashboard: string;
     experiences: string;
     newExperience: string;
@@ -985,6 +1011,8 @@ export interface AdminDashboardDict {
     xsed: string;
   };
   pageHeadings: {
+    blog: { description: string; title: string };
+    blogDetail: { description: string; title: string };
     experiences: { description: string; title: string };
     experiencesNew: { description: string; title: string };
     experiencesDetail: { description: string; title: string };
@@ -1275,6 +1303,34 @@ export interface AdminPagesDict {
       errorPricing: string;
     };
   };
+  blog: {
+    eyebrow: string;
+    title: string;
+    count: string;
+    errorLoad: string;
+    empty: string;
+    emptyPending: string;
+    columns: {
+      post: string;
+      tripper: string;
+      status: string;
+      updated: string;
+      actions: string;
+    };
+    status: {
+      DRAFT: string;
+      PENDING_REVIEW: string;
+      PENDING_TRIPPER_REVIEW: string;
+      PUBLISHED: string;
+    };
+    actions: {
+      review: string;
+    };
+    tabs: {
+      all: string;
+      pending: string;
+    };
+  };
   reviews: {
     eyebrow: string;
     title: string;
@@ -1502,6 +1558,44 @@ export interface MarketingDictionary {
   tripperExperienceReviewCopy: {
     approve: string;
     reject: string;
+    errorApprove: string;
+    errorReject: string;
+  };
+  adminBlogReview: {
+    back: string;
+    approve: string;
+    reject: string;
+    confirmReject: string;
+    cancel: string;
+    noteLabel: string;
+    notePlaceholder: string;
+    noteOptional: string;
+    noteRequired: string;
+    tripperNoteLabel: string;
+    editPost: string;
+    sendToTripper: string;
+    discardChanges: string;
+    lockedBannerTitle: string;
+    lockedBannerBody: string;
+    approveConfirmTitle: string;
+    approveConfirmBody: string;
+    approveNotePlaceholder: string;
+    rejectConfirmTitle: string;
+    rejectConfirmBody: string;
+    sendConfirmTitle: string;
+    sendConfirmBody: string;
+    sendNotePlaceholder: string;
+    errorApprove: string;
+    errorReject: string;
+    errorStartEdit: string;
+    errorLocked: string;
+    errorSendToTripper: string;
+    errorDiscard: string;
+  };
+  tripperBlogReviewCopy: {
+    approve: string;
+    reject: string;
+    noteLabel: string;
     errorApprove: string;
     errorReject: string;
   };

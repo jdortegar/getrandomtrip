@@ -3,17 +3,34 @@
 import { useCallback, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, Megaphone, MegaphoneOff, Pencil, Plus, Trash2, X } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Clock,
+  Eye,
+  EyeOff,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { BLOG_TRAVEL_TYPE_OPTIONS } from "@/lib/constants/blog-filters";
+import { resolveBlogRowAction } from "@/lib/blog/row-actions";
 import type { TripperBlogsDict } from "@/lib/types/dictionary";
 import type { BlogFormat, BlogPost } from "@/types/blog";
 
 const BLOG_FORMATS: BlogFormat[] = ["article", "photo", "video", "mixed"];
-const BLOG_STATUSES = ["draft", "published"] as const;
+const BLOG_STATUSES = [
+  "draft",
+  "pending_review",
+  "pending_tripper_review",
+  "published",
+] as const;
 
 const SELECT_CLASS =
   "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
@@ -36,6 +53,7 @@ export function BlogPageClient({
   const [selectedTravelType, setSelectedTravelType] = useState("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [unpublishTargetId, setUnpublishTargetId] = useState<string | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
 
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
@@ -84,15 +102,14 @@ export function BlogPageClient({
     });
   }
 
-  function handleTogglePublish(id: string, currentStatus: BlogPost["status"]) {
-    const nextStatus = currentStatus === "published" ? "draft" : "published";
+  function setIsActive(id: string, isActive: boolean) {
     setTogglingId(id);
     startTransition(async () => {
       try {
         const res = await fetch(`/api/tripper/blogs/${id}`, {
-          body: JSON.stringify({ status: nextStatus }),
-          headers: { "Content-Type": "application/json" },
           method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isActive }),
         });
         if (res.ok) {
           router.refresh();
@@ -101,6 +118,20 @@ export function BlogPageClient({
         setTogglingId(null);
       }
     });
+  }
+
+  function handleTogglePublish(post: BlogPost) {
+    if (post.isActive) {
+      setUnpublishTargetId(post.id);
+    } else {
+      setIsActive(post.id, true);
+    }
+  }
+
+  function confirmUnpublish() {
+    if (!unpublishTargetId) return;
+    setIsActive(unpublishTargetId, false);
+    setUnpublishTargetId(null);
   }
 
   function formatLabel(format: BlogFormat): string {
@@ -247,9 +278,11 @@ export function BlogPageClient({
                     togglingId === post.id ||
                     isPending;
                   const editHref = `${basePath}/${post.id}`;
+                  const reviewCopyHref = `${basePath}/${post.id}/review-copy`;
                   const publicHref = post.slug
                     ? `/${locale}/blog/${post.slug}`
                     : null;
+                  const rowAction = resolveBlogRowAction(post.status);
 
                   return (
                     <tr
@@ -289,37 +322,58 @@ export function BlogPageClient({
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1.5">
-                          <TableIconLink
-                            href={editHref}
-                            title={copy.table.edit}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </TableIconLink>
-                          {publicHref && post.status === "published" && (
+                          {/* No edit link while an admin's copy holds the source of truth — the
+                              original is locked_for_review (409) until the tripper resolves it
+                              via the review-copy action below. */}
+                          {post.status !== "pending_tripper_review" && (
+                            <TableIconLink
+                              href={editHref}
+                              title={copy.table.edit}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </TableIconLink>
+                          )}
+                          {publicHref && post.status === "published" && post.isActive && (
                             <TableIconLink
                               href={publicHref}
                               title={copy.table.view}
                             >
-                              <Eye className="h-4 w-4" />
+                              <ArrowUpRight className="h-4 w-4" />
                             </TableIconLink>
                           )}
-                          <TableIconButton
-                            disabled={isBusy}
-                            onClick={() =>
-                              handleTogglePublish(post.id, post.status)
-                            }
-                            title={
-                              post.status === "published"
-                                ? copy.table.unpublish
-                                : copy.table.publish
-                            }
-                          >
-                            {post.status === "published" ? (
-                              <MegaphoneOff className="h-4 w-4" />
-                            ) : (
-                              <Megaphone className="h-4 w-4 text-light-blue" />
-                            )}
-                          </TableIconButton>
+                          {post.status === "published" && (
+                            <TableIconButton
+                              disabled={isBusy}
+                              onClick={() => handleTogglePublish(post)}
+                              title={
+                                post.isActive
+                                  ? copy.table.unpublish
+                                  : copy.table.publish
+                              }
+                            >
+                              {post.isActive ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-light-blue" />
+                              )}
+                            </TableIconButton>
+                          )}
+                          {rowAction === "waiting" && (
+                            <TableIconButton
+                              disabled
+                              title={copy.table.waitingReview}
+                            >
+                              <Clock className="h-4 w-4 text-neutral-400" />
+                            </TableIconButton>
+                          )}
+                          {rowAction === "review" && (
+                            <TableIconLink
+                              href={reviewCopyHref}
+                              title={copy.table.reviewChanges}
+                            >
+                              <ArrowRight className="h-4 w-4 text-light-blue" />
+                            </TableIconLink>
+                          )}
                           <TableIconButton
                             danger
                             disabled={isBusy}
@@ -338,6 +392,21 @@ export function BlogPageClient({
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        open={unpublishTargetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setUnpublishTargetId(null);
+        }}
+        onConfirm={confirmUnpublish}
+        isConfirming={togglingId === unpublishTargetId}
+        icon={EyeOff}
+        tone="neutral"
+        title={copy.unpublishConfirm.title}
+        description={copy.unpublishConfirm.body}
+        cancelLabel={copy.unpublishConfirm.cancel}
+        confirmLabel={copy.unpublishConfirm.confirm}
+      />
     </div>
   );
 }

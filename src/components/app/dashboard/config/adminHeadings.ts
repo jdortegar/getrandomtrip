@@ -23,6 +23,12 @@ export function resolveAdminPageHeading(
   ) {
     return headings.experiences;
   }
+  if (pathname.match(new RegExp(`^${base("/blog/")}.+`))) {
+    return headings.blogDetail;
+  }
+  if (pathname === base("/blog") || pathname.startsWith(base("/blog/"))) {
+    return headings.blog;
+  }
   if (pathname.startsWith(base("/payments"))) return headings.payments;
   if (pathname.startsWith(base("/reviews"))) return headings.reviews;
   return headings.home;

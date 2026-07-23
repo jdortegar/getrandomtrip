@@ -37,11 +37,15 @@ export async function GET(
 
     const blogId = params.id;
 
-    // Find blog and verify ownership
+    // Find blog and verify ownership. Review copies (isReviewCopy: true)
+    // share authorId with the original and must never be reachable through
+    // the tripper's own edit routes — they only exist on admin review
+    // surfaces until resolved.
     const blog = await prisma.blogPost.findFirst({
       where: {
         id: blogId,
         authorId: user.id,
+        isReviewCopy: false,
       },
       select: {
         id: true,
@@ -58,6 +62,7 @@ export async function GET(
         excuseKey: true,
         format: true,
         status: true,
+        isActive: true,
         seo: true,
         createdAt: true,
         updatedAt: true,
@@ -131,11 +136,13 @@ export async function PATCH(
 
     const blogId = params.id;
 
-    // Verify blog exists and belongs to user
+    // Verify blog exists and belongs to user. Review copies must never be
+    // reachable through this route (see GET above).
     const existingBlog = await prisma.blogPost.findFirst({
       where: {
         id: blogId,
         authorId: user.id,
+        isReviewCopy: false,
       },
     });
 
@@ -143,6 +150,24 @@ export async function PATCH(
       return NextResponse.json(
         { error: "Blog post not found or access denied" },
         { status: 404 },
+      );
+    }
+
+    // Guard: cannot edit a blog post while a decision is pending — either the
+    // admin is reviewing the tripper's submission (PENDING_REVIEW) or the
+    // admin's proposed copy is awaiting the tripper's decision
+    // (PENDING_TRIPPER_REVIEW). The client-side isReadOnly lock in
+    // NewBlogPostShell is UI-only; this is the real boundary.
+    if (
+      (existingBlog.status as string) === "PENDING_REVIEW" ||
+      (existingBlog.status as string) === "PENDING_TRIPPER_REVIEW"
+    ) {
+      return NextResponse.json(
+        {
+          error: "locked_for_review",
+          message: "Blog post cannot be edited while a review decision is pending.",
+        },
+        { status: 409 },
       );
     }
 
@@ -156,17 +181,51 @@ export async function PATCH(
       faq,
       tags,
       format,
-      status,
+      // status is intentionally NOT destructured for persistence — transitions
+      // only happen via the guarded submit/approve/reject/copy endpoints.
       coverUrl,
       seo,
       travelType,
       excuseKey,
+      tripperNote,
+      isActive,
     } = body;
 
     // Validate required fields
     if (title !== undefined && !title) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
+
+    // Revert to DRAFT only if a reviewable content field actually changed.
+    // Autosave fires on mount even when nothing changed — we must not
+    // penalise no-ops, and review-mechanism fields (tripperNote, slug,
+    // publishedAt) must never trigger a revert.
+    const eq = (a: unknown, b: unknown) =>
+      JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+
+    const contentChanged =
+      (title !== undefined && !eq(title, existingBlog.title)) ||
+      (subtitle !== undefined && !eq(subtitle || null, existingBlog.subtitle)) ||
+      (tagline !== undefined && !eq(tagline || null, existingBlog.tagline)) ||
+      (coverUrl !== undefined && !eq(coverUrl || null, existingBlog.coverUrl)) ||
+      (content !== undefined && !eq(content ?? null, existingBlog.content)) ||
+      (blocks !== undefined && !eq(blocks, existingBlog.blocks)) ||
+      (tags !== undefined && !eq(tags, existingBlog.tags)) ||
+      (travelType !== undefined &&
+        !eq(
+          typeof travelType === "string" && travelType.trim() ? travelType.trim() : null,
+          existingBlog.travelType,
+        )) ||
+      (excuseKey !== undefined &&
+        !eq(
+          typeof excuseKey === "string" && excuseKey.trim() ? excuseKey.trim() : null,
+          existingBlog.excuseKey,
+        )) ||
+      (format !== undefined && !eq(format.toUpperCase?.() ?? format, existingBlog.format)) ||
+      (seo !== undefined && !eq(seo || null, existingBlog.seo)) ||
+      (faq !== undefined && !eq(faq ?? null, existingBlog.faq));
+
+    const revertToDraft = existingBlog.status === "PUBLISHED" && contentChanged;
 
     // Convert string enums to uppercase for Prisma
     const { slugify } = await import("@/lib/helpers/slugify");
@@ -218,13 +277,21 @@ export async function PATCH(
       updateData.format = formatMap[format.toLowerCase()] || "ARTICLE";
     }
 
-    if (status !== undefined) {
-      updateData.status =
-        status.toUpperCase() === "PUBLISHED" ? "PUBLISHED" : "DRAFT";
-      // Set publishedAt if status changed to published and it wasn't published before
-      if (updateData.status === "PUBLISHED" && !existingBlog.publishedAt) {
-        updateData.publishedAt = new Date();
-      }
+    if (tripperNote !== undefined) updateData.tripperNote = tripperNote || null;
+
+    // Visibility toggle, decoupled from status — mirrors Experience.isActive.
+    // Publishing/unpublishing an already-approved post never touches status
+    // or triggers re-review.
+    if (isActive !== undefined) updateData.isActive = isActive;
+
+    // Status is never accepted from the client — transitions only happen via
+    // the guarded submit/approve/reject/copy endpoints. The one exception is
+    // this auto-revert: editing a PUBLISHED post's content forces re-review.
+    // publishedAt is intentionally KEPT (not nulled) — the public PUBLISHED
+    // gate already hides it, so history is preserved for the next approve.
+    if (revertToDraft) {
+      updateData.status = "DRAFT";
+      updateData.isActive = false;
     }
 
     // Update blog in database
@@ -246,6 +313,7 @@ export async function PATCH(
         excuseKey: true,
         format: true,
         status: true,
+        isActive: true,
         seo: true,
         createdAt: true,
         updatedAt: true,
@@ -300,11 +368,13 @@ export async function DELETE(
 
     const blogId = params.id;
 
-    // Find blog and verify ownership
+    // Find blog and verify ownership. Review copies must never be reachable
+    // through this route (see GET above).
     const existingBlog = await prisma.blogPost.findFirst({
       where: {
         id: blogId,
         authorId: user.id,
+        isReviewCopy: false,
       },
     });
 
@@ -312,6 +382,22 @@ export async function DELETE(
       return NextResponse.json(
         { error: "Blog post not found or access denied" },
         { status: 404 },
+      );
+    }
+
+    // Guard: cannot delete while a review copy may exist for this post —
+    // deleting the original would orphan it (parentId is a bare string, no
+    // FK/cascade) with no cleanup path.
+    if (
+      (existingBlog.status as string) === "PENDING_REVIEW" ||
+      (existingBlog.status as string) === "PENDING_TRIPPER_REVIEW"
+    ) {
+      return NextResponse.json(
+        {
+          error: "locked_for_review",
+          message: "Blog post cannot be deleted while a review decision is pending.",
+        },
+        { status: 409 },
       );
     }
 

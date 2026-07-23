@@ -1,0 +1,12 @@
+change: tripper-blog-review
+status: applied
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done # 62/63 tasks done (all phases complete + typecheck 0 errors + 421/421 tests green, zero regressions); remaining: 9.3 lint only (blocked — pre-existing env issue, manually verified no raw <img>/dark: instead). 9.4-9.6 manual QA completed by the human across several live sessions plus 2 independent code-review passes, surfacing and fixing real bugs (see tasks.md). A follow-on publish/unpublish visibility toggle (BlogPost.isActive, decoupled from status, mirrors Experience.isActive) was added beyond the original scope via a separate design interview and is included in this change.
+  verify: done # 2 independent passes: initial sdd-verify (1 CRITICAL: isActive not reset on approve — fixed) + full 8-angle code review (found and fixed 5 more isReviewCopy leak sites, a PENDING_REVIEW server-side edit/delete guard gap, a POST status-bypass, a discard-copy state-machine gap, a completeness-gate bug, a content-duplication bug, and a changed-fields email bug). All fixes landed with regression tests.
+  archive: pending
+created: 2026-07-17

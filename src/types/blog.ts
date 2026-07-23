@@ -1,4 +1,8 @@
-export type BlogStatus = "draft" | "published";
+export type BlogStatus =
+  | "draft"
+  | "pending_review"
+  | "pending_tripper_review"
+  | "published";
 export type BlogFormat = "article" | "photo" | "video" | "mixed";
 
 export interface BlogPost {
@@ -32,10 +36,20 @@ export interface BlogPost {
   travelType?: string | null;
   format: BlogFormat;
   status: BlogStatus;
+  /** Visibility toggle, decoupled from status — a PUBLISHED post can be hidden without losing approval history. */
+  isActive: boolean;
   seo?: { title?: string; description?: string; keywords?: string[] };
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
+  /** Review pipeline fields — present on tripper/admin surfaces only. */
+  reviewNote?: string | null;
+  tripperNote?: string | null;
+  isReviewCopy?: boolean;
+  parentId?: string | null;
+  reviewLockedBy?: string | null;
+  changedFields?: string[];
+  isDiscarded?: boolean;
 }
 
 /**
@@ -55,6 +69,8 @@ export interface BlogFormDraft {
   sections: { title: string; description: string }[];
   faq: { question: string; answer: string }[];
   gallery: string[];
+  /** Tripper's note to the admin at submission time. */
+  tripperNote?: string | null;
 }
 
 export type BlogFormDraftOnChange = <K extends keyof BlogFormDraft>(

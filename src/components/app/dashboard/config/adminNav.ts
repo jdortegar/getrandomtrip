@@ -4,6 +4,7 @@ import {
   Compass,
   CreditCard,
   LayoutDashboard,
+  Newspaper,
   Package,
   PackagePlus,
   Settings,
@@ -62,6 +63,12 @@ export function buildAdminNavTabs(
       href: base("/xsed"),
       icon: Compass,
       label: copy.xsed,
+    },
+    {
+      // Non-exact so /blog/[id] review pages keep this tab active.
+      href: base("/blog"),
+      icon: Newspaper,
+      label: copy.blog,
     },
     {
       audience: "ADMIN",

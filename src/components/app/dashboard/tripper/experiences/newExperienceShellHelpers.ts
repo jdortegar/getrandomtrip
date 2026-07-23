@@ -87,3 +87,18 @@ export function isEditingLiveRandomtrip(
 ): boolean {
   return mode === "adminCreate" && status !== "DRAFT";
 }
+
+/**
+ * True whenever the shell was opened against an existing row (tripper's own
+ * edit page, admin's RANDOMTRIP edit page) rather than the "new" creation
+ * flow — autosave is for creation only; an edit page disables it entirely,
+ * regardless of status, and relies on an explicit finalize/save click.
+ * `adminEdit` (review-copy editing) is a different, nested flow and keeps
+ * its own always-on autosave, so it's excluded here.
+ */
+export function isEditingExisting(
+  mode: ExperienceShellMode,
+  hasInitialDraftId: boolean,
+): boolean {
+  return hasInitialDraftId && (mode === "tripper" || mode === "adminCreate");
+}

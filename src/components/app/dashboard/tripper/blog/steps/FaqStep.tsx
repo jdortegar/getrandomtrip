@@ -5,17 +5,23 @@ import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
+import type { FieldPeek } from "@/components/ui/field-peek";
 
 interface Props {
   copy: TripperBlogFormDict;
   draft: BlogFormDraft;
   onChange: BlogFormDraftOnChange;
+  changedFieldSet?: Set<string>;
+  /** Per-entry, per-field "peek at original" toggle; undefined outside adminReadOnly review. */
+  peek?: (index: number, entryKey: "question" | "answer") => FieldPeek | undefined;
 }
 
 const EMPTY_FAQ = { question: "", answer: "" };
 
-export function FaqStep({ copy, draft, onChange }: Props) {
+export function FaqStep({ copy, draft, onChange, changedFieldSet, peek }: Props) {
   const { fields } = copy;
+  const ring = (index: number, key: "question" | "answer") =>
+    peek?.(index, key) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   function updateFaq(index: number, key: "question" | "answer", value: string) {
     const updated = draft.faq.map((f, i) => (i === index ? { ...f, [key]: value } : f));
@@ -34,7 +40,7 @@ export function FaqStep({ copy, draft, onChange }: Props) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className={`space-y-5 ${changedFieldSet?.has("faq") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
       <p className="text-sm text-neutral-500 -mt-1">
         {copy.contentTabs[2]?.substeps[0]?.description}
       </p>
@@ -64,6 +70,8 @@ export function FaqStep({ copy, draft, onChange }: Props) {
               onChange={(e) => updateFaq(index, "question", e.target.value)}
               placeholder={fields.faqQuestionPlaceholder}
               value={item.question}
+              className={ring(index, "question")}
+              peek={peek?.(index, "question")}
             />
 
             <TextAreaInput
@@ -72,6 +80,8 @@ export function FaqStep({ copy, draft, onChange }: Props) {
               onChange={(e) => updateFaq(index, "answer", e.target.value)}
               placeholder={fields.faqAnswerPlaceholder}
               value={item.answer}
+              className={ring(index, "answer")}
+              peek={peek?.(index, "answer")}
             />
           </div>
         ))}

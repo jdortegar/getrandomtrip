@@ -1,5 +1,6 @@
 export type NotificationMetadata =
   | { experienceId: string }
+  | { blogId: string }
   | { tripRequestId: string }
   | { reviewId: string }
   | null;

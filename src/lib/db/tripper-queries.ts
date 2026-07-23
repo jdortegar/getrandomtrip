@@ -878,6 +878,12 @@ export async function getTripperPublishedBlogs(
       where: {
         authorId: tripperId,
         status: "PUBLISHED",
+        // Review copies (isReviewCopy: true) share authorId with the
+        // original and must never leak into this public-facing list.
+        isReviewCopy: false,
+        // Tripper-unpublished posts stay PUBLISHED (approval history) but
+        // must not appear on the public profile.
+        isActive: true,
       },
       select: {
         id: true,

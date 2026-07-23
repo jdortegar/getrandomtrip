@@ -37,6 +37,7 @@ export default async function TripperBlogPage(props: {
       excuseKey: true,
       format: true,
       id: true,
+      isActive: true,
       publishedAt: true,
       slug: true,
       status: true,
@@ -46,7 +47,9 @@ export default async function TripperBlogPage(props: {
       travelType: true,
       updatedAt: true,
     },
-    where: { authorId: user.id },
+    // Review copies (isReviewCopy: true) share authorId with the original
+    // and must never appear in the tripper's own list.
+    where: { authorId: user.id, isReviewCopy: false },
   });
 
   const posts: BlogPost[] = rawBlogs.map((blog) => ({

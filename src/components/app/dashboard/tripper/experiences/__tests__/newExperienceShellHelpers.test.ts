@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   canRequestSubmit,
+  isEditingExisting,
   isEditingLiveRandomtrip,
   resolveFinalizeCopy,
   resolvePublishRedirectPath,
@@ -72,6 +73,27 @@ describe("isEditingLiveRandomtrip", () => {
   it("is false for adminEdit and adminReadOnly modes (not applicable — different flows)", () => {
     expect(isEditingLiveRandomtrip("adminEdit", "ACTIVE")).toBe(false);
     expect(isEditingLiveRandomtrip("adminReadOnly", "ACTIVE")).toBe(false);
+  });
+});
+
+// ── isEditingExisting ────────────────────────────────────────────────────────
+describe("isEditingExisting", () => {
+  it("is false for tripper/adminCreate with no initialDraftId (the 'new' creation flow — autosave stays on)", () => {
+    expect(isEditingExisting("tripper", false)).toBe(false);
+    expect(isEditingExisting("adminCreate", false)).toBe(false);
+  });
+
+  it("is true for tripper/adminCreate with an initialDraftId (an edit page, regardless of status — autosave is off)", () => {
+    expect(isEditingExisting("tripper", true)).toBe(true);
+    expect(isEditingExisting("adminCreate", true)).toBe(true);
+  });
+
+  it("is false for adminEdit even with an initialDraftId (review-copy editing is a different, nested flow with its own always-on autosave)", () => {
+    expect(isEditingExisting("adminEdit", true)).toBe(false);
+  });
+
+  it("is false for adminReadOnly regardless (never autosaves at all)", () => {
+    expect(isEditingExisting("adminReadOnly", true)).toBe(false);
   });
 });
 

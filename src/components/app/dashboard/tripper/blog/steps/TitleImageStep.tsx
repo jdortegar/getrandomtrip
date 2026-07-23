@@ -4,9 +4,9 @@ import { useRef } from "react";
 import { ImagePlus, X } from "lucide-react";
 import Img from "@/components/common/Img";
 import { FormField } from "@/components/ui/FormField";
-import { cn } from "@/lib/utils";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
+import type { FieldPeek } from "@/components/ui/field-peek";
 import type { BlogImageState } from "../NewBlogPostShell";
 
 interface Props {
@@ -14,14 +14,18 @@ interface Props {
   draft: BlogFormDraft;
   onChange: BlogFormDraftOnChange;
   imageState: BlogImageState;
+  changedFieldSet?: Set<string>;
+  /** Builds the peek toggle for an eligible field; `undefined` when peek is not available. */
+  peek?: (field: keyof BlogFormDraft, diffKey?: string) => FieldPeek | undefined;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-export function TitleImageStep({ copy, draft, onChange, imageState }: Props) {
+export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek }: Props) {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const { fields } = copy;
   const { coverUploading, onCoverSelect, onCoverRemove } = imageState;
+  const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   return (
     <div className="space-y-5">
@@ -35,6 +39,8 @@ export function TitleImageStep({ copy, draft, onChange, imageState }: Props) {
         placeholder={fields.titlePlaceholder}
         value={draft.title}
         onChange={(e) => onChange("title", e.target.value)}
+        className={ch("title")}
+        peek={peek?.("title")}
       />
 
       <FormField
@@ -43,6 +49,8 @@ export function TitleImageStep({ copy, draft, onChange, imageState }: Props) {
         placeholder={fields.subtitlePlaceholder}
         value={draft.subtitle}
         onChange={(e) => onChange("subtitle", e.target.value)}
+        className={ch("subtitle")}
+        peek={peek?.("subtitle")}
       />
 
       {/* Cover image */}
@@ -54,7 +62,7 @@ export function TitleImageStep({ copy, draft, onChange, imageState }: Props) {
         <p className="text-xs text-neutral-400 -mt-1">{fields.coverImageHint}</p>
 
         {draft.coverUrl ? (
-          <div className="group relative h-40 w-full max-w-md overflow-hidden rounded-xl border border-neutral-200">
+          <div className={`group relative h-40 w-full max-w-md overflow-hidden rounded-xl border border-neutral-200${ch("coverUrl") ? ` ${ch("coverUrl")}` : ""}`}>
             <Img
               alt={fields.coverImage}
               className="h-full w-full object-cover"
@@ -72,7 +80,7 @@ export function TitleImageStep({ copy, draft, onChange, imageState }: Props) {
           </div>
         ) : (
           <button
-            className="flex h-40 w-full max-w-md flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600"
+            className={`flex h-40 w-full max-w-md flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600${ch("coverUrl") ? ` ${ch("coverUrl")}` : ""}`}
             disabled={coverUploading}
             onClick={() => coverInputRef.current?.click()}
             type="button"
@@ -95,39 +103,6 @@ export function TitleImageStep({ copy, draft, onChange, imageState }: Props) {
           ref={coverInputRef}
           type="file"
         />
-      </div>
-
-      {/* Status toggle */}
-      <div className="space-y-2">
-        <label className="block font-normal text-gray-600 text-base">
-          {fields.statusLabel}
-        </label>
-        <div className="inline-flex rounded-lg border border-gray-200 p-1">
-          <button
-            className={cn(
-              "rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
-              draft.status === "draft"
-                ? "bg-gray-900 text-white"
-                : "text-neutral-500 hover:text-neutral-700",
-            )}
-            onClick={() => onChange("status", "draft")}
-            type="button"
-          >
-            {fields.statusDraft}
-          </button>
-          <button
-            className={cn(
-              "rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
-              draft.status === "published"
-                ? "bg-gray-900 text-white"
-                : "text-neutral-500 hover:text-neutral-700",
-            )}
-            onClick={() => onChange("status", "published")}
-            type="button"
-          >
-            {fields.statusPublished}
-          </button>
-        </div>
       </div>
     </div>
   );

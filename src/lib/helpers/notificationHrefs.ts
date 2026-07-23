@@ -56,6 +56,14 @@ export function resolveTripperNotificationHref(
     return pathForLocale(locale as Locale, path);
   }
 
+  if ("blogId" in metadata && metadata.blogId) {
+    const path =
+      type === "BLOG_PENDING_TRIPPER_REVIEW"
+        ? `/dashboard/tripper/blog/${metadata.blogId}/review-copy`
+        : `/dashboard/tripper/blog/${metadata.blogId}`;
+    return pathForLocale(locale as Locale, path);
+  }
+
   if ("tripRequestId" in metadata && metadata.tripRequestId) {
     return pathForLocale(
       locale as Locale,

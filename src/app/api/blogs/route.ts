@@ -25,8 +25,16 @@ export async function GET(request: NextRequest) {
       excuseKey?: string | null;
       status: BlogStatus;
       travelType?: string | null;
+      isReviewCopy: boolean;
+      isActive: boolean;
     } = {
       status: BlogStatus.PUBLISHED,
+      // Review copies (isReviewCopy: true) share authorId with the original
+      // and must never leak into public listings.
+      isReviewCopy: false,
+      // Tripper-unpublished posts stay PUBLISHED (approval history) but must
+      // not be publicly visible.
+      isActive: true,
     };
     if (tripperId) {
       where.authorId = tripperId;

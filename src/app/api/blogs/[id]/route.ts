@@ -24,6 +24,12 @@ export async function GET(
     const blog = await prisma.blogPost.findFirst({
       where: {
         status: "PUBLISHED",
+        // Review copies (isReviewCopy: true) share id/authorId patterns with
+        // the original and must never leak into public detail lookups.
+        isReviewCopy: false,
+        // Tripper-unpublished posts stay PUBLISHED (approval history) but
+        // must not be publicly reachable.
+        isActive: true,
         ...(isCuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug }),
       },
       select: {

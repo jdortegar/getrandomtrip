@@ -25,6 +25,18 @@ import DestinationRevealed, {
 import ExperienceSubmitted, {
   subjects as experienceSubmittedSubjects,
 } from "@/emails/ExperienceSubmitted";
+import BlogSubmitted, {
+  subjects as blogSubmittedSubjects,
+} from "@/emails/BlogSubmitted";
+import BlogPendingTripperReview, {
+  subjects as blogPendingTripperReviewSubjects,
+} from "@/emails/BlogPendingTripperReview";
+import BlogCopyApproved, {
+  subjects as blogCopyApprovedSubjects,
+} from "@/emails/BlogCopyApproved";
+import BlogCopyRejected, {
+  subjects as blogCopyRejectedSubjects,
+} from "@/emails/BlogCopyRejected";
 import PaymentFailed, {
   subjects as paymentFailedSubjects,
 } from "@/emails/PaymentFailed";
@@ -472,6 +484,167 @@ export function sendExperienceCopyRejected(
       });
     } catch (err) {
       console.error("[email] sendExperienceCopyRejected:", err);
+    }
+  })();
+}
+
+export function sendBlogSubmitted(blogId: string, tripperId: string): void {
+  void (async () => {
+    try {
+      const [blog, tripper, admins] = await Promise.all([
+        prisma.blogPost.findUnique({
+          where: { id: blogId },
+          select: { title: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { name: true },
+        }),
+        prisma.user.findMany({
+          where: { roles: { has: "ADMIN" } },
+          select: { email: true },
+        }),
+      ]);
+
+      if (!blog?.title) return;
+
+      const adminEmails = admins.map((a) => a.email);
+      const to =
+        adminEmails.length > 0
+          ? adminEmails
+          : [process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com"];
+
+      const result = await sendMail({
+        to,
+        subject: blogSubmittedSubjects.es,
+        content: {
+          react: React.createElement(BlogSubmitted, {
+            tripperName: tripper?.name ?? "",
+            blogTitle: blog.title,
+            blogId,
+          }),
+        },
+      });
+      console.log("[email] sendBlogSubmitted: sent to", to, "id:", result?.id);
+    } catch (err) {
+      console.error("[email] sendBlogSubmitted:", err);
+    }
+  })();
+}
+
+export function sendBlogPendingTripperReview(
+  blogId: string,
+  tripperId: string,
+  changedFields: string[],
+): void {
+  void (async () => {
+    try {
+      const [blog, tripper] = await Promise.all([
+        prisma.blogPost.findUnique({
+          where: { id: blogId },
+          select: { title: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { email: true, name: true, locale: true },
+        }),
+      ]);
+
+      if (!blog?.title || !tripper?.email) return;
+
+      const locale = resolveLocale(tripper.locale);
+      const BASE_URL = "https://getrandomtrip.com";
+      const reviewUrl = `${BASE_URL}/${locale}/dashboard/tripper/blog/${blogId}/review-copy`;
+
+      await sendMail({
+        to: tripper.email,
+        subject: blogPendingTripperReviewSubjects[locale],
+        content: {
+          react: React.createElement(BlogPendingTripperReview, {
+            tripperName: tripper.name ?? "",
+            blogTitle: blog.title,
+            changedFields,
+            reviewUrl,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendBlogPendingTripperReview:", err);
+    }
+  })();
+}
+
+export function sendBlogCopyApproved(blogId: string, tripperId: string): void {
+  void (async () => {
+    try {
+      const [blog, tripper] = await Promise.all([
+        prisma.blogPost.findUnique({
+          where: { id: blogId },
+          select: { title: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { name: true },
+        }),
+      ]);
+
+      if (!blog?.title) return;
+
+      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminName = process.env.ADMIN_NAME ?? "Admin";
+
+      await sendMail({
+        to: adminEmail,
+        subject: blogCopyApprovedSubjects.es,
+        content: {
+          react: React.createElement(BlogCopyApproved, {
+            adminName,
+            blogTitle: blog.title,
+            tripperName: tripper?.name ?? "",
+            locale: "es",
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendBlogCopyApproved:", err);
+    }
+  })();
+}
+
+export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
+  void (async () => {
+    try {
+      const [blog, tripper] = await Promise.all([
+        prisma.blogPost.findUnique({
+          where: { id: blogId },
+          select: { title: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: tripperId },
+          select: { name: true },
+        }),
+      ]);
+
+      if (!blog?.title) return;
+
+      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminName = process.env.ADMIN_NAME ?? "Admin";
+
+      await sendMail({
+        to: adminEmail,
+        subject: blogCopyRejectedSubjects.es,
+        content: {
+          react: React.createElement(BlogCopyRejected, {
+            adminName,
+            blogTitle: blog.title,
+            tripperName: tripper?.name ?? "",
+            locale: "es",
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendBlogCopyRejected:", err);
     }
   })();
 }

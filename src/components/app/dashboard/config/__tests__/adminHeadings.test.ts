@@ -13,6 +13,8 @@ const headings: AdminDashboardDict["pageHeadings"] = {
   reviews: { title: "Reviews", description: "Reviews desc" },
   xsedNew: { title: "New Drop", description: "New drop desc" },
   notifications: { title: "Notifications", description: "Notifications desc" },
+  blog: { title: "Blog", description: "Blog desc" },
+  blogDetail: { title: "Post Review", description: "Post review desc" },
 };
 
 describe("resolveAdminPageHeading", () => {
@@ -80,5 +82,17 @@ describe("resolveAdminPageHeading", () => {
     expect(
       resolveAdminPageHeading("/dashboard/admin/packages", headings),
     ).toEqual(headings.home);
+  });
+
+  it("resolves the blog list but not the review detail", () => {
+    expect(
+      resolveAdminPageHeading("/dashboard/admin/blog", headings),
+    ).toEqual(headings.blog);
+  });
+
+  it("resolves the blog review detail heading for a nested id", () => {
+    expect(
+      resolveAdminPageHeading("/dashboard/admin/blog/abc123", headings),
+    ).toEqual(headings.blogDetail);
   });
 });

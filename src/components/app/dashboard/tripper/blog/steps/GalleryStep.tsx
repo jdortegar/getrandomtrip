@@ -12,15 +12,19 @@ interface Props {
   draft: BlogFormDraft;
   onChange: BlogFormDraftOnChange;
   imageState: BlogImageState;
+  changedFieldSet?: Set<string>;
 }
 
-export function GalleryStep({ copy, draft, imageState }: Props) {
+export function GalleryStep({ copy, draft, imageState, changedFieldSet }: Props) {
   const { fields } = copy;
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const { galleryUploading, onGalleryFilesSelect, onGalleryImageRemove } = imageState;
 
   return (
-    <div className="space-y-5">
+    // Gallery images fold into the server-side "blocks" column alongside
+    // the quote and sections — no per-image peek (images aren't text to
+    // compare), just a ring highlight on the whole section when it changed.
+    <div className={`space-y-5 ${changedFieldSet?.has("blocks") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
       <p className="text-sm text-neutral-500 -mt-1">
         {copy.contentTabs[3]?.substeps[0]?.description}
       </p>
