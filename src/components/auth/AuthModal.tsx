@@ -268,7 +268,7 @@ export default function AuthModal({
         }
       }}
     >
-      <div className="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
+      <div className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl border border-gray-200">
         {/* Close button */}
         <button
           aria-label={t?.close}
@@ -428,33 +428,36 @@ export default function AuthModal({
                 </div>
 
                 {mode === "login" && (
-                  <div className="flex items-center justify-between pt-1">
-                    <label className="flex cursor-pointer items-center gap-2 text-md font-light text-[#344266]">
-                      <input
-                        checked={keepMeLoggedIn}
-                        className="h-4 w-4 accent-cyan-600 border-neutral-200 cursor-pointer border-2 padding-px"
-                        onChange={(event) =>
-                          setKeepMeLoggedIn(event.target.checked)
-                        }
-                        type="checkbox"
-                      />
-                      Keep me logged in
-                    </label>
-                    {forgotState === "sent" ? (
-                      <span className="text-md font-light text-neutral-500">
+                  <div className="flex flex-col gap-2 pt-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-md font-light text-[#344266]">
+                        <input
+                          checked={keepMeLoggedIn}
+                          className="h-4 w-4 accent-cyan-600 border-neutral-200 cursor-pointer border-2 padding-px"
+                          onChange={(event) =>
+                            setKeepMeLoggedIn(event.target.checked)
+                          }
+                          type="checkbox"
+                        />
+                        {t?.keepLoggedIn}
+                      </label>
+                      {forgotState !== "sent" && (
+                        <button
+                          className="text-md font-light text-neutral-700 transition-colors hover:underline underline-offset-2 cursor-pointer hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={forgotState === "sending"}
+                          onClick={handleForgotPassword}
+                          type="button"
+                        >
+                          {forgotState === "sending"
+                            ? t?.forgotSending
+                            : t?.forgotPasswordLink}
+                        </button>
+                      )}
+                    </div>
+                    {forgotState === "sent" && (
+                      <p className="text-sm font-light text-neutral-500">
                         {t?.forgotSentGeneric}
-                      </span>
-                    ) : (
-                      <button
-                        className="text-md font-light text-neutral-700 transition-colors hover:underline underline-offset-2 cursor-pointer hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
-                        disabled={forgotState === "sending"}
-                        onClick={handleForgotPassword}
-                        type="button"
-                      >
-                        {forgotState === "sending"
-                          ? t?.forgotSending
-                          : t?.forgotPasswordLink}
-                      </button>
+                      </p>
                     )}
                   </div>
                 )}

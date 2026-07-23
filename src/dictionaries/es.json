@@ -839,7 +839,8 @@
     "forgotSending": "Enviando…",
     "forgotSentGeneric": "Si existe una cuenta con ese email, te enviamos un enlace para restablecer la contraseña.",
     "passwordPolicyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
-    "forgotPasswordLink": "¿Olvidaste tu contraseña?"
+    "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+    "keepLoggedIn": "Mantenerme conectado"
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verificando tu email…",

@@ -1684,6 +1684,7 @@ export interface MarketingDictionary {
     forgotSentGeneric: string;
     passwordPolicyHint: string;
     forgotPasswordLink: string;
+    keepLoggedIn: string;
   };
   verifyEmailPage: VerifyEmailPageDict;
   resetPasswordPage: ResetPasswordPageDict;
