@@ -11,7 +11,8 @@ import {
   prismaUserRoleToAppRole,
   prismaUserRolesToAppRoles,
 } from "@/lib/auth/prismaUserRoles";
-import { sendWelcomeEmail } from "@/lib/email";
+import { sendWelcomeEmail, sendVerificationEmail } from "@/lib/email";
+import { issueVerificationToken } from "@/lib/auth/verificationTokens";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -42,6 +43,7 @@ export const authOptions: NextAuthOptions = {
             travelerType: true,
             interests: true,
             dislikes: true,
+            emailVerified: true,
           },
         });
 
@@ -56,6 +58,15 @@ export const authOptions: NextAuthOptions = {
 
         if (!isValid) {
           throw new Error("Invalid credentials");
+        }
+
+        if (!user.emailVerified) {
+          // Backfilled or never-verified account: fire a fresh verification
+          // email and reject with a distinguishable error (not "wrong
+          // password") so the client can offer a resend.
+          const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
+          sendVerificationEmail(user.id, token); // fire-and-forget
+          throw new Error("EMAIL_NOT_VERIFIED");
         }
 
         return {
@@ -93,6 +104,7 @@ export const authOptions: NextAuthOptions = {
             travelerType: null,
             interests: [],
             dislikes: [],
+            emailVerified: new Date(),
           },
         });
         console.log("✅ Created new user from Google OAuth:", dbUser.id);

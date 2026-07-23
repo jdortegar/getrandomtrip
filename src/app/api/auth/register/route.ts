@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { isValidPassword } from "@/lib/validation/password";
+import { isValidEmail } from "@/lib/validation/email";
+import { issueVerificationToken } from "@/lib/auth/verificationTokens";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,9 +19,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Invalid email address" },
+        { status: 400 },
+      );
+    }
+
+    if (!isValidPassword(password)) {
+      return NextResponse.json(
+        {
+          error:
+            "Password must be at least 8 characters and contain a letter and a number",
+        },
         { status: 400 },
       );
     }
@@ -37,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user (emailVerified stays null until the verification link is consumed)
     console.log("Creating user:", { name, email });
     const user = await prisma.user.create({
       data: {
@@ -56,6 +70,9 @@ export async function POST(request: NextRequest) {
       },
     });
     console.log("User created successfully:", user);
+
+    const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
+    sendVerificationEmail(user.id, token); // fire-and-forget
 
     return NextResponse.json(
       {

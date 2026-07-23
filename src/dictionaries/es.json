@@ -829,7 +829,50 @@
     "haveAccount": "¿Ya tienes cuenta?",
     "loading": "Cargando...",
     "forgotPasswordSubject": "Solicitud de recuperación de contraseña",
-    "forgotPasswordBody": "Necesito restablecer la contraseña de esta cuenta: {email}"
+    "forgotPasswordBody": "Necesito restablecer la contraseña de esta cuenta: {email}",
+    "notVerifiedTitle": "Verificá tu email",
+    "notVerifiedBody": "Necesitás verificar tu email antes de iniciar sesión. Te acabamos de enviar un enlace.",
+    "resendVerification": "Reenviar link",
+    "verificationResent": "Email de verificación enviado. Revisá tu bandeja de entrada.",
+    "resending": "Enviando…",
+    "registerCheckInbox": "Te enviamos un enlace de verificación a {email}.",
+    "forgotSending": "Enviando…",
+    "forgotSentGeneric": "Si existe una cuenta con ese email, te enviamos un enlace para restablecer la contraseña.",
+    "passwordPolicyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
+    "forgotPasswordLink": "¿Olvidaste tu contraseña?"
+  },
+  "verifyEmailPage": {
+    "verifyingTitle": "Verificando tu email…",
+    "verifyingBody": "Esperá un momento mientras confirmamos tu cuenta.",
+    "successTitle": "¡Email verificado!",
+    "successBody": "Tu cuenta fue verificada correctamente. Ya podés iniciar sesión.",
+    "loginCta": "Ir a iniciar sesión",
+    "errorTitle": "No pudimos verificar tu email",
+    "reasonInvalid": "Este enlace de verificación no es válido.",
+    "reasonExpired": "Este enlace venció. Iniciá sesión para recibir uno nuevo.",
+    "reasonUsed": "Este enlace ya fue utilizado.",
+    "reasonMissing": "No se encontró un token de verificación."
+  },
+  "resetPasswordPage": {
+    "title": "Restablecer contraseña",
+    "subtitle": "Elegí una nueva contraseña para tu cuenta.",
+    "newPasswordLabel": "Nueva contraseña",
+    "newPasswordPlaceholder": "Mín. 8 caracteres, una letra y un número",
+    "confirmPasswordLabel": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "Repetí tu nueva contraseña",
+    "submitLabel": "Restablecer contraseña",
+    "submitting": "Restableciendo…",
+    "policyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
+    "mismatch": "Las contraseñas no coinciden.",
+    "weakPassword": "La contraseña debe tener al menos 8 caracteres, una letra y un número.",
+    "successTitle": "¡Contraseña actualizada!",
+    "successBody": "Tu contraseña fue restablecida correctamente.",
+    "loginCta": "Ir a iniciar sesión",
+    "errorTitle": "No pudimos restablecer tu contraseña",
+    "reasonInvalid": "Este enlace no es válido.",
+    "reasonExpired": "Este enlace venció. Solicitá uno nuevo.",
+    "reasonUsed": "Este enlace ya fue utilizado.",
+    "reasonMissing": "No se encontró un token de restablecimiento."
   },
   "home": {
     "hero": {
@@ -3047,19 +3090,19 @@
   "waitlist": {
     "headline": "Accedé antes que nadie al lanzamiento de Randomtrip",
     "subheadline": "Sumate a la lista y te avisamos cuando estemos listos.",
-    "namePlaceholder": "Nombre",
-    "lastNamePlaceholder": "Apellido",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Juan",
+    "lastNameLabel": "Apellido",
+    "lastNamePlaceholder": "Pérez",
+    "emailLabel": "Email",
     "emailPlaceholder": "tu@email.com",
     "submitButton": "Quiero acceso anticipado",
     "successMessage": "¡Listo! Te vamos a avisar cuando sea tu turno.",
-    "adminLoginLabel": "¿Admin? Iniciar sesión",
-    "loginModal": {
-      "title": "Acceso para administradores",
-      "description": "Ingresá usuario y contraseña para acceder.",
-      "usernamePlaceholder": "Usuario",
-      "passwordPlaceholder": "Contraseña",
-      "submitButton": "Entrar"
-    }
+    "errorMessage": "Algo salió mal. Por favor, intentá de nuevo.",
+    "adminLoginLabel": "¿Admin o Tripper? Iniciar sesión",
+    "accessDeniedTitle": "Acceso no permitido",
+    "accessDeniedBody": "Esta sección está restringida a admins y trippers. Contactá a tu administrador si creés que esto es un error.",
+    "signOutLabel": "Cerrar sesión"
   },
   "profile": {
     "actionsAria": "Acciones de cuenta",

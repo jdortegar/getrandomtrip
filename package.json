@@ -19,6 +19,7 @@
     "db:studio": "prisma studio",
     "db:grant-all-roles": "npx tsx scripts/grant-all-roles-to-all-users.ts",
     "db:backfill-source": "npx tsx scripts/backfill-experience-source.ts",
+    "db:backfill-email-verified": "npx tsx scripts/backfill-email-verified.ts",
     "db:seed": "npx tsx prisma/seed.ts",
     "discord:setup": "npx tsx scripts/discord-setup.ts",
     "discord:setup-work": "npx tsx scripts/discord-setup-work-channels.ts",

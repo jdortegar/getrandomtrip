@@ -49,6 +49,12 @@ import TripCompleted, {
 import WelcomeEmail, {
   subjects as welcomeEmailSubjects,
 } from "@/emails/WelcomeEmail";
+import VerifyEmail, {
+  subjects as verifyEmailSubjects,
+} from "@/emails/VerifyEmail";
+import PasswordReset, {
+  subjects as passwordResetSubjects,
+} from "@/emails/PasswordReset";
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -746,6 +752,68 @@ export function sendReviewApprovedForTripper(
       });
     } catch (err) {
       console.error("[email] sendReviewApprovedForTripper:", err);
+    }
+  })();
+}
+
+export function sendVerificationEmail(userId: string, token: string): void {
+  void (async () => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true, locale: true },
+      });
+
+      if (!user?.email) return;
+
+      const locale = resolveLocale(user.locale);
+      const BASE_URL = "https://getrandomtrip.com";
+      const verifyUrl = `${BASE_URL}/${locale}/verify-email?token=${token}`;
+
+      await sendMail({
+        to: user.email,
+        subject: verifyEmailSubjects[locale],
+        content: {
+          react: React.createElement(VerifyEmail, {
+            name: user.name ?? "",
+            verifyUrl,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendVerificationEmail:", err);
+    }
+  })();
+}
+
+export function sendPasswordResetEmail(userId: string, token: string): void {
+  void (async () => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true, locale: true },
+      });
+
+      if (!user?.email) return;
+
+      const locale = resolveLocale(user.locale);
+      const BASE_URL = "https://getrandomtrip.com";
+      const resetUrl = `${BASE_URL}/${locale}/reset-password?token=${token}`;
+
+      await sendMail({
+        to: user.email,
+        subject: passwordResetSubjects[locale],
+        content: {
+          react: React.createElement(PasswordReset, {
+            name: user.name ?? "",
+            resetUrl,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendPasswordResetEmail:", err);
     }
   })();
 }

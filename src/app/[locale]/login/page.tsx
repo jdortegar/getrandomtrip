@@ -1,34 +1,37 @@
 "use client";
 
 import { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useUserStore } from "@/store/slices/userStore";
 import AuthModal from "@/components/auth/AuthModal";
-import Hero from "@/components/Hero";
 import Section from "@/components/layout/Section";
-import type { UserRole } from "@/store/slices/userStore";
-import { dashboardPathFromRole } from "@/lib/roles";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import esCopy from "@/dictionaries/es.json";
+import enCopy from "@/dictionaries/en.json";
 
 function LoginContent() {
   const { data: session, status } = useSession();
   const { isAuthed } = useUserStore();
   const router = useRouter();
   const search = useSearchParams();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
+  const dict = locale.startsWith("en") ? enCopy : esCopy;
 
   // Auto-redirect if authenticated
   useEffect(() => {
     if (status !== "authenticated" && !isAuthed) return;
 
-    const role = (session?.user?.role as UserRole) ?? "client";
     const returnTo = search.get("returnTo");
     const dest = returnTo
       ? decodeURIComponent(returnTo)
-      : dashboardPathFromRole(role);
+      : pathForLocale(locale as Locale, "/");
 
     router.replace(dest);
-  }, [status, session, isAuthed, router, search]);
+  }, [status, session, isAuthed, router, search, locale]);
 
   // Show auth modal if not authenticated
   const showModal = status !== "loading" && !session && !isAuthed;
@@ -46,7 +49,13 @@ function LoginContent() {
           </div>
         )}
       </Section>
-      <AuthModal isOpen={showModal} onClose={() => {}} defaultMode="login" />
+      <AuthModal
+        defaultMode="login"
+        dict={dict}
+        initialEmail={search.get("email") ?? undefined}
+        isOpen={showModal}
+        onClose={() => {}}
+      />
     </>
   );
 }

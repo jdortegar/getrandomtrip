@@ -829,7 +829,50 @@
     "haveAccount": "Already have an account?",
     "loading": "Loading...",
     "forgotPasswordSubject": "Password reset request",
-    "forgotPasswordBody": "Please help me reset my password for this account: {email}"
+    "forgotPasswordBody": "Please help me reset my password for this account: {email}",
+    "notVerifiedTitle": "Verify your email",
+    "notVerifiedBody": "You need to verify your email before signing in. We just sent you a link.",
+    "resendVerification": "Resend link",
+    "verificationResent": "Verification email sent. Check your inbox.",
+    "resending": "Sending…",
+    "registerCheckInbox": "We sent a verification link to {email}.",
+    "forgotSending": "Sending…",
+    "forgotSentGeneric": "If an account exists for that email, we sent a reset link.",
+    "passwordPolicyHint": "Min. 8 characters, at least one letter and one number.",
+    "forgotPasswordLink": "Forgot password?"
+  },
+  "verifyEmailPage": {
+    "verifyingTitle": "Verifying your email…",
+    "verifyingBody": "Hang tight while we confirm your account.",
+    "successTitle": "Email verified!",
+    "successBody": "Your account has been verified. You can now sign in.",
+    "loginCta": "Go to login",
+    "errorTitle": "We couldn't verify your email",
+    "reasonInvalid": "This verification link is invalid.",
+    "reasonExpired": "This link has expired. Sign in to get a new one.",
+    "reasonUsed": "This link was already used.",
+    "reasonMissing": "No verification token found."
+  },
+  "resetPasswordPage": {
+    "title": "Reset password",
+    "subtitle": "Choose a new password for your account.",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "Min. 8 characters, a letter and a number",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Repeat your new password",
+    "submitLabel": "Reset password",
+    "submitting": "Resetting…",
+    "policyHint": "Min. 8 characters, at least one letter and one number.",
+    "mismatch": "Passwords don't match.",
+    "weakPassword": "Password must be at least 8 characters with a letter and a number.",
+    "successTitle": "Password updated!",
+    "successBody": "Your password has been reset successfully.",
+    "loginCta": "Go to login",
+    "errorTitle": "We couldn't reset your password",
+    "reasonInvalid": "This link is invalid.",
+    "reasonExpired": "This link has expired. Request a new one.",
+    "reasonUsed": "This link was already used.",
+    "reasonMissing": "No reset token found."
   },
   "home": {
     "hero": {
@@ -3047,19 +3090,19 @@
   "waitlist": {
     "headline": "Get early access to Randomtrip's launch",
     "subheadline": "Join the list and we'll notify you when we're ready.",
-    "namePlaceholder": "First name",
-    "lastNamePlaceholder": "Last name",
+    "nameLabel": "First name",
+    "namePlaceholder": "John",
+    "lastNameLabel": "Last name",
+    "lastNamePlaceholder": "Doe",
+    "emailLabel": "Email",
     "emailPlaceholder": "you@email.com",
     "submitButton": "I want early access",
     "successMessage": "You're in! We'll notify you when it's your turn.",
-    "adminLoginLabel": "Admin? Log in",
-    "loginModal": {
-      "title": "Admin access",
-      "description": "Enter username and password to access.",
-      "usernamePlaceholder": "Username",
-      "passwordPlaceholder": "Password",
-      "submitButton": "Sign in"
-    }
+    "errorMessage": "Something went wrong. Please try again.",
+    "adminLoginLabel": "Admin or Tripper? Log in",
+    "accessDeniedTitle": "Access not allowed",
+    "accessDeniedBody": "This area is restricted to admins and trippers. Contact your administrator if you believe this is a mistake.",
+    "signOutLabel": "Sign out"
   },
   "profile": {
     "actionsAria": "Account actions",
