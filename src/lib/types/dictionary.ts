@@ -1366,8 +1366,21 @@ export interface AdminPagesDict {
     count: string;
     errorLoad: string;
     empty: string;
-    columns: { name: string; email: string; joined: string; actions: string };
-    actions: { delete: string; deleting: string };
+    columns: {
+      name: string;
+      email: string;
+      joined: string;
+      status: string;
+      actions: string;
+    };
+    actions: {
+      delete: string;
+      deleting: string;
+      inviteTripper: string;
+      inviting: string;
+      resend: string;
+    };
+    inviteStatus: { invited: string; expired: string };
   };
   xsedNotifications: {
     count: string;
@@ -1480,6 +1493,62 @@ export interface ReviewFormDict {
   errorInvalidToken: string;
   errorAlreadySubmitted: string;
   errorGeneric: string;
+}
+
+export interface VerifyEmailPageDict {
+  verifyingTitle: string;
+  verifyingBody: string;
+  successTitle: string;
+  successBody: string;
+  loginCta: string;
+  errorTitle: string;
+  reasonInvalid: string;
+  reasonExpired: string;
+  reasonUsed: string;
+  reasonMissing: string;
+}
+
+export interface ResetPasswordPageDict {
+  title: string;
+  subtitle: string;
+  newPasswordLabel: string;
+  newPasswordPlaceholder: string;
+  confirmPasswordLabel: string;
+  confirmPasswordPlaceholder: string;
+  submitLabel: string;
+  submitting: string;
+  policyHint: string;
+  mismatch: string;
+  weakPassword: string;
+  successTitle: string;
+  successBody: string;
+  loginCta: string;
+  errorTitle: string;
+  reasonInvalid: string;
+  reasonExpired: string;
+  reasonUsed: string;
+  reasonMissing: string;
+}
+
+export interface TripperInviteAcceptDict {
+  loadingTitle: string;
+  loadingBody: string;
+  errorTitle: string;
+  reasonInvalid: string;
+  reasonExpired: string;
+  reasonUsed: string;
+  reasonMissing: string;
+  loginCta: string;
+  grantedTitle: string;
+  grantedBody: string;
+  registerTitle: string;
+  registerSubtitle: string;
+  emailLockedNote: string;
+  submitLabel: string;
+  submitting: string;
+  registerSuccessTitle: string;
+  registerSuccessBody: string;
+  registerErrorGeneric: string;
 }
 
 export interface MarketingDictionary {
@@ -1622,7 +1691,9 @@ export interface MarketingDictionary {
     createAccountSubtitle: string;
     email: string;
     emailPlaceholder: string;
+    emailTaken: string;
     fillAllFields: string;
+    invalidCredentials: string;
     invalidEmail: string;
     loginFailed: string;
     loginSubtitle: string;
@@ -1639,7 +1710,21 @@ export interface MarketingDictionary {
     loading: string;
     forgotPasswordSubject: string;
     forgotPasswordBody: string;
+    notVerifiedTitle: string;
+    notVerifiedBody: string;
+    resendVerification: string;
+    verificationResent: string;
+    resending: string;
+    registerCheckInbox: string;
+    forgotSending: string;
+    forgotSentGeneric: string;
+    passwordPolicyHint: string;
+    forgotPasswordLink: string;
+    keepLoggedIn: string;
   };
+  verifyEmailPage: VerifyEmailPageDict;
+  resetPasswordPage: ResetPasswordPageDict;
+  tripperInviteAccept: TripperInviteAcceptDict;
   home: {
     hero: {
       branding: { repeatText?: string; text: string };
@@ -2363,18 +2448,18 @@ export interface MarketingDictionary {
     viewPackages: string;
   };
   waitlist: {
+    accessDeniedBody: string;
+    accessDeniedTitle: string;
     adminLoginLabel: string;
+    emailLabel: string;
     emailPlaceholder: string;
+    errorMessage: string;
     headline: string;
+    lastNameLabel: string;
     lastNamePlaceholder: string;
-    loginModal: {
-      description: string;
-      passwordPlaceholder: string;
-      submitButton: string;
-      title: string;
-      usernamePlaceholder: string;
-    };
+    nameLabel: string;
     namePlaceholder: string;
+    signOutLabel: string;
     subheadline: string;
     submitButton: string;
     successMessage: string;
@@ -2512,6 +2597,7 @@ export interface MarketingDictionary {
       actions: string;
       joined: string;
       roles: string;
+      status: string;
       tripperSlug: string;
       user: string;
     };
@@ -2535,6 +2621,12 @@ export interface MarketingDictionary {
       TRIPPER: string;
     };
     usersCount: string;
+    invite: {
+      inviteTripper: string;
+      inviting: string;
+      resend: string;
+    };
+    inviteStatus: { invited: string; expired: string };
   };
   adminTripEditModal: {
     cancel: string;

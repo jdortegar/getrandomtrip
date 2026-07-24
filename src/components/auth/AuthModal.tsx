@@ -6,27 +6,50 @@ import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import { X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { isValidPassword } from "@/lib/validation/password";
+import { isValidEmail } from "@/lib/validation/email";
+import { registerErrorMessage } from "@/lib/auth/registerErrorMessages";
 
 interface AuthModalProps {
+  /** When false, hides the sign-up toggle and keeps the modal in login mode only. */
+  allowRegister?: boolean;
   defaultMode?: "login" | "register";
-  dict?: Dictionary;
+  /** Only `dict.auth` is ever read — accepting the full Dictionary would force
+   * every caller (including client components with statically-imported JSON)
+   * to satisfy unrelated sections' stricter literal-union types. */
+  dict?: Pick<Dictionary, "auth">;
+  /** Pre-fills the email field, e.g. after landing here from a verify-email redirect. */
+  initialEmail?: string;
   onClose: () => void;
   isOpen: boolean;
 }
 
 export default function AuthModal({
+  allowRegister = true,
   defaultMode = "login",
   dict,
+  initialEmail,
   isOpen,
   onClose,
 }: AuthModalProps) {
   const t = dict?.auth;
-  const [mode, setMode] = useState<"login" | "register">(defaultMode);
+  const [mode, setMode] = useState<"login" | "register">(
+    allowRegister ? defaultMode : "login",
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [errorKind, setErrorKind] = useState<"generic" | "notVerified" | null>(
+    null,
+  );
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent">(
+    "idle",
+  );
+  const [forgotState, setForgotState] = useState<"idle" | "sending" | "sent">(
+    "idle",
+  );
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail ?? "");
   const [password, setPassword] = useState("");
   const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
 
@@ -37,6 +60,8 @@ export default function AuthModal({
     setEmail("");
     setPassword("");
     setError("");
+    setErrorKind(null);
+    setResendState("idle");
 
     // Close modal
     onClose();
@@ -66,12 +91,12 @@ export default function AuthModal({
   }, [isOpen, handleClose]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || initialEmail) return;
     const rememberedEmail = localStorage.getItem("auth-remember-email");
     if (!rememberedEmail) return;
     setEmail(rememberedEmail);
     setKeepMeLoggedIn(true);
-  }, [isOpen]);
+  }, [isOpen, initialEmail]);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -82,12 +107,19 @@ export default function AuthModal({
       setError(t?.nameRequired ?? "");
       return false;
     }
-    if (password.length < 6) {
+    if (mode === "register") {
+      // Registration enforces the shared password policy (8+ chars, a
+      // letter, a number); login keeps the looser legacy check so existing
+      // accounts created before this policy still authenticate.
+      if (!isValidPassword(password)) {
+        setError(t?.passwordPolicyHint ?? "");
+        return false;
+      }
+    } else if (password.length < 6) {
       setError(t?.passwordMinLength ?? "");
       return false;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       setError(t?.invalidEmail ?? "");
       return false;
     }
@@ -103,6 +135,7 @@ export default function AuthModal({
 
     setIsLoading(true);
     setError("");
+    setErrorKind(null);
 
     try {
       if (mode === "register") {
@@ -116,10 +149,14 @@ export default function AuthModal({
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || (t?.loginFailed ?? ""));
+          throw new Error(
+            registerErrorMessage(data.error, t) ?? (t?.loginFailed ?? ""),
+          );
         }
 
-        // Auto-login after successful registration
+        // Auto-login after successful registration — now gated by the
+        // verification requirement, so this is expected to return
+        // EMAIL_NOT_VERIFIED rather than silently logging in.
         const result = await signIn("credentials", {
           email,
           rememberMe: keepMeLoggedIn ? "true" : "false",
@@ -127,8 +164,18 @@ export default function AuthModal({
           redirect: false,
         });
 
+        if (result?.error === "EMAIL_NOT_VERIFIED") {
+          setErrorKind("notVerified");
+          setIsLoading(false);
+          return;
+        }
+
         if (result?.error) {
-          throw new Error(t?.loginFailed ?? "");
+          throw new Error(
+            result.error === "Invalid credentials"
+              ? (t?.invalidCredentials ?? "")
+              : (t?.loginFailed ?? ""),
+          );
         }
 
         // Handle successful authentication
@@ -142,8 +189,19 @@ export default function AuthModal({
           redirect: false,
         });
 
+        if (result?.error === "EMAIL_NOT_VERIFIED") {
+          setErrorKind("notVerified");
+          setIsLoading(false);
+          return;
+        }
+
         if (result?.error) {
-          throw new Error(t?.loginFailed ?? "");
+          setErrorKind("generic");
+          throw new Error(
+            result.error === "Invalid credentials"
+              ? (t?.invalidCredentials ?? "")
+              : (t?.loginFailed ?? ""),
+          );
         }
 
         // Handle successful authentication
@@ -161,6 +219,22 @@ export default function AuthModal({
     }
   };
 
+  const handleResend = useCallback(async () => {
+    setResendState("sending");
+    try {
+      // Re-invokes signIn with the credentials already in form state, which
+      // re-triggers the server-side auto-send inside authorize().
+      await signIn("credentials", {
+        email,
+        password,
+        rememberMe: "false",
+        redirect: false,
+      });
+    } finally {
+      setResendState("sent");
+    }
+  }, [email, password]);
+
   const handleGoogleSignIn = useCallback(async () => {
     // Use current page as callback - let the page handle what happens next
     await signIn("google", { callbackUrl: window.location.href });
@@ -169,19 +243,28 @@ export default function AuthModal({
   const toggleMode = useCallback(() => {
     setMode(mode === "login" ? "register" : "login");
     setError("");
+    setErrorKind(null);
+    setForgotState("idle");
   }, [mode]);
 
-  const handleForgotPassword = useCallback(() => {
-    if (!email) {
+  const handleForgotPassword = useCallback(async () => {
+    if (!email || !isValidEmail(email)) {
       setError(t?.invalidEmail ?? "");
       return;
     }
-    const subject = encodeURIComponent(t?.forgotPasswordSubject ?? "");
-    const body = encodeURIComponent(
-      (t?.forgotPasswordBody ?? "").replace("{email}", email),
-    );
-    window.location.href = `mailto:support@getrandomtrip.com?subject=${subject}&body=${body}`;
-  }, [email, t?.forgotPasswordBody, t?.forgotPasswordSubject, t?.invalidEmail]);
+    setForgotState("sending");
+    try {
+      await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+    } finally {
+      // Always show the generic "if that email exists, we sent a link"
+      // message — enumeration-safe on the client too.
+      setForgotState("sent");
+    }
+  }, [email, t?.invalidEmail]);
 
   if (!isOpen) {
     return null;
@@ -196,7 +279,7 @@ export default function AuthModal({
         }
       }}
     >
-      <div className="relative w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-200">
+      <div className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl border border-gray-200">
         {/* Close button */}
         <button
           aria-label={t?.close}
@@ -264,118 +347,164 @@ export default function AuthModal({
             </div>
           </div>
 
-          {/* Error message */}
-          {error && (
-            <div
-              id="error-message"
-              className="mb-4 rounded-md border border-red-200 bg-red-50 p-4"
-              role="alert"
-            >
-              <p className="text-sm text-red-700">{error}</p>
+          {/* Not-verified panel — replaces the form while active */}
+          {errorKind === "notVerified" ? (
+            <div className="space-y-6">
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
+                <p className="text-sm font-medium text-amber-800">
+                  {t?.notVerifiedTitle}
+                </p>
+                <p className="mt-1 text-sm text-amber-700">
+                  {mode === "register"
+                    ? (t?.registerCheckInbox ?? "").replace("{email}", email)
+                    : t?.notVerifiedBody}
+                </p>
+              </div>
+              <Button
+                className="w-full"
+                disabled={resendState === "sending"}
+                onClick={handleResend}
+                size="lg"
+                type="button"
+                variant="secondary"
+              >
+                {resendState === "sending"
+                  ? t?.resending
+                  : resendState === "sent"
+                    ? t?.verificationResent
+                    : t?.resendVerification}
+              </Button>
             </div>
+          ) : (
+            <>
+              {/* Error message */}
+              {error && (
+                <div
+                  id="error-message"
+                  className="mb-4 rounded-md border border-red-200 bg-red-50 p-4"
+                  role="alert"
+                >
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              )}
+
+              {/* Form */}
+              <form className="space-y-6" noValidate onSubmit={handleSubmit}>
+                {/* Name field (only for register) */}
+                {mode === "register" && (
+                  <div>
+                    <FormField
+                      aria-describedby={error ? "error-message" : undefined}
+                      autoComplete="name"
+                      id="auth-name"
+                      label={t?.nameLabel}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={t?.namePlaceholder}
+                      required
+                      type="text"
+                      value={name}
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <FormField
+                    aria-describedby={error ? "error-message" : undefined}
+                    autoComplete="email"
+                    id="auth-email"
+                    label={t?.email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t?.emailPlaceholder}
+                    required
+                    type="email"
+                    value={email}
+                  />
+                </div>
+
+                <div>
+                  <FormField
+                    aria-describedby={error ? "error-message" : undefined}
+                    autoComplete={
+                      mode === "register" ? "new-password" : "current-password"
+                    }
+                    id="auth-password"
+                    label={t?.password}
+                    minLength={6}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={t?.passwordPolicyHint}
+                    required
+                    type="password"
+                    value={password}
+                  />
+                </div>
+
+                {mode === "login" && (
+                  <div className="flex flex-col gap-2 pt-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-md font-light text-[#344266]">
+                        <input
+                          checked={keepMeLoggedIn}
+                          className="h-4 w-4 accent-cyan-600 border-neutral-200 cursor-pointer border-2 padding-px"
+                          onChange={(event) =>
+                            setKeepMeLoggedIn(event.target.checked)
+                          }
+                          type="checkbox"
+                        />
+                        {t?.keepLoggedIn}
+                      </label>
+                      {forgotState !== "sent" && (
+                        <button
+                          className="text-md font-light text-neutral-700 transition-colors hover:underline underline-offset-2 cursor-pointer hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={forgotState === "sending"}
+                          onClick={handleForgotPassword}
+                          type="button"
+                        >
+                          {forgotState === "sending"
+                            ? t?.forgotSending
+                            : t?.forgotPasswordLink}
+                        </button>
+                      )}
+                    </div>
+                    {forgotState === "sent" && (
+                      <p className="text-sm font-light text-neutral-500">
+                        {t?.forgotSentGeneric}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Submit button */}
+                <Button
+                  className=" w-full"
+                  disabled={isLoading}
+                  size="lg"
+                  type="submit"
+                >
+                  {isLoading
+                    ? t?.loading
+                    : mode === "login"
+                      ? t?.signIn
+                      : t?.createAccount}
+                </Button>
+              </form>
+            </>
           )}
 
-          {/* Form */}
-          <form className="space-y-6" noValidate onSubmit={handleSubmit}>
-            {/* Name field (only for register) */}
-            {mode === "register" && (
-              <div>
-                <FormField
-                  aria-describedby={error ? "error-message" : undefined}
-                  autoComplete="name"
-                  id="auth-name"
-                  label={t?.nameLabel}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder={t?.namePlaceholder}
-                  required
-                  type="text"
-                  value={name}
-                />
-              </div>
-            )}
-
-            <div>
-              <FormField
-                aria-describedby={error ? "error-message" : undefined}
-                autoComplete="email"
-                id="auth-email"
-                label={t?.email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t?.emailPlaceholder}
-                required
-                type="email"
-                value={email}
-              />
-            </div>
-
-            <div>
-              <FormField
-                aria-describedby={error ? "error-message" : undefined}
-                autoComplete={
-                  mode === "register" ? "new-password" : "current-password"
-                }
-                id="auth-password"
-                label={t?.password}
-                minLength={6}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 8 characters + special character"
-                required
-                type="password"
-                value={password}
-              />
-            </div>
-
-            {mode === "login" && (
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex cursor-pointer items-center gap-2 text-md font-light text-[#344266]">
-                  <input
-                    checked={keepMeLoggedIn}
-                    className="h-4 w-4 accent-cyan-600 border-neutral-200 cursor-pointer border-2 padding-px"
-                    onChange={(event) =>
-                      setKeepMeLoggedIn(event.target.checked)
-                    }
-                    type="checkbox"
-                  />
-                  Keep me logged in
-                </label>
-                <button
-                  className="text-md font-light text-neutral-700 transition-colors hover:underline underline-offset-2 cursor-pointer hover:text-neutral-900"
-                  onClick={handleForgotPassword}
-                  type="button"
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            {/* Submit button */}
-            <Button
-              className=" w-full"
-              disabled={isLoading}
-              size="lg"
-              type="submit"
-            >
-              {isLoading
-                ? t?.loading
-                : mode === "login"
-                  ? t?.signIn
-                  : t?.createAccount}
-            </Button>
-          </form>
-
           {/* Toggle mode */}
-          <div className="mt-6 text-center text-sm">
-            <span className="text-neutral-600">
-              {mode === "login" ? t?.noAccount : t?.haveAccount}
-            </span>{" "}
-            <button
-              type="button"
-              onClick={toggleMode}
-              className="text-primary hover:text-primary/90 font-medium transition-colors hover:underline underline-offset-2 cursor-pointer"
-            >
-              {mode === "login" ? t?.signUp : t?.signIn}
-            </button>
-          </div>
+          {allowRegister && (
+            <div className="mt-6 text-center text-sm">
+              <span className="text-neutral-600">
+                {mode === "login" ? t?.noAccount : t?.haveAccount}
+              </span>{" "}
+              <button
+                type="button"
+                onClick={toggleMode}
+                className="text-primary hover:text-primary/90 font-medium transition-colors hover:underline underline-offset-2 cursor-pointer"
+              >
+                {mode === "login" ? t?.signUp : t?.signIn}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

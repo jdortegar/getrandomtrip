@@ -546,11 +546,19 @@
         "name": "Nombre",
         "email": "Email",
         "joined": "Se unió",
+        "status": "Estado",
         "actions": "Acciones"
       },
       "actions": {
         "delete": "Eliminar",
-        "deleting": "Eliminando…"
+        "deleting": "Eliminando…",
+        "inviteTripper": "Invitar como Tripper",
+        "inviting": "Invitando…",
+        "resend": "Reenviar invitación"
+      },
+      "inviteStatus": {
+        "invited": "Invitado",
+        "expired": "Expirado"
       }
     },
     "xsedNotifications": {
@@ -813,7 +821,9 @@
     "createAccountSubtitle": "Crea tu cuenta para empezar",
     "email": "Email",
     "emailPlaceholder": "tu@email.com",
+    "emailTaken": "Ya existe una cuenta con este email",
     "fillAllFields": "Por favor completa todos los campos",
+    "invalidCredentials": "Email o contraseña incorrectos",
     "invalidEmail": "Por favor ingresa un email válido",
     "loginFailed": "Algo salió mal",
     "loginSubtitle": "Ingresa a tu cuenta para continuar",
@@ -829,7 +839,71 @@
     "haveAccount": "¿Ya tienes cuenta?",
     "loading": "Cargando...",
     "forgotPasswordSubject": "Solicitud de recuperación de contraseña",
-    "forgotPasswordBody": "Necesito restablecer la contraseña de esta cuenta: {email}"
+    "forgotPasswordBody": "Necesito restablecer la contraseña de esta cuenta: {email}",
+    "notVerifiedTitle": "Verificá tu email",
+    "notVerifiedBody": "Necesitás verificar tu email antes de iniciar sesión. Te acabamos de enviar un enlace.",
+    "resendVerification": "Reenviar link",
+    "verificationResent": "Email de verificación enviado. Revisá tu bandeja de entrada.",
+    "resending": "Enviando…",
+    "registerCheckInbox": "Te enviamos un enlace de verificación a {email}.",
+    "forgotSending": "Enviando…",
+    "forgotSentGeneric": "Si existe una cuenta con ese email, te enviamos un enlace para restablecer la contraseña.",
+    "passwordPolicyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
+    "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+    "keepLoggedIn": "Mantenerme conectado"
+  },
+  "verifyEmailPage": {
+    "verifyingTitle": "Verificando tu email…",
+    "verifyingBody": "Esperá un momento mientras confirmamos tu cuenta.",
+    "successTitle": "¡Email verificado!",
+    "successBody": "Tu cuenta fue verificada correctamente. Ya podés iniciar sesión.",
+    "loginCta": "Ir a iniciar sesión",
+    "errorTitle": "No pudimos verificar tu email",
+    "reasonInvalid": "Este enlace de verificación no es válido.",
+    "reasonExpired": "Este enlace venció. Iniciá sesión para recibir uno nuevo.",
+    "reasonUsed": "Este enlace ya fue utilizado.",
+    "reasonMissing": "No se encontró un token de verificación."
+  },
+  "resetPasswordPage": {
+    "title": "Restablecer contraseña",
+    "subtitle": "Elegí una nueva contraseña para tu cuenta.",
+    "newPasswordLabel": "Nueva contraseña",
+    "newPasswordPlaceholder": "Mín. 8 caracteres, una letra y un número",
+    "confirmPasswordLabel": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "Repetí tu nueva contraseña",
+    "submitLabel": "Restablecer contraseña",
+    "submitting": "Restableciendo…",
+    "policyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
+    "mismatch": "Las contraseñas no coinciden.",
+    "weakPassword": "La contraseña debe tener al menos 8 caracteres, una letra y un número.",
+    "successTitle": "¡Contraseña actualizada!",
+    "successBody": "Tu contraseña fue restablecida correctamente.",
+    "loginCta": "Ir a iniciar sesión",
+    "errorTitle": "No pudimos restablecer tu contraseña",
+    "reasonInvalid": "Este enlace no es válido.",
+    "reasonExpired": "Este enlace venció. Solicitá uno nuevo.",
+    "reasonUsed": "Este enlace ya fue utilizado.",
+    "reasonMissing": "No se encontró un token de restablecimiento."
+  },
+  "tripperInviteAccept": {
+    "loadingTitle": "Activando tu invitación…",
+    "loadingBody": "Esperá un momento mientras confirmamos tu cuenta como Tripper.",
+    "errorTitle": "No pudimos validar tu invitación",
+    "reasonInvalid": "Este enlace de invitación no es válido.",
+    "reasonExpired": "Esta invitación venció. Pedile a un admin que te reenvíe una nueva.",
+    "reasonUsed": "Esta invitación ya fue utilizada.",
+    "reasonMissing": "No se encontró un token de invitación.",
+    "loginCta": "Ir a iniciar sesión",
+    "grantedTitle": "¡Listo, ya sos Tripper!",
+    "grantedBody": "Activamos tu rol de Tripper. Iniciá sesión para empezar a crear tus paquetes.",
+    "registerTitle": "Completá tu cuenta de Tripper",
+    "registerSubtitle": "Te invitaron a ser Tripper en Randomtrip. Creá tu cuenta para aceptar.",
+    "emailLockedNote": "Este email viene de tu invitación y no se puede cambiar.",
+    "submitLabel": "Crear cuenta",
+    "submitting": "Creando cuenta…",
+    "registerSuccessTitle": "¡Cuenta creada!",
+    "registerSuccessBody": "Te enviamos un email para verificar tu cuenta. Confirmalo y después iniciá sesión.",
+    "registerErrorGeneric": "No pudimos crear tu cuenta. Intentá de nuevo."
   },
   "home": {
     "hero": {
@@ -3047,19 +3121,19 @@
   "waitlist": {
     "headline": "Accedé antes que nadie al lanzamiento de Randomtrip",
     "subheadline": "Sumate a la lista y te avisamos cuando estemos listos.",
-    "namePlaceholder": "Nombre",
-    "lastNamePlaceholder": "Apellido",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Juan",
+    "lastNameLabel": "Apellido",
+    "lastNamePlaceholder": "Pérez",
+    "emailLabel": "Email",
     "emailPlaceholder": "tu@email.com",
     "submitButton": "Quiero acceso anticipado",
     "successMessage": "¡Listo! Te vamos a avisar cuando sea tu turno.",
-    "adminLoginLabel": "¿Admin? Iniciar sesión",
-    "loginModal": {
-      "title": "Acceso para administradores",
-      "description": "Ingresá usuario y contraseña para acceder.",
-      "usernamePlaceholder": "Usuario",
-      "passwordPlaceholder": "Contraseña",
-      "submitButton": "Entrar"
-    }
+    "errorMessage": "Algo salió mal. Por favor, intentá de nuevo.",
+    "adminLoginLabel": "¿Admin o Tripper? Iniciar sesión",
+    "accessDeniedTitle": "Acceso no permitido",
+    "accessDeniedBody": "Esta sección está restringida a admins y trippers. Contactá a tu administrador si creés que esto es un error.",
+    "signOutLabel": "Cerrar sesión"
   },
   "profile": {
     "actionsAria": "Acciones de cuenta",
@@ -4228,6 +4302,7 @@
       "actions": "Acciones",
       "joined": "Alta",
       "roles": "Roles",
+      "status": "Estado",
       "tripperSlug": "Slug tripper",
       "user": "Usuario"
     },
@@ -4250,7 +4325,16 @@
       "CLIENT": "Cliente",
       "TRIPPER": "Tripper"
     },
-    "usersCount": "{count} usuarios"
+    "usersCount": "{count} usuarios",
+    "invite": {
+      "inviteTripper": "Invitar como Tripper",
+      "inviting": "Invitando…",
+      "resend": "Reenviar invitación"
+    },
+    "inviteStatus": {
+      "invited": "Invitado",
+      "expired": "Expirado"
+    }
   },
   "contactPage": {
     "meta": {

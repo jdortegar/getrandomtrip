@@ -4,18 +4,22 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface UsersTableProps {
   copy: MarketingDictionary["adminUsers"];
+  invitingId: string | null;
   locale: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
+  onInvite: (id: string) => void;
   selectedId: string | null;
   users: AdminUser[];
 }
 
 export function UsersTable({
   copy,
+  invitingId,
   locale,
   onDelete,
   onEdit,
+  onInvite,
   selectedId,
   users,
 }: UsersTableProps) {
@@ -24,6 +28,7 @@ export function UsersTable({
     copy.headers.roles,
     copy.headers.tripperSlug,
     copy.headers.joined,
+    copy.headers.status,
     copy.headers.actions,
   ];
   return (
@@ -51,11 +56,13 @@ export function UsersTable({
               {users.map((user) => (
                 <UsersTableRow
                   copy={copy}
+                  invitingId={invitingId}
                   isSelected={selectedId === user.id}
                   key={user.id}
                   locale={locale}
                   onDelete={onDelete}
                   onEdit={onEdit}
+                  onInvite={onInvite}
                   user={user}
                 />
               ))}

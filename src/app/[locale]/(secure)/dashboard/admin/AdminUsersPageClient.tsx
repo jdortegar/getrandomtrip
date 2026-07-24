@@ -24,6 +24,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [invitingId, setInvitingId] = useState<string | null>(null);
 
   async function fetchUsers() {
     setLoading(true);
@@ -50,6 +51,21 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     void fetchUsers();
   }, []);
 
+  async function inviteAsTripper(id: string) {
+    setInvitingId(id);
+    try {
+      const res = await fetch(`/api/admin/users/${id}/invite-tripper`, {
+        method: "POST",
+      });
+      if (!res.ok) return;
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, inviteStatus: "invited" } : u)),
+      );
+    } finally {
+      setInvitingId(null);
+    }
+  }
+
   const selectedUser = selectedUserId
     ? users.find((u) => u.id === selectedUserId)
     : null;
@@ -74,9 +90,11 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
 
       <UsersTable
         copy={copy}
+        invitingId={invitingId}
         locale={locale}
         onDelete={setDeleteTargetId}
         onEdit={setSelectedUserId}
+        onInvite={(id) => void inviteAsTripper(id)}
         selectedId={selectedUserId}
         users={users}
       />

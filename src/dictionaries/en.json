@@ -546,11 +546,19 @@
         "name": "Name",
         "email": "Email",
         "joined": "Joined",
+        "status": "Status",
         "actions": "Actions"
       },
       "actions": {
         "delete": "Delete",
-        "deleting": "Deleting…"
+        "deleting": "Deleting…",
+        "inviteTripper": "Invite as Tripper",
+        "inviting": "Inviting…",
+        "resend": "Resend invite"
+      },
+      "inviteStatus": {
+        "invited": "Invited",
+        "expired": "Expired"
       }
     },
     "xsedNotifications": {
@@ -813,7 +821,9 @@
     "createAccountSubtitle": "Create your account to get started",
     "email": "Email",
     "emailPlaceholder": "you@email.com",
+    "emailTaken": "An account with this email already exists",
     "fillAllFields": "Please fill in all fields",
+    "invalidCredentials": "Incorrect email or password",
     "invalidEmail": "Please enter a valid email",
     "loginFailed": "Something went wrong",
     "loginSubtitle": "Sign in to your account to continue",
@@ -829,7 +839,71 @@
     "haveAccount": "Already have an account?",
     "loading": "Loading...",
     "forgotPasswordSubject": "Password reset request",
-    "forgotPasswordBody": "Please help me reset my password for this account: {email}"
+    "forgotPasswordBody": "Please help me reset my password for this account: {email}",
+    "notVerifiedTitle": "Verify your email",
+    "notVerifiedBody": "You need to verify your email before signing in. We just sent you a link.",
+    "resendVerification": "Resend link",
+    "verificationResent": "Verification email sent. Check your inbox.",
+    "resending": "Sending…",
+    "registerCheckInbox": "We sent a verification link to {email}.",
+    "forgotSending": "Sending…",
+    "forgotSentGeneric": "If an account exists for that email, we sent a reset link.",
+    "passwordPolicyHint": "Min. 8 characters, at least one letter and one number.",
+    "forgotPasswordLink": "Forgot password?",
+    "keepLoggedIn": "Keep me logged in"
+  },
+  "verifyEmailPage": {
+    "verifyingTitle": "Verifying your email…",
+    "verifyingBody": "Hang tight while we confirm your account.",
+    "successTitle": "Email verified!",
+    "successBody": "Your account has been verified. You can now sign in.",
+    "loginCta": "Go to login",
+    "errorTitle": "We couldn't verify your email",
+    "reasonInvalid": "This verification link is invalid.",
+    "reasonExpired": "This link has expired. Sign in to get a new one.",
+    "reasonUsed": "This link was already used.",
+    "reasonMissing": "No verification token found."
+  },
+  "resetPasswordPage": {
+    "title": "Reset password",
+    "subtitle": "Choose a new password for your account.",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "Min. 8 characters, a letter and a number",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Repeat your new password",
+    "submitLabel": "Reset password",
+    "submitting": "Resetting…",
+    "policyHint": "Min. 8 characters, at least one letter and one number.",
+    "mismatch": "Passwords don't match.",
+    "weakPassword": "Password must be at least 8 characters with a letter and a number.",
+    "successTitle": "Password updated!",
+    "successBody": "Your password has been reset successfully.",
+    "loginCta": "Go to login",
+    "errorTitle": "We couldn't reset your password",
+    "reasonInvalid": "This link is invalid.",
+    "reasonExpired": "This link has expired. Request a new one.",
+    "reasonUsed": "This link was already used.",
+    "reasonMissing": "No reset token found."
+  },
+  "tripperInviteAccept": {
+    "loadingTitle": "Activating your invite…",
+    "loadingBody": "Hang tight while we confirm your Tripper account.",
+    "errorTitle": "We couldn't validate your invite",
+    "reasonInvalid": "This invite link is invalid.",
+    "reasonExpired": "This invite has expired. Ask an admin to resend a new one.",
+    "reasonUsed": "This invite was already used.",
+    "reasonMissing": "No invite token found.",
+    "loginCta": "Go to login",
+    "grantedTitle": "You're now a Tripper!",
+    "grantedBody": "We activated your Tripper role. Sign in to start creating your packages.",
+    "registerTitle": "Complete your Tripper account",
+    "registerSubtitle": "You've been invited to become a Tripper on Randomtrip. Create your account to accept.",
+    "emailLockedNote": "This email comes from your invite and can't be changed.",
+    "submitLabel": "Create account",
+    "submitting": "Creating account…",
+    "registerSuccessTitle": "Account created!",
+    "registerSuccessBody": "We sent you an email to verify your account. Confirm it, then sign in.",
+    "registerErrorGeneric": "We couldn't create your account. Please try again."
   },
   "home": {
     "hero": {
@@ -3047,19 +3121,19 @@
   "waitlist": {
     "headline": "Get early access to Randomtrip's launch",
     "subheadline": "Join the list and we'll notify you when we're ready.",
-    "namePlaceholder": "First name",
-    "lastNamePlaceholder": "Last name",
+    "nameLabel": "First name",
+    "namePlaceholder": "John",
+    "lastNameLabel": "Last name",
+    "lastNamePlaceholder": "Doe",
+    "emailLabel": "Email",
     "emailPlaceholder": "you@email.com",
     "submitButton": "I want early access",
     "successMessage": "You're in! We'll notify you when it's your turn.",
-    "adminLoginLabel": "Admin? Log in",
-    "loginModal": {
-      "title": "Admin access",
-      "description": "Enter username and password to access.",
-      "usernamePlaceholder": "Username",
-      "passwordPlaceholder": "Password",
-      "submitButton": "Sign in"
-    }
+    "errorMessage": "Something went wrong. Please try again.",
+    "adminLoginLabel": "Admin or Tripper? Log in",
+    "accessDeniedTitle": "Access not allowed",
+    "accessDeniedBody": "This area is restricted to admins and trippers. Contact your administrator if you believe this is a mistake.",
+    "signOutLabel": "Sign out"
   },
   "profile": {
     "actionsAria": "Account actions",
@@ -4228,6 +4302,7 @@
       "actions": "Actions",
       "joined": "Joined",
       "roles": "Roles",
+      "status": "Status",
       "tripperSlug": "Tripper slug",
       "user": "User"
     },
@@ -4250,7 +4325,16 @@
       "CLIENT": "Client",
       "TRIPPER": "Tripper"
     },
-    "usersCount": "{count} users"
+    "usersCount": "{count} users",
+    "invite": {
+      "inviteTripper": "Invite as Tripper",
+      "inviting": "Inviting…",
+      "resend": "Resend invite"
+    },
+    "inviteStatus": {
+      "invited": "Invited",
+      "expired": "Expired"
+    }
   },
   "contactPage": {
     "meta": {

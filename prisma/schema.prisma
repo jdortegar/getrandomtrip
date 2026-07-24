@@ -22,6 +22,7 @@ model User {
   email     String     @unique
   name      String
   password  String?
+  emailVerified DateTime? // null = unverified. Set on token consume, backfill, or Google create.
   avatarUrl String?
   /**
    * Membership roles for this account.
@@ -84,6 +85,7 @@ model User {
   experiencesCreated Experience[]     @relation("ExperienceCreatedBy")
   experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
   notifications      Notification[]
+  verificationTokens VerificationToken[]
 
   @@map("users")
 }
@@ -516,6 +518,11 @@ enum NotificationAudience {
   ADMIN
 }
 
+enum VerificationTokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
 // ============================================================================
 // NOTIFICATIONS
 // ============================================================================
@@ -551,6 +558,33 @@ model WaitlistEntry {
 
   @@index([email])
   @@map("waitlist_entries")
+}
+
+model VerificationToken {
+  id         String                @id @default(cuid())
+  userId     String
+  user       User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       VerificationTokenType
+  tokenHash  String                @unique // SHA-256 hex of the plaintext; consumption lookup key
+  expiresAt  DateTime
+  consumedAt DateTime? // null = still valid (single-use)
+  createdAt  DateTime              @default(now())
+
+  @@index([userId, type])
+  @@index([expiresAt])
+  @@map("verification_tokens")
+}
+
+model TripperInvite {
+  id         String    @id @default(cuid())
+  email      String // NO FK — resolved by email at accept-time; invitee may have no User yet
+  tokenHash  String    @unique // SHA-256 hex of the plaintext; consumption + peek lookup key
+  expiresAt  DateTime
+  consumedAt DateTime? // null = still pending (single-use)
+  createdAt  DateTime  @default(now())
+
+  @@index([email])
+  @@map("tripper_invites")
 }
 
 model XsedNotificationSignup {
