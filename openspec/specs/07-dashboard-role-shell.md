@@ -1,14 +1,14 @@
 # Feature Spec: Dashboard Role Shell
 
 **Priority:** 5 — Shared dashboard infrastructure  
-**Routes:** applies to `/dashboard/client/*` and `/dashboard/tripper/*`  
-**Last audited:** 2026-06-30
+**Routes:** applies to `/dashboard/traveler/*` and `/dashboard/tripper/*`  
+**Last audited:** 2026-07-24
 
 ---
 
 ## Overview
 
-The Dashboard Role Shell is a shared layout component (`DashboardRoleShell`) that wraps both the client and tripper dashboards. It provides a consistent chrome layer consisting of a page heading band and a horizontal tab strip, driven by per-role configuration objects.
+The Dashboard Role Shell is a shared layout component (`DashboardRoleShell`) that wraps both the traveler and tripper dashboards. It provides a consistent chrome layer consisting of a page heading band and a horizontal tab strip, driven by per-role configuration objects.
 
 ---
 
@@ -16,7 +16,7 @@ The Dashboard Role Shell is a shared layout component (`DashboardRoleShell`) tha
 
 ### Requirement: Shared tab shell
 
-The system SHALL render a consistent dashboard shell for client and tripper roles consisting of:
+The system SHALL render a consistent dashboard shell for traveler and tripper roles consisting of:
 - A page heading (title + description) derived from the current pathname
 - A horizontal tab strip with icon + label per tab
 - Tab content area below the shell header band
@@ -31,15 +31,15 @@ The system SHALL show an unread notification dot on the notifications tab when t
 
 ### Scenario: Active tab highlighting
 
-**Given** a user on `/dashboard/client/trips`  
+**Given** a user on `/dashboard/traveler/trips`  
 **When** the tab strip renders  
 **Then** the "My Trips" tab is visually active  
 **And** other tabs are inactive
 
-### Scenario: Client unread count
+### Scenario: Traveler unread count
 
-**Given** a client with 2 unread `CLIENT` audience notifications  
-**When** the client notifications tab renders  
+**Given** a traveler with 2 unread `TRAVELER` audience notifications  
+**When** the traveler notifications tab renders  
 **Then** an unread dot appears on that tab
 
 ---
@@ -60,8 +60,8 @@ The system SHALL show an unread notification dot on the notifications tab when t
 
 Each role provides two config objects:
 
-- `clientNav` / `tripperNav` — array of tab items with `href`, `label`, `icon`, and `audience` (for unread dot)
-- `clientHeadings` / `tripperHeadings` — map of pathname → `{ title, description }`
+- `travelerNav` / `tripperNav` — array of tab items with `href`, `label`, `icon`, and `audience` (for unread dot)
+- `travelerHeadings` / `tripperHeadings` — map of pathname → `{ title, description }`
 
 ---
 

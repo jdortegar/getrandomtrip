@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { StrictDashboardLayout } from "@/components/app/dashboard/shell/StrictDashboardLayout";
 
-export default async function ClientDashboardLayout({
+export default async function TravelerDashboardLayout({
   children,
   params,
 }: {
@@ -12,7 +12,7 @@ export default async function ClientDashboardLayout({
   const { locale } = await params;
 
   return (
-    <StrictDashboardLayout locale={locale} requiredRole="client" shellRole="client">
+    <StrictDashboardLayout locale={locale} requiredRole="traveler" shellRole="traveler">
       {children}
     </StrictDashboardLayout>
   );

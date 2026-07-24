@@ -128,7 +128,7 @@ export async function grantTripperAndCleanup(
     select: { roles: true },
   });
 
-  const currentRoles: UserRole[] = user?.roles ?? ["CLIENT"];
+  const currentRoles: UserRole[] = user?.roles ?? ["TRAVELER"];
   const { roles } = buildUserRoleUpdate(
     addMembershipRole(currentRoles, "TRIPPER"),
   );

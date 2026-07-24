@@ -28,7 +28,7 @@ import { sendBlogCopyRejected } from "@/lib/email";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "tripper@example.com" } });
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
-const mockClientUser = (id: string) => ({ id, roles: ["CLIENT"] });
+const mockTravelerUser = (id: string) => ({ id, roles: ["TRAVELER"] });
 
 function makePostRequest(id: string): Request {
   return new Request(`http://localhost/api/tripper/blogs/${id}/reject-copy`, { method: "POST" });
@@ -55,7 +55,7 @@ describe("POST /api/tripper/blogs/[id]/reject-copy", () => {
   it("returns 403 when the caller is not a tripper", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("client-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockClientUser("client-1"),
+      mockTravelerUser("client-1"),
     );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest("blog-1"), {

@@ -3,18 +3,18 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, Star } from "lucide-react";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
-import type { ClientDashboardDict } from "@/lib/types/dictionary";
+import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import { getTrips, type Trip } from "@/lib/utils/trips";
 
-interface ClientReviewsPageClientProps {
-  copy: ClientDashboardDict["reviews"];
+interface TravelerReviewsPageClientProps {
+  copy: TravelerDashboardDict["reviews"];
   locale: string;
 }
 
-export function ClientReviewsPageClient({
+export function TravelerReviewsPageClient({
   copy,
   locale,
-}: ClientReviewsPageClientProps) {
+}: TravelerReviewsPageClientProps) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";

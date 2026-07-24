@@ -74,12 +74,12 @@ export const PAYMENT_STATUS_COLORS: Record<string, StatusColors> = {
   },
 };
 
-export const USER_ROLE_COLORS: Record<"ADMIN" | "CLIENT" | "TRIPPER", StatusColors> = {
+export const USER_ROLE_COLORS: Record<"ADMIN" | "TRAVELER" | "TRIPPER", StatusColors> = {
   ADMIN: {
     badge: "bg-purple-50 text-purple-800 border-purple-200",
     dot: "bg-purple-500",
   },
-  CLIENT: {
+  TRAVELER: {
     badge: "bg-blue-50 text-blue-800 border-blue-200",
     dot: "bg-blue-500",
   },

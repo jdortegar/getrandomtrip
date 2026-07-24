@@ -14,7 +14,7 @@ interface StrictDashboardLayoutProps {
   children: React.ReactNode;
   locale: string;
   requiredRole: DashboardRole;
-  shellRole?: "admin" | "client" | "tripper";
+  shellRole?: "admin" | "traveler" | "tripper";
 }
 
 export async function StrictDashboardLayout({

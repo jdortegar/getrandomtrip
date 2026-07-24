@@ -1,5 +1,5 @@
 /**
- * Sets every user’s membership to all roles (CLIENT, TRIPPER, ADMIN).
+ * Sets every user’s membership to all roles (TRAVELER, TRIPPER, ADMIN).
  * Useful for local/dev when everyone should access all surfaces.
  * Run: npx tsx scripts/grant-all-roles-to-all-users.ts
  */
@@ -16,7 +16,7 @@ const prisma = new PrismaClient(
 );
 
 /** Same order as `uniqSortedRoles` in prismaUserRoles (localeCompare on enum names). */
-const ALL_ROLES: UserRole[] = ["ADMIN", "CLIENT", "TRIPPER"];
+const ALL_ROLES: UserRole[] = ["ADMIN", "TRAVELER", "TRIPPER"];
 
 async function main() {
   const result = await prisma.user.updateMany({

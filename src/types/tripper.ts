@@ -15,7 +15,7 @@ export type TierLevel =
   | "explora-plus"
   | "bivouac"
   | "atelier-getaway";
-export type UserRole = "CLIENT" | "TRIPPER" | "ADMIN";
+export type UserRole = "TRAVELER" | "TRIPPER" | "ADMIN";
 export type OwnerType = "CUSTOMER" | "TRIPPER" | "ADMIN";
 export type RouteStatus =
   | "draft"

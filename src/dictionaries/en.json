@@ -3687,7 +3687,7 @@
       }
     }
   },
-  "clientDashboard": {
+  "travelerDashboard": {
     "home": {
       "eyebrow": "This month",
       "heading": "Your overview",
@@ -4312,7 +4312,7 @@
     "modal": {
       "admin": "ADMIN",
       "cancel": "Cancel",
-      "clientBase": "CLIENT (base)",
+      "travelerBase": "TRAVELER (base)",
       "confirmDelete": "Confirm deletion?",
       "delete": "Delete user",
       "deleteError": "Failed to delete user",
@@ -4325,7 +4325,7 @@
     },
     "roles": {
       "ADMIN": "Admin",
-      "CLIENT": "Client",
+      "TRAVELER": "Traveler",
       "TRIPPER": "Tripper"
     },
     "usersCount": "{count} users",

@@ -2,13 +2,13 @@ import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { type AppRole } from "@/lib/auth/roleAccess";
 
-export type DashboardRole = "admin" | "client" | "tripper";
+export type DashboardRole = "admin" | "traveler" | "tripper";
 
 export function hasStrictRole(
   roles: AppRole[],
   required: DashboardRole,
 ): boolean {
-  if (required === "client") {
+  if (required === "traveler") {
     return roles.length > 0;
   }
   return roles.includes(required);
@@ -25,5 +25,5 @@ export function getDefaultDashboardPath(
   if (roles.includes("tripper")) {
     return pathForLocale(resolvedLocale, "/dashboard/tripper");
   }
-  return pathForLocale(resolvedLocale, "/dashboard/client");
+  return pathForLocale(resolvedLocale, "/dashboard/traveler");
 }

@@ -50,7 +50,7 @@ describe("POST /api/admin/waitlist/[id]/invite-tripper", () => {
     });
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "caller-1",
-      roles: ["CLIENT"],
+      roles: ["TRAVELER"],
     });
 
     const mod = await import("../route");

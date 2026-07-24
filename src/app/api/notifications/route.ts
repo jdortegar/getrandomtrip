@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   const notifications = await prisma.notification.findMany({
     where: {
       userId: session.user.id,
-      ...(audience === "CLIENT" || audience === "TRIPPER" ? { audience } : {}),
+      ...(audience === "TRAVELER" || audience === "TRIPPER" ? { audience } : {}),
     },
     orderBy: { createdAt: "desc" },
   });

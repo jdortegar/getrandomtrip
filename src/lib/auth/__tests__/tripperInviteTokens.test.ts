@@ -252,7 +252,7 @@ describe("grantTripperAndCleanup", () => {
   it("appends TRIPPER to the user's roles (preserving existing) and deletes any matching waitlist row", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "user-1",
-      roles: ["CLIENT"],
+      roles: ["TRAVELER"],
     });
     (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({});
     (
@@ -263,7 +263,7 @@ describe("grantTripperAndCleanup", () => {
 
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: "user-1" },
-      data: { roles: { set: expect.arrayContaining(["CLIENT", "TRIPPER"]) } },
+      data: { roles: { set: expect.arrayContaining(["TRAVELER", "TRIPPER"]) } },
     });
     expect(prisma.waitlistEntry.deleteMany).toHaveBeenCalledWith({
       where: { email: "alice@example.com" },
@@ -273,7 +273,7 @@ describe("grantTripperAndCleanup", () => {
   it("does not duplicate TRIPPER when the user already has it", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "user-1",
-      roles: ["CLIENT", "TRIPPER"],
+      roles: ["TRAVELER", "TRIPPER"],
     });
     (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({});
     (
@@ -284,13 +284,13 @@ describe("grantTripperAndCleanup", () => {
 
     const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
-    expect(updateArgs.data.roles.set.sort()).toEqual(["CLIENT", "TRIPPER"]);
+    expect(updateArgs.data.roles.set.sort()).toEqual(["TRAVELER", "TRIPPER"]);
   });
 
   it("does not throw when there is no matching waitlist row to clean up", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "user-2",
-      roles: ["CLIENT"],
+      roles: ["TRAVELER"],
     });
     (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({});
     (

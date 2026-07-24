@@ -38,9 +38,9 @@ const mockAdminUser = (id: string) => ({
   roles: ["ADMIN"],
 });
 
-const mockClientUser = (id: string) => ({
+const mockTravelerUser = (id: string) => ({
   id,
-  roles: ["CLIENT"],
+  roles: ["TRAVELER"],
 });
 
 function makePostRequest(body: Record<string, unknown>): Request {
@@ -70,12 +70,12 @@ describe("POST /api/admin/xsed", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns 403 when the user is not an admin (CLIENT role)", async () => {
+  it("returns 403 when the user is not an admin (TRAVELER role)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockSession("user-client-1"),
     );
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockClientUser("user-client-1"),
+      mockTravelerUser("user-client-1"),
     );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest({ titleInternal: "A mystery trip" }));

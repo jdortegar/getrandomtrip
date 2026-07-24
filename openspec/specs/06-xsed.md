@@ -28,7 +28,7 @@ What works end-to-end today:
 
 ## User Flows
 
-**Client discovery and booking:**
+**Traveler discovery and booking:**
 1. `/xsed` → learn about the product → join waitlist or navigate to `/xsed/drops`
 2. `/xsed/drops` → browse available and upcoming drops
 3. `/xsed/drops/[slug]` → see drop details, countdown, remaining spots → "Reservar" CTA

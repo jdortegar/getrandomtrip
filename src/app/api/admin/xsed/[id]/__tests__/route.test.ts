@@ -34,7 +34,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
-const mockClientUser = (id: string) => ({ id, roles: ["CLIENT"] });
+const mockTravelerUser = (id: string) => ({ id, roles: ["TRAVELER"] });
 
 function adminSession(userId = "admin-1") {
   return { user: { id: userId, email: "admin@example.com" } };
@@ -64,7 +64,7 @@ describe("GET /api/admin/xsed/[id]", () => {
 
   it("returns 403 for a non-admin user", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession("client-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockClientUser("client-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockTravelerUser("client-1"));
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.GET(makeRequest("GET"), routeParams);
     expect(res.status).toBe(403);

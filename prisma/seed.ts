@@ -87,7 +87,7 @@ async function main() {
       email: 'demo@getrandomtrip.com',
       name: 'Demo User',
       password: userPassword,
-      role: UserRole.CLIENT,
+      role: UserRole.TRAVELER,
       travelerType: 'couple',
       interests: ['adventure', 'culture', 'food'],
       dislikes: ['crowds', 'cold'],

@@ -5,11 +5,11 @@ import { prisma } from "@/lib/prisma";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import Section from "@/components/layout/Section";
-import { ClientNotificationsPageClient } from "@/components/app/dashboard/client/ClientNotificationsPageClient";
+import { TravelerNotificationsPageClient } from "@/components/app/dashboard/traveler/TravelerNotificationsPageClient";
 import type { ClientNotification } from "@/types/notifications";
 import type { NotificationMetadata } from "@/types/notifications";
 
-export default async function ClientNotificationsPage(props: {
+export default async function TravelerNotificationsPage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const params = await props.params;
@@ -25,7 +25,7 @@ export default async function ClientNotificationsPage(props: {
   const rawNotifications = await prisma.notification.findMany({
     orderBy: { createdAt: "desc" },
     where: {
-      audience: "CLIENT",
+      audience: "TRAVELER",
       userId: session.user.id,
     },
   });
@@ -47,7 +47,7 @@ export default async function ClientNotificationsPage(props: {
   return (
     <Section className="py-10!">
       <div className="rt-container text-left">
-        <ClientNotificationsPageClient
+        <TravelerNotificationsPageClient
           copy={dict.notifications}
           initialNotifications={initialNotifications}
           locale={locale}

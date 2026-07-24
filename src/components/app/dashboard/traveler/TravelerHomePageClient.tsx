@@ -8,7 +8,7 @@ import {
   type DashboardStats,
 } from "@/components/app/dashboard";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
-import { UpcomingTripsList } from "@/components/app/dashboard/client/UpcomingTripsList";
+import { UpcomingTripsList } from "@/components/app/dashboard/traveler/UpcomingTripsList";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import {
@@ -18,7 +18,7 @@ import {
   type Trip,
 } from "@/lib/utils/trips";
 
-interface ClientHomePageClientProps {
+interface TravelerHomePageClientProps {
   copy: DashboardCopy;
   eyebrow: string;
   heading: string;
@@ -53,13 +53,13 @@ function computeDashboardStats(
   };
 }
 
-export function ClientHomePageClient({
+export function TravelerHomePageClient({
   copy,
   eyebrow,
   heading,
   locale,
   roleToast,
-}: ClientHomePageClientProps) {
+}: TravelerHomePageClientProps) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({

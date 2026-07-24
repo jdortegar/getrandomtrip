@@ -331,7 +331,7 @@ export interface TripperDashboardDict {
   };
 }
 
-export interface ClientDashboardDict {
+export interface TravelerDashboardDict {
   home: {
     eyebrow: string;
     heading: string;
@@ -2607,7 +2607,7 @@ export interface MarketingDictionary {
     modal: {
       admin: string;
       cancel: string;
-      clientBase: string;
+      travelerBase: string;
       confirmDelete: string;
       delete: string;
       deleteError: string;
@@ -2620,7 +2620,7 @@ export interface MarketingDictionary {
     };
     roles: {
       ADMIN: string;
-      CLIENT: string;
+      TRAVELER: string;
       TRIPPER: string;
     };
     usersCount: string;
@@ -2676,7 +2676,7 @@ export interface MarketingDictionary {
   tripperBlogs: TripperBlogsDict;
   dashboard: DashboardDict;
   adminDashboard: AdminDashboardDict;
-  clientDashboard: ClientDashboardDict;
+  travelerDashboard: TravelerDashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
   tripperExperiences: TripperExperiencesDict;

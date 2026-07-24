@@ -94,13 +94,13 @@ describe("POST /api/tripper/experiences/[id]/approve-copy", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns 403 when caller has CLIENT role only (not tripper)", async () => {
+  it("returns 403 when caller has TRAVELER role only (not tripper)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockSession("client-1"),
     );
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "client-1",
-      roles: ["CLIENT"],
+      roles: ["TRAVELER"],
     });
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest("exp-1"), {

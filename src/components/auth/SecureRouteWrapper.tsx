@@ -4,7 +4,7 @@ import SecureRoute from "@/components/auth/SecureRoute";
 
 interface Props {
   children: React.ReactNode;
-  requiredRole?: "client" | "tripper" | "admin";
+  requiredRole?: "traveler" | "tripper" | "admin";
 }
 
 export default function SecureRouteWrapper({ children, requiredRole }: Props) {

@@ -7,5 +7,5 @@ export default async function LegacySettingsRedirectPage(props: {
 }) {
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : "es";
-  redirect(pathForLocale(locale, "/dashboard/client/settings"));
+  redirect(pathForLocale(locale, "/dashboard/traveler/settings"));
 }

@@ -15,7 +15,7 @@ export type Currency = "USD" | "EUR" | "MXN" | "ARS" | "COP" | "CLP" | "PEN";
 // USER & AUTHENTICATION TYPES
 // ============================================================================
 
-export type UserRole = "client" | "tripper" | "admin";
+export type UserRole = "traveler" | "tripper" | "admin";
 export type TravelerType =
   | "solo"
   | "couple"
