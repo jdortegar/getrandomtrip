@@ -1,11 +1,11 @@
-# Trip Booking / Client Journey
+# Trip Booking / Traveler Journey
 
 **Status**: Partial
 **Priority**: High
 
 ## Purpose
 
-The core booking flow that lets a client configure a mystery trip through a multi-step wizard and proceed to checkout. The client specifies budget, occasion, travel details, and preferences; the system persists a TripRequest and drives them to payment. Post-checkout pages handle success, failure, and pending states.
+The core booking flow that lets a traveler configure a mystery trip through a multi-step wizard and proceed to checkout. The traveler specifies budget, occasion, travel details, and preferences; the system persists a TripRequest and drives them to payment. Post-checkout pages handle success, failure, and pending states.
 
 ## What's Implemented
 

@@ -11,7 +11,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 interface SecureRouteProps {
   children: React.ReactNode;
-  requiredRole?: "client" | "tripper" | "admin";
+  requiredRole?: "traveler" | "tripper" | "admin";
   fallback?: React.ReactNode;
 }
 
@@ -26,7 +26,7 @@ export default function SecureRoute({
   const [isChecking, setIsChecking] = useState(true);
 
   const sessionUser = session?.user as
-    | { role?: string; roles?: Array<"admin" | "client" | "tripper"> }
+    | { role?: string; roles?: Array<"admin" | "traveler" | "tripper"> }
     | undefined;
 
   const subjectFromStore =
@@ -75,11 +75,11 @@ export default function SecureRoute({
       normalizedRequiredRole &&
       !hasRoleAccess(
         storeSubject,
-        normalizedRequiredRole as "client" | "tripper" | "admin",
+        normalizedRequiredRole as "traveler" | "tripper" | "admin",
       ) &&
       !hasRoleAccess(
         sessionSubject,
-        normalizedRequiredRole as "client" | "tripper" | "admin",
+        normalizedRequiredRole as "traveler" | "tripper" | "admin",
       )
     ) {
       router.push("/unauthorized");
@@ -113,11 +113,11 @@ export default function SecureRoute({
     normalizedRequiredRole &&
     !hasRoleAccess(
       subjectFromStore,
-      normalizedRequiredRole as "client" | "tripper" | "admin",
+      normalizedRequiredRole as "traveler" | "tripper" | "admin",
     ) &&
     !hasRoleAccess(
       subjectFromSession,
-      normalizedRequiredRole as "client" | "tripper" | "admin",
+      normalizedRequiredRole as "traveler" | "tripper" | "admin",
     )
   ) {
     return (

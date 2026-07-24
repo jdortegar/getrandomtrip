@@ -8,7 +8,7 @@ Defines the admin home page at `/dashboard/admin`: an all-time KPI stats grid pl
 
 ### Requirement: Admin-Only Access
 
-The admin home page MUST enforce the same session and role guard as other `/dashboard/admin` pages — the shared `StrictDashboardLayout` guard. Unauthenticated requests MUST redirect to the locale login page; authenticated requests from a user without the admin role MUST redirect to that user's own role's default dashboard path (e.g. `/dashboard/tripper` for a tripper, `/dashboard` for a client) — not a fixed admin-specific redirect target.
+The admin home page MUST enforce the same session and role guard as other `/dashboard/admin` pages — the shared `StrictDashboardLayout` guard. Unauthenticated requests MUST redirect to the locale login page; authenticated requests from a user without the admin role MUST redirect to that user's own role's default dashboard path (e.g. `/dashboard/tripper` for a tripper, `/dashboard/traveler` for a traveler) — not a fixed admin-specific redirect target.
 
 #### Scenario: Unauthenticated visitor
 
@@ -20,7 +20,7 @@ The admin home page MUST enforce the same session and role guard as other `/dash
 
 - GIVEN a session for a user without the admin role
 - WHEN they request `/dashboard/admin`
-- THEN they are redirected to their own role's default dashboard path, per the shared `StrictDashboardLayout` guard already used by tripper/client pages
+- THEN they are redirected to their own role's default dashboard path, per the shared `StrictDashboardLayout` guard already used by tripper/traveler pages
 
 ### Requirement: Server-Side Stats Computation
 

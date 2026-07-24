@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Handles user registration, authentication, and account management for all roles (CLIENT, TRIPPER, ADMIN). Users sign up with email/password credentials, manage their profile across six account tabs, and can upload an avatar. Role-aware routing sends users to the appropriate dashboard after login.
+Handles user registration, authentication, and account management for all roles (TRAVELER, TRIPPER, ADMIN). Users sign up with email/password credentials, manage their profile across six account tabs, and can upload an avatar. Role-aware routing sends users to the appropriate dashboard after login.
 
 ## What's Implemented
 

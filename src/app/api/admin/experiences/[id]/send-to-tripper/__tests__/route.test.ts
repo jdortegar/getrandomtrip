@@ -40,9 +40,9 @@ const mockAdminUser = (id: string) => ({
   roles: ["ADMIN"],
 });
 
-const mockClientUser = (id: string) => ({
+const mockTravelerUser = (id: string) => ({
   id,
-  roles: ["CLIENT"],
+  roles: ["TRAVELER"],
 });
 
 const pendingExperience = (extra: Record<string, unknown> = {}) => ({
@@ -124,7 +124,7 @@ describe("POST /api/admin/experiences/[id]/send-to-tripper", () => {
       mockSession("client-1"),
     );
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockClientUser("client-1"),
+      mockTravelerUser("client-1"),
     );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest("exp-1"), {

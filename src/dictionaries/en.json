@@ -398,6 +398,7 @@
     "home": {
       "eyebrow": "Overview",
       "heading": "Admin dashboard",
+      "roleToast": "You're viewing this as an Admin.",
       "stats": {
         "tripsSold": "Trips completed",
         "earnings": "Gross earnings",
@@ -3527,6 +3528,7 @@
       "title": "Tripper OS",
       "description": "Manage your travel packages and clients"
     },
+    "roleToast": "You're viewing this as a Tripper.",
     "pageHeadings": {
       "dashboard": {
         "title": "Tripper OS",
@@ -3685,10 +3687,11 @@
       }
     }
   },
-  "clientDashboard": {
+  "travelerDashboard": {
     "home": {
       "eyebrow": "This month",
-      "heading": "Your overview"
+      "heading": "Your overview",
+      "roleToast": "You're viewing this as a Traveler."
     },
     "nav": {
       "dashboard": "My dashboard",
@@ -4309,7 +4312,7 @@
     "modal": {
       "admin": "ADMIN",
       "cancel": "Cancel",
-      "clientBase": "CLIENT (base)",
+      "travelerBase": "TRAVELER (base)",
       "confirmDelete": "Confirm deletion?",
       "delete": "Delete user",
       "deleteError": "Failed to delete user",
@@ -4322,7 +4325,7 @@
     },
     "roles": {
       "ADMIN": "Admin",
-      "CLIENT": "Client",
+      "TRAVELER": "Traveler",
       "TRIPPER": "Tripper"
     },
     "usersCount": "{count} users",

@@ -128,7 +128,7 @@ export const authOptions: NextAuthOptions = {
             interests: [],
             dislikes: [],
             emailVerified: new Date(),
-            ...(grantTripper ? { roles: ["CLIENT", "TRIPPER"] } : {}),
+            ...(grantTripper ? { roles: ["TRAVELER", "TRIPPER"] } : {}),
           },
         });
         console.log("✅ Created new user from Google OAuth:", dbUser.id);

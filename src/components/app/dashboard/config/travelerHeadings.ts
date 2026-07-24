@@ -1,12 +1,12 @@
-import type { ClientDashboardDict } from "@/lib/types/dictionary";
+import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import type { PageHeadingCopy } from "@/components/app/dashboard/config/dashboardNavTypes";
 
-export function resolveClientPageHeading(
+export function resolveTravelerPageHeading(
   pathname: string,
-  headings: ClientDashboardDict["pageHeadings"],
+  headings: TravelerDashboardDict["pageHeadings"],
 ): PageHeadingCopy {
   function base(path: string) {
-    return `/dashboard/client${path}`;
+    return `/dashboard/traveler${path}`;
   }
 
   if (pathname.startsWith(base("/trips"))) return headings.trips;

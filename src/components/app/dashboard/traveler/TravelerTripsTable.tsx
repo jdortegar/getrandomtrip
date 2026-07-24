@@ -10,7 +10,7 @@ import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Locale } from "@/lib/i18n/config";
 import type { Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
-import type { ClientDashboardDict } from "@/lib/types/dictionary";
+import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 
 type StatusFilter = "all" | "upcoming" | "completed";
 
@@ -44,19 +44,19 @@ function StatusBadge({ label, status }: StatusBadgeProps) {
   );
 }
 
-interface ClientTripsTableProps {
+interface TravelerTripsTableProps {
   copy: DashboardCopy;
   locale: string;
-  pageCopy: ClientDashboardDict["trips"];
+  pageCopy: TravelerDashboardDict["trips"];
   trips: Trip[];
 }
 
-export function ClientTripsTable({
+export function TravelerTripsTable({
   copy,
   locale,
   pageCopy,
   trips,
-}: ClientTripsTableProps) {
+}: TravelerTripsTableProps) {
   const [filter, setFilter] = useState<StatusFilter>("all");
 
   const filtered = trips.filter((t) => {

@@ -7,16 +7,16 @@ import type { AppRole } from "@/lib/auth/roleAccess";
 
 describe("dashboardPaths", () => {
   describe("hasStrictRole", () => {
-    it("allows any known role for client segment", () => {
-      expect(hasStrictRole(["client"], "client")).toBe(true);
-      expect(hasStrictRole(["tripper"], "client")).toBe(true);
-      expect(hasStrictRole(["admin"], "client")).toBe(true);
+    it("allows any known role for traveler segment", () => {
+      expect(hasStrictRole(["traveler"], "traveler")).toBe(true);
+      expect(hasStrictRole(["tripper"], "traveler")).toBe(true);
+      expect(hasStrictRole(["admin"], "traveler")).toBe(true);
     });
 
     it("requires tripper membership for tripper segment", () => {
       expect(hasStrictRole(["tripper"], "tripper")).toBe(true);
       expect(hasStrictRole(["admin"], "tripper")).toBe(false);
-      expect(hasStrictRole(["client"], "tripper")).toBe(false);
+      expect(hasStrictRole(["traveler"], "tripper")).toBe(false);
     });
 
     it("requires admin membership for admin segment", () => {
@@ -26,14 +26,14 @@ describe("dashboardPaths", () => {
   });
 
   describe("getDefaultDashboardPath", () => {
-    it("prioritizes admin over tripper over client", () => {
-      const roles: AppRole[] = ["admin", "tripper", "client"];
+    it("prioritizes admin over tripper over traveler", () => {
+      const roles: AppRole[] = ["admin", "tripper", "traveler"];
       expect(getDefaultDashboardPath(roles, "es")).toBe("/dashboard/admin");
-      expect(getDefaultDashboardPath(["tripper", "client"], "en")).toBe(
+      expect(getDefaultDashboardPath(["tripper", "traveler"], "en")).toBe(
         "/en/dashboard/tripper",
       );
-      expect(getDefaultDashboardPath(["client"], "es")).toBe(
-        "/dashboard/client",
+      expect(getDefaultDashboardPath(["traveler"], "es")).toBe(
+        "/dashboard/traveler",
       );
     });
   });

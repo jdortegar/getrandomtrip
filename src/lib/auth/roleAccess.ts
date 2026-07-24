@@ -1,4 +1,4 @@
-export type AppRole = "admin" | "client" | "tripper";
+export type AppRole = "admin" | "traveler" | "tripper";
 
 type RoleSubject =
   | AppRole
@@ -17,18 +17,18 @@ function normalizeAppRoleToken(
   const normalized = token.toLowerCase();
   if (
     normalized === "admin" ||
-    normalized === "client" ||
+    normalized === "traveler" ||
     normalized === "tripper"
   ) {
     return normalized;
   }
 
-  // Support Prisma enum string values (CLIENT/TRIPPER/ADMIN)
+  // Support Prisma enum string values (TRAVELER/TRIPPER/ADMIN)
   const upper = token.toUpperCase();
-  if (upper === "ADMIN" || upper === "CLIENT" || upper === "TRIPPER") {
+  if (upper === "ADMIN" || upper === "TRAVELER" || upper === "TRIPPER") {
     if (upper === "ADMIN") return "admin";
     if (upper === "TRIPPER") return "tripper";
-    return "client";
+    return "traveler";
   }
   return null;
 }
@@ -65,9 +65,9 @@ function appRolesFromSubject(subject: RoleSubject): AppRole[] {
 
 function hasAppRole(roles: AppRole[], requiredRole: AppRole): boolean {
   if (roles.includes("admin")) return true;
-  if (requiredRole === "client") {
-    // Client is the base: any logged-in account with a known role is treated as a client
-    // (trippers and admins are still clients in this product model).
+  if (requiredRole === "traveler") {
+    // Traveler is the base: any logged-in account with a known role is treated as a traveler
+    // (trippers and admins are still travelers in this product model).
     return roles.length > 0;
   }
   if (requiredRole === "tripper") {
@@ -82,7 +82,7 @@ function hasAppRole(roles: AppRole[], requiredRole: AppRole): boolean {
  *
  * Rules:
  * - `admin` can access everything.
- * - `tripper` is also a `client` (for `client`-gated areas).
+ * - `tripper` is also a `traveler` (for `traveler`-gated areas).
  */
 export function hasRoleAccess(
   subject: RoleSubject,

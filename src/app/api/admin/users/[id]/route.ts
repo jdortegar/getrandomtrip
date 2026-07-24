@@ -72,11 +72,11 @@ export async function DELETE(
   }
 }
 
-const VALID_ROLES = ["CLIENT", "TRIPPER", "ADMIN"] as const;
+const VALID_ROLES = ["TRAVELER", "TRIPPER", "ADMIN"] as const;
 type AdminRoleToken = (typeof VALID_ROLES)[number];
 
 function isValidRoleToken(value: unknown): value is AdminRoleToken {
-  return value === "CLIENT" || value === "TRIPPER" || value === "ADMIN";
+  return value === "TRAVELER" || value === "TRIPPER" || value === "ADMIN";
 }
 
 export async function PATCH(
@@ -110,7 +110,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    if (!nextRoles.includes("CLIENT")) {
+    if (!nextRoles.includes("TRAVELER")) {
       return NextResponse.json({ error: "Invalid roles" }, { status: 400 });
     }
 

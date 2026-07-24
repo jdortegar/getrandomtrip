@@ -5,14 +5,14 @@ import { resolveClientNotificationHref } from "@/lib/helpers/notificationHrefs";
 import type { NotificationsDict } from "@/lib/types/dictionary";
 import type { ClientNotification } from "@/types/notifications";
 
-interface ClientNotificationsPageClientProps {
+interface TravelerNotificationsPageClientProps {
   copy: NotificationsDict;
   initialNotifications: ClientNotification[];
   locale: string;
 }
 
-export function ClientNotificationsPageClient(
-  props: ClientNotificationsPageClientProps,
+export function TravelerNotificationsPageClient(
+  props: TravelerNotificationsPageClientProps,
 ) {
   return (
     <RoleNotificationsPageClient

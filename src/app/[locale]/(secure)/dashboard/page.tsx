@@ -7,5 +7,5 @@ export default async function DashboardRootPage(props: {
 }) {
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : "es";
-  redirect(pathForLocale(locale, "/dashboard/client"));
+  redirect(pathForLocale(locale, "/dashboard/traveler"));
 }

@@ -17,7 +17,7 @@ export default function TripperGuard({
   const [hasChecked, setHasChecked] = useState(false);
 
   const sessionUser = session?.user as
-    | { role?: string; roles?: Array<"admin" | "client" | "tripper"> }
+    | { role?: string; roles?: Array<"admin" | "traveler" | "tripper"> }
     | undefined;
 
   const roleSubject =

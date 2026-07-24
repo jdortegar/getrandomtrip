@@ -3,13 +3,13 @@ import { AccountSettingsPanel } from "@/components/app/account/AccountSettingsPa
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 
-export default async function ClientSettingsPage(props: {
+export default async function TravelerSettingsPage(props: {
   params: Promise<{ locale: string }>;
 }) {
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale : "es";
   const dict = await getDictionary(locale);
-  const copy = dict.clientDashboard.settingsProfile;
+  const copy = dict.travelerDashboard.settingsProfile;
 
   return (
     <Section className="py-10!">
@@ -23,7 +23,7 @@ export default async function ClientSettingsPage(props: {
               {copy.heading}
             </h1>
           </div>
-          <AccountSettingsPanel role="client" />
+          <AccountSettingsPanel role="traveler" />
         </div>
       </div>
     </Section>

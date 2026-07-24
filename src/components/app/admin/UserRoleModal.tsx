@@ -27,11 +27,11 @@ function withMembershipToggled(
   member: "ADMIN" | "TRIPPER",
   enabled: boolean,
 ): UserRole[] {
-  const other = current.filter((r) => r !== "CLIENT" && r !== member);
+  const other = current.filter((r) => r !== "TRAVELER" && r !== member);
   if (enabled) {
-    return sortRoles(["CLIENT", member, ...other]);
+    return sortRoles(["TRAVELER", member, ...other]);
   }
-  return sortRoles(["CLIENT", ...other]);
+  return sortRoles(["TRAVELER", ...other]);
 }
 
 interface UserRoleModalProps {
@@ -119,7 +119,7 @@ export function UserRoleModal({
               disabled
               type="checkbox"
             />
-            <span>{copy.modal.clientBase}</span>
+            <span>{copy.modal.travelerBase}</span>
           </label>
           <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input

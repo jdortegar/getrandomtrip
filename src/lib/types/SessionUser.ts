@@ -7,7 +7,7 @@ export type SessionUser = Session["user"] & {
   handle?: string | null;
   image?: string | null;
   role?: string;
-  roles?: Array<"admin" | "client" | "tripper">;
+  roles?: Array<"admin" | "traveler" | "tripper">;
   travelerType?: string | null;
   interests?: string[];
   dislikes?: string[];
@@ -17,7 +17,7 @@ function normalizeRoleToken(token: string | undefined): UserRole | undefined {
   if (!token) return undefined;
   const normalized = token.toLowerCase();
   if (
-    normalized === "client" ||
+    normalized === "traveler" ||
     normalized === "tripper" ||
     normalized === "admin"
   ) {
@@ -25,7 +25,7 @@ function normalizeRoleToken(token: string | undefined): UserRole | undefined {
   }
 
   const upper = token.toUpperCase();
-  if (upper === "CLIENT") return "client";
+  if (upper === "TRAVELER") return "traveler";
   if (upper === "TRIPPER") return "tripper";
   if (upper === "ADMIN") return "admin";
   return undefined;

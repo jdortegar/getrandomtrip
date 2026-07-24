@@ -56,7 +56,7 @@ The system MUST persist invites in a `TripperInvite` model: `{id, email, tokenHa
 
 #### Scenario: Sending an invite does not alter the invitee
 
-- GIVEN a `CLIENT`-only `User` targeted from the Users table
+- GIVEN a `TRAVELER`-only `User` targeted from the Users table
 - WHEN the admin sends the invite
 - THEN that user's `roles` remain unchanged until they accept
 
@@ -86,11 +86,11 @@ The system MUST persist invites in a `TripperInvite` model: `{id, email, tokenHa
 
 When the accept flow resolves a valid invite to an existing `User`, the system MUST append `TRIPPER` to that user's `roles` via `addMembershipRole`/`buildUserRoleUpdate` (preserving existing roles), mark the invite `consumedAt`, and redirect to `/` with a message instructing the user to log in.
 
-#### Scenario: Existing CLIENT user accepts
+#### Scenario: Existing TRAVELER user accepts
 
-- GIVEN a valid invite for `alice@example.com`, an existing `User` with `roles: ["CLIENT"]`
+- GIVEN a valid invite for `alice@example.com`, an existing `User` with `roles: ["TRAVELER"]`
 - WHEN the accept flow runs
-- THEN `roles` becomes `["CLIENT", "TRIPPER"]`, the invite is marked consumed, and the response redirects to `/` with a log-in message
+- THEN `roles` becomes `["TRAVELER", "TRIPPER"]`, the invite is marked consumed, and the response redirects to `/` with a log-in message
 
 #### Scenario: Existing user already TRIPPER
 
@@ -100,19 +100,19 @@ When the accept flow resolves a valid invite to an existing `User`, the system M
 
 ### Requirement: Accept Flow — New User (Credentials or OAuth)
 
-When the accept flow resolves a valid invite to no existing `User`, the accept page MUST render the registration form with the invite email pre-filled and locked, carrying the token through account creation via either credentials or Google OAuth. On successful account creation via either path, the system MUST grant `roles: [CLIENT, TRIPPER]` at creation time, mark the invite `consumedAt`, and delete the matching `WaitlistEntry` (by email) if one exists.
+When the accept flow resolves a valid invite to no existing `User`, the accept page MUST render the registration form with the invite email pre-filled and locked, carrying the token through account creation via either credentials or Google OAuth. On successful account creation via either path, the system MUST grant `roles: [TRAVELER, TRIPPER]` at creation time, mark the invite `consumedAt`, and delete the matching `WaitlistEntry` (by email) if one exists.
 
 #### Scenario: New user registers via credentials with a valid invite token
 
 - GIVEN a valid, unconsumed invite for `bob@example.com` and no existing `User`
 - WHEN `bob@example.com` submits `/api/auth/register` carrying that token
-- THEN the created user has `roles: [CLIENT, TRIPPER]`, the invite is marked consumed, and any `WaitlistEntry` for that email is deleted
+- THEN the created user has `roles: [TRAVELER, TRIPPER]`, the invite is marked consumed, and any `WaitlistEntry` for that email is deleted
 
 #### Scenario: New user registers via Google OAuth with a valid invite token
 
 - GIVEN a valid, unconsumed invite for `bob@example.com` and no existing `User`
 - WHEN `bob@example.com` completes Google sign-in from the accept flow carrying that token
-- THEN the `signIn` callback's new-user `create` branch sets `roles: [CLIENT, TRIPPER]` instead of the default `[CLIENT]`, the invite is marked consumed, and any matching `WaitlistEntry` is deleted
+- THEN the `signIn` callback's new-user `create` branch sets `roles: [TRAVELER, TRIPPER]` instead of the default `[TRAVELER]`, the invite is marked consumed, and any matching `WaitlistEntry` is deleted
 
 #### Scenario: OAuth email mismatch is not granted
 
@@ -124,7 +124,7 @@ When the accept flow resolves a valid invite to no existing `User`, the accept p
 
 - GIVEN a registration request that carries no invite token
 - WHEN the account is created
-- THEN roles default to `[CLIENT]` exactly as before this change
+- THEN roles default to `[TRAVELER]` exactly as before this change
 
 ### Requirement: Waitlist Cleanup on Acceptance
 
@@ -207,5 +207,5 @@ Both the Waiting List row and the Users-table row MUST derive an invite status b
 | `POST /api/admin/waitlist/[id]/invite-tripper` | admin (`hasRoleAccess`) | Resolve email from waitlist row; issue/reissue invite; send `es` email |
 | `POST /api/admin/users/[id]/invite-tripper` | admin (`hasRoleAccess`) | Resolve email from user row; issue/reissue invite; send email in `User.locale` |
 | `/[locale]/tripper-invite?token=` + backing endpoint(s) | public | Resolve invite by token hash; branch existing-user grant vs. new-user registration (credentials/OAuth) |
-| `POST /api/auth/register` (modified) | public | Accept+validate optional invite token; grant `roles: [CLIENT, TRIPPER]` at creation when valid |
+| `POST /api/auth/register` (modified) | public | Accept+validate optional invite token; grant `roles: [TRAVELER, TRIPPER]` at creation when valid |
 | `signIn` OAuth callback (modified) | n/a | New-Google-user `create` branch grants `TRIPPER` when a valid pending invite matches the created email |

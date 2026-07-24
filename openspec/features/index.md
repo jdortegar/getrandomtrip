@@ -5,8 +5,8 @@ Last updated: 2026-06-08
 | Feature | Status | Priority | Open Gaps | Spec |
 |---|---|---|---|---|
 | [Auth & User Management](01-auth.md) | Partial | High | 7 | [01-auth.md](01-auth.md) |
-| [Trip Booking / Client Journey](02-trip-booking.md) | Partial | High | 5 | [02-trip-booking.md](02-trip-booking.md) |
-| [Client Dashboard](03-client-dashboard.md) | Partial | High | 5 | [03-client-dashboard.md](03-client-dashboard.md) |
+| [Trip Booking / Traveler Journey](02-trip-booking.md) | Partial | High | 5 | [02-trip-booking.md](02-trip-booking.md) |
+| [Traveler Dashboard](03-traveler-dashboard.md) | Partial | High | 5 | [03-traveler-dashboard.md](03-traveler-dashboard.md) |
 | [Payments](09-payments.md) | Partial | High | 4 | [09-payments.md](09-payments.md) |
 | [Experience Discovery (Public)](05-experience-catalog.md) | Partial | Medium | 2 | [05-experience-catalog.md](05-experience-catalog.md) |
 | [Tripper OS](04-tripper-os.md) | Partial | Medium | 5 | [04-tripper-os.md](04-tripper-os.md) |
@@ -34,5 +34,5 @@ The following gaps block core product loops and should be prioritized before any
 
 1. **Password reset flow** (Auth) — no API, no email template, no UI
 2. **`/api/bookings` stub** (Trip Booking) — returns a fake UUID; the booking core is unimplemented
-3. **Client review submission** (Client Dashboard) — "Leave Review" links to a non-existent route
+3. **Traveler review submission** (Traveler Dashboard) — "Leave Review" links to a non-existent route
 4. **Refund flow** (Payments) — no Stripe refund API call and no admin action

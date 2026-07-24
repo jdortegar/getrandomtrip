@@ -94,7 +94,7 @@ function profileToDetailsForm(p: UserProfileMe): DetailsFormState {
 }
 
 interface AccountSettingsPanelProps {
-  role: "client" | "tripper";
+  role: "traveler" | "tripper";
 }
 
 export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
@@ -403,9 +403,9 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
     { id: "payments", label: p.nav.payments, Icon: CreditCard },
   ];
 
-  // Cross-link to Tripper OS for client accounts that also have the tripper role.
+  // Cross-link to Tripper OS for traveler accounts that also have the tripper role.
   const tripperNavLinks =
-    role === "client" && isTripper
+    role === "traveler" && isTripper
       ? [
           {
             href: pathForLocale(resolvedLocale, "/dashboard/tripper"),

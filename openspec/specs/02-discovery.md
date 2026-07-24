@@ -1,6 +1,6 @@
 # Feature Spec: Discovery
 
-**Priority:** 2 — Client acquisition entry point  
+**Priority:** 2 — Traveler acquisition entry point  
 **Routes:** `/experiences`, `/experiences/by-type/[type]`, `/experiences/by-tripper/[tripper]`, `/trippers`, `/trippers/[tripper]`  
 **Last audited:** 2026-06-22
 

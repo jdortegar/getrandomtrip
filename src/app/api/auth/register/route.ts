@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (inviteToken && typeof inviteToken === "string") {
       const peek = await peekTripperInvite(inviteToken);
       grantTripper = peek.ok && peek.email === email;
-      roles = grantTripper ? ["CLIENT", "TRIPPER"] : ["CLIENT"];
+      roles = grantTripper ? ["TRAVELER", "TRIPPER"] : ["TRAVELER"];
     }
 
     // Create user (emailVerified stays null until the verification link is consumed)
