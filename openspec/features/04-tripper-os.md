@@ -5,7 +5,7 @@
 
 ## Purpose
 
-The operational back-office for trippers. Trippers use this area to manage their experience catalog, track bookings and earnings, read client reviews, publish blog content, and respond to in-app notifications. Access is gated by `TripperGuard`.
+The operational back-office for trippers. Trippers use this area to manage their experience catalog, track bookings and earnings, read traveler reviews, publish blog content, and respond to in-app notifications. Access is gated by `TripperGuard`.
 
 ## What's Implemented
 
@@ -28,6 +28,6 @@ The operational back-office for trippers. Trippers use this area to manage their
 
 ## Out of Scope
 
-- Tripper-to-client direct messaging
+- Tripper-to-traveler direct messaging
 - Custom earnings withdrawal methods beyond payout request
 - Analytics beyond the current NPS and rating breakdown

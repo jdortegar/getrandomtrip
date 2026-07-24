@@ -26,9 +26,9 @@ model User {
   avatarUrl String?
   /**
    * Membership roles for this account.
-   * `CLIENT` is the base: trippers and admins are also clients.
+   * `TRAVELER` is the base: trippers and admins are also travelers.
    */
-  roles     UserRole[] @default([CLIENT])
+  roles     UserRole[] @default([TRAVELER])
 
   // Tripper-specific fields
   tripperSlug    String?  @unique // For trippers: 'dawson', 'alma', etc.
@@ -430,7 +430,7 @@ model BlogPost {
 // ============================================================================
 
 enum UserRole {
-  CLIENT
+  TRAVELER
   TRIPPER
   ADMIN
 }
@@ -514,7 +514,7 @@ enum NotificationType {
 
 enum NotificationAudience {
   TRIPPER
-  CLIENT
+  TRAVELER
   ADMIN
 }
 

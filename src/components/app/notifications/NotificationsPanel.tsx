@@ -14,10 +14,10 @@ function getCopy(locale: string): NotificationsDict {
 
 interface NotificationsPanelProps {
   copy?: NotificationsDict;
-  audience?: "CLIENT" | "TRIPPER";
+  audience?: "TRAVELER" | "TRIPPER";
 }
 
-export function NotificationsPanel({ copy: copyProp, audience = "CLIENT" }: NotificationsPanelProps) {
+export function NotificationsPanel({ copy: copyProp, audience = "TRAVELER" }: NotificationsPanelProps) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const copy = copyProp ?? getCopy(locale);

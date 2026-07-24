@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useUserStore } from "@/store/slices/userStore";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
+import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import { TripperDashboardSkeleton } from "@/components/app/dashboard/tripper/TripperDashboardSkeleton";
 import { TripperStatsGrid } from "@/components/app/dashboard/tripper/TripperStatsGrid";
 import { RecentBookingsList } from "@/components/app/dashboard/tripper/RecentBookingsList";
@@ -69,6 +70,7 @@ function TripperContent() {
   return (
     <Section className="py-10!">
       <div className="rt-container text-left">
+        <DashboardRoleToast message={copy.roleToast} />
         {loading ? (
           <TripperDashboardSkeleton />
         ) : (

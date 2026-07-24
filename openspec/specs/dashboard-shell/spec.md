@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Shared navigation shell contract used by client, tripper, and admin dashboards. This delta covers only the testable navigation-mechanism change for admin; visual restyling of individual admin pages has no behavioral contract and is not specified here.
+Shared navigation shell contract used by traveler, tripper, and admin dashboards. This delta covers only the testable navigation-mechanism change for admin; visual restyling of individual admin pages has no behavioral contract and is not specified here.
 
 ## Requirements
 
 ### Requirement: Admin Top Navigation
 
-The admin dashboard MUST use the same top tab navigation shell (`StrictDashboardLayout` + `DashboardNavTabs`) as the client and tripper dashboards, instead of a role-specific left sidebar.
+The admin dashboard MUST use the same top tab navigation shell (`StrictDashboardLayout` + `DashboardNavTabs`) as the traveler and tripper dashboards, instead of a role-specific left sidebar.
 
 #### Scenario: Admin navigates via top tabs
 
@@ -25,7 +25,7 @@ The admin dashboard MUST use the same top tab navigation shell (`StrictDashboard
 
 ### Requirement: Admin Settings Grouping
 
-Users, Waitlist, and TGIS Notifications MUST be grouped under a single "Settings" nav tab rather than each having their own top-level tab, following the same pattern already used for client/tripper account settings (`AccountSettingsPanel` + `TabSelector`): one nav entry linking to a page that renders an internal horizontal tab bar switching between the three sections, with no page-level duplication of the eyebrow/heading pattern inside each sub-section.
+Users, Waitlist, and TGIS Notifications MUST be grouped under a single "Settings" nav tab rather than each having their own top-level tab, following the same pattern already used for traveler/tripper account settings (`AccountSettingsPanel` + `TabSelector`): one nav entry linking to a page that renders an internal horizontal tab bar switching between the three sections, with no page-level duplication of the eyebrow/heading pattern inside each sub-section.
 
 #### Scenario: Admin opens Settings
 

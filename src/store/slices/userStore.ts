@@ -30,7 +30,7 @@ export interface UserMetrics {
   favs?: number;
 }
 
-export type UserRole = "client" | "tripper" | "admin";
+export type UserRole = "traveler" | "tripper" | "admin";
 
 export interface User {
   id: string;

@@ -7,15 +7,15 @@ import {
 } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import type { ClientDashboardDict } from "@/lib/types/dictionary";
+import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import type { DashboardNavTabItem } from "@/components/app/dashboard/config/dashboardNavTypes";
 
-export function buildClientNavTabs(
-  copy: ClientDashboardDict["nav"],
+export function buildTravelerNavTabs(
+  copy: TravelerDashboardDict["nav"],
   locale: Locale,
 ): DashboardNavTabItem[] {
   function base(path: string) {
-    return pathForLocale(locale, `/dashboard/client${path}`);
+    return pathForLocale(locale, `/dashboard/traveler${path}`);
   }
 
   return [
@@ -36,7 +36,7 @@ export function buildClientNavTabs(
       label: copy.reviews,
     },
     {
-      audience: "CLIENT",
+      audience: "TRAVELER",
       href: base("/notifications"),
       icon: Bell,
       label: copy.notifications,

@@ -1,23 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ClientTripsTable } from "@/components/app/dashboard/client/ClientTripsTable";
+import { TravelerTripsTable } from "@/components/app/dashboard/traveler/TravelerTripsTable";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
-import type { ClientDashboardDict } from "@/lib/types/dictionary";
+import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import { getTrips, type Trip } from "@/lib/utils/trips";
 
-interface ClientTripsPageClientProps {
+interface TravelerTripsPageClientProps {
   copy: DashboardCopy;
   locale: string;
-  pageCopy: ClientDashboardDict["trips"];
+  pageCopy: TravelerDashboardDict["trips"];
 }
 
-export function ClientTripsPageClient({
+export function TravelerTripsPageClient({
   copy,
   locale,
   pageCopy,
-}: ClientTripsPageClientProps) {
+}: TravelerTripsPageClientProps) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,7 +57,7 @@ export function ClientTripsPageClient({
         </h2>
       </div>
 
-      <ClientTripsTable
+      <TravelerTripsTable
         copy={copy}
         locale={locale}
         pageCopy={pageCopy}

@@ -17,7 +17,7 @@ const prisma = new PrismaClient(
   (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
 );
 
-const TRIPPER_MEMBERSHIP: UserRole[] = ["CLIENT", "TRIPPER"];
+const TRIPPER_MEMBERSHIP: UserRole[] = ["TRAVELER", "TRIPPER"];
 
 async function seedTrippersAndPackages() {
   console.log("🌱 Seeding trippers and packages...");

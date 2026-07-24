@@ -4,7 +4,7 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "./StatusBadge";
 
-export type UserRole = "CLIENT" | "TRIPPER" | "ADMIN";
+export type UserRole = "TRAVELER" | "TRIPPER" | "ADMIN";
 
 export interface AdminUser {
   avatarUrl: string | null;

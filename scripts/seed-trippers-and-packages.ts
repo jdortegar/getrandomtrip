@@ -1034,7 +1034,7 @@ async function seedTrippersAndPackages() {
             avatarUrl: tripperData.avatarUrl,
             roles: {
               set: Array.from(
-                new Set([...(tripper.roles ?? []), "CLIENT", "TRIPPER"]),
+                new Set([...(tripper.roles ?? []), "TRAVELER", "TRIPPER"]),
               ),
             },
           },
@@ -1046,7 +1046,7 @@ async function seedTrippersAndPackages() {
           data: {
             name: tripperData.name,
             email: tripperData.email,
-            roles: ["CLIENT", "TRIPPER"],
+            roles: ["TRAVELER", "TRIPPER"],
             tripperSlug: tripperData.slug,
             bio: tripperData.bio,
             location: tripperData.location,

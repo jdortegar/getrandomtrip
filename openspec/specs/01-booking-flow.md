@@ -15,7 +15,7 @@ What works end-to-end today:
 - **`POST /api/stripe/payment-intent`** — server-side amount calculation, idempotent intent creation, DB upsert with cancel-on-Stripe-failure guard.
 - **Promo code cycle** — `apply-promo` validates against Stripe, recalculates, updates the existing PaymentIntent amount. `remove-promo` resets it. Both are server-authoritative.
 - **Webhook + client-side fallback** — webhook handles `succeeded / failed / canceled`. The success page fires `POST /api/stripe/confirm-payment` as a race-safe fallback. Atomic `updateMany` with a status guard prevents double-email if both arrive simultaneously.
-- **Post-payment emails** — `BookingConfirmed` → client, `AdminNewBooking` → admin, `PaymentFailed` → client. All fire on the first `APPROVED` transition.
+- **Post-payment emails** — `BookingConfirmed` → traveler, `AdminNewBooking` → admin, `PaymentFailed` → traveler. All fire on the first `APPROVED` transition.
 - **Checkout UI** — contact form pre-fills from session, Stripe Elements mounts correctly, pax edit patches the trip and re-creates the intent, promo discount reflected in real time.
 - **Success / pending / failure pages** — all exist with correct i18n metadata and Suspense boundaries.
 

@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Public-facing pages where prospective clients discover and evaluate individual trippers. Includes a tripper directory listing and a full profile page per tripper. Trippers can also edit their own profile. These pages are key trust-building surfaces before a client commits to a booking.
+Public-facing pages where prospective travelers discover and evaluate individual trippers. Includes a tripper directory listing and a full profile page per tripper. Trippers can also edit their own profile. These pages are key trust-building surfaces before a traveler commits to a booking.
 
 ## What's Implemented
 

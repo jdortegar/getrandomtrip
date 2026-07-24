@@ -3,6 +3,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { prisma } from "@/lib/prisma";
 import { computeAdminOverviewStats } from "@/lib/admin/overview";
+import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import { AdminHomeContent } from "./AdminHomeContent";
 
 export default async function AdminHomePage(props: {
@@ -16,6 +17,7 @@ export default async function AdminHomePage(props: {
   return (
     <Section className="py-10!">
       <div className="rt-container text-left">
+        <DashboardRoleToast message={dict.adminPages.home.roleToast} />
         <AdminHomeContent
           copy={dict.adminPages.home}
           locale={locale}

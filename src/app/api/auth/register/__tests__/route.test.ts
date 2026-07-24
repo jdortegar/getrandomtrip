@@ -151,12 +151,12 @@ describe("POST /api/auth/register", () => {
       expect.objectContaining({ id: "user-1", email: "ana@example.com" }),
     );
     // Regression: no inviteToken in the body → no invite lookup, roles untouched
-    // (Prisma schema default [CLIENT] applies).
+    // (Prisma schema default [TRAVELER] applies).
     expect(peekTripperInvite).not.toHaveBeenCalled();
     expect(createArgs.data.roles).toBeUndefined();
   });
 
-  it("grants CLIENT+TRIPPER at create and consumes the invite + cleans up the waitlist when inviteToken peeks ok with a matching email", async () => {
+  it("grants TRAVELER+TRIPPER at create and consumes the invite + cleans up the waitlist when inviteToken peeks ok with a matching email", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       null,
     );
@@ -186,7 +186,7 @@ describe("POST /api/auth/register", () => {
     const createArgs = (prisma.user.create as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
     expect(createArgs.data.roles).toEqual(
-      expect.arrayContaining(["CLIENT", "TRIPPER"]),
+      expect.arrayContaining(["TRAVELER", "TRIPPER"]),
     );
     expect(consumeTripperInvite).toHaveBeenCalledWith("good-token");
     expect(prisma.waitlistEntry.deleteMany).toHaveBeenCalledWith({
@@ -197,7 +197,7 @@ describe("POST /api/auth/register", () => {
     );
   });
 
-  it("grants only CLIENT and does not consume/cleanup when inviteToken peeks ok but the email doesn't match", async () => {
+  it("grants only TRAVELER and does not consume/cleanup when inviteToken peeks ok but the email doesn't match", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       null,
     );
@@ -226,7 +226,7 @@ describe("POST /api/auth/register", () => {
     expect(res.status).toBe(201);
     const createArgs = (prisma.user.create as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
-    expect(createArgs.data.roles).toEqual(["CLIENT"]);
+    expect(createArgs.data.roles).toEqual(["TRAVELER"]);
     expect(consumeTripperInvite).not.toHaveBeenCalled();
     expect(prisma.waitlistEntry.deleteMany).not.toHaveBeenCalled();
     expect(json.user).toEqual(

@@ -13,10 +13,10 @@ export interface UserProfileMe {
   /**
    * App-level role tokens (lowercase) derived from Prisma `User.roles`.
    */
-  roles: Array<"admin" | "client" | "tripper">;
+  roles: Array<"admin" | "traveler" | "tripper">;
   /**
    * Most privileged app role (lowercase), for simple UI checks.
    */
-  role: "admin" | "client" | "tripper";
+  role: "admin" | "traveler" | "tripper";
   avatarUrl?: string | null;
 }

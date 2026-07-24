@@ -17,7 +17,7 @@ const TRIPPER_MENU_ITEM = {
 };
 
 const DASHBOARD_MENU_ITEM = {
-  href: "/dashboard/client",
+  href: "/dashboard/traveler",
 };
 
 const ADMIN_MENU_ITEM = {

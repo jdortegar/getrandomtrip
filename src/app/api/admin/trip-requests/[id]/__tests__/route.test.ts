@@ -37,7 +37,7 @@ import { prisma } from "@/lib/prisma";
 import { sendTripCompleted } from "@/lib/email";
 
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
-const mockClientUser = (id: string) => ({ id, roles: ["CLIENT"] });
+const mockTravelerUser = (id: string) => ({ id, roles: ["TRAVELER"] });
 const mockSession = (userId: string) => ({
   user: { id: userId, email: "admin@example.com" },
 });
@@ -67,7 +67,7 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
 
   it("returns 403 when user is not admin", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("user-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockClientUser("user-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockTravelerUser("user-1"));
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.PATCH(makePatchRequest("trip-1", { status: "COMPLETED" }), {
       params: Promise.resolve({ id: "trip-1" }),

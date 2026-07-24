@@ -8,7 +8,7 @@
 
 ## Requirement: Tripper uses shared shell
 
-The tripper dashboard layout SHALL use the same shared `DashboardRoleShell` components as the client dashboard, driven by tripper nav/heading config (`tripperNav`, `tripperHeadings`).
+The tripper dashboard layout SHALL use the same shared `DashboardRoleShell` components as the traveler dashboard, driven by tripper nav/heading config (`tripperNav`, `tripperHeadings`).
 
 Existing tripper page content and routes SHALL remain unchanged. Visual parity with the pre-migration tripper dashboard SHALL be maintained.
 

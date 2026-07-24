@@ -32,7 +32,7 @@ const mockSession = (userId: string) => ({
 });
 
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
-const mockClientUser = (id: string) => ({ id, roles: ["CLIENT"] });
+const mockTravelerUser = (id: string) => ({ id, roles: ["TRAVELER"] });
 
 const completeDraftBlog = (authorId: string, overrides: Record<string, unknown> = {}) => ({
   id: "blog-1",
@@ -81,10 +81,10 @@ describe("POST /api/tripper/blogs/[id]/submit", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns 403 when the caller is not a tripper (CLIENT role)", async () => {
+  it("returns 403 when the caller is not a tripper (TRAVELER role)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("client-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockClientUser("client-1"),
+      mockTravelerUser("client-1"),
     );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest("blog-1"), {

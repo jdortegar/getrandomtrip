@@ -48,7 +48,7 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
       user: { id: "caller-1" },
     });
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      { id: "caller-1", roles: ["CLIENT"] },
+      { id: "caller-1", roles: ["TRAVELER"] },
     );
 
     const mod = await import("../route");
@@ -70,7 +70,7 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
         id: "target-1",
         email: "bob@example.com",
         locale: "en",
-        roles: ["CLIENT", "TRIPPER"],
+        roles: ["TRAVELER", "TRIPPER"],
       });
 
     const mod = await import("../route");
@@ -92,7 +92,7 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
         id: "target-1",
         email: "bob@example.com",
         locale: "en",
-        roles: ["CLIENT"],
+        roles: ["TRAVELER"],
       });
 
     const mod = await import("../route");
@@ -121,7 +121,7 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
         id: "target-2",
         email: "carol@example.com",
         locale: null,
-        roles: ["CLIENT"],
+        roles: ["TRAVELER"],
       });
 
     const mod = await import("../route");

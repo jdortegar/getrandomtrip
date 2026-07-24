@@ -13,8 +13,8 @@ declare module "next-auth" {
       name: string;
       phone?: string | null;
       locale?: "es" | "en" | null;
-      role?: "admin" | "client" | "tripper";
-      roles?: Array<"admin" | "client" | "tripper">;
+      role?: "admin" | "traveler" | "tripper";
+      roles?: Array<"admin" | "traveler" | "tripper">;
       travelerType?: string | null;
     };
   }

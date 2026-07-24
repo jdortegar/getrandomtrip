@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const audienceParam = searchParams.get("audience");
   const audience =
-    audienceParam === "CLIENT" ||
+    audienceParam === "TRAVELER" ||
     audienceParam === "TRIPPER" ||
     audienceParam === "ADMIN"
       ? audienceParam
