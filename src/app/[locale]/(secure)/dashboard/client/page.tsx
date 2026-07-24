@@ -18,6 +18,7 @@ export default async function ClientDashboardHomePage(props: {
           eyebrow={dict.clientDashboard.home.eyebrow}
           heading={dict.clientDashboard.home.heading}
           locale={locale}
+          roleToast={dict.clientDashboard.home.roleToast}
         />
       </div>
     </Section>

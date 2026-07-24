@@ -198,6 +198,7 @@ export interface TripperDashboardDict {
     title: string;
     description: string;
   };
+  roleToast: string;
   pageHeadings: {
     dashboard: { title: string; description: string };
     experiences: { title: string; description: string };
@@ -334,6 +335,7 @@ export interface ClientDashboardDict {
   home: {
     eyebrow: string;
     heading: string;
+    roleToast: string;
   };
   nav: {
     dashboard: string;
@@ -1222,6 +1224,7 @@ export interface AdminPagesDict {
   home: {
     eyebrow: string;
     heading: string;
+    roleToast: string;
     stats: {
       tripsSold: string;
       earnings: string;

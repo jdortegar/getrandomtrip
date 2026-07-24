@@ -398,6 +398,7 @@
     "home": {
       "eyebrow": "Resumen general",
       "heading": "Panel de administración",
+      "roleToast": "Estás viendo esto como Administrador.",
       "stats": {
         "tripsSold": "Viajes completados",
         "earnings": "Ingresos brutos",
@@ -3527,6 +3528,7 @@
       "title": "Tripper OS",
       "description": "Gestiona tus paquetes de viaje y clientes"
     },
+    "roleToast": "Estás viendo esto como Tripper.",
     "pageHeadings": {
       "dashboard": {
         "title": "Tripper OS",
@@ -3688,7 +3690,8 @@
   "clientDashboard": {
     "home": {
       "eyebrow": "Este mes",
-      "heading": "Tu resumen"
+      "heading": "Tu resumen",
+      "roleToast": "Estás viendo esto como Viajero."
     },
     "nav": {
       "dashboard": "Mi panel",

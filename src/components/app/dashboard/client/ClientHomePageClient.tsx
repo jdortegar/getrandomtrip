@@ -10,6 +10,7 @@ import {
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
 import { UpcomingTripsList } from "@/components/app/dashboard/client/UpcomingTripsList";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
+import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import {
   getPayments,
   getTrips,
@@ -22,6 +23,7 @@ interface ClientHomePageClientProps {
   eyebrow: string;
   heading: string;
   locale: string;
+  roleToast: string;
 }
 
 function computeDashboardStats(
@@ -56,6 +58,7 @@ export function ClientHomePageClient({
   eyebrow,
   heading,
   locale,
+  roleToast,
 }: ClientHomePageClientProps) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -124,32 +127,35 @@ export function ClientHomePageClient({
     [copy.unpaidTrips.deleteFailed, payments],
   );
 
-  if (loading) {
-    return <DashboardSkeleton variant="home" />;
-  }
-
   return (
-    <div className="space-y-10 py-10">
-      <section>
-        <div className="mb-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
-            {eyebrow}
-          </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
-            {heading}
-          </h2>
+    <>
+      <DashboardRoleToast message={roleToast} />
+      {loading ? (
+        <DashboardSkeleton variant="home" />
+      ) : (
+        <div className="space-y-10 py-10">
+          <section>
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+                {eyebrow}
+              </p>
+              <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
+                {heading}
+              </h2>
+            </div>
+            <DashboardStatsGrid copy={copy} stats={stats} />
+          </section>
+
+          <UnpaidTripsAlert
+            copy={copy}
+            locale={locale}
+            onDelete={handleTripDelete}
+            trips={unpaidTrips}
+          />
+
+          <UpcomingTripsList copy={copy} locale={locale} trips={trips} />
         </div>
-        <DashboardStatsGrid copy={copy} stats={stats} />
-      </section>
-
-      <UnpaidTripsAlert
-        copy={copy}
-        locale={locale}
-        onDelete={handleTripDelete}
-        trips={unpaidTrips}
-      />
-
-      <UpcomingTripsList copy={copy} locale={locale} trips={trips} />
-    </div>
+      )}
+    </>
   );
 }
