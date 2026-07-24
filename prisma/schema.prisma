@@ -396,8 +396,8 @@ model BlogPost {
 
   // Metadata
   tags       String[] @default([])
-  travelType String? // solo | couple | family | group | honeymoon | paws
-  excuseKey  String? // e.g. solo-adventure (from shared excuses)
+  travelType String[] @default([]) // solo | couple | family | group | honeymoon | paws
+  excuseKey  String[] @default([]) // e.g. solo-adventure (from shared excuses)
 
   // SEO
   seo Json? // { title?: string, description?: string, keywords?: string[] }

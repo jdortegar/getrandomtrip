@@ -1,9 +1,13 @@
 "use client";
 
 import { useRef } from "react";
+import { useParams } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
 import Img from "@/components/common/Img";
 import { FormField } from "@/components/ui/FormField";
+import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
+import { getExcuseOptionsForType } from "@/lib/constants/packages";
+import { getTravelerTypeOptions } from "@/lib/data/traveler-types";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
 import type { FieldPeek } from "@/components/ui/field-peek";
@@ -22,10 +26,23 @@ interface Props {
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
 export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek }: Props) {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
   const coverInputRef = useRef<HTMLInputElement>(null);
   const { fields } = copy;
   const { coverUploading, onCoverSelect, onCoverRemove } = imageState;
   const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
+
+  const travelTypeOptions = getTravelerTypeOptions(locale).map((t) => ({
+    value: t.key,
+    label: t.title,
+  }));
+  const excuseOptions = getExcuseOptionsForType(draft.travelType, locale);
+
+  const handleTravelTypeChange = (value: string[]) => {
+    onChange("travelType", value);
+    onChange("excuseKey", []);
+  };
 
   return (
     <div className="space-y-5">
@@ -52,6 +69,32 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
         className={ch("subtitle")}
         peek={peek?.("subtitle")}
       />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1">
+          <MultiSelectInput
+            id="blog-travel-type"
+            label={fields.travelType}
+            options={travelTypeOptions}
+            value={draft.travelType}
+            onChange={handleTravelTypeChange}
+            placeholder={fields.travelTypePlaceholder}
+            triggerClassName={ch("travelType")}
+          />
+          <p className="text-xs text-neutral-400">{fields.travelTypeHint}</p>
+        </div>
+
+        <MultiSelectInput
+          id="blog-excuse"
+          label={fields.excuseKey}
+          options={excuseOptions}
+          placeholder={fields.excuseKeyPlaceholder}
+          hint={fields.excuseKeyHint}
+          value={draft.excuseKey}
+          onChange={(v) => onChange("excuseKey", v)}
+          triggerClassName={ch("excuseKey")}
+        />
+      </div>
 
       {/* Cover image */}
       <div className="space-y-2">

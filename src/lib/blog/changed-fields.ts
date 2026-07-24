@@ -37,7 +37,7 @@ const JSON_FIELDS = new Set<string>(["blocks", "seo", "faq"]);
 /**
  * Array fields (scalar arrays) — compared by serializing to JSON.
  */
-const ARRAY_FIELDS = new Set<string>(["tags"]);
+const ARRAY_FIELDS = new Set<string>(["tags", "travelType", "excuseKey"]);
 
 type FieldRecord = Record<string, unknown>;
 

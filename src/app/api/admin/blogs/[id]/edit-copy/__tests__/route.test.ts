@@ -107,6 +107,34 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy", () => {
     expect(updateArgs.data).not.toHaveProperty("slug");
   });
 
+  it("normalizes travelType/excuseKey — dedupes, trims, and drops non-strings/empty entries", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+      isReviewCopy: true,
+      status: "DRAFT",
+    });
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ id: "copy-1", ...data }),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(
+      makePatchRequest("copy-1", {
+        travelType: ["solo", "solo", "  couple  ", 123, ""],
+        excuseKey: ["solo", "solo", "  couple  ", 123, ""],
+      }),
+      { params: Promise.resolve({ id: "copy-1" }) },
+    );
+
+    const updateArgs = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateArgs.data.travelType).toEqual(["solo", "couple"]);
+    expect(updateArgs.data.excuseKey).toEqual(["solo", "couple"]);
+  });
+
   it("returns 404 when the blog post does not exist", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(

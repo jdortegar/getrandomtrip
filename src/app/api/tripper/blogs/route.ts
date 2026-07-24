@@ -10,6 +10,18 @@ import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
+/** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  for (const v of value) {
+    if (typeof v !== "string") continue;
+    const trimmed = v.trim();
+    if (trimmed) seen.add(trimmed);
+  }
+  return Array.from(seen);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -134,14 +146,8 @@ export async function POST(request: NextRequest) {
     };
     const prismaFormat = formatMap[blogFormat.toLowerCase()] || "ARTICLE";
 
-    const travelTypeValue =
-      typeof travelType === "string" && travelType.trim().length > 0
-        ? travelType.trim()
-        : null;
-    const excuseKeyValue =
-      typeof excuseKey === "string" && excuseKey.trim().length > 0
-        ? excuseKey.trim()
-        : null;
+    const travelTypeValue = normalizeStringArray(travelType);
+    const excuseKeyValue = normalizeStringArray(excuseKey);
 
     const baseSlug = slugify(title) || "post";
     let slug = baseSlug;

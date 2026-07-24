@@ -10,6 +10,18 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 
+/** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  for (const v of value) {
+    if (typeof v !== "string") continue;
+    const trimmed = v.trim();
+    if (trimmed) seen.add(trimmed);
+  }
+  return Array.from(seen);
+}
+
 export async function PATCH(
   request: Request,
   props: { params: Promise<{ id: string }> },
@@ -76,13 +88,8 @@ export async function PATCH(
         ...(blocks !== undefined && { blocks }),
         ...(faq !== undefined && { faq: faq ?? null }),
         ...(tags !== undefined && { tags }),
-        ...(travelType !== undefined && {
-          travelType:
-            typeof travelType === "string" && travelType.trim() ? travelType.trim() : null,
-        }),
-        ...(excuseKey !== undefined && {
-          excuseKey: typeof excuseKey === "string" && excuseKey.trim() ? excuseKey.trim() : null,
-        }),
+        ...(travelType !== undefined && { travelType: normalizeStringArray(travelType) }),
+        ...(excuseKey !== undefined && { excuseKey: normalizeStringArray(excuseKey) }),
         ...(format !== undefined && { format: format.toUpperCase?.() ?? format }),
         ...(seo !== undefined && { seo: seo || null }),
         // slug is intentionally never written here — copies have no public slug.

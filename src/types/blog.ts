@@ -30,10 +30,10 @@ export interface BlogPost {
   >;
   faq?: { items: { question: string; answer: string }[] } | null;
   tags: string[];
-  /** Journey excuse key (e.g. solo-adventure); used for discovery filters. */
-  excuseKey?: string | null;
-  /** Journey traveler type key (e.g. solo, couple); used for discovery filters. */
-  travelType?: string | null;
+  /** Journey excuse keys (e.g. solo-adventure); used for discovery filters. */
+  excuseKey: string[];
+  /** Journey traveler type keys (e.g. solo, couple); used for discovery filters. */
+  travelType: string[];
   format: BlogFormat;
   status: BlogStatus;
   /** Visibility toggle, decoupled from status — a PUBLISHED post can be hidden without losing approval history. */
@@ -69,6 +69,10 @@ export interface BlogFormDraft {
   sections: { title: string; description: string }[];
   faq: { question: string; answer: string }[];
   gallery: string[];
+  /** Journey traveler type keys (e.g. solo, couple); used for discovery filters. */
+  travelType: string[];
+  /** Journey excuse keys (e.g. solo-adventure), scoped to the selected travelType(s). */
+  excuseKey: string[];
   /** Tripper's note to the admin at submission time. */
   tripperNote?: string | null;
 }

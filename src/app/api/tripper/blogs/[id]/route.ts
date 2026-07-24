@@ -10,6 +10,18 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
+/** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  for (const v of value) {
+    if (typeof v !== "string") continue;
+    const trimmed = v.trim();
+    if (trimmed) seen.add(trimmed);
+  }
+  return Array.from(seen);
+}
+
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ id: string }> },
@@ -212,15 +224,9 @@ export async function PATCH(
       (blocks !== undefined && !eq(blocks, existingBlog.blocks)) ||
       (tags !== undefined && !eq(tags, existingBlog.tags)) ||
       (travelType !== undefined &&
-        !eq(
-          typeof travelType === "string" && travelType.trim() ? travelType.trim() : null,
-          existingBlog.travelType,
-        )) ||
+        !eq(normalizeStringArray(travelType), existingBlog.travelType)) ||
       (excuseKey !== undefined &&
-        !eq(
-          typeof excuseKey === "string" && excuseKey.trim() ? excuseKey.trim() : null,
-          existingBlog.excuseKey,
-        )) ||
+        !eq(normalizeStringArray(excuseKey), existingBlog.excuseKey)) ||
       (format !== undefined && !eq(format.toUpperCase?.() ?? format, existingBlog.format)) ||
       (seo !== undefined && !eq(seo || null, existingBlog.seo)) ||
       (faq !== undefined && !eq(faq ?? null, existingBlog.faq));
@@ -252,16 +258,10 @@ export async function PATCH(
     if (faq !== undefined) updateData.faq = faq ?? null;
     if (tags !== undefined) updateData.tags = tags;
     if (travelType !== undefined) {
-      updateData.travelType =
-        typeof travelType === "string" && travelType.trim().length > 0
-          ? travelType.trim()
-          : null;
+      updateData.travelType = normalizeStringArray(travelType);
     }
     if (excuseKey !== undefined) {
-      updateData.excuseKey =
-        typeof excuseKey === "string" && excuseKey.trim().length > 0
-          ? excuseKey.trim()
-          : null;
+      updateData.excuseKey = normalizeStringArray(excuseKey);
     }
     if (coverUrl !== undefined) updateData.coverUrl = coverUrl || null;
     if (seo !== undefined) updateData.seo = seo || null;

@@ -35,8 +35,8 @@ const baseBlog = (authorId: string, overrides: Record<string, unknown> = {}) => 
   content: "<p>Body</p>",
   blocks: [],
   tags: ["adventure"],
-  travelType: "solo",
-  excuseKey: "solo-adventure",
+  travelType: ["solo"],
+  excuseKey: ["solo-adventure"],
   format: "ARTICLE",
   seo: null,
   faq: null,
@@ -234,6 +234,126 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
 
     const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(updateCall.data.status).toBeUndefined();
+  });
+
+  it("normalizes travelType/excuseKey on update — dedupes, trims, and drops non-strings/empty entries", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(
+      makePatchRequest({
+        travelType: ["solo", "solo", "  couple  ", 123, ""],
+        excuseKey: ["solo", "solo", "  couple  ", 123, ""],
+      }),
+      { params: Promise.resolve({ id: "blog-1" }) },
+    );
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.travelType).toEqual(["solo", "couple"]);
+    expect(updateCall.data.excuseKey).toEqual(["solo", "couple"]);
+  });
+
+  it("detects an added travelType/excuseKey element as a content change and reverts a PUBLISHED post to DRAFT", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    const existing = baseBlog("tripper-1", { status: "PUBLISHED" });
+    mockOwnershipAndSlugLookup(existing);
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(
+      makePatchRequest({
+        title: existing.title,
+        subtitle: existing.subtitle,
+        tagline: existing.tagline,
+        coverUrl: existing.coverUrl,
+        content: existing.content,
+        blocks: existing.blocks,
+        tags: existing.tags,
+        travelType: [...existing.travelType, "couple"],
+        excuseKey: existing.excuseKey,
+        format: "article",
+        seo: existing.seo,
+        faq: existing.faq,
+      }),
+      { params: Promise.resolve({ id: "blog-1" }) },
+    );
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.status).toBe("DRAFT");
+  });
+
+  it("removing a travelType element is detected as a content change and reverts a PUBLISHED post to DRAFT", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    const existing = baseBlog("tripper-1", {
+      status: "PUBLISHED",
+      travelType: ["solo", "couple"],
+    });
+    mockOwnershipAndSlugLookup(existing);
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(
+      makePatchRequest({
+        title: existing.title,
+        subtitle: existing.subtitle,
+        tagline: existing.tagline,
+        coverUrl: existing.coverUrl,
+        content: existing.content,
+        blocks: existing.blocks,
+        tags: existing.tags,
+        travelType: ["solo"],
+        excuseKey: existing.excuseKey,
+        format: "article",
+        seo: existing.seo,
+        faq: existing.faq,
+      }),
+      { params: Promise.resolve({ id: "blog-1" }) },
+    );
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.status).toBe("DRAFT");
+  });
+
+  it("current comparison semantics: reordering the same travelType elements IS treated as a content change (JSON.stringify is order-sensitive, the route does not sort before comparing)", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    const existing = baseBlog("tripper-1", {
+      status: "PUBLISHED",
+      travelType: ["solo", "couple"],
+    });
+    mockOwnershipAndSlugLookup(existing);
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(
+      makePatchRequest({
+        title: existing.title,
+        subtitle: existing.subtitle,
+        tagline: existing.tagline,
+        coverUrl: existing.coverUrl,
+        content: existing.content,
+        blocks: existing.blocks,
+        tags: existing.tags,
+        travelType: ["couple", "solo"], // same set, reordered
+        excuseKey: existing.excuseKey,
+        format: "article",
+        seo: existing.seo,
+        faq: existing.faq,
+      }),
+      { params: Promise.resolve({ id: "blog-1" }) },
+    );
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.status).toBe("DRAFT");
   });
 
   it("returns 404 when the post is not owned by the caller", async () => {

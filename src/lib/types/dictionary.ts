@@ -101,6 +101,12 @@ export interface TripperBlogFormDict {
     uploadImage: string;
     uploading: string;
     removeImage: string;
+    travelType: string;
+    travelTypePlaceholder: string;
+    travelTypeHint: string;
+    excuseKey: string;
+    excuseKeyPlaceholder: string;
+    excuseKeyHint: string;
     featureText: string;
     featureTextPlaceholder: string;
     featureAttribution: string;

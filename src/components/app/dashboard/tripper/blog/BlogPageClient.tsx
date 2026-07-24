@@ -81,7 +81,7 @@ export function BlogPageClient({
       selectedStatus === "all" || post.status === selectedStatus;
     const travelTypeMatch =
       selectedTravelType === "all" ||
-      post.travelType === selectedTravelType;
+      post.travelType.includes(selectedTravelType);
     return formatMatch && statusMatch && travelTypeMatch;
   });
 

@@ -75,6 +75,8 @@ const EMPTY_DRAFT: BlogFormDraft = {
   sections: [{ title: "", description: "" }],
   faq: [{ question: "", answer: "" }],
   gallery: [],
+  travelType: [],
+  excuseKey: [],
   tripperNote: null,
 };
 

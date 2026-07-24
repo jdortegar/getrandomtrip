@@ -9,7 +9,7 @@ export interface BlogIndexPost {
   /** Single author (tripper) per post. */
   author: BlogIndexAuthor;
   coverUrl: string | null;
-  excuseKey: string | null;
+  excuseKey: string[];
   format: string;
   id: string;
   publishedAt?: string;
@@ -18,7 +18,7 @@ export interface BlogIndexPost {
   tagline?: string;
   tags: string[];
   title: string;
-  travelType: string | null;
+  travelType: string[];
 }
 
 export interface BlogIndexPagination {
