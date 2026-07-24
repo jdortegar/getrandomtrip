@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
@@ -13,6 +14,11 @@ import {
 } from "@/lib/auth/prismaUserRoles";
 import { sendWelcomeEmail, sendVerificationEmail } from "@/lib/email";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
+import {
+  peekTripperInvite,
+  consumeTripperInvite,
+  resolveOAuthInviteGrant,
+} from "@/lib/auth/tripperInviteTokens";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -63,9 +69,15 @@ export const authOptions: NextAuthOptions = {
         if (!user.emailVerified) {
           // Backfilled or never-verified account: fire a fresh verification
           // email and reject with a distinguishable error (not "wrong
-          // password") so the client can offer a resend.
-          const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
-          sendVerificationEmail(user.id, token); // fire-and-forget
+          // password") so the client can offer a resend. Token issuance is
+          // best-effort here — a DB hiccup on this side must never mask the
+          // EMAIL_NOT_VERIFIED signal with an unrelated thrown error.
+          try {
+            const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
+            sendVerificationEmail(user.id, token); // fire-and-forget
+          } catch (err) {
+            console.error("Failed to issue verification token on login:", err);
+          }
           throw new Error("EMAIL_NOT_VERIFIED");
         }
 
@@ -95,6 +107,17 @@ export const authOptions: NextAuthOptions = {
 
       // For OAuth (Google), create user if doesn't exist
       if (account?.provider === "google" && !dbUser) {
+        // Optional Tripper invite carried through OAuth via a short-lived
+        // cookie (the `?token=` can't ride the Google redirect as an arg).
+        // Peek (never consume) BEFORE create so the token stays alive until
+        // account creation succeeds.
+        const cookieStore = await cookies();
+        const inviteToken = cookieStore.get("grt_tripper_invite")?.value;
+        const invitePeek = inviteToken
+          ? await peekTripperInvite(inviteToken)
+          : null;
+        const grantTripper = resolveOAuthInviteGrant(invitePeek, user.email);
+
         dbUser = await prisma.user.create({
           data: {
             email: user.email,
@@ -105,10 +128,18 @@ export const authOptions: NextAuthOptions = {
             interests: [],
             dislikes: [],
             emailVerified: new Date(),
+            ...(grantTripper ? { roles: ["CLIENT", "TRIPPER"] } : {}),
           },
         });
         console.log("✅ Created new user from Google OAuth:", dbUser.id);
         sendWelcomeEmail(dbUser.id);
+
+        if (grantTripper && inviteToken) {
+          await consumeTripperInvite(inviteToken);
+          await prisma.waitlistEntry.deleteMany({
+            where: { email: user.email },
+          });
+        }
       }
 
       // For credentials, user should already exist (created during registration)

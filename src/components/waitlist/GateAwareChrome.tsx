@@ -18,7 +18,12 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 const GATE_ALLOWED_ROLES = new Set(["admin", "tripper"]);
 
 /** Auth utility pages must stay reachable regardless of the marketing gate. */
-const GATE_EXEMPT_ROUTES = ["/login", "/verify-email", "/reset-password"];
+const GATE_EXEMPT_ROUTES = [
+  "/login",
+  "/verify-email",
+  "/reset-password",
+  "/tripper-invite",
+];
 
 function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {
   if (!pathname) return false;

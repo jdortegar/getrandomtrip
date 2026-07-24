@@ -546,11 +546,19 @@
         "name": "Name",
         "email": "Email",
         "joined": "Joined",
+        "status": "Status",
         "actions": "Actions"
       },
       "actions": {
         "delete": "Delete",
-        "deleting": "Deleting…"
+        "deleting": "Deleting…",
+        "inviteTripper": "Invite as Tripper",
+        "inviting": "Inviting…",
+        "resend": "Resend invite"
+      },
+      "inviteStatus": {
+        "invited": "Invited",
+        "expired": "Expired"
       }
     },
     "xsedNotifications": {
@@ -813,7 +821,9 @@
     "createAccountSubtitle": "Create your account to get started",
     "email": "Email",
     "emailPlaceholder": "you@email.com",
+    "emailTaken": "An account with this email already exists",
     "fillAllFields": "Please fill in all fields",
+    "invalidCredentials": "Incorrect email or password",
     "invalidEmail": "Please enter a valid email",
     "loginFailed": "Something went wrong",
     "loginSubtitle": "Sign in to your account to continue",
@@ -874,6 +884,26 @@
     "reasonExpired": "This link has expired. Request a new one.",
     "reasonUsed": "This link was already used.",
     "reasonMissing": "No reset token found."
+  },
+  "tripperInviteAccept": {
+    "loadingTitle": "Activating your invite…",
+    "loadingBody": "Hang tight while we confirm your Tripper account.",
+    "errorTitle": "We couldn't validate your invite",
+    "reasonInvalid": "This invite link is invalid.",
+    "reasonExpired": "This invite has expired. Ask an admin to resend a new one.",
+    "reasonUsed": "This invite was already used.",
+    "reasonMissing": "No invite token found.",
+    "loginCta": "Go to login",
+    "grantedTitle": "You're now a Tripper!",
+    "grantedBody": "We activated your Tripper role. Sign in to start creating your packages.",
+    "registerTitle": "Complete your Tripper account",
+    "registerSubtitle": "You've been invited to become a Tripper on Randomtrip. Create your account to accept.",
+    "emailLockedNote": "This email comes from your invite and can't be changed.",
+    "submitLabel": "Create account",
+    "submitting": "Creating account…",
+    "registerSuccessTitle": "Account created!",
+    "registerSuccessBody": "We sent you an email to verify your account. Confirm it, then sign in.",
+    "registerErrorGeneric": "We couldn't create your account. Please try again."
   },
   "home": {
     "hero": {
@@ -4272,6 +4302,7 @@
       "actions": "Actions",
       "joined": "Joined",
       "roles": "Roles",
+      "status": "Status",
       "tripperSlug": "Tripper slug",
       "user": "User"
     },
@@ -4294,7 +4325,16 @@
       "CLIENT": "Client",
       "TRIPPER": "Tripper"
     },
-    "usersCount": "{count} users"
+    "usersCount": "{count} users",
+    "invite": {
+      "inviteTripper": "Invite as Tripper",
+      "inviting": "Inviting…",
+      "resend": "Resend invite"
+    },
+    "inviteStatus": {
+      "invited": "Invited",
+      "expired": "Expired"
+    }
   },
   "contactPage": {
     "meta": {

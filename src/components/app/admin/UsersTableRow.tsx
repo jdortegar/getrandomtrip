@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2, UserPlus } from "lucide-react";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ export interface AdminUser {
   createdAt: string;
   email: string;
   id: string;
+  inviteStatus?: "invited" | "expired" | null;
   name: string;
   roles: UserRole[];
   tripperSlug: string | null;
@@ -18,23 +19,35 @@ export interface AdminUser {
 
 interface UsersTableRowProps {
   copy: MarketingDictionary["adminUsers"];
+  invitingId: string | null;
   isSelected: boolean;
   locale: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
+  onInvite: (id: string) => void;
   user: AdminUser;
 }
 
+const inviteChipClass: Record<"invited" | "expired", string> = {
+  invited: "border-sky-200 bg-sky-50 text-sky-700",
+  expired: "border-amber-200 bg-amber-50 text-amber-700",
+};
+
 export function UsersTableRow({
   copy,
+  invitingId,
   isSelected,
   locale,
   onDelete,
   onEdit,
+  onInvite,
   user,
 }: UsersTableRowProps) {
   const displayRoles = [...user.roles].sort((a, b) => a.localeCompare(b));
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
+  const isTripperOrAdmin =
+    user.roles.includes("TRIPPER") || user.roles.includes("ADMIN");
+  const isInviting = invitingId === user.id;
   return (
     <tr
       className={cn(
@@ -69,7 +82,38 @@ export function UsersTableRow({
         })}
       </td>
       <td className="px-5 py-4">
-        <div className="flex items-center gap-1.5">
+        {user.inviteStatus && (
+          <span
+            className={cn(
+              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
+              inviteChipClass[user.inviteStatus],
+            )}
+          >
+            {copy.inviteStatus[user.inviteStatus]}
+          </span>
+        )}
+      </td>
+      <td className="px-5 py-4">
+        <div className="flex items-center gap-2">
+          {!isTripperOrAdmin && (
+            <TableIconButton
+              disabled={isInviting}
+              onClick={() => onInvite(user.id)}
+              title={
+                isInviting
+                  ? copy.invite.inviting
+                  : user.inviteStatus
+                    ? copy.invite.resend
+                    : copy.invite.inviteTripper
+              }
+            >
+              {isInviting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <UserPlus className="h-4 w-4" />
+              )}
+            </TableIconButton>
+          )}
           <TableIconButton onClick={() => onEdit(user.id)} title={copy.edit}>
             <Pencil className="h-4 w-4" />
           </TableIconButton>

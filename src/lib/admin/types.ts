@@ -156,6 +156,7 @@ export interface AdminWaitlistEntry {
   createdAt: string;
   email: string;
   id: string;
+  inviteStatus?: "invited" | "expired" | null;
   lastName: string | null;
   name: string | null;
 }

@@ -575,6 +575,18 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+model TripperInvite {
+  id         String    @id @default(cuid())
+  email      String // NO FK — resolved by email at accept-time; invitee may have no User yet
+  tokenHash  String    @unique // SHA-256 hex of the plaintext; consumption + peek lookup key
+  expiresAt  DateTime
+  consumedAt DateTime? // null = still pending (single-use)
+  createdAt  DateTime  @default(now())
+
+  @@index([email])
+  @@map("tripper_invites")
+}
+
 model XsedNotificationSignup {
   id             String    @id @default(cuid())
   email          String    @unique

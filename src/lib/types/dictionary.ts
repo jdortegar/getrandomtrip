@@ -1366,8 +1366,21 @@ export interface AdminPagesDict {
     count: string;
     errorLoad: string;
     empty: string;
-    columns: { name: string; email: string; joined: string; actions: string };
-    actions: { delete: string; deleting: string };
+    columns: {
+      name: string;
+      email: string;
+      joined: string;
+      status: string;
+      actions: string;
+    };
+    actions: {
+      delete: string;
+      deleting: string;
+      inviteTripper: string;
+      inviting: string;
+      resend: string;
+    };
+    inviteStatus: { invited: string; expired: string };
   };
   xsedNotifications: {
     count: string;
@@ -1517,6 +1530,27 @@ export interface ResetPasswordPageDict {
   reasonMissing: string;
 }
 
+export interface TripperInviteAcceptDict {
+  loadingTitle: string;
+  loadingBody: string;
+  errorTitle: string;
+  reasonInvalid: string;
+  reasonExpired: string;
+  reasonUsed: string;
+  reasonMissing: string;
+  loginCta: string;
+  grantedTitle: string;
+  grantedBody: string;
+  registerTitle: string;
+  registerSubtitle: string;
+  emailLockedNote: string;
+  submitLabel: string;
+  submitting: string;
+  registerSuccessTitle: string;
+  registerSuccessBody: string;
+  registerErrorGeneric: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -1657,7 +1691,9 @@ export interface MarketingDictionary {
     createAccountSubtitle: string;
     email: string;
     emailPlaceholder: string;
+    emailTaken: string;
     fillAllFields: string;
+    invalidCredentials: string;
     invalidEmail: string;
     loginFailed: string;
     loginSubtitle: string;
@@ -1688,6 +1724,7 @@ export interface MarketingDictionary {
   };
   verifyEmailPage: VerifyEmailPageDict;
   resetPasswordPage: ResetPasswordPageDict;
+  tripperInviteAccept: TripperInviteAcceptDict;
   home: {
     hero: {
       branding: { repeatText?: string; text: string };
@@ -2560,6 +2597,7 @@ export interface MarketingDictionary {
       actions: string;
       joined: string;
       roles: string;
+      status: string;
       tripperSlug: string;
       user: string;
     };
@@ -2583,6 +2621,12 @@ export interface MarketingDictionary {
       TRIPPER: string;
     };
     usersCount: string;
+    invite: {
+      inviteTripper: string;
+      inviting: string;
+      resend: string;
+    };
+    inviteStatus: { invited: string; expired: string };
   };
   adminTripEditModal: {
     cancel: string;

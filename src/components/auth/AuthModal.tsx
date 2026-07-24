@@ -8,6 +8,7 @@ import { X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { isValidPassword } from "@/lib/validation/password";
 import { isValidEmail } from "@/lib/validation/email";
+import { registerErrorMessage } from "@/lib/auth/registerErrorMessages";
 
 interface AuthModalProps {
   /** When false, hides the sign-up toggle and keeps the modal in login mode only. */
@@ -148,7 +149,9 @@ export default function AuthModal({
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || (t?.loginFailed ?? ""));
+          throw new Error(
+            registerErrorMessage(data.error, t) ?? (t?.loginFailed ?? ""),
+          );
         }
 
         // Auto-login after successful registration — now gated by the
@@ -168,7 +171,11 @@ export default function AuthModal({
         }
 
         if (result?.error) {
-          throw new Error(t?.loginFailed ?? "");
+          throw new Error(
+            result.error === "Invalid credentials"
+              ? (t?.invalidCredentials ?? "")
+              : (t?.loginFailed ?? ""),
+          );
         }
 
         // Handle successful authentication
@@ -190,7 +197,11 @@ export default function AuthModal({
 
         if (result?.error) {
           setErrorKind("generic");
-          throw new Error(t?.loginFailed ?? "");
+          throw new Error(
+            result.error === "Invalid credentials"
+              ? (t?.invalidCredentials ?? "")
+              : (t?.loginFailed ?? ""),
+          );
         }
 
         // Handle successful authentication

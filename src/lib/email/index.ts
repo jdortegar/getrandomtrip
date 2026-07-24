@@ -55,6 +55,9 @@ import VerifyEmail, {
 import PasswordReset, {
   subjects as passwordResetSubjects,
 } from "@/emails/PasswordReset";
+import TripperInvite, {
+  subjects as tripperInviteSubjects,
+} from "@/emails/TripperInvite";
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -814,6 +817,37 @@ export function sendPasswordResetEmail(userId: string, token: string): void {
       });
     } catch (err) {
       console.error("[email] sendPasswordResetEmail:", err);
+    }
+  })();
+}
+
+/**
+ * Sends a Tripper invite email. Unlike the other senders here, this one
+ * takes email/locale as direct args instead of a `userId` — the invitee
+ * frequently has no `User` row yet.
+ */
+export function sendTripperInviteEmail(
+  email: string,
+  token: string,
+  locale: "es" | "en",
+): void {
+  void (async () => {
+    try {
+      const BASE_URL = "https://getrandomtrip.com";
+      const inviteUrl = `${BASE_URL}/${locale}/tripper-invite?token=${token}`;
+
+      await sendMail({
+        to: email,
+        subject: tripperInviteSubjects[locale],
+        content: {
+          react: React.createElement(TripperInvite, {
+            inviteUrl,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendTripperInviteEmail:", err);
     }
   })();
 }

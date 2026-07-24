@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { getTripperInviteStatuses } from "@/lib/auth/tripperInviteTokens";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const entries = await prisma.waitlistEntry.findMany({
+    const rows = await prisma.waitlistEntry.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         createdAt: true,
@@ -31,6 +32,14 @@ export async function GET() {
         name: true,
       },
     });
+
+    const inviteStatuses = await getTripperInviteStatuses(
+      rows.map((r) => r.email),
+    );
+    const entries = rows.map((r) => ({
+      ...r,
+      inviteStatus: inviteStatuses.get(r.email) ?? null,
+    }));
 
     return NextResponse.json({ entries });
   } catch (error) {

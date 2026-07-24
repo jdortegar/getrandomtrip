@@ -546,11 +546,19 @@
         "name": "Nombre",
         "email": "Email",
         "joined": "Se unió",
+        "status": "Estado",
         "actions": "Acciones"
       },
       "actions": {
         "delete": "Eliminar",
-        "deleting": "Eliminando…"
+        "deleting": "Eliminando…",
+        "inviteTripper": "Invitar como Tripper",
+        "inviting": "Invitando…",
+        "resend": "Reenviar invitación"
+      },
+      "inviteStatus": {
+        "invited": "Invitado",
+        "expired": "Expirado"
       }
     },
     "xsedNotifications": {
@@ -813,7 +821,9 @@
     "createAccountSubtitle": "Crea tu cuenta para empezar",
     "email": "Email",
     "emailPlaceholder": "tu@email.com",
+    "emailTaken": "Ya existe una cuenta con este email",
     "fillAllFields": "Por favor completa todos los campos",
+    "invalidCredentials": "Email o contraseña incorrectos",
     "invalidEmail": "Por favor ingresa un email válido",
     "loginFailed": "Algo salió mal",
     "loginSubtitle": "Ingresa a tu cuenta para continuar",
@@ -874,6 +884,26 @@
     "reasonExpired": "Este enlace venció. Solicitá uno nuevo.",
     "reasonUsed": "Este enlace ya fue utilizado.",
     "reasonMissing": "No se encontró un token de restablecimiento."
+  },
+  "tripperInviteAccept": {
+    "loadingTitle": "Activando tu invitación…",
+    "loadingBody": "Esperá un momento mientras confirmamos tu cuenta como Tripper.",
+    "errorTitle": "No pudimos validar tu invitación",
+    "reasonInvalid": "Este enlace de invitación no es válido.",
+    "reasonExpired": "Esta invitación venció. Pedile a un admin que te reenvíe una nueva.",
+    "reasonUsed": "Esta invitación ya fue utilizada.",
+    "reasonMissing": "No se encontró un token de invitación.",
+    "loginCta": "Ir a iniciar sesión",
+    "grantedTitle": "¡Listo, ya sos Tripper!",
+    "grantedBody": "Activamos tu rol de Tripper. Iniciá sesión para empezar a crear tus paquetes.",
+    "registerTitle": "Completá tu cuenta de Tripper",
+    "registerSubtitle": "Te invitaron a ser Tripper en Randomtrip. Creá tu cuenta para aceptar.",
+    "emailLockedNote": "Este email viene de tu invitación y no se puede cambiar.",
+    "submitLabel": "Crear cuenta",
+    "submitting": "Creando cuenta…",
+    "registerSuccessTitle": "¡Cuenta creada!",
+    "registerSuccessBody": "Te enviamos un email para verificar tu cuenta. Confirmalo y después iniciá sesión.",
+    "registerErrorGeneric": "No pudimos crear tu cuenta. Intentá de nuevo."
   },
   "home": {
     "hero": {
@@ -4272,6 +4302,7 @@
       "actions": "Acciones",
       "joined": "Alta",
       "roles": "Roles",
+      "status": "Estado",
       "tripperSlug": "Slug tripper",
       "user": "Usuario"
     },
@@ -4294,7 +4325,16 @@
       "CLIENT": "Cliente",
       "TRIPPER": "Tripper"
     },
-    "usersCount": "{count} usuarios"
+    "usersCount": "{count} usuarios",
+    "invite": {
+      "inviteTripper": "Invitar como Tripper",
+      "inviting": "Invitando…",
+      "resend": "Reenviar invitación"
+    },
+    "inviteStatus": {
+      "invited": "Invitado",
+      "expired": "Expirado"
+    }
   },
   "contactPage": {
     "meta": {

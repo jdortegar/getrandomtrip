@@ -5,11 +5,17 @@ type RouteModule = typeof import("../route");
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn(), create: vi.fn() },
+    waitlistEntry: { deleteMany: vi.fn() },
   },
 }));
 
 vi.mock("@/lib/auth/verificationTokens", () => ({
   issueVerificationToken: vi.fn().mockResolvedValue("plaintext-token"),
+}));
+
+vi.mock("@/lib/auth/tripperInviteTokens", () => ({
+  peekTripperInvite: vi.fn(),
+  consumeTripperInvite: vi.fn(),
 }));
 
 vi.mock("@/lib/email", () => ({
@@ -22,6 +28,10 @@ vi.mock("bcryptjs", () => ({
 
 import { prisma } from "@/lib/prisma";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
+import {
+  peekTripperInvite,
+  consumeTripperInvite,
+} from "@/lib/auth/tripperInviteTokens";
 import { sendVerificationEmail } from "@/lib/email";
 
 function makePostRequest(body: Record<string, unknown>) {
@@ -49,7 +59,7 @@ describe("POST /api/auth/register", () => {
     const json = await res.json();
 
     expect(res.status).toBe(400);
-    expect(json.error).toMatch(/password/i);
+    expect(json.error).toBe("WEAK_PASSWORD");
     expect(prisma.user.create).not.toHaveBeenCalled();
     expect(issueVerificationToken).not.toHaveBeenCalled();
   });
@@ -66,7 +76,7 @@ describe("POST /api/auth/register", () => {
     const json = await res.json();
 
     expect(res.status).toBe(400);
-    expect(json.error).toMatch(/email/i);
+    expect(json.error).toBe("INVALID_EMAIL");
     expect(prisma.user.create).not.toHaveBeenCalled();
     expect(issueVerificationToken).not.toHaveBeenCalled();
   });
@@ -88,7 +98,7 @@ describe("POST /api/auth/register", () => {
     const json = await res.json();
 
     expect(res.status).toBe(400);
-    expect(json.error).toMatch(/already exists/i);
+    expect(json.error).toBe("USER_EXISTS");
     expect(prisma.user.create).not.toHaveBeenCalled();
     expect(issueVerificationToken).not.toHaveBeenCalled();
   });
@@ -139,6 +149,88 @@ describe("POST /api/auth/register", () => {
     );
     expect(json.user).toEqual(
       expect.objectContaining({ id: "user-1", email: "ana@example.com" }),
+    );
+    // Regression: no inviteToken in the body → no invite lookup, roles untouched
+    // (Prisma schema default [CLIENT] applies).
+    expect(peekTripperInvite).not.toHaveBeenCalled();
+    expect(createArgs.data.roles).toBeUndefined();
+  });
+
+  it("grants CLIENT+TRIPPER at create and consumes the invite + cleans up the waitlist when inviteToken peeks ok with a matching email", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-2",
+      name: "Bob",
+      email: "bob@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    (peekTripperInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      email: "bob@example.com",
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Bob",
+        email: "bob@example.com",
+        password: "abc12345",
+        inviteToken: "good-token",
+      }),
+    );
+    const json = await res.json();
+
+    expect(res.status).toBe(201);
+    const createArgs = (prisma.user.create as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(createArgs.data.roles).toEqual(
+      expect.arrayContaining(["CLIENT", "TRIPPER"]),
+    );
+    expect(consumeTripperInvite).toHaveBeenCalledWith("good-token");
+    expect(prisma.waitlistEntry.deleteMany).toHaveBeenCalledWith({
+      where: { email: "bob@example.com" },
+    });
+    expect(json.user).toEqual(
+      expect.objectContaining({ id: "user-2", email: "bob@example.com" }),
+    );
+  });
+
+  it("grants only CLIENT and does not consume/cleanup when inviteToken peeks ok but the email doesn't match", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-3",
+      name: "Carol",
+      email: "carol@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    (peekTripperInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      email: "someone-else@example.com",
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Carol",
+        email: "carol@example.com",
+        password: "abc12345",
+        inviteToken: "mismatched-token",
+      }),
+    );
+    const json = await res.json();
+
+    expect(res.status).toBe(201);
+    const createArgs = (prisma.user.create as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(createArgs.data.roles).toEqual(["CLIENT"]);
+    expect(consumeTripperInvite).not.toHaveBeenCalled();
+    expect(prisma.waitlistEntry.deleteMany).not.toHaveBeenCalled();
+    expect(json.user).toEqual(
+      expect.objectContaining({ id: "user-3", email: "carol@example.com" }),
     );
   });
 });
