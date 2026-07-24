@@ -12,6 +12,8 @@ const baseDraft: BlogFormDraft = {
   sections: [{ title: "Original section", description: "Original body" }],
   faq: [{ question: "Original question?", answer: "Original answer" }],
   gallery: [],
+  travelType: [],
+  excuseKey: [],
   tripperNote: null,
 };
 

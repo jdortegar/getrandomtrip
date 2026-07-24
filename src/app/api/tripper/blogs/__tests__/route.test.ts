@@ -82,4 +82,62 @@ describe("POST /api/tripper/blogs (create) — status is never accepted from the
     expect(createArgs.data.status).toBeUndefined();
     expect(createArgs.data.publishedAt).toBeUndefined();
   });
+
+  it("normalizes travelType/excuseKey — dedupes, trims, and drops non-strings/empty entries", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "My Trip",
+        travelType: ["solo", "solo", "  couple  ", 123, ""],
+        excuseKey: ["solo", "solo", "  couple  ", 123, ""],
+      }),
+    });
+    await POST(req);
+
+    const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(createArgs.data.travelType).toEqual(["solo", "couple"]);
+    expect(createArgs.data.excuseKey).toEqual(["solo", "couple"]);
+  });
+
+  it("defaults travelType/excuseKey to [] when omitted or not an array", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip", travelType: "solo", excuseKey: null }),
+    });
+    await POST(req);
+
+    const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(createArgs.data.travelType).toEqual([]);
+    expect(createArgs.data.excuseKey).toEqual([]);
+  });
+
+  it("defaults travelType/excuseKey to [] when the fields are omitted entirely", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip" }),
+    });
+    await POST(req);
+
+    const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(createArgs.data.travelType).toEqual([]);
+    expect(createArgs.data.excuseKey).toEqual([]);
+  });
 });

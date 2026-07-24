@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { getBlogCompleteness, isBlogTabComplete, mapBlogPostToDraft } from "../blog-form";
+import {
+  buildBlogSubmitPayload,
+  getBlogCompleteness,
+  isBlogTabComplete,
+  mapBlogPostToDraft,
+} from "../blog-form";
 import type { BlogFormDraft, BlogPost } from "@/types/blog";
 
 const baseDraft: BlogFormDraft = {
@@ -12,6 +17,8 @@ const baseDraft: BlogFormDraft = {
   sections: [{ title: "", description: "" }],
   faq: [{ question: "", answer: "" }],
   gallery: [],
+  travelType: [],
+  excuseKey: [],
   tripperNote: null,
 };
 
@@ -156,5 +163,50 @@ describe("mapBlogPostToDraft", () => {
     };
     const draft = mapBlogPostToDraft(post);
     expect(draft.sections).toEqual([{ title: "Day 1", description: "<p>Arrival</p>" }]);
+  });
+
+  it("round-trips travelType/excuseKey arrays from a fetched BlogPost into the draft", () => {
+    const post: Partial<BlogPost> = {
+      status: "draft",
+      title: "My Trip",
+      blocks: [],
+      travelType: ["solo", "couple"],
+      excuseKey: ["x", "y"],
+    };
+    const draft = mapBlogPostToDraft(post);
+    expect(draft.travelType).toEqual(["solo", "couple"]);
+    expect(draft.excuseKey).toEqual(["x", "y"]);
+  });
+
+  it("defaults travelType/excuseKey to [] when absent on the fetched post", () => {
+    const post: Partial<BlogPost> = { status: "draft", title: "My Trip", blocks: [] };
+    const draft = mapBlogPostToDraft(post);
+    expect(draft.travelType).toEqual([]);
+    expect(draft.excuseKey).toEqual([]);
+  });
+});
+
+describe("buildBlogSubmitPayload", () => {
+  it("passes travelType/excuseKey arrays through to the submit payload unchanged", () => {
+    const draft: BlogFormDraft = {
+      ...baseDraft,
+      travelType: ["solo", "couple"],
+      excuseKey: ["x", "y"],
+    };
+    const payload = buildBlogSubmitPayload(draft);
+    expect(payload.travelType).toEqual(["solo", "couple"]);
+    expect(payload.excuseKey).toEqual(["x", "y"]);
+  });
+
+  it("round-trips travelType/excuseKey through buildBlogSubmitPayload -> mapBlogPostToDraft", () => {
+    const draft: BlogFormDraft = {
+      ...baseDraft,
+      travelType: ["solo", "couple"],
+      excuseKey: ["x", "y"],
+    };
+    const payload = buildBlogSubmitPayload(draft);
+    const roundTripped = mapBlogPostToDraft(payload as unknown as Partial<BlogPost>);
+    expect(roundTripped.travelType).toEqual(["solo", "couple"]);
+    expect(roundTripped.excuseKey).toEqual(["x", "y"]);
   });
 });

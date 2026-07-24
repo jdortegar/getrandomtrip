@@ -52,6 +52,34 @@ describe("computeChangedFields (blog)", () => {
     expect(result).not.toContain("tags");
   });
 
+  it("detects travelType array field change", () => {
+    const original = { ...base, travelType: ["solo"] };
+    const copy = { ...base, travelType: ["solo", "couple"] };
+    const result = computeChangedFields(copy, original);
+    expect(result).toContain("travelType");
+  });
+
+  it("does NOT flag travelType as changed when arrays are identical", () => {
+    const original = { ...base, travelType: ["solo", "couple"] };
+    const copy = { ...base, travelType: ["solo", "couple"] };
+    const result = computeChangedFields(copy, original);
+    expect(result).not.toContain("travelType");
+  });
+
+  it("detects excuseKey array field change", () => {
+    const original = { ...base, excuseKey: ["solo-adventure"] };
+    const copy = { ...base, excuseKey: ["solo-adventure", "escapada-romantica"] };
+    const result = computeChangedFields(copy, original);
+    expect(result).toContain("excuseKey");
+  });
+
+  it("does NOT flag excuseKey as changed when arrays are identical", () => {
+    const original = { ...base, excuseKey: ["solo-adventure"] };
+    const copy = { ...base, excuseKey: ["solo-adventure"] };
+    const result = computeChangedFields(copy, original);
+    expect(result).not.toContain("excuseKey");
+  });
+
   it("detects seo JSON change", () => {
     const copy = { ...base, seo: { title: "Different SEO" } };
     const result = computeChangedFields(copy, base);

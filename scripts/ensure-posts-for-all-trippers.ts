@@ -27,8 +27,8 @@ async function main() {
         subtitle: "Contenido increíble en camino.",
         coverUrl:
           "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80",
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         tags: ["tripper", "inspiracion"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,

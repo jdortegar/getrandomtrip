@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
 
     const where: {
       authorId?: string | { in: string[] };
-      excuseKey?: string | null;
+      excuseKey?: { has: string };
       status: BlogStatus;
-      travelType?: string | null;
+      travelType?: { has: string };
       isReviewCopy: boolean;
       isActive: boolean;
     } = {
@@ -49,11 +49,11 @@ export async function GET(request: NextRequest) {
     }
 
     if (travelType?.trim()) {
-      where.travelType = travelType.trim();
+      where.travelType = { has: travelType.trim() };
     }
 
     if (excuseKey?.trim()) {
-      where.excuseKey = excuseKey.trim();
+      where.excuseKey = { has: excuseKey.trim() };
     }
 
     // Fetch blogs with pagination
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
         slug: blog.author.tripperSlug ?? "",
       },
       coverUrl: blog.coverUrl,
-      excuseKey: blog.excuseKey ?? null,
+      excuseKey: blog.excuseKey,
       format: blog.format.toLowerCase(),
       id: blog.id,
       publishedAt: blog.publishedAt?.toISOString(),
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
       tagline: blog.tagline ?? "",
       tags: blog.tags,
       title: blog.title,
-      travelType: blog.travelType ?? null,
+      travelType: blog.travelType,
     }));
 
     const hasMore = skip + blogs.length < total;

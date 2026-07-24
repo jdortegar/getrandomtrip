@@ -838,8 +838,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ["caribe", "buceo", "snorkel", "playas", "aventura"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -970,8 +970,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ["aventura", "patagonia", "buenos-aires", "urban-exploration"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -1023,8 +1023,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ["cafe", "colombia", "gastronomia", "eje-cafetero"],
-        travelType: "solo",
-        excuseKey: "cultural-immersion",
+        travelType: ["solo"],
+        excuseKey: ["cultural-immersion"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -1076,8 +1076,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ["fotografia", "urban", "tecnica", "arte"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.PHOTO,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -1110,8 +1110,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ["gastronomia", "mercados", "cultura-local", "comida"],
-        travelType: "couple",
-        excuseKey: "cultural-immersion",
+        travelType: ["couple"],
+        excuseKey: ["cultural-immersion"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.DRAFT,
         seo: {
@@ -1139,8 +1139,8 @@ async function seedTrippersAndPackages() {
           },
         ],
         tags: ["noche", "vida-nocturna", "cultura", "aventura"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.MIXED,
         status: BlogStatus.DRAFT,
         seo: {
@@ -1176,8 +1176,8 @@ async function seedTrippersAndPackages() {
         tagline: "La familia que viaja junta, crece junta",
         coverUrl:
           "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=1200&q=80",
-        travelType: "family",
-        excuseKey: "family-adventure",
+        travelType: ["family"],
+        excuseKey: ["family-adventure"],
         blocks: [
           {
             type: "paragraph",
@@ -1205,8 +1205,8 @@ async function seedTrippersAndPackages() {
         tagline: "Romance con propósito",
         coverUrl:
           "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80",
-        travelType: "honeymoon",
-        excuseKey: "romantic-getaway",
+        travelType: ["honeymoon"],
+        excuseKey: ["romantic-getaway"],
         blocks: [
           {
             type: "paragraph",
@@ -1250,8 +1250,8 @@ async function seedTrippersAndPackages() {
         tagline: "Menos planificación, más descubrimiento",
         coverUrl:
           "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80",
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         blocks: [
           {
             type: "paragraph",
@@ -1299,8 +1299,8 @@ async function seedTrippersAndPackages() {
         tagline: "La capital que no te esperas",
         coverUrl:
           "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=80",
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         blocks: [
           {
             type: "paragraph",
@@ -1324,8 +1324,8 @@ async function seedTrippersAndPackages() {
         tagline: "Menos turismo, más conexión",
         coverUrl:
           "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80",
-        travelType: "couple",
-        excuseKey: "romantic-getaway",
+        travelType: ["couple"],
+        excuseKey: ["romantic-getaway"],
         blocks: [
           {
             type: "paragraph",
@@ -1372,8 +1372,8 @@ async function seedTrippersAndPackages() {
         content: `<p>Nunca había visto tanta nieve junta. El paisaje blanco, el silencio y la sensación de estar en otro mundo me marcaron para siempre. En este post quiero compartir cómo fue mi primera vez en la montaña en temporada invernal.</p><p>La clave fue ir bien equipado y con una actitud de descubrimiento. Cada paso sobre la nieve era una pequeña aventura. Al final del día, una taza de chocolate caliente frente a la ventana con vista a los picos fue el broche de oro.</p>`,
         blocks: [],
         tags: ["invierno", "nieve", "aventura", "naturaleza"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -1393,8 +1393,8 @@ async function seedTrippersAndPackages() {
         content: `<p>Viajar sola me enseñó más sobre mí misma que cualquier otro año de mi vida. Al principio daba miedo; después se volvió adictivo. La libertad de elegir cada paso, cada restaurante, cada ruta sin tener que negociar con nadie es una sensación que recomiendo a todo el mundo probar al menos una vez.</p><p>Lo que más me sorprendió fue la cantidad de gente que conocés cuando vas sola. La gente se acerca más, te invitan a la mesa, te cuentan historias. Si estás dudando, mi consejo es: empezá por un viaje corto y cercano. El resto viene solo.</p>`,
         blocks: [],
         tags: ["solo", "libertad", "reflexión", "viajes"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {
@@ -1415,8 +1415,8 @@ async function seedTrippersAndPackages() {
         content: `<p>São Paulo es una ciudad que cobra vida cuando el sol se esconde. Los bares se llenan, la música suena en cada esquina y la energía es única. En este post te cuento mis rincones favoritos para vivir la noche paulista sin gastar una fortuna.</p><p>Desde bares con vista hasta fiestas en galerías de arte, la oferta es infinita. Lo importante es ir con ganas de caminar, de hablar con desconocidos y de dejarse llevar. La noche en São Paulo te devuelve lo que vos le das.</p>`,
         blocks: [],
         tags: ["sao-paulo", "noche", "bares", "cultura"],
-        travelType: "solo",
-        excuseKey: "solo-adventure",
+        travelType: ["solo"],
+        excuseKey: ["solo-adventure"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
         seo: {

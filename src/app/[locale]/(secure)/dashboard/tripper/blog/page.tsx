@@ -57,13 +57,13 @@ export default async function TripperBlogPage(props: {
     blocks: blog.blocks as BlogPost["blocks"],
     coverUrl: blog.coverUrl ?? undefined,
     createdAt: blog.createdAt.toISOString(),
-    excuseKey: blog.excuseKey ?? undefined,
+    excuseKey: blog.excuseKey,
     format: blog.format.toLowerCase() as BlogPost["format"],
     publishedAt: blog.publishedAt?.toISOString(),
     slug: blog.slug ?? undefined,
     status: blog.status.toLowerCase() as BlogPost["status"],
     subtitle: blog.subtitle ?? undefined,
-    travelType: blog.travelType ?? undefined,
+    travelType: blog.travelType,
     updatedAt: blog.updatedAt.toISOString(),
   }));
 

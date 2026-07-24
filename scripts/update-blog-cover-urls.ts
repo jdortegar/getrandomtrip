@@ -46,7 +46,7 @@ async function main() {
     (p) => !p.coverUrl || !p.coverUrl.startsWith("https://images.unsplash.com"),
   );
   const needsTravelExcuse = posts.filter(
-    (p) => p.travelType == null || p.excuseKey == null,
+    (p) => p.travelType.length === 0 || p.excuseKey.length === 0,
   );
 
   if (needsCover.length === 0 && needsTravelExcuse.length === 0) {
@@ -63,8 +63,8 @@ async function main() {
       !post.coverUrl || !post.coverUrl.startsWith("https://images.unsplash.com")
         ? UNSPLASH_COVER_URLS[i % UNSPLASH_COVER_URLS.length]
         : undefined;
-    const travelType = post.travelType == null ? meta.travelType : undefined;
-    const excuseKey = post.excuseKey == null ? meta.excuseKey : undefined;
+    const travelType = post.travelType.length === 0 ? [meta.travelType] : undefined;
+    const excuseKey = post.excuseKey.length === 0 ? [meta.excuseKey] : undefined;
 
     if (coverUrl ?? travelType ?? excuseKey) {
       await prisma.blogPost.update({

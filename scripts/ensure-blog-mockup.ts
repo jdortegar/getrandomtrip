@@ -73,8 +73,8 @@ const mockupData = {
     },
   ],
   tags: ["caribe", "buceo", "snorkel", "playas", "aventura"],
-  travelType: "solo",
-  excuseKey: "solo-adventure",
+  travelType: ["solo"],
+  excuseKey: ["solo-adventure"],
   format: BlogFormat.ARTICLE,
   status: BlogStatus.PUBLISHED,
   seo: {

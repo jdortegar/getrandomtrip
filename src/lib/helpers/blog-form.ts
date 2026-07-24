@@ -134,6 +134,8 @@ export function buildBlogSubmitPayload(draft: BlogFormDraft) {
     blocks,
     faq: nonEmptyFaq.length > 0 ? { items: nonEmptyFaq } : null,
     status: draft.status,
+    travelType: draft.travelType,
+    excuseKey: draft.excuseKey,
     tripperNote: draft.tripperNote ?? null,
   };
 }
@@ -189,6 +191,8 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
     sections,
     faq: faqItems && faqItems.length > 0 ? faqItems : [{ question: "", answer: "" }],
     gallery: imageBlocks.map((b) => b.url),
+    travelType: post.travelType ?? [],
+    excuseKey: post.excuseKey ?? [],
     tripperNote: post.tripperNote ?? null,
   };
 }
