@@ -3136,7 +3136,8 @@
     "submitButton": "Quiero acceso anticipado",
     "successMessage": "¡Listo! Te vamos a avisar cuando sea tu turno.",
     "errorMessage": "Algo salió mal. Por favor, intentá de nuevo.",
-    "adminLoginLabel": "¿Admin o Tripper? Iniciar sesión",
+    "adminLoginLabel": "¿Admin o Tripper?",
+    "adminLoginAction": "Iniciar sesión",
     "accessDeniedTitle": "Acceso no permitido",
     "accessDeniedBody": "Esta sección está restringida a admins y trippers. Contactá a tu administrador si creés que esto es un error.",
     "signOutLabel": "Cerrar sesión"

@@ -7,6 +7,7 @@ import { FormField } from "@/components/ui/FormField";
 interface WaitlistDict {
   accessDeniedBody: string;
   accessDeniedTitle: string;
+  adminLoginAction: string;
   adminLoginLabel: string;
   emailLabel: string;
   emailPlaceholder: string;
@@ -74,14 +75,16 @@ export function WaitlistPage({
 
   return (
     <section className="grid h-screen grid-cols-1 lg:grid-cols-2 rt-container">
-      <div className="flex min-w-0 items-center justify-center py-4 md:py-6">
-        <Img
-          alt="Randomtrip"
-          className="h-24 w-auto md:h-32 lg:h-40"
-          src="/assets/svg/randomtrip.svg"
-        />
+      <div className="flex min-w-0 items-center justify-center px-6 pb-4 pt-10 md:px-12 md:pb-6 md:pt-14 lg:px-0 lg:py-6">
+        <div className="mx-auto w-full max-w-md lg:mx-0 lg:w-auto lg:max-w-none">
+          <Img
+            alt="Randomtrip"
+            className="h-auto w-full lg:h-40 lg:w-auto"
+            src="/assets/svg/randomtrip.svg"
+          />
+        </div>
       </div>
-      <div className="flex min-w-0 flex-col justify-center px-6 py-4 md:px-12 md:py-6 lg:px-16 xl:px-24">
+      <div className="flex min-w-0 flex-col justify-center px-6 pb-10 pt-4 md:px-12 md:pb-14 md:pt-6 lg:px-16 lg:pb-6 xl:px-24">
         <div className="mx-auto w-full max-w-md">
           <h1 className="font-barlow-condensed text-3xl font-bold uppercase leading-none tracking-wide text-foreground md:text-4xl lg:text-5xl">
             {accessDenied ? dict.accessDeniedTitle : dict.headline}
@@ -155,13 +158,14 @@ export function WaitlistPage({
                 </p>
               )}
               <Button
-                className="mt-8 mx-auto"
+                className="mt-8 mx-auto flex flex-col leading-tight lg:flex-row lg:gap-1.5 lg:leading-normal"
                 onClick={onOpenLogin}
                 size="md"
                 type="button"
                 variant="link"
               >
-                {dict.adminLoginLabel}
+                <span>{dict.adminLoginLabel}</span>
+                <span>{dict.adminLoginAction}</span>
               </Button>
             </>
           )}
