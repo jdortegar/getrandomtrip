@@ -166,7 +166,7 @@ export default function HeaderHero({
       )}
 
       {/* Content row: left text + optional right tripper info */}
-      <div className="relative z-10 mx-auto w-full min-w-7/12 px-6 flex items-center justify-between gap-8 text-white max-w-7xl">
+      <div className="rt-container relative z-10 flex items-center justify-between gap-8 text-white">
         {/* Left: eyebrow + title + description */}
         <div className="flex-1 text-left">
           {subtitle != null && (

@@ -3040,6 +3040,7 @@
       "sectionTitle": "Our philosophy"
     },
     "steps": {
+      "eyebrow": "Three reasons to trust us",
       "items": [
         {
           "key": "01",
@@ -3061,21 +3062,25 @@
       "stepLabel": "Step"
     },
     "trust": {
+      "backgroundImage": "/images/about-us-trust.png",
+      "ctaAriaLabel": "Go to the 'Start your journey' section",
+      "ctaLabel": "GET RANDOMTRIP",
+      "headline": "Trust in the process",
       "items": [
         {
           "title": "Clear pricing",
-          "description": "We define budget and conditions before designing. No microextras disguised as surprises."
+          "description": "No extras disguised as surprises."
         },
         {
           "title": "Validated providers",
-          "description": "We work with accommodations, experiences, and operators aligned with quality, safety, and service."
+          "description": "Accommodations and experiences with quality, safety, and service."
         },
         {
           "title": "Reveal with support",
-          "description": "The destination is revealed on time, with practical information and guidance so you just have to live it."
+          "description": "With practical information so you just have to live it."
         }
       ],
-      "sectionTitle": "Trust in process"
+      "subtitle": "We define budget and conditions before designing."
     },
     "valueProps": {
       "items": [

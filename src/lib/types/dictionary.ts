@@ -2373,13 +2373,18 @@ export interface MarketingDictionary {
       sectionTitle: string;
     };
     steps: {
+      eyebrow: string;
       items: Array<{ description: string; key: string; title: string }>;
       sectionTitle: string;
       stepLabel: string;
     };
     trust: {
+      backgroundImage: string;
+      ctaAriaLabel: string;
+      ctaLabel: string;
+      headline: string;
       items: Array<{ title: string; description: string }>;
-      sectionTitle: string;
+      subtitle: string;
     };
     presentTrippers: {
       ctaHref: string;

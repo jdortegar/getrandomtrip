@@ -3040,6 +3040,7 @@
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {
+      "eyebrow": "Tres razones para confiar en nosotros",
       "items": [
         {
           "key": "01",
@@ -3061,21 +3062,25 @@
       "stepLabel": "Paso"
     },
     "trust": {
+      "backgroundImage": "/images/about-us-trust.png",
+      "ctaAriaLabel": "Ir a la sección 'Comienza tu viaje'",
+      "ctaLabel": "GET RANDOMTRIP",
+      "headline": "Confianza en el proceso",
       "items": [
         {
           "title": "Precio claro",
-          "description": "Definimos presupuesto y condiciones antes de diseñar. Sin microextras disfrazados de sorpresa."
+          "description": "Sin extras disfrazados de sorpresa."
         },
         {
           "title": "Proveedores validados",
-          "description": "Trabajamos con alojamientos, experiencias y operadores alineados con calidad, seguridad y servicio."
+          "description": "Alojamientos y experiencias con calidad, seguridad y servicio."
         },
         {
           "title": "Reveal con soporte",
-          "description": "El destino se revela a tiempo, con información práctica y acompañamiento para que solo tengas que vivirlo."
+          "description": "Con información práctica para que solo tengas que vivirlo."
         }
       ],
-      "sectionTitle": "Confianza en proceso"
+      "subtitle": "Definimos presupuesto y condiciones antes de diseñar."
     },
     "valueProps": {
       "items": [
