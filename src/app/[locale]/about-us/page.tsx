@@ -6,7 +6,7 @@ import { AboutUsValues } from "@/components/app/about-us/AboutUsValues";
 import { AboutUsPhilosophy } from "@/components/app/about-us/AboutUsPhilosophy";
 import { TeamSection } from "@/components/app/about-us/TeamSection";
 import { AboutUsSteps } from "@/components/app/about-us/AboutUsSteps";
-import { AboutUsTrust } from "@/components/app/about-us/AboutUsTrust";
+import { TrustHero } from "@/components/app/about-us/TrustHero";
 import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getTravelerTypeLabel } from "@/lib/helpers/traveler-types";
@@ -67,8 +67,8 @@ export default async function AboutUsPage(props: LocaleParams) {
         imageClassName="object-top"
       />
       <TeamSection content={aboutUs.curators} />
-      <AboutUsSteps content={aboutUs.steps} />
-      <AboutUsTrust content={aboutUs.trust} />
+      <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
+      <TrustHero content={aboutUs.trust} locale={locale} />
       <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
       <FaqBlock copy={aboutUs.faq} />
     </div>
