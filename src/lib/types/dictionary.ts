@@ -2464,6 +2464,7 @@ export interface MarketingDictionary {
   waitlist: {
     accessDeniedBody: string;
     accessDeniedTitle: string;
+    adminLoginAction: string;
     adminLoginLabel: string;
     emailLabel: string;
     emailPlaceholder: string;

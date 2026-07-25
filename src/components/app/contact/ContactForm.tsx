@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface ContactFormProps {
@@ -93,22 +94,14 @@ export function ContactForm({ copy, onSuccess }: ContactFormProps) {
         </option>
         <option value="other">{copy.interestOptions.other}</option>
       </FormSelectField>
-      <div>
-        <label
-          className="mb-2 block text-sm text-neutral-700"
-          htmlFor="contact-message"
-        >
-          {copy.message}
-        </label>
-        <textarea
-          className="h-40 w-full rounded-md border border-neutral-200 bg-neutral-100 px-4 py-3 text-neutral-900 outline-none focus:ring-2 focus:ring-primary/40"
-          id="contact-message"
-          name="message"
-          onChange={(event) => setMessage(event.target.value)}
-          required
-          value={message}
-        />
-      </div>
+      <TextAreaInput
+        id="contact-message"
+        label={copy.message}
+        name="message"
+        onChange={(event) => setMessage(event.target.value)}
+        required
+        value={message}
+      />
       <Button
         className="w-full"
         disabled={isSubmitting}
