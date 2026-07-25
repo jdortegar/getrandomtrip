@@ -118,7 +118,7 @@ export function RoleNotificationsPageClient({
         </span>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
         {notifications.length === 0 ? (
           <div className="py-16 text-center">
             <Bell className="mx-auto mb-4 h-12 w-12 text-neutral-300" />
@@ -129,7 +129,7 @@ export function RoleNotificationsPageClient({
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {notifications.map((notification) => {
+            {notifications.map((notification, index) => {
               const Icon = TYPE_ICONS[notification.type] ?? Bell;
               const isDanger = DANGER_TYPES.has(notification.type);
               const { body, createdAt, id, isRead, title, type } = notification;
@@ -150,6 +150,8 @@ export function RoleNotificationsPageClient({
                 "flex items-start gap-4 px-5 py-4 transition-colors",
                 isRead ? "bg-white" : "bg-sky-50/40",
                 clickToMarkRead ? "cursor-pointer hover:bg-sky-50/70" : null,
+                index === 0 ? "rounded-t-xl" : null,
+                index === notifications.length - 1 ? "rounded-b-xl" : null,
               );
 
               return (

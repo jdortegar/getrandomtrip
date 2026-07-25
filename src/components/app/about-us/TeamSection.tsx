@@ -57,7 +57,13 @@ export function TeamSection({ content }: TeamSectionProps) {
       title={content.sectionTitle}
       subtitle={content.subtitle}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
+      <div
+        className={
+          content.items.length < 4
+            ? "flex flex-wrap justify-center gap-6 mt-4"
+            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-4"
+        }
+      >
         {content.items.map((member) => {
           const isFlipped =
             flippedCard === member.name || mobileFlippedCard === member.name;
@@ -67,7 +73,14 @@ export function TeamSection({ content }: TeamSectionProps) {
             .toUpperCase();
 
           return (
-            <div key={member.name} className="flex flex-col gap-3">
+            <div
+              key={member.name}
+              className={
+                content.items.length < 4
+                  ? "flex flex-col gap-3 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
+                  : "flex flex-col gap-3"
+              }
+            >
               {/* Flip card wrapper */}
               <div
                 className="relative aspect-3/4 rounded-xl cursor-pointer select-none"
