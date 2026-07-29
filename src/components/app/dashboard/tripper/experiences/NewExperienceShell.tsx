@@ -85,7 +85,7 @@ const EMPTY_DRAFT: ExperienceFormDraft = {
   climate: "any",
   minPax: 1,
   maxPax: 1,
-  minNights: 1,
+  minNights: 2,
   maxNights: 2,
   pricingByType: null,
   reviewNote: null,

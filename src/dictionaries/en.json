@@ -4050,7 +4050,7 @@
         "excuseKey": "Trip excuse",
         "excuseKeyPlaceholder": "Select an excuse",
         "excuseKeyHint": "The excuse the client uses to justify the trip",
-        "minNights": "Recommended duration",
+        "minNights": "Duration",
         "minNightsHint": "{nights} Nights / {days} Days",
         "maxNights": "Maximum nights",
         "maxNightsHint": "This level supports max {n} nights",
