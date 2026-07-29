@@ -13,9 +13,10 @@ interface DaysInputProps {
   onChange: (days: number) => void;
   className?: string;
   inputClassName?: string;
+  disabled?: boolean;
 }
 
-export function DaysInput({ id, hintTemplate, label, value, onChange, className, inputClassName }: DaysInputProps) {
+export function DaysInput({ id, hintTemplate, label, value, onChange, className, inputClassName, disabled }: DaysInputProps) {
   const [raw, setRaw] = useState(String(value ?? 0));
 
   const days = Math.max(1, parseInt(raw, 10) || 1);
@@ -43,7 +44,7 @@ export function DaysInput({ id, hintTemplate, label, value, onChange, className,
         {label}
       </label>
       <input
-        className={`w-full bg-gray-100 outline-none px-6 py-4 rounded-xl text-gray-900 text-base tabular-nums${inputClassName ? ` ${inputClassName}` : ""}`}
+        className={`w-full bg-gray-100 outline-none px-6 py-4 rounded-xl text-gray-900 text-base tabular-nums disabled:cursor-not-allowed disabled:opacity-50${inputClassName ? ` ${inputClassName}` : ""}`}
         id={id}
         inputMode="numeric"
         maxLength={2}
@@ -51,6 +52,7 @@ export function DaysInput({ id, hintTemplate, label, value, onChange, className,
         onChange={handleChange}
         type="text"
         value={raw}
+        disabled={disabled}
       />
       {hint && <p className="text-xs text-neutral-400">{hint}</p>}
     </div>
