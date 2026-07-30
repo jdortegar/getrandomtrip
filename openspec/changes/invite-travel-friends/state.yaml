@@ -9,7 +9,7 @@ phases:
   design: done
   tasks: done
   apply: done
-  verify: done_with_critical_findings
+  verify: done_pass_with_warnings
   archive: pending
 artifacts:
   proposal: openspec/changes/invite-travel-friends/proposal.md
@@ -17,8 +17,8 @@ artifacts:
   design: openspec/changes/invite-travel-friends/design.md
   tasks: openspec/changes/invite-travel-friends/tasks.md
   verify_report: openspec/changes/invite-travel-friends/verify-report.md
-verify_verdict: FAIL
-verify_critical_count: 2
-verify_warning_count: 5
+verify_verdict: PASS_WITH_WARNINGS
+verify_critical_count: 0
+verify_warning_count: 4
 verify_suggestion_count: 3
 updated: 2026-07-29

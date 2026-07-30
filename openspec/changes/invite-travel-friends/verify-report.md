@@ -1,65 +1,71 @@
 # Verify Report: invite-travel-friends
 
-**Verdict: FAIL** (2 CRITICAL, 5 WARNING, 3 SUGGESTION)
+**Verdict: PASS WITH WARNINGS** (0 CRITICAL, 4 WARNING, 3 SUGGESTION)
+
+This is a RE-VERIFY pass following fix commit `00f49c50` (`fix(travelers): distinguish used tokens from invalid ones, localize completion notification`), applied on top of the 4 implementation commits (`9f6fc4ce`, `f5410844`, `af476667`, `60ad8049`) on `develop`. Both prior CRITICAL findings were independently re-checked against source and are genuinely resolved, not just claimed.
 
 ## Execution Evidence
 
 | Check | Result |
 |---|---|
-| Branch | `develop`, 4 commits present (`9f6fc4ce`, `f5410844`, `af476667`, `60ad8049`) |
+| Branch | `develop`, 5 commits present (4 implementation + `00f49c50` fix) |
 | `npm run typecheck` | Clean, 0 errors |
-| `npm test` | 573/573 passed, 81 test files, 0 regressions |
-| `npm run lint` | Not run — pre-existing, unrelated `next lint` environment breakage (confirmed out of scope) |
-| tasks.md | 48/48 checked `[x]` across all 4 phases — matches apply-progress and actual code state |
+| `npm test` | 578/578 passed, 81 test files, 0 regressions (up from 573/573 pre-fix — 5 new tests added) |
+| `npm run lint` | Not run — pre-existing, unrelated `next lint`/Next 16 environment breakage (confirmed out of scope, per instruction) |
+| tasks.md | 48/48 checked `[x]`, matches apply-progress and code state |
 
 ## Completeness
 
-All 48 tasks across Phase 1 (schema/token/roster core), Phase 2 (write/read routes), Phase 3 (email/cron), Phase 4 (UI/i18n) are checked and match the committed code. No task claims completion without corresponding source.
+All 48 tasks across Phase 1–4 remain checked and match the committed code, including the fix batch's changes.
 
-## Spec Compliance Matrix (9 requirements / 24 scenarios)
+## CRITICAL — Re-Verification
 
-| Requirement | Scenarios | Status |
-|---|---|---|
-| Roster Creation on Payment Success | Normal party, Malformed paxDetails, Solo traveler | PASS — `computeTravelerCap` (`src/lib/travelers/travelerRoster.ts`) defensively coerces non-numeric to 0, clamps ≥0; `ensureRoster` creates ADULT-then-MINOR; `TravelerRosterSection` returns `null` at `cap === 0` |
-| Adult Row Fields and Invite Action | Buyer sends first invite, Resend rotates token, Buyer fills adult row directly | PASS — `issueTravelerInvite` rotates hash in place; `TravelerRow` auto-saves adult fields on blur via PATCH, flipping to COMPLETE without ever sending an invite |
-| Minor Row Direct-Save Validation | Complete minor save, Incomplete minor save rejected | PASS — `PATCH /api/travelers/[id]` requires all 3 minor fields before COMPLETE, rejects with 400 + inline error otherwise, status never downgraded |
-| Edit Rules and Cutoff Enforcement | Pre-cutoff edit allowed, Post-cutoff write rejected server-side, No add/remove at any time | PASS — `isRosterLocked` checked server-side in both `PATCH` and `invite` routes (not just rendered); PATCH is single-row only, no create/delete path exists |
-| Blocking Until Cutoff | Incomplete rows block processing pre-cutoff, Cutoff pass locks and stops reminders | PASS w/ WARNING — reminders continue correctly (`runPass1`) and lock correctly (`runPass2`), but no discrete "trip processing eligibility" function exists anywhere in the codebase for the literal "not-yet-processable" wording (see WARNING 2) |
-| Buyer Notification on Companion Completion | Companion submits via invite, No duplicate notification on re-render | PASS — one `Notification` created per completion in `submit/route.ts`; re-render doesn't call the route so no duplicate risk |
-| Companion Invite Token Lifecycle | Valid token peek, Expired token, **Already-consumed token**, Submission after cutoff rejected | **FAIL on "Already-consumed token"** — see CRITICAL 1 |
-| Companion Invite Landing — No-Login Submission | Consent gates submit, Destination never revealed, Account creation optional | PASS — client+server consent gate, no destination reference anywhere in `TravelerInviteClient.tsx`/`/invite/[token]/page.tsx`, `/login` link is optional |
-| Gender-Neutral Bilingual Invite Copy | Dictionary parity, Neutral greeting rendered | PASS — `inviteTravelers` has exactly 51 keys in both `es.json`/`en.json` (0 drift); greeting uses "su randomtrip" (ES) / "their randomtrip" (EN), no gendered pronoun |
+### CRITICAL 1 (prior): Already-consumed token resolved to "invalid" instead of "used" — RESOLVED, confirmed genuine
 
-## CRITICAL
+Re-inspected `src/lib/travelers/travelerInviteTokens.ts`:
 
-**1. "Already-consumed token" scenario is unreachable in production — dead branch masked by over-mocked tests.**
+- `consumeTravelerInvite` (lines 119–140) no longer includes `inviteTokenHash` in its update payload — the hash is deliberately left untouched/persisted on the row after consumption.
+- `resolveTravelerInvite` (lines 78–98) now checks `if (row.status === "COMPLETE") return { ok: false, reason: "used" }` **before** the expiry check and **before** the `isRosterLocked` check — so a used-but-now-also-expired-or-locked token still correctly reads "used", not "expired"/"locked".
+- **(a) Confirms it prevents a real Postgres unique-hash lookup from going stale**: because the hash is never nulled, `prisma.tripTraveler.findUnique({ where: { inviteTokenHash: tokenHash } })` will still find the row on a re-visit — the fix is structurally correct for real Prisma/Postgres unique-column semantics, not just for the mocked test.
+- **(b) Test now genuinely simulates Prisma's `where.inviteTokenHash` matching semantics.** Verified `src/lib/travelers/__tests__/travelerInviteTokens.test.ts`: a real `hashPlaintext()` helper (identical sha256-hex logic to production `hashToken`) computes the persisted hash, and `findUnique` is mocked with `mockImplementation((args) => args.where.inviteTokenHash !== persistedHash ? null : <row>)` — the mock only returns the row when the hash argument actually matches, which is a faithful simulation of a real unique-column lookup. This is a materially different (and correct) test design vs. the prior unconditional-return mock. Also added: a re-consumption test (`consumeTravelerInvite` called twice with the same plaintext) asserting both calls return `used` and `prisma.tripTraveler.update` is never called — directly covers point (d).
+- **(c) Checked `PATCH /api/travelers/[id]` for a second path that could set `status: "COMPLETE"`** and cause a false "used": it does — a buyer filling in an adult row directly (`fullName`+`email`+`idDocument` all present) flips `status` to `COMPLETE` via the PATCH route (`route.ts:69-79`), independent of the invite-token flow. This is NOT a bug: if that row happens to also have a previously-issued (now stale) `inviteTokenHash` still on it, a companion revisiting that old invite link correctly resolves to "used" — the row genuinely is complete, so surfacing "used" (rather than "invalid") is the more accurate user-facing state, not a false positive. No path sets `status: "COMPLETE"` on a row that is actually still open/incomplete.
+- **(d) Re-consumption of an already-COMPLETE row is refused with no write** — confirmed via both the dedicated re-consumption test and the "used" tests in `consumeTravelerInvite`, all asserting `expect(prisma.tripTraveler.update).not.toHaveBeenCalled()`.
 
-`resolveTravelerInvite` (`src/lib/travelers/travelerInviteTokens.ts:68-88`) looks up the row via `prisma.tripTraveler.findUnique({ where: { inviteTokenHash: tokenHash } })`. `consumeTravelerInvite` nulls `inviteTokenHash` on successful submission. Once null, **no row can ever be found again by re-hashing the original plaintext** — Prisma's unique-column lookup for a specific non-null hash value will never match a column that is now `null`. So a companion who re-visits (or double-clicks) an already-submitted invite link gets `row = null` → `{ ok: false, reason: "invalid" }`, not `{ ok: false, reason: "used" }`.
+**Verdict: genuinely fixed**, not just claimed.
 
-The unit tests (`travelerInviteTokens.test.ts:96-111`, `submit/route.test.ts:95-104`) "pass" only because they mock `prisma.tripTraveler.findUnique` to directly return a row with `inviteTokenHash: null` regardless of the `where` clause — that's not how Prisma's `findUnique` on a unique column actually behaves, so the test gives false confidence. Landing page shows the generic `landingReasonInvalid` copy instead of the intended `landingReasonUsed` copy for this case — the two are different, user-facing strings in both locales, so this is an observable UX defect, not just an internal label mismatch.
+### CRITICAL 2 (prior): Hardcoded Spanish-only notification title — RESOLVED, confirmed genuine
 
-Fix requires resolving the plaintext token to a row by an identifier that survives consumption (e.g. keep a separate `consumedTokenHash` or store `travelerId` in the URL alongside the token, or never null the hash and instead check `status === "COMPLETE"` to distinguish "used" from "invalid").
+Re-inspected `src/app/api/travelers/submit/route.ts:56-58` and both dictionaries:
 
-**2. Hardcoded Spanish-only notification title violates the project's mandatory i18n rule.**
+- Route now does `const locale = trip.user?.locale === "en" ? "en" : "es"; const dict = locale === "en" ? enCopy.inviteTravelers : esCopy.inviteTravelers;` and uses `dict.notifTitle`.
+- **Dictionary keys are real, not placeholders**: `src/dictionaries/es.json` → `"notifTitle": "Un acompañante completó sus datos de viaje"`; `src/dictionaries/en.json` → `"notifTitle": "A companion completed their travel details"` — both under the `inviteTravelers` section, distinct bilingual strings.
+- **Type wiring confirmed**: `src/lib/types/dictionary.ts:1567` — `InviteTravelersDict.notifTitle: string`, and `InviteTravelersDict` is referenced as `inviteTravelers: InviteTravelersDict` inside `MarketingDictionary` (line 2758).
+- **Locale-fallback default is defensible, not an assumption**: `src/lib/i18n/config.ts:8` defines `export const DEFAULT_LOCALE: Locale = "es"`, confirming "es" is genuinely this repo's default locale. The route's `locale === "en" ? "en" : "es"` pattern is also not a one-off invention — it's byte-for-byte identical to the established convention already used in `src/lib/email/index.ts:73`, `src/app/api/admin/experiences/[id]/send-to-tripper/route.ts:114`, `src/app/api/admin/experiences/[id]/approve/route.tsx:132/158`, `src/app/api/admin/experiences/[id]/reject/route.tsx:91/118`, `src/app/api/admin/blogs/[id]/approve|reject|send-to-tripper` — i.e. this is the codebase's standard locale-resolution idiom, applied consistently here.
+- **Test coverage confirmed**: `src/app/api/travelers/submit/__tests__/route.test.ts` has three dedicated tests — es-locale buyer gets `esCopy.inviteTravelers.notifTitle`, en-locale buyer gets `enCopy.inviteTravelers.notifTitle`, and no-locale-set buyer defaults to `esCopy.inviteTravelers.notifTitle` — all asserting against the actual imported dictionary objects (not duplicated literal strings), so the test would fail if the dictionary values drifted from what the route sends.
 
-`src/app/api/travelers/submit/route.ts:61` — `title: "Un acompañante completó sus datos de viaje"` is a literal Spanish string, sent regardless of the buyer's locale. This is a user-visible string per `NotificationItem.tsx` (renders `notification.title` verbatim, no runtime i18n lookup). Per `.claude/rules/i18n-and-types.md`: *"Any code that introduces user-visible text MUST be localized in both es and en in the same change. No exceptions."* This is not one of the 5 confirmed scope-reduction decisions listed in the task brief.
+**Verdict: genuinely fixed**, not just claimed.
 
-This also diverges from the established convention already present elsewhere in this exact codebase — e.g. `src/app/api/admin/experiences/[id]/send-to-tripper/route.ts:114-116` resolves `owner.locale` and picks `dict.notifTitle` from the locale-appropriate JSON before calling `notification.create`. English-locale buyers get a Spanish notification title with no equivalent English string added to either dictionary.
+## WARNING — Re-Verification
 
-## WARNING
+### Lock icon warning (prior WARNING 3): RESOLVED, confirmed genuine
 
-1. **spec.md/API naming drift.** `spec.md`'s API Contracts table lists `POST /api/travelers/submit-from-token`; the actual route, `design.md`, and `tasks.md` all consistently use `POST /api/travelers/submit`. Functionally identical, but `spec.md` itself was never updated — flag for correction so the artifact doesn't mislead future readers.
-2. **No discrete "trip processing eligibility" function for the "Blocking Until Cutoff" requirement's literal wording** ("the trip is marked not-yet-processable"). Only reminders-continue / lock-at-cutoff are implemented and tested; there's no codebase feature today that consumes a "not-yet-processable" flag (no other trip-progression step currently checks traveler completeness), so this is satisfied indirectly (roster `locked`/`submitted` fields exist for a future consumer) rather than by an explicit, tested gate.
-3. **"No icon actions" wording vs. implementation.** Spec says locked rows render "disabled inputs with no icon actions." `TravelerRow.tsx` keeps the `TableIconButton` present (disabled, icon swapped to `Lock`) rather than omitting it. Functionally locked and server-enforced regardless, but a literal reading of the spec text isn't met — the icon is present, just non-interactive.
-4. **`npm run lint` still not independently re-run** in this verify pass — confirmed same pre-existing, unrelated `next lint` sandbox breakage already flagged in apply-progress. Still owed before merge in a normal shell.
-5. **Manual QA (task 4.14) remains code-review-only**, not a real click-through pass (≥360px / ≥1280px) — carried forward from apply-progress as still outstanding before merge.
+Re-inspected `src/components/app/travelers/TravelerRow.tsx:206-227`: the icon button block is now gated by `{!locked && (isAdult ? <TableIconButton .../> : <TableIconButton .../>)}` — when `locked` is true, the entire conditional short-circuits to `false` and renders nothing, not a disabled button. This now matches the spec's literal "no icon actions" wording for locked rows. Confirmed against actual JSX, not inferred from the commit message.
 
-## SUGGESTION
+## WARNING — Carried Forward Unchanged (not re-investigated, per instruction)
 
-1. Locked-banner "days remaining" (`TravelerRosterSection.tsx:74-86`) always computes to `0` once locked, since the deadline is necessarily in the past by definition of being locked — harmless but slightly redundant copy path.
-2. `runPass1`'s window uses a strict `gt` cutoff boundary, excluding the exact cutoff instant from receiving a final reminder — a minor edge-case interpretation of "up to and including the cutoff pass," unlikely to matter at hourly cron granularity.
-3. `BASE_URL = "https://getrandomtrip.com"` is hardcoded again in the two new email senders — consistent with the rest of `src/lib/email/index.ts` (pre-existing pattern, not introduced by this change) but worth eventually centralizing into an env var repo-wide.
+These 4 were explicitly deferred by the fix batch, not silently dropped. Re-confirmed accurate as originally described:
+
+1. **spec.md/API naming drift** — `spec.md`'s API Contracts table still lists `POST /api/travelers/submit-from-token` while the actual route/design/tasks consistently use `POST /api/travelers/submit`. Still an unresolved doc-only drift; not touched by the fix batch.
+2. **No discrete "trip processing eligibility" function** for the "Blocking Until Cutoff" requirement's literal wording — still satisfied indirectly via roster `locked`/`submitted` fields rather than an explicit consumed gate. Unchanged.
+3. **`npm run lint` still not independently re-run** — same pre-existing, unrelated `next lint`/Next 16 sandbox breakage, confirmed out of scope again in this pass per explicit instruction. Still owed before merge in a normal shell.
+4. **Manual QA (task 4.14) remains code-review-only** — no live click-through pass (≥360px / ≥1280px) has been performed. Still outstanding before merge.
+
+## SUGGESTION (unchanged, carried forward)
+
+1. Locked-banner "days remaining" always computes to `0` once locked — harmless, cosmetic.
+2. `runPass1`'s strict `gt` cutoff boundary excludes the exact cutoff instant from a final reminder — negligible at hourly cron granularity.
+3. `BASE_URL` hardcoded in new email senders — consistent with pre-existing repo-wide pattern, not introduced by this change.
 
 ## Recommendation
 
-Route back to `sdd-apply` to fix the 2 CRITICAL items (token-consumption lookup + notification i18n) before re-running `sdd-verify`. WARNINGs 1 and 3 are cheap doc/UX fixes; WARNINGs 4-5 are process gates (lint + manual QA) already known and owed before merge regardless of this report.
+Both CRITICAL items are genuinely resolved with correct logic and non-tautological test coverage. The remaining 4 WARNINGs are known process/doc gates (lint environment, manual QA, spec doc drift, indirect requirement satisfaction) that do not block archive — they are pre-existing, already-scoped-out, or non-blocking documentation debt. Recommend proceeding to `sdd-archive`. Lint (env-blocked) and manual QA remain owed before the change ships to production, independent of this SDD pipeline.
