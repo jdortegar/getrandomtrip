@@ -1,4 +1,7 @@
-import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
+import {
+  AMERICAN_COUNTRIES,
+  findCountryByName,
+} from "@/lib/data/shared/countries";
 
 // Country neighboring relationships (simplified for American countries)
 const NEIGHBORING_COUNTRIES: Record<string, string[]> = {
@@ -92,12 +95,27 @@ export interface AvoidCity {
 }
 
 /**
+ * Normalize a level id to the form used in the switch below. The rest of the
+ * app uses two different id schemes for the same levels (see
+ * `src/lib/utils/levels.ts`): raw ids ("explora", "exploraPlus", "atelier")
+ * and normalized slugs ("modo-explora", "explora-plus", "atelier-getaway").
+ * Accept both so callers don't need to know which form they're passing.
+ */
+function normalizeAvoidLevel(level: string): string {
+  const n = level.toLowerCase();
+  if (n === "explora" || n === "modo-explora") return "modo-explora";
+  if (n === "exploraplus" || n === "explora-plus") return "explora-plus";
+  if (n === "atelier" || n === "atelier-getaway") return "atelier-getaway";
+  return n;
+}
+
+/**
  * Get cities to show in AvoidGrid based on level and departure location.
  * Scope by level:
  * - essenza: national only (departure country)
- * - modo-explora: national + neighboring countries
- * - explora-plus: national + neighboring + full region (e.g. south-america)
- * - bivouac / atelier-getaway: all American countries (international)
+ * - modo-explora (aka "explora"): national + neighboring countries
+ * - explora-plus (aka "exploraPlus"): national + neighboring + full region (e.g. south-america)
+ * - bivouac / atelier-getaway (aka "atelier"): all American countries (international)
  */
 export function getAvoidCities(
   departureCountry: string,
@@ -107,15 +125,15 @@ export function getAvoidCities(
 ): AvoidCity[] {
   const allCities: AvoidCity[] = [];
 
-  // Find departure country data
-  const deptCountry = AMERICAN_COUNTRIES.find(
-    (c) => c.name === departureCountry || c.code === departureCountry,
-  );
+  // Find departure country data — locale-agnostic (accepts either Spanish or
+  // English country names, plus codes), since departureCountry may come from
+  // Mapbox geocoding in either language depending on app locale.
+  const deptCountry = findCountryByName(departureCountry);
   const deptCountryCode = deptCountry?.code || "";
 
   let eligibleCountries: string[] = [];
 
-  switch (level) {
+  switch (normalizeAvoidLevel(level)) {
     case "essenza":
       // Only national cities
       eligibleCountries = [deptCountryCode];
@@ -161,8 +179,10 @@ export function getAvoidCities(
     if (!country) return;
 
     country.cities.forEach((city) => {
-      // Exclude departure city
-      if (country.name === departureCountry && city === departureCity) {
+      // Exclude departure city (compare by resolved country code, not the
+      // raw departureCountry string, since that string may be in a different
+      // language than country.name).
+      if (countryCode === deptCountryCode && city === departureCity) {
         return;
       }
 

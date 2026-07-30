@@ -1435,6 +1435,7 @@
         "avoidHint": "Seleccioná hasta 15",
         "avoidLabel": "Destinos a evitar (opcional)",
         "avoidGridLoading": "Cargando ciudades...",
+        "avoidGridEmpty": "No hay sugerencias de destinos disponibles para esta ruta",
         "avoidGridButton": "Otros destinos a evitar",
         "filterOptions": {
           "accommodationType": {

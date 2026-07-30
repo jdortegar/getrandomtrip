@@ -2045,6 +2045,7 @@ export interface MarketingDictionary {
       filtersForm: {
         arrivePrefLabel: string;
         avoidGridButton: string;
+        avoidGridEmpty: string;
         avoidGridLoading: string;
         avoidHint: string;
         avoidLabel: string;

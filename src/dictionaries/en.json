@@ -1430,6 +1430,7 @@
         "avoidHint": "Select up to 15",
         "avoidLabel": "Destinations to avoid (optional)",
         "avoidGridLoading": "Loading cities...",
+        "avoidGridEmpty": "No destination suggestions available for this route",
         "avoidGridButton": "Other destinations to avoid",
         "filterOptions": {
           "accommodationType": {

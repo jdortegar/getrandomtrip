@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 
 export interface AvoidGridLabels {
   loading: string;
+  empty: string;
   otherDestinationsButton: string;
   searchModal: AvoidSearchModalLabels;
 }
@@ -64,6 +65,10 @@ export default function AvoidGrid({
   const [suggestions, setSuggestions] = useState<
     Array<{ slug: string; city: string; country: string; image?: string }>
   >([]);
+  // Tracks whether getAvoidCities/image-loading has resolved at least once,
+  // so an empty result can be told apart from "still loading" — without this,
+  // a genuinely empty suggestions list renders the loading message forever.
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const originCountry = originCountryProp ?? "";
   const originCity = originCityProp ?? "";
@@ -74,8 +79,11 @@ export default function AvoidGrid({
   const avoidCities = getAvoidCities(originCountry, originCity, level, 12);
 
   useEffect(() => {
+    setHasLoaded(false);
+
     if (avoidCities.length === 0) {
       setSuggestions([]);
+      setHasLoaded(true);
       return;
     }
 
@@ -89,6 +97,7 @@ export default function AvoidGrid({
         tripperExperienceDestinations,
       );
       setSuggestions(chips);
+      setHasLoaded(true);
       return;
     }
 
@@ -111,6 +120,7 @@ export default function AvoidGrid({
           tripperExperienceDestinations,
         ),
       );
+      setHasLoaded(true);
     }
 
     void loadCityImages();
@@ -141,7 +151,7 @@ export default function AvoidGrid({
                   : "w-full py-8 text-center text-neutral-500"
               }
             >
-              {labels.loading}
+              {hasLoaded ? labels.empty : labels.loading}
             </div>
           ) : (
             suggestions.map((d) => (

@@ -2,6 +2,8 @@ export interface Country {
   name: string;
   code: string;
   cities: string[];
+  /** Alternate spellings (e.g. English names) that should resolve to this country. */
+  aliases?: string[];
 }
 
 export const AMERICAN_COUNTRIES: Country[] = [
@@ -44,6 +46,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Brasil",
     code: "BR",
+    aliases: ["Brazil"],
     cities: [
       "São Paulo",
       "Río de Janeiro",
@@ -152,6 +155,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "México",
     code: "MX",
+    aliases: ["Mexico"],
     cities: [
       "Ciudad de México",
       "Guadalajara",
@@ -188,6 +192,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Perú",
     code: "PE",
+    aliases: ["Peru"],
     cities: [
       "Lima",
       "Arequipa",
@@ -402,6 +407,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Estados Unidos",
     code: "US",
+    aliases: ["United States", "USA", "United States of America"],
     cities: [
       "Nueva York",
       "Los Ángeles",
@@ -438,6 +444,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Canadá",
     code: "CA",
+    aliases: ["Canada"],
     cities: [
       "Toronto",
       "Montreal",
@@ -510,6 +517,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Panamá",
     code: "PA",
+    aliases: ["Panama"],
     cities: [
       "Ciudad de Panamá",
       "San Miguelito",
@@ -724,6 +732,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "República Dominicana",
     code: "DO",
+    aliases: ["Dominican Republic"],
     cities: [
       "Santo Domingo",
       "Santiago",
@@ -760,6 +769,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Haití",
     code: "HT",
+    aliases: ["Haiti"],
     cities: [
       "Puerto Príncipe",
       "Carrefour",
@@ -832,6 +842,7 @@ export const AMERICAN_COUNTRIES: Country[] = [
   {
     name: "Trinidad y Tobago",
     code: "TT",
+    aliases: ["Trinidad and Tobago"],
     cities: [
       "Puerto España",
       "San Fernando",
@@ -867,11 +878,35 @@ export const AMERICAN_COUNTRIES: Country[] = [
   },
 ];
 
+/** Normalize a string for locale-agnostic comparison: trim, lowercase, strip diacritics. */
+const normalizeForMatch = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+
+/**
+ * Find a country by name, code, or alias, regardless of language/accent/case.
+ * Matches "Brasil", "Brazil", "brazil", "BRASIL", "México", "Mexico", country
+ * codes ("BR"), and any entry in `aliases`, all diacritic- and case-insensitive.
+ */
+export const findCountryByName = (input: string): Country | undefined => {
+  const normalizedInput = normalizeForMatch(input);
+  if (!normalizedInput) return undefined;
+
+  return AMERICAN_COUNTRIES.find((country) => {
+    if (normalizeForMatch(country.name) === normalizedInput) return true;
+    if (normalizeForMatch(country.code) === normalizedInput) return true;
+    return (country.aliases ?? []).some(
+      (alias) => normalizeForMatch(alias) === normalizedInput,
+    );
+  });
+};
+
 // Helper function to get cities by country name
 export const getCitiesByCountry = (countryName: string): string[] => {
-  const country = AMERICAN_COUNTRIES.find(
-    (c) => c.name.toLowerCase() === countryName.toLowerCase(),
-  );
+  const country = findCountryByName(countryName);
   return country ? country.cities : [];
 };
 
