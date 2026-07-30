@@ -23,13 +23,17 @@ import {
   getExcuseLabel,
   getExperienceLabel,
   getNextTab,
+  getPreviousTab,
   getRefineDetailsLabel,
+  getTabSubstepOrder,
   getTravelTypeLabel,
   getTravelTypeSelectionEffects,
-  isJourneyComplete,
   isStepComplete,
+  isSubstepValueComplete,
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
+  type SubstepCompletionContext,
 } from "@/lib/helpers/journey";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 import {
   getDefaultPaxDetailsForTravelType,
   hasPaxSubstep,
@@ -49,6 +53,7 @@ import { cn } from "@/lib/utils";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 interface JourneyMainContentLabels {
+  back: string;
   clearAll: string;
   completeBudgetAndExcuse: string;
   completeBudgetFirst: string;
@@ -524,22 +529,73 @@ export default function JourneyMainContent({
     if (onTabChange) onTabChange("budget");
   };
 
+  // Next/Back move one substep at a time within a tab (e.g. Origin -> Dates),
+  // only advancing to the next/previous TAB once there's no next/previous
+  // substep left in the current one. getTabSubstepOrder is the single source
+  // of truth for substep order, shared with page.tsx's getAccordionForStep.
+  const substepOrderCtx = {
+    hasExcuseStep,
+    hasPax: hasPaxSubstep(url.travelType),
+    addonsEnabled: JOURNEY_ADDONS_ENABLED,
+  };
+  const currentSubstepOrder = getTabSubstepOrder(activeTab, substepOrderCtx);
+  const currentSubstepIndex = Math.max(
+    0,
+    currentSubstepOrder.indexOf(accordionValue),
+  );
+  const currentSubstepId = currentSubstepOrder[currentSubstepIndex];
+  const hasNextSubstepInTab =
+    currentSubstepIndex < currentSubstepOrder.length - 1;
+
+  const substepCompletionCtx: SubstepCompletionContext = {
+    travelType: url.travelType,
+    experience: url.experience,
+    excuse: url.excuse,
+    refineDetails: url.refineDetails,
+    originCountry: draftDetails.effectiveOriginCountry,
+    originCity: draftDetails.effectiveOriginCity,
+    startDate: draftDetails.effectiveStartDate,
+    nights: draftDetails.effectiveNights,
+    transportOrder: draftDetails.effectiveTransportOrder,
+  };
+
+  const nextTab = getNextTab(activeTab, hasExcuseStep);
+  const previousTab = getPreviousTab(activeTab, hasExcuseStep);
+
+  // Next is blocked until the CURRENT substep itself has a selection — not
+  // the whole tab (e.g. on Origin, Dates being empty doesn't matter yet).
+  const canContinue = currentSubstepId
+    ? isSubstepValueComplete(activeTab, currentSubstepId, substepCompletionCtx)
+    : false;
+  const isAllStepsComplete = !hasNextSubstepInTab && !nextTab && canContinue;
+
   const handleContinue = () => {
-    const nextTab = getNextTab(activeTab, hasExcuseStep);
+    if (hasNextSubstepInTab) {
+      setAccordionValue(currentSubstepOrder[currentSubstepIndex + 1]);
+      scrollToActions();
+      return;
+    }
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
-      if (nextTab === "excuse") setAccordionValue("excuse");
-      if (nextTab === "details") {
-        setAccordionValue(hasPaxSubstep(url.travelType) ? "pax" : "origin");
-      }
-      if (nextTab === "preferences") setAccordionValue("filters");
+      const nextOrder = getTabSubstepOrder(nextTab, substepOrderCtx);
+      setAccordionValue(nextOrder[0] ?? "");
       scrollToActions();
     }
   };
 
-  const nextTab = getNextTab(activeTab, hasExcuseStep);
-  const canContinue = isStepComplete(activeTab, stepValues) && Boolean(nextTab);
-  const isAllStepsComplete = isJourneyComplete(activeTab, stepValues);
+  const handleBack = () => {
+    if (currentSubstepIndex > 0) {
+      setAccordionValue(currentSubstepOrder[currentSubstepIndex - 1]);
+      scrollToActions();
+      return;
+    }
+    if (previousTab && onTabChange) {
+      onTabChange(previousTab);
+      const previousOrder = getTabSubstepOrder(previousTab, substepOrderCtx);
+      setAccordionValue(previousOrder[previousOrder.length - 1] ?? "");
+      scrollToActions();
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -731,10 +787,12 @@ export default function JourneyMainContent({
         isAllStepsComplete={isAllStepsComplete}
         isSavingAndRedirecting={isSavingAndRedirecting}
         labels={{
+          back: labels.back,
           clearAll: labels.clearAll,
           next: labels.next,
           viewCheckout: labels.viewCheckout,
         }}
+        onBack={previousTab ? handleBack : undefined}
         onClearAll={handleClearAll}
         onContinue={handleContinue}
         onGoToCheckout={handleGoToCheckout}

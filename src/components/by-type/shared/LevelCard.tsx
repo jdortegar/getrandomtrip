@@ -269,6 +269,7 @@ export default function LevelCard({
             className="uppercase"
             href={ctaHref}
             onClick={(e) => e.stopPropagation()}
+            scroll={false}
           >
             {level.ctaLabel}
           </Link>

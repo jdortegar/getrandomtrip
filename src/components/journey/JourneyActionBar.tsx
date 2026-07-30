@@ -53,23 +53,6 @@ export function JourneyActionBar({
         className,
       )}
     >
-      {onBack && labels.back ? (
-        <button
-          className="text-sm font-medium text-gray-900 underline hover:no-underline"
-          onClick={onBack}
-          type="button"
-        >
-          {labels.back}
-        </button>
-      ) : backHref && labels.back ? (
-        <Link
-          className="text-sm font-medium text-gray-900 underline hover:no-underline"
-          href={backHref}
-        >
-          {labels.back}
-        </Link>
-      ) : null}
-
       {showClearAll ? (
         <button
           className="text-sm font-medium text-gray-900 underline hover:no-underline"
@@ -89,6 +72,16 @@ export function JourneyActionBar({
           type="button"
         >
           {isSavingDraft ? "Guardando..." : labels.saveDraft}
+        </Button>
+      ) : null}
+
+      {onBack && labels.back ? (
+        <Button onClick={onBack} size="sm" type="button" variant="secondary">
+          {labels.back}
+        </Button>
+      ) : backHref && labels.back ? (
+        <Button asChild size="sm" variant="secondary">
+          <Link href={backHref}>{labels.back}</Link>
         </Button>
       ) : null}
 

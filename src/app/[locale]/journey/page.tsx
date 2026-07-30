@@ -12,7 +12,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
-import { filterContentTabsForUI } from "@/lib/helpers/journey";
+import { filterContentTabsForUI, getTabSubstepOrder } from "@/lib/helpers/journey";
 import { hasPaxSubstep } from "@/lib/helpers/pax-details";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
@@ -23,33 +23,25 @@ import {
   saveJourneyDraftQueryString,
 } from "@/lib/helpers/journeyDraftStorage";
 
+/**
+ * Resolves which accordion section should be open for a given tab/substep
+ * click. When substepId is a real substep of this tab, it wins outright.
+ * Otherwise (e.g. clicking the tab itself, or advancing via Next/Back)
+ * falls back to the first substep in that tab's order — the single source
+ * of truth for substep order is getTabSubstepOrder, shared with Next/Back.
+ */
 export function getAccordionForStep(
   tabId: string,
   substepId?: string,
   travelType?: string | null,
 ): string {
-  switch (tabId) {
-    case "budget":
-      return substepId === "experience" ? "experience" : "travel-type";
-    case "excuse":
-      return substepId === "refine-details" ? "refine-details" : "excuse";
-    case "details":
-      // "Travellers" is a normal accordion item, first in order, same as
-      // Origin/Dates/Transport -- only one substep is open at a time.
-      // When no specific substep is requested (e.g. clicking the "Details
-      // and planning" tab itself, or advancing via Next), open whichever
-      // substep is actually first in the list for this travel type.
-      if (substepId === "pax") return "pax";
-      if (substepId === "origin") return "origin";
-      if (substepId === "dates") return "dates";
-      if (substepId === "transport") return "transport";
-      return hasPaxSubstep(travelType) ? "pax" : "origin";
-    case "preferences":
-      if (substepId === "addons" && JOURNEY_ADDONS_ENABLED) return "addons";
-      return "filters";
-    default:
-      return "";
-  }
+  const order = getTabSubstepOrder(tabId, {
+    hasExcuseStep: true,
+    hasPax: hasPaxSubstep(travelType),
+    addonsEnabled: JOURNEY_ADDONS_ENABLED,
+  });
+  if (substepId && order.includes(substepId)) return substepId;
+  return order[0] ?? "";
 }
 
 function getTabForSection(sectionId: string): string {
@@ -57,7 +49,7 @@ function getTabForSection(sectionId: string): string {
     case "travel-type":
     case "experience":
       return "budget";
-    case "excuse":
+    case "reason":
     case "refine-details":
       return "excuse";
     case "pax":
@@ -89,8 +81,8 @@ function getInitialStepFromParams(params: URLSearchParams): {
   if (!travelType) return { tabId: "budget", sectionId: "travel-type" };
   if (!experience) return { tabId: "budget", sectionId: "travel-type" };
   const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");
-  if (hasExcuseStep && !excuse) return { tabId: "excuse", sectionId: "excuse" };
-  if (hasExcuseStep && excuse) return { tabId: "excuse", sectionId: "excuse" };
+  if (hasExcuseStep && !excuse) return { tabId: "excuse", sectionId: "reason" };
+  if (hasExcuseStep && excuse) return { tabId: "excuse", sectionId: "reason" };
   if (!originCountry || !originCity)
     return { tabId: "details", sectionId: "origin" };
   if (!startDate || !nights) return { tabId: "details", sectionId: "dates" };

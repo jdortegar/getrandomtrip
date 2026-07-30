@@ -8,6 +8,7 @@ import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { Filters } from "@/store/slices/journeyStore";
 import {
   getPrimaryTransportIdFromOrderParam,
+  isCompleteTransportOrderParam,
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
 } from "@/lib/helpers/transport";
@@ -372,6 +373,17 @@ export function getNextTab(
   return currentIndex < tabs.length - 1 ? tabs[currentIndex + 1] : null;
 }
 
+export function getPreviousTab(
+  activeTab: string,
+  hasExcuseStep: boolean,
+): string | null {
+  const tabs = hasExcuseStep
+    ? ["budget", "excuse", "details", "preferences"]
+    : ["budget", "details", "preferences"];
+  const currentIndex = tabs.indexOf(activeTab);
+  return currentIndex > 0 ? tabs[currentIndex - 1] : null;
+}
+
 export function isStepComplete(
   activeTab: string,
   v: JourneyStepValues,
@@ -400,15 +412,86 @@ export function isStepComplete(
   }
 }
 
-export function isJourneyComplete(
-  activeTab: string,
-  v: JourneyStepValues,
+// ---------------------------------------------------------------------------
+// Substep-level navigation (pure — no React dependencies)
+//
+// Next/Back move one substep at a time within a tab (e.g. Origin -> Dates),
+// only advancing to the next/previous TAB once there's no next/previous
+// substep left in the current one. Next is blocked (canContinue = false)
+// until the CURRENT substep itself has a selection — see
+// isSubstepValueComplete.
+// ---------------------------------------------------------------------------
+
+export interface SubstepOrderContext {
+  hasExcuseStep: boolean;
+  hasPax: boolean;
+  addonsEnabled: boolean;
+}
+
+/** Ordered substep ids for a tab — the single source of truth for substep
+ * sequencing, reused by page.tsx's sidebar-click mapping and by Next/Back. */
+export function getTabSubstepOrder(
+  tabId: string,
+  ctx: SubstepOrderContext,
+): string[] {
+  switch (tabId) {
+    case "budget":
+      return ["travel-type", "experience"];
+    case "excuse":
+      return ["reason", "refine-details"];
+    case "details":
+      return ctx.hasPax
+        ? ["pax", "origin", "dates", "transport"]
+        : ["origin", "dates", "transport"];
+    case "preferences":
+      return ctx.addonsEnabled ? ["filters", "addons"] : ["filters"];
+    default:
+      return [];
+  }
+}
+
+export interface SubstepCompletionContext {
+  travelType?: string;
+  experience?: string;
+  excuse?: string;
+  refineDetails: string[];
+  originCountry: string;
+  originCity: string;
+  startDate?: string;
+  nights: number;
+  transportOrder: string[];
+}
+
+/**
+ * Whether the given substep currently has a selection — used to block Next
+ * until the CURRENT substep (not the whole tab) is filled in. Substeps with
+ * sensible defaults (Travellers, Filters, Extras) never block.
+ */
+export function isSubstepValueComplete(
+  tabId: string,
+  substepId: string,
+  ctx: SubstepCompletionContext,
 ): boolean {
-  // "Complete" means the user is on the last tab AND that tab's own
-  // requirements are met — not "every field across the whole flow happens
-  // to be truthy already" (e.g. transport is filled in as a substep of
-  // "details", well before the user ever reaches "preferences").
-  return getNextTab(activeTab, v.hasExcuseStep) === null && isStepComplete(activeTab, v);
+  switch (`${tabId}:${substepId}`) {
+    case "budget:travel-type":
+      return Boolean(ctx.travelType);
+    case "budget:experience":
+      return Boolean(ctx.experience);
+    case "excuse:reason":
+      return Boolean(ctx.excuse);
+    case "excuse:refine-details":
+      return ctx.refineDetails.length > 0;
+    case "details:origin":
+      return Boolean(ctx.originCountry && ctx.originCity);
+    case "details:dates":
+      return Boolean(ctx.startDate && ctx.nights);
+    case "details:transport":
+      return isCompleteTransportOrderParam(ctx.transportOrder.join(","));
+    default:
+      // details:pax, preferences:filters, preferences:addons — always have a
+      // valid default value, never block Next.
+      return true;
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -3,7 +3,7 @@ import { getAccordionForStep } from "@/app/[locale]/journey/page";
 
 describe("getAccordionForStep", () => {
   it("returns 'pax' for the pax substep — Travellers is a normal collapsible accordion item, same as Origin/Dates/Transport", () => {
-    expect(getAccordionForStep("details", "pax")).toBe("pax");
+    expect(getAccordionForStep("details", "pax", "group")).toBe("pax");
   });
 
   it("still maps dates/transport/origin substeps under details", () => {
@@ -35,7 +35,13 @@ describe("getAccordionForStep", () => {
     expect(getAccordionForStep("excuse", "refine-details")).toBe(
       "refine-details",
     );
-    expect(getAccordionForStep("excuse")).toBe("excuse");
+    // "reason", not "excuse" — the tab id and its first substep's accordion
+    // value used to collide on the same string ("excuse"), which silently
+    // broke the sidebar's active-substep highlight once activeSubstepId was
+    // actually wired up. Renamed for consistency with the dictionary's
+    // substep id and JourneyProgressSidebar's own isSubstepComplete check,
+    // both of which already used "reason".
+    expect(getAccordionForStep("excuse")).toBe("reason");
     expect(getAccordionForStep("preferences")).toBe("filters");
   });
 });

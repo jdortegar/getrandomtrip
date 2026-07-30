@@ -3,10 +3,14 @@ import {
   buildTripRequestPayloadFromSearchParams,
   filterContentTabsForUI,
   getNextTab,
+  getPreviousTab,
+  getTabSubstepOrder,
   getTravelTypeSelectionEffects,
-  isJourneyComplete,
+  isStepComplete,
+  isSubstepValueComplete,
   PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
   type JourneyStepValues,
+  type SubstepCompletionContext,
 } from "@/lib/helpers/journey";
 
 const baseValues: JourneyStepValues = {
@@ -37,37 +41,68 @@ describe("getNextTab", () => {
   });
 });
 
-describe("isJourneyComplete", () => {
-  it("is false while still on the details tab, even if transport is already set", () => {
-    // Regression test: transport is collected as a substep of "details" (Origin/Dates/Transport).
-    // Filling it in must not surface Checkout before the user has ever reached "preferences",
-    // the actual last tab.
-    expect(isJourneyComplete("details", baseValues)).toBe(false);
+describe("getPreviousTab", () => {
+  it("treats budget as the first tab without an excuse step", () => {
+    expect(getPreviousTab("budget", false)).toBeNull();
+    expect(getPreviousTab("details", false)).toBe("budget");
+    expect(getPreviousTab("preferences", false)).toBe("details");
   });
 
-  it("is true once the user is on preferences and its own requirement is met", () => {
-    expect(isJourneyComplete("preferences", baseValues)).toBe(true);
+  it("treats budget as the first tab with an excuse step", () => {
+    expect(getPreviousTab("budget", true)).toBeNull();
+    expect(getPreviousTab("excuse", true)).toBe("budget");
+    expect(getPreviousTab("details", true)).toBe("excuse");
+    expect(getPreviousTab("preferences", true)).toBe("details");
   });
 
-  it("is false on preferences if its own requirement (transport) is missing", () => {
+  it("is the exact inverse of getNextTab for every adjacent pair", () => {
+    for (const hasExcuseStep of [true, false]) {
+      const tabs = hasExcuseStep
+        ? ["budget", "excuse", "details", "preferences"]
+        : ["budget", "details", "preferences"];
+      for (let i = 1; i < tabs.length; i++) {
+        expect(getPreviousTab(tabs[i], hasExcuseStep)).toBe(tabs[i - 1]);
+      }
+    }
+  });
+});
+
+describe("isStepComplete", () => {
+  it("budget requires both travelType and experience", () => {
+    expect(isStepComplete("budget", baseValues)).toBe(true);
     expect(
-      isJourneyComplete("preferences", {
-        ...baseValues,
-        transport: undefined,
-      }),
+      isStepComplete("budget", { ...baseValues, experience: undefined }),
     ).toBe(false);
   });
 
-  it("does not flip early on excuse or details tabs when hasExcuseStep is true", () => {
-    const withExcuse: JourneyStepValues = {
-      ...baseValues,
-      hasExcuseStep: true,
-      excuse: "lost-a-bet",
-      refineDetails: ["surprise-me"],
-    };
-    expect(isJourneyComplete("excuse", withExcuse)).toBe(false);
-    expect(isJourneyComplete("details", withExcuse)).toBe(false);
-    expect(isJourneyComplete("preferences", withExcuse)).toBe(true);
+  it("excuse requires excuse + at least one refineDetails only when hasExcuseStep is true", () => {
+    expect(isStepComplete("excuse", baseValues)).toBe(true); // hasExcuseStep: false
+    const withExcuseStep = { ...baseValues, hasExcuseStep: true };
+    expect(isStepComplete("excuse", withExcuseStep)).toBe(false);
+    expect(
+      isStepComplete("excuse", { ...withExcuseStep, excuse: "celebration" }),
+    ).toBe(false); // still missing refineDetails
+    expect(
+      isStepComplete("excuse", {
+        ...withExcuseStep,
+        excuse: "celebration",
+        refineDetails: ["birthday"],
+      }),
+    ).toBe(true);
+  });
+
+  it("details requires origin + dates, NOT transport", () => {
+    expect(isStepComplete("details", baseValues)).toBe(true);
+    expect(
+      isStepComplete("details", { ...baseValues, effectiveOriginCity: "" }),
+    ).toBe(false);
+  });
+
+  it("preferences checks the (legacy, url-level) transport field", () => {
+    expect(isStepComplete("preferences", baseValues)).toBe(true);
+    expect(
+      isStepComplete("preferences", { ...baseValues, transport: undefined }),
+    ).toBe(false);
   });
 });
 
@@ -309,5 +344,161 @@ describe("getTravelTypeSelectionEffects", () => {
     expect(result.queryPatch.paxAdults).toBeUndefined();
     expect(result.queryPatch.paxMinors).toBeUndefined();
     expect(result.queryPatch.paxPets).toBeUndefined();
+  });
+});
+
+describe("getTabSubstepOrder", () => {
+  it("orders budget as travel-type then experience", () => {
+    expect(
+      getTabSubstepOrder("budget", {
+        hasExcuseStep: false,
+        hasPax: false,
+        addonsEnabled: false,
+      }),
+    ).toEqual(["travel-type", "experience"]);
+  });
+
+  it("orders excuse as reason then refine-details", () => {
+    expect(
+      getTabSubstepOrder("excuse", {
+        hasExcuseStep: true,
+        hasPax: false,
+        addonsEnabled: false,
+      }),
+    ).toEqual(["reason", "refine-details"]);
+  });
+
+  it("puts pax first under details only when hasPax is true", () => {
+    expect(
+      getTabSubstepOrder("details", {
+        hasExcuseStep: false,
+        hasPax: true,
+        addonsEnabled: false,
+      }),
+    ).toEqual(["pax", "origin", "dates", "transport"]);
+    expect(
+      getTabSubstepOrder("details", {
+        hasExcuseStep: false,
+        hasPax: false,
+        addonsEnabled: false,
+      }),
+    ).toEqual(["origin", "dates", "transport"]);
+  });
+
+  it("includes addons under preferences only when addonsEnabled is true", () => {
+    expect(
+      getTabSubstepOrder("preferences", {
+        hasExcuseStep: false,
+        hasPax: false,
+        addonsEnabled: true,
+      }),
+    ).toEqual(["filters", "addons"]);
+    expect(
+      getTabSubstepOrder("preferences", {
+        hasExcuseStep: false,
+        hasPax: false,
+        addonsEnabled: false,
+      }),
+    ).toEqual(["filters"]);
+  });
+
+  it("returns an empty list for an unknown tab", () => {
+    expect(
+      getTabSubstepOrder("nonexistent", {
+        hasExcuseStep: false,
+        hasPax: false,
+        addonsEnabled: false,
+      }),
+    ).toEqual([]);
+  });
+});
+
+describe("isSubstepValueComplete", () => {
+  const baseCtx: SubstepCompletionContext = {
+    travelType: undefined,
+    experience: undefined,
+    excuse: undefined,
+    refineDetails: [],
+    originCountry: "",
+    originCity: "",
+    startDate: undefined,
+    nights: 0,
+    transportOrder: [],
+  };
+
+  it("blocks budget substeps until their own field is set", () => {
+    expect(isSubstepValueComplete("budget", "travel-type", baseCtx)).toBe(false);
+    expect(
+      isSubstepValueComplete("budget", "travel-type", {
+        ...baseCtx,
+        travelType: "group",
+      }),
+    ).toBe(true);
+    expect(isSubstepValueComplete("budget", "experience", baseCtx)).toBe(false);
+    expect(
+      isSubstepValueComplete("budget", "experience", {
+        ...baseCtx,
+        experience: "essenza",
+      }),
+    ).toBe(true);
+  });
+
+  it("blocks excuse substeps until reason/refine-details are set", () => {
+    expect(isSubstepValueComplete("excuse", "reason", baseCtx)).toBe(false);
+    expect(
+      isSubstepValueComplete("excuse", "reason", {
+        ...baseCtx,
+        excuse: "celebration",
+      }),
+    ).toBe(true);
+    expect(
+      isSubstepValueComplete("excuse", "refine-details", baseCtx),
+    ).toBe(false);
+    expect(
+      isSubstepValueComplete("excuse", "refine-details", {
+        ...baseCtx,
+        refineDetails: ["birthday"],
+      }),
+    ).toBe(true);
+  });
+
+  it("blocks details:origin/dates/transport until their own fields are set, independent of each other", () => {
+    expect(isSubstepValueComplete("details", "origin", baseCtx)).toBe(false);
+    expect(
+      isSubstepValueComplete("details", "origin", {
+        ...baseCtx,
+        originCountry: "Argentina",
+        originCity: "Buenos Aires",
+      }),
+    ).toBe(true);
+
+    expect(isSubstepValueComplete("details", "dates", baseCtx)).toBe(false);
+    expect(
+      isSubstepValueComplete("details", "dates", {
+        ...baseCtx,
+        startDate: "2026-08-01",
+        nights: 3,
+      }),
+    ).toBe(true);
+
+    expect(isSubstepValueComplete("details", "transport", baseCtx)).toBe(
+      false,
+    );
+    expect(
+      isSubstepValueComplete("details", "transport", {
+        ...baseCtx,
+        transportOrder: ["bus", "train", "plane", "ship"],
+      }),
+    ).toBe(true);
+  });
+
+  it("never blocks details:pax, preferences:filters, or preferences:addons — they always have a valid default", () => {
+    expect(isSubstepValueComplete("details", "pax", baseCtx)).toBe(true);
+    expect(isSubstepValueComplete("preferences", "filters", baseCtx)).toBe(
+      true,
+    );
+    expect(isSubstepValueComplete("preferences", "addons", baseCtx)).toBe(
+      true,
+    );
   });
 });

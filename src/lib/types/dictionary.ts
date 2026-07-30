@@ -1953,6 +1953,7 @@ export interface MarketingDictionary {
     };
     mainContent: {
       addonsComingSoon: string;
+      back: string;
       clearAll: string;
       completeBudgetAndExcuse: string;
       completeBudgetFirst: string;
