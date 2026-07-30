@@ -20,12 +20,12 @@ import {
 import { clearJourneyDraftStorage } from "@/lib/helpers/journeyDraftStorage";
 import {
   buildTripRequestPayloadFromSearchParams,
-  checkAllComplete,
   getExcuseLabel,
   getExperienceLabel,
   getNextTab,
   getRefineDetailsLabel,
   getTravelTypeLabel,
+  isJourneyComplete,
   isStepComplete,
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
   PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
@@ -457,7 +457,7 @@ export default function JourneyMainContent({
 
   const nextTab = getNextTab(activeTab, hasExcuseStep);
   const canContinue = isStepComplete(activeTab, stepValues) && Boolean(nextTab);
-  const isAllStepsComplete = checkAllComplete(stepValues);
+  const isAllStepsComplete = isJourneyComplete(activeTab, stepValues);
 
   const renderContent = () => {
     switch (activeTab) {

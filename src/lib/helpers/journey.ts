@@ -307,16 +307,13 @@ export function isStepComplete(
   }
 }
 
-export function checkAllComplete(v: JourneyStepValues): boolean {
-  return Boolean(
-    v.travelType &&
-    v.experience &&
-    (v.excuse || !v.hasExcuseStep) &&
-    (!v.hasExcuseStep || v.refineDetails.length > 0) &&
-    v.effectiveOriginCountry &&
-    v.effectiveOriginCity &&
-    v.effectiveStartDate &&
-    v.effectiveNights &&
-    v.transport,
-  );
+export function isJourneyComplete(
+  activeTab: string,
+  v: JourneyStepValues,
+): boolean {
+  // "Complete" means the user is on the last tab AND that tab's own
+  // requirements are met — not "every field across the whole flow happens
+  // to be truthy already" (e.g. transport is filled in as a substep of
+  // "details", well before the user ever reaches "preferences").
+  return getNextTab(activeTab, v.hasExcuseStep) === null && isStepComplete(activeTab, v);
 }
