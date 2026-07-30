@@ -1564,6 +1564,7 @@ export interface InviteTravelersDict {
   eyebrow: string;
   heading: string;
   subtitle: string;
+  notifTitle: string;
   deadlineLabel: string;
   progressLabel: string;
   lockedBanner: string;

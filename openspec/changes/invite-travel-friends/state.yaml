@@ -1,5 +1,5 @@
 change: invite-travel-friends
-status: proposal
+status: verify
 artifact_store: openspec
 delivery_strategy: ask-on-risk
 chain_strategy: stacked-to-main
@@ -8,12 +8,17 @@ phases:
   spec: done
   design: done
   tasks: done
-  apply: pending
-  verify: pending
+  apply: done
+  verify: done_with_critical_findings
   archive: pending
 artifacts:
   proposal: openspec/changes/invite-travel-friends/proposal.md
   spec: openspec/changes/invite-travel-friends/spec.md
   design: openspec/changes/invite-travel-friends/design.md
   tasks: openspec/changes/invite-travel-friends/tasks.md
+  verify_report: openspec/changes/invite-travel-friends/verify-report.md
+verify_verdict: FAIL
+verify_critical_count: 2
+verify_warning_count: 5
+verify_suggestion_count: 3
 updated: 2026-07-29

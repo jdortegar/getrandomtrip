@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
-import type { TravelerKind } from "@prisma/client";
+import type { TravelerKind, TravelerStatus } from "@prisma/client";
 import { isRosterLocked } from "./travelerRoster";
 
 const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -50,6 +50,7 @@ type TravelerInviteRow = {
   id: string;
   tripRequestId: string;
   kind: TravelerKind;
+  status: TravelerStatus;
   inviteTokenHash: string | null;
   inviteTokenExpiresAt: Date | null;
   tripRequest: {
@@ -64,6 +65,15 @@ type TravelerInviteRow = {
  * `consumeTravelerInvite` — the single place a plaintext token is resolved
  * to a row, checked for validity (unknown / already-consumed / expired /
  * past-cutoff), never duplicated between the two callers.
+ *
+ * IMPORTANT: `inviteTokenHash` is NEVER nulled on consume (see
+ * `consumeTravelerInvite`) — it stays persisted so the row remains
+ * findable by its original hash. Otherwise a real Postgres unique-column
+ * lookup for that hash could never match the row again once nulled, and an
+ * already-submitted link would incorrectly resolve to "invalid" instead of
+ * "used". "Used" is discriminated by `status === "COMPLETE"`, checked
+ * BEFORE expiry/cutoff so a used-but-now-also-expired/locked token still
+ * reads as "used".
  */
 async function resolveTravelerInvite(plaintext: string): Promise<TravelerPeek> {
   const tokenHash = hashToken(plaintext);
@@ -73,7 +83,7 @@ async function resolveTravelerInvite(plaintext: string): Promise<TravelerPeek> {
   })) as TravelerInviteRow | null;
 
   if (!row) return { ok: false, reason: "invalid" };
-  if (!row.inviteTokenHash) return { ok: false, reason: "used" };
+  if (row.status === "COMPLETE") return { ok: false, reason: "used" };
   if (row.inviteTokenExpiresAt && row.inviteTokenExpiresAt.getTime() < Date.now())
     return { ok: false, reason: "expired" };
   if (isRosterLocked(row.tripRequest)) return { ok: false, reason: "locked" };
@@ -98,7 +108,13 @@ export async function peekTravelerInvite(plaintext: string): Promise<TravelerPee
 /**
  * Re-validate (expiry + cutoff, independently of any earlier peek), then
  * write the companion-submitted identity fields, stamp `submittedAt` +
- * `consentAt`, flip `status` to `COMPLETE`, and null the hash (single-use).
+ * `consentAt`, and flip `status` to `COMPLETE`. Deliberately does NOT null
+ * `inviteTokenHash` — the row must stay findable by that hash so a re-visit
+ * of the same link resolves to "used" (via `resolveTravelerInvite`'s
+ * `status === "COMPLETE"` check) rather than "invalid". Single-use is
+ * enforced by `resolveTravelerInvite` refusing (early return, no write) any
+ * row that is already `COMPLETE` — including on this exact call, so a
+ * second `consumeTravelerInvite` with the same plaintext never re-writes.
  */
 export async function consumeTravelerInvite(
   plaintext: string,
@@ -117,7 +133,6 @@ export async function consumeTravelerInvite(
       submittedAt: now,
       consentAt: now,
       status: "COMPLETE",
-      inviteTokenHash: null,
     },
   });
 

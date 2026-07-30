@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createHash } from "crypto";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -18,6 +19,14 @@ import {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TTL_MS = 7 * DAY_MS;
+
+// Mirrors the production `hashToken` (sha256 hex) so tests can simulate a
+// REAL Prisma unique-column lookup: the mock only returns a row when the
+// `where.inviteTokenHash` argument matches the hash of a specific plaintext,
+// instead of unconditionally returning a fixed row regardless of `where`.
+function hashPlaintext(plaintext: string): string {
+  return createHash("sha256").update(plaintext).digest("hex");
+}
 
 const futureTrip = {
   startDate: new Date(Date.now() + 30 * DAY_MS),
@@ -93,19 +102,26 @@ describe("peekTravelerInvite", () => {
     expect(result).toEqual({ ok: false, reason: "invalid" });
   });
 
-  it("returns used when the row's invite hash is already null (consumed)", async () => {
+  it("returns used for an already-consumed token — simulating a REAL Prisma unique lookup (row is only returned when where.inviteTokenHash matches the persisted hash, which is no longer nulled on consume)", async () => {
+    const plaintext = "already-consumed-token";
+    const persistedHash = hashPlaintext(plaintext);
+
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      id: "trav-1",
-      tripRequestId: "trip-1",
-      kind: "ADULT",
-      inviteTokenHash: null,
-      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
-      tripRequest: futureTrip,
+    ).mockImplementation((args: { where: { inviteTokenHash: string } }) => {
+      if (args.where.inviteTokenHash !== persistedHash) return Promise.resolve(null);
+      return Promise.resolve({
+        id: "trav-1",
+        tripRequestId: "trip-1",
+        kind: "ADULT",
+        status: "COMPLETE",
+        inviteTokenHash: persistedHash,
+        inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+        tripRequest: futureTrip,
+      });
     });
 
-    const result = await peekTravelerInvite("tok");
+    const result = await peekTravelerInvite(plaintext);
 
     expect(result).toEqual({ ok: false, reason: "used" });
   });
@@ -117,6 +133,7 @@ describe("peekTravelerInvite", () => {
       id: "trav-1",
       tripRequestId: "trip-1",
       kind: "ADULT",
+      status: "INVITED",
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() - 1000),
       tripRequest: futureTrip,
@@ -134,6 +151,7 @@ describe("peekTravelerInvite", () => {
       id: "trav-1",
       tripRequestId: "trip-1",
       kind: "ADULT",
+      status: "INVITED",
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
@@ -144,6 +162,24 @@ describe("peekTravelerInvite", () => {
     expect(result).toEqual({ ok: false, reason: "locked" });
   });
 
+  it("returns used (not locked) when a completed row's trip has also passed cutoff — 'used' must win over 'locked'", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "COMPLETE",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: lockedTrip,
+    });
+
+    const result = await peekTravelerInvite("tok");
+
+    expect(result).toEqual({ ok: false, reason: "used" });
+  });
+
   it("returns ok + travelerId/tripRequestId/kind/buyerFirstName for a valid row, WITHOUT mutating it", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
@@ -151,6 +187,7 @@ describe("peekTravelerInvite", () => {
       id: "trav-1",
       tripRequestId: "trip-1",
       kind: "ADULT",
+      status: "INVITED",
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -191,24 +228,61 @@ describe("consumeTravelerInvite", () => {
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
-  it("returns used for an already-consumed row and does not write", async () => {
+  it("returns used for an already-consumed row and does not write — simulating a REAL Prisma unique lookup by hash (the hash is no longer nulled on consume, so the row must still be findable by its original hash; `status: COMPLETE` is what now discriminates 'used')", async () => {
+    const plaintext = "already-consumed-token";
+    const persistedHash = hashPlaintext(plaintext);
+
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      id: "trav-1",
-      tripRequestId: "trip-1",
-      kind: "ADULT",
-      inviteTokenHash: null,
-      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
-      tripRequest: futureTrip,
+    ).mockImplementation((args: { where: { inviteTokenHash: string } }) => {
+      if (args.where.inviteTokenHash !== persistedHash) return Promise.resolve(null);
+      return Promise.resolve({
+        id: "trav-1",
+        tripRequestId: "trip-1",
+        kind: "ADULT",
+        status: "COMPLETE",
+        inviteTokenHash: persistedHash,
+        inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+        tripRequest: futureTrip,
+      });
     });
 
-    const result = await consumeTravelerInvite("tok", {
+    const result = await consumeTravelerInvite(plaintext, {
       fullName: "X",
       idDocument: "Y",
     });
 
     expect(result).toEqual({ ok: false, reason: "used" });
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+  });
+
+  it("refuses to re-consume an already-used token even on a second consume attempt with the correct plaintext", async () => {
+    const plaintext = "reused-token";
+    const persistedHash = hashPlaintext(plaintext);
+    const completedRow = {
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT" as const,
+      status: "COMPLETE" as const,
+      inviteTokenHash: persistedHash,
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    };
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(completedRow);
+
+    const first = await consumeTravelerInvite(plaintext, {
+      fullName: "X",
+      idDocument: "Y",
+    });
+    const second = await consumeTravelerInvite(plaintext, {
+      fullName: "Z",
+      idDocument: "W",
+    });
+
+    expect(first).toEqual({ ok: false, reason: "used" });
+    expect(second).toEqual({ ok: false, reason: "used" });
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
@@ -219,6 +293,7 @@ describe("consumeTravelerInvite", () => {
       id: "trav-1",
       tripRequestId: "trip-1",
       kind: "ADULT",
+      status: "INVITED",
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() - 1000),
       tripRequest: futureTrip,
@@ -240,6 +315,7 @@ describe("consumeTravelerInvite", () => {
       id: "trav-1",
       tripRequestId: "trip-1",
       kind: "ADULT",
+      status: "INVITED",
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
@@ -254,13 +330,14 @@ describe("consumeTravelerInvite", () => {
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
-  it("writes identity fields, stamps submittedAt + consentAt, sets COMPLETE, and nulls the hash on a valid submission", async () => {
+  it("writes identity fields, stamps submittedAt + consentAt, sets COMPLETE, and LEAVES inviteTokenHash untouched (persisted, not nulled) on a valid submission", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
       id: "trav-1",
       tripRequestId: "trip-1",
       kind: "ADULT",
+      status: "INVITED",
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -288,7 +365,11 @@ describe("consumeTravelerInvite", () => {
     expect(args.data.idDocument).toBe("ID999");
     expect(args.data.email).toBe("bob@example.com");
     expect(args.data.status).toBe("COMPLETE");
-    expect(args.data.inviteTokenHash).toBeNull();
+    // Must NOT null the hash on consume — the row needs to remain findable
+    // by its original hash so a re-visit resolves to "used" (status ===
+    // COMPLETE), not "invalid". See CRITICAL fix: resolveTravelerInvite now
+    // discriminates "used" via `status`, not via hash presence.
+    expect(args.data).not.toHaveProperty("inviteTokenHash");
     expect(args.data.submittedAt).toBeInstanceOf(Date);
     expect(args.data.consentAt).toBeInstanceOf(Date);
   });

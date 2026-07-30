@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { consumeTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import esCopy from "@/dictionaries/es.json";
+import enCopy from "@/dictionaries/en.json";
 
 export const dynamic = "force-dynamic";
 
@@ -48,17 +50,19 @@ export async function POST(request: NextRequest) {
 
     const trip = await prisma.tripRequest.findUnique({
       where: { id: result.tripRequestId },
-      select: { userId: true },
+      select: { userId: true, user: { select: { locale: true } } },
     });
 
     if (trip) {
+      const locale = trip.user?.locale === "en" ? "en" : "es";
+      const dict = locale === "en" ? enCopy.inviteTravelers : esCopy.inviteTravelers;
       await prisma.notification.create({
         data: {
           userId: trip.userId,
           type: "TRAVELER_SUBMITTED",
           audience: "TRAVELER",
           isRead: false,
-          title: "Un acompañante completó sus datos de viaje",
+          title: dict.notifTitle,
         },
       });
     }

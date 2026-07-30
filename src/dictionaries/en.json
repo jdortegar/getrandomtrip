@@ -4479,6 +4479,7 @@
     "eyebrow": "Before you travel",
     "heading": "Invite your travel friends",
     "subtitle": "You booked for {count} travelers. Add each companion's details now, or send them an invite so they fill it in themselves — either way, we need this before we can confirm your itinerary.",
+    "notifTitle": "A companion completed their travel details",
     "deadlineLabel": "Complete by {date} — {days} days before departure",
     "progressLabel": "{submitted} of {cap} travelers submitted",
     "lockedBanner": "Traveler details are locked. Departure is in {days} days — need a change? {supportLink}",

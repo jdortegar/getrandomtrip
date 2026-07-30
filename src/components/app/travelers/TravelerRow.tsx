@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Lock, Send } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import { TravelerStatusBadge } from "@/components/common/TravelerStatusBadge";
@@ -203,30 +203,28 @@ export function TravelerRow({
           value={idDocument}
         />
 
-        {isAdult ? (
+        {!locked && (isAdult ? (
           <TableIconButton
             danger={false}
-            disabled={locked || !email || saving}
+            disabled={!email || saving}
             onClick={() => void handleSendInvite()}
             title={
-              locked
-                ? copy.lockedActionTitle
-                : traveler.status === "INVITED"
-                  ? copy.resendInviteAction
-                  : copy.sendInviteAction
+              traveler.status === "INVITED"
+                ? copy.resendInviteAction
+                : copy.sendInviteAction
             }
           >
-            {locked ? <Lock className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+            <Send className="h-4 w-4" />
           </TableIconButton>
         ) : (
           <TableIconButton
-            disabled={locked || saving}
+            disabled={saving}
             onClick={handleMinorSave}
-            title={locked ? copy.lockedActionTitle : copy.saveAction}
+            title={copy.saveAction}
           >
-            {locked ? <Lock className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+            <Check className="h-4 w-4" />
           </TableIconButton>
-        )}
+        ))}
       </div>
 
       {rowFoot && (

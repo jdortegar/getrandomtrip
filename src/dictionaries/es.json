@@ -4479,6 +4479,7 @@
     "eyebrow": "Antes de viajar",
     "heading": "Invitá a tus compañeros de viaje",
     "subtitle": "Reservaste para {count} viajeros. Cargá los datos de cada acompañante ahora, o enviales una invitación para que los completen ellos mismos — de cualquier forma, los necesitamos antes de poder confirmar el itinerario.",
+    "notifTitle": "Un acompañante completó sus datos de viaje",
     "deadlineLabel": "Completar antes del {date} — {days} días antes de la salida",
     "progressLabel": "{submitted} de {cap} viajeros completados",
     "lockedBanner": "Los datos de los viajeros están bloqueados. La salida es en {days} días — ¿necesitás un cambio? {supportLink}",

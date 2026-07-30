@@ -18,6 +18,8 @@ vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
 
 import { prisma } from "@/lib/prisma";
 import { consumeTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import esCopy from "@/dictionaries/es.json";
+import enCopy from "@/dictionaries/en.json";
 
 type RouteModule = typeof import("../route");
 
@@ -76,7 +78,7 @@ describe("POST /api/travelers/submit", () => {
     });
     (
       prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({ userId: "buyer-1" });
+    ).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } });
 
     const res = await POST(makeRequest(validBody));
 
@@ -90,6 +92,69 @@ describe("POST /api/travelers/submit", () => {
     expect(args.data.userId).toBe("buyer-1");
     expect(args.data.type).toBe("TRAVELER_SUBMITTED");
     expect(args.data.audience).toBe("TRAVELER");
+  });
+
+  it("localizes the notification title to Spanish for an es-locale buyer (not a hardcoded string)", async () => {
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      ok: true,
+      travelerId: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      buyerFirstName: "Alice",
+    });
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } });
+
+    await POST(makeRequest(validBody));
+
+    const args = (prisma.notification.create as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(args.data.title).toBe(esCopy.inviteTravelers.notifTitle);
+  });
+
+  it("localizes the notification title to English for an en-locale buyer", async () => {
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      ok: true,
+      travelerId: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      buyerFirstName: "Alice",
+    });
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ userId: "buyer-1", user: { locale: "en" } });
+
+    await POST(makeRequest(validBody));
+
+    const args = (prisma.notification.create as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(args.data.title).toBe(enCopy.inviteTravelers.notifTitle);
+  });
+
+  it("defaults to Spanish when the buyer has no locale set", async () => {
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      ok: true,
+      travelerId: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      buyerFirstName: "Alice",
+    });
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ userId: "buyer-1", user: null });
+
+    await POST(makeRequest(validBody));
+
+    const args = (prisma.notification.create as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(args.data.title).toBe(esCopy.inviteTravelers.notifTitle);
   });
 
   it("does not create a duplicate notification when the token was already consumed", async () => {
