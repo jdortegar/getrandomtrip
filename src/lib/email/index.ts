@@ -58,6 +58,12 @@ import PasswordReset, {
 import TripperInvite, {
   subjects as tripperInviteSubjects,
 } from "@/emails/TripperInvite";
+import TravelerInvite, {
+  subjects as travelerInviteSubjects,
+} from "@/emails/TravelerInvite";
+import TravelerReminder, {
+  subjects as travelerReminderSubjects,
+} from "@/emails/TravelerReminder";
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -848,6 +854,89 @@ export function sendTripperInviteEmail(
       });
     } catch (err) {
       console.error("[email] sendTripperInviteEmail:", err);
+    }
+  })();
+}
+
+/**
+ * Sends the companion-traveler invite email. Takes the PLAINTEXT token as
+ * a second arg because only its SHA-256 hash is persisted on `TripTraveler`
+ * — the caller (whichever code path just rotated the token via
+ * `issueTravelerInvite`) is the only place the plaintext is ever available.
+ */
+export function sendTravelerInviteEmail(
+  travelerId: string,
+  plaintextToken: string,
+): void {
+  void (async () => {
+    try {
+      const traveler = await prisma.tripTraveler.findUnique({
+        where: { id: travelerId },
+        include: { tripRequest: { include: { user: true } } },
+      });
+
+      if (!traveler?.email) return;
+
+      const locale = resolveLocale(traveler.tripRequest.user.locale);
+      const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
+      const BASE_URL = "https://getrandomtrip.com";
+      const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
+
+      await sendMail({
+        to: traveler.email,
+        subject: travelerInviteSubjects[locale],
+        content: {
+          react: React.createElement(TravelerInvite, {
+            inviteUrl,
+            buyerFirstName,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendTravelerInviteEmail:", err);
+    }
+  })();
+}
+
+/**
+ * Sends the companion-traveler reminder email. Same plaintext-token
+ * requirement as `sendTravelerInviteEmail` — the reminder job
+ * (`runPass1` in `api/internal/traveler-reminder`) reissues/rotates the
+ * token via `issueTravelerInvite` immediately before calling this, since
+ * the original plaintext from the first invite send is never persisted.
+ */
+export function sendTravelerReminderEmail(
+  travelerId: string,
+  plaintextToken: string,
+): void {
+  void (async () => {
+    try {
+      const traveler = await prisma.tripTraveler.findUnique({
+        where: { id: travelerId },
+        include: { tripRequest: { include: { user: true } } },
+      });
+
+      if (!traveler?.email) return;
+
+      const locale = resolveLocale(traveler.tripRequest.user.locale);
+      const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
+      const BASE_URL = "https://getrandomtrip.com";
+      const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
+
+      await sendMail({
+        to: traveler.email,
+        subject: travelerReminderSubjects[locale],
+        content: {
+          react: React.createElement(TravelerReminder, {
+            inviteUrl,
+            buyerFirstName,
+            locale,
+          }),
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendTravelerReminderEmail:", err);
     }
   })();
 }

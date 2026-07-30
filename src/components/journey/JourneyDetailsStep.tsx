@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Accordion } from "@/components/ui/accordion";
+import { CountNumberInput } from "@/components/ui/CountNumberInput";
 import CitySelector from "@/components/journey/CitySelector";
 import CountrySelector from "@/components/journey/CountrySelector";
 import { JourneyDatesPicker } from "@/components/journey/JourneyDatesPicker";
@@ -11,6 +12,7 @@ import TransportSelector, {
   TRANSPORT_OPTIONS,
 } from "@/components/journey/TransportSelector";
 import type { TransportSelectorLabels } from "@/components/journey/TransportSelector";
+import { getPaxSubstepFields, hasPaxSubstep } from "@/lib/helpers/pax-details";
 import { getLevelById } from "@/lib/utils/experiencesData";
 
 const DEFAULT_MAX_NIGHTS = 2;
@@ -29,6 +31,11 @@ const DEFAULT_MONTH_NAMES = [
   "Noviembre",
   "Diciembre",
 ];
+
+function paxSegment(one: string, many: string, n: number): string {
+  const template = n === 1 ? one : many;
+  return template.replace("{count}", String(n));
+}
 
 function formatDatesRange(
   startDate: string,
@@ -51,6 +58,25 @@ function formatDatesRange(
   return `del ${startDay} de ${monthNames[startMonth]} al ${endDay} de ${monthNames[endMonth]}`;
 }
 
+export interface JourneyDetailsStepPaxLabels {
+  adultsLabel: string;
+  minorsLabel: string;
+  petsLabel: string;
+  ariaDecreaseAdults: string;
+  ariaIncreaseAdults: string;
+  ariaDecreaseMinors: string;
+  ariaIncreaseMinors: string;
+  ariaDecreasePets: string;
+  ariaIncreasePets: string;
+  adultsOne: string;
+  adultsMany: string;
+  minorsOne: string;
+  minorsMany: string;
+  petsOne: string;
+  petsMany: string;
+  breakdownSeparator: string;
+}
+
 export interface JourneyDetailsStepLabels {
   cityLabel: string;
   cityPlaceholder: string;
@@ -62,6 +88,8 @@ export interface JourneyDetailsStepLabels {
   monthNames: string[];
   originLabel: string;
   originPlaceholder: string;
+  pax?: JourneyDetailsStepPaxLabels;
+  paxLabel?: string;
   transportLabel: string;
   transportPlaceholder: string;
   transportSelector?: TransportSelectorLabels;
@@ -75,12 +103,18 @@ interface JourneyDetailsStepProps {
   onOpenSection: (id: string) => void;
   onOriginCityChange: (value: string) => void;
   onOriginCountryChange: (value: string) => void;
+  onPaxAdultsChange: (value: number) => void;
+  onPaxMinorsChange: (value: number) => void;
+  onPaxPetsChange: (value: number) => void;
   onRangeChange?: (startDate: string | undefined, nights: number) => void;
   onStartDateChange: (startDate: string | undefined) => void;
   onTransportOrderChange: (orderedIds: string[]) => void;
   openSectionId: string;
   originCity: string;
   originCountry: string;
+  paxAdults: number;
+  paxMinors: number;
+  paxPets: number;
   startDate: string | undefined;
   transportOrder: string[];
   travelType?: string;
@@ -94,12 +128,18 @@ export function JourneyDetailsStep({
   onOpenSection,
   onOriginCityChange,
   onOriginCountryChange,
+  onPaxAdultsChange,
+  onPaxMinorsChange,
+  onPaxPetsChange,
   onRangeChange,
   onStartDateChange,
   onTransportOrderChange,
   openSectionId,
   originCity,
   originCountry,
+  paxAdults,
+  paxMinors,
+  paxPets,
   startDate,
   transportOrder,
   travelType,
@@ -127,6 +167,31 @@ export function JourneyDetailsStep({
       originLabel: labelsProp?.originLabel ?? "Origen",
       originPlaceholder:
         labelsProp?.originPlaceholder ?? "Elegí país y ciudad de salida",
+      paxLabel: labelsProp?.paxLabel ?? "Viajeros",
+      pax: {
+        adultsLabel: labelsProp?.pax?.adultsLabel ?? "Adultos",
+        minorsLabel: labelsProp?.pax?.minorsLabel ?? "Menores",
+        petsLabel: labelsProp?.pax?.petsLabel ?? "Mascotas",
+        ariaDecreaseAdults:
+          labelsProp?.pax?.ariaDecreaseAdults ?? "Disminuir adultos",
+        ariaIncreaseAdults:
+          labelsProp?.pax?.ariaIncreaseAdults ?? "Aumentar adultos",
+        ariaDecreaseMinors:
+          labelsProp?.pax?.ariaDecreaseMinors ?? "Disminuir menores",
+        ariaIncreaseMinors:
+          labelsProp?.pax?.ariaIncreaseMinors ?? "Aumentar menores",
+        ariaDecreasePets:
+          labelsProp?.pax?.ariaDecreasePets ?? "Disminuir mascotas",
+        ariaIncreasePets:
+          labelsProp?.pax?.ariaIncreasePets ?? "Aumentar mascotas",
+        adultsOne: labelsProp?.pax?.adultsOne ?? "{count} adulto",
+        adultsMany: labelsProp?.pax?.adultsMany ?? "{count} adultos",
+        minorsOne: labelsProp?.pax?.minorsOne ?? "{count} menor",
+        minorsMany: labelsProp?.pax?.minorsMany ?? "{count} menores",
+        petsOne: labelsProp?.pax?.petsOne ?? "{count} mascota",
+        petsMany: labelsProp?.pax?.petsMany ?? "{count} mascotas",
+        breakdownSeparator: labelsProp?.pax?.breakdownSeparator ?? " · ",
+      },
       transportLabel:
         labelsProp?.transportLabel ?? "Transporte: Orden de preferencia",
       transportPlaceholder:
@@ -157,6 +222,20 @@ export function JourneyDetailsStep({
       ? `${labelsProp?.transportSelector?.optionLabels?.[transportOrder[0]] ?? TRANSPORT_OPTIONS.find((o) => o.id === transportOrder[0])?.label ?? transportOrder[0]} *`
       : labels.transportPlaceholder;
 
+  const showPaxSubstep = hasPaxSubstep(travelType);
+  const paxFields = getPaxSubstepFields(travelType);
+
+  const paxSummary =
+    paxFields === "adults-pets"
+      ? [
+          paxSegment(labels.pax.adultsOne, labels.pax.adultsMany, paxAdults),
+          paxSegment(labels.pax.petsOne, labels.pax.petsMany, paxPets),
+        ].join(labels.pax.breakdownSeparator)
+      : [
+          paxSegment(labels.pax.adultsOne, labels.pax.adultsMany, paxAdults),
+          paxSegment(labels.pax.minorsOne, labels.pax.minorsMany, paxMinors),
+        ].join(labels.pax.breakdownSeparator);
+
   return (
     <Accordion
       collapsible
@@ -165,69 +244,100 @@ export function JourneyDetailsStep({
       value={openSectionId}
     >
       <div className="space-y-4">
+        {showPaxSubstep && (
+          <JourneyDropdown content={paxSummary} label={labels.paxLabel} value="pax">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <CountNumberInput
+                id="pax-adults"
+                label={labels.pax.adultsLabel}
+                min={1}
+                onChange={onPaxAdultsChange}
+                value={paxAdults}
+              />
+              {paxFields === "adults-minors" && (
+                <CountNumberInput
+                  id="pax-minors"
+                  label={labels.pax.minorsLabel}
+                  min={0}
+                  onChange={onPaxMinorsChange}
+                  value={paxMinors}
+                />
+              )}
+              {paxFields === "adults-pets" && (
+                <CountNumberInput
+                  id="pax-pets"
+                  label={labels.pax.petsLabel}
+                  min={0}
+                  onChange={onPaxPetsChange}
+                  value={paxPets}
+                />
+              )}
+            </div>
+          </JourneyDropdown>
+        )}
         <JourneyDropdown
           content={originSummary}
           label={labels.originLabel}
           value="origin"
         >
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div className="flex min-w-0 flex-col gap-2">
-              <label className="text-base font-bold text-gray-700">
-                {labels.countryLabel}
-              </label>
-              <CountrySelector
-                onChange={(name, code) => {
-                  onOriginCountryChange(name);
-                  setOriginCountryCode(code);
-                  if (originCity) onOriginCityChange("");
-                }}
-                placeholder={labels.countryPlaceholder}
-                size="lg"
-                value={originCountry}
-              />
-            </div>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              <div className="flex min-w-0 flex-col gap-2">
+                <label className="text-base font-bold text-gray-700">
+                  {labels.countryLabel}
+                </label>
+                <CountrySelector
+                  onChange={(name, code) => {
+                    onOriginCountryChange(name);
+                    setOriginCountryCode(code);
+                    if (originCity) onOriginCityChange("");
+                  }}
+                  placeholder={labels.countryPlaceholder}
+                  size="lg"
+                  value={originCountry}
+                />
+              </div>
 
-            <div className="flex min-w-0 flex-col gap-2">
-              <label className="text-base font-bold text-gray-700">
-                {labels.cityLabel}
-              </label>
-              <CitySelector
-                countryCode={originCountryCode}
-                onChange={onOriginCityChange}
-                placeholder={labels.cityPlaceholder}
-                size="lg"
-                value={originCity}
-              />
+              <div className="flex min-w-0 flex-col gap-2">
+                <label className="text-base font-bold text-gray-700">
+                  {labels.cityLabel}
+                </label>
+                <CitySelector
+                  countryCode={originCountryCode}
+                  onChange={onOriginCityChange}
+                  placeholder={labels.cityPlaceholder}
+                  size="lg"
+                  value={originCity}
+                />
+              </div>
             </div>
-          </div>
-        </JourneyDropdown>
+          </JourneyDropdown>
 
-        <JourneyDropdown
-          content={datesSummary}
-          label={labels.datesLabel}
-          value="dates"
-        >
-          <JourneyDatesPicker
-            labels={labelsProp?.datesPicker}
-            maxNights={maxNights}
-            nights={nights}
-            onNightsChange={onNightsChange}
-            onRangeChange={onRangeChange}
-            onStartDateChange={onStartDateChange}
-            startDate={startDate}
-          />
-        </JourneyDropdown>
-        <JourneyDropdown
-          content={transportSummary}
-          label={labels.transportLabel}
-          value="transport"
-        >
-          <TransportSelector
-            labels={labelsProp?.transportSelector}
-            onChange={onTransportOrderChange}
-            value={transportOrder}
-          />
-        </JourneyDropdown>
+          <JourneyDropdown
+            content={datesSummary}
+            label={labels.datesLabel}
+            value="dates"
+          >
+            <JourneyDatesPicker
+              labels={labelsProp?.datesPicker}
+              maxNights={maxNights}
+              nights={nights}
+              onNightsChange={onNightsChange}
+              onRangeChange={onRangeChange}
+              onStartDateChange={onStartDateChange}
+              startDate={startDate}
+            />
+          </JourneyDropdown>
+          <JourneyDropdown
+            content={transportSummary}
+            label={labels.transportLabel}
+            value="transport"
+          >
+            <TransportSelector
+              labels={labelsProp?.transportSelector}
+              onChange={onTransportOrderChange}
+              value={transportOrder}
+            />
+          </JourneyDropdown>
       </div>
     </Accordion>
   );

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { findPaymentByStripeIntentId } from "@/lib/db/payment";
 import { getStripe } from "@/lib/stripe";
+import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 
 /**
  * GET /api/stripe/trip-summary?paymentIntentId=pi_xxx
@@ -51,6 +52,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  const roster = await getRosterForTrip(trip.id);
+
   return NextResponse.json({
     payment: {
       amount: payment.amount,
@@ -65,8 +68,10 @@ export async function GET(request: NextRequest) {
       originCity: trip.originCity,
       originCountry: trip.originCountry,
       pax: trip.pax,
+      paxDetails: trip.paxDetails,
       startDate: trip.startDate?.toISOString() ?? null,
       type: trip.type,
+      roster,
     },
   });
 }

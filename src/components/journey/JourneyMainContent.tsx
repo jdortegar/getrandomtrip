@@ -20,18 +20,30 @@ import {
 import { clearJourneyDraftStorage } from "@/lib/helpers/journeyDraftStorage";
 import {
   buildTripRequestPayloadFromSearchParams,
-  checkAllComplete,
   getExcuseLabel,
   getExperienceLabel,
   getNextTab,
+  getPreviousTab,
   getRefineDetailsLabel,
+  getTabSubstepOrder,
   getTravelTypeLabel,
+  getTravelTypeSelectionEffects,
   isStepComplete,
+  isSubstepValueComplete,
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
-  PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
+  type SubstepCompletionContext,
 } from "@/lib/helpers/journey";
+import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
+import {
+  getDefaultPaxDetailsForTravelType,
+  hasPaxSubstep,
+} from "@/lib/helpers/pax-details";
 import { useJourneyAccordion } from "@/hooks/useJourneyAccordion";
 import { useJourneyDraftDetails } from "@/hooks/useJourneyDraftDetails";
+import {
+  useJourneyDetailsProgressCallback,
+  type JourneyDetailsProgress,
+} from "@/hooks/useJourneyDetailsProgress";
 import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
 import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
 import { useQuerySync } from "@/hooks/useQuerySync";
@@ -41,6 +53,7 @@ import { cn } from "@/lib/utils";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 interface JourneyMainContentLabels {
+  back: string;
   clearAll: string;
   completeBudgetAndExcuse: string;
   completeBudgetFirst: string;
@@ -114,6 +127,14 @@ interface JourneyMainContentProps {
   detailsStepLabels?: JourneyDetailsStepLabels;
   /** Labels for preferences step (journey.preferencesStep). */
   preferencesStepLabels: JourneyPreferencesStepLabels;
+  /**
+   * Fires whenever the live, draft-aware completion of the "details" tab's
+   * Origin/Dates/Transport substeps (and the tab itself) changes. The
+   * sidebar (JourneyProgressSidebar) renders as a sibling, not a child, so
+   * it can't read this component's draft state directly — the parent page
+   * relays this into the sidebar's completion-override props instead.
+   */
+  onDetailsProgressChange?: (progress: JourneyDetailsProgress) => void;
   onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
   openSectionId?: string;
@@ -137,6 +158,7 @@ export default function JourneyMainContent({
   localizedRefineOptions,
   localizedTravelerTypes,
   mainContentLabels,
+  onDetailsProgressChange,
   onOpenSection,
   onTabChange,
   openSectionId,
@@ -201,6 +223,18 @@ export default function JourneyMainContent({
     });
   }, [url.excuse, url.travelType, localizedRefineOptions]);
 
+  // Defensive fallback for the "Travellers" substep: paxAdults/paxMinors/paxPets
+  // are normally seeded into the URL the moment a group/family/paws travel
+  // type is selected (see handleTravelTypeSelect), but this also covers
+  // stale/shared links from before this param existed.
+  const paxDefaults = useMemo(
+    () => getDefaultPaxDetailsForTravelType(url.travelType ?? ""),
+    [url.travelType],
+  );
+  const effectivePaxAdults = url.paxAdults ?? paxDefaults.adults;
+  const effectivePaxMinors = url.paxMinors ?? paxDefaults.minors;
+  const effectivePaxPets = url.paxPets ?? paxDefaults.pets ?? 0;
+
   const stepValues = {
     travelType: url.travelType,
     experience: url.experience,
@@ -213,6 +247,27 @@ export default function JourneyMainContent({
     effectiveNights: draftDetails.effectiveNights,
     transport: url.transport,
   };
+
+  // Live, draft-aware "details" tab progress — relayed up to journey/page.tsx
+  // so it can override JourneyProgressSidebar's search-param-based checks
+  // (which lag behind Origin/Dates/Transport edits until the draft flushes;
+  // see useJourneyDetailsProgress.ts for the full rationale). "complete"
+  // mirrors isStepComplete("details", ...)'s own criteria (origin + dates
+  // only — transport isn't required there, same as JourneyProgressSidebar's
+  // isTabComplete("details")).
+  useJourneyDetailsProgressCallback(
+    {
+      origin: Boolean(
+        draftDetails.effectiveOriginCountry && draftDetails.effectiveOriginCity,
+      ),
+      dates: Boolean(
+        draftDetails.effectiveStartDate && draftDetails.effectiveNights,
+      ),
+      transport: draftDetails.effectiveTransportOrder.length === 4,
+      complete: isStepComplete("details", stepValues),
+    },
+    onDetailsProgressChange,
+  );
 
   const scrollToActions = () => {
     requestAnimationFrame(() => {
@@ -286,7 +341,22 @@ export default function JourneyMainContent({
   ]);
 
   const handleTravelTypeSelect = (slug: string) => {
-    updateQuery({ ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, travelType: slug });
+    // For group/family/paws we also seed paxAdults/paxMinors/paxPets to that
+    // type's sensible defaults, so switching travel types never carries over
+    // stale numbers from a previous type.
+    const paxSeed = hasPaxSubstep(slug)
+      ? getDefaultPaxDetailsForTravelType(slug)
+      : null;
+    const { queryPatch, accordionValue: nextAccordionValue } =
+      getTravelTypeSelectionEffects(slug, paxSeed);
+    updateQuery(queryPatch);
+    // The accordion is a single flat piece of state shared across the whole
+    // flow (see useJourneyAccordion) — "dates"/"transport" stay *valid*
+    // accordion values for the "details" tab's own whitelist even though
+    // origin/dates/transport were just wiped above, so it must be reset
+    // explicitly here (matching the "origin" target handleContinue already
+    // uses when advancing into "details" normally).
+    setAccordionValue(nextAccordionValue);
   };
 
   const handleExperienceSelect = (levelId: string) => {
@@ -416,6 +486,18 @@ export default function JourneyMainContent({
     updateQuery({ addons: value });
   };
 
+  const handlePaxAdultsChange = (value: number) => {
+    updateQuery({ paxAdults: String(value) });
+  };
+
+  const handlePaxMinorsChange = (value: number) => {
+    updateQuery({ paxMinors: String(value) });
+  };
+
+  const handlePaxPetsChange = (value: number) => {
+    updateQuery({ paxPets: String(value) });
+  };
+
   const handleClearRefineDetails = () => {
     updateQuery({ refineDetails: undefined });
   };
@@ -434,6 +516,9 @@ export default function JourneyMainContent({
       nights: undefined,
       originCity: undefined,
       originCountry: undefined,
+      paxAdults: undefined,
+      paxMinors: undefined,
+      paxPets: undefined,
       refineDetails: undefined,
       startDate: undefined,
       transportOrder: undefined,
@@ -444,20 +529,73 @@ export default function JourneyMainContent({
     if (onTabChange) onTabChange("budget");
   };
 
+  // Next/Back move one substep at a time within a tab (e.g. Origin -> Dates),
+  // only advancing to the next/previous TAB once there's no next/previous
+  // substep left in the current one. getTabSubstepOrder is the single source
+  // of truth for substep order, shared with page.tsx's getAccordionForStep.
+  const substepOrderCtx = {
+    hasExcuseStep,
+    hasPax: hasPaxSubstep(url.travelType),
+    addonsEnabled: JOURNEY_ADDONS_ENABLED,
+  };
+  const currentSubstepOrder = getTabSubstepOrder(activeTab, substepOrderCtx);
+  const currentSubstepIndex = Math.max(
+    0,
+    currentSubstepOrder.indexOf(accordionValue),
+  );
+  const currentSubstepId = currentSubstepOrder[currentSubstepIndex];
+  const hasNextSubstepInTab =
+    currentSubstepIndex < currentSubstepOrder.length - 1;
+
+  const substepCompletionCtx: SubstepCompletionContext = {
+    travelType: url.travelType,
+    experience: url.experience,
+    excuse: url.excuse,
+    refineDetails: url.refineDetails,
+    originCountry: draftDetails.effectiveOriginCountry,
+    originCity: draftDetails.effectiveOriginCity,
+    startDate: draftDetails.effectiveStartDate,
+    nights: draftDetails.effectiveNights,
+    transportOrder: draftDetails.effectiveTransportOrder,
+  };
+
+  const nextTab = getNextTab(activeTab, hasExcuseStep);
+  const previousTab = getPreviousTab(activeTab, hasExcuseStep);
+
+  // Next is blocked until the CURRENT substep itself has a selection — not
+  // the whole tab (e.g. on Origin, Dates being empty doesn't matter yet).
+  const canContinue = currentSubstepId
+    ? isSubstepValueComplete(activeTab, currentSubstepId, substepCompletionCtx)
+    : false;
+  const isAllStepsComplete = !hasNextSubstepInTab && !nextTab && canContinue;
+
   const handleContinue = () => {
-    const nextTab = getNextTab(activeTab, hasExcuseStep);
+    if (hasNextSubstepInTab) {
+      setAccordionValue(currentSubstepOrder[currentSubstepIndex + 1]);
+      scrollToActions();
+      return;
+    }
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
-      if (nextTab === "excuse") setAccordionValue("excuse");
-      if (nextTab === "details") setAccordionValue("origin");
-      if (nextTab === "preferences") setAccordionValue("filters");
+      const nextOrder = getTabSubstepOrder(nextTab, substepOrderCtx);
+      setAccordionValue(nextOrder[0] ?? "");
       scrollToActions();
     }
   };
 
-  const nextTab = getNextTab(activeTab, hasExcuseStep);
-  const canContinue = isStepComplete(activeTab, stepValues) && Boolean(nextTab);
-  const isAllStepsComplete = checkAllComplete(stepValues);
+  const handleBack = () => {
+    if (currentSubstepIndex > 0) {
+      setAccordionValue(currentSubstepOrder[currentSubstepIndex - 1]);
+      scrollToActions();
+      return;
+    }
+    if (previousTab && onTabChange) {
+      onTabChange(previousTab);
+      const previousOrder = getTabSubstepOrder(previousTab, substepOrderCtx);
+      setAccordionValue(previousOrder[previousOrder.length - 1] ?? "");
+      scrollToActions();
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -573,12 +711,18 @@ export default function JourneyMainContent({
             onOpenSection={setAccordionValue}
             onOriginCityChange={handleOriginCityChange}
             onOriginCountryChange={handleOriginCountryChange}
+            onPaxAdultsChange={handlePaxAdultsChange}
+            onPaxMinorsChange={handlePaxMinorsChange}
+            onPaxPetsChange={handlePaxPetsChange}
             onRangeChange={handleRangeChange}
             onStartDateChange={handleStartDateChange}
             onTransportOrderChange={handleTransportOrderChange}
             openSectionId={accordionValue || "origin"}
             originCity={draftDetails.effectiveOriginCity}
             originCountry={draftDetails.effectiveOriginCountry}
+            paxAdults={effectivePaxAdults}
+            paxMinors={effectivePaxMinors}
+            paxPets={effectivePaxPets}
             startDate={draftDetails.effectiveStartDate}
             transportOrder={draftDetails.effectiveTransportOrder}
             travelType={url.travelType}
@@ -643,10 +787,12 @@ export default function JourneyMainContent({
         isAllStepsComplete={isAllStepsComplete}
         isSavingAndRedirecting={isSavingAndRedirecting}
         labels={{
+          back: labels.back,
           clearAll: labels.clearAll,
           next: labels.next,
           viewCheckout: labels.viewCheckout,
         }}
+        onBack={previousTab ? handleBack : undefined}
         onClearAll={handleClearAll}
         onContinue={handleContinue}
         onGoToCheckout={handleGoToCheckout}

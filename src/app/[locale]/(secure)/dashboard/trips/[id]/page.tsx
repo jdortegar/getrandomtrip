@@ -29,6 +29,9 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { JourneyFilterKey } from "@/lib/constants/journey-filters";
+import { TravelerRosterSection } from "@/components/app/travelers/TravelerRosterSection";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
+import type { TravelerRoster } from "@/types/traveler";
 
 interface TripDetails {
   id: string;
@@ -85,6 +88,9 @@ interface TripDetails {
 
   createdAt: string;
   updatedAt: string;
+
+  // Companion travelers roster
+  roster: TravelerRoster;
 }
 
 function TripDetailsContent() {
@@ -367,6 +373,17 @@ function TripDetailsContent() {
                   </div>
                 </div>
               </div>
+
+              {/* Invite your travel friends / traveler roster */}
+              {dict && trip.roster && trip.roster.cap > 0 && (
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                  <TravelerRosterSection
+                    copy={dict.inviteTravelers}
+                    locale={hasLocale(locale) ? (locale as Locale) : "es"}
+                    roster={trip.roster}
+                  />
+                </div>
+              )}
 
               {/* Filters & Preferences */}
               <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">

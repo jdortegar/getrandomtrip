@@ -1,0 +1,25 @@
+change: invite-travel-friends
+status: archived
+artifact_store: openspec
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done_pass_with_warnings
+  archive: done
+artifacts:
+  proposal: openspec/changes/archive/2026-07-29-invite-travel-friends/proposal.md
+  spec: openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md
+  design: openspec/changes/archive/2026-07-29-invite-travel-friends/design.md
+  tasks: openspec/changes/archive/2026-07-29-invite-travel-friends/tasks.md
+  verify_report: openspec/changes/archive/2026-07-29-invite-travel-friends/verify-report.md
+  archive_report: openspec/changes/archive/2026-07-29-invite-travel-friends/archive-report.md
+verify_verdict: PASS_WITH_WARNINGS
+verify_critical_count: 0
+verify_warning_count: 4
+verify_suggestion_count: 3
+archived: 2026-07-30

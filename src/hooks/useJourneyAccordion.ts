@@ -45,14 +45,15 @@ export function useJourneyAccordion(
       }
     } else if (activeTab === "excuse") {
       const valid =
-        accordionValue === "excuse" ||
+        accordionValue === "reason" ||
         accordionValue === "refine-details" ||
         accordionValue === "";
       if (!valid) {
-        setAccordionValue("excuse");
+        setAccordionValue("reason");
       }
     } else if (activeTab === "details") {
       const valid =
+        accordionValue === "pax" ||
         accordionValue === "origin" ||
         accordionValue === "dates" ||
         accordionValue === "transport" ||

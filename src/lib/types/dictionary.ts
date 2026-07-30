@@ -1560,6 +1560,61 @@ export interface TripperInviteAcceptDict {
   registerErrorGeneric: string;
 }
 
+export interface InviteTravelersDict {
+  eyebrow: string;
+  heading: string;
+  subtitle: string;
+  notifTitle: string;
+  deadlineLabel: string;
+  progressLabel: string;
+  lockedBanner: string;
+  supportLinkLabel: string;
+  footnote: string;
+  travelerLabel: string;
+  adultTag: string;
+  minorTag: string;
+  fullNameLabel: string;
+  fullNamePlaceholder: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  idDocumentLabel: string;
+  idDocumentPlaceholder: string;
+  idDocumentPendingPlaceholder: string;
+  dateOfBirthLabel: string;
+  sendInviteAction: string;
+  resendInviteAction: string;
+  saveAction: string;
+  lockedActionTitle: string;
+  statusPending: string;
+  statusInvited: string;
+  statusComplete: string;
+  invitedNote: string;
+  inviteResentNote: string;
+  minorFilledByBuyerNote: string;
+  savedNote: string;
+  incompleteError: string;
+  saveErrorGeneric: string;
+  sendInviteErrorGeneric: string;
+  landingBrand: string;
+  landingGreeting: string;
+  landingConsentPrefix: string;
+  landingConsentLinkLabel: string;
+  landingConsentSuffix: string;
+  landingSubmitLabel: string;
+  landingSubmitting: string;
+  landingCreateAccountPrompt: string;
+  landingCreateAccountLink: string;
+  landingSuccessTitle: string;
+  landingSuccessBody: string;
+  landingErrorTitle: string;
+  landingReasonInvalid: string;
+  landingReasonExpired: string;
+  landingReasonUsed: string;
+  landingReasonLocked: string;
+  landingConsentRequiredError: string;
+  landingGenericError: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -1898,6 +1953,7 @@ export interface MarketingDictionary {
     };
     mainContent: {
       addonsComingSoon: string;
+      back: string;
       clearAll: string;
       completeBudgetAndExcuse: string;
       completeBudgetFirst: string;
@@ -1944,6 +2000,25 @@ export interface MarketingDictionary {
       monthNames: string[];
       originLabel: string;
       originPlaceholder: string;
+      paxLabel?: string;
+      pax?: {
+        adultsLabel: string;
+        minorsLabel: string;
+        petsLabel: string;
+        ariaDecreaseAdults: string;
+        ariaIncreaseAdults: string;
+        ariaDecreaseMinors: string;
+        ariaIncreaseMinors: string;
+        ariaDecreasePets: string;
+        ariaIncreasePets: string;
+        adultsOne: string;
+        adultsMany: string;
+        minorsOne: string;
+        minorsMany: string;
+        petsOne: string;
+        petsMany: string;
+        breakdownSeparator: string;
+      };
       transportLabel: string;
       transportPlaceholder: string;
       transportSelector?: {
@@ -1990,6 +2065,7 @@ export interface MarketingDictionary {
       filtersForm: {
         arrivePrefLabel: string;
         avoidGridButton: string;
+        avoidGridEmpty: string;
         avoidGridLoading: string;
         avoidHint: string;
         avoidLabel: string;
@@ -2700,4 +2776,5 @@ export interface MarketingDictionary {
   tripItinerary: TripItineraryDict;
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
+  inviteTravelers: InviteTravelersDict;
 }

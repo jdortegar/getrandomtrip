@@ -75,6 +75,7 @@ export interface JourneyFiltersFormLabels {
   accommodationTypeLabel?: string;
   arrivePrefLabel: string;
   avoidGridButton: string;
+  avoidGridEmpty: string;
   avoidGridLoading: string;
   avoidHint: string;
   avoidLabel: string;
@@ -288,6 +289,7 @@ export function JourneyFiltersForm({
           experienceLevel={experience}
           labels={{
             loading: labelsProp.avoidGridLoading,
+            empty: labelsProp.avoidGridEmpty,
             otherDestinationsButton: labelsProp.avoidGridButton,
             searchModal: labelsProp.avoidSearchModal,
           }}

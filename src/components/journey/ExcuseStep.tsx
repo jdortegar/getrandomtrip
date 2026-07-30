@@ -106,7 +106,7 @@ export default function ExcuseStep({
           className="mb-4"
           content={getExcuseLabel}
           label={labels.excuseLabel}
-          value="excuse"
+          value="reason"
         >
           {travelType && experience ? (
             <div className="space-y-4">
@@ -127,7 +127,7 @@ export default function ExcuseStep({
           )}
         </JourneyDropdown>
 
-        {travelType && experience && excuse && (
+        {travelType && experience && hasExcuseStep && (
           <JourneyDropdown
             className="mb-4"
             content={getRefineDetailsLabel}

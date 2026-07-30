@@ -145,16 +145,20 @@ model TripRequest {
   // Destination reveal pipeline
   destinationAssignmentNotifiedAt DateTime? // T-72h admin reminder idempotency stamp
 
+  // Companion travelers roster — locked server-side at startDate - 7 days
+  travelersLockedAt DateTime? // Pass-2 cutoff-lock idempotency stamp
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  user       User        @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
-  experience Experience? @relation(fields: [experienceId], references: [id], onDelete: SetNull)
-  tripper    User?       @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
+  user       User            @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience?     @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  tripper    User?           @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
   payment    Payment?
   review     Review?
+  travelers  TripTraveler[]
 
   @@map("trip_requests")
 }
@@ -331,6 +335,47 @@ model Payment {
   expiresAt DateTime? // When payment preference expires
 
   @@map("payments")
+}
+
+enum TravelerKind {
+  ADULT
+  MINOR
+}
+
+enum TravelerStatus {
+  PENDING
+  INVITED
+  COMPLETE
+}
+
+model TripTraveler {
+  id            String         @id @default(cuid())
+  tripRequestId String
+  kind          TravelerKind   @default(ADULT)
+  status        TravelerStatus @default(PENDING)
+
+  // Identity (buyer- or companion-filled)
+  fullName    String?
+  email       String? // adults only; null for minors
+  idDocument  String? // ID / passport number
+  dateOfBirth DateTime? // minors only
+
+  // Invite token — inline, rotated in place on resend
+  inviteTokenHash      String? @unique // SHA-256 hex; null once consumed (many NULLs allowed)
+  inviteTokenExpiresAt DateTime?
+  invitedAt            DateTime? // last send; reminder-window anchor
+  reminderSentAt       DateTime? // reminder idempotency stamp
+  submittedAt          DateTime? // row completed (buyer or companion)
+  consentAt            DateTime? // required consent checkbox at token submit
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+
+  @@index([tripRequestId])
+  @@index([status])
+  @@map("trip_travelers")
 }
 
 model Review {
@@ -510,6 +555,7 @@ enum NotificationType {
   PAYMENT_RECEIVED
   REVIEW_SUBMITTED
   REVIEW_APPROVED
+  TRAVELER_SUBMITTED
 }
 
 enum NotificationAudience {

@@ -1,8 +1,14 @@
-import { paxDetailsFromTotalPax } from "@/lib/helpers/pax-details";
+import {
+  getDefaultPaxDetailsForTravelType,
+  getPaxSubstepFields,
+  hasPaxSubstep,
+  paxDetailsFromTotalPax,
+} from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { Filters } from "@/store/slices/journeyStore";
 import {
   getPrimaryTransportIdFromOrderParam,
+  isCompleteTransportOrderParam,
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
 } from "@/lib/helpers/transport";
@@ -78,7 +84,7 @@ export function buildTripRequestPayloadFromSearchParams(
     end.setDate(end.getDate() + nightsNum);
     endDate = end.toISOString();
   }
-  const pax = Math.max(
+  const legacyPax = Math.max(
     1,
     Math.min(20, parseInt(searchParams.get("pax") ?? "2", 10) || 2),
   );
@@ -98,7 +104,52 @@ export function buildTripRequestPayloadFromSearchParams(
         .map((id) => ({ id, qty: 1 }))
     : [];
 
-  const paxDetails = paxDetailsFromTotalPax(pax);
+  // Group/family/paws: party size comes from the "Travellers" substep
+  // (paxAdults/paxMinors/paxPets), not the legacy flat `pax` headcount param.
+  // Every other travel type keeps today's exact behavior, unchanged.
+  let pax = legacyPax;
+  let paxDetails: PaxDetails = paxDetailsFromTotalPax(legacyPax);
+
+  if (hasPaxSubstep(travelType)) {
+    const paxAdultsRaw = searchParams.get("paxAdults");
+    const paxMinorsRaw = searchParams.get("paxMinors");
+    const paxPetsRaw = searchParams.get("paxPets");
+    const defaults = getDefaultPaxDetailsForTravelType(travelType);
+    // Which fields this travel type's "Travellers" substep actually shows —
+    // the other one is forced to 0 below regardless of any stale/tampered
+    // URL param, since there's no input for it (group/family: no Pets field;
+    // paws: no Minors field).
+    const fields = getPaxSubstepFields(travelType);
+
+    if (paxAdultsRaw != null || paxMinorsRaw != null || paxPetsRaw != null) {
+      const parsedAdults = parseInt(paxAdultsRaw ?? "", 10);
+      const parsedMinors = parseInt(paxMinorsRaw ?? "", 10);
+      const parsedPets = parseInt(paxPetsRaw ?? "", 10);
+      const adults = Math.max(
+        1,
+        Number.isFinite(parsedAdults) ? parsedAdults : defaults.adults,
+      );
+      const minors =
+        fields === "adults-pets"
+          ? 0
+          : Math.max(
+              0,
+              Number.isFinite(parsedMinors) ? parsedMinors : defaults.minors,
+            );
+      const pets =
+        fields === "adults-minors"
+          ? 0
+          : Math.max(
+              0,
+              Number.isFinite(parsedPets) ? parsedPets : (defaults.pets ?? 0),
+            );
+      paxDetails = { adults, minors, rooms: 1, pets };
+    } else {
+      paxDetails = defaults;
+    }
+    // Pets aren't billable heads; pax stays adults + minors.
+    pax = paxDetails.adults + paxDetails.minors;
+  }
 
   const tripRequestIdRaw = searchParams.get("tripRequestId")?.trim();
   const id =
@@ -224,6 +275,9 @@ export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<
   nights: undefined,
   originCity: undefined,
   originCountry: undefined,
+  paxAdults: undefined,
+  paxMinors: undefined,
+  paxPets: undefined,
   refineDetails: undefined,
   startDate: undefined,
   transportOrder: undefined,
@@ -251,6 +305,46 @@ export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<
   tripRequestId: undefined,
 };
 
+export interface TravelTypeSelectionEffects {
+  queryPatch: Record<string, string | undefined>;
+  accordionValue: string;
+}
+
+/**
+ * Computes the URL query patch AND the accordion section that should end up
+ * open after the user picks a new travel type.
+ *
+ * `accordionValue` is a single flat piece of state shared across the whole
+ * journey flow (see useJourneyAccordion), not scoped per tab. Origin/Dates/
+ * Transport/pax params are wiped here via PARAMS_TO_RESET_AFTER_TRAVEL_TYPE
+ * because they no longer apply to the new type, but "dates" or "transport"
+ * remain *valid* accordion values for the "details" tab's own whitelist even
+ * though the data behind them was just wiped — useJourneyAccordion's
+ * tab-change effect only corrects values that become *invalid*, so it never
+ * catches this. The accordion must be forced back to "origin" explicitly,
+ * matching the same target handleContinue already uses when advancing into
+ * "details" normally.
+ */
+export function getTravelTypeSelectionEffects(
+  slug: string,
+  paxSeed: { adults: number; minors: number; pets?: number } | null,
+): TravelTypeSelectionEffects {
+  return {
+    queryPatch: {
+      ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
+      travelType: slug,
+      ...(paxSeed
+        ? {
+            paxAdults: String(paxSeed.adults),
+            paxMinors: String(paxSeed.minors),
+            paxPets: String(paxSeed.pets ?? 0),
+          }
+        : {}),
+    },
+    accordionValue: paxSeed ? "pax" : "origin",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Step-logic helpers (pure — no React dependencies)
 // ---------------------------------------------------------------------------
@@ -277,6 +371,17 @@ export function getNextTab(
     : ["budget", "details", "preferences"];
   const currentIndex = tabs.indexOf(activeTab);
   return currentIndex < tabs.length - 1 ? tabs[currentIndex + 1] : null;
+}
+
+export function getPreviousTab(
+  activeTab: string,
+  hasExcuseStep: boolean,
+): string | null {
+  const tabs = hasExcuseStep
+    ? ["budget", "excuse", "details", "preferences"]
+    : ["budget", "details", "preferences"];
+  const currentIndex = tabs.indexOf(activeTab);
+  return currentIndex > 0 ? tabs[currentIndex - 1] : null;
 }
 
 export function isStepComplete(
@@ -307,16 +412,123 @@ export function isStepComplete(
   }
 }
 
-export function checkAllComplete(v: JourneyStepValues): boolean {
-  return Boolean(
-    v.travelType &&
-    v.experience &&
-    (v.excuse || !v.hasExcuseStep) &&
-    (!v.hasExcuseStep || v.refineDetails.length > 0) &&
-    v.effectiveOriginCountry &&
-    v.effectiveOriginCity &&
-    v.effectiveStartDate &&
-    v.effectiveNights &&
-    v.transport,
-  );
+// ---------------------------------------------------------------------------
+// Substep-level navigation (pure — no React dependencies)
+//
+// Next/Back move one substep at a time within a tab (e.g. Origin -> Dates),
+// only advancing to the next/previous TAB once there's no next/previous
+// substep left in the current one. Next is blocked (canContinue = false)
+// until the CURRENT substep itself has a selection — see
+// isSubstepValueComplete.
+// ---------------------------------------------------------------------------
+
+export interface SubstepOrderContext {
+  hasExcuseStep: boolean;
+  hasPax: boolean;
+  addonsEnabled: boolean;
+}
+
+/** Ordered substep ids for a tab — the single source of truth for substep
+ * sequencing, reused by page.tsx's sidebar-click mapping and by Next/Back. */
+export function getTabSubstepOrder(
+  tabId: string,
+  ctx: SubstepOrderContext,
+): string[] {
+  switch (tabId) {
+    case "budget":
+      return ["travel-type", "experience"];
+    case "excuse":
+      return ["reason", "refine-details"];
+    case "details":
+      return ctx.hasPax
+        ? ["pax", "origin", "dates", "transport"]
+        : ["origin", "dates", "transport"];
+    case "preferences":
+      return ctx.addonsEnabled ? ["filters", "addons"] : ["filters"];
+    default:
+      return [];
+  }
+}
+
+export interface SubstepCompletionContext {
+  travelType?: string;
+  experience?: string;
+  excuse?: string;
+  refineDetails: string[];
+  originCountry: string;
+  originCity: string;
+  startDate?: string;
+  nights: number;
+  transportOrder: string[];
+}
+
+/**
+ * Whether the given substep currently has a selection — used to block Next
+ * until the CURRENT substep (not the whole tab) is filled in. Substeps with
+ * sensible defaults (Travellers, Filters, Extras) never block.
+ */
+export function isSubstepValueComplete(
+  tabId: string,
+  substepId: string,
+  ctx: SubstepCompletionContext,
+): boolean {
+  switch (`${tabId}:${substepId}`) {
+    case "budget:travel-type":
+      return Boolean(ctx.travelType);
+    case "budget:experience":
+      return Boolean(ctx.experience);
+    case "excuse:reason":
+      return Boolean(ctx.excuse);
+    case "excuse:refine-details":
+      return ctx.refineDetails.length > 0;
+    case "details:origin":
+      return Boolean(ctx.originCountry && ctx.originCity);
+    case "details:dates":
+      return Boolean(ctx.startDate && ctx.nights);
+    case "details:transport":
+      return isCompleteTransportOrderParam(ctx.transportOrder.join(","));
+    default:
+      // details:pax, preferences:filters, preferences:addons — always have a
+      // valid default value, never block Next.
+      return true;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// contentTabs UI filtering (pure — no React dependencies)
+// ---------------------------------------------------------------------------
+
+export interface ContentTabSubstep {
+  description: string;
+  id: string;
+  title: string;
+}
+
+export interface ContentTab {
+  id: string;
+  label: string;
+  substeps: ContentTabSubstep[];
+}
+
+/**
+ * Shapes the dictionary-driven journey.contentTabs array for the sidebar and
+ * tab navigation: drops the "excuse" tab when it doesn't apply, and drops the
+ * "pax" substep under "details" unless travelType is group/family/paws.
+ */
+export function filterContentTabsForUI<T extends ContentTab>(
+  contentTabs: T[],
+  options: { travelType: string | null | undefined; hasExcuseStep: boolean },
+): T[] {
+  const { travelType, hasExcuseStep } = options;
+  const tabs = hasExcuseStep
+    ? contentTabs
+    : contentTabs.filter((tab) => tab.id !== "excuse");
+
+  return tabs.map((tab) => {
+    if (tab.id !== "details" || hasPaxSubstep(travelType)) return tab;
+    return {
+      ...tab,
+      substeps: tab.substeps.filter((substep) => substep.id !== "pax"),
+    };
+  });
 }
