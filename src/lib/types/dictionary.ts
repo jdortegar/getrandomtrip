@@ -1999,6 +1999,25 @@ export interface MarketingDictionary {
       monthNames: string[];
       originLabel: string;
       originPlaceholder: string;
+      paxLabel?: string;
+      pax?: {
+        adultsLabel: string;
+        minorsLabel: string;
+        petsLabel: string;
+        ariaDecreaseAdults: string;
+        ariaIncreaseAdults: string;
+        ariaDecreaseMinors: string;
+        ariaIncreaseMinors: string;
+        ariaDecreasePets: string;
+        ariaIncreasePets: string;
+        adultsOne: string;
+        adultsMany: string;
+        minorsOne: string;
+        minorsMany: string;
+        petsOne: string;
+        petsMany: string;
+        breakdownSeparator: string;
+      };
       transportLabel: string;
       transportPlaceholder: string;
       transportSelector?: {

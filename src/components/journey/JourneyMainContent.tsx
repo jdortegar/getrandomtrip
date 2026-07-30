@@ -30,6 +30,10 @@ import {
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
   PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
 } from "@/lib/helpers/journey";
+import {
+  getDefaultPaxDetailsForTravelType,
+  hasPaxSubstep,
+} from "@/lib/helpers/pax-details";
 import { useJourneyAccordion } from "@/hooks/useJourneyAccordion";
 import { useJourneyDraftDetails } from "@/hooks/useJourneyDraftDetails";
 import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
@@ -201,6 +205,18 @@ export default function JourneyMainContent({
     });
   }, [url.excuse, url.travelType, localizedRefineOptions]);
 
+  // Defensive fallback for the "Travellers" substep: paxAdults/paxMinors/paxPets
+  // are normally seeded into the URL the moment a group/family/paws travel
+  // type is selected (see handleTravelTypeSelect), but this also covers
+  // stale/shared links from before this param existed.
+  const paxDefaults = useMemo(
+    () => getDefaultPaxDetailsForTravelType(url.travelType ?? ""),
+    [url.travelType],
+  );
+  const effectivePaxAdults = url.paxAdults ?? paxDefaults.adults;
+  const effectivePaxMinors = url.paxMinors ?? paxDefaults.minors;
+  const effectivePaxPets = url.paxPets ?? paxDefaults.pets ?? 0;
+
   const stepValues = {
     travelType: url.travelType,
     experience: url.experience,
@@ -286,7 +302,25 @@ export default function JourneyMainContent({
   ]);
 
   const handleTravelTypeSelect = (slug: string) => {
-    updateQuery({ ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, travelType: slug });
+    // PARAMS_TO_RESET_AFTER_TRAVEL_TYPE is reset-only (clears every param to
+    // undefined) — it doesn't seed new values. For group/family/paws we also
+    // seed paxAdults/paxMinors/paxPets to that type's sensible defaults here,
+    // in the same updateQuery call, so switching travel types never carries
+    // over stale numbers from a previous type.
+    const paxSeed = hasPaxSubstep(slug)
+      ? getDefaultPaxDetailsForTravelType(slug)
+      : null;
+    updateQuery({
+      ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
+      travelType: slug,
+      ...(paxSeed
+        ? {
+            paxAdults: String(paxSeed.adults),
+            paxMinors: String(paxSeed.minors),
+            paxPets: String(paxSeed.pets ?? 0),
+          }
+        : {}),
+    });
   };
 
   const handleExperienceSelect = (levelId: string) => {
@@ -416,6 +450,18 @@ export default function JourneyMainContent({
     updateQuery({ addons: value });
   };
 
+  const handlePaxAdultsChange = (value: number) => {
+    updateQuery({ paxAdults: String(value) });
+  };
+
+  const handlePaxMinorsChange = (value: number) => {
+    updateQuery({ paxMinors: String(value) });
+  };
+
+  const handlePaxPetsChange = (value: number) => {
+    updateQuery({ paxPets: String(value) });
+  };
+
   const handleClearRefineDetails = () => {
     updateQuery({ refineDetails: undefined });
   };
@@ -434,6 +480,9 @@ export default function JourneyMainContent({
       nights: undefined,
       originCity: undefined,
       originCountry: undefined,
+      paxAdults: undefined,
+      paxMinors: undefined,
+      paxPets: undefined,
       refineDetails: undefined,
       startDate: undefined,
       transportOrder: undefined,
@@ -573,12 +622,18 @@ export default function JourneyMainContent({
             onOpenSection={setAccordionValue}
             onOriginCityChange={handleOriginCityChange}
             onOriginCountryChange={handleOriginCountryChange}
+            onPaxAdultsChange={handlePaxAdultsChange}
+            onPaxMinorsChange={handlePaxMinorsChange}
+            onPaxPetsChange={handlePaxPetsChange}
             onRangeChange={handleRangeChange}
             onStartDateChange={handleStartDateChange}
             onTransportOrderChange={handleTransportOrderChange}
             openSectionId={accordionValue || "origin"}
             originCity={draftDetails.effectiveOriginCity}
             originCountry={draftDetails.effectiveOriginCountry}
+            paxAdults={effectivePaxAdults}
+            paxMinors={effectivePaxMinors}
+            paxPets={effectivePaxPets}
             startDate={draftDetails.effectiveStartDate}
             transportOrder={draftDetails.effectiveTransportOrder}
             travelType={url.travelType}

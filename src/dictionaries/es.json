@@ -1178,6 +1178,11 @@
         "label": "Detalles y planificación",
         "substeps": [
           {
+            "id": "pax",
+            "title": "VIAJEROS",
+            "description": "Indicá cuántos adultos, menores y mascotas viajan."
+          },
+          {
             "id": "origin",
             "title": "ORIGEN",
             "description": "Elegí país y ciudad de salida."
@@ -1271,6 +1276,25 @@
       ],
       "originLabel": "Origen",
       "originPlaceholder": "Elegí país y ciudad de salida",
+      "paxLabel": "Viajeros",
+      "pax": {
+        "adultsLabel": "Adultos",
+        "minorsLabel": "Menores",
+        "petsLabel": "Mascotas",
+        "ariaDecreaseAdults": "Disminuir adultos",
+        "ariaIncreaseAdults": "Aumentar adultos",
+        "ariaDecreaseMinors": "Disminuir menores",
+        "ariaIncreaseMinors": "Aumentar menores",
+        "ariaDecreasePets": "Disminuir mascotas",
+        "ariaIncreasePets": "Aumentar mascotas",
+        "adultsOne": "{count} adulto",
+        "adultsMany": "{count} adultos",
+        "minorsOne": "{count} menor",
+        "minorsMany": "{count} menores",
+        "petsOne": "{count} mascota",
+        "petsMany": "{count} mascotas",
+        "breakdownSeparator": " · "
+      },
       "transportLabel": "Transporte: Orden de preferencia",
       "transportPlaceholder": "Definí el orden de preferencia arrastrando",
       "transportSelector": {

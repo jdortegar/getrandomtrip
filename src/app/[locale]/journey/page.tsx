@@ -12,6 +12,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
+import { filterContentTabsForUI } from "@/lib/helpers/journey";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 import {
@@ -193,9 +194,10 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   const travelType = searchParams.get("travelType");
   const experience = searchParams.get("experience");
   const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");
-  const contentTabsForUI = hasExcuseStep
-    ? journey.contentTabs
-    : journey.contentTabs.filter((tab) => tab.id !== "excuse");
+  const contentTabsForUI = filterContentTabsForUI(journey.contentTabs, {
+    travelType,
+    hasExcuseStep,
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">

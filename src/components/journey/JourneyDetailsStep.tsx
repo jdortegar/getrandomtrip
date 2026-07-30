@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Accordion } from "@/components/ui/accordion";
+import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import CitySelector from "@/components/journey/CitySelector";
 import CountrySelector from "@/components/journey/CountrySelector";
 import { JourneyDatesPicker } from "@/components/journey/JourneyDatesPicker";
@@ -11,7 +12,13 @@ import TransportSelector, {
   TRANSPORT_OPTIONS,
 } from "@/components/journey/TransportSelector";
 import type { TransportSelectorLabels } from "@/components/journey/TransportSelector";
+import { formatPaxSubstepSummary } from "@/lib/helpers/format-travelers-party-breakdown";
+import { hasPaxSubstep } from "@/lib/helpers/pax-details";
 import { getLevelById } from "@/lib/utils/experiencesData";
+
+const PAX_ADULTS_MAX = 20;
+const PAX_MINORS_MAX = 20;
+const PAX_PETS_MAX = 10;
 
 const DEFAULT_MAX_NIGHTS = 2;
 
@@ -51,6 +58,25 @@ function formatDatesRange(
   return `del ${startDay} de ${monthNames[startMonth]} al ${endDay} de ${monthNames[endMonth]}`;
 }
 
+export interface JourneyDetailsStepPaxLabels {
+  adultsLabel: string;
+  minorsLabel: string;
+  petsLabel: string;
+  ariaDecreaseAdults: string;
+  ariaIncreaseAdults: string;
+  ariaDecreaseMinors: string;
+  ariaIncreaseMinors: string;
+  ariaDecreasePets: string;
+  ariaIncreasePets: string;
+  adultsOne: string;
+  adultsMany: string;
+  minorsOne: string;
+  minorsMany: string;
+  petsOne: string;
+  petsMany: string;
+  breakdownSeparator: string;
+}
+
 export interface JourneyDetailsStepLabels {
   cityLabel: string;
   cityPlaceholder: string;
@@ -62,6 +88,8 @@ export interface JourneyDetailsStepLabels {
   monthNames: string[];
   originLabel: string;
   originPlaceholder: string;
+  pax?: JourneyDetailsStepPaxLabels;
+  paxLabel?: string;
   transportLabel: string;
   transportPlaceholder: string;
   transportSelector?: TransportSelectorLabels;
@@ -75,12 +103,18 @@ interface JourneyDetailsStepProps {
   onOpenSection: (id: string) => void;
   onOriginCityChange: (value: string) => void;
   onOriginCountryChange: (value: string) => void;
+  onPaxAdultsChange: (value: number) => void;
+  onPaxMinorsChange: (value: number) => void;
+  onPaxPetsChange: (value: number) => void;
   onRangeChange?: (startDate: string | undefined, nights: number) => void;
   onStartDateChange: (startDate: string | undefined) => void;
   onTransportOrderChange: (orderedIds: string[]) => void;
   openSectionId: string;
   originCity: string;
   originCountry: string;
+  paxAdults: number;
+  paxMinors: number;
+  paxPets: number;
   startDate: string | undefined;
   transportOrder: string[];
   travelType?: string;
@@ -94,12 +128,18 @@ export function JourneyDetailsStep({
   onOpenSection,
   onOriginCityChange,
   onOriginCountryChange,
+  onPaxAdultsChange,
+  onPaxMinorsChange,
+  onPaxPetsChange,
   onRangeChange,
   onStartDateChange,
   onTransportOrderChange,
   openSectionId,
   originCity,
   originCountry,
+  paxAdults,
+  paxMinors,
+  paxPets,
   startDate,
   transportOrder,
   travelType,
@@ -127,6 +167,31 @@ export function JourneyDetailsStep({
       originLabel: labelsProp?.originLabel ?? "Origen",
       originPlaceholder:
         labelsProp?.originPlaceholder ?? "Elegí país y ciudad de salida",
+      paxLabel: labelsProp?.paxLabel ?? "Viajeros",
+      pax: {
+        adultsLabel: labelsProp?.pax?.adultsLabel ?? "Adultos",
+        minorsLabel: labelsProp?.pax?.minorsLabel ?? "Menores",
+        petsLabel: labelsProp?.pax?.petsLabel ?? "Mascotas",
+        ariaDecreaseAdults:
+          labelsProp?.pax?.ariaDecreaseAdults ?? "Disminuir adultos",
+        ariaIncreaseAdults:
+          labelsProp?.pax?.ariaIncreaseAdults ?? "Aumentar adultos",
+        ariaDecreaseMinors:
+          labelsProp?.pax?.ariaDecreaseMinors ?? "Disminuir menores",
+        ariaIncreaseMinors:
+          labelsProp?.pax?.ariaIncreaseMinors ?? "Aumentar menores",
+        ariaDecreasePets:
+          labelsProp?.pax?.ariaDecreasePets ?? "Disminuir mascotas",
+        ariaIncreasePets:
+          labelsProp?.pax?.ariaIncreasePets ?? "Aumentar mascotas",
+        adultsOne: labelsProp?.pax?.adultsOne ?? "{count} adulto",
+        adultsMany: labelsProp?.pax?.adultsMany ?? "{count} adultos",
+        minorsOne: labelsProp?.pax?.minorsOne ?? "{count} menor",
+        minorsMany: labelsProp?.pax?.minorsMany ?? "{count} menores",
+        petsOne: labelsProp?.pax?.petsOne ?? "{count} mascota",
+        petsMany: labelsProp?.pax?.petsMany ?? "{count} mascotas",
+        breakdownSeparator: labelsProp?.pax?.breakdownSeparator ?? " · ",
+      },
       transportLabel:
         labelsProp?.transportLabel ?? "Transporte: Orden de preferencia",
       transportPlaceholder:
@@ -157,6 +222,14 @@ export function JourneyDetailsStep({
       ? `${labelsProp?.transportSelector?.optionLabels?.[transportOrder[0]] ?? TRANSPORT_OPTIONS.find((o) => o.id === transportOrder[0])?.label ?? transportOrder[0]} *`
       : labels.transportPlaceholder;
 
+  const showPaxSubstep = hasPaxSubstep(travelType);
+
+  const paxSummary = formatPaxSubstepSummary(labels.pax, {
+    adults: paxAdults,
+    minors: paxMinors,
+    pets: paxPets,
+  });
+
   return (
     <Accordion
       collapsible
@@ -165,6 +238,39 @@ export function JourneyDetailsStep({
       value={openSectionId}
     >
       <div className="space-y-4">
+        {showPaxSubstep && (
+          <JourneyDropdown content={paxSummary} label={labels.paxLabel} value="pax">
+            <div className="space-y-0">
+              <QuantityStepper
+                ariaDecrease={labels.pax.ariaDecreaseAdults}
+                ariaIncrease={labels.pax.ariaIncreaseAdults}
+                label={labels.pax.adultsLabel}
+                max={PAX_ADULTS_MAX}
+                min={1}
+                onValueChange={onPaxAdultsChange}
+                value={paxAdults}
+              />
+              <QuantityStepper
+                ariaDecrease={labels.pax.ariaDecreaseMinors}
+                ariaIncrease={labels.pax.ariaIncreaseMinors}
+                label={labels.pax.minorsLabel}
+                max={PAX_MINORS_MAX}
+                min={0}
+                onValueChange={onPaxMinorsChange}
+                value={paxMinors}
+              />
+              <QuantityStepper
+                ariaDecrease={labels.pax.ariaDecreasePets}
+                ariaIncrease={labels.pax.ariaIncreasePets}
+                label={labels.pax.petsLabel}
+                max={PAX_PETS_MAX}
+                min={0}
+                onValueChange={onPaxPetsChange}
+                value={paxPets}
+              />
+            </div>
+          </JourneyDropdown>
+        )}
         <JourneyDropdown
           content={originSummary}
           label={labels.originLabel}

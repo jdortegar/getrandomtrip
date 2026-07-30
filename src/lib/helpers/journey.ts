@@ -1,4 +1,8 @@
-import { paxDetailsFromTotalPax } from "@/lib/helpers/pax-details";
+import {
+  getDefaultPaxDetailsForTravelType,
+  hasPaxSubstep,
+  paxDetailsFromTotalPax,
+} from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { Filters } from "@/store/slices/journeyStore";
 import {
@@ -78,7 +82,7 @@ export function buildTripRequestPayloadFromSearchParams(
     end.setDate(end.getDate() + nightsNum);
     endDate = end.toISOString();
   }
-  const pax = Math.max(
+  const legacyPax = Math.max(
     1,
     Math.min(20, parseInt(searchParams.get("pax") ?? "2", 10) || 2),
   );
@@ -98,7 +102,41 @@ export function buildTripRequestPayloadFromSearchParams(
         .map((id) => ({ id, qty: 1 }))
     : [];
 
-  const paxDetails = paxDetailsFromTotalPax(pax);
+  // Group/family/paws: party size comes from the "Travellers" substep
+  // (paxAdults/paxMinors/paxPets), not the legacy flat `pax` headcount param.
+  // Every other travel type keeps today's exact behavior, unchanged.
+  let pax = legacyPax;
+  let paxDetails: PaxDetails = paxDetailsFromTotalPax(legacyPax);
+
+  if (hasPaxSubstep(travelType)) {
+    const paxAdultsRaw = searchParams.get("paxAdults");
+    const paxMinorsRaw = searchParams.get("paxMinors");
+    const paxPetsRaw = searchParams.get("paxPets");
+    const defaults = getDefaultPaxDetailsForTravelType(travelType);
+
+    if (paxAdultsRaw != null || paxMinorsRaw != null || paxPetsRaw != null) {
+      const parsedAdults = parseInt(paxAdultsRaw ?? "", 10);
+      const parsedMinors = parseInt(paxMinorsRaw ?? "", 10);
+      const parsedPets = parseInt(paxPetsRaw ?? "", 10);
+      const adults = Math.max(
+        1,
+        Number.isFinite(parsedAdults) ? parsedAdults : defaults.adults,
+      );
+      const minors = Math.max(
+        0,
+        Number.isFinite(parsedMinors) ? parsedMinors : defaults.minors,
+      );
+      const pets = Math.max(
+        0,
+        Number.isFinite(parsedPets) ? parsedPets : (defaults.pets ?? 0),
+      );
+      paxDetails = { adults, minors, rooms: 1, pets };
+    } else {
+      paxDetails = defaults;
+    }
+    // Pets aren't billable heads; pax stays adults + minors.
+    pax = paxDetails.adults + paxDetails.minors;
+  }
 
   const tripRequestIdRaw = searchParams.get("tripRequestId")?.trim();
   const id =
@@ -224,6 +262,9 @@ export const PARAMS_TO_RESET_AFTER_TRAVEL_TYPE: Record<
   nights: undefined,
   originCity: undefined,
   originCountry: undefined,
+  paxAdults: undefined,
+  paxMinors: undefined,
+  paxPets: undefined,
   refineDetails: undefined,
   startDate: undefined,
   transportOrder: undefined,
@@ -316,4 +357,43 @@ export function isJourneyComplete(
   // to be truthy already" (e.g. transport is filled in as a substep of
   // "details", well before the user ever reaches "preferences").
   return getNextTab(activeTab, v.hasExcuseStep) === null && isStepComplete(activeTab, v);
+}
+
+// ---------------------------------------------------------------------------
+// contentTabs UI filtering (pure — no React dependencies)
+// ---------------------------------------------------------------------------
+
+export interface ContentTabSubstep {
+  description: string;
+  id: string;
+  title: string;
+}
+
+export interface ContentTab {
+  id: string;
+  label: string;
+  substeps: ContentTabSubstep[];
+}
+
+/**
+ * Shapes the dictionary-driven journey.contentTabs array for the sidebar and
+ * tab navigation: drops the "excuse" tab when it doesn't apply, and drops the
+ * "pax" substep under "details" unless travelType is group/family/paws.
+ */
+export function filterContentTabsForUI<T extends ContentTab>(
+  contentTabs: T[],
+  options: { travelType: string | null | undefined; hasExcuseStep: boolean },
+): T[] {
+  const { travelType, hasExcuseStep } = options;
+  const tabs = hasExcuseStep
+    ? contentTabs
+    : contentTabs.filter((tab) => tab.id !== "excuse");
+
+  return tabs.map((tab) => {
+    if (tab.id !== "details" || hasPaxSubstep(travelType)) return tab;
+    return {
+      ...tab,
+      substeps: tab.substeps.filter((substep) => substep.id !== "pax"),
+    };
+  });
 }

@@ -1173,6 +1173,11 @@
         "label": "Details and planning",
         "substeps": [
           {
+            "id": "pax",
+            "title": "TRAVELLERS",
+            "description": "Set how many adults, minors, and pets are travelling."
+          },
+          {
             "id": "origin",
             "title": "ORIGIN",
             "description": "Choose country and city of departure."
@@ -1266,6 +1271,25 @@
       ],
       "originLabel": "Origin",
       "originPlaceholder": "Choose country and city of departure",
+      "paxLabel": "Travellers",
+      "pax": {
+        "adultsLabel": "Adults",
+        "minorsLabel": "Children",
+        "petsLabel": "Pets",
+        "ariaDecreaseAdults": "Decrease adults",
+        "ariaIncreaseAdults": "Increase adults",
+        "ariaDecreaseMinors": "Decrease children",
+        "ariaIncreaseMinors": "Increase children",
+        "ariaDecreasePets": "Decrease pets",
+        "ariaIncreasePets": "Increase pets",
+        "adultsOne": "{count} adult",
+        "adultsMany": "{count} adults",
+        "minorsOne": "{count} child",
+        "minorsMany": "{count} children",
+        "petsOne": "{count} pet",
+        "petsMany": "{count} pets",
+        "breakdownSeparator": " · "
+      },
       "transportLabel": "Transport: Order of preference",
       "transportPlaceholder": "Set order of preference by dragging",
       "transportSelector": {

@@ -30,6 +30,16 @@ export interface JourneySearchParamsValues {
   addons: string | undefined;
   /** Draft trip request id for checkout upsert; set when user saves to checkout. */
   tripRequestId: string | undefined;
+  /** "Travellers" substep values (group/family/paws only). Undefined when not yet set. */
+  paxAdults: number | undefined;
+  paxMinors: number | undefined;
+  paxPets: number | undefined;
+}
+
+function parsePaxCountParam(raw: string | null): number | undefined {
+  if (raw == null) return undefined;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? Math.max(0, Math.floor(parsed)) : undefined;
 }
 
 export function useJourneySearchParams(
@@ -118,6 +128,18 @@ export function useJourneySearchParams(
     const raw = searchParams.get("tripRequestId")?.trim();
     return raw && raw.length > 0 ? raw : undefined;
   }, [searchParams]);
+  const paxAdults = useMemo(
+    () => parsePaxCountParam(searchParams.get("paxAdults")),
+    [searchParams],
+  );
+  const paxMinors = useMemo(
+    () => parsePaxCountParam(searchParams.get("paxMinors")),
+    [searchParams],
+  );
+  const paxPets = useMemo(
+    () => parsePaxCountParam(searchParams.get("paxPets")),
+    [searchParams],
+  );
 
   return {
     travelType,
@@ -137,5 +159,8 @@ export function useJourneySearchParams(
     accommodationType,
     addons,
     tripRequestId,
+    paxAdults,
+    paxMinors,
+    paxPets,
   };
 }

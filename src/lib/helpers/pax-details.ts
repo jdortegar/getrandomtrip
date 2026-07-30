@@ -31,7 +31,10 @@ export const FIXED_PAX_GROUP: PaxDetails = {
  * When non-null, checkout party size is fixed for this traveler type.
  *   solo   → 1 adult
  *   couple → 2 adults
- *   group  → 3 adults
+ *
+ * Group is intentionally NOT fixed here: its party size is now editable via
+ * the "Travellers" substep in journey/details, defaulting to 3 adults
+ * (see getDefaultPaxDetailsForTravelType) but adjustable by the user.
  */
 export function getFixedPaxDetailsForTravelType(
   travelType: string,
@@ -39,8 +42,34 @@ export function getFixedPaxDetailsForTravelType(
   const t = travelType.trim().toLowerCase();
   if (t === "solo") return FIXED_PAX_SOLO;
   if (t === "couple") return FIXED_PAX_COUPLE_LIKE;
-  if (t === "group") return FIXED_PAX_GROUP;
   return null;
+}
+
+/**
+ * Sensible starting defaults for the "Travellers" substep (group/family/paws
+ * only). These are pre-filled values the user can then adjust — not locks.
+ */
+export function getDefaultPaxDetailsForTravelType(
+  travelType: string,
+): PaxDetails {
+  const t = travelType.trim().toLowerCase();
+  if (t === "group") return { adults: 3, minors: 0, rooms: 1, pets: 0 };
+  if (t === "family") return { adults: 2, minors: 1, rooms: 1, pets: 0 };
+  if (t === "paws") return { adults: 1, minors: 0, rooms: 1, pets: 1 };
+  return DEFAULT_PAX_DETAILS;
+}
+
+const PAX_SUBSTEP_TRAVEL_TYPES = new Set(["group", "family", "paws"]);
+
+/**
+ * True when travelType is in scope for the journey/details "Travellers"
+ * substep (Adults/Minors/Pets steppers). Single source of truth shared by
+ * the substep's conditional render, the travel-type-change seeding effect,
+ * and the trip-request payload builder.
+ */
+export function hasPaxSubstep(travelType: string | null | undefined): boolean {
+  if (!travelType) return false;
+  return PAX_SUBSTEP_TRAVEL_TYPES.has(travelType.trim().toLowerCase());
 }
 
 /** True when the user may change adults / minors / rooms on checkout. */
@@ -68,7 +97,16 @@ export function parsePaxDetails(value: unknown): PaxDetails | null {
   const m = Math.floor(minors);
   const r = Math.floor(rooms);
   if (a < 1 || m < 0 || r < 1) return null;
-  return { adults: a, minors: m, rooms: r };
+
+  // pets is optional and backward-compat: absent or invalid just defaults to
+  // 0 rather than invalidating the whole (already-persisted) record.
+  let pets = 0;
+  if (o.pets != null) {
+    const p = Number(o.pets);
+    if (Number.isFinite(p) && p >= 0) pets = Math.floor(p);
+  }
+
+  return { adults: a, minors: m, rooms: r, pets };
 }
 
 export function paxDetailsFromTotalPax(totalPax: number): PaxDetails {
@@ -82,6 +120,7 @@ export function paxDetailsEquals(a: PaxDetails, b: unknown): boolean {
   return (
     parsed.adults === a.adults &&
     parsed.minors === a.minors &&
-    parsed.rooms === a.rooms
+    parsed.rooms === a.rooms &&
+    parsed.pets === (a.pets ?? 0)
   );
 }
