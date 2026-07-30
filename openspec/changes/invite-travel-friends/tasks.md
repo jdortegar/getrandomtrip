@@ -31,24 +31,24 @@ Chain strategy: stacked-to-main
 
 ## Phase 1: Schema + Token Core + Roster Core
 
-- [ ] 1.1 `prisma/schema.prisma` — add `model TripTraveler` (FK `TripRequest`, inline token fields per confirmed decision), `TravelerKind`/`TravelerStatus` enums, extend `NotificationType` with `TRAVELER_SUBMITTED`, add `TripRequest.travelers[]` + `travelersLockedAt`. Satisfies spec "Roster Creation on Payment Success" schema delta.
-- [ ] 1.2 Run `npm run db:push` (additive model + enum values + nullable columns; no migration file in this repo).
-- [ ] 1.3 `src/types/traveler.ts` — `TravelerDTO`, `TravelerRoster`; re-export `TravelerKind`/`TravelerStatus` from `@prisma/client`.
-- [ ] 1.4 RED — `src/lib/travelers/__tests__/travelerInviteTokens.test.ts`: `issueTravelerInvite(travelerId)` overwrites `inviteTokenHash`/`inviteTokenExpiresAt`/`invitedAt` via a single `update` (no delete-then-create), clears `reminderSentAt`, sets `status: INVITED`, returns plaintext not hash. Mock `prisma`.
-- [ ] 1.5 GREEN — implement `issueTravelerInvite` in `src/lib/travelers/travelerInviteTokens.ts` (fork `tripperInviteTokens.ts`'s hash/TTL idiom, rotate-in-place per design decision). Satisfies spec "Buyer sends first invite" + "Resend rotates token".
-- [ ] 1.6 RED — extend tests for `peekTravelerInvite(plaintext)`: unknown hash → `invalid`; null hash (already consumed) → `used`; past `inviteTokenExpiresAt` → `expired`; trip past cutoff → `locked`; valid → `{ok:true, travelerId, tripRequestId, kind, buyerFirstName}`; assert no `update` call.
-- [ ] 1.7 GREEN — implement `peekTravelerInvite` (joins `tripRequest` for cutoff + buyer first name). Satisfies spec "Valid token peek", "Expired token", "Already-consumed token".
-- [ ] 1.8 RED — extend tests for `consumeTravelerInvite(plaintext, data)`: same branch results as peek; on valid, re-checks cutoff independently (still-valid token past cutoff → `locked`), writes `fullName`/`idDocument`/`email?`, stamps `submittedAt`+`consentAt`, sets `status: COMPLETE`, nulls the hash.
-- [ ] 1.9 GREEN — implement `consumeTravelerInvite`, sharing lookup/branch logic with `peekTravelerInvite` via a private helper. Satisfies spec "Submission after cutoff rejected".
-- [ ] 1.10 RED — `src/lib/travelers/__tests__/travelerRoster.test.ts`: `computeTravelerCap(paxDetails)` — missing/non-numeric `adults`/`minors` → treated as `0`; `adultRows = max(0, adults-1)`, `minorRows = max(0, minors)`; never throws.
-- [ ] 1.11 GREEN — implement `computeTravelerCap`. Satisfies spec "Normal party", "Malformed paxDetails", "Solo traveler".
-- [ ] 1.12 RED — extend tests for `isRosterLocked(trip)`: `travelersLockedAt != null` → `true`; `now >= startDate - 7d` → `true` (boundary case at exact T-7d); otherwise `false`.
-- [ ] 1.13 GREEN — implement `isRosterLocked`. Satisfies spec "Pre-cutoff edit allowed", "Post-cutoff write rejected server-side".
-- [ ] 1.14 RED — extend tests for `ensureRoster(tripId)`: no-op when `payment.status !== "APPROVED"`; creates `ADULT` rows first then `MINOR` rows matching `computeTravelerCap`; idempotent — second call creates nothing when rows already match cap.
-- [ ] 1.15 GREEN — implement `ensureRoster`.
-- [ ] 1.16 RED — extend tests for `getRosterForTrip(tripId)` / `serializeTraveler`: calls `ensureRoster` then returns `{deadline, locked, cap, submitted, travelers[]}`; `serializeTraveler` is the only place a row becomes a `TravelerDTO`.
-- [ ] 1.17 GREEN — implement `getRosterForTrip` + `serializeTraveler` in `src/lib/travelers/travelerRoster.ts`.
-- [ ] 1.18 REFACTOR — confirm one shared hash/lookup helper (no duplicated hashing logic), `TravelerPeek` union exhaustively handled by every branch above.
+- [x] 1.1 `prisma/schema.prisma` — add `model TripTraveler` (FK `TripRequest`, inline token fields per confirmed decision), `TravelerKind`/`TravelerStatus` enums, extend `NotificationType` with `TRAVELER_SUBMITTED`, add `TripRequest.travelers[]` + `travelersLockedAt`. Satisfies spec "Roster Creation on Payment Success" schema delta.
+- [x] 1.2 Run `npm run db:push` (additive model + enum values + nullable columns; no migration file in this repo).
+- [x] 1.3 `src/types/traveler.ts` — `TravelerDTO`, `TravelerRoster`; re-export `TravelerKind`/`TravelerStatus` from `@prisma/client`.
+- [x] 1.4 RED — `src/lib/travelers/__tests__/travelerInviteTokens.test.ts`: `issueTravelerInvite(travelerId)` overwrites `inviteTokenHash`/`inviteTokenExpiresAt`/`invitedAt` via a single `update` (no delete-then-create), clears `reminderSentAt`, sets `status: INVITED`, returns plaintext not hash. Mock `prisma`.
+- [x] 1.5 GREEN — implement `issueTravelerInvite` in `src/lib/travelers/travelerInviteTokens.ts` (fork `tripperInviteTokens.ts`'s hash/TTL idiom, rotate-in-place per design decision). Satisfies spec "Buyer sends first invite" + "Resend rotates token".
+- [x] 1.6 RED — extend tests for `peekTravelerInvite(plaintext)`: unknown hash → `invalid`; null hash (already consumed) → `used`; past `inviteTokenExpiresAt` → `expired`; trip past cutoff → `locked`; valid → `{ok:true, travelerId, tripRequestId, kind, buyerFirstName}`; assert no `update` call.
+- [x] 1.7 GREEN — implement `peekTravelerInvite` (joins `tripRequest` for cutoff + buyer first name). Satisfies spec "Valid token peek", "Expired token", "Already-consumed token".
+- [x] 1.8 RED — extend tests for `consumeTravelerInvite(plaintext, data)`: same branch results as peek; on valid, re-checks cutoff independently (still-valid token past cutoff → `locked`), writes `fullName`/`idDocument`/`email?`, stamps `submittedAt`+`consentAt`, sets `status: COMPLETE`, nulls the hash.
+- [x] 1.9 GREEN — implement `consumeTravelerInvite`, sharing lookup/branch logic with `peekTravelerInvite` via a private helper. Satisfies spec "Submission after cutoff rejected".
+- [x] 1.10 RED — `src/lib/travelers/__tests__/travelerRoster.test.ts`: `computeTravelerCap(paxDetails)` — missing/non-numeric `adults`/`minors` → treated as `0`; `adultRows = max(0, adults-1)`, `minorRows = max(0, minors)`; never throws.
+- [x] 1.11 GREEN — implement `computeTravelerCap`. Satisfies spec "Normal party", "Malformed paxDetails", "Solo traveler".
+- [x] 1.12 RED — extend tests for `isRosterLocked(trip)`: `travelersLockedAt != null` → `true`; `now >= startDate - 7d` → `true` (boundary case at exact T-7d); otherwise `false`.
+- [x] 1.13 GREEN — implement `isRosterLocked`. Satisfies spec "Pre-cutoff edit allowed", "Post-cutoff write rejected server-side".
+- [x] 1.14 RED — extend tests for `ensureRoster(tripId)`: no-op when `payment.status !== "APPROVED"`; creates `ADULT` rows first then `MINOR` rows matching `computeTravelerCap`; idempotent — second call creates nothing when rows already match cap.
+- [x] 1.15 GREEN — implement `ensureRoster`.
+- [x] 1.16 RED — extend tests for `getRosterForTrip(tripId)` / `serializeTraveler`: calls `ensureRoster` then returns `{deadline, locked, cap, submitted, travelers[]}`; `serializeTraveler` is the only place a row becomes a `TravelerDTO`.
+- [x] 1.17 GREEN — implement `getRosterForTrip` + `serializeTraveler` in `src/lib/travelers/travelerRoster.ts`.
+- [x] 1.18 REFACTOR — confirm one shared hash/lookup helper (no duplicated hashing logic), `TravelerPeek` union exhaustively handled by every branch above.
 
 ## Phase 2: Write/Read API Routes
 
