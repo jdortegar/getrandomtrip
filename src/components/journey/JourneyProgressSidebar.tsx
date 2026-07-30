@@ -25,6 +25,25 @@ interface JourneyProgressSidebarProps {
   activeSubstepId?: string;
   /** Tab IDs considered fully complete (used instead of search-param checks when provided). */
   completedTabIds?: string[];
+  /**
+   * Live per-tab completeness overrides keyed by tabId, e.g. `{ details: true }`.
+   * Used instead of the internal search-param-based isTabComplete() check for
+   * exactly the tab ids present as keys here — other tabs keep the existing
+   * behavior unchanged. Needed for tabs (e.g. "details") whose caller stages
+   * edits in local draft state and only flushes to the URL when the user
+   * leaves the tab, so reading raw search params for that tab lags behind
+   * real-time edits. Strictly additive: omit this prop for zero behavior
+   * change (same as every existing caller).
+   */
+  tabCompletionOverrides?: Record<string, boolean>;
+  /**
+   * Live per-substep completeness overrides keyed by `${tabId}:${substepId}`.
+   * Same rationale as tabCompletionOverrides, at the substep level. Composite
+   * keys avoid any accidental cross-tab collision if two tabs ever reuse the
+   * same substep id. Strictly additive: omit this prop for zero behavior
+   * change (same as every existing caller).
+   */
+  substepCompletionOverrides?: Record<string, boolean>;
   /** Shown as a badge when add-ons substep exists but is disabled (journey flag). */
   addonsComingSoonLabel: string;
   className?: string;
@@ -41,6 +60,8 @@ export default function JourneyProgressSidebar({
   activeTab,
   activeSubstepId,
   completedTabIds,
+  tabCompletionOverrides,
+  substepCompletionOverrides,
   addonsComingSoonLabel,
   className,
   progressLabel,
@@ -181,9 +202,12 @@ export default function JourneyProgressSidebar({
         <div className="space-y-8">
           {tabs.map((tab, tabIndex) => {
             const isActive = tab.id === activeTab;
-            const isCompleted = completedTabIds
-              ? completedTabIds.includes(tab.id)
-              : isTabComplete(tab.id);
+            const isCompleted =
+              tabCompletionOverrides && tab.id in tabCompletionOverrides
+                ? tabCompletionOverrides[tab.id]
+                : completedTabIds
+                  ? completedTabIds.includes(tab.id)
+                  : isTabComplete(tab.id);
             const isUpcoming = tabIndex > activeIndex;
             const stepNumber = tabIndex + 1;
             const hasSubsteps = tab.substeps.length > 0;
@@ -270,12 +294,16 @@ export default function JourneyProgressSidebar({
                             (activeSubstepId
                               ? substep.id === activeSubstepId
                               : substepIndex === 0);
+                          const substepKey = `${tab.id}:${substep.id}`;
                           const isSubstepCompleted = activeSubstepId
                             ? substepIndex <
                               tab.substeps.findIndex(
                                 (s) => s.id === activeSubstepId,
                               )
-                            : isSubstepComplete(tab.id, substep.id);
+                            : substepCompletionOverrides &&
+                                substepKey in substepCompletionOverrides
+                              ? substepCompletionOverrides[substepKey]
+                              : isSubstepComplete(tab.id, substep.id);
                           const isLastSubstep =
                             substepIndex === tab.substeps.length - 1;
 
@@ -343,13 +371,9 @@ export default function JourneyProgressSidebar({
                                     "mb-1 flex flex-wrap items-center gap-2 text-sm font-bold uppercase",
                                     {
                                       "text-light-blue":
-                                        (isSubstepActive ||
-                                          isSubstepCompleted) &&
-                                        !isAddonsComingSoon,
+                                        isSubstepActive && !isAddonsComingSoon,
                                       "text-gray-400":
-                                        (!isSubstepActive &&
-                                          !isSubstepCompleted) ||
-                                        isAddonsComingSoon,
+                                        !isSubstepActive || isAddonsComingSoon,
                                     },
                                   )}
                                 >
@@ -363,12 +387,9 @@ export default function JourneyProgressSidebar({
                                 <p
                                   className={cn("text-xs leading-relaxed", {
                                     "text-gray-700":
-                                      (isSubstepActive || isSubstepCompleted) &&
-                                      !isAddonsComingSoon,
+                                      isSubstepActive && !isAddonsComingSoon,
                                     "text-gray-400":
-                                      (!isSubstepActive &&
-                                        !isSubstepCompleted) ||
-                                      isAddonsComingSoon,
+                                      !isSubstepActive || isAddonsComingSoon,
                                   })}
                                 >
                                   {substep.description}

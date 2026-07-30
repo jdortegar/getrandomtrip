@@ -3,7 +3,9 @@ import {
   buildTripRequestPayloadFromSearchParams,
   filterContentTabsForUI,
   getNextTab,
+  getTravelTypeSelectionEffects,
   isJourneyComplete,
+  PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
   type JourneyStepValues,
 } from "@/lib/helpers/journey";
 
@@ -246,5 +248,66 @@ describe("filterContentTabsForUI", () => {
     });
     const excuseTab = result.find((t) => t.id === "excuse");
     expect(excuseTab?.substeps).toEqual(contentTabs[1].substeps);
+  });
+});
+
+describe("getTravelTypeSelectionEffects", () => {
+  // Regression test for: switching travel type while a non-"origin"
+  // accordion section (e.g. "dates" or "transport") is open leaves the
+  // accordion stuck on the stale section — origin/dates/transport params
+  // get wiped by PARAMS_TO_RESET_AFTER_TRAVEL_TYPE, but "dates"/"transport"
+  // remain *valid* accordion values for the "details" tab, so
+  // useJourneyAccordion's tab-change effect (which only corrects *invalid*
+  // values) never resets it. The accordion must be reset explicitly here.
+  it("always resets the accordion back to 'origin', matching handleContinue's precedent for entering details", () => {
+    const result = getTravelTypeSelectionEffects("couple", null);
+    expect(result.accordionValue).toBe("origin");
+  });
+
+  it("resets it to 'pax' for travel types that seed pax defaults, since Travellers is the first substep for them", () => {
+    const result = getTravelTypeSelectionEffects("group", {
+      adults: 3,
+      minors: 0,
+      pets: 0,
+    });
+    expect(result.accordionValue).toBe("pax");
+  });
+
+  it("includes every PARAMS_TO_RESET_AFTER_TRAVEL_TYPE key plus the new travelType", () => {
+    const result = getTravelTypeSelectionEffects("solo", null);
+    expect(result.queryPatch).toEqual({
+      ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
+      travelType: "solo",
+    });
+  });
+
+  it("seeds paxAdults/paxMinors/paxPets in the same patch when a paxSeed is given", () => {
+    const result = getTravelTypeSelectionEffects("family", {
+      adults: 2,
+      minors: 1,
+      pets: 0,
+    });
+    expect(result.queryPatch).toEqual({
+      ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
+      travelType: "family",
+      paxAdults: "2",
+      paxMinors: "1",
+      paxPets: "0",
+    });
+  });
+
+  it("defaults paxPets to '0' when paxSeed.pets is omitted", () => {
+    const result = getTravelTypeSelectionEffects("paws", {
+      adults: 1,
+      minors: 0,
+    });
+    expect(result.queryPatch.paxPets).toBe("0");
+  });
+
+  it("does not seed pax params when paxSeed is null (they stay reset via PARAMS_TO_RESET_AFTER_TRAVEL_TYPE)", () => {
+    const result = getTravelTypeSelectionEffects("couple", null);
+    expect(result.queryPatch.paxAdults).toBeUndefined();
+    expect(result.queryPatch.paxMinors).toBeUndefined();
+    expect(result.queryPatch.paxPets).toBeUndefined();
   });
 });

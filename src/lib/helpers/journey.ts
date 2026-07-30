@@ -304,6 +304,46 @@ export const PARAMS_TO_RESET_AFTER_EXPERIENCE: Record<
   tripRequestId: undefined,
 };
 
+export interface TravelTypeSelectionEffects {
+  queryPatch: Record<string, string | undefined>;
+  accordionValue: string;
+}
+
+/**
+ * Computes the URL query patch AND the accordion section that should end up
+ * open after the user picks a new travel type.
+ *
+ * `accordionValue` is a single flat piece of state shared across the whole
+ * journey flow (see useJourneyAccordion), not scoped per tab. Origin/Dates/
+ * Transport/pax params are wiped here via PARAMS_TO_RESET_AFTER_TRAVEL_TYPE
+ * because they no longer apply to the new type, but "dates" or "transport"
+ * remain *valid* accordion values for the "details" tab's own whitelist even
+ * though the data behind them was just wiped — useJourneyAccordion's
+ * tab-change effect only corrects values that become *invalid*, so it never
+ * catches this. The accordion must be forced back to "origin" explicitly,
+ * matching the same target handleContinue already uses when advancing into
+ * "details" normally.
+ */
+export function getTravelTypeSelectionEffects(
+  slug: string,
+  paxSeed: { adults: number; minors: number; pets?: number } | null,
+): TravelTypeSelectionEffects {
+  return {
+    queryPatch: {
+      ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
+      travelType: slug,
+      ...(paxSeed
+        ? {
+            paxAdults: String(paxSeed.adults),
+            paxMinors: String(paxSeed.minors),
+            paxPets: String(paxSeed.pets ?? 0),
+          }
+        : {}),
+    },
+    accordionValue: paxSeed ? "pax" : "origin",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Step-logic helpers (pure — no React dependencies)
 // ---------------------------------------------------------------------------

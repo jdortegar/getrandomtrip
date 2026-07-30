@@ -25,10 +25,10 @@ import {
   getNextTab,
   getRefineDetailsLabel,
   getTravelTypeLabel,
+  getTravelTypeSelectionEffects,
   isJourneyComplete,
   isStepComplete,
   PARAMS_TO_RESET_AFTER_EXPERIENCE,
-  PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
 } from "@/lib/helpers/journey";
 import {
   getDefaultPaxDetailsForTravelType,
@@ -36,6 +36,10 @@ import {
 } from "@/lib/helpers/pax-details";
 import { useJourneyAccordion } from "@/hooks/useJourneyAccordion";
 import { useJourneyDraftDetails } from "@/hooks/useJourneyDraftDetails";
+import {
+  useJourneyDetailsProgressCallback,
+  type JourneyDetailsProgress,
+} from "@/hooks/useJourneyDetailsProgress";
 import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
 import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
 import { useQuerySync } from "@/hooks/useQuerySync";
@@ -118,6 +122,14 @@ interface JourneyMainContentProps {
   detailsStepLabels?: JourneyDetailsStepLabels;
   /** Labels for preferences step (journey.preferencesStep). */
   preferencesStepLabels: JourneyPreferencesStepLabels;
+  /**
+   * Fires whenever the live, draft-aware completion of the "details" tab's
+   * Origin/Dates/Transport substeps (and the tab itself) changes. The
+   * sidebar (JourneyProgressSidebar) renders as a sibling, not a child, so
+   * it can't read this component's draft state directly — the parent page
+   * relays this into the sidebar's completion-override props instead.
+   */
+  onDetailsProgressChange?: (progress: JourneyDetailsProgress) => void;
   onOpenSection?: (sectionId: string) => void;
   onTabChange?: (tabId: string) => void;
   openSectionId?: string;
@@ -141,6 +153,7 @@ export default function JourneyMainContent({
   localizedRefineOptions,
   localizedTravelerTypes,
   mainContentLabels,
+  onDetailsProgressChange,
   onOpenSection,
   onTabChange,
   openSectionId,
@@ -230,6 +243,27 @@ export default function JourneyMainContent({
     transport: url.transport,
   };
 
+  // Live, draft-aware "details" tab progress — relayed up to journey/page.tsx
+  // so it can override JourneyProgressSidebar's search-param-based checks
+  // (which lag behind Origin/Dates/Transport edits until the draft flushes;
+  // see useJourneyDetailsProgress.ts for the full rationale). "complete"
+  // mirrors isStepComplete("details", ...)'s own criteria (origin + dates
+  // only — transport isn't required there, same as JourneyProgressSidebar's
+  // isTabComplete("details")).
+  useJourneyDetailsProgressCallback(
+    {
+      origin: Boolean(
+        draftDetails.effectiveOriginCountry && draftDetails.effectiveOriginCity,
+      ),
+      dates: Boolean(
+        draftDetails.effectiveStartDate && draftDetails.effectiveNights,
+      ),
+      transport: draftDetails.effectiveTransportOrder.length === 4,
+      complete: isStepComplete("details", stepValues),
+    },
+    onDetailsProgressChange,
+  );
+
   const scrollToActions = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -302,25 +336,22 @@ export default function JourneyMainContent({
   ]);
 
   const handleTravelTypeSelect = (slug: string) => {
-    // PARAMS_TO_RESET_AFTER_TRAVEL_TYPE is reset-only (clears every param to
-    // undefined) — it doesn't seed new values. For group/family/paws we also
-    // seed paxAdults/paxMinors/paxPets to that type's sensible defaults here,
-    // in the same updateQuery call, so switching travel types never carries
-    // over stale numbers from a previous type.
+    // For group/family/paws we also seed paxAdults/paxMinors/paxPets to that
+    // type's sensible defaults, so switching travel types never carries over
+    // stale numbers from a previous type.
     const paxSeed = hasPaxSubstep(slug)
       ? getDefaultPaxDetailsForTravelType(slug)
       : null;
-    updateQuery({
-      ...PARAMS_TO_RESET_AFTER_TRAVEL_TYPE,
-      travelType: slug,
-      ...(paxSeed
-        ? {
-            paxAdults: String(paxSeed.adults),
-            paxMinors: String(paxSeed.minors),
-            paxPets: String(paxSeed.pets ?? 0),
-          }
-        : {}),
-    });
+    const { queryPatch, accordionValue: nextAccordionValue } =
+      getTravelTypeSelectionEffects(slug, paxSeed);
+    updateQuery(queryPatch);
+    // The accordion is a single flat piece of state shared across the whole
+    // flow (see useJourneyAccordion) — "dates"/"transport" stay *valid*
+    // accordion values for the "details" tab's own whitelist even though
+    // origin/dates/transport were just wiped above, so it must be reset
+    // explicitly here (matching the "origin" target handleContinue already
+    // uses when advancing into "details" normally).
+    setAccordionValue(nextAccordionValue);
   };
 
   const handleExperienceSelect = (levelId: string) => {
@@ -498,7 +529,9 @@ export default function JourneyMainContent({
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
       if (nextTab === "excuse") setAccordionValue("excuse");
-      if (nextTab === "details") setAccordionValue("origin");
+      if (nextTab === "details") {
+        setAccordionValue(hasPaxSubstep(url.travelType) ? "pax" : "origin");
+      }
       if (nextTab === "preferences") setAccordionValue("filters");
       scrollToActions();
     }

@@ -53,6 +53,7 @@ export function useJourneyAccordion(
       }
     } else if (activeTab === "details") {
       const valid =
+        accordionValue === "pax" ||
         accordionValue === "origin" ||
         accordionValue === "dates" ||
         accordionValue === "transport" ||

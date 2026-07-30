@@ -32,6 +32,11 @@ const DEFAULT_MONTH_NAMES = [
   "Diciembre",
 ];
 
+function paxSegment(one: string, many: string, n: number): string {
+  const template = n === 1 ? one : many;
+  return template.replace("{count}", String(n));
+}
+
 function formatDatesRange(
   startDate: string,
   nights: number,
@@ -220,54 +225,61 @@ export function JourneyDetailsStep({
   const showPaxSubstep = hasPaxSubstep(travelType);
   const paxFields = getPaxSubstepFields(travelType);
 
+  const paxSummary =
+    paxFields === "adults-pets"
+      ? [
+          paxSegment(labels.pax.adultsOne, labels.pax.adultsMany, paxAdults),
+          paxSegment(labels.pax.petsOne, labels.pax.petsMany, paxPets),
+        ].join(labels.pax.breakdownSeparator)
+      : [
+          paxSegment(labels.pax.adultsOne, labels.pax.adultsMany, paxAdults),
+          paxSegment(labels.pax.minorsOne, labels.pax.minorsMany, paxMinors),
+        ].join(labels.pax.breakdownSeparator);
+
   return (
-    <div className="space-y-4">
-      {showPaxSubstep && (
-        <div className="min-w-0 w-full rounded-lg bg-white p-4 shadow-md sm:p-6">
-          <h3 className="mb-4 text-xl font-semibold text-neutral-900">
-            {labels.paxLabel}
-          </h3>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <CountNumberInput
-              id="pax-adults"
-              label={labels.pax.adultsLabel}
-              min={1}
-              onChange={onPaxAdultsChange}
-              value={paxAdults}
-            />
-            {paxFields === "adults-minors" && (
+    <Accordion
+      collapsible
+      onValueChange={onOpenSection}
+      type="single"
+      value={openSectionId}
+    >
+      <div className="space-y-4">
+        {showPaxSubstep && (
+          <JourneyDropdown content={paxSummary} label={labels.paxLabel} value="pax">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <CountNumberInput
-                id="pax-minors"
-                label={labels.pax.minorsLabel}
-                min={0}
-                onChange={onPaxMinorsChange}
-                value={paxMinors}
+                id="pax-adults"
+                label={labels.pax.adultsLabel}
+                min={1}
+                onChange={onPaxAdultsChange}
+                value={paxAdults}
               />
-            )}
-            {paxFields === "adults-pets" && (
-              <CountNumberInput
-                id="pax-pets"
-                label={labels.pax.petsLabel}
-                min={0}
-                onChange={onPaxPetsChange}
-                value={paxPets}
-              />
-            )}
-          </div>
-        </div>
-      )}
-      <Accordion
-        collapsible
-        onValueChange={onOpenSection}
-        type="single"
-        value={openSectionId}
-      >
-        <div className="space-y-4">
-          <JourneyDropdown
-            content={originSummary}
-            label={labels.originLabel}
-            value="origin"
-          >
+              {paxFields === "adults-minors" && (
+                <CountNumberInput
+                  id="pax-minors"
+                  label={labels.pax.minorsLabel}
+                  min={0}
+                  onChange={onPaxMinorsChange}
+                  value={paxMinors}
+                />
+              )}
+              {paxFields === "adults-pets" && (
+                <CountNumberInput
+                  id="pax-pets"
+                  label={labels.pax.petsLabel}
+                  min={0}
+                  onChange={onPaxPetsChange}
+                  value={paxPets}
+                />
+              )}
+            </div>
+          </JourneyDropdown>
+        )}
+        <JourneyDropdown
+          content={originSummary}
+          label={labels.originLabel}
+          value="origin"
+        >
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <div className="flex min-w-0 flex-col gap-2">
                 <label className="text-base font-bold text-gray-700">
@@ -326,8 +338,7 @@ export function JourneyDetailsStep({
               value={transportOrder}
             />
           </JourneyDropdown>
-        </div>
-      </Accordion>
-    </div>
+      </div>
+    </Accordion>
   );
 }

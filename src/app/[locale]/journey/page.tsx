@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState, use } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, use } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
@@ -13,29 +13,37 @@ import { hasLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
 import { filterContentTabsForUI } from "@/lib/helpers/journey";
+import { hasPaxSubstep } from "@/lib/helpers/pax-details";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
+import type { JourneyDetailsProgress } from "@/hooks/useJourneyDetailsProgress";
 import {
   clearPendingJourneyDraftIdSession,
   consumePendingJourneyDraftId,
   saveJourneyDraftQueryString,
 } from "@/lib/helpers/journeyDraftStorage";
 
-export function getAccordionForStep(tabId: string, substepId?: string): string {
+export function getAccordionForStep(
+  tabId: string,
+  substepId?: string,
+  travelType?: string | null,
+): string {
   switch (tabId) {
     case "budget":
       return substepId === "experience" ? "experience" : "travel-type";
     case "excuse":
       return substepId === "refine-details" ? "refine-details" : "excuse";
     case "details":
-      // "Travellers" is no longer a collapsible accordion item — it's an
-      // always-visible block rendered before the Origin/Dates/Transport
-      // accordion. Clicking it in the sidebar must just switch to the
-      // "details" tab without forcing any accordion section open.
-      if (substepId === "pax") return "";
+      // "Travellers" is a normal accordion item, first in order, same as
+      // Origin/Dates/Transport -- only one substep is open at a time.
+      // When no specific substep is requested (e.g. clicking the "Details
+      // and planning" tab itself, or advancing via Next), open whichever
+      // substep is actually first in the list for this travel type.
+      if (substepId === "pax") return "pax";
+      if (substepId === "origin") return "origin";
       if (substepId === "dates") return "dates";
       if (substepId === "transport") return "transport";
-      return "origin";
+      return hasPaxSubstep(travelType) ? "pax" : "origin";
     case "preferences":
       if (substepId === "addons" && JOURNEY_ADDONS_ENABLED) return "addons";
       return "filters";
@@ -52,6 +60,7 @@ function getTabForSection(sectionId: string): string {
     case "excuse":
     case "refine-details":
       return "excuse";
+    case "pax":
     case "origin":
     case "dates":
     case "transport":
@@ -108,6 +117,41 @@ function JourneyPageContent({ locale }: { locale?: string }) {
     useState<TripperJourneyContext | null>(null);
   const hasSyncedJourneyStateFromUrl = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Live, draft-aware completion for the "details" tab's Origin/Dates/
+  // Transport substeps — relayed here from JourneyMainContent (which owns
+  // the draft state) so JourneyProgressSidebar (a sibling, not a child) can
+  // show real-time dots instead of the stale ones its own search-param-based
+  // check would produce while the user is actively editing. See
+  // useJourneyDetailsProgress.ts for the full rationale.
+  const [detailsProgress, setDetailsProgress] = useState<JourneyDetailsProgress>(
+    { origin: false, dates: false, transport: false, complete: false },
+  );
+  const handleDetailsProgressChange = useCallback(
+    (next: JourneyDetailsProgress) => {
+      setDetailsProgress((prev) =>
+        prev.origin === next.origin &&
+        prev.dates === next.dates &&
+        prev.transport === next.transport &&
+        prev.complete === next.complete
+          ? prev
+          : next,
+      );
+    },
+    [],
+  );
+  const detailsTabCompletionOverrides = useMemo(
+    () => ({ details: detailsProgress.complete }),
+    [detailsProgress.complete],
+  );
+  const detailsSubstepCompletionOverrides = useMemo(
+    () => ({
+      "details:origin": detailsProgress.origin,
+      "details:dates": detailsProgress.dates,
+      "details:transport": detailsProgress.transport,
+    }),
+    [detailsProgress.origin, detailsProgress.dates, detailsProgress.transport],
+  );
 
   const resolvedLocale = hasLocale(locale) ? locale : "es";
 
@@ -179,7 +223,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
 
   const handleStepClick = (tabId: string, substepId?: string) => {
     setActiveTab(tabId);
-    setOpenSectionId(getAccordionForStep(tabId, substepId));
+    setOpenSectionId(getAccordionForStep(tabId, substepId, travelType));
   };
 
   const handleSummaryEdit = (sectionId: string) => {
@@ -234,9 +278,12 @@ function JourneyPageContent({ locale }: { locale?: string }) {
         <div className="flex flex-col lg:flex-row w-full gap-8">
           <div className="lg:sticky lg:top-8 lg:self-start hidden lg:block">
             <JourneyProgressSidebar
+              activeSubstepId={openSectionId}
               activeTab={activeTab}
               addonsComingSoonLabel={journey.mainContent.addonsComingSoon}
               onStepClick={handleStepClick}
+              substepCompletionOverrides={detailsSubstepCompletionOverrides}
+              tabCompletionOverrides={detailsTabCompletionOverrides}
               tabs={contentTabsForUI}
             />
           </div>
@@ -252,6 +299,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               localizedRefineOptions={journey.refineDetailOptions}
               localizedTravelerTypes={dict.home.exploration.travelerTypes}
               mainContentLabels={journey.mainContent}
+              onDetailsProgressChange={handleDetailsProgressChange}
               onOpenSection={setOpenSectionId}
               onTabChange={handleTabChange}
               openSectionId={openSectionId}

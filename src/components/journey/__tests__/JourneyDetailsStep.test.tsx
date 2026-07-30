@@ -27,27 +27,35 @@ const baseProps = {
   transportOrder: [],
 };
 
-function renderStep(travelType: string) {
+function renderStep(travelType: string, openSectionId = "origin") {
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
   act(() => {
-    root.render(<JourneyDetailsStep {...baseProps} travelType={travelType} />);
+    root.render(
+      <JourneyDetailsStep
+        {...baseProps}
+        openSectionId={openSectionId}
+        travelType={travelType}
+      />,
+    );
   });
   return { container, root };
 }
 
 describe("JourneyDetailsStep — Travellers substep", () => {
-  it("renders the Travellers block always-visible, not inside a collapsible trigger, for group", () => {
+  it("renders Travellers as a collapsible accordion trigger, same as Origin/Dates/Transport", () => {
     const { container, root } = renderStep("group");
 
-    // No accordion trigger button wraps the pax label — plain heading only.
-    const paxHeading = Array.from(container.querySelectorAll("h3")).find((h) =>
-      h.textContent?.includes("Viajeros"),
+    // "Viajeros" is the dropdown trigger label, not a plain heading — it
+    // must be inside a Radix accordion trigger button with a data-state,
+    // just like the Origin/Dates/Transport triggers.
+    const paxLabel = Array.from(container.querySelectorAll("span")).find(
+      (el) => el.textContent === "Viajeros",
     );
-    expect(paxHeading).toBeTruthy();
-    expect(paxHeading?.closest("button")).toBeNull();
-    expect(paxHeading?.closest('[data-state]')).toBeNull();
+    expect(paxLabel).toBeTruthy();
+    expect(paxLabel?.closest("button")).toBeTruthy();
+    expect(paxLabel?.closest("[data-state]")).toBeTruthy();
 
     act(() => {
       root.unmount();
@@ -56,7 +64,7 @@ describe("JourneyDetailsStep — Travellers substep", () => {
   });
 
   it("shows Adults + Minors (no Pets) for group", () => {
-    const { container, root } = renderStep("group");
+    const { container, root } = renderStep("group", "pax");
     expect(container.querySelector("#pax-adults")).toBeTruthy();
     expect(container.querySelector("#pax-minors")).toBeTruthy();
     expect(container.querySelector("#pax-pets")).toBeNull();
@@ -67,7 +75,7 @@ describe("JourneyDetailsStep — Travellers substep", () => {
   });
 
   it("shows Adults + Minors (no Pets) for family", () => {
-    const { container, root } = renderStep("family");
+    const { container, root } = renderStep("family", "pax");
     expect(container.querySelector("#pax-adults")).toBeTruthy();
     expect(container.querySelector("#pax-minors")).toBeTruthy();
     expect(container.querySelector("#pax-pets")).toBeNull();
@@ -78,7 +86,7 @@ describe("JourneyDetailsStep — Travellers substep", () => {
   });
 
   it("shows Adults + Pets (no Minors) for paws", () => {
-    const { container, root } = renderStep("paws");
+    const { container, root } = renderStep("paws", "pax");
     expect(container.querySelector("#pax-adults")).toBeTruthy();
     expect(container.querySelector("#pax-pets")).toBeTruthy();
     expect(container.querySelector("#pax-minors")).toBeNull();
@@ -100,7 +108,7 @@ describe("JourneyDetailsStep — Travellers substep", () => {
   });
 
   it("uses plain number inputs (CountNumberInput), not the +/- QuantityStepper", () => {
-    const { container, root } = renderStep("group");
+    const { container, root } = renderStep("group", "pax");
     // QuantityStepper renders increase/decrease buttons with aria-labels;
     // the new plain inputs must not.
     expect(container.querySelector('[aria-label*="adultos" i]')).toBeNull();
