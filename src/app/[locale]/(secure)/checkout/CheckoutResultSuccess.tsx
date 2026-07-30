@@ -11,8 +11,10 @@ import Confetti from "@/components/feedback/Confetti";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
 import Section from "@/components/layout/Section";
+import { TravelerRosterSection } from "@/components/app/travelers/TravelerRosterSection";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import type { TravelerRoster } from "@/types/traveler";
 
 interface TripSummaryData {
   trip: {
@@ -25,6 +27,7 @@ interface TripSummaryData {
     pax: number;
     startDate: string | null;
     type: string;
+    roster: TravelerRoster;
   };
   payment: {
     amount: number;
@@ -41,6 +44,7 @@ interface CheckoutResultSuccessProps {
     paymentIntent: string | null;
     redirectStatus: string | null;
   } | null;
+  travelersCopy: Dictionary["inviteTravelers"];
 }
 
 function isXsed(type: string) {
@@ -52,6 +56,7 @@ export default function CheckoutResultSuccess({
   labels,
   locale,
   stripeReturn,
+  travelersCopy,
 }: CheckoutResultSuccessProps) {
   const searchParams = useSearchParams();
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
@@ -205,6 +210,17 @@ export default function CheckoutResultSuccess({
                     />
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Invite your travel friends */}
+            {tripData?.trip.roster && (
+              <div className="mt-12 flex w-full justify-center">
+                <TravelerRosterSection
+                  copy={travelersCopy}
+                  locale={safeLocale}
+                  roster={tripData.trip.roster}
+                />
               </div>
             )}
 

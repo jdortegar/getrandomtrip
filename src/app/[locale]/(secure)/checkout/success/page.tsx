@@ -56,6 +56,7 @@ export default async function CheckoutSuccessPage(props: {
         labels={dict.confirmation.page}
         locale={params.locale}
         stripeReturn={stripeReturn}
+        travelersCopy={dict.inviteTravelers}
       />
     </Suspense>
   );

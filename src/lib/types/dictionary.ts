@@ -1560,6 +1560,60 @@ export interface TripperInviteAcceptDict {
   registerErrorGeneric: string;
 }
 
+export interface InviteTravelersDict {
+  eyebrow: string;
+  heading: string;
+  subtitle: string;
+  deadlineLabel: string;
+  progressLabel: string;
+  lockedBanner: string;
+  supportLinkLabel: string;
+  footnote: string;
+  travelerLabel: string;
+  adultTag: string;
+  minorTag: string;
+  fullNameLabel: string;
+  fullNamePlaceholder: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  idDocumentLabel: string;
+  idDocumentPlaceholder: string;
+  idDocumentPendingPlaceholder: string;
+  dateOfBirthLabel: string;
+  sendInviteAction: string;
+  resendInviteAction: string;
+  saveAction: string;
+  lockedActionTitle: string;
+  statusPending: string;
+  statusInvited: string;
+  statusComplete: string;
+  invitedNote: string;
+  inviteResentNote: string;
+  minorFilledByBuyerNote: string;
+  savedNote: string;
+  incompleteError: string;
+  saveErrorGeneric: string;
+  sendInviteErrorGeneric: string;
+  landingBrand: string;
+  landingGreeting: string;
+  landingConsentPrefix: string;
+  landingConsentLinkLabel: string;
+  landingConsentSuffix: string;
+  landingSubmitLabel: string;
+  landingSubmitting: string;
+  landingCreateAccountPrompt: string;
+  landingCreateAccountLink: string;
+  landingSuccessTitle: string;
+  landingSuccessBody: string;
+  landingErrorTitle: string;
+  landingReasonInvalid: string;
+  landingReasonExpired: string;
+  landingReasonUsed: string;
+  landingReasonLocked: string;
+  landingConsentRequiredError: string;
+  landingGenericError: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -2700,4 +2754,5 @@ export interface MarketingDictionary {
   tripItinerary: TripItineraryDict;
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
+  inviteTravelers: InviteTravelersDict;
 }
