@@ -72,6 +72,24 @@ export function hasPaxSubstep(travelType: string | null | undefined): boolean {
   return PAX_SUBSTEP_TRAVEL_TYPES.has(travelType.trim().toLowerCase());
 }
 
+/** Which pair of headcount fields the "Travellers" substep shows for a given travel type. */
+export type PaxSubstepFields = "adults-minors" | "adults-pets";
+
+/**
+ * Group and family show Adults + Minors; paws shows Adults + Pets. No travel
+ * type shows all three fields, and none shows a field that doesn't apply to
+ * it. Returns null outside the hasPaxSubstep scope (solo/couple/etc).
+ */
+export function getPaxSubstepFields(
+  travelType: string | null | undefined,
+): PaxSubstepFields | null {
+  if (!travelType) return null;
+  const t = travelType.trim().toLowerCase();
+  if (t === "group" || t === "family") return "adults-minors";
+  if (t === "paws") return "adults-pets";
+  return null;
+}
+
 /** True when the user may change adults / minors / rooms on checkout. */
 export function isTravelersPartyEditable(
   travelType: string | undefined,

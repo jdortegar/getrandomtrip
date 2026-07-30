@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Accordion } from "@/components/ui/accordion";
-import { QuantityStepper } from "@/components/ui/QuantityStepper";
+import { CountNumberInput } from "@/components/ui/CountNumberInput";
 import CitySelector from "@/components/journey/CitySelector";
 import CountrySelector from "@/components/journey/CountrySelector";
 import { JourneyDatesPicker } from "@/components/journey/JourneyDatesPicker";
@@ -12,13 +12,8 @@ import TransportSelector, {
   TRANSPORT_OPTIONS,
 } from "@/components/journey/TransportSelector";
 import type { TransportSelectorLabels } from "@/components/journey/TransportSelector";
-import { formatPaxSubstepSummary } from "@/lib/helpers/format-travelers-party-breakdown";
-import { hasPaxSubstep } from "@/lib/helpers/pax-details";
+import { getPaxSubstepFields, hasPaxSubstep } from "@/lib/helpers/pax-details";
 import { getLevelById } from "@/lib/utils/experiencesData";
-
-const PAX_ADULTS_MAX = 20;
-const PAX_MINORS_MAX = 20;
-const PAX_PETS_MAX = 10;
 
 const DEFAULT_MAX_NIGHTS = 2;
 
@@ -223,118 +218,116 @@ export function JourneyDetailsStep({
       : labels.transportPlaceholder;
 
   const showPaxSubstep = hasPaxSubstep(travelType);
-
-  const paxSummary = formatPaxSubstepSummary(labels.pax, {
-    adults: paxAdults,
-    minors: paxMinors,
-    pets: paxPets,
-  });
+  const paxFields = getPaxSubstepFields(travelType);
 
   return (
-    <Accordion
-      collapsible
-      onValueChange={onOpenSection}
-      type="single"
-      value={openSectionId}
-    >
-      <div className="space-y-4">
-        {showPaxSubstep && (
-          <JourneyDropdown content={paxSummary} label={labels.paxLabel} value="pax">
-            <div className="space-y-0">
-              <QuantityStepper
-                ariaDecrease={labels.pax.ariaDecreaseAdults}
-                ariaIncrease={labels.pax.ariaIncreaseAdults}
-                label={labels.pax.adultsLabel}
-                max={PAX_ADULTS_MAX}
-                min={1}
-                onValueChange={onPaxAdultsChange}
-                value={paxAdults}
-              />
-              <QuantityStepper
-                ariaDecrease={labels.pax.ariaDecreaseMinors}
-                ariaIncrease={labels.pax.ariaIncreaseMinors}
+    <div className="space-y-4">
+      {showPaxSubstep && (
+        <div className="min-w-0 w-full rounded-lg bg-white p-4 shadow-md sm:p-6">
+          <h3 className="mb-4 text-xl font-semibold text-neutral-900">
+            {labels.paxLabel}
+          </h3>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <CountNumberInput
+              id="pax-adults"
+              label={labels.pax.adultsLabel}
+              min={1}
+              onChange={onPaxAdultsChange}
+              value={paxAdults}
+            />
+            {paxFields === "adults-minors" && (
+              <CountNumberInput
+                id="pax-minors"
                 label={labels.pax.minorsLabel}
-                max={PAX_MINORS_MAX}
                 min={0}
-                onValueChange={onPaxMinorsChange}
+                onChange={onPaxMinorsChange}
                 value={paxMinors}
               />
-              <QuantityStepper
-                ariaDecrease={labels.pax.ariaDecreasePets}
-                ariaIncrease={labels.pax.ariaIncreasePets}
+            )}
+            {paxFields === "adults-pets" && (
+              <CountNumberInput
+                id="pax-pets"
                 label={labels.pax.petsLabel}
-                max={PAX_PETS_MAX}
                 min={0}
-                onValueChange={onPaxPetsChange}
+                onChange={onPaxPetsChange}
                 value={paxPets}
               />
+            )}
+          </div>
+        </div>
+      )}
+      <Accordion
+        collapsible
+        onValueChange={onOpenSection}
+        type="single"
+        value={openSectionId}
+      >
+        <div className="space-y-4">
+          <JourneyDropdown
+            content={originSummary}
+            label={labels.originLabel}
+            value="origin"
+          >
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              <div className="flex min-w-0 flex-col gap-2">
+                <label className="text-base font-bold text-gray-700">
+                  {labels.countryLabel}
+                </label>
+                <CountrySelector
+                  onChange={(name, code) => {
+                    onOriginCountryChange(name);
+                    setOriginCountryCode(code);
+                    if (originCity) onOriginCityChange("");
+                  }}
+                  placeholder={labels.countryPlaceholder}
+                  size="lg"
+                  value={originCountry}
+                />
+              </div>
+
+              <div className="flex min-w-0 flex-col gap-2">
+                <label className="text-base font-bold text-gray-700">
+                  {labels.cityLabel}
+                </label>
+                <CitySelector
+                  countryCode={originCountryCode}
+                  onChange={onOriginCityChange}
+                  placeholder={labels.cityPlaceholder}
+                  size="lg"
+                  value={originCity}
+                />
+              </div>
             </div>
           </JourneyDropdown>
-        )}
-        <JourneyDropdown
-          content={originSummary}
-          label={labels.originLabel}
-          value="origin"
-        >
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <div className="flex min-w-0 flex-col gap-2">
-              <label className="text-base font-bold text-gray-700">
-                {labels.countryLabel}
-              </label>
-              <CountrySelector
-                onChange={(name, code) => {
-                  onOriginCountryChange(name);
-                  setOriginCountryCode(code);
-                  if (originCity) onOriginCityChange("");
-                }}
-                placeholder={labels.countryPlaceholder}
-                size="lg"
-                value={originCountry}
-              />
-            </div>
 
-            <div className="flex min-w-0 flex-col gap-2">
-              <label className="text-base font-bold text-gray-700">
-                {labels.cityLabel}
-              </label>
-              <CitySelector
-                countryCode={originCountryCode}
-                onChange={onOriginCityChange}
-                placeholder={labels.cityPlaceholder}
-                size="lg"
-                value={originCity}
-              />
-            </div>
-          </div>
-        </JourneyDropdown>
-
-        <JourneyDropdown
-          content={datesSummary}
-          label={labels.datesLabel}
-          value="dates"
-        >
-          <JourneyDatesPicker
-            labels={labelsProp?.datesPicker}
-            maxNights={maxNights}
-            nights={nights}
-            onNightsChange={onNightsChange}
-            onRangeChange={onRangeChange}
-            onStartDateChange={onStartDateChange}
-            startDate={startDate}
-          />
-        </JourneyDropdown>
-        <JourneyDropdown
-          content={transportSummary}
-          label={labels.transportLabel}
-          value="transport"
-        >
-          <TransportSelector
-            labels={labelsProp?.transportSelector}
-            onChange={onTransportOrderChange}
-            value={transportOrder}
-          />
-        </JourneyDropdown>
-      </div>
-    </Accordion>
+          <JourneyDropdown
+            content={datesSummary}
+            label={labels.datesLabel}
+            value="dates"
+          >
+            <JourneyDatesPicker
+              labels={labelsProp?.datesPicker}
+              maxNights={maxNights}
+              nights={nights}
+              onNightsChange={onNightsChange}
+              onRangeChange={onRangeChange}
+              onStartDateChange={onStartDateChange}
+              startDate={startDate}
+            />
+          </JourneyDropdown>
+          <JourneyDropdown
+            content={transportSummary}
+            label={labels.transportLabel}
+            value="transport"
+          >
+            <TransportSelector
+              labels={labelsProp?.transportSelector}
+              onChange={onTransportOrderChange}
+              value={transportOrder}
+            />
+          </JourneyDropdown>
+        </div>
+      </Accordion>
+    </div>
   );
 }

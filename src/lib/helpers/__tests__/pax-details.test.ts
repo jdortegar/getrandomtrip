@@ -3,6 +3,7 @@ import {
   DEFAULT_PAX_DETAILS,
   getDefaultPaxDetailsForTravelType,
   getFixedPaxDetailsForTravelType,
+  getPaxSubstepFields,
   hasPaxSubstep,
   isTravelersPartyEditable,
   parsePaxDetails,
@@ -132,6 +133,31 @@ describe("hasPaxSubstep", () => {
     expect(hasPaxSubstep(undefined)).toBe(false);
     expect(hasPaxSubstep(null)).toBe(false);
     expect(hasPaxSubstep("")).toBe(false);
+  });
+});
+
+describe("getPaxSubstepFields", () => {
+  it("returns 'adults-minors' for group and family — they show Adults + Minors, no Pets field", () => {
+    expect(getPaxSubstepFields("group")).toBe("adults-minors");
+    expect(getPaxSubstepFields("family")).toBe("adults-minors");
+  });
+
+  it("returns 'adults-pets' for paws — it shows Adults + Pets, no Minors field", () => {
+    expect(getPaxSubstepFields("paws")).toBe("adults-pets");
+  });
+
+  it("is case-insensitive and trims whitespace", () => {
+    expect(getPaxSubstepFields(" GROUP ")).toBe("adults-minors");
+    expect(getPaxSubstepFields(" Paws ")).toBe("adults-pets");
+  });
+
+  it("returns null for every other travel type, undefined, null, and empty string", () => {
+    expect(getPaxSubstepFields("solo")).toBeNull();
+    expect(getPaxSubstepFields("couple")).toBeNull();
+    expect(getPaxSubstepFields("honeymoon")).toBeNull();
+    expect(getPaxSubstepFields(undefined)).toBeNull();
+    expect(getPaxSubstepFields(null)).toBeNull();
+    expect(getPaxSubstepFields("")).toBeNull();
   });
 });
 

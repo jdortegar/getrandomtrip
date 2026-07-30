@@ -97,7 +97,7 @@ describe("buildTripRequestPayloadFromSearchParams — pax fields", () => {
     expect(payload.paxDetails).toEqual({ adults: 2, minors: 0, rooms: 1 });
   });
 
-  it("reflects paxAdults/paxMinors/paxPets in the payload when present for group", () => {
+  it("reflects paxAdults/paxMinors in the payload for group, and zeroes pets (group has no Pets field)", () => {
     const params = new URLSearchParams({
       travelType: "group",
       originCountry: "Argentina",
@@ -111,19 +111,19 @@ describe("buildTripRequestPayloadFromSearchParams — pax fields", () => {
       adults: 4,
       minors: 1,
       rooms: 1,
-      pets: 2,
+      pets: 0,
     });
     expect(payload.pax).toBe(5); // adults + minors, pets excluded from headcount
   });
 
-  it("reflects paxAdults/paxMinors/paxPets in the payload when present for family", () => {
+  it("reflects paxAdults/paxMinors in the payload for family, and zeroes pets (family has no Pets field)", () => {
     const params = new URLSearchParams({
       travelType: "family",
       originCountry: "Argentina",
       originCity: "Buenos Aires",
       paxAdults: "2",
       paxMinors: "2",
-      paxPets: "0",
+      paxPets: "3",
     });
     const payload = buildTripRequestPayloadFromSearchParams(params);
     expect(payload.paxDetails).toEqual({
@@ -135,13 +135,13 @@ describe("buildTripRequestPayloadFromSearchParams — pax fields", () => {
     expect(payload.pax).toBe(4);
   });
 
-  it("reflects paxAdults/paxMinors/paxPets in the payload when present for paws", () => {
+  it("reflects paxAdults/paxPets in the payload for paws, and zeroes minors (paws has no Minors field)", () => {
     const params = new URLSearchParams({
       travelType: "paws",
       originCountry: "Argentina",
       originCity: "Buenos Aires",
       paxAdults: "1",
-      paxMinors: "0",
+      paxMinors: "5",
       paxPets: "1",
     });
     const payload = buildTripRequestPayloadFromSearchParams(params);
@@ -151,7 +151,7 @@ describe("buildTripRequestPayloadFromSearchParams — pax fields", () => {
       rooms: 1,
       pets: 1,
     });
-    expect(payload.pax).toBe(1);
+    expect(payload.pax).toBe(1); // pets excluded, minors zeroed for paws
   });
 
   it("falls back to getDefaultPaxDetailsForTravelType for group/family/paws when pax params are absent", () => {

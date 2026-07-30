@@ -1,5 +1,6 @@
 import {
   getDefaultPaxDetailsForTravelType,
+  getPaxSubstepFields,
   hasPaxSubstep,
   paxDetailsFromTotalPax,
 } from "@/lib/helpers/pax-details";
@@ -113,6 +114,11 @@ export function buildTripRequestPayloadFromSearchParams(
     const paxMinorsRaw = searchParams.get("paxMinors");
     const paxPetsRaw = searchParams.get("paxPets");
     const defaults = getDefaultPaxDetailsForTravelType(travelType);
+    // Which fields this travel type's "Travellers" substep actually shows —
+    // the other one is forced to 0 below regardless of any stale/tampered
+    // URL param, since there's no input for it (group/family: no Pets field;
+    // paws: no Minors field).
+    const fields = getPaxSubstepFields(travelType);
 
     if (paxAdultsRaw != null || paxMinorsRaw != null || paxPetsRaw != null) {
       const parsedAdults = parseInt(paxAdultsRaw ?? "", 10);
@@ -122,14 +128,20 @@ export function buildTripRequestPayloadFromSearchParams(
         1,
         Number.isFinite(parsedAdults) ? parsedAdults : defaults.adults,
       );
-      const minors = Math.max(
-        0,
-        Number.isFinite(parsedMinors) ? parsedMinors : defaults.minors,
-      );
-      const pets = Math.max(
-        0,
-        Number.isFinite(parsedPets) ? parsedPets : (defaults.pets ?? 0),
-      );
+      const minors =
+        fields === "adults-pets"
+          ? 0
+          : Math.max(
+              0,
+              Number.isFinite(parsedMinors) ? parsedMinors : defaults.minors,
+            );
+      const pets =
+        fields === "adults-minors"
+          ? 0
+          : Math.max(
+              0,
+              Number.isFinite(parsedPets) ? parsedPets : (defaults.pets ?? 0),
+            );
       paxDetails = { adults, minors, rooms: 1, pets };
     } else {
       paxDetails = defaults;

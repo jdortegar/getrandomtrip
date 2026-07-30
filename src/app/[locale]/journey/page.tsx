@@ -21,13 +21,18 @@ import {
   saveJourneyDraftQueryString,
 } from "@/lib/helpers/journeyDraftStorage";
 
-function getAccordionForStep(tabId: string, substepId?: string): string {
+export function getAccordionForStep(tabId: string, substepId?: string): string {
   switch (tabId) {
     case "budget":
       return substepId === "experience" ? "experience" : "travel-type";
     case "excuse":
       return substepId === "refine-details" ? "refine-details" : "excuse";
     case "details":
+      // "Travellers" is no longer a collapsible accordion item — it's an
+      // always-visible block rendered before the Origin/Dates/Transport
+      // accordion. Clicking it in the sidebar must just switch to the
+      // "details" tab without forcing any accordion section open.
+      if (substepId === "pax") return "";
       if (substepId === "dates") return "dates";
       if (substepId === "transport") return "transport";
       return "origin";
