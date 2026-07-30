@@ -58,6 +58,12 @@ import PasswordReset, {
 import TripperInvite, {
   subjects as tripperInviteSubjects,
 } from "@/emails/TripperInvite";
+import TravelerInvite, {
+  subjects as travelerInviteSubjects,
+} from "@/emails/TravelerInvite";
+import TravelerReminder, {
+  subjects as travelerReminderSubjects,
+} from "@/emails/TravelerReminder";
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -853,13 +859,15 @@ export function sendTripperInviteEmail(
 }
 
 /**
- * Placeholder invite email sender for the companion-traveler roster
- * feature. Thin inline subject/body — Phase 3 replaces this body with the
- * real `TravelerInvite` template (bilingual, gender-neutral copy). Kept
- * here only so `POST /api/travelers/[id]/invite` compiles and is testable
- * standalone in this PR.
+ * Sends the companion-traveler invite email. Takes the PLAINTEXT token as
+ * a second arg because only its SHA-256 hash is persisted on `TripTraveler`
+ * — the caller (whichever code path just rotated the token via
+ * `issueTravelerInvite`) is the only place the plaintext is ever available.
  */
-export function sendTravelerInviteEmail(travelerId: string): void {
+export function sendTravelerInviteEmail(
+  travelerId: string,
+  plaintextToken: string,
+): void {
   void (async () => {
     try {
       const traveler = await prisma.tripTraveler.findUnique({
@@ -871,18 +879,18 @@ export function sendTravelerInviteEmail(travelerId: string): void {
 
       const locale = resolveLocale(traveler.tripRequest.user.locale);
       const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
+      const BASE_URL = "https://getrandomtrip.com";
+      const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
 
       await sendMail({
         to: traveler.email,
-        subject:
-          locale === "en"
-            ? "You've been invited to add your travel details"
-            : "Te invitaron a completar tus datos de viaje",
+        subject: travelerInviteSubjects[locale],
         content: {
-          text:
-            locale === "en"
-              ? `${buyerFirstName} invited you to join their randomtrip. Add your travel details to confirm your spot.`
-              : `${buyerFirstName} te invitó a sumarte a su randomtrip. Completá tus datos de viaje para confirmar tu lugar.`,
+          react: React.createElement(TravelerInvite, {
+            inviteUrl,
+            buyerFirstName,
+            locale,
+          }),
         },
       });
     } catch (err) {
@@ -892,10 +900,16 @@ export function sendTravelerInviteEmail(travelerId: string): void {
 }
 
 /**
- * Placeholder reminder email sender — see `sendTravelerInviteEmail`. Phase 3
- * replaces this body with the real `TravelerReminder` template.
+ * Sends the companion-traveler reminder email. Same plaintext-token
+ * requirement as `sendTravelerInviteEmail` — the reminder job
+ * (`runPass1` in `api/internal/traveler-reminder`) reissues/rotates the
+ * token via `issueTravelerInvite` immediately before calling this, since
+ * the original plaintext from the first invite send is never persisted.
  */
-export function sendTravelerReminderEmail(travelerId: string): void {
+export function sendTravelerReminderEmail(
+  travelerId: string,
+  plaintextToken: string,
+): void {
   void (async () => {
     try {
       const traveler = await prisma.tripTraveler.findUnique({
@@ -907,18 +921,18 @@ export function sendTravelerReminderEmail(travelerId: string): void {
 
       const locale = resolveLocale(traveler.tripRequest.user.locale);
       const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
+      const BASE_URL = "https://getrandomtrip.com";
+      const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
 
       await sendMail({
         to: traveler.email,
-        subject:
-          locale === "en"
-            ? "Reminder: complete your travel details"
-            : "Recordatorio: completá tus datos de viaje",
+        subject: travelerReminderSubjects[locale],
         content: {
-          text:
-            locale === "en"
-              ? `Friendly reminder to add your travel details for ${buyerFirstName}'s randomtrip before the deadline.`
-              : `Recordatorio para completar tus datos de viaje para el randomtrip de ${buyerFirstName} antes de la fecha límite.`,
+          react: React.createElement(TravelerReminder, {
+            inviteUrl,
+            buyerFirstName,
+            locale,
+          }),
         },
       });
     } catch (err) {

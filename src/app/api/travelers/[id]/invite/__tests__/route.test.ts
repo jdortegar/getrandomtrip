@@ -156,7 +156,10 @@ describe("POST /api/travelers/[id]/invite", () => {
 
     expect(res.status).toBe(200);
     expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1");
-    expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1");
+    expect(sendTravelerInviteEmail).toHaveBeenCalledWith(
+      "trav-1",
+      "plaintext-token",
+    );
 
     const body = await res.json();
     expect(body.traveler.status).toBe("INVITED");

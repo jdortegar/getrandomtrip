@@ -48,8 +48,8 @@ export async function POST(
       return NextResponse.json({ error: "missing_email" }, { status: 400 });
     }
 
-    await issueTravelerInvite(traveler.id);
-    sendTravelerInviteEmail(traveler.id);
+    const plaintext = await issueTravelerInvite(traveler.id);
+    sendTravelerInviteEmail(traveler.id, plaintext);
 
     const updated = await prisma.tripTraveler.findUnique({
       where: { id: traveler.id },
