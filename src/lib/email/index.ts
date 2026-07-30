@@ -852,6 +852,81 @@ export function sendTripperInviteEmail(
   })();
 }
 
+/**
+ * Placeholder invite email sender for the companion-traveler roster
+ * feature. Thin inline subject/body — Phase 3 replaces this body with the
+ * real `TravelerInvite` template (bilingual, gender-neutral copy). Kept
+ * here only so `POST /api/travelers/[id]/invite` compiles and is testable
+ * standalone in this PR.
+ */
+export function sendTravelerInviteEmail(travelerId: string): void {
+  void (async () => {
+    try {
+      const traveler = await prisma.tripTraveler.findUnique({
+        where: { id: travelerId },
+        include: { tripRequest: { include: { user: true } } },
+      });
+
+      if (!traveler?.email) return;
+
+      const locale = resolveLocale(traveler.tripRequest.user.locale);
+      const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
+
+      await sendMail({
+        to: traveler.email,
+        subject:
+          locale === "en"
+            ? "You've been invited to add your travel details"
+            : "Te invitaron a completar tus datos de viaje",
+        content: {
+          text:
+            locale === "en"
+              ? `${buyerFirstName} invited you to join their randomtrip. Add your travel details to confirm your spot.`
+              : `${buyerFirstName} te invitó a sumarte a su randomtrip. Completá tus datos de viaje para confirmar tu lugar.`,
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendTravelerInviteEmail:", err);
+    }
+  })();
+}
+
+/**
+ * Placeholder reminder email sender — see `sendTravelerInviteEmail`. Phase 3
+ * replaces this body with the real `TravelerReminder` template.
+ */
+export function sendTravelerReminderEmail(travelerId: string): void {
+  void (async () => {
+    try {
+      const traveler = await prisma.tripTraveler.findUnique({
+        where: { id: travelerId },
+        include: { tripRequest: { include: { user: true } } },
+      });
+
+      if (!traveler?.email) return;
+
+      const locale = resolveLocale(traveler.tripRequest.user.locale);
+      const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
+
+      await sendMail({
+        to: traveler.email,
+        subject:
+          locale === "en"
+            ? "Reminder: complete your travel details"
+            : "Recordatorio: completá tus datos de viaje",
+        content: {
+          text:
+            locale === "en"
+              ? `Friendly reminder to add your travel details for ${buyerFirstName}'s randomtrip before the deadline.`
+              : `Recordatorio para completar tus datos de viaje para el randomtrip de ${buyerFirstName} antes de la fecha límite.`,
+        },
+      });
+    } catch (err) {
+      console.error("[email] sendTravelerReminderEmail:", err);
+    }
+  })();
+}
+
 export function sendWelcomeEmail(userId: string): void {
   void (async () => {
     try {

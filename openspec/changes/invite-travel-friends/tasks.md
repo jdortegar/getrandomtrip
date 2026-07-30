@@ -52,16 +52,16 @@ Chain strategy: stacked-to-main
 
 ## Phase 2: Write/Read API Routes
 
-- [ ] 2.1 RED — `src/app/api/travelers/[id]/__tests__/route.test.ts`: non-owner → 403; locked roster → 403; valid update flips `status: COMPLETE` when required fields present (adult: name+email+idDocument; minor: name+dob+idDocument) and never downgrades an already-`COMPLETE` row; add/remove not applicable (single-row PATCH only).
-- [ ] 2.2 GREEN — create `src/app/api/travelers/[id]/route.ts` (`PATCH`). Satisfies spec "Complete minor save", "Incomplete minor save rejected", "Buyer fills adult row directly", "Pre-cutoff edit allowed", "Post-cutoff write rejected server-side".
-- [ ] 2.3 Add placeholder `sendTravelerInviteEmail(travelerId)` / `sendTravelerReminderEmail(travelerId)` to `src/lib/email/index.ts` — thin `sendMail` call with minimal inline subject/body; Phase 3 replaces the body with the real templates. Keeps this PR buildable standalone.
-- [ ] 2.4 RED — `src/app/api/travelers/[id]/invite/__tests__/route.test.ts`: non-owner → 403; locked → 403; `kind: MINOR` → 400; missing email → 400; valid adult row → `issueTravelerInvite` + `sendTravelerInviteEmail` called, `status: INVITED` returned.
-- [ ] 2.5 GREEN — create `src/app/api/travelers/[id]/invite/route.ts` (`POST`). Satisfies spec "Buyer sends first invite", "Resend rotates token".
-- [ ] 2.6 RED — `src/app/api/travelers/submit/__tests__/route.test.ts`: `consent !== true` → 400; `consumeTravelerInvite` not-ok → `400 {reason}`; ok → creates one `TRAVELER_SUBMITTED` `Notification` for the buyer (idempotent — no duplicate on re-invocation of an already-`COMPLETE` row), `200 {ok:true}`. **Per confirmed scope decision, no completion email is sent — in-app `Notification` only; do not wire an email sender here.**
-- [ ] 2.7 GREEN — create `src/app/api/travelers/submit/route.ts` (`POST`, public). Satisfies spec "Consent gates submit", "Companion submits via invite", "No duplicate notification on re-render".
-- [ ] 2.8 `src/app/api/stripe/trip-summary/route.ts` — modify: add `paxDetails` + `roster` via `getRosterForTrip`.
-- [ ] 2.9 `src/app/api/trips/[id]/route.ts` — modify: add `roster` via the same `getRosterForTrip` call (identical shape — no route builds a traveler object inline).
-- [ ] 2.10 RED+GREEN — integration test asserting `trip-summary` and `/api/trips/[id]` return byte-identical `roster` shape for the same trip (guards the shared-serializer risk called out in design.md).
+- [x] 2.1 RED — `src/app/api/travelers/[id]/__tests__/route.test.ts`: non-owner → 403; locked roster → 403; valid update flips `status: COMPLETE` when required fields present (adult: name+email+idDocument; minor: name+dob+idDocument) and never downgrades an already-`COMPLETE` row; add/remove not applicable (single-row PATCH only).
+- [x] 2.2 GREEN — create `src/app/api/travelers/[id]/route.ts` (`PATCH`). Satisfies spec "Complete minor save", "Incomplete minor save rejected", "Buyer fills adult row directly", "Pre-cutoff edit allowed", "Post-cutoff write rejected server-side".
+- [x] 2.3 Add placeholder `sendTravelerInviteEmail(travelerId)` / `sendTravelerReminderEmail(travelerId)` to `src/lib/email/index.ts` — thin `sendMail` call with minimal inline subject/body; Phase 3 replaces the body with the real templates. Keeps this PR buildable standalone.
+- [x] 2.4 RED — `src/app/api/travelers/[id]/invite/__tests__/route.test.ts`: non-owner → 403; locked → 403; `kind: MINOR` → 400; missing email → 400; valid adult row → `issueTravelerInvite` + `sendTravelerInviteEmail` called, `status: INVITED` returned.
+- [x] 2.5 GREEN — create `src/app/api/travelers/[id]/invite/route.ts` (`POST`). Satisfies spec "Buyer sends first invite", "Resend rotates token".
+- [x] 2.6 RED — `src/app/api/travelers/submit/__tests__/route.test.ts`: `consent !== true` → 400; `consumeTravelerInvite` not-ok → `400 {reason}`; ok → creates one `TRAVELER_SUBMITTED` `Notification` for the buyer (idempotent — no duplicate on re-invocation of an already-`COMPLETE` row), `200 {ok:true}`. **Per confirmed scope decision, no completion email is sent — in-app `Notification` only; do not wire an email sender here.**
+- [x] 2.7 GREEN — create `src/app/api/travelers/submit/route.ts` (`POST`, public). Satisfies spec "Consent gates submit", "Companion submits via invite", "No duplicate notification on re-render".
+- [x] 2.8 `src/app/api/stripe/trip-summary/route.ts` — modify: add `paxDetails` + `roster` via `getRosterForTrip`.
+- [x] 2.9 `src/app/api/trips/[id]/route.ts` — modify: add `roster` via the same `getRosterForTrip` call (identical shape — no route builds a traveler object inline).
+- [x] 2.10 RED+GREEN — integration test asserting `trip-summary` and `/api/trips/[id]` return byte-identical `roster` shape for the same trip (guards the shared-serializer risk called out in design.md).
 
 ## Phase 3: Email Templates + Cron Job
 

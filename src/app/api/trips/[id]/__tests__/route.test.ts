@@ -50,7 +50,9 @@ const mockTrip = {
   userId: "user-1",
   status: "CONFIRMED",
   startDate: new Date("2026-08-01T00:00:00.000Z"),
+  travelersLockedAt: null,
   payment: null,
+  travelers: [],
   experience: mockExperience,
 };
 

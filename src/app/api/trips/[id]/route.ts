@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 
 // GET /api/trips/[id] - Get a specific trip
 export async function GET(
@@ -54,7 +55,9 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    return NextResponse.json({ trip }, { status: 200 });
+    const roster = await getRosterForTrip(trip.id);
+
+    return NextResponse.json({ trip: { ...trip, roster } }, { status: 200 });
   } catch (error) {
     console.error("Error fetching trip:", error);
     return NextResponse.json(
