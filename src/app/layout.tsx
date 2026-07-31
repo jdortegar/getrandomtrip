@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import "./globals.css";
 import "@/styles/rt.css";
 import { LenisProvider } from "@/components/providers/LenisProvider";
@@ -7,6 +8,11 @@ import {
   Barlow_Condensed,
   Nothing_You_Could_Do,
 } from "next/font/google";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import {
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/seo/schemas";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -29,12 +35,26 @@ const nothingYouCouldDo = Nothing_You_Could_Do({
   display: "swap",
 });
 
-export const metadata = {
-  title: "Randomtrip",
+export const metadata: Metadata = {
   icons: {
     apple: [{ url: "/favicon.png", sizes: "180x180", type: "image/png" }],
     icon: [{ url: "/favicon.png", sizes: "48x48", type: "image/png" }],
     shortcut: [{ url: "/favicon.png", sizes: "48x48", type: "image/png" }],
+  },
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com",
+  ),
+  openGraph: {
+    images: [
+      { alt: "Randomtrip", height: 630, url: "/images/opengraph.jpg", width: 1200 },
+    ],
+    siteName: "Randomtrip",
+    type: "website",
+  },
+  title: "Randomtrip",
+  twitter: {
+    card: "summary_large_image",
+    images: ["/images/opengraph.jpg"],
   },
 };
 
@@ -53,6 +73,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#fafafa" />
       </head>
       <body className="bg-white text-neutral-900 antialiased overflow-x-hidden font-barlow">
+        <JsonLd schema={buildOrganizationSchema()} />
+        <JsonLd schema={buildWebSiteSchema()} />
         <LenisProvider>{children}</LenisProvider>
       </body>
     </html>

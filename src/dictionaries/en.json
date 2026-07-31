@@ -1066,6 +1066,10 @@
       "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
       "errorMessage": "We couldn't add you. Please try again.",
       "invalidEmailMessage": "Please enter a valid email."
+    },
+    "meta": {
+      "title": "Randomtrip — Curated Surprise Trips",
+      "description": "Discover your next destination with Randomtrip. Surprise trips designed by passionate trippers. Book your adventure today."
     }
   },
   "experiences": {
@@ -1233,6 +1237,7 @@
       "extrasTabDescription": "Add extras to your trip.",
       "extrasTabTitle": "Extras",
       "next": "Next",
+      "processingCheckout": "Processing...",
       "refineDetailsLabel": "Refine details",
       "refineDetailsPlaceholder": "Refine details",
       "refineDetailsOneSelected": "1 detail selected",
@@ -2545,7 +2550,11 @@
       "curatedBy": "TRIP CURATED BY",
       "byTripper": "BY TRIPPER"
     },
-    "userNamePlaceholder": "User name"
+    "userNamePlaceholder": "User name",
+    "meta": {
+      "title": "Plan your trip | Randomtrip",
+      "description": "Set up your surprise travel experience and let our trippers do the rest."
+    }
   },
   "confirmation": {
     "hero": {

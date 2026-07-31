@@ -1,0 +1,326 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import Section from "@/components/layout/Section";
+import BlogPostHero from "@/components/blog/BlogPostHero";
+import BlogArticle from "@/components/blog/BlogArticle";
+import Breadcrumb from "@/components/navigation/Breadcrumb";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import LightboxCarousel from "@/components/media/LightboxCarousel";
+import FaqSection from "@/components/display/FaqSection";
+import { ArrowLeft } from "lucide-react";
+import Blog from "@/components/Blog";
+import TripperMottoBanner from "@/components/blog/TripperMottoBanner";
+import Testimonials from "@/components/Testimonials/Testimonials";
+import type { Testimonial } from "@/lib/data/shared/testimonial-types";
+import type {
+  BlogDetailAuthor,
+  BlogPost as BlogCardPost,
+} from "@/lib/data/shared/blog-types";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
+
+interface BlogPostBlock {
+  type: string;
+  url?: string;
+  caption?: string;
+  title?: string;
+  description?: string;
+  text?: string;
+  cite?: string;
+}
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  tagline?: string;
+  coverUrl: string | null;
+  content: string | null;
+  blocks?: BlogPostBlock[];
+  faq?: { items?: { question: string; answer: string }[] } | null;
+  tags: string[];
+  format: string;
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+  };
+  publishedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  author: BlogDetailAuthor;
+}
+
+interface BlogPostClientProps {
+  blog: BlogPost;
+  locale: string;
+}
+
+export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
+  const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
+  const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+  const isSofia =
+    blog.author?.name?.toLowerCase() === "sofia" ||
+    blog.author?.slug?.toLowerCase() === "sofia";
+
+  useEffect(() => {
+    if (!blog.author?.id) return;
+    fetch(`/api/tripper/${blog.author.id}/testimonials`)
+      .then((r) => r.json())
+      .then((data: { testimonials?: Testimonial[] }) => {
+        if (Array.isArray(data.testimonials)) setTestimonials(data.testimonials);
+      })
+      .catch(() => undefined);
+  }, [blog.author?.id]);
+
+  useEffect(() => {
+    if (!blog.author?.id) return;
+    const authorId = blog.author.id;
+    const currentId = blog.id;
+    const currentSlug = blog.slug;
+
+    async function fetchAuthorPosts() {
+      try {
+        const res = await fetch(`/api/blogs?tripperId=${authorId}&limit=6`);
+        const data = await res.json();
+        if (!res.ok || !Array.isArray(data.blogs)) return;
+        const posts: BlogCardPost[] = data.blogs
+          .filter(
+            (b: { id?: string; slug?: string }) =>
+              b.id !== currentId && b.slug !== currentSlug,
+          )
+          .filter((b: { coverUrl?: string | null }) => b.coverUrl)
+          .map(
+            (b: {
+              slug?: string;
+              id?: string;
+              title: string;
+              coverUrl: string;
+              tags: string[];
+            }) => ({
+              category: b.tags?.[0] ?? "Viajes",
+              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
+              image: b.coverUrl,
+              title: b.title,
+            }),
+          );
+        setAuthorPosts(posts);
+      } catch {
+        setAuthorPosts([]);
+      }
+    }
+
+    fetchAuthorPosts();
+  }, [blog.id, blog.slug, blog.author?.id, locale]);
+
+  useEffect(() => {
+    if (!isSofia) return;
+
+    const currentId = blog.id;
+    const currentSlug = blog.slug;
+
+    async function fetchOtherPosts() {
+      try {
+        const res = await fetch(`/api/blogs?limit=8`);
+        const data = await res.json();
+        if (!res.ok || !Array.isArray(data.blogs)) return;
+        const posts: BlogCardPost[] = data.blogs
+          .filter(
+            (b: { id?: string; slug?: string }) =>
+              b.id !== currentId && b.slug !== currentSlug,
+          )
+          .filter((b: { coverUrl?: string | null }) => b.coverUrl)
+          .slice(0, 6)
+          .map(
+            (b: {
+              slug?: string;
+              id?: string;
+              title: string;
+              coverUrl: string;
+              tags: string[];
+            }) => ({
+              category: b.tags?.[0] ?? "Viajes",
+              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
+              image: b.coverUrl,
+              title: b.title,
+            }),
+          );
+        setOtherPosts(posts);
+      } catch {
+        setOtherPosts([]);
+      }
+    }
+
+    fetchOtherPosts();
+  }, [blog.id, blog.slug, isSofia, locale]);
+
+  const carouselImages = useMemo(() => {
+    const items: { url: string; caption?: string }[] = [];
+    if (blog.coverUrl) items.push({ url: blog.coverUrl });
+    (blog.blocks ?? []).forEach((b) => {
+      if (b.type === "image" && b.url)
+        items.push({ url: b.url, caption: b.caption });
+    });
+    return items;
+  }, [blog.coverUrl, blog.blocks]);
+
+  const faqFromSchema = (() => {
+    if (!blog.faq) return null;
+    const f = blog.faq as
+      | { items?: { question: string; answer: string }[] }
+      | { question: string; answer: string }[];
+    if (Array.isArray(f)) return f;
+    if (f.items && Array.isArray(f.items)) return f.items;
+    return null;
+  })();
+  const faqItems = faqFromSchema ?? [];
+
+  // `blocks` is the source of truth going forward (see buildBlogSubmitPayload
+  // in src/lib/helpers/blog-form.ts). Posts authored before this migration
+  // have no `section` blocks — their content lives only in the flat
+  // `blog.content` HTML string, so we fall back to rendering that as a
+  // single block when there are no sections to split around the FAQ.
+  const sectionBlocks = (blog.blocks ?? []).filter((b) => b.type === "section");
+  const quoteBlock = (blog.blocks ?? []).find((b) => b.type === "quote");
+  const hasSectionBlocks = sectionBlocks.length > 0;
+  const firstSection = sectionBlocks[0];
+  const remainingSections = sectionBlocks.slice(1);
+
+  const displayPosts = isSofia ? otherPosts : authorPosts;
+
+  return (
+    <>
+      <BlogPostHero
+        author={{
+          avatarUrl: blog.author.avatarUrl,
+          location: blog.author.location,
+          name: blog.author.name,
+          slug: blog.author.slug,
+        }}
+        coverUrl={blog.coverUrl}
+        subtitle={blog.subtitle || blog.tagline || ""}
+        title={blog.title}
+      />
+
+      <Section>
+        <Breadcrumb
+          items={[
+            { href: pathForLocale(locale as Locale, "/blog"), label: "Tripper Inspirations" },
+            { label: blog.title },
+          ]}
+        />
+
+        {/* First section, or the legacy flattened content for pre-migration
+            posts. Title is never re-rendered here — BlogPostHero already
+            shows it. The feature quote is not rendered inline — it goes in
+            TripperMottoBanner below instead. */}
+        {hasSectionBlocks ? (
+          <BlogArticle
+            content={firstSection.description ?? null}
+            headingLevel="h2"
+            showTitle={!!firstSection.title}
+            title={firstSection.title ?? ""}
+          />
+        ) : (
+          <BlogArticle
+            content={blog.content}
+            emptyMessage="Este post aún no tiene contenido."
+            showTitle={false}
+            title={blog.title}
+          />
+        )}
+
+        <FaqSection items={faqItems} />
+
+        {/* Remaining sections, if any, follow the FAQ */}
+        {remainingSections.map((section, index) => (
+          <BlogArticle
+            className="mt-10"
+            content={section.description ?? null}
+            headingLevel="h2"
+            key={index}
+            showTitle={!!section.title}
+            title={section.title ?? ""}
+          />
+        ))}
+      </Section>
+      <LightboxCarousel images={carouselImages} className="bg-gray-50" />
+
+      {(quoteBlock?.text || blog.author.motto) && (
+        <TripperMottoBanner
+          attributionOverride={quoteBlock?.cite}
+          authorName={blog.author.name}
+          authorSlug={blog.author.slug}
+          avatarUrl={blog.author.avatarUrl}
+          backgroundImageUrl={blog.coverUrl ?? ""}
+          motto={quoteBlock?.text || blog.author.motto || ""}
+          specialization={blog.author.specialization}
+        />
+      )}
+
+      {displayPosts.length > 0 && (
+        <Blog
+          className="bg-gray-50"
+          eyebrow="EXPLORA"
+          id="more-posts"
+          paneClassName="bg-gray-50"
+          posts={displayPosts}
+          subtitle="Notas, guías y momentos que inspiran. Escritos en primera persona."
+          title="MÁS DE MIS AVENTURAS"
+          viewAll={{
+            href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
+            subtitle: "Explora más contenido",
+            title: "Ver Todo",
+          }}
+        />
+      )}
+
+      <Testimonials
+        testimonials={testimonials}
+        title={`Lo que dicen sobre ${blog.author.name}`}
+      />
+    </>
+  );
+}
+
+export function BlogPostErrorView({
+  error,
+  locale,
+}: {
+  error?: string;
+  locale: string;
+}) {
+  return (
+    <Section>
+      <div className="mx-auto max-w-4xl">
+        <div className="py-12 text-center">
+          <p className="mb-4 text-neutral-500">
+            {error ?? "El post que buscas no existe o ya no está disponible."}
+          </p>
+          <Link
+            className="inline-flex items-center text-blue-600 hover:text-blue-700"
+            href={pathForLocale(locale as Locale, "/blog")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver al Blog
+          </Link>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+export function BlogPostLoading() {
+  return (
+    <Section>
+      <div className="mx-auto max-w-4xl">
+        <LoadingSpinner />
+      </div>
+    </Section>
+  );
+}

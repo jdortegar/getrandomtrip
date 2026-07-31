@@ -73,6 +73,7 @@ interface JourneyMainContentLabels {
   extrasTabDescription: string;
   extrasTabTitle: string;
   next: string;
+  processingCheckout: string;
   refineDetailsLabel: string;
   refineDetailsPlaceholder: string;
   refineDetailsOneSelected: string;
@@ -319,6 +320,7 @@ export default function JourneyMainContent({
             data.error ?? "No se pudo guardar el viaje. Intentá de nuevo.",
           );
         }
+        setIsSavingAndRedirecting(false);
         return;
       }
       clearJourneyDraftStorage(searchParams.get("draftId"));
@@ -327,7 +329,6 @@ export default function JourneyMainContent({
     } catch (err) {
       console.error("Error saving trip:", err);
       toast.error("Error de conexión. Intentá de nuevo.");
-    } finally {
       setIsSavingAndRedirecting(false);
     }
   }, [
@@ -790,6 +791,7 @@ export default function JourneyMainContent({
           back: labels.back,
           clearAll: labels.clearAll,
           next: labels.next,
+          processingCheckout: labels.processingCheckout,
           viewCheckout: labels.viewCheckout,
         }}
         onBack={previousTab ? handleBack : undefined}

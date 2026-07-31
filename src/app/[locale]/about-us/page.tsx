@@ -11,6 +11,8 @@ import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getTravelerTypeLabel } from "@/lib/helpers/traveler-types";
 import { FaqBlock } from "@/components/display/FaqBlock";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { buildFAQPageSchema } from "@/lib/seo/schemas";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -57,6 +59,7 @@ export default async function AboutUsPage(props: LocaleParams) {
 
   return (
     <div className="bg-white font-barlow text-neutral-900">
+      <JsonLd schema={buildFAQPageSchema(aboutUs.faq.items)} />
       <Hero content={aboutUs.hero} scrollIndicator />
       <AboutUsValues items={aboutUs.valueProps.items} />
       <AboutUsPhilosophy content={aboutUs.philosophy} id="philosophy" />

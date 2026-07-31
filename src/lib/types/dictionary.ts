@@ -1871,6 +1871,10 @@ export interface MarketingDictionary {
       title: string;
       videoSrc: string;
     };
+    meta: {
+      description: string;
+      title: string;
+    };
   };
   experiences: {
     hero: {
@@ -1973,6 +1977,7 @@ export interface MarketingDictionary {
       extrasTabDescription: string;
       extrasTabTitle: string;
       next: string;
+      processingCheckout: string;
       refineDetailsLabel: string;
       refineDetailsPlaceholder: string;
       refineDetailsOneSelected: string;
@@ -2269,6 +2274,10 @@ export interface MarketingDictionary {
       byTripper: string;
     };
     userNamePlaceholder: string;
+    meta: {
+      description: string;
+      title: string;
+    };
   };
   confirmation: {
     hero: {

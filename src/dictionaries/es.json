@@ -1066,6 +1066,10 @@
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
       "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
       "invalidEmailMessage": "Ingresá un email válido."
+    },
+    "meta": {
+      "title": "Randomtrip — Viajes sorpresa curados por expertos",
+      "description": "Descubrí tu próximo destino con Randomtrip. Viajes sorpresa diseñados por trippers apasionados. Reservá tu aventura hoy."
     }
   },
   "experiences": {
@@ -1238,6 +1242,7 @@
       "extrasTabDescription": "Agrega extras a tu viaje.",
       "extrasTabTitle": "Extras",
       "next": "Siguiente",
+      "processingCheckout": "Procesando...",
       "refineDetailsLabel": "Afinar detalles",
       "refineDetailsPlaceholder": "Afinar detalles",
       "refineDetailsOneSelected": "1 detalle seleccionado",
@@ -2545,6 +2550,10 @@
         "nomad": "Nómade",
         "randomtripper": "Randomtripero"
       }
+    },
+    "meta": {
+      "title": "Planificá tu viaje | Randomtrip",
+      "description": "Configurá tu experiencia de viaje sorpresa y dejá que nuestros trippers hagan el resto."
     }
   },
   "confirmation": {

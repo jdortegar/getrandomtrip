@@ -8,6 +8,7 @@ interface JourneyActionBarLabels {
   back?: string;
   clearAll: string;
   next: string;
+  processingCheckout?: string;
   saveDraft?: string;
   viewCheckout: string;
 }
@@ -103,7 +104,9 @@ export function JourneyActionBar({
           size="sm"
           variant="default"
         >
-          {isSavingAndRedirecting ? "Guardando..." : labels.viewCheckout}
+          {isSavingAndRedirecting
+            ? (labels.processingCheckout ?? labels.viewCheckout)
+            : labels.viewCheckout}
         </Button>
       )}
     </div>

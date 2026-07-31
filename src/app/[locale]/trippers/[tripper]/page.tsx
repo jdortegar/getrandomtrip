@@ -21,6 +21,8 @@ import {
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { buildPersonSchema } from "@/lib/seo/schemas";
 
 // 👇 Modal de video (client component)
 import TripperIntroVideoGate from "@/components/tripper/TripperIntroVideoGate";
@@ -42,13 +44,14 @@ export async function generateMetadata(props: {
 
   if (!dbTripper) return { title: "Randomtrip" };
 
-  const heroImage = dbTripper.avatarUrl || "/images/fallback-profile.jpg";
+  const ogImage =
+    dbTripper.heroImage ?? dbTripper.avatarUrl ?? "/images/opengraph.jpg";
 
   return {
     title: `${dbTripper.name} | Randomtrip`,
     openGraph: {
+      images: [{ url: ogImage, width: 1200, height: 630 }],
       title: `${dbTripper.name} | Randomtrip`,
-      images: [{ url: heroImage, width: 1200, height: 630 }],
     },
   };
 }
@@ -91,6 +94,15 @@ export default async function Page(props: {
 
   return (
     <main className="bg-white text-slate-900">
+      <JsonLd
+        schema={buildPersonSchema({
+          avatarUrl: tripperData.avatarUrl,
+          bio: tripperData.bio,
+          heroImage: tripperData.heroImage,
+          name: tripperData.name,
+          slug: tripperData.tripperSlug,
+        })}
+      />
       <TripperHero tripper={tripperData} />
 
       {tripperData && tripperData.tripperSlug && (
