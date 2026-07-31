@@ -15,7 +15,11 @@ import {
   getExcuseTitle,
   getHasExcuseStep,
 } from "@/lib/helpers/excuse-helper";
-import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
+import {
+  getDefaultPaxDetailsForTravelType,
+  getFixedPaxDetailsForTravelType,
+  hasPaxSubstep,
+} from "@/lib/helpers/pax-details";
 import { FILTER_OPTIONS } from "@/store/slices/journeyStore";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import {
@@ -401,6 +405,22 @@ export default function JourneySummary({
     if (travelType) {
       const fixed = getFixedPaxDetailsForTravelType(travelType);
       if (fixed) return fixed.adults + fixed.minors;
+
+      if (hasPaxSubstep(travelType)) {
+        // Group/family/paws: party size comes from the Travellers substep
+        // (paxAdults/paxMinors), not the legacy flat `pax` param -- pets
+        // aren't billable heads, mirroring buildTripRequestPayloadFromSearchParams.
+        const defaults = getDefaultPaxDetailsForTravelType(travelType);
+        const parsedAdults = parseInt(searchParams.get("paxAdults") ?? "", 10);
+        const parsedMinors = parseInt(searchParams.get("paxMinors") ?? "", 10);
+        const adults = Number.isFinite(parsedAdults)
+          ? parsedAdults
+          : defaults.adults;
+        const minors = Number.isFinite(parsedMinors)
+          ? parsedMinors
+          : defaults.minors;
+        return Math.max(1, adults + minors);
+      }
     }
     return Math.max(
       1,
