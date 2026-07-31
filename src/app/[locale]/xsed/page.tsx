@@ -11,6 +11,8 @@ import { XsedHero } from "@/components/app/xsed/XsedHero";
 import { DropGrid } from "@/components/app/xsed/DropGrid";
 import { getCurrentXsedDrop, getXsedDropsForGrid } from "@/lib/data/xsed";
 import { getAllXsedTestimonials } from "@/lib/xsed/get-xsed-drop-testimonials";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { buildFAQPageSchema } from "@/lib/seo/schemas";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -48,6 +50,7 @@ export default async function XsedPage(props: LocaleParams) {
 
   return (
     <>
+      <JsonLd schema={buildFAQPageSchema(dict.xsedPage.faq.items)} />
       <SecondaryHero
         content={dict.xsedPage.hero}
         id="xsed"

@@ -532,3 +532,25 @@ export function filterContentTabsForUI<T extends ContentTab>(
     };
   });
 }
+
+/**
+ * Resolves which accordion section should be open for a given tab/substep
+ * click. When substepId is a real substep of this tab, it wins outright.
+ * Otherwise (e.g. clicking the tab itself, or advancing via Next/Back)
+ * falls back to the first substep in that tab's order — the single source
+ * of truth for substep order is getTabSubstepOrder, shared with Next/Back.
+ */
+export function getAccordionForStep(
+  tabId: string,
+  substepId?: string,
+  travelType?: string | null,
+  addonsEnabled = false,
+): string {
+  const order = getTabSubstepOrder(tabId, {
+    hasExcuseStep: true,
+    hasPax: hasPaxSubstep(travelType),
+    addonsEnabled,
+  });
+  if (substepId && order.includes(substepId)) return substepId;
+  return order[0] ?? "";
+}

@@ -1,360 +1,139 @@
-"use client";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { normalizeUploadUrl } from "@/lib/media/upload-url";
+import { hasLocale } from "@/lib/i18n/config";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { buildBlogPostingSchema } from "@/lib/seo/schemas";
+import BlogPostClient, {
+  type BlogPost,
+  BlogPostLoading,
+} from "@/components/app/blog/BlogPostClient";
 
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import Section from "@/components/layout/Section";
-import BlogPostHero from "@/components/blog/BlogPostHero";
-import BlogArticle from "@/components/blog/BlogArticle";
-import Breadcrumb from "@/components/navigation/Breadcrumb";
-import LoadingSpinner from "@/components/layout/LoadingSpinner";
-import LightboxCarousel from "@/components/media/LightboxCarousel";
-import FaqSection from "@/components/display/FaqSection";
-import { ArrowLeft } from "lucide-react";
-import Blog from "@/components/Blog";
-import TripperMottoBanner from "@/components/blog/TripperMottoBanner";
-import Testimonials from "@/components/Testimonials/Testimonials";
-import type { Testimonial } from "@/lib/data/shared/testimonial-types";
-import type {
-  BlogDetailAuthor,
-  BlogPost as BlogCardPost,
-} from "@/lib/data/shared/blog-types";
-import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import type { Locale } from "@/lib/i18n/config";
-
-interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle: string;
-  tagline?: string;
-  coverUrl: string | null;
-  content: string | null;
-  blocks?: Array<{
-    type: string;
-    url?: string;
-    caption?: string;
-    title?: string;
-    description?: string;
-    text?: string;
-    cite?: string;
-  }>;
-  faq?: { items?: { question: string; answer: string }[] } | null;
-  tags: string[];
-  format: string;
-  seo?: {
-    title?: string;
-    description?: string;
-    keywords?: string[];
-  };
-  publishedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-  author: BlogDetailAuthor;
-}
-
-function BlogDetailContent() {
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "es";
-  const [blog, setBlog] = useState<BlogPost | null>(null);
-  const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
-  const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const isSofia =
-    blog?.author?.name?.toLowerCase() === "sofia" ||
-    blog?.author?.slug?.toLowerCase() === "sofia";
-
-  const slugOrId = params?.slug?.toString() ?? "";
-
-  useEffect(() => {
-    async function fetchBlog() {
-      if (!slugOrId) return;
-
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/blogs/${slugOrId}`);
-        const data = await response.json();
-
-        if (response.ok && data.blog) {
-          setBlog(data.blog);
-        } else if (response.status === 404) {
-          setError("Post no encontrado");
-        } else {
-          setError(data.error || "Error al cargar el post");
-        }
-      } catch (err) {
-        console.error("Error fetching blog:", err);
-        setError("Error al cargar el post");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBlog();
-  }, [slugOrId]);
-
-  useEffect(() => {
-    if (!blog?.author?.id) return;
-    fetch(`/api/tripper/${blog.author.id}/testimonials`)
-      .then((r) => r.json())
-      .then((data: { testimonials?: Testimonial[] }) => {
-        if (Array.isArray(data.testimonials)) setTestimonials(data.testimonials);
-      })
-      .catch(() => undefined);
-  }, [blog?.author?.id]);
-
-  useEffect(() => {
-    if (!blog?.author?.id) return;
-    const authorId = blog.author.id;
-    const currentId = blog.id;
-    const currentSlug = blog.slug;
-
-    async function fetchAuthorPosts() {
-      try {
-        const res = await fetch(`/api/blogs?tripperId=${authorId}&limit=6`);
-        const data = await res.json();
-        if (!res.ok || !Array.isArray(data.blogs)) return;
-        const posts: BlogCardPost[] = data.blogs
-          .filter(
-            (b: { id?: string; slug?: string }) =>
-              b.id !== currentId && b.slug !== currentSlug,
-          )
-          .filter((b: { coverUrl?: string | null }) => b.coverUrl)
-          .map(
-            (b: {
-              slug?: string;
-              id?: string;
-              title: string;
-              coverUrl: string;
-              tags: string[];
-            }) => ({
-              category: b.tags?.[0] ?? "Viajes",
-              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
-              image: b.coverUrl,
-              title: b.title,
-            }),
-          );
-        setAuthorPosts(posts);
-      } catch {
-        setAuthorPosts([]);
-      }
-    }
-
-    fetchAuthorPosts();
-  }, [blog?.id, blog?.slug, blog?.author?.id]);
-
-  useEffect(() => {
-    if (!blog) return;
-    const isAuthorSofia =
-      blog.author.name?.toLowerCase() === "sofia" ||
-      blog.author.slug?.toLowerCase() === "sofia";
-    if (!isAuthorSofia) return;
-
-    const currentId = blog.id;
-    const currentSlug = blog.slug;
-
-    async function fetchOtherPosts() {
-      try {
-        const res = await fetch(`/api/blogs?limit=8`);
-        const data = await res.json();
-        if (!res.ok || !Array.isArray(data.blogs)) return;
-        const posts: BlogCardPost[] = data.blogs
-          .filter(
-            (b: { id?: string; slug?: string }) =>
-              b.id !== currentId && b.slug !== currentSlug,
-          )
-          .filter((b: { coverUrl?: string | null }) => b.coverUrl)
-          .slice(0, 6)
-          .map(
-            (b: {
-              slug?: string;
-              id?: string;
-              title: string;
-              coverUrl: string;
-              tags: string[];
-            }) => ({
-              category: b.tags?.[0] ?? "Viajes",
-              href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
-              image: b.coverUrl,
-              title: b.title,
-            }),
-          );
-        setOtherPosts(posts);
-      } catch {
-        setOtherPosts([]);
-      }
-    }
-
-    fetchOtherPosts();
-  }, [blog?.id, blog?.slug]);
-
-  const carouselImages = useMemo(() => {
-    if (!blog) return [];
-    const items: { url: string; caption?: string }[] = [];
-    if (blog.coverUrl) items.push({ url: blog.coverUrl });
-    (blog.blocks ?? []).forEach((b) => {
-      if (b.type === "image" && b.url)
-        items.push({ url: b.url, caption: b.caption });
-    });
-    return items;
-  }, [blog?.coverUrl, blog?.blocks]);
-
-  if (loading) {
-    return (
-      <>
-        <Section>
-          <div className="mx-auto max-w-4xl">
-            <LoadingSpinner />
-          </div>
-        </Section>
-      </>
-    );
-  }
-
-  if (error || !blog) {
-    return (
-      <>
-        <Section>
-          <div className="mx-auto max-w-4xl">
-            <div className="py-12 text-center">
-              <p className="mb-4 text-neutral-500">
-                {error ??
-                  "El post que buscas no existe o ya no está disponible."}
-              </p>
-              <Link
-                className="inline-flex items-center text-blue-600 hover:text-blue-700"
-                href={pathForLocale(locale as Locale, "/blog")}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Volver al Blog
-              </Link>
-            </div>
-          </div>
-        </Section>
-      </>
-    );
-  }
-
-  const faqFromSchema = (() => {
-    if (!blog.faq) return null;
-    const f = blog.faq as
-      | { items?: { question: string; answer: string }[] }
-      | { question: string; answer: string }[];
-    if (Array.isArray(f)) return f;
-    if (f.items && Array.isArray(f.items)) return f.items;
-    return null;
-  })();
-  const faqItems = faqFromSchema ?? [];
-
-  // `blocks` is the source of truth going forward (see buildBlogSubmitPayload
-  // in src/lib/helpers/blog-form.ts). Posts authored before this migration
-  // have no `section` blocks — their content lives only in the flat
-  // `blog.content` HTML string, so we fall back to rendering that as a
-  // single block when there are no sections to split around the FAQ.
-  const sectionBlocks = (blog.blocks ?? []).filter((b) => b.type === "section");
-  const quoteBlock = (blog.blocks ?? []).find((b) => b.type === "quote");
-  const hasSectionBlocks = sectionBlocks.length > 0;
-  const firstSection = sectionBlocks[0];
-  const remainingSections = sectionBlocks.slice(1);
-
+function isCuid(param: string): boolean {
   return (
-    <>
-      <BlogPostHero
-        author={{
-          avatarUrl: blog.author.avatarUrl,
-          location: blog.author.location,
-          name: blog.author.name,
-          slug: blog.author.slug,
-        }}
-        coverUrl={blog.coverUrl}
-        subtitle={blog.subtitle || blog.tagline || ""}
-        title={blog.title}
-      />
-
-      <Section>
-        <Breadcrumb
-          items={[
-            { href: pathForLocale(locale as Locale, "/blog"), label: "Tripper Inspirations" },
-            { label: blog.title },
-          ]}
-        />
-
-        {/* First section, or the legacy flattened content for pre-migration
-            posts. Title is never re-rendered here — BlogPostHero already
-            shows it. The feature quote is not rendered inline — it goes in
-            TripperMottoBanner below instead. */}
-        {hasSectionBlocks ? (
-          <BlogArticle
-            content={firstSection.description ?? null}
-            headingLevel="h2"
-            showTitle={!!firstSection.title}
-            title={firstSection.title ?? ""}
-          />
-        ) : (
-          <BlogArticle
-            content={blog.content}
-            emptyMessage="Este post aún no tiene contenido."
-            showTitle={false}
-            title={blog.title}
-          />
-        )}
-
-        <FaqSection items={faqItems} />
-
-        {/* Remaining sections, if any, follow the FAQ */}
-        {remainingSections.map((section, index) => (
-          <BlogArticle
-            className="mt-10"
-            content={section.description ?? null}
-            headingLevel="h2"
-            key={index}
-            showTitle={!!section.title}
-            title={section.title ?? ""}
-          />
-        ))}
-      </Section>
-      <LightboxCarousel images={carouselImages} className="bg-gray-50" />
-
-      {(quoteBlock?.text || blog.author.motto) && (
-        <TripperMottoBanner
-          attributionOverride={quoteBlock?.cite}
-          authorName={blog.author.name}
-          authorSlug={blog.author.slug}
-          avatarUrl={blog.author.avatarUrl}
-          backgroundImageUrl={blog.coverUrl ?? ""}
-          motto={quoteBlock?.text || blog.author.motto || ""}
-          specialization={blog.author.specialization}
-        />
-      )}
-
-      {authorPosts.length > 0 && (
-        <Blog
-          className="bg-gray-50"
-          paneClassName="bg-gray-50"
-          eyebrow="EXPLORA"
-          id="more-posts"
-          posts={authorPosts}
-          subtitle="Notas, guías y momentos que inspiran. Escritos en primera persona."
-          title="MÁS DE MIS AVENTURAS"
-          viewAll={{
-            href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
-            subtitle: "Explora más contenido",
-            title: "Ver Todo",
-          }}
-        />
-      )}
-
-      <Testimonials
-        testimonials={testimonials}
-        title={`Lo que dicen sobre ${blog.author.name}`}
-      />
-    </>
+    param.length === 25 && param.startsWith("c") && /^c[a-z0-9]+$/.test(param)
   );
 }
 
-export default function BlogDetailPage() {
-  return <BlogDetailContent />;
+async function getBlogPost(slugOrId: string): Promise<BlogPost | null> {
+  const blog = await prisma.blogPost.findFirst({
+    where: {
+      isActive: true,
+      isReviewCopy: false,
+      status: "PUBLISHED",
+      ...(isCuid(slugOrId) ? { id: slugOrId } : { slug: slugOrId }),
+    },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      subtitle: true,
+      tagline: true,
+      coverUrl: true,
+      content: true,
+      blocks: true,
+      faq: true,
+      tags: true,
+      format: true,
+      seo: true,
+      publishedAt: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          tripperSlug: true,
+          avatarUrl: true,
+          bio: true,
+          location: true,
+          motto: true,
+          specialization: true,
+        },
+      },
+    },
+  });
+
+  if (!blog) return null;
+
+  return {
+    id: blog.id,
+    slug: blog.slug ?? blog.id,
+    title: blog.title,
+    subtitle: blog.subtitle ?? "",
+    tagline: blog.tagline ?? "",
+    coverUrl: blog.coverUrl,
+    content: blog.content ?? "",
+    blocks: blog.blocks as BlogPost["blocks"],
+    faq: blog.faq as BlogPost["faq"],
+    tags: blog.tags,
+    format: blog.format.toLowerCase(),
+    seo: blog.seo as BlogPost["seo"],
+    publishedAt: blog.publishedAt?.toISOString() ?? null,
+    createdAt: blog.createdAt.toISOString(),
+    updatedAt: blog.updatedAt.toISOString(),
+    author: {
+      bio: blog.author.bio ?? "",
+      id: blog.author.id,
+      location: blog.author.location ?? "",
+      motto: blog.author.motto ?? null,
+      name: blog.author.name,
+      slug: blog.author.tripperSlug ?? "",
+      specialization: blog.author.specialization ?? null,
+      avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
+    },
+  };
+}
+
+export async function generateMetadata(props: {
+  params: Promise<{ locale?: string; slug: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
+  const blog = await getBlogPost(params.slug);
+  if (!blog) return { title: "Randomtrip" };
+
+  const seoTitle = blog.seo?.title ?? `${blog.title} | Randomtrip`;
+  const seoDescription = blog.seo?.description ?? blog.subtitle ?? undefined;
+
+  return {
+    description: seoDescription,
+    openGraph: {
+      description: seoDescription,
+      images: blog.coverUrl ? [{ url: blog.coverUrl }] : undefined,
+      title: seoTitle,
+      type: "article",
+    },
+    title: seoTitle,
+  };
+}
+
+export default async function BlogDetailPage(props: {
+  params: Promise<{ locale?: string; slug: string }>;
+}) {
+  const params = await props.params;
+  const locale = hasLocale(params.locale) ? params.locale! : "es";
+  const blog = await getBlogPost(params.slug);
+
+  if (!blog) notFound();
+
+  const jsonLdSchema = buildBlogPostingSchema({
+    authorName: blog.author.name,
+    createdAt: blog.createdAt,
+    description: blog.seo?.description ?? blog.subtitle ?? undefined,
+    heroImage: blog.coverUrl ?? undefined,
+    publishedAt: blog.publishedAt ?? undefined,
+    slug: blog.slug,
+    title: blog.title,
+  });
+
+  return (
+    <>
+      <JsonLd schema={jsonLdSchema} />
+      <Suspense fallback={<BlogPostLoading />}>
+        <BlogPostClient blog={blog} locale={locale} />
+      </Suspense>
+    </>
+  );
 }
