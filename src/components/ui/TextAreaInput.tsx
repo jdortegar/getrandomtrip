@@ -44,7 +44,7 @@ export function TextAreaInput({
           onChange={onChange}
           placeholder={isEmpty ? peek?.emptyLabel : placeholder}
           className={cn(
-            "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base resize-none min-h-[160px]",
+            "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-sm text-gray-900 w-full text-base resize-none min-h-[160px]",
             showPeek && "pr-12",
             peek?.active && !isEmpty && "line-through",
             isEmpty && "italic",
