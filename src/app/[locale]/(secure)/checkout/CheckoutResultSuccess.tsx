@@ -73,19 +73,22 @@ export default function CheckoutResultSuccess({
 
   useEffect(() => {
     if (!paymentIntentId || hasFailed) return;
+    // confirm-payment must resolve first — it's what flips Payment.status to
+    // APPROVED when the Stripe webhook hasn't landed yet, and trip-summary's
+    // roster lookup only materializes traveler rows for an APPROVED payment.
+    // Firing both in parallel raced the two and could leave the roster
+    // permanently empty if trip-summary won.
     fetch("/api/stripe/confirm-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ paymentIntentId }),
-    }).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentIntentId]);
-
-  useEffect(() => {
-    if (!paymentIntentId || hasFailed) return;
-    fetch(`/api/stripe/trip-summary?paymentIntentId=${paymentIntentId}`)
-      .then((r) => r.json())
-      .then((data: TripSummaryData) => setTripData(data))
+    })
+      .catch(() => {})
+      .then(() =>
+        fetch(`/api/stripe/trip-summary?paymentIntentId=${paymentIntentId}`),
+      )
+      .then((r) => r?.json())
+      .then((data: TripSummaryData | undefined) => data && setTripData(data))
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentIntentId]);
