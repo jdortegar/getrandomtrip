@@ -2,6 +2,7 @@
 
 import { Calendar, Clock, Eye, MapPin, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
+import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -78,10 +79,8 @@ export function UpcomingTripsList({
         ) : (
           <div className="divide-y divide-gray-100">
             {upcoming.map((trip) => {
-              const { levelName, travelerTypeTitle } = getTripExperienceDisplay(
-                trip,
-                locale,
-              );
+              const { levelName, travelerTypeTitle, typeImageSrc } =
+                getTripExperienceDisplay(trip, locale);
               const startDate = new Date(trip.startDate).toLocaleDateString(
                 dateLocale,
                 { day: "numeric", month: "short", year: "numeric" },
@@ -94,6 +93,16 @@ export function UpcomingTripsList({
               return (
                 <div className="px-5 py-4" key={trip.id}>
                   <div className="flex items-center gap-4">
+                    {typeImageSrc && (
+                      <div className="hidden h-12 w-12 shrink-0 overflow-hidden rounded-lg sm:block">
+                        <Img
+                          alt={travelerTypeTitle}
+                          className="h-full w-full object-cover"
+                          sizes="48px"
+                          src={typeImageSrc}
+                        />
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-neutral-900">
                         {trip.actualDestination ?? copy.allTrips.emptyDestination}
@@ -145,7 +154,7 @@ export function UpcomingTripsList({
                   <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500">
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3 w-3 shrink-0" />
-                      {trip.city}, {trip.country}
+                      {copy.allTrips.from} {trip.city}, {trip.country}
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3 shrink-0" />

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -29,7 +29,10 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import type { JourneyFilterKey } from "@/lib/constants/journey-filters";
-import { TravelerRosterSection } from "@/components/app/travelers/TravelerRosterSection";
+import {
+  TravelerRosterSection,
+  type TravelerRosterSectionHandle,
+} from "@/components/app/travelers/TravelerRosterSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
 
@@ -100,9 +103,20 @@ function TripDetailsContent() {
   const [loading, setLoading] = useState(true);
   const [showDestination, setShowDestination] = useState(false);
   const [dict, setDict] = useState<MarketingDictionary | null>(null);
+  const rosterRef = useRef<TravelerRosterSectionHandle>(null);
+  const [savingTravelers, setSavingTravelers] = useState(false);
 
   const tripId = params.id as string;
   const locale = (params.locale as string) ?? "es";
+
+  async function handleSaveTravelers() {
+    setSavingTravelers(true);
+    try {
+      await rosterRef.current?.saveAll();
+    } finally {
+      setSavingTravelers(false);
+    }
+  }
 
   useEffect(() => {
     getDictionary(locale).then(setDict);
@@ -380,8 +394,23 @@ function TripDetailsContent() {
                   <TravelerRosterSection
                     copy={dict.inviteTravelers}
                     locale={hasLocale(locale) ? (locale as Locale) : "es"}
+                    ref={rosterRef}
                     roster={trip.roster}
                   />
+                  {!trip.roster.locked && (
+                    <div className="mt-6">
+                      <Button
+                        disabled={savingTravelers}
+                        onClick={() => void handleSaveTravelers()}
+                        size="lg"
+                        variant="default"
+                      >
+                        {savingTravelers
+                          ? dict.inviteTravelers.savingAction
+                          : dict.inviteTravelers.saveAction}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 
