@@ -10,6 +10,7 @@ import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
 import Chip from "@/components/badge";
+import { StatusBadge } from "@/components/app/admin/StatusBadge";
 import {
   ArrowLeft,
   Calendar,
@@ -19,10 +20,8 @@ import {
   Star,
   CreditCard,
   Eye,
-  EyeOff,
   CheckCircle,
-  Clock,
-  X as XIcon,
+  Info,
 } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
@@ -35,6 +34,8 @@ import {
 } from "@/components/app/travelers/TravelerRosterSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
+import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
+import { paymentTotalsInputFromTripRequest } from "@/lib/helpers/trip-request-pricing";
 
 interface TripDetails {
   id: string;
@@ -44,8 +45,8 @@ interface TripDetails {
   from: string;
 
   // Logistics
-  country: string;
-  city: string;
+  originCountry: string;
+  originCity: string;
   startDate: string;
   endDate: string;
   nights: number;
@@ -62,14 +63,6 @@ interface TripDetails {
 
   // Addons
   addons: any;
-
-  // Pricing
-  basePrice: number;
-  displayPrice: string;
-  filtersCostUsd: number;
-  addonsCostUsd: number;
-  totalPerPaxUsd: number;
-  totalTripUsd: number;
 
   // Completed trip data
   actualDestination?: string | null;
@@ -96,12 +89,15 @@ interface TripDetails {
   roster: TravelerRoster;
 }
 
+function labelFor(map: Record<string, string>, key: string): string {
+  return map[key] ?? key;
+}
+
 function TripDetailsContent() {
   const params = useParams();
   const { data: session } = useSession();
   const [trip, setTrip] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showDestination, setShowDestination] = useState(false);
   const [dict, setDict] = useState<MarketingDictionary | null>(null);
   const rosterRef = useRef<TravelerRosterSectionHandle>(null);
   const [savingTravelers, setSavingTravelers] = useState(false);
@@ -137,14 +133,6 @@ function TripDetailsContent() {
         }
 
         setTrip(data.trip);
-
-        // Auto-show destination if revealed or completed
-        if (
-          data.trip.status === "REVEALED" ||
-          data.trip.status === "COMPLETED"
-        ) {
-          setShowDestination(true);
-        }
       } catch (error) {
         console.error("Error fetching trip details:", error);
       } finally {
@@ -155,30 +143,32 @@ function TripDetailsContent() {
     fetchTripDetails();
   }, [tripId, session?.user?.id]);
 
-  if (loading) {
+  if (loading || !dict) {
     return <LoadingSpinner />;
   }
+
+  const copy = dict.tripDetail;
 
   if (!trip) {
     return (
       <>
         <HeaderHero
           className="h-[40vh]!"
-          description="No pudimos encontrar este viaje"
+          description={copy.notFoundDescription}
           fallbackImage="/images/hero-image-1.jpeg"
-          title="Viaje no encontrado"
+          title={copy.notFoundTitle}
           videoSrc="/videos/hero-video-1.mp4"
         />
         <Section>
           <div className="max-w-2xl mx-auto text-center">
-            <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-sm">
+            <div className="rounded-2xl bg-white p-8 shadow-md ring-1 ring-gray-100">
               <p className="text-neutral-600 mb-6">
-                El viaje que buscas no existe o no tienes permiso para verlo.
+                {copy.notFoundDescription}
               </p>
               <Button asChild>
                 <Link href="/dashboard">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Volver al Dashboard
+                  {copy.backToDashboard}
                 </Link>
               </Button>
             </div>
@@ -188,37 +178,7 @@ function TripDetailsContent() {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "COMPLETED":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "CONFIRMED":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "REVEALED":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case "CANCELLED":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      DRAFT: "Borrador",
-      SAVED: "Guardado",
-      PENDING_PAYMENT: "Pendiente de Pago",
-      CONFIRMED: "Confirmado",
-      REVEALED: "Revelado",
-      COMPLETED: "Completado",
-      CANCELLED: "Cancelado",
-    };
-    return labels[status] || status;
-  };
-
-
-
-  const filterOptions = dict?.journey?.preferencesStep?.filterOptions;
+  const filterOptions = dict.journey?.preferencesStep?.filterOptions;
   const filterChips = [
     { key: "transport" as JourneyFilterKey, value: trip.transport },
     ...(trip.accommodationType && trip.accommodationType !== "any"
@@ -262,6 +222,41 @@ function TripDetailsContent() {
   const canRevealDestination =
     trip.status === "REVEALED" || trip.status === "COMPLETED";
 
+  // Pricing fields were dropped from TripRequest — recompute live totals from
+  // stored type/level/filters/addons (same helper the dashboard trip list uses),
+  // and prefer the actually-charged Payment.amount as the authoritative total
+  // when one exists.
+  const pax = Math.max(1, trip.pax || 1);
+  const paymentInput = paymentTotalsInputFromTripRequest({
+    accommodationType: trip.accommodationType,
+    addons: addonsList,
+    arrivePref: trip.arrivePref,
+    avoidDestinations: trip.avoidDestinations,
+    city: trip.originCity,
+    climate: trip.climate,
+    country: trip.originCountry,
+    departPref: trip.departPref,
+    level: trip.level,
+    maxTravelTime: trip.maxTravelTime,
+    nights: trip.nights,
+    pax,
+    transport: trip.transport,
+    type: trip.type,
+  });
+  const totals = paymentInput ? calculatePaymentTotals(paymentInput) : null;
+  const basePriceTotal = (totals?.basePerPax ?? 0) * pax;
+  const filtersCostTotal = (totals?.filtersPerPax ?? 0) * pax;
+  const addonsCostTotal =
+    ((totals?.addonsPerPax ?? 0) + (totals?.cancelInsurancePerPax ?? 0)) * pax;
+  const hasChargedAmount = (trip.payment?.amount ?? 0) > 0;
+  const totalTripUsd = hasChargedAmount
+    ? (trip.payment?.amount ?? 0)
+    : (totals?.totalTrip ?? 0);
+  const totalPerPaxUsd = hasChargedAmount
+    ? (trip.payment?.amount ?? 0) / pax
+    : (totals?.totalPerPax ?? 0);
+  const isEstimate = !hasChargedAmount;
+
   return (
     <>
       <HeaderHero
@@ -269,21 +264,21 @@ function TripDetailsContent() {
         description={`Viaje ${trip.type} • ${trip.level}`}
         fallbackImage="/images/hero-image-1.jpeg"
         title={
-          showDestination && trip.actualDestination
+          canRevealDestination && trip.actualDestination
             ? trip.actualDestination
-            : "Destino Sorpresa"
+            : copy.destinationSorpresa
         }
         videoSrc="/videos/hero-video-1.mp4"
       />
 
       <Section>
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto text-left">
           {/* Back Button */}
           <div className="mb-6">
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="justify-start" asChild>
               <Link href="/dashboard">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver al Dashboard
+                {copy.backToDashboard}
               </Link>
             </Button>
           </div>
@@ -292,52 +287,42 @@ function TripDetailsContent() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Trip Overview */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
                 <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-neutral-900">
-                    Detalles del Viaje
+                  <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                    {copy.detailsTitle}
                   </h2>
-                  <span
-                    className={`px-3 py-1.5 text-sm rounded-full border ${getStatusColor(trip.status)}`}
-                  >
-                    {getStatusLabel(trip.status)}
-                  </span>
+                  <StatusBadge
+                    status={trip.status}
+                    label={labelFor(copy.status, trip.status)}
+                    variant="trip"
+                  />
                 </div>
 
                 {/* Destination Reveal */}
                 {canRevealDestination && (
-                  <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="flex items-center justify-between">
+                  <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-violet-50 p-4">
+                    <div className="flex items-center gap-3">
+                      <Eye className="h-5 w-5 shrink-0 text-violet-700" />
                       <div>
-                        <h3 className="font-semibold text-purple-900 mb-1">
-                          {showDestination
-                            ? "🎉 Destino Revelado"
-                            : "🔒 Destino Oculto"}
+                        <h3 className="font-semibold text-violet-900">
+                          {copy.destinationRevealedTitle}
                         </h3>
-                        <p className="text-sm text-purple-700">
-                          {showDestination
-                            ? trip.actualDestination
-                            : "Haz clic para revelar tu destino"}
+                        <p className="text-sm text-violet-700">
+                          {trip.actualDestination}
                         </p>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowDestination(!showDestination)}
-                      >
-                        {showDestination ? (
-                          <>
-                            <EyeOff className="w-4 h-4 mr-2" />
-                            Ocultar
-                          </>
-                        ) : (
-                          <>
-                            <Eye className="w-4 h-4 mr-2" />
-                            Revelar
-                          </>
-                        )}
-                      </Button>
                     </div>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="rounded-full border-0 shadow-sm"
+                      asChild
+                    >
+                      <Link href={`/${locale}/dashboard/trips/${trip.id}/reveal`}>
+                        {copy.viewRevelationAction}
+                      </Link>
+                    </Button>
                   </div>
                 )}
 
@@ -347,11 +332,11 @@ function TripDetailsContent() {
                     <div className="flex items-center gap-2 mb-1">
                       <MapPin className="h-4 w-4 text-neutral-500" />
                       <span className="text-xs text-neutral-600">
-                        Salida desde
+                        {copy.departureFromLabel}
                       </span>
                     </div>
                     <p className="font-medium text-neutral-900">
-                      {trip.city}, {trip.country}
+                      {trip.originCity}, {trip.originCountry}
                     </p>
                   </div>
 
@@ -359,7 +344,7 @@ function TripDetailsContent() {
                     <div className="flex items-center gap-2 mb-1">
                       <Users className="h-4 w-4 text-neutral-500" />
                       <span className="text-xs text-neutral-600">
-                        Pasajeros
+                        {copy.passengersLabel}
                       </span>
                     </div>
                     <p className="font-medium text-neutral-900">{trip.pax}</p>
@@ -368,7 +353,9 @@ function TripDetailsContent() {
                   <div className="p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center gap-2 mb-1">
                       <Calendar className="h-4 w-4 text-neutral-500" />
-                      <span className="text-xs text-neutral-600">Fechas</span>
+                      <span className="text-xs text-neutral-600">
+                        {copy.datesLabel}
+                      </span>
                     </div>
                     <p className="font-medium text-neutral-900 text-sm">
                       {new Date(trip.startDate).toLocaleDateString()} →{" "}
@@ -379,7 +366,9 @@ function TripDetailsContent() {
                   <div className="p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center gap-2 mb-1">
                       <Moon className="h-4 w-4 text-neutral-500" />
-                      <span className="text-xs text-neutral-600">Noches</span>
+                      <span className="text-xs text-neutral-600">
+                        {copy.nightsLabel}
+                      </span>
                     </div>
                     <p className="font-medium text-neutral-900">
                       {trip.nights}
@@ -389,8 +378,8 @@ function TripDetailsContent() {
               </div>
 
               {/* Invite your travel friends / traveler roster */}
-              {dict && trip.roster && trip.roster.cap > 0 && (
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              {trip.roster && trip.roster.cap > 0 && (
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
                   <TravelerRosterSection
                     copy={dict.inviteTravelers}
                     locale={hasLocale(locale) ? (locale as Locale) : "es"}
@@ -415,9 +404,9 @@ function TripDetailsContent() {
               )}
 
               {/* Filters & Preferences */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-xl font-semibold text-neutral-900 mb-4">
-                  Filtros y Preferencias ({filterChips.length})
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                  {copy.filtersTitle} ({filterChips.length})
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {filterChips.map((chip, index) => (
@@ -437,7 +426,7 @@ function TripDetailsContent() {
                 {trip.avoidDestinations.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <p className="text-sm font-medium text-neutral-700 mb-2">
-                      Destinos a evitar
+                      {copy.avoidDestinationsLabel}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {trip.avoidDestinations.map((dest, index) => (
@@ -445,7 +434,7 @@ function TripDetailsContent() {
                           key={index}
                           item={{
                             key: dest,
-                            label: "Ciudad",
+                            label: copy.cityChipLabel,
                             value: dest,
                           }}
                           color="secondary"
@@ -459,9 +448,9 @@ function TripDetailsContent() {
 
               {/* Add-ons */}
               {addonChips.length > 0 && (
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-4">
-                    Add-ons ({addonChips.length})
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                    {copy.addonsTitle} ({addonChips.length})
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {addonChips.map((addon: any, index: number) => (
@@ -482,9 +471,9 @@ function TripDetailsContent() {
 
               {/* Customer Review */}
               {trip.customerRating && (
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-4">
-                    Mi Reseña
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                    {copy.reviewTitle}
                   </h3>
                   <div className="flex items-center gap-2 mb-3">
                     {[...Array(5)].map((_, i) => (
@@ -511,43 +500,52 @@ function TripDetailsContent() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Pricing Summary */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-                  Resumen de Costos
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                  {copy.costsTitle}
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center pb-3 border-b border-gray-200">
                     <span className="text-sm text-neutral-600">
-                      Precio Base
+                      {copy.basePriceLabel}
                     </span>
                     <span className="font-semibold text-neutral-900">
-                      ${(trip.basePrice ?? 0).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-sm text-neutral-600">Filtros</span>
-                    <span className="font-semibold text-neutral-900">
-                      ${(trip.filtersCostUsd ?? 0).toFixed(2)}
+                      ${basePriceTotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-sm text-neutral-600">Add-ons</span>
+                    <span className="text-sm text-neutral-600">
+                      {copy.filtersCostLabel}
+                    </span>
                     <span className="font-semibold text-neutral-900">
-                      ${(trip.addonsCostUsd ?? 0).toFixed(2)}
+                      ${filtersCostTotal.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                    <span className="text-sm text-neutral-600">
+                      {copy.addonsCostLabel}
+                    </span>
+                    <span className="font-semibold text-neutral-900">
+                      ${addonsCostTotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
                     <span className="text-sm font-semibold text-neutral-900">
-                      Total Viaje
+                      {copy.totalTripLabel}
+                      {isEstimate && (
+                        <span className="ml-1 text-xs font-normal text-neutral-400">
+                          {copy.estimateNote}
+                        </span>
+                      )}
                     </span>
-                    <span className="text-xl font-bold text-blue-600">
-                      ${(trip.totalTripUsd ?? 0).toFixed(2)}
+                    <span className="text-xl font-bold text-light-blue">
+                      ${totalTripUsd.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm text-neutral-600">
-                    <span>Por persona</span>
+                    <span>{copy.perPersonLabel}</span>
                     <span className="font-medium">
-                      ${(trip.totalPerPaxUsd ?? 0).toFixed(2)}
+                      ${totalPerPaxUsd.toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -555,63 +553,48 @@ function TripDetailsContent() {
 
               {/* Payment Info */}
               {trip.payment && (
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-                    Información de Pago
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                  <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                    {copy.paymentInfoTitle}
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      {trip.payment.status === "APPROVED" ||
-                      trip.payment.status === "COMPLETED" ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : trip.payment.status === "PENDING" ? (
-                        <Clock className="h-5 w-5 text-yellow-600" />
-                      ) : (
-                        <XIcon className="h-5 w-5 text-red-600" />
-                      )}
-                      <span
-                        className={`font-medium ${
-                          trip.payment.status === "APPROVED" ||
-                          trip.payment.status === "COMPLETED"
-                            ? "text-green-600"
-                            : trip.payment.status === "PENDING"
-                              ? "text-yellow-600"
-                              : "text-red-600"
-                        }`}
-                      >
-                        {trip.payment.status === "APPROVED"
-                          ? "Pago Aprobado"
-                          : trip.payment.status === "COMPLETED"
-                            ? "Pago Completado"
-                            : trip.payment.status === "PENDING"
-                              ? "Pago Pendiente"
-                              : "Pago Fallido"}
-                      </span>
-                    </div>
+                    <StatusBadge
+                      status={trip.payment.status}
+                      label={labelFor(copy.paymentStatus, trip.payment.status)}
+                      variant="payment"
+                    />
 
                     <div className="pt-3 border-t border-gray-200 space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-neutral-600">Monto</span>
+                        <span className="text-neutral-600">
+                          {copy.amountLabel}
+                        </span>
                         <span className="font-semibold text-neutral-900">
                           ${(trip.payment?.amount ?? 0).toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-neutral-600">Proveedor</span>
+                        <span className="text-neutral-600">
+                          {copy.providerLabel}
+                        </span>
                         <span className="font-medium text-neutral-900 capitalize">
                           {trip.payment.provider}
                         </span>
                       </div>
                       {trip.payment.providerPaymentId && (
                         <div className="flex justify-between">
-                          <span className="text-neutral-600">ID Pago</span>
+                          <span className="text-neutral-600">
+                            {copy.paymentIdLabel}
+                          </span>
                           <span className="font-mono text-xs text-neutral-900">
                             {trip.payment.providerPaymentId.slice(0, 12)}...
                           </span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-neutral-600">Fecha</span>
+                        <span className="text-neutral-600">
+                          {copy.dateLabel}
+                        </span>
                         <span className="text-neutral-900">
                           {new Date(
                             trip.payment.createdAt,
@@ -624,9 +607,9 @@ function TripDetailsContent() {
               )}
 
               {/* Trip Timeline */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-                  Línea de Tiempo
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                  {copy.timelineTitle}
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
@@ -635,7 +618,7 @@ function TripDetailsContent() {
                     </div>
                     <div>
                       <p className="font-medium text-neutral-900">
-                        Viaje creado
+                        {copy.tripCreatedLabel}
                       </p>
                       <p className="text-sm text-neutral-600">
                         {new Date(trip.createdAt).toLocaleDateString()}
@@ -650,7 +633,7 @@ function TripDetailsContent() {
                       </div>
                       <div>
                         <p className="font-medium text-neutral-900">
-                          Pago confirmado
+                          {copy.paymentConfirmedLabel}
                         </p>
                         <p className="text-sm text-neutral-600">
                           {new Date(trip.payment.paidAt).toLocaleDateString()}
@@ -666,7 +649,7 @@ function TripDetailsContent() {
                       </div>
                       <div>
                         <p className="font-medium text-neutral-900">
-                          Destino revelado
+                          {copy.timelineDestinationRevealedLabel}
                         </p>
                         <p className="text-sm text-neutral-600">
                           {new Date(
@@ -684,7 +667,7 @@ function TripDetailsContent() {
                       </div>
                       <div>
                         <p className="font-medium text-neutral-900">
-                          Viaje completado
+                          {copy.tripCompletedLabel}
                         </p>
                         <p className="text-sm text-neutral-600">
                           {new Date(trip.completedAt).toLocaleDateString()}
@@ -694,29 +677,26 @@ function TripDetailsContent() {
                   )}
                 </div>
               </div>
-            </div>
-
-            {/* Sidebar - empty for now, can add actions later */}
-            <div className="space-y-6">
               {/* Actions */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                <h3 className="text-lg font-semibold text-neutral-900 mb-4">
-                  Acciones
+              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                  {copy.actionsTitle}
                 </h3>
                 <div className="space-y-3">
                   {trip.status === "COMPLETED" && !trip.customerRating && (
                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <p className="text-sm font-medium text-neutral-900">
-                        {dict?.tripReview?.emailHintTitle ?? "Dejá tu reseña"}
+                        {dict.tripReview.emailHintTitle}
                       </p>
                       <p className="mt-1 text-xs text-gray-500">
-                        {dict?.tripReview?.emailHint ?? "Revisá tu correo — te enviamos un enlace para calificar tu experiencia."}
+                        {dict.tripReview.emailHint}
                       </p>
                     </div>
                   )}
 
                   {(trip.status === "CONFIRMED" ||
-                    trip.status === "REVEALED") && (
+                    trip.status === "REVEALED" ||
+                    trip.status === "COMPLETED") && (
                     <Button
                       variant="secondary"
                       className="w-full justify-start"
@@ -724,42 +704,39 @@ function TripDetailsContent() {
                     >
                       <Link href={`/${locale}/dashboard/trips/${trip.id}/details`}>
                         <Calendar className="w-4 h-4 mr-2" />
-                        Ver Itinerario
+                        {copy.viewItineraryAction}
                       </Link>
                     </Button>
                   )}
 
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     className="w-full justify-start"
                     asChild
                   >
                     <Link href="/dashboard">
                       <ArrowLeft className="w-4 h-4 mr-2" />
-                      Volver al Dashboard
+                      {copy.backToDashboard}
                     </Link>
                   </Button>
                 </div>
               </div>
 
               {/* Trip Info Card */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="font-semibold text-blue-900 mb-2">
-                  ℹ️ Información del Viaje
+              <div className="rounded-2xl bg-light-blue/5 p-6 ring-1 ring-light-blue/20">
+                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-light-blue">
+                  <Info className="h-4 w-4" />
+                  {copy.tripInfoTitle}
                 </h3>
-                <ul className="text-sm text-blue-800 space-y-2">
+                <ul className="text-sm text-neutral-700 space-y-2">
                   <li>
-                    • Tipo: <strong>{trip.type}</strong>
+                    • {copy.typeLabel}: <strong>{trip.type}</strong>
                   </li>
                   <li>
-                    • Nivel: <strong>{trip.level}</strong>
+                    • {copy.levelLabel}: <strong>{trip.level}</strong>
                   </li>
-                  {trip.status === "CONFIRMED" && (
-                    <li>• El destino será revelado 48 horas antes del viaje</li>
-                  )}
-                  {trip.status === "REVEALED" && (
-                    <li>• ¡Tu destino ha sido revelado!</li>
-                  )}
+                  {trip.status === "CONFIRMED" && <li>• {copy.confirmedHint}</li>}
+                  {trip.status === "REVEALED" && <li>• {copy.revealedHint}</li>}
                 </ul>
               </div>
             </div>

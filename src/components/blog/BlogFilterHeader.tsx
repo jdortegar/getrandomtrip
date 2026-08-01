@@ -42,14 +42,16 @@ function FilterDropdownCard({
   return (
     <div
       className={cn(
-        "relative min-w-[220px] rounded-lg border border-neutral-200 bg-white py-2 px-4 shadow-sm text-left",
+        "relative w-full rounded-lg border border-neutral-200 bg-white py-1.5 px-3 shadow-sm text-left md:w-auto md:min-w-[220px] md:py-2 md:px-4",
         className,
       )}
     >
       <div className="flex justify-between gap-1 items-center w-full">
-        <p className="text-xl font-semibold text-neutral-900">{title}</p>
+        <p className="text-base font-semibold text-neutral-900 md:text-xl">
+          {title}
+        </p>
         <span className="pointer-events-none text-neutral-900">
-          <ChevronDown className="h-5 w-5" />
+          <ChevronDown className="h-4 w-4 md:h-5 md:w-5" />
         </span>
       </div>
       <p className="text-xs text-neutral-500">{subtitle}</p>
@@ -106,51 +108,48 @@ export function BlogFilterHeader({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-3 border-b border-neutral-200 pb-4 justify-between",
+        "flex flex-col gap-3 border-b border-neutral-200 pb-4 md:flex-row md:flex-wrap md:items-center",
         className,
       )}
     >
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterDropdownCard
-          subtitle={labels.travelTypeSubtitle}
-          title={travelTypeTitle}
-        >
-          <select
-            className="absolute inset-0 cursor-pointer opacity-0"
-            onChange={handleTravelTypeChange}
-            value={value.travelTypeKey}
-          >
-            <option value="">{labels.allOption}</option>
-            {BLOG_TRAVEL_TYPE_OPTIONS.map((opt) => (
-              <option key={opt.key} value={opt.key}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </FilterDropdownCard>
-
-        <FilterDropdownCard
-          subtitle={labels.excuseSubtitle}
-          title={excuseTitle}
-        >
-          <select
-            className="absolute inset-0 cursor-pointer opacity-0"
-            onChange={(e) => {
-              const key = e.target.value;
-              onChange({ ...value, excuseKey: key || null });
-            }}
-            value={value.excuseKey ?? ""}
-          >
-            <option value="">{labels.excuseLabel}</option>
-            {BLOG_EXCUSE_OPTIONS.slice(0, 8).map((opt) => (
-              <option key={opt.key} value={opt.key}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </FilterDropdownCard>
-      </div>
       <FilterDropdownCard
+        subtitle={labels.travelTypeSubtitle}
+        title={travelTypeTitle}
+      >
+        <select
+          className="absolute inset-0 cursor-pointer opacity-0"
+          onChange={handleTravelTypeChange}
+          value={value.travelTypeKey}
+        >
+          <option value="">{labels.allOption}</option>
+          {BLOG_TRAVEL_TYPE_OPTIONS.map((opt) => (
+            <option key={opt.key} value={opt.key}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </FilterDropdownCard>
+
+      <FilterDropdownCard subtitle={labels.excuseSubtitle} title={excuseTitle}>
+        <select
+          className="absolute inset-0 cursor-pointer opacity-0"
+          onChange={(e) => {
+            const key = e.target.value;
+            onChange({ ...value, excuseKey: key || null });
+          }}
+          value={value.excuseKey ?? ""}
+        >
+          <option value="">{labels.excuseLabel}</option>
+          {BLOG_EXCUSE_OPTIONS.slice(0, 8).map((opt) => (
+            <option key={opt.key} value={opt.key}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </FilterDropdownCard>
+
+      <FilterDropdownCard
+        className="md:ml-auto"
         subtitle={labels.tripperSubtitle}
         title={tripperTitle}
       >

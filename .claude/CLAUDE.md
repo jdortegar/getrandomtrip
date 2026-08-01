@@ -17,47 +17,6 @@ User instructions always override this file.
 
 ---
 
-## Tech Stack
-
-| Layer         | Technology                                 |
-| ------------- | ------------------------------------------ |
-| Framework     | Next.js 14 (App Router)                    |
-| Language      | TypeScript 5                               |
-| Styling       | Tailwind CSS 4                             |
-| State         | Zustand 5 (`src/store/`)                   |
-| ORM           | Prisma 7 (PostgreSQL)                      |
-| Auth          | NextAuth 4 (Prisma adapter + Google OAuth) |
-| Payments      | Stripe                                     |
-| UI Primitives | Radix UI, shadcn/ui (`components.json`)    |
-| Forms         | react-hook-form                            |
-| Maps          | React Leaflet, Google Maps/Places          |
-| Toasts        | Sonner, react-toastify                     |
-| Animation     | Framer Motion                              |
-
----
-
-## Commands
-
-```bash
-npm run dev           # Start dev server on port 3010
-npm run build         # Production build
-npm run build:clean   # Clean .next then build
-npm run typecheck     # tsc --noEmit (run before committing)
-npm run lint          # ESLint
-npm run lint:fix      # ESLint auto-fix
-npm run format        # Prettier write
-npm run format:check  # Prettier check
-
-# Database
-npm run db:generate   # prisma generate
-npm run db:push       # Push schema (no migration file)
-npm run db:migrate    # prisma migrate dev
-npm run db:studio     # Prisma Studio
-npm run db:seed       # Seed database
-```
-
----
-
 ## Architecture
 
 ### Routing

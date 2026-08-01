@@ -1572,6 +1572,64 @@ export interface TripperInviteAcceptDict {
   registerErrorGeneric: string;
 }
 
+export interface TripDetailDict {
+  backToDashboard: string;
+  notFoundTitle: string;
+  notFoundDescription: string;
+  destinationSorpresa: string;
+  detailsTitle: string;
+  status: {
+    DRAFT: string;
+    SAVED: string;
+    PENDING_PAYMENT: string;
+    CONFIRMED: string;
+    REVEALED: string;
+    COMPLETED: string;
+    CANCELLED: string;
+  };
+  destinationRevealedTitle: string;
+  viewRevelationAction: string;
+  departureFromLabel: string;
+  passengersLabel: string;
+  datesLabel: string;
+  nightsLabel: string;
+  filtersTitle: string;
+  avoidDestinationsLabel: string;
+  cityChipLabel: string;
+  addonsTitle: string;
+  reviewTitle: string;
+  costsTitle: string;
+  basePriceLabel: string;
+  filtersCostLabel: string;
+  addonsCostLabel: string;
+  totalTripLabel: string;
+  perPersonLabel: string;
+  estimateNote: string;
+  paymentInfoTitle: string;
+  paymentStatus: {
+    APPROVED: string;
+    COMPLETED: string;
+    PENDING: string;
+    FAILED: string;
+  };
+  amountLabel: string;
+  providerLabel: string;
+  paymentIdLabel: string;
+  dateLabel: string;
+  timelineTitle: string;
+  tripCreatedLabel: string;
+  paymentConfirmedLabel: string;
+  timelineDestinationRevealedLabel: string;
+  tripCompletedLabel: string;
+  actionsTitle: string;
+  viewItineraryAction: string;
+  tripInfoTitle: string;
+  typeLabel: string;
+  levelLabel: string;
+  confirmedHint: string;
+  revealedHint: string;
+}
+
 export interface InviteTravelersDict {
   eyebrow: string;
   heading: string;
@@ -2810,4 +2868,5 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  tripDetail: TripDetailDict;
 }

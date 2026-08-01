@@ -7,6 +7,7 @@ import {
   parseUserRolesPayload,
 } from "@/lib/auth/prismaUserRoles";
 import { prisma } from "@/lib/prisma";
+import { generateUniqueTripperSlug } from "@/lib/db/tripper-queries";
 import type { UserRole } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -124,9 +125,28 @@ export async function PATCH(
 
     const { roles } = buildUserRoleUpdate(nextRoles);
 
+    let tripperSlug: string | undefined;
+    if (roles.includes("TRIPPER")) {
+      const target = await prisma.user.findUnique({
+        select: { name: true, tripperSlug: true },
+        where: { id: params.id },
+      });
+
+      if (!target) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      if (!target.tripperSlug) {
+        tripperSlug = await generateUniqueTripperSlug(target.name, params.id);
+      }
+    }
+
     const updated = await prisma.user.update({
-      data: { roles: { set: roles } },
-      select: { id: true, roles: true },
+      data: {
+        roles: { set: roles },
+        ...(tripperSlug ? { tripperSlug } : {}),
+      },
+      select: { id: true, roles: true, tripperSlug: true },
       where: { id: params.id },
     });
 

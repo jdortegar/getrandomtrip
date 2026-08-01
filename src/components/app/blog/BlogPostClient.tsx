@@ -235,9 +235,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
           />
         )}
 
-        <FaqSection items={faqItems} />
-
-        {/* Remaining sections, if any, follow the FAQ */}
+        {/* Remaining sections, if any, follow the first block */}
         {remainingSections.map((section, index) => (
           <BlogArticle
             className="mt-10"
@@ -248,6 +246,8 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
             title={section.title ?? ""}
           />
         ))}
+
+        <FaqSection items={faqItems} />
       </Section>
       <LightboxCarousel images={carouselImages} className="bg-gray-50" />
 
