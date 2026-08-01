@@ -51,11 +51,11 @@
     "pageHeadings": {
       "blog": {
         "title": "Blog",
-        "description": "Moderá los posts enviados por los trippers."
+        "description": "Modera los posts enviados por los trippers."
       },
       "blogDetail": {
         "title": "Revisión de post",
-        "description": "Revisá el post antes de aprobarlo."
+        "description": "Revisa el post antes de aprobarlo."
       },
       "home": {
         "title": "Panel de Admin",
@@ -63,35 +63,35 @@
       },
       "tripRequests": {
         "title": "Solicitudes de viaje",
-        "description": "Gestioná las solicitudes de viaje de los clientes."
+        "description": "Gestiona las solicitudes de viaje de los clientes."
       },
       "settings": {
         "title": "Configuración",
-        "description": "Gestioná usuarios, lista de espera y suscripciones a notificaciones TGIS."
+        "description": "Gestiona usuarios, lista de espera y suscripciones a notificaciones TGIS."
       },
       "experiences": {
         "title": "Experiencias",
-        "description": "Revisá y gestioná las experiencias de los trippers."
+        "description": "Revisa y gestioná las experiencias de los trippers."
       },
       "experiencesNew": {
         "title": "Nueva experiencia",
-        "description": "Creá una experiencia genérica publicada por RandomTrip."
+        "description": "Crea una experiencia genérica publicada por RandomTrip."
       },
       "experiencesDetail": {
         "title": "Revisión de experiencia",
-        "description": "Revisá los detalles de la experiencia antes de aprobarla."
+        "description": "Revisa los detalles de la experiencia antes de aprobarla."
       },
       "payments": {
         "title": "Pagos",
-        "description": "Consultá los pagos registrados en la plataforma."
+        "description": "Consulta los pagos registrados en la plataforma."
       },
       "reviews": {
         "title": "Reseñas",
-        "description": "Moderá las reseñas de los clientes."
+        "description": "Modera las reseñas de los clientes."
       },
       "xsedNew": {
         "title": "Nuevo XSED drop",
-        "description": "Creá o editá un XSED drop."
+        "description": "Crea o editá un XSED drop."
       },
       "notifications": {
         "title": "Notificaciones",
@@ -274,7 +274,7 @@
           "removePhoto": "Eliminar foto"
         },
         "gallery": {
-          "hint": "Subí las fotos que se van a mostrar en la galería pública del drop.",
+          "hint": "Sube las fotos que se van a mostrar en la galería pública del drop.",
           "addImage": "Agregar imagen",
           "uploading": "Subiendo…",
           "removeImageAria": "Eliminar imagen"
@@ -282,7 +282,7 @@
       }
     },
     "benefits": {
-      "saveFirst": "Guardá el drop primero y luego volvé a gestionar los beneficios.",
+      "saveFirst": "Guarda el drop primero y luego volvé a gestionar los beneficios.",
       "add": "Agregar beneficio",
       "empty": "Sin beneficios aún.",
       "save": "Guardar",
@@ -323,12 +323,12 @@
     "confirmReject": "Confirmar rechazo",
     "cancel": "Cancelar",
     "noteLabel": "Nota para el tripper",
-    "notePlaceholder": "Explicá qué necesita cambiar...",
+    "notePlaceholder": "Explica qué necesita cambiar...",
     "noteOptional": "(opcional)",
     "noteRequired": "(obligatorio)",
     "tripperNoteLabel": "Nota del tripper",
     "notifTitle": "El admin propuso cambios en tu experiencia",
-    "notifBody": "Revisá los cambios propuestos para \"{title}\".",
+    "notifBody": "Revisa los cambios propuestos para \"{title}\".",
     "priceSection": "Precio por persona (USD)",
     "editExperience": "Editar experiencia",
     "sendToTripper": "Enviar al tripper para revisión",
@@ -342,19 +342,19 @@
     "rejectConfirmBody": "Vuelve a Borrador para que el tripper la revise.",
     "sendConfirmTitle": "¿Enviar al tripper para revisión?",
     "sendConfirmBody": "El tripper verá los cambios que hiciste y podrá aprobarlos o rechazarlos.",
-    "sendNotePlaceholder": "Explicá qué cambiaste y por qué…",
-    "errorApprove": "No se pudo aprobar. Intentá de nuevo.",
-    "errorReject": "No se pudo rechazar. Intentá de nuevo.",
-    "errorStartEdit": "No se pudo iniciar la edición. Intentá de nuevo.",
-    "errorLocked": "Bloqueado por otro admin ({name}). Actualizá la página para ver el estado.",
-    "errorSendToTripper": "No se pudo enviar al tripper. Intentá de nuevo.",
-    "errorDiscard": "No se pudieron descartar los cambios. Intentá de nuevo."
+    "sendNotePlaceholder": "Explica qué cambiaste y por qué…",
+    "errorApprove": "No se pudo aprobar. Intenta de nuevo.",
+    "errorReject": "No se pudo rechazar. Intenta de nuevo.",
+    "errorStartEdit": "No se pudo iniciar la edición. Intenta de nuevo.",
+    "errorLocked": "Bloqueado por otro admin ({name}). Actualiza la página para ver el estado.",
+    "errorSendToTripper": "No se pudo enviar al tripper. Intenta de nuevo.",
+    "errorDiscard": "No se pudieron descartar los cambios. Intenta de nuevo."
   },
   "tripperExperienceReviewCopy": {
     "approve": "Aprobar y aplicar",
     "reject": "Rechazar cambios",
-    "errorApprove": "No se pudieron aplicar los cambios. Intentá de nuevo.",
-    "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
+    "errorApprove": "No se pudieron aplicar los cambios. Intenta de nuevo.",
+    "errorReject": "No se pudieron rechazar los cambios. Intenta de nuevo."
   },
   "adminBlogReview": {
     "back": "Volver al blog",
@@ -363,7 +363,7 @@
     "confirmReject": "Confirmar rechazo",
     "cancel": "Cancelar",
     "noteLabel": "Nota para el tripper",
-    "notePlaceholder": "Explicá qué necesita cambiar...",
+    "notePlaceholder": "Explica qué necesita cambiar...",
     "noteOptional": "(opcional)",
     "noteRequired": "(obligatorio)",
     "tripperNoteLabel": "Nota del tripper",
@@ -379,20 +379,20 @@
     "rejectConfirmBody": "Vuelve a Borrador para que el tripper lo revise.",
     "sendConfirmTitle": "¿Enviar al tripper para revisión?",
     "sendConfirmBody": "El tripper verá los cambios que hiciste y podrá aprobarlos o rechazarlos.",
-    "sendNotePlaceholder": "Explicá qué cambiaste y por qué…",
-    "errorApprove": "No se pudo aprobar. Intentá de nuevo.",
-    "errorReject": "No se pudo rechazar. Intentá de nuevo.",
-    "errorStartEdit": "No se pudo iniciar la edición. Intentá de nuevo.",
-    "errorLocked": "Bloqueado por otro admin ({name}). Actualizá la página para ver el estado.",
-    "errorSendToTripper": "No se pudo enviar al tripper. Intentá de nuevo.",
-    "errorDiscard": "No se pudieron descartar los cambios. Intentá de nuevo."
+    "sendNotePlaceholder": "Explica qué cambiaste y por qué…",
+    "errorApprove": "No se pudo aprobar. Intenta de nuevo.",
+    "errorReject": "No se pudo rechazar. Intenta de nuevo.",
+    "errorStartEdit": "No se pudo iniciar la edición. Intenta de nuevo.",
+    "errorLocked": "Bloqueado por otro admin ({name}). Actualiza la página para ver el estado.",
+    "errorSendToTripper": "No se pudo enviar al tripper. Intenta de nuevo.",
+    "errorDiscard": "No se pudieron descartar los cambios. Intenta de nuevo."
   },
   "tripperBlogReviewCopy": {
     "approve": "Aprobar y aplicar",
     "reject": "Rechazar cambios",
     "noteLabel": "Nota del admin",
-    "errorApprove": "No se pudieron aplicar los cambios. Intentá de nuevo.",
-    "errorReject": "No se pudieron rechazar los cambios. Intentá de nuevo."
+    "errorApprove": "No se pudieron aplicar los cambios. Intenta de nuevo.",
+    "errorReject": "No se pudieron rechazar los cambios. Intenta de nuevo."
   },
   "adminPages": {
     "home": {
@@ -473,11 +473,11 @@
         "approve": "Aprobar y publicar",
         "reject": "Rechazar",
         "noteLabel": "Nota para el tripper",
-        "notePlaceholder": "Explicá qué cambiar...",
+        "notePlaceholder": "Explica qué cambiar...",
         "close": "Cerrar",
         "errorApprove": "No se pudo aprobar",
         "errorReject": "No se pudo rechazar",
-        "errorPricing": "Completá el precio de cada tipo"
+        "errorPricing": "Completa el precio de cada tipo"
       }
     },
     "blog": {
@@ -594,8 +594,8 @@
       "stateOn": "Activado",
       "stateOff": "Desactivado",
       "savedNote": "Guardado.",
-      "errorLoad": "No se pudo cargar esta configuración. Recargá la página.",
-      "errorSave": "No se pudo guardar este cambio. Intentá de nuevo."
+      "errorLoad": "No se pudo cargar esta configuración. Recarga la página.",
+      "errorSave": "No se pudo guardar este cambio. Intenta de nuevo."
     },
     "tripRequests": {
       "eyebrow": "Solicitudes de clientes",
@@ -624,7 +624,7 @@
   "xsedBook": {
     "hero": {
       "brand": "XSED",
-      "description": "Completá tu información de salida para confirmar tu XSED.",
+      "description": "Completa tu información de salida para confirmar tu XSED.",
       "fallbackImage": "/images/xsed-hero.jpg",
       "label": "RESERVÁ TU ESCAPE",
       "progressLabel": "Progreso",
@@ -679,7 +679,7 @@
       "title": "XSED | Randomtrip",
       "description": "X Suerte es Domingo: una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
       "openGraphTitle": "XSED | Randomtrip",
-      "openGraphDescription": "Sumate a la lista de espera de XSED y enterate antes de que se abra la pasarela cada domingo."
+      "openGraphDescription": "Súmate a la lista de espera de XSED y entérate antes de que se abra la pasarela cada domingo."
     },
     "hero": {
       "title": "XSED",
@@ -687,15 +687,15 @@
       "dropNumberLabel": "Nº {number}",
       "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> única a menos de 300km de tu casa.<br/>Solo 10 cupos liberados cada domingo por país.",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
-      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
-      "invalidEmailMessage": "Ingresá un email válido.",
+      "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
+      "invalidEmailMessage": "Ingresa un email válido.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
       "submitLabel": "UNIRME A LA LISTA DE ESPERA",
       "submitAriaLabel": "Unirme a la lista de espera de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.<br/>Si parpadeás, te quedás fuera.",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.<br/>Si parpadeas, te quedas fuera.",
       "fallbackImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4"
     },
@@ -704,24 +704,24 @@
         {
           "icon": "alert",
           "title": "La Alerta",
-          "description": "El domingo a las 18:00 hs <strong>recibís el acceso oculto.</strong><br/>Tenés 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona."
+          "description": "El domingo a las 18:00 hs <strong>recibes el acceso oculto.</strong><br/>Tienes 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona."
         },
         {
           "icon": "rhythm",
           "title": "Reveal a tu ritmo",
-          "description": "Vos controlás el asombro. <strong>Exactamente 48 horas antes</strong>, te enviamos la distancia de manejo y el clima para que prepares el auto y la maleta. Las coordenadas secretas estarán desbloqueadas: podés verlas ese mismo jueves, o jugar con la intriga y abrir el mapa justo antes de arrancar el sábado."
+          "description": "Tú controlas el asombro. <strong>Exactamente 48 horas antes</strong>, te enviamos la distancia de manejo y el clima para que prepares el auto y la maleta. Las coordenadas secretas estarán desbloqueadas: puedes verlas ese mismo jueves, o jugar con la intriga y abrir el mapa justo antes de arrancar el sábado."
         },
         {
           "icon": "escape",
           "title": "El escape",
-          "description": "El sábado tomás tu auto. <strong>Llegás a un destino a menos de 300km de tu casa.</strong> Incluye la noche de hotel, la cena del sábado, el desayuno del domingo y una experiencia local curada."
+          "description": "El sábado tomas tu auto. <strong>Llegas a un destino a menos de 300km de tu casa.</strong> Incluye la noche de hotel, la cena del sábado, el desayuno del domingo y una experiencia local curada."
         }
       ]
     },
     "countdown": {
       "title": "COMPRÁ TU",
       "titleHighlight": "XSED Nº{number}",
-      "subtitle": "Unite a la lista de espera — no te quedes sin el tuyo.",
+      "subtitle": "Únete a la lista de espera — no te quedes sin el tuyo.",
       "openSubtitle": "La pasarela está abierta. Quedan pocos lugares.",
       "nextDropLabel": "NEXT DROP",
       "windowOpenLabel": "ABIERTO AHORA",
@@ -752,20 +752,20 @@
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeas, te quedas fuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
       "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
       "submitAriaLabel": "Notificarme del próximo drop de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
-      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
-      "invalidEmailMessage": "Ingresá un email válido."
+      "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
+      "invalidEmailMessage": "Ingresa un email válido."
     },
     "faq": {
       "eyebrow": "FAQ'S",
       "title": "PREGUNTAS DESTACADAS",
-      "description": "Más de 1.000 Trippers compartiendo experiencias! Descubrí viajes exclusivos, curados a no más de 300Km de distancia.",
+      "description": "Más de 1.000 Trippers compartiendo experiencias! Descubre viajes exclusivos, curados a no más de 300Km de distancia.",
       "items": [
         {
           "question": "¿Qué día empieza mi escapada?",
@@ -773,11 +773,11 @@
         },
         {
           "question": "¿Puedo elegir el tipo de lugar? (Playa, Hotel, Cabaña)",
-          "answer": "Podés indicar preferencias generales en el brief (entorno natural, ciudad, costa), pero el destino exacto es siempre una sorpresa curada por nuestro equipo."
+          "answer": "Puedes indicar preferencias generales en el brief (entorno natural, ciudad, costa), pero el destino exacto es siempre una sorpresa curada por nuestro equipo."
         },
         {
           "question": "¿Qué pasa si tengo que cambiar la fecha?",
-          "answer": "Podés reagendar hasta 7 días antes del XSED. Contactanos por soporte y te ayudamos a mover tu cupo al siguiente disponible."
+          "answer": "Puedes reagendar hasta 7 días antes del XSED. Contactanos por soporte y te ayudamos a mover tu cupo al siguiente disponible."
         },
         {
           "question": "¿Qué incluye?",
@@ -790,30 +790,30 @@
     "hero": {
       "eyebrow": "FAQ's",
       "title": "PREGUNTAS FRECUENTES",
-      "description": "Todo lo que necesitás saber antes de dar el salto."
+      "description": "Todo lo que necesitas saber antes de dar el salto."
     },
     "meta": {
       "title": "Preguntas Frecuentes | Randomtrip",
-      "description": "Todo lo que necesitás saber antes de dar el salto: cómo funciona, qué incluye y cómo reagendar tu viaje sorpresa.",
+      "description": "Todo lo que necesitas saber antes de dar el salto: cómo funciona, qué incluye y cómo reagendar tu viaje sorpresa.",
       "openGraphTitle": "FAQ | Randomtrip — Preguntas Frecuentes",
-      "openGraphDescription": "Respondemos todo: cómo funciona el viaje sorpresa, qué podés elegir y cómo reagendar."
+      "openGraphDescription": "Respondemos todo: cómo funciona el viaje sorpresa, qué puedes elegir y cómo reagendar."
     },
     "block": {
       "eyebrow": "FAQ's",
       "title": "Preguntas destacadas",
-      "description": "Todo lo que necesitás saber antes de dar el salto.",
+      "description": "Todo lo que necesitas saber antes de dar el salto.",
       "items": [
         {
           "question": "¿Cómo doy el primer paso para mi viaje sorpresa?",
-          "answer": "Completás un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
+          "answer": "Completas un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
         },
         {
           "question": "¿Qué es lo que puedo elegir?",
-          "answer": "Elegís el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
+          "answer": "Eliges el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
         },
         {
           "question": "¿Qué pasa si tengo que cambiar la fecha?",
-          "answer": "Podés reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
+          "answer": "Puedes reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
         },
         {
           "question": "¿Qué incluye?",
@@ -852,10 +852,10 @@
     "loading": "Cargando...",
     "forgotPasswordSubject": "Solicitud de recuperación de contraseña",
     "forgotPasswordBody": "Necesito restablecer la contraseña de esta cuenta: {email}",
-    "notVerifiedTitle": "Verificá tu email",
-    "notVerifiedBody": "Necesitás verificar tu email antes de iniciar sesión. Te acabamos de enviar un enlace.",
+    "notVerifiedTitle": "Verifica tu email",
+    "notVerifiedBody": "Necesitas verificar tu email antes de iniciar sesión. Te acabamos de enviar un enlace.",
     "resendVerification": "Reenviar link",
-    "verificationResent": "Email de verificación enviado. Revisá tu bandeja de entrada.",
+    "verificationResent": "Email de verificación enviado. Revisa tu bandeja de entrada.",
     "resending": "Enviando…",
     "registerCheckInbox": "Te enviamos un enlace de verificación a {email}.",
     "forgotSending": "Enviando…",
@@ -866,23 +866,23 @@
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verificando tu email…",
-    "verifyingBody": "Esperá un momento mientras confirmamos tu cuenta.",
+    "verifyingBody": "Espera un momento mientras confirmamos tu cuenta.",
     "successTitle": "¡Email verificado!",
-    "successBody": "Tu cuenta fue verificada correctamente. Ya podés iniciar sesión.",
+    "successBody": "Tu cuenta fue verificada correctamente. Ya puedes iniciar sesión.",
     "loginCta": "Ir a iniciar sesión",
     "errorTitle": "No pudimos verificar tu email",
     "reasonInvalid": "Este enlace de verificación no es válido.",
-    "reasonExpired": "Este enlace venció. Iniciá sesión para recibir uno nuevo.",
+    "reasonExpired": "Este enlace venció. Inicia sesión para recibir uno nuevo.",
     "reasonUsed": "Este enlace ya fue utilizado.",
     "reasonMissing": "No se encontró un token de verificación."
   },
   "resetPasswordPage": {
     "title": "Restablecer contraseña",
-    "subtitle": "Elegí una nueva contraseña para tu cuenta.",
+    "subtitle": "Elige una nueva contraseña para tu cuenta.",
     "newPasswordLabel": "Nueva contraseña",
     "newPasswordPlaceholder": "Mín. 8 caracteres, una letra y un número",
     "confirmPasswordLabel": "Confirmar contraseña",
-    "confirmPasswordPlaceholder": "Repetí tu nueva contraseña",
+    "confirmPasswordPlaceholder": "Repite tu nueva contraseña",
     "submitLabel": "Restablecer contraseña",
     "submitting": "Restableciendo…",
     "policyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
@@ -893,13 +893,13 @@
     "loginCta": "Ir a iniciar sesión",
     "errorTitle": "No pudimos restablecer tu contraseña",
     "reasonInvalid": "Este enlace no es válido.",
-    "reasonExpired": "Este enlace venció. Solicitá uno nuevo.",
+    "reasonExpired": "Este enlace venció. Solicita uno nuevo.",
     "reasonUsed": "Este enlace ya fue utilizado.",
     "reasonMissing": "No se encontró un token de restablecimiento."
   },
   "tripperInviteAccept": {
     "loadingTitle": "Activando tu invitación…",
-    "loadingBody": "Esperá un momento mientras confirmamos tu cuenta como Tripper.",
+    "loadingBody": "Espera un momento mientras confirmamos tu cuenta como Tripper.",
     "errorTitle": "No pudimos validar tu invitación",
     "reasonInvalid": "Este enlace de invitación no es válido.",
     "reasonExpired": "Esta invitación venció. Pedile a un admin que te reenvíe una nueva.",
@@ -907,16 +907,16 @@
     "reasonMissing": "No se encontró un token de invitación.",
     "loginCta": "Ir a iniciar sesión",
     "grantedTitle": "¡Listo, ya sos Tripper!",
-    "grantedBody": "Activamos tu rol de Tripper. Iniciá sesión para empezar a crear tus paquetes.",
+    "grantedBody": "Activamos tu rol de Tripper. Inicia sesión para empezar a crear tus paquetes.",
     "registerEyebrow": "Te invitaron",
-    "registerTitle": "Completá tu cuenta de Tripper",
-    "registerSubtitle": "Te invitaron a ser Tripper en Randomtrip. Creá tu cuenta para aceptar.",
+    "registerTitle": "Completa tu cuenta de Tripper",
+    "registerSubtitle": "Te invitaron a ser Tripper en Randomtrip. Crea tu cuenta para aceptar.",
     "emailLockedNote": "Este email viene de tu invitación y no se puede cambiar.",
     "submitLabel": "Crear cuenta",
     "submitting": "Creando cuenta…",
     "registerSuccessTitle": "¡Cuenta creada!",
     "registerSuccessBody": "Te enviamos un email para verificar tu cuenta. Confirmalo y después iniciá sesión.",
-    "registerErrorGeneric": "No pudimos crear tu cuenta. Intentá de nuevo."
+    "registerErrorGeneric": "No pudimos crear tu cuenta. Intenta de nuevo."
   },
   "home": {
     "hero": {
@@ -931,7 +931,7 @@
         "text": "GETRANDOMTRIP!"
       },
       "scrollText": "SCROLL",
-      "subtitle": "Viví lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
+      "subtitle": "Vive lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
       "title": "SERENDIPIA DISEÑADA",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
@@ -939,7 +939,7 @@
       "benefitsSteps": [
         {
           "title": "sin stress y flexible",
-          "description": "Decís cuánto querés gastar y cuándo; con opciones y filtros para adaptar la sorpresa a vos. Nosotros resolvemos lo demás.",
+          "description": "Dices cuánto quieres gastar y cuándo; con opciones y filtros para adaptar la sorpresa a ti. Nosotros resolvemos lo demás.",
           "imageAlt": "Camino entre bosque verde",
           "imageSrc": "/images/benefits-1.png"
         },
@@ -951,7 +951,7 @@
         },
         {
           "title": "descubrimiento auténtico",
-          "description": "Viví la emoción de lo inesperado con curaduría real, no al azar.",
+          "description": "Vive la emoción de lo inesperado con curaduría real, no al azar.",
           "imageAlt": "Vista desde ventanilla del avión",
           "imageSrc": "/images/benefits-3.png"
         }
@@ -962,19 +962,19 @@
       "howItWorksSteps": [
         {
           "title": "PLANIFICÁ",
-          "description": "Elegí fechas, ciudad de origen, duración y presupuesto. Sumá filtros y mood si querés.",
+          "description": "Elige fechas, ciudad de origen, duración y presupuesto. Suma filtros y mood si quieres.",
           "imageAlt": "Camino entre bosque verde",
           "imageSrc": "/images/how-it-works-1.png"
         },
         {
           "title": "RECIBÍ LA SORPRESA",
-          "description": "Confirmá tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
+          "description": "Confirma tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
           "imageAlt": "Interior de avión de noche",
           "imageSrc": "/images/how-it-works-2.png"
         },
         {
           "title": "VIAJÁ SIN STRESS",
-          "description": "Hacé la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
+          "description": "Haz la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
           "imageAlt": "Vista desde ventanilla del avión",
           "imageSrc": "/images/how-it-works-3.png"
         }
@@ -1069,19 +1069,19 @@
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
       "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeás, te quedás fuera.",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeas, te quedas fuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Email",
       "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
       "submitAriaLabel": "Notificarme del próximo drop de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
-      "errorMessage": "No pudimos sumarte a la lista. Intentá de nuevo.",
-      "invalidEmailMessage": "Ingresá un email válido."
+      "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
+      "invalidEmailMessage": "Ingresa un email válido."
     },
     "meta": {
       "title": "Randomtrip — Viajes sorpresa curados por expertos",
-      "description": "Descubrí tu próximo destino con Randomtrip. Viajes sorpresa diseñados por trippers apasionados. Reservá tu aventura hoy."
+      "description": "Descubre tu próximo destino con Randomtrip. Viajes sorpresa diseñados por trippers apasionados. Reserva tu escapada hoy."
     }
   },
   "experiences": {
@@ -1097,12 +1097,12 @@
         "text": "GET RANDOMTRIP"
       },
       "scrollText": "SCROLL",
-      "subtitle": "Elegí el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
+      "subtitle": "Elige el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
       "title": "EXPERIENCIAS",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "travelTypeEyebrow": "Punto de partida",
-    "travelTypeSubtitle": "Elegí con quién vas a vivir esta experiencia.",
+    "travelTypeSubtitle": "Elige con quién vas a vivir esta experiencia.",
     "travelTypeTitle": "Por tipo de viajero"
   },
   "trippers": {
@@ -1113,8 +1113,8 @@
       "videoSrc": "/videos/trippers-hero.mp4"
     },
     "grid": {
-      "searchCardTitle": "Buscá tu Tripper",
-      "searchCardDescription": "Encontrá el experto perfecto para tu aventura.",
+      "searchCardTitle": "Busca tu Tripper",
+      "searchCardDescription": "Encuentra el experto perfecto para tu aventura.",
       "searchCardCta": "Explorar Trippers"
     }
   },
@@ -1125,11 +1125,11 @@
     "filters": {
       "allOption": "Todos",
       "excuseLabel": "Excusa / Categoría",
-      "excuseSubtitle": "Elegí una excusa",
+      "excuseSubtitle": "Elige una excusa",
       "travelTypeLabel": "Tipo de viaje",
-      "travelTypeSubtitle": "Elegí cómo querés viajar",
+      "travelTypeSubtitle": "Elige cómo quieres viajar",
       "tripperLabel": "Por Tripper",
-      "tripperSubtitle": "Elegí un tripper"
+      "tripperSubtitle": "Elige un tripper"
     },
     "heroDescription": "Descubre historias, guías y experiencias de nuestros trippers",
     "heroTitleByTripper": "Blog de {name}",
@@ -1147,7 +1147,7 @@
   },
   "journey": {
     "hero": {
-      "title": "Empezá la aventura",
+      "title": "Empieza la aventura",
       "description": "¿Con quién vas a escribir tu próxima historia?",
       "subtitle": "PUNTO DE <span style=\"color: #F2C53D\">PARTIDA</span>"
     },
@@ -1169,7 +1169,7 @@
           {
             "id": "experience",
             "title": "Experiencia",
-            "description": "Lo único que definís acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros."
+            "description": "Lo único que defines acá es el presupuesto por persona para pasaje y alojamiento. Ese será tu techo. Del resto... nos ocupamos nosotros."
           }
         ]
       },
@@ -1185,7 +1185,7 @@
           {
             "id": "refine-details",
             "title": "AFINAR DETALLES",
-            "description": "Elegí una o más aventuras."
+            "description": "Elige una o más aventuras."
           }
         ]
       },
@@ -1196,22 +1196,22 @@
           {
             "id": "pax",
             "title": "VIAJEROS",
-            "description": "Indicá cuántos adultos, menores y mascotas viajan."
+            "description": "Indica cuántos adultos, menores y mascotas viajan."
           },
           {
             "id": "origin",
             "title": "ORIGEN",
-            "description": "Elegí país y ciudad de salida."
+            "description": "Elige país y ciudad de salida."
           },
           {
             "id": "dates",
             "title": "FECHAS",
-            "description": "Elegí cantidad de días y la fecha de inicio. Fin de semana o flexible."
+            "description": "Elige cantidad de días y la fecha de inicio. Fin de semana o flexible."
           },
           {
             "id": "transport",
             "title": "TRANSPORTE",
-            "description": "Definí el orden de preferencia de medios de transporte arrastrando."
+            "description": "Define el orden de preferencia de medios de transporte arrastrando."
           }
         ]
       },
@@ -1227,7 +1227,7 @@
           {
             "id": "addons",
             "title": "Extras",
-            "description": "Elegí tus add-ons."
+            "description": "Elige tus add-ons."
           }
         ]
       }
@@ -1241,7 +1241,7 @@
       "completeOriginFirst": "Primero completá Origen y Fechas en Detalles y planificación.",
       "customTripNoExcuseMessage": "Tu viaje se diseña a medida con tu asesor. Avanza a los siguientes pasos para indicar origen, fechas y preferencias.",
       "excuseLabel": "Excusa",
-      "excusePlaceholder": "Elegí tu excusa",
+      "excusePlaceholder": "Elige tu excusa",
       "excuseCardCta": "Elegir y continuar",
       "excuseStepDescription": "Toda escapada tiene su \"porque sí\".",
       "experienceLabel": "Experiencia",
@@ -1259,9 +1259,9 @@
       "refineDetailsPlaceholder": "Afinar detalles",
       "refineDetailsOneSelected": "1 detalle seleccionado",
       "refineDetailsCountSelected": "{count} detalles seleccionados",
-      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía. Elegí una o más aventuras.",
+      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía. Elige una o más aventuras.",
       "travelTypeLabel": "Tipo de Viaje",
-      "travelTypePlaceholder": "Elegí tu experiencia",
+      "travelTypePlaceholder": "Elige tu experiencia",
       "viewCheckout": "Pagar"
     },
     "detailsStep": {
@@ -1270,7 +1270,7 @@
       "countryLabel": "País de salida",
       "countryPlaceholder": "Escribir país de salida",
       "datesLabel": "Fechas",
-      "datesPlaceholder": "Elegí cantidad de días y fecha de inicio",
+      "datesPlaceholder": "Elige cantidad de días y fecha de inicio",
       "datesPicker": {
         "availableFromHint": "Fechas disponibles a partir de 7 días.",
         "clearAll": "Borrar todo",
@@ -1293,7 +1293,7 @@
         "Diciembre"
       ],
       "originLabel": "Origen",
-      "originPlaceholder": "Elegí país y ciudad de salida",
+      "originPlaceholder": "Elige país y ciudad de salida",
       "paxLabel": "Viajeros",
       "pax": {
         "adultsLabel": "Adultos",
@@ -1314,7 +1314,7 @@
         "breakdownSeparator": " · "
       },
       "transportLabel": "Transporte: Orden de preferencia",
-      "transportPlaceholder": "Definí el orden de preferencia arrastrando",
+      "transportPlaceholder": "Define el orden de preferencia arrastrando",
       "transportSelector": {
         "ariaPreferenceTemplate": "{label}, preferencia {position}. Arrastrar para reordenar.",
         "hintOrder": "No es una sola opción: ordená del 1 al 4 según tu preferencia. Según el destino podríamos usar otra opción de la lista.",
@@ -1329,7 +1329,7 @@
     },
     "preferencesStep": {
       "addonsLabel": "Extras",
-      "addonsPlaceholder": "Elegí tus add-ons.",
+      "addonsPlaceholder": "Elige tus add-ons.",
       "filterOptions": {
         "accommodationType": {
           "label": "Tipo de alojamiento",
@@ -1474,7 +1474,7 @@
       "filtersLabel": "Filtros",
       "filtersForm": {
         "arrivePrefLabel": "Horarios preferidos de llegada",
-        "avoidHint": "Seleccioná hasta 15",
+        "avoidHint": "Selecciona hasta 15",
         "avoidLabel": "Destinos a evitar (opcional)",
         "avoidGridLoading": "Cargando ciudades...",
         "avoidGridEmpty": "No hay sugerencias de destinos disponibles para esta ruta",
@@ -1645,8 +1645,8 @@
       "filtersSummaryDefault": "Transporte, horarios, clima, destinos a evitar",
       "filtersSummaryDepart": "Salida",
       "filtersSummaryTime": "Tiempo",
-      "addonsHint": "Opcional. Sumá seguros, asientos o equipaje según tu nivel.",
-      "addonsEmptyMessage": "Completá tipo de viaje y experiencia para ver add-ons disponibles.",
+      "addonsHint": "Opcional. Suma seguros, asientos o equipaje según tu nivel.",
+      "addonsEmptyMessage": "Completa tipo de viaje y experiencia para ver add-ons disponibles.",
       "addonsClearButton": "Borrar",
       "addonsSaveButton": "Guardar Add-ons"
     },
@@ -1654,7 +1654,7 @@
       "cancel-ins": {
         "category": "Seguridad",
         "title": "Seguro de Cancelación",
-        "shortDescription": "Protegé tu inversión",
+        "shortDescription": "Protege tu inversión",
         "longDescription": "Cubre cancelaciones por causas contempladas. Se calcula como el 15% del subtotal."
       },
       "travel-ins-basic": {
@@ -1666,7 +1666,7 @@
       "seat-select": {
         "category": "Vuelo y Equipaje",
         "title": "Selección de asiento",
-        "shortDescription": "Elegí tu lugar",
+        "shortDescription": "Elige tu lugar",
         "longDescription": "Ventana, pasillo o preferente."
       },
       "carry-on": {
@@ -1709,7 +1709,7 @@
         "category": "Movilidad",
         "title": "Alquiler de Auto (por día)",
         "shortDescription": "Con seguro básico",
-        "longDescription": "Precio por día. Ajustá cantidad de días."
+        "longDescription": "Precio por día. Ajusta cantidad de días."
       },
       "scooter": {
         "category": "Movilidad",
@@ -1720,20 +1720,20 @@
       "bike": {
         "category": "Movilidad",
         "title": "Alquiler de Bicicleta (día)",
-        "shortDescription": "Explorá a tu ritmo",
+        "shortDescription": "Explora a tu ritmo",
         "longDescription": "Precio por día."
       },
       "hotel-upgrade": {
         "category": "Alojamiento",
         "title": "Upgrade de Alojamiento",
-        "shortDescription": "Subí de categoría",
+        "shortDescription": "Sube de categoría",
         "longDescription": "Mejor vista o categoría superior."
       },
       "early-late": {
         "category": "Alojamiento",
         "title": "Early Check-in / Late Check-out",
         "shortDescription": "Flexibilidad",
-        "longDescription": "Garantizá horarios cómodos."
+        "longDescription": "Garantiza horarios cómodos."
       },
       "food-exp": {
         "category": "Experiencias",
@@ -1919,7 +1919,7 @@
           {
             "key": "sl-gl-senderos-lentos",
             "label": "Senderos Lentos",
-            "desc": "Caminar sin cronómetro: el ritmo lo ponés vos."
+            "desc": "Caminar sin cronómetro: el ritmo lo pones vos."
           }
         ],
         "solo-busqueda-interior": [
@@ -2496,12 +2496,12 @@
       "contactTitle": "Información de contacto",
       "contactZipCodeLabel": "Código postal",
       "errors": {
-        "connectionTryAgain": "Error de conexión. Intentá de nuevo.",
-        "idDocumentRequired": "Ingresá tu DNI o número de pasaporte.",
+        "connectionTryAgain": "Error de conexión. Intenta de nuevo.",
+        "idDocumentRequired": "Ingresa tu DNI o número de pasaporte.",
         "loadTripFailed": "Error al cargar el viaje",
         "loadTripsFailed": "No se pudieron cargar tus viajes",
         "noTripFound": "Viaje no encontrado",
-        "noTripToContinue": "No tenés un viaje para continuar",
+        "noTripToContinue": "No tienes un viaje para continuar",
         "noValidSession": "No hay sesión válida.",
         "saveUserFailed": "No se pudieron guardar tus datos.",
         "updateTripFailed": "No se pudo actualizar el viaje."
@@ -2512,11 +2512,11 @@
       "filterFeeLineFirstFree": "{{optional}} opción(es). El primer filtro opcional es gratis — sin recargo.",
       "filterFeeLineNone": "Sin preferencias opcionales — sin recargo por filtros.",
       "filterFeePaxLine": "×{{pax}} personas",
-      "formDescription": "Ajustá la cantidad de viajeros y continuá al pago seguro.",
-      "formTitle": "Confirmá tu compra",
+      "formDescription": "Ajusta la cantidad de viajeros y continuá al pago seguro.",
+      "formTitle": "Confirma tu compra",
       "itemsDescription": "Detalle de lo que incluye tu viaje y las opciones que elegiste.",
       "itemsTitle": "Items",
-      "loginToContinue": "Iniciá sesión para continuar",
+      "loginToContinue": "Inicia sesión para continuar",
       "payButton": "Pagar",
       "payProcessingButton": "Procesando...",
       "paxLabel": "Cantidad de viajeros",
@@ -2564,21 +2564,21 @@
       }
     },
     "meta": {
-      "title": "Planificá tu viaje | Randomtrip",
-      "description": "Configurá tu experiencia de viaje sorpresa y dejá que nuestros trippers hagan el resto."
+      "title": "Planifica tu viaje | Randomtrip",
+      "description": "Configura tu experiencia de viaje sorpresa y dejá que nuestros trippers hagan el resto."
     }
   },
   "confirmation": {
     "hero": {
       "title": "¡Gracias por tu compra!",
-      "description": "Tu viaje sorpresa está confirmado. Revisá los detalles más abajo.",
+      "description": "Tu viaje sorpresa está confirmado. Revisa los detalles más abajo.",
       "subtitle": "CONFIRMACIÓN <span style=\"color: #F2C53D\">DE PAGO</span>"
     },
     "page": {
       "title": "¡Gracias por tu compra!",
       "body": "Tu aventura sorpresa Randomtrip está confirmada.",
       "messageApproved": "Pago aprobado. Tu viaje sorpresa está confirmado.",
-      "messagePending": "Estado del pago: {status}. Revisá tu correo para la confirmación.",
+      "messagePending": "Estado del pago: {status}. Revisa tu correo para la confirmación.",
       "messageGeneric": "Gracias por tu compra. Si acabás de pagar, tu viaje está en proceso de confirmación.",
       "errorTitle": "Error al cargar el pedido",
       "metaDescription": "Tu compra en Randomtrip está confirmada.",
@@ -2595,8 +2595,8 @@
       "savingTravelersAction": "Guardando…",
       "totalPaidLabel": "Total pagado",
       "calendarEventDescription": "Tu escapada sorpresa Randomtrip. Destino revelado 48 horas antes de la salida.",
-      "xsedTitle": "Ya tenés tu XSED",
-      "xsedBody": "Recibirás un correo con todo lo que necesitás para tu escapada.",
+      "xsedTitle": "Ya tienes tu XSED",
+      "xsedBody": "Recibirás un correo con todo lo que necesitas para tu escapada.",
       "xsedTripTypeLabel": "Tipo de viaje",
       "xsedExperienceLabel": "Experiencia XSED Drop",
       "xsedReferenceLabel": "Número de referencia de compra",
@@ -2607,8 +2607,8 @@
   },
   "paymentFailure": {
     "title": "Pago rechazado",
-    "body": "El pago no pudo completarse. Podés intentar de nuevo o elegir otro medio de pago.",
-    "metaDescription": "El pago fue rechazado. Intentá de nuevo en Randomtrip.",
+    "body": "El pago no pudo completarse. Puedes intentar de nuevo o elegir otro medio de pago.",
+    "metaDescription": "El pago fue rechazado. Intenta de nuevo en Randomtrip.",
     "subtitle": "PAGO <span style=\"color: #F2C53D\">RECHAZADO</span>",
     "ctaBackToJourney": "Volver al viaje",
     "ctaHome": "Ir al inicio",
@@ -2617,7 +2617,7 @@
   },
   "paymentPending": {
     "title": "Pago pendiente",
-    "body": "Tu pago está en proceso. Revisá tu correo para ver el estado.",
+    "body": "Tu pago está en proceso. Revisa tu correo para ver el estado.",
     "metaDescription": "Tu pago está pendiente. Randomtrip.",
     "subtitle": "PAGO <span style=\"color: #F2C53D\">PENDIENTE</span>",
     "ctaBackToJourney": "Volver al viaje",
@@ -2642,7 +2642,7 @@
     "privacyPolicy": "Política de Privacidad",
     "cookiePolicy": "Política de Cookies",
     "refundPolicy": "Política de Reembolso",
-    "contactTitle": "Contáctanos",
+    "contactTitle": "Cuentactanos",
     "contact": "Contacto",
     "support": "Soporte",
     "ariaFacebook": "Facebook",
@@ -2669,7 +2669,7 @@
       {
         "title": "Qué cubre esta política",
         "paragraphs": [
-          "Esta Política de Cookies explica cómo Randomtrip (nosotros) usa cookies y tecnologías similares cuando visitás nuestro sitio, usás el flujo de viaje, iniciás sesión o completás una compra. Debe leerse junto con nuestra Política de Privacidad."
+          "Esta Política de Cookies explica cómo Randomtrip (nosotros) usa cookies y tecnologías similares cuando visitas nuestro sitio, usas el flujo de viaje, inicias sesión o completas una compra. Debe leerse junto con nuestra Política de Privacidad."
         ]
       },
       {
@@ -2703,13 +2703,13 @@
       {
         "title": "Gestionar cookies",
         "paragraphs": [
-          "Podés bloquear o borrar cookies desde la configuración del navegador. Bloquear las estrictamente necesarias puede afectar inicio de sesión, checkout o selección de idioma. Si mostramos banner o centro de preferencias, podés ajustar categorías no esenciales según la ley aplicable."
+          "Puedes bloquear o borrar cookies desde la configuración del navegador. Bloquear las estrictamente necesarias puede afectar inicio de sesión, checkout o selección de idioma. Si mostramos banner o centro de preferencias, puedes ajustar categorías no esenciales según la ley aplicable."
         ]
       },
       {
         "title": "Actualizaciones",
         "paragraphs": [
-          "Podemos actualizar esta política cuando cambien tecnologías o requisitos legales. Los cambios se publican en esta página; el uso continuado puede implicar que reconocés la versión revisada donde la ley lo permita."
+          "Podemos actualizar esta política cuando cambien tecnologías o requisitos legales. Los cambios se publican en esta página; el uso continuado puede implicar que reconoces la versión revisada donde la ley lo permita."
         ]
       }
     ],
@@ -2728,7 +2728,7 @@
       "title": "Política de Privacidad | Randomtrip"
     },
     "hero": {
-      "description": "Tu privacidad importa cuando confiás en nosotros con tu viaje.",
+      "description": "Tu privacidad importa cuando confías en nosotros con tu viaje.",
       "eyebrow": "LEGAL",
       "title": "Política de Privacidad"
     },
@@ -2743,7 +2743,7 @@
         "title": "Datos que recopilamos",
         "listIntro": "Podemos recopilar:",
         "listItems": [
-          "Datos de cuenta: nombre, correo, hash de contraseña, datos de perfil que elijas y identificadores de proveedores como Google si usás inicio social.",
+          "Datos de cuenta: nombre, correo, hash de contraseña, datos de perfil que elijas y identificadores de proveedores como Google si usas inicio social.",
           "Datos de viaje y journey: tipo de viajero, preferencias, dislikes, señales de presupuesto, fechas, tamaño del grupo, notas de accesibilidad y mensajes que envíes en el producto.",
           "Datos de transacción: compras, estado de pago, referencias de Mercado Pago u otros procesadores (no almacenamos números completos de tarjeta en nuestros servidores).",
           "Datos técnicos: IP, dispositivo, navegador, ubicación aproximada por IP, registros y cookies según nuestra Política de Cookies.",
@@ -2764,7 +2764,7 @@
       {
         "title": "Bases legales (donde aplica)",
         "paragraphs": [
-          "Según tu región, podemos basarnos en necesidad contractual (prestar el servicio que solicitás), intereses legítimos (seguridad, analítica, mejora del producto equilibrada con tus derechos), consentimiento (cookies o marketing cuando se exija) y obligaciones legales."
+          "Según tu región, podemos basarnos en necesidad contractual (prestar el servicio que solicitas), intereses legítimos (seguridad, analítica, mejora del producto equilibrada con tus derechos), consentimiento (cookies o marketing cuando se exija) y obligaciones legales."
         ]
       },
       {
@@ -2793,16 +2793,16 @@
       },
       {
         "title": "Tus derechos",
-        "listIntro": "Según la ley aplicable, podrías tener derechos de acceso, rectificación, supresión, limitación u oposición, y portabilidad. También podés retirar el consentimiento cuando el tratamiento se base en él. Para ejercerlos, contactanos por los medios indicados.",
+        "listIntro": "Según la ley aplicable, podrías tener derechos de acceso, rectificación, supresión, limitación u oposición, y portabilidad. También puedes retirar el consentimiento cuando el tratamiento se base en él. Para ejercerlos, contactanos por los medios indicados.",
         "listItems": [
-          "Podés actualizar parte de tu perfil en la app donde haya autoservicio.",
-          "Podés presentar una reclamación ante tu autoridad de protección de datos."
+          "Puedes actualizar parte de tu perfil en la app donde haya autoservicio.",
+          "Puedes presentar una reclamación ante tu autoridad de protección de datos."
         ]
       },
       {
         "title": "Menores",
         "paragraphs": [
-          "Randomtrip no está dirigido a menores de 16 años (o la edad que exija tu jurisdicción). No recopilamos datos de menores a sabiendas. Si creés que un menor nos envió datos, escribinos para eliminarlos."
+          "Randomtrip no está dirigido a menores de 16 años (o la edad que exija tu jurisdicción). No recopilamos datos de menores a sabiendas. Si crees que un menor nos envió datos, escribinos para eliminarlos."
         ]
       },
       {
@@ -2835,7 +2835,7 @@
       {
         "title": "Resumen",
         "paragraphs": [
-          "Esta Política de Reembolso explica cancelaciones, reembolsos y disputas de pago cuando comprás experiencias a través de Randomtrip. Algunas ofertas pueden incluir términos adicionales en el checkout; si hay conflicto, prevalecen los términos de esa compra."
+          "Esta Política de Reembolso explica cancelaciones, reembolsos y disputas de pago cuando compras experiencias a través de Randomtrip. Algunas ofertas pueden incluir términos adicionales en el checkout; si hay conflicto, prevalecen los términos de esa compra."
         ]
       },
       {
@@ -2846,9 +2846,9 @@
       },
       {
         "title": "Cancelaciones por tu parte",
-        "listIntro": "Si necesitás cancelar:",
+        "listIntro": "Si necesitas cancelar:",
         "listItems": [
-          "Solicitá la cancelación lo antes posible por el canal de contacto o soporte indicado en tu confirmación o cuenta.",
+          "Solicita la cancelación lo antes posible por el canal de contacto o soporte indicado en tu confirmación o cuenta.",
           "Si aplica reembolso total, parcial o crédito depende de la anticipación, la política del Tripper y costos no reembolsables de proveedores.",
           "Si aún no se reservó viaje y el Tripper puede cancelar sin costo, buscaremos reembolsar cargos al medio de pago menos comisiones no reembolsables indicadas al comprar."
         ]
@@ -2880,13 +2880,13 @@
       {
         "title": "Derechos legales",
         "paragraphs": [
-          "Nada en esta política limita derechos de consumidor obligatorios en tu país (incluido desistimiento en contratos a distancia donde aplique). Si creés que aplica un derecho legal, decinos y revisaremos tu caso."
+          "Nada en esta política limita derechos de consumidor obligatorios en tu país (incluido desistimiento en contratos a distancia donde aplique). Si crees que aplica un derecho legal, decinos y revisaremos tu caso."
         ]
       }
     ],
     "contactBlock": {
       "title": "¿Ayuda con un reembolso?",
-      "before": "Abrí una solicitud vía",
+      "before": "Abre una solicitud vía",
       "linkLabel": "Contacto",
       "after": "con tu referencia de pedido y te guiaremos."
     }
@@ -2907,7 +2907,7 @@
       {
         "title": "Aceptación",
         "paragraphs": [
-          "Al acceder o usar sitios, apps o servicios de Randomtrip (los Servicios), aceptás estos Términos de Servicio. Si no estás de acuerdo, no uses los Servicios. Podemos actualizar los Términos; la versión actualizada se publicará aquí y el uso continuado puede implicar aceptación según permita la ley."
+          "Al acceder o usar sitios, apps o servicios de Randomtrip (los Servicios), aceptas estos Términos de Servicio. Si no estás de acuerdo, no uses los Servicios. Podemos actualizar los Términos; la versión actualizada se publicará aquí y el uso continuado puede implicar aceptación según permita la ley."
         ]
       },
       {
@@ -2918,9 +2918,9 @@
       },
       {
         "title": "Elegibilidad y cuentas",
-        "listIntro": "Aceptás que:",
+        "listIntro": "Aceptas que:",
         "listItems": [
-          "Podés celebrar un contrato vinculante en tu jurisdicción.",
+          "Puedes celebrar un contrato vinculante en tu jurisdicción.",
           "Los datos de registro son veraces y los mantendrás actualizados.",
           "Sos responsable de proteger tu contraseña y de la actividad bajo tu cuenta.",
           "Nos avisarás pronto de accesos no autorizados."
@@ -2928,17 +2928,17 @@
       },
       {
         "title": "Reservas, precios y pagos",
-        "listIntro": "Cuando comprás a través de Randomtrip:",
+        "listIntro": "Cuando compras a través de Randomtrip:",
         "listItems": [
           "Los precios se muestran en la moneda del checkout salvo indicación distinta.",
           "El pago se procesa con Mercado Pago u otro procesador que designemos; también aplican sus términos y política de privacidad.",
-          "Nos autorizás a nosotros y a socios de pago a cobrar tu medio de pago por el total mostrado, incluidos impuestos y cargos cuando se indiquen.",
+          "Nos autorizas a nosotros y a socios de pago a cobrar tu medio de pago por el total mostrado, incluidos impuestos y cargos cuando se indiquen.",
           "Detalles del viaje, fechas bloqueadas, inclusiones y exclusiones figuran en la oferta o confirmación. El modelo sorpresa implica que algunos detalles se revelan según las reglas del producto."
         ]
       },
       {
         "title": "Conducta del viajero",
-        "listIntro": "No debés:",
+        "listIntro": "No debes:",
         "listItems": [
           "Usar los Servicios para fines ilícitos, acosadores o discriminatorios.",
           "Intentar scraping, hackeo, ingeniería inversa o sobrecarga de nuestros sistemas.",
@@ -2956,7 +2956,7 @@
       {
         "title": "Propiedad intelectual",
         "paragraphs": [
-          "El contenido de los Servicios (marca, diseño, texto, gráficos, video, software) pertenece a Randomtrip o licenciantes. Recibís una licencia limitada, no exclusiva, para uso personal y no comercial del servicio salvo acuerdo por escrito distinto."
+          "El contenido de los Servicios (marca, diseño, texto, gráficos, video, software) pertenece a Randomtrip o licenciantes. Recibes una licencia limitada, no exclusiva, para uso personal y no comercial del servicio salvo acuerdo por escrito distinto."
         ]
       },
       {
@@ -2980,7 +2980,7 @@
       {
         "title": "Suspensión y terminación",
         "paragraphs": [
-          "Podemos suspender o terminar el acceso por incumplimiento, riesgo, fraude o requisitos legales. Podés dejar de usar los Servicios cuando quieras. Las cláusulas que por naturaleza deben sobrevivir (límites de responsabilidad, indemnización, ley aplicable) permanecen vigentes."
+          "Podemos suspender o terminar el acceso por incumplimiento, riesgo, fraude o requisitos legales. Puedes dejar de usar los Servicios cuando quieras. Las cláusulas que por naturaleza deben sobrevivir (límites de responsabilidad, indemnización, ley aplicable) permanecen vigentes."
         ]
       },
       {
@@ -2992,7 +2992,7 @@
     ],
     "contactBlock": {
       "title": "Contacto",
-      "before": "¿Preguntas sobre estos Términos? Visitá",
+      "before": "¿Preguntas sobre estos Términos? Visita",
       "linkLabel": "Contacto",
       "after": "."
     }
@@ -3001,7 +3001,7 @@
     "cta": {
       "buttonAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
       "buttonText": "GETRANDOMTRIP!",
-      "subtitle": "Empezá con un brief de sentimientos. Tarda 3 minutos.",
+      "subtitle": "Empieza con un brief de sentimientos. Tarda 3 minutos.",
       "title": "¿Listo para soltar el control y ganar libertad?"
     },
     "curators": {
@@ -3033,20 +3033,20 @@
       "subtitle": "Somos un equipo de producto, tecnología, operaciones, diseño y curaduría con categoría de viaje: Asombro Controlado. No somos una agencia tradicional ni una OTA. Somos un managed marketplace de experiencias sorpresa, donde cada ruta combina sensibilidad humana, tecnología operativa y conocimiento local. La promesa es simple: el destino puede sorprenderte; la experiencia no debería preocuparte."
     },
     "faq": {
-      "description": "Todo lo que necesitás saber antes de dar el salto.",
+      "description": "Todo lo que necesitas saber antes de dar el salto.",
       "eyebrow": "FAQ's",
       "items": [
         {
           "question": "¿Cómo doy el primer paso para mi viaje sorpresa?",
-          "answer": "Completás un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
+          "answer": "Completas un brief de 3 minutos con tus preferencias y límites. A partir de ahí, tu Tripper diseña una experiencia a medida y te la revela el día del drop."
         },
         {
           "question": "¿Qué es lo que puedo elegir?",
-          "answer": "Elegís el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
+          "answer": "Eliges el estilo de viaje, el rango de fechas, el presupuesto y tus no-go's. El destino y la logística quedan en nuestras manos."
         },
         {
           "question": "¿Qué pasa si tengo que cambiar la fecha?",
-          "answer": "Podés reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
+          "answer": "Puedes reagendar con hasta 72 horas de anticipación sin cargo. Cambios posteriores quedan sujetos a disponibilidad del Tripper."
         },
         {
           "question": "¿Qué incluye?",
@@ -3077,15 +3077,15 @@
       "title": "Nosotros"
     },
     "meta": {
-      "description": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
-      "openGraphDescription": "Conocé la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip.",
+      "description": "Conoce la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip. Serendipia diseñada con seguridad y gusto impecable.",
+      "openGraphDescription": "Conoce la filosofía, la historia del fundador y el equipo curador detrás de Randomtrip.",
       "openGraphTitle": "Nosotros | Randomtrip — Arquitectura de la confianza",
       "title": "Nosotros | Randomtrip — Arquitectura de la confianza"
     },
     "philosophy": {
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos destinos. Diseñamos una forma distinta de viajar. Randomtrip nace para liberar a los viajeros de la fatiga de planificar: demasiadas pestañas abiertas, demasiadas decisiones antes de empezar.",
-      "p2": "A eso respondemos con Serendipia Diseñada: experiencias que se sienten espontáneas, pero nacen de una estructura rigurosa. Tú definís fechas, presupuesto, estilo, ritmo y límites. Nosotros diseñamos el asombro dentro de ese marco. Vivir lo inesperado, sin improvisar.",
+      "p2": "A eso respondemos con Serendipia Diseñada: experiencias que se sienten espontáneas, pero nacen de una estructura rigurosa. Tú defines fechas, presupuesto, estilo, ritmo y límites. Nosotros diseñamos el asombro dentro de ese marco. Vivir lo inesperado, sin improvisar.",
       "pills": [
         "Brief emocional",
         "Diseño invisible",
@@ -3098,8 +3098,8 @@
       "items": [
         {
           "key": "01",
-          "title": "Tú marcás los límites",
-          "description": "Nos contás cuándo viajás, cuánto querés invertir, qué estilo buscás y qué cosas no querés."
+          "title": "Tú marcas los límites",
+          "description": "Nos cuentas cuándo viajas, cuánto quieres invertir, qué estilo buscas y qué cosas no quieres."
         },
         {
           "key": "02",
@@ -3109,7 +3109,7 @@
         {
           "key": "03",
           "title": "Revelamos lo justo",
-          "description": "Recibís la información clave en el momento correcto. La sorpresa se mantiene; la confianza nunca se pierde."
+          "description": "Recibes la información clave en el momento correcto. La sorpresa se mantiene; la confianza nunca se pierde."
         }
       ],
       "sectionTitle": "Cómo diseñamos tu viaje",
@@ -3158,11 +3158,11 @@
       "ctaLabel": "Explorar Trippers",
       "eyebrow": "Dale forma a tu aventura",
       "subtitle": "Curadores de —",
-      "title": "Conocé a los Trippers"
+      "title": "Conoce a los Trippers"
     }
   },
   "notFound": {
-    "contactUs": "Contáctanos",
+    "contactUs": "Cuentactanos",
     "exploreSections": "O explora estas secciones populares:",
     "goHome": "Ir al Inicio",
     "linkCouple": "En Pareja",
@@ -3179,8 +3179,8 @@
     "viewPackages": "Ver Paquetes"
   },
   "waitlist": {
-    "headline": "Accedé antes que nadie al lanzamiento de Randomtrip",
-    "subheadline": "Sumate a la lista y te avisamos cuando estemos listos.",
+    "headline": "Accede antes que nadie al lanzamiento de Randomtrip",
+    "subheadline": "Súmate a la lista y te avisamos cuando estemos listos.",
     "nameLabel": "Nombre",
     "namePlaceholder": "Juan",
     "lastNameLabel": "Apellido",
@@ -3193,7 +3193,7 @@
     "adminLoginLabel": "¿Admin o Tripper?",
     "adminLoginAction": "Iniciar sesión",
     "accessDeniedTitle": "Acceso no permitido",
-    "accessDeniedBody": "Esta sección está restringida a admins y trippers. Contactá a tu administrador si creés que esto es un error.",
+    "accessDeniedBody": "Esta sección está restringida a admins y trippers. Contacta a tu administrador si crees que esto es un error.",
     "signOutLabel": "Cerrar sesión"
   },
   "profile": {
@@ -3411,7 +3411,7 @@
       "requiredFieldsLabel": "Campos requeridos",
       "cancel": "Cancelar",
       "submitConfirmTitle": "¿Enviar a revisión?",
-      "submitConfirmBody": "Tu post quedará bloqueado mientras el admin lo revisa. Agregá lo que necesite saber.",
+      "submitConfirmBody": "Tu post quedará bloqueado mientras el admin lo revisa. Agrega lo que necesite saber.",
       "tripperNoteLabel": "Nota para el admin",
       "tripperNoteOptional": "(opcional)",
       "tripperNotePlaceholder": "Cualquier cosa que el revisor deba saber sobre este post…",
@@ -3424,7 +3424,7 @@
       },
       "review": {
         "pendingTitle": "En revisión",
-        "pendingBody": "Tu post está siendo revisado. No podés hacer cambios hasta recibir una respuesta."
+        "pendingBody": "Tu post está siendo revisado. No puedes hacer cambios hasta recibir una respuesta."
       },
       "actionBar": {
         "back": "Volver",
@@ -3456,7 +3456,7 @@
             {
               "id": "sections",
               "title": "Secciones",
-              "description": "Organizá el cuerpo del post en secciones con título y descripción."
+              "description": "Organiza el cuerpo del post en secciones con título y descripción."
             }
           ]
         },
@@ -3467,7 +3467,7 @@
             {
               "id": "faq",
               "title": "Preguntas frecuentes",
-              "description": "Respondé las dudas más comunes de tus lectores."
+              "description": "Responde las dudas más comunes de tus lectores."
             }
           ]
         },
@@ -3478,7 +3478,7 @@
             {
               "id": "gallery",
               "title": "Imágenes",
-              "description": "Sumá fotos para el carrusel de tu publicación."
+              "description": "Suma fotos para el carrusel de tu publicación."
             }
           ]
         }
@@ -3497,7 +3497,7 @@
         "travelTypePlaceholder": "Seleccionar tipo de viaje...",
         "travelTypeHint": "Puede elegir 1 o +",
         "excuseKey": "Excusa del viaje",
-        "excuseKeyPlaceholder": "Seleccioná una excusa",
+        "excuseKeyPlaceholder": "Selecciona una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
         "statusLabel": "Estado",
         "statusDraft": "Borrador",
@@ -3509,14 +3509,14 @@
         "sectionTitle": "Título de la sección",
         "sectionTitlePlaceholder": "Título",
         "sectionDescription": "Descripción",
-        "sectionDescriptionPlaceholder": "Contá esta parte de la historia…",
+        "sectionDescriptionPlaceholder": "Cuenta esta parte de la historia…",
         "sectionLabel": "Sección",
         "addSection": "Añadir sección",
         "removeSection": "Quitar sección",
         "faqQuestion": "Pregunta",
-        "faqQuestionPlaceholder": "¿Qué querés responder?",
+        "faqQuestionPlaceholder": "¿Qué quieres responder?",
         "faqAnswer": "Respuesta",
-        "faqAnswerPlaceholder": "Escribí la respuesta…",
+        "faqAnswerPlaceholder": "Escribe la respuesta…",
         "faqLabel": "Pregunta",
         "addFaq": "Añadir pregunta",
         "removeFaq": "Quitar pregunta",
@@ -3572,7 +3572,7 @@
     },
     "unpublishConfirm": {
       "title": "Despublicar este post",
-      "body": "El post dejará de verse en tu perfil público. Podés volver a publicarlo cuando quieras.",
+      "body": "El post dejará de verse en tu perfil público. Puedes volver a publicarlo cuando quieras.",
       "cancel": "Cancelar",
       "confirm": "Despublicar"
     },
@@ -3630,7 +3630,7 @@
       },
       "newDrop": {
         "title": "Nuevo Drop",
-        "description": "Creá un nuevo drop XSED"
+        "description": "Crea un nuevo drop XSED"
       }
     },
     "stats": {
@@ -3658,7 +3658,7 @@
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
       "settings": "Mi Perfil",
-      "settingsSub": "Gestioná tu perfil",
+      "settingsSub": "Gestiona tu perfil",
       "dashboard": "Mi Dashboard",
       "notifications": "Notificaciones"
     },
@@ -3720,8 +3720,8 @@
         "socialLinksLabel": "Redes sociales",
         "socialLinksEmpty": "Sin redes sociales agregadas.",
         "socialLinksAdd": "Agregar red",
-        "travelerTypesLabel": "Tipos de viajero que aceptás",
-        "travelerTypesHelper": "Elegí los tipos de viajero para los que armás experiencias"
+        "travelerTypesLabel": "Tipos de viajero que aceptas",
+        "travelerTypesHelper": "Elige los tipos de viajero para los que armas experiencias"
       },
       "publicUrl": {
         "eyebrow": "Tu página pública",
@@ -3881,8 +3881,8 @@
       "action": "Completar pago",
       "bookingRefLabel": "Referencia",
       "deleteAction": "Eliminar",
-      "deleteConfirm": "¿Seguro que querés eliminar este viaje? Esta acción no se puede deshacer.",
-      "deleteFailed": "No se pudo eliminar el viaje. Intentá de nuevo.",
+      "deleteConfirm": "¿Seguro que quieres eliminar este viaje? Esta acción no se puede deshacer.",
+      "deleteFailed": "No se pudo eliminar el viaje. Intenta de nuevo.",
       "editAction": "Editar",
       "estimatedTripTotal": "Total estimado del viaje",
       "experienceSection": "Experiencia",
@@ -4009,7 +4009,7 @@
       "tripperNotePlaceholder": "Cualquier cosa que el revisor deba saber — pedidos especiales, contexto sobre precios, restricciones de fecha…",
       "tripperNoteHint": "Visible para el admin que revise esta experiencia.",
       "submitConfirmTitle": "¿Enviar a revisión?",
-      "submitConfirmBody": "Tu experiencia quedará bloqueada mientras el admin la revisa. Agregá lo que necesite saber.",
+      "submitConfirmBody": "Tu experiencia quedará bloqueada mientras el admin la revisa. Agrega lo que necesite saber.",
       "actionBar": {
         "clearAll": "Borrar todo",
         "back": "Volver al inicio",
@@ -4102,7 +4102,7 @@
         "city": "Ciudad",
         "cityPlaceholder": "Ej: Buenos Aires",
         "excuseKey": "Excusa del viaje",
-        "excuseKeyPlaceholder": "Seleccioná una excusa",
+        "excuseKeyPlaceholder": "Selecciona una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
         "minNights": "Duración recomendada",
         "minNightsHint": "{nights} Noches / {days} Días",
@@ -4193,7 +4193,7 @@
         "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
         "entryImageSizeHint": "Mínimo 800 × 600 px recomendado",
         "imageTooSmall": "Imagen demasiado pequeña",
-        "copyrightHint": "Usá solo imágenes de tu propiedad o con licencia de uso.",
+        "copyrightHint": "Usa solo imágenes de tu propiedad o con licencia de uso.",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",
@@ -4225,7 +4225,7 @@
       },
       "review": {
         "pendingTitle": "En revisión",
-        "pendingBody": "Tu experiencia está siendo revisada. No podés hacer cambios hasta recibir una respuesta.",
+        "pendingBody": "Tu experiencia está siendo revisada. No puedes hacer cambios hasta recibir una respuesta.",
         "rejectedTitle": "Cambios solicitados",
         "approvedNoteTitle": "Nota del admin",
         "rejectedDismiss": "Entendido",
@@ -4245,9 +4245,9 @@
   "tripperProfilePage": {
     "meta": {
       "title": "Perfil de tripper",
-      "description": "Gestioná tu perfil de tripper, experiencias y rendimiento.",
+      "description": "Gestiona tu perfil de tripper, experiencias y rendimiento.",
       "openGraphTitle": "Perfil de tripper",
-      "openGraphDescription": "Gestioná tu perfil de tripper, experiencias y rendimiento."
+      "openGraphDescription": "Gestiona tu perfil de tripper, experiencias y rendimiento."
     },
     "accessDenied": {
       "title": "Acceso restringido",
@@ -4257,7 +4257,7 @@
     "hero": {
       "eyebrow": "Cuenta tripper",
       "title": "Mi perfil de tripper",
-      "description": "Gestioná tu negocio de viajes"
+      "description": "Gestiona tu negocio de viajes"
     },
     "card": {
       "nameFallback": "Tripper",
@@ -4283,7 +4283,7 @@
     },
     "experiences": {
       "manageCta": "Gestionar experiencias",
-      "countBlurb": "Tenés {count} experiencia(s) creada(s). Andá al panel para crear otras o gestionar las existentes.",
+      "countBlurb": "Tienes {count} experiencia(s) creada(s). Ve al panel para crear otras o gestionar las existentes.",
       "nightsLabel": "noches",
       "peopleLabel": "personas",
       "active": "Activo",
@@ -4313,7 +4313,7 @@
       "title": "Editar perfil de tripper",
       "closeAria": "Cerrar",
       "bio": "Biografía",
-      "bioPlaceholder": "Contanos sobre vos como tripper...",
+      "bioPlaceholder": "Contanos sobre ti como tripper...",
       "heroImage": "Imagen hero",
       "heroImagePlaceholder": "https://ejemplo.com/imagen.jpg",
       "location": "Ubicación",
@@ -4414,12 +4414,12 @@
     },
     "hero": {
       "title": "Contacto",
-      "description": "¿Tenés preguntas sobre tu próximo viaje? Estamos para ayudarte."
+      "description": "¿Tienes preguntas sobre tu próximo viaje? Estamos para ayudarte."
     },
     "intro": {
       "title": "Hablemos",
-      "p1": "¿Tenés alguna pregunta sobre tu próximo Randomtrip o sobre cómo funcionan nuestros viajes sorpresa?",
-      "p2": "Completá el formulario o escribinos directamente a hola@randomtrip.com",
+      "p1": "¿Tienes alguna pregunta sobre tu próximo Randomtrip o sobre cómo funcionan nuestros viajes sorpresa?",
+      "p2": "Completa el formulario o escribinos directamente a hola@randomtrip.com",
       "p3": "¿Te interesa colaborar con Randomtrip o explorar oportunidades de publicidad o partnerships?",
       "p4": "¡Nos encanta! Escribinos a partnerships@randomtrip.com."
     },
@@ -4455,7 +4455,7 @@
     "pageTitle": "Notificaciones",
     "eyebrow": "Tu actividad",
     "description": "Tus últimas notificaciones y alertas.",
-    "emptyState": "No tenés notificaciones todavía.",
+    "emptyState": "No tienes notificaciones todavía.",
     "emptyStateTitle": "Sin notificaciones",
     "markRead": "Marcar como leída",
     "markAllRead": "Marcar todas como leídas",
@@ -4481,8 +4481,8 @@
     "submit": "Enviar reseña",
     "cancel": "Cancelar",
     "success": "¡Gracias por tu reseña!",
-    "emailHintTitle": "Dejá tu reseña",
-    "emailHint": "Revisá tu correo — te enviamos un enlace para calificar tu experiencia."
+    "emailHintTitle": "Deja tu reseña",
+    "emailHint": "Revisa tu correo — te enviamos un enlace para calificar tu experiencia."
   },
   "tripItinerary": {
     "title": "Itinerario del viaje",
@@ -4506,10 +4506,10 @@
     "pendingAssignment": "Tu destino está siendo preparado con mucho cuidado. ¡Ya casi es hora!",
     "revealedEyebrow": "Tu destino revelado",
     "revealedTitle": "¡Tu destino ha sido revelado!",
-    "revealedSubtitle": "Preparate para vivir una experiencia increíble.",
+    "revealedSubtitle": "Prepárate para vivir una experiencia increíble.",
     "viewItinerary": "Ver Itinerario",
     "notFoundTitle": "Viaje no encontrado",
-    "notFoundDescription": "El viaje que buscás no existe o no tenés permiso para verlo.",
+    "notFoundDescription": "El viaje que buscas no existe o no tienes permiso para verlo.",
     "backToDashboard": "Volver al Dashboard",
     "revealCountdown": "Cuenta Regresiva",
     "revealDestination": "Ver Destino"
@@ -4582,20 +4582,20 @@
     "submitButton": "Enviar reseña",
     "successTitle": "¡Gracias por tu reseña!",
     "successMessage": "Tu opinión fue enviada y está siendo revisada. Una vez aprobada, aparecerá en el perfil de tu tripper.",
-    "errorInvalidToken": "Este enlace no es válido o ya venció. Si creés que es un error, contactate con nosotros.",
+    "errorInvalidToken": "Este enlace no es válido o ya venció. Si crees que es un error, contáctate con nosotros.",
     "errorAlreadySubmitted": "Ya enviaste una reseña para este viaje. ¡Gracias por tu tiempo!",
     "errorGeneric": "Ocurrió un error al enviar tu reseña. Por favor intentá de nuevo."
   },
   "inviteTravelers": {
     "eyebrow": "Antes de viajar",
-    "heading": "Invitá a tus compañeros de viaje",
-    "subtitle": "Reservaste para {count} viajeros. Cargá los datos de cada acompañante ahora, o enviales una invitación para que los completen ellos mismos — de cualquier forma, los necesitamos antes de poder confirmar el itinerario.",
+    "heading": "Invita a tus compañeros de viaje",
+    "subtitle": "Reservaste para {count} viajeros. Carga los datos de cada acompañante ahora, o enviales una invitación para que los completen ellos mismos — de cualquier forma, los necesitamos antes de poder confirmar el itinerario.",
     "notifTitle": "Un acompañante completó sus datos de viaje",
     "deadlineLabel": "Completar antes del {date} — {days} días antes de la salida",
     "progressLabel": "{submitted} de {cap} viajeros completados",
-    "lockedBanner": "Los datos de los viajeros están bloqueados. La salida es en {days} días — ¿necesitás un cambio? {supportLink}",
-    "supportLinkLabel": "Contactá a soporte",
-    "footnote": "La cantidad de viajeros queda fija al pagar — ¿necesitás agregar o quitar a alguien? {supportLink}",
+    "lockedBanner": "Los datos de los viajeros están bloqueados. La salida es en {days} días — ¿necesitas un cambio? {supportLink}",
+    "supportLinkLabel": "Contacta a soporte",
+    "footnote": "La cantidad de viajeros queda fija al pagar — ¿necesitas agregar o quitar a alguien? {supportLink}",
     "travelerLabel": "Viajero {number}",
     "adultTag": "Adulto",
     "minorTag": "Menor",
@@ -4616,15 +4616,15 @@
     "statusComplete": "Completo",
     "invitedNote": "Invitado el {date} · esperando que complete sus datos",
     "inviteResentNote": "Invitación reenviada recién",
-    "minorFilledByBuyerNote": "Lo completás vos, ya que los menores viajan con un adulto responsable",
+    "minorFilledByBuyerNote": "Lo completas vos, ya que los menores viajan con un adulto responsable",
     "savedNote": "Guardado recién",
-    "incompleteError": "Completá todos los campos para guardar",
-    "saveErrorGeneric": "No pudimos guardar los datos. Intentá de nuevo.",
-    "sendInviteErrorGeneric": "No pudimos enviar la invitación. Intentá de nuevo.",
+    "incompleteError": "Completa todos los campos para guardar",
+    "saveErrorGeneric": "No pudimos guardar los datos. Intenta de nuevo.",
+    "sendInviteErrorGeneric": "No pudimos enviar la invitación. Intenta de nuevo.",
     "landingEyebrow": "Te invitaron",
-    "landingHeading": "Sumate al viaje",
+    "landingHeading": "Súmate al viaje",
     "landingGreeting": "{buyerFirstName} te invitó a sumarte a su randomtrip — el destino es sorpresa hasta el revelado.",
-    "landingSignupExplainer": "Creá una cuenta o iniciá sesión para completar tus datos de viaje — así también vas a poder seguir este viaje desde tu panel.",
+    "landingSignupExplainer": "Crea una cuenta o iniciá sesión para completar tus datos de viaje — así también vas a poder seguir este viaje desde tu panel.",
     "landingSignupCta": "Crear cuenta para continuar",
     "landingStep2Heading": "Ya casi — completá tus datos de viaje",
     "landingConsentPrefix": "Doy mi consentimiento para que Randomtrip almacene los datos de mi documento de identidad para gestionar reservas de este viaje, según la ",
@@ -4633,15 +4633,15 @@
     "landingSubmitLabel": "Enviar mis datos",
     "landingSubmitting": "Enviando…",
     "landingRedirecting": "¡Listo! Te llevamos a tu panel…",
-    "landingSessionExpiredError": "Tu sesión venció. Iniciá sesión de nuevo para continuar.",
+    "landingSessionExpiredError": "Tu sesión venció. Inicia sesión de nuevo para continuar.",
     "landingSuccessTitle": "¡Listo, gracias!",
-    "landingSuccessBody": "Recibimos tus datos. Ya podés cerrar esta ventana — nos vemos en el viaje.",
+    "landingSuccessBody": "Recibimos tus datos. Ya puedes cerrar esta ventana — nos vemos en el viaje.",
     "landingErrorTitle": "No pudimos validar esta invitación",
     "landingReasonInvalid": "Este enlace de invitación no es válido.",
     "landingReasonExpired": "Esta invitación venció. Pedile a quien te invitó que te reenvíe una nueva.",
     "landingReasonUsed": "Ya completaste tus datos con este enlace.",
-    "landingReasonLocked": "El plazo para completar los datos de este viaje ya cerró. Contactá a soporte si necesitás hacer un cambio.",
-    "landingConsentRequiredError": "Tenés que aceptar el consentimiento para poder enviar tus datos.",
+    "landingReasonLocked": "El plazo para completar los datos de este viaje ya cerró. Contacta a soporte si necesitas hacer un cambio.",
+    "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"
   }
