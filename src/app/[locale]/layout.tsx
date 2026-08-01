@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { GateAwareChrome } from "@/components/waitlist/GateAwareChrome";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
+import { isGateEnabled } from "@/lib/siteSettings";
 
 /** Avoid SSG so SessionProvider/useSession have request context (no "auth" destructure error during prerender). */
 export const dynamic = "force-dynamic";
@@ -32,6 +33,7 @@ export default async function LocaleLayout(props: {
 
   const dict = await getDictionary(locale);
   const localeTyped = locale as Locale;
+  const gateEnabled = await isGateEnabled();
 
   return (
     <SessionProvider>
@@ -40,7 +42,7 @@ export default async function LocaleLayout(props: {
       <Suspense fallback={null}>
         <AppTracking />
       </Suspense>
-      <GateAwareChrome dict={dict} locale={localeTyped}>
+      <GateAwareChrome dict={dict} gateEnabled={gateEnabled} locale={localeTyped}>
         {children}
       </GateAwareChrome>
       <GlobalAuthModal dict={dict} />

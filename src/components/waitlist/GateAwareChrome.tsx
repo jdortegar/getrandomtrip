@@ -23,6 +23,7 @@ const GATE_EXEMPT_ROUTES = [
   "/verify-email",
   "/reset-password",
   "/tripper-invite",
+  "/invite",
 ];
 
 function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {
@@ -39,12 +40,16 @@ function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {
 interface GateAwareChromeProps {
   children: React.ReactNode;
   dict: Dictionary;
+  /** Global admin toggle (site_settings.gateEnabled). False = gate is fully
+   * off for everyone, regardless of role or the per-browser unlock below. */
+  gateEnabled: boolean;
   locale: Locale;
 }
 
 export function GateAwareChrome({
   children,
   dict,
+  gateEnabled,
   locale,
 }: GateAwareChromeProps) {
   const { data: session } = useSession();
@@ -65,8 +70,26 @@ export function GateAwareChrome({
     setGateUnlocked(true);
   }, [session?.user?.role]);
 
+  const normalChrome = (
+    <>
+      <Navbar
+        backgroundPrimary={navbarBackgroundPrimary}
+        dict={dict}
+        locale={locale}
+      />
+      <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
+        <main className="min-h-screen">{children}</main>
+      </NavbarChromeContext.Provider>
+      <Footer dict={dict} locale={locale} />
+    </>
+  );
+
   if (isGateExemptRoute(pathname, locale)) {
     return <>{children}</>;
+  }
+
+  if (!gateEnabled) {
+    return normalChrome;
   }
 
   if (gateUnlocked === null) return null;
@@ -94,17 +117,5 @@ export function GateAwareChrome({
     );
   }
 
-  return (
-    <>
-      <Navbar
-        backgroundPrimary={navbarBackgroundPrimary}
-        dict={dict}
-        locale={locale}
-      />
-      <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
-        <main className="min-h-screen">{children}</main>
-      </NavbarChromeContext.Provider>
-      <Footer dict={dict} locale={locale} />
-    </>
-  );
+  return normalChrome;
 }
