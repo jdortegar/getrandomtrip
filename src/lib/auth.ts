@@ -19,6 +19,10 @@ import {
   consumeTripperInvite,
   resolveOAuthInviteGrant,
 } from "@/lib/auth/tripperInviteTokens";
+import {
+  TRAVELER_INVITE_COOKIE,
+  hasLiveTravelerInviteGrant,
+} from "@/lib/travelers/travelerInviteTokens";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -67,6 +71,27 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!user.emailVerified) {
+          // Narrow, token-gated exception: a companion holding a LIVE,
+          // unconsumed traveler invite may take a session while still
+          // unverified, so the `/invite/[token]` wall is not a dead end.
+          // The cookie is mintable only by our own `invite-auth-init`
+          // route, only after a server-side peek — no other login path
+          // ever carries it, so default EMAIL_NOT_VERIFIED behaviour below
+          // is otherwise unchanged. Skips the verification-email resend on
+          // purpose (see design's "no resend on bypass path" — the
+          // register flow already sent one seconds earlier).
+          const inviteCookie = (await cookies()).get(
+            TRAVELER_INVITE_COOKIE,
+          )?.value;
+          if (await hasLiveTravelerInviteGrant(inviteCookie)) {
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              image: user.avatarUrl || undefined,
+            };
+          }
+
           // Backfilled or never-verified account: fire a fresh verification
           // email and reject with a distinguishable error (not "wrong
           // password") so the client can offer a resend. Token issuance is

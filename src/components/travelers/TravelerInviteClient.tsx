@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
+import AuthModal from "@/components/auth/AuthModal";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 
 type Reason = "invalid" | "expired" | "used" | "locked";
@@ -18,6 +22,7 @@ export type TravelerInviteResolution =
 type FormState = "form" | "submitting" | "success";
 
 interface TravelerInviteClientProps {
+  authCopy: Pick<Dictionary, "auth">;
   copy: InviteTravelersDict;
   locale: Locale;
   resolution: TravelerInviteResolution;
@@ -25,6 +30,7 @@ interface TravelerInviteClientProps {
 }
 
 export default function TravelerInviteClient({
+  authCopy,
   copy,
   locale,
   resolution,
@@ -36,6 +42,7 @@ export default function TravelerInviteClient({
 
   return (
     <InviteForm
+      authCopy={authCopy}
       buyerFirstName={resolution.buyerFirstName}
       copy={copy}
       locale={locale}
@@ -80,25 +87,63 @@ function ErrorCard({
 }
 
 function InviteForm({
+  authCopy,
   buyerFirstName,
   copy,
   locale,
   token,
 }: {
+  authCopy: Pick<Dictionary, "auth">;
   buyerFirstName: string;
   copy: InviteTravelersDict;
   locale: Locale;
   token: string | null;
 }) {
+  const router = useRouter();
+  const { status } = useSession();
+  const authenticated = status === "authenticated";
+
+  const [authOpen, setAuthOpen] = useState(false);
   const [state, setState] = useState<FormState>("form");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
   const [idDocument, setIdDocument] = useState("");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loginHref = pathForLocale(locale, "/login");
   const privacyHref = pathForLocale(locale, "/privacy");
+
+  // Closes the modal on both the credentials-login path and the Google
+  // full-page-return remount. Deliberately keyed off `status`, never off
+  // `AuthModal`'s `onClose` — `onClose` also fires on Escape/backdrop/X, so
+  // it does not imply success.
+  useEffect(() => {
+    if (authenticated) setAuthOpen(false);
+  }, [authenticated]);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    };
+  }, []);
+
+  async function handleCtaClick() {
+    // Fail-open: mints the invite-grant cookie so an unverified account can
+    // still get a session (see `authorize()` bypass). If this call fails or
+    // rejects, the modal still opens — the exception simply won't apply.
+    try {
+      if (token) {
+        await fetch("/api/travelers/invite-auth-init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+      }
+    } catch {
+      // Fail-open — see comment above.
+    } finally {
+      setAuthOpen(true);
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +153,7 @@ function InviteForm({
       setError(copy.landingConsentRequiredError);
       return;
     }
-    if (!fullName.trim() || !idDocument.trim() || !token) {
+    if (!idDocument.trim() || !token) {
       setError(copy.landingGenericError);
       return;
     }
@@ -118,14 +163,15 @@ function InviteForm({
       const res = await fetch("/api/travelers/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          fullName,
-          idDocument,
-          ...(email.trim() && { email: email.trim() }),
-          consent,
-        }),
+        body: JSON.stringify({ token, idDocument, consent }),
       });
+
+      if (res.status === 401) {
+        setState("form");
+        setError(copy.landingSessionExpiredError);
+        return;
+      }
+
       const data = await res.json();
 
       if (!res.ok || !data.ok) {
@@ -135,6 +181,9 @@ function InviteForm({
       }
 
       setState("success");
+      redirectTimer.current = setTimeout(() => {
+        router.push(`/${locale}/dashboard`);
+      }, 1500);
     } catch {
       setState("form");
       setError(copy.landingGenericError);
@@ -154,90 +203,101 @@ function InviteForm({
         <p className="mt-2 text-sm text-neutral-600">
           {copy.landingSuccessBody}
         </p>
+        <p className="mt-4 text-xs text-neutral-400">
+          {copy.landingRedirecting}
+        </p>
       </CardShell>
     );
   }
 
   return (
-    <CardShell>
-      <p className="font-barlow-condensed text-lg font-extrabold uppercase tracking-wide text-gray-900">
-        {copy.landingBrand}
-      </p>
-      <p className="mt-4 text-left text-sm text-neutral-600">
-        {copy.landingGreeting.replace("{buyerFirstName}", buyerFirstName)}
-      </p>
+    <>
+      <CardShell>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          {copy.landingEyebrow}
+        </p>
+        <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          {copy.landingHeading}
+        </h1>
+        <p className="mt-4 text-left text-sm text-neutral-600">
+          {copy.landingGreeting.replace("{buyerFirstName}", buyerFirstName)}
+        </p>
 
-      {error && (
-        <div
-          className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-left"
-          role="alert"
-        >
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
+        {error && (
+          <div
+            className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-left"
+            role="alert"
+          >
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
 
-      <form className="mt-6 space-y-5 text-left" onSubmit={handleSubmit}>
-        <FormField
-          id="traveler-invite-fullName"
-          label={copy.fullNameLabel}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder={copy.fullNamePlaceholder}
-          required
-          type="text"
-          value={fullName}
-        />
-        <FormField
-          id="traveler-invite-email"
-          label={copy.emailLabel}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={copy.emailPlaceholder}
-          type="email"
-          value={email}
-        />
-        <FormField
-          id="traveler-invite-idDocument"
-          label={copy.idDocumentLabel}
-          onChange={(e) => setIdDocument(e.target.value)}
-          placeholder={copy.idDocumentPlaceholder}
-          required
-          type="text"
-          value={idDocument}
-        />
+        {!authenticated ? (
+          <div className="mt-6 text-left">
+            <p className="text-sm text-neutral-600">
+              {copy.landingSignupExplainer}
+            </p>
+            <Button
+              className="mt-5 w-full"
+              onClick={handleCtaClick}
+              size="lg"
+              type="button"
+            >
+              {copy.landingSignupCta}
+            </Button>
+          </div>
+        ) : (
+          <form className="mt-6 space-y-5 text-left" onSubmit={handleSubmit}>
+            <h2 className="font-barlow-condensed text-xl font-extrabold uppercase text-gray-900">
+              {copy.landingStep2Heading}
+            </h2>
+            <FormField
+              id="traveler-invite-idDocument"
+              label={copy.idDocumentLabel}
+              onChange={(e) => setIdDocument(e.target.value)}
+              placeholder={copy.idDocumentPlaceholder}
+              required
+              type="text"
+              value={idDocument}
+            />
 
-        <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
-          <input
-            checked={consent}
-            className="mt-0.5"
-            onChange={(e) => setConsent(e.target.checked)}
-            type="checkbox"
-          />
-          <span>
-            {copy.landingConsentPrefix}
-            <Link className="text-light-blue underline" href={privacyHref}>
-              {copy.landingConsentLinkLabel}
-            </Link>
-            {copy.landingConsentSuffix}
-          </span>
-        </label>
+            <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
+              <input
+                checked={consent}
+                className="mt-0.5"
+                onChange={(e) => setConsent(e.target.checked)}
+                type="checkbox"
+              />
+              <span>
+                {copy.landingConsentPrefix}
+                <Link className="text-light-blue underline" href={privacyHref}>
+                  {copy.landingConsentLinkLabel}
+                </Link>
+                {copy.landingConsentSuffix}
+              </span>
+            </label>
 
-        <Button
-          className="w-full"
-          disabled={state === "submitting"}
-          size="lg"
-          type="submit"
-        >
-          {state === "submitting"
-            ? copy.landingSubmitting
-            : copy.landingSubmitLabel}
-        </Button>
-      </form>
+            <Button
+              className="w-full"
+              disabled={state === "submitting"}
+              size="lg"
+              type="submit"
+            >
+              {state === "submitting"
+                ? copy.landingSubmitting
+                : copy.landingSubmitLabel}
+            </Button>
+          </form>
+        )}
+      </CardShell>
 
-      <p className="mt-5 text-center text-xs text-neutral-500">
-        {copy.landingCreateAccountPrompt}{" "}
-        <Link className="text-light-blue underline" href={loginHref}>
-          {copy.landingCreateAccountLink}
-        </Link>
-      </p>
-    </CardShell>
+      <AuthModal
+        allowRegister
+        defaultMode="register"
+        dict={authCopy}
+        isOpen={authOpen}
+        onClose={() => setAuthOpen(false)}
+      />
+    </>
   );
 }

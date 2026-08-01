@@ -9,6 +9,7 @@ import {
   normalizeMaxTravelTimeKey,
   normalizeTransportId,
 } from "@/lib/helpers/transport";
+import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { Prisma, TripRequestStatus } from "@prisma/client";
 
 /**
@@ -144,10 +145,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get all trip requests for this user
+    // Get all trip requests owned by OR companion-linked to this user.
     console.log("Fetching trip requests for userId:", user.id);
     const tripRequests = await prisma.tripRequest.findMany({
-      where: { userId: user.id },
+      where: tripAccessWhere(user.id),
       orderBy: { createdAt: "desc" },
       include: {
         payment: true,
@@ -156,7 +157,15 @@ export async function GET(request: NextRequest) {
     });
     console.log("Trip requests found:", tripRequests.length);
 
-    return NextResponse.json({ tripRequests }, { status: 200 });
+    const taggedTripRequests = tripRequests.map((trip) => ({
+      ...trip,
+      role: tripRoleFor(trip, user.id),
+    }));
+
+    return NextResponse.json(
+      { tripRequests: taggedTripRequests },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error fetching trip requests:", error);
     console.error(

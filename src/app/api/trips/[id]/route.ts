@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
+import { canAccessTrip } from "@/lib/travelers/travelerAccess";
 
 // GET /api/trips/[id] - Get a specific trip
 export async function GET(
@@ -50,8 +51,10 @@ export async function GET(
       return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
 
-    // Verify ownership
-    if (trip.userId !== user.id) {
+    // Buyer-OR-companion, via the single shared predicate (v1: same
+    // permission level as the buyer once access is granted — narrowing is
+    // a documented follow-up, not this change's scope).
+    if (!(await canAccessTrip(trip.id, user.id))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

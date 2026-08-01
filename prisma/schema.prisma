@@ -86,6 +86,7 @@ model User {
   experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
   notifications      Notification[]
   verificationTokens VerificationToken[]
+  tripTravelers      TripTraveler[]
 
   @@map("users")
 }
@@ -360,6 +361,14 @@ model TripTraveler {
   idDocument  String? // ID / passport number
   dateOfBirth DateTime? // minors only
 
+  // Owning account — set ONLY at successful invite submission. Nullable:
+  // minor rows never authenticate, and rows completed via the buyer's
+  // direct-fill path (or predating this change) stay unclaimed. SetNull (not
+  // Cascade) so deleting a companion's account never deletes the buyer's
+  // roster row — it only unlinks the claim.
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   // Invite token — inline, rotated in place on resend
   inviteTokenHash      String? @unique // SHA-256 hex; null once consumed (many NULLs allowed)
   inviteTokenExpiresAt DateTime?
@@ -375,6 +384,7 @@ model TripTraveler {
 
   @@index([tripRequestId])
   @@index([status])
+  @@index([userId])
   @@map("trip_travelers")
 }
 
@@ -604,6 +614,21 @@ model WaitlistEntry {
 
   @@index([email])
   @@map("waitlist_entries")
+}
+
+/**
+ * Singleton row (fixed id "global") — global on/off switch for the
+ * marketing/waitlist gate. Same flag doubles as a maintenance-mode switch:
+ * flipping it back on after launch shows the gate to non-admin/tripper
+ * visitors again. Admin- and tripper-role sessions always bypass the gate
+ * regardless of this flag (see `GateAwareChrome`).
+ */
+model SiteSetting {
+  id          String   @id @default(cuid())
+  gateEnabled Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings")
 }
 
 model VerificationToken {

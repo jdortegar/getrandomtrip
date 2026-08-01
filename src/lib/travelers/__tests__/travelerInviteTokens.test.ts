@@ -15,6 +15,8 @@ import {
   issueTravelerInvite,
   peekTravelerInvite,
   consumeTravelerInvite,
+  hasLiveTravelerInviteGrant,
+  TRAVELER_INVITE_COOKIE,
 } from "../travelerInviteTokens";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -372,5 +374,147 @@ describe("consumeTravelerInvite", () => {
     expect(args.data).not.toHaveProperty("inviteTokenHash");
     expect(args.data.submittedAt).toBeInstanceOf(Date);
     expect(args.data.consentAt).toBeInstanceOf(Date);
+  });
+
+  it("persists userId when given (companion-invite submission)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    await consumeTravelerInvite("tok", {
+      fullName: "Bob Companion",
+      idDocument: "ID999",
+      userId: "user-42",
+    });
+
+    const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(args.data.userId).toBe("user-42");
+  });
+
+  it("omits userId from the update payload when not given (buyer direct-fill path stays userId-free)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    await consumeTravelerInvite("tok", {
+      fullName: "Bob Companion",
+      idDocument: "ID999",
+    });
+
+    const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(args.data).not.toHaveProperty("userId");
+  });
+});
+
+describe("TRAVELER_INVITE_COOKIE", () => {
+  it("is the fixed cookie name grt_traveler_invite", () => {
+    expect(TRAVELER_INVITE_COOKIE).toBe("grt_traveler_invite");
+  });
+});
+
+describe("hasLiveTravelerInviteGrant", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns false for an undefined cookie value", async () => {
+    const result = await hasLiveTravelerInviteGrant(undefined);
+    expect(result).toBe(false);
+    expect(prisma.tripTraveler.findUnique).not.toHaveBeenCalled();
+  });
+
+  it("returns false for an invalid/unknown token", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
+
+    const result = await hasLiveTravelerInviteGrant("bogus");
+    expect(result).toBe(false);
+  });
+
+  it("returns false for an expired token", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() - 1000),
+      tripRequest: futureTrip,
+    });
+
+    const result = await hasLiveTravelerInviteGrant("expired-tok");
+    expect(result).toBe(false);
+  });
+
+  it("returns false for an already-consumed token", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "COMPLETE",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    const result = await hasLiveTravelerInviteGrant("used-tok");
+    expect(result).toBe(false);
+  });
+
+  it("returns false for a token whose trip is past the cutoff (locked)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: lockedTrip,
+    });
+
+    const result = await hasLiveTravelerInviteGrant("locked-tok");
+    expect(result).toBe(false);
+  });
+
+  it("returns true only for a live, unconsumed peek", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    const result = await hasLiveTravelerInviteGrant("live-tok");
+    expect(result).toBe(true);
   });
 });

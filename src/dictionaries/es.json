@@ -583,8 +583,19 @@
       "tabs": {
         "users": "Usuarios",
         "waitlist": "Lista de espera",
-        "xsedNotifications": "Notificaciones TGIS"
+        "xsedNotifications": "Notificaciones TGIS",
+        "siteAccess": "Acceso al sitio"
       }
+    },
+    "siteAccess": {
+      "toggleLabel": "Muro de lista de espera",
+      "toggleDescription": "Cuando está activado, los visitantes sin cuenta de admin o tripper ven la lista de espera en lugar del sitio. Trippers y admins siempre pueden entrar.",
+      "maintenanceHint": "Activalo de nuevo durante una ventana de mantenimiento para mostrar la misma pantalla a los visitantes habituales — desactivalo cuando termines.",
+      "stateOn": "Activado",
+      "stateOff": "Desactivado",
+      "savedNote": "Guardado.",
+      "errorLoad": "No se pudo cargar esta configuración. Recargá la página.",
+      "errorSave": "No se pudo guardar este cambio. Intentá de nuevo."
     },
     "tripRequests": {
       "eyebrow": "Solicitudes de clientes",
@@ -897,6 +908,7 @@
     "loginCta": "Ir a iniciar sesión",
     "grantedTitle": "¡Listo, ya sos Tripper!",
     "grantedBody": "Activamos tu rol de Tripper. Iniciá sesión para empezar a crear tus paquetes.",
+    "registerEyebrow": "Te invitaron",
     "registerTitle": "Completá tu cuenta de Tripper",
     "registerSubtitle": "Te invitaron a ser Tripper en Randomtrip. Creá tu cuenta para aceptar.",
     "emailLockedNote": "Este email viene de tu invitación y no se puede cambiar.",
@@ -2575,6 +2587,13 @@
       "ctaBackToJourney": "Volver al viaje",
       "ctaHome": "Ir al inicio",
       "ctaMyTrips": "Ir a mis viajes",
+      "departingFromLabel": "Saliendo desde",
+      "experienceCaptionLabel": "Experiencia",
+      "revealCountdownLabel": "El destino se revela en {days}d {hours}h",
+      "revealedLabel": "Destino revelado",
+      "saveTravelersAction": "Guardar",
+      "savingTravelersAction": "Guardando…",
+      "totalPaidLabel": "Total pagado",
       "calendarEventDescription": "Tu escapada sorpresa Randomtrip. Destino revelado 48 horas antes de la salida.",
       "xsedTitle": "Ya tenés tu XSED",
       "xsedBody": "Recibirás un correo con todo lo que necesitás para tu escapada.",
@@ -4545,15 +4564,19 @@
     "incompleteError": "Completá todos los campos para guardar",
     "saveErrorGeneric": "No pudimos guardar los datos. Intentá de nuevo.",
     "sendInviteErrorGeneric": "No pudimos enviar la invitación. Intentá de nuevo.",
-    "landingBrand": "Randomtrip",
-    "landingGreeting": "{buyerFirstName} te invitó a sumarte a su randomtrip — el destino es sorpresa hasta el revelado. Completá tus datos abajo, solo toma un minuto.",
+    "landingEyebrow": "Te invitaron",
+    "landingHeading": "Sumate al viaje",
+    "landingGreeting": "{buyerFirstName} te invitó a sumarte a su randomtrip — el destino es sorpresa hasta el revelado.",
+    "landingSignupExplainer": "Creá una cuenta o iniciá sesión para completar tus datos de viaje — así también vas a poder seguir este viaje desde tu panel.",
+    "landingSignupCta": "Crear cuenta para continuar",
+    "landingStep2Heading": "Ya casi — completá tus datos de viaje",
     "landingConsentPrefix": "Doy mi consentimiento para que Randomtrip almacene los datos de mi documento de identidad para gestionar reservas de este viaje, según la ",
     "landingConsentLinkLabel": "política de privacidad",
     "landingConsentSuffix": ".",
     "landingSubmitLabel": "Enviar mis datos",
     "landingSubmitting": "Enviando…",
-    "landingCreateAccountPrompt": "¿Querés seguir este viaje vos también?",
-    "landingCreateAccountLink": "Creá una cuenta gratis (opcional)",
+    "landingRedirecting": "¡Listo! Te llevamos a tu panel…",
+    "landingSessionExpiredError": "Tu sesión venció. Iniciá sesión de nuevo para continuar.",
     "landingSuccessTitle": "¡Listo, gracias!",
     "landingSuccessBody": "Recibimos tus datos. Ya podés cerrar esta ventana — nos vemos en el viaje.",
     "landingErrorTitle": "No pudimos validar esta invitación",
@@ -4562,6 +4585,7 @@
     "landingReasonUsed": "Ya completaste tus datos con este enlace.",
     "landingReasonLocked": "El plazo para completar los datos de este viaje ya cerró. Contactá a soporte si necesitás hacer un cambio.",
     "landingConsentRequiredError": "Tenés que aceptar el consentimiento para poder enviar tus datos.",
-    "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo."
+    "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
+    "savingAction": "Guardando…"
   }
 }

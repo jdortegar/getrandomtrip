@@ -15,6 +15,7 @@ vi.mock("@/lib/prisma", () => ({
     tripRequest: {
       findUnique: vi.fn(),
       delete: vi.fn(),
+      count: vi.fn(),
     },
   },
 }));
@@ -94,7 +95,7 @@ describe("GET /api/trips/[id]", () => {
     expect(res.status).toBe(404);
   });
 
-  it("returns 403 when user does not own the trip", async () => {
+  it("returns 403 for an unrelated user (not the buyer, not a linked companion)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { email: "test@example.com" },
     });
@@ -103,6 +104,7 @@ describe("GET /api/trips/[id]", () => {
       ...mockTrip,
       userId: "other-user",
     });
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(0);
 
     const res = await GET(makeRequest(), makeProps("trip-1"));
     expect(res.status).toBe(403);
@@ -114,6 +116,7 @@ describe("GET /api/trips/[id]", () => {
     });
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockTrip);
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
 
     const res = await GET(makeRequest(), makeProps("trip-1"));
     expect(res.status).toBe(200);
@@ -123,5 +126,71 @@ describe("GET /api/trips/[id]", () => {
     expect(body.trip.experience.heroImage).toBe("https://example.com/hero.jpg");
     expect(body.trip.experience.destinationCity).toBe("Tulum");
     expect(body.trip.experience.destinationCountry).toBe("Mexico");
+  });
+
+  it("returns 200 for a companion linked via TripTraveler.userId to a trip bought by someone else", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { email: "test@example.com" },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...mockTrip,
+      userId: "other-buyer",
+    });
+    // canAccessTrip's count resolves >0 because a TripTraveler row links
+    // this user to the trip, even though they are not the buyer.
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+
+    const res = await GET(makeRequest(), makeProps("trip-1"));
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.trip).toBeDefined();
+  });
+});
+
+describe("DELETE /api/trips/[id]", () => {
+  let DELETE: RouteModule["DELETE"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    const mod = await import("../route");
+    DELETE = mod.DELETE;
+  });
+
+  it("stays buyer-only: a companion linked via TripTraveler.userId still gets 403 — NOT routed through the shared read predicate", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { email: "test@example.com" },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...mockTrip,
+      userId: "other-buyer",
+    });
+
+    const res = await DELETE(makeRequest("DELETE"), makeProps("trip-1"));
+
+    expect(res.status).toBe(403);
+    expect(prisma.tripRequest.delete).not.toHaveBeenCalled();
+    // DELETE's guard must never call the shared companion-access predicate.
+    expect(prisma.tripRequest.count).not.toHaveBeenCalled();
+  });
+
+  it("still allows the buyer to delete their own trip", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { email: "test@example.com" },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTrip,
+    );
+    (prisma.tripRequest.delete as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTrip,
+    );
+
+    const res = await DELETE(makeRequest("DELETE"), makeProps("trip-1"));
+
+    expect(res.status).toBe(200);
+    expect(prisma.tripRequest.delete).toHaveBeenCalledTimes(1);
   });
 });

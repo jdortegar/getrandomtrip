@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
+import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import {
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
@@ -32,10 +33,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get all trips for this user
+    // Get all trips owned by OR companion-linked to this user.
     console.log("Fetching trips for userId:", user.id);
     const trips = await prisma.tripRequest.findMany({
-      where: { userId: user.id },
+      where: tripAccessWhere(user.id),
       orderBy: { createdAt: "desc" },
     });
     const paymentEntries = await Promise.all(
@@ -55,7 +56,9 @@ export async function GET(request: NextRequest) {
         unknown
       >;
     }
-    const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId);
+    const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId).map(
+      (trip) => ({ ...trip, role: tripRoleFor(trip, user.id) }),
+    );
     console.log("Trips found:", trips.length);
 
     return NextResponse.json({ trips: hydratedTrips }, { status: 200 });

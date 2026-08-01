@@ -1405,7 +1405,18 @@ export interface AdminPagesDict {
       users: string;
       waitlist: string;
       xsedNotifications: string;
+      siteAccess: string;
     };
+  };
+  siteAccess: {
+    errorLoad: string;
+    errorSave: string;
+    maintenanceHint: string;
+    savedNote: string;
+    stateOff: string;
+    stateOn: string;
+    toggleDescription: string;
+    toggleLabel: string;
   };
   tripRequests: {
     eyebrow: string;
@@ -1550,6 +1561,7 @@ export interface TripperInviteAcceptDict {
   loginCta: string;
   grantedTitle: string;
   grantedBody: string;
+  registerEyebrow: string;
   registerTitle: string;
   registerSubtitle: string;
   emailLockedNote: string;
@@ -1595,15 +1607,19 @@ export interface InviteTravelersDict {
   incompleteError: string;
   saveErrorGeneric: string;
   sendInviteErrorGeneric: string;
-  landingBrand: string;
+  landingEyebrow: string;
+  landingHeading: string;
   landingGreeting: string;
+  landingSignupExplainer: string;
+  landingSignupCta: string;
+  landingStep2Heading: string;
   landingConsentPrefix: string;
   landingConsentLinkLabel: string;
   landingConsentSuffix: string;
   landingSubmitLabel: string;
   landingSubmitting: string;
-  landingCreateAccountPrompt: string;
-  landingCreateAccountLink: string;
+  landingRedirecting: string;
+  landingSessionExpiredError: string;
   landingSuccessTitle: string;
   landingSuccessBody: string;
   landingErrorTitle: string;
@@ -1613,6 +1629,7 @@ export interface InviteTravelersDict {
   landingReasonLocked: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
+  savingAction: string;
 }
 
 export interface MarketingDictionary {
@@ -2291,7 +2308,14 @@ export interface MarketingDictionary {
       ctaHome: string;
       ctaMyTrips: string;
       ctaReveal: string;
+      departingFromLabel: string;
       errorTitle: string;
+      experienceCaptionLabel: string;
+      revealCountdownLabel: string;
+      revealedLabel: string;
+      saveTravelersAction: string;
+      savingTravelersAction: string;
+      totalPaidLabel: string;
       messageApproved: string;
       messageGeneric: string;
       messagePending: string;

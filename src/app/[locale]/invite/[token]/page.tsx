@@ -42,6 +42,7 @@ export default async function TravelerInvitePage({ params }: Props) {
     <>
       <Navbar backgroundPrimary dict={dict} locale={locale} />
       <TravelerInviteClient
+        authCopy={{ auth: dict.auth }}
         copy={dict.inviteTravelers}
         locale={locale}
         resolution={resolution}
