@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import { hasLocale } from "@/lib/i18n/config";
-import { JsonLd } from "@/lib/seo/JsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBlogPostingSchema } from "@/lib/seo/schemas";
 import BlogPostClient, {
   type BlogPost,

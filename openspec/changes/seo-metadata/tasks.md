@@ -56,3 +56,14 @@ Chain strategy: feature-branch-chain
 - [x] 6.1 Add `<JsonLd>` with `buildPersonSchema()` into `src/app/[locale]/trippers/[tripper]/page.tsx` (use tripper record already fetched for metadata)
 - [x] 6.2 Add `<JsonLd>` with `buildFAQPageSchema()` into `src/app/[locale]/about-us/page.tsx` — source FAQ entries from the existing `faqItems` array in that file
 - [x] 6.3 Add `<JsonLd>` with `buildFAQPageSchema()` into `src/app/[locale]/xsed/page.tsx` — same pattern as 6.2
+
+---
+
+## Post-Verify Fixes (applied after sdd-verify raised issues)
+
+- [x] C1-fix: Create `src/middleware.ts` that wraps `handleI18n` and sets `x-locale` request header for non-default locale paths (`/en/...`); `src/app/layout.tsx` reads `x-locale` via `headers()` to render `<html lang={locale}>` with correct SSR value
+- [x] C1-fix: Add `alternates.canonical` to `generateMetadata` in `src/app/[locale]/page.tsx` using `NEXT_PUBLIC_SITE_URL`
+- [x] W1-fix: Create `src/lib/seo/__tests__/schemas.test.ts` — 17 vitest unit tests covering all 5 builder functions (`buildOrganizationSchema`, `buildWebSiteSchema`, `buildPersonSchema`, `buildBlogPostingSchema`, `buildFAQPageSchema`)
+- [x] W2-fix: Create `src/app/[locale]/trippers/[tripper]/__tests__/metadata.test.ts` — 4 vitest tests for `generateMetadata` hero-image OG fallback chain (`heroImage` → `avatarUrl` → `/images/opengraph.png`)
+- [x] W3-fix: Move `src/lib/seo/JsonLd.tsx` → `src/components/seo/JsonLd.tsx`; update all 5 consumer import paths (`layout.tsx`, `trippers/[tripper]/page.tsx`, `about-us/page.tsx`, `xsed/page.tsx`, `blog/[slug]/page.tsx`)
+- [x] W4-fix: Update `spec.md` and `design.md` to reference `opengraph.png` (not `.jpg`) to match the actual file on disk

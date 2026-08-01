@@ -8,9 +8,15 @@ export async function generateMetadata(props: {
   params: Promise<{ locale?: string }>;
 }): Promise<Metadata> {
   const { locale } = await props.params;
-  const dict = await getDictionary(hasLocale(locale) ? locale! : "es");
+  const resolvedLocale = hasLocale(locale) ? locale! : "es";
+  const dict = await getDictionary(resolvedLocale);
   const meta = dict.home.meta;
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
+  const canonical =
+    resolvedLocale === "es" ? siteUrl : `${siteUrl}/${resolvedLocale}`;
   return {
+    alternates: { canonical },
     description: meta.description,
     openGraph: {
       description: meta.description,
