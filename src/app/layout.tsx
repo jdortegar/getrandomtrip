@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import "@/styles/rt.css";
 import { LenisProvider } from "@/components/providers/LenisProvider";
@@ -8,11 +9,12 @@ import {
   Barlow_Condensed,
   Nothing_You_Could_Do,
 } from "next/font/google";
-import { JsonLd } from "@/lib/seo/JsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
 import {
   buildOrganizationSchema,
   buildWebSiteSchema,
 } from "@/lib/seo/schemas";
+import { DEFAULT_LOCALE, hasLocale } from "@/lib/i18n/config";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -46,7 +48,7 @@ export const metadata: Metadata = {
   ),
   openGraph: {
     images: [
-      { alt: "Randomtrip", height: 630, url: "/images/opengraph.jpg", width: 1200 },
+      { alt: "Randomtrip", height: 630, url: "/images/opengraph.png", width: 1200 },
     ],
     siteName: "Randomtrip",
     type: "website",
@@ -54,19 +56,25 @@ export const metadata: Metadata = {
   title: "Randomtrip",
   twitter: {
     card: "summary_large_image",
-    images: ["/images/opengraph.jpg"],
+    images: ["/images/opengraph.png"],
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Read the locale injected by middleware (set on /en/... paths).
+  // For default-locale rewrites the header is absent; fall back to DEFAULT_LOCALE.
+  const headersList = await headers();
+  const xLocale = headersList.get("x-locale") ?? undefined;
+  const lang = hasLocale(xLocale) ? xLocale : DEFAULT_LOCALE;
+
   return (
     <html
-      lang="es"
       className={`${barlow.variable} ${barlowCondensed.variable} ${nothingYouCouldDo.variable}`}
+      lang={lang}
     >
       <head>
         <meta name="color-scheme" content="light" />

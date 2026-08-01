@@ -14,6 +14,7 @@ import type {
 } from "@/types/tripper";
 import type { TestimonialData } from "@/components/Testimonials/types";
 import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
+import { slugify } from "@/lib/helpers/slugify";
 
 /**
  * Get tripper profile by slug
@@ -78,6 +79,35 @@ export async function getTripperBySlug(
     console.error("Error fetching tripper by slug:", error);
     return null;
   }
+}
+
+/**
+ * Derives a unique `tripperSlug` from a user's name (e.g. "Santi Senega" ->
+ * "santi-senega"), appending "-2", "-3", etc. on collision. Used whenever a
+ * user is granted the TRIPPER role/profile without supplying their own slug.
+ */
+export async function generateUniqueTripperSlug(
+  name: string,
+  excludeUserId?: string,
+): Promise<string> {
+  const base = slugify(name) || "tripper";
+  let candidate = base;
+  let suffix = 2;
+
+  while (
+    await prisma.user.findFirst({
+      where: {
+        tripperSlug: candidate,
+        ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
+      },
+      select: { id: true },
+    })
+  ) {
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+
+  return candidate;
 }
 
 /**

@@ -1405,7 +1405,18 @@ export interface AdminPagesDict {
       users: string;
       waitlist: string;
       xsedNotifications: string;
+      siteAccess: string;
     };
+  };
+  siteAccess: {
+    errorLoad: string;
+    errorSave: string;
+    maintenanceHint: string;
+    savedNote: string;
+    stateOff: string;
+    stateOn: string;
+    toggleDescription: string;
+    toggleLabel: string;
   };
   tripRequests: {
     eyebrow: string;
@@ -1550,6 +1561,7 @@ export interface TripperInviteAcceptDict {
   loginCta: string;
   grantedTitle: string;
   grantedBody: string;
+  registerEyebrow: string;
   registerTitle: string;
   registerSubtitle: string;
   emailLockedNote: string;
@@ -1558,6 +1570,64 @@ export interface TripperInviteAcceptDict {
   registerSuccessTitle: string;
   registerSuccessBody: string;
   registerErrorGeneric: string;
+}
+
+export interface TripDetailDict {
+  backToDashboard: string;
+  notFoundTitle: string;
+  notFoundDescription: string;
+  destinationSorpresa: string;
+  detailsTitle: string;
+  status: {
+    DRAFT: string;
+    SAVED: string;
+    PENDING_PAYMENT: string;
+    CONFIRMED: string;
+    REVEALED: string;
+    COMPLETED: string;
+    CANCELLED: string;
+  };
+  destinationRevealedTitle: string;
+  viewRevelationAction: string;
+  departureFromLabel: string;
+  passengersLabel: string;
+  datesLabel: string;
+  nightsLabel: string;
+  filtersTitle: string;
+  avoidDestinationsLabel: string;
+  cityChipLabel: string;
+  addonsTitle: string;
+  reviewTitle: string;
+  costsTitle: string;
+  basePriceLabel: string;
+  filtersCostLabel: string;
+  addonsCostLabel: string;
+  totalTripLabel: string;
+  perPersonLabel: string;
+  estimateNote: string;
+  paymentInfoTitle: string;
+  paymentStatus: {
+    APPROVED: string;
+    COMPLETED: string;
+    PENDING: string;
+    FAILED: string;
+  };
+  amountLabel: string;
+  providerLabel: string;
+  paymentIdLabel: string;
+  dateLabel: string;
+  timelineTitle: string;
+  tripCreatedLabel: string;
+  paymentConfirmedLabel: string;
+  timelineDestinationRevealedLabel: string;
+  tripCompletedLabel: string;
+  actionsTitle: string;
+  viewItineraryAction: string;
+  tripInfoTitle: string;
+  typeLabel: string;
+  levelLabel: string;
+  confirmedHint: string;
+  revealedHint: string;
 }
 
 export interface InviteTravelersDict {
@@ -1595,15 +1665,19 @@ export interface InviteTravelersDict {
   incompleteError: string;
   saveErrorGeneric: string;
   sendInviteErrorGeneric: string;
-  landingBrand: string;
+  landingEyebrow: string;
+  landingHeading: string;
   landingGreeting: string;
+  landingSignupExplainer: string;
+  landingSignupCta: string;
+  landingStep2Heading: string;
   landingConsentPrefix: string;
   landingConsentLinkLabel: string;
   landingConsentSuffix: string;
   landingSubmitLabel: string;
   landingSubmitting: string;
-  landingCreateAccountPrompt: string;
-  landingCreateAccountLink: string;
+  landingRedirecting: string;
+  landingSessionExpiredError: string;
   landingSuccessTitle: string;
   landingSuccessBody: string;
   landingErrorTitle: string;
@@ -1613,6 +1687,7 @@ export interface InviteTravelersDict {
   landingReasonLocked: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
+  savingAction: string;
 }
 
 export interface MarketingDictionary {
@@ -2291,7 +2366,14 @@ export interface MarketingDictionary {
       ctaHome: string;
       ctaMyTrips: string;
       ctaReveal: string;
+      departingFromLabel: string;
       errorTitle: string;
+      experienceCaptionLabel: string;
+      revealCountdownLabel: string;
+      revealedLabel: string;
+      saveTravelersAction: string;
+      savingTravelersAction: string;
+      totalPaidLabel: string;
       messageApproved: string;
       messageGeneric: string;
       messagePending: string;
@@ -2786,4 +2868,5 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  tripDetail: TripDetailDict;
 }

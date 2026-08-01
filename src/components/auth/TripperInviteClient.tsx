@@ -290,7 +290,10 @@ function NewUserBranch({
 
   return (
     <CardShell>
-      <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        {copy.registerEyebrow}
+      </p>
+      <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
         {copy.registerTitle}
       </h1>
       <p className="mt-2 text-sm text-neutral-600">{copy.registerSubtitle}</p>

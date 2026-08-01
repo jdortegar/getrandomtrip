@@ -118,7 +118,7 @@ export async function peekTravelerInvite(plaintext: string): Promise<TravelerPee
  */
 export async function consumeTravelerInvite(
   plaintext: string,
-  data: { fullName: string; idDocument: string; email?: string },
+  data: { fullName: string; idDocument: string; email?: string; userId?: string },
 ): Promise<TravelerPeek> {
   const resolved = await resolveTravelerInvite(plaintext);
   if (!resolved.ok) return resolved;
@@ -130,6 +130,7 @@ export async function consumeTravelerInvite(
       fullName: data.fullName,
       idDocument: data.idDocument,
       ...(data.email !== undefined && { email: data.email }),
+      ...(data.userId !== undefined && { userId: data.userId }),
       submittedAt: now,
       consentAt: now,
       status: "COMPLETE",
@@ -137,4 +138,25 @@ export async function consumeTravelerInvite(
   });
 
   return resolved;
+}
+
+/**
+ * Short-lived httpOnly cookie carrying a live traveler-invite grant into
+ * `authorize()` — minted only by `POST /api/travelers/invite-auth-init`
+ * after a server-side `peekTravelerInvite` succeeds. Mirrors the shipped
+ * `grt_tripper_invite` idiom.
+ */
+export const TRAVELER_INVITE_COOKIE = "grt_traveler_invite";
+
+/**
+ * True only for a live, unconsumed invite — no email match (see design
+ * decision #9: the token alone is the whole grant). Takes the raw cookie
+ * value rather than reading `cookies()` itself, so this unit-tests without
+ * mocking `next/headers`.
+ */
+export async function hasLiveTravelerInviteGrant(
+  cookieValue: string | undefined,
+): Promise<boolean> {
+  if (!cookieValue) return false;
+  return (await peekTravelerInvite(cookieValue)).ok;
 }

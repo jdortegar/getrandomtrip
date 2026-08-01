@@ -2,7 +2,9 @@
 description: >-
   Component structure—one per file, no barrels, dashboard folder layout, copy
   props from dictionary slices.
-alwaysApply: true
+alwaysApply: false
+paths:
+  - "src/components/**"
 ---
 
 # Component Patterns

@@ -14,8 +14,8 @@ Extend Next.js Metadata API with `metadataBase` + per-page `generateMetadata`, i
 | JSON-LD delivery | RSC `JsonLd.tsx` component — `<script type="application/ld+json" dangerouslySetInnerHTML>` | `next-seo`, `schema-dts` lib | Zero new deps; RSC ensures the script renders on the server with no hydration overhead; inline object typed locally |
 | Schema builder location | `src/lib/seo/schemas.ts` — pure TS functions, no framework coupling | Co-locate in components | Follows existing `lib/helpers/` pattern; easily testable in isolation; consumed by both pages and the `JsonLd` component |
 | Blog RSC refactor strategy | Extract `BlogDetailContent` body → `BlogPostClient.tsx` island; page becomes bare RSC shell | Rewrite from scratch; use route-level `loader` pattern | Minimises diff — all hooks/state/`useEffect` move as-is, only the outer file loses `"use client"` |
-| Tripper `heroImage` in metadata | `dbTripper.heroImage ?? dbTripper.avatarUrl ?? "/images/opengraph.jpg"` — no DB query change needed | Re-query with expanded select | `heroImage` is already selected at line 41 of `tripper-queries.ts`; only the metadata function needs updating |
-| OG image fallback chain | per-page image → `/images/opengraph.jpg` | No fallback | `opengraph.jpg` (1200×630) is already in `public/`; guarantees rich cards on every page |
+| Tripper `heroImage` in metadata | `dbTripper.heroImage ?? dbTripper.avatarUrl ?? "/images/opengraph.png"` — no DB query change needed | Re-query with expanded select | `heroImage` is already selected at line 41 of `tripper-queries.ts`; only the metadata function needs updating |
+| OG image fallback chain | per-page image → `/images/opengraph.png` | No fallback | `opengraph.png` (1200×630) is already in `public/`; guarantees rich cards on every page |
 | Dictionary keys for home/journey | Add `meta: { title, description }` keys to `es.json` and `en.json` | Hardcode strings in page | Consistent with the `aboutUs.meta` and `xsedPage.meta` pattern used throughout the project |
 
 ---
@@ -26,7 +26,7 @@ Extend Next.js Metadata API with `metadataBase` + per-page `generateMetadata`, i
 Build time / request time
 ──────────────────────────────────────────────────────
 layout.tsx
-  └── metadata: { metadataBase, openGraph.images[opengraph.jpg], twitter }
+  └── metadata: { metadataBase, openGraph.images[opengraph.png], twitter }
   └── <JsonLd schema={organizationSchema()} />
   └── <JsonLd schema={webSiteSchema()} />
 
@@ -133,7 +133,7 @@ export async function generateMetadata(props): Promise<Metadata> {
     title: blog?.seo?.title ?? blog?.title,
     description: blog?.seo?.description,
     openGraph: {
-      images: [{ url: blog?.coverUrl ?? "/images/opengraph.jpg", width: 1200, height: 630 }],
+      images: [{ url: blog?.coverUrl ?? "/images/opengraph.png", width: 1200, height: 630 }],
     },
   }
 }

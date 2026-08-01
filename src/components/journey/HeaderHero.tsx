@@ -140,7 +140,7 @@ export default function HeaderHero({
   return (
     <section
       className={cn(
-        "relative flex min-h-[40vh] items-center justify-center overflow-hidden",
+        "relative flex min-h-[40vh] items-center justify-center overflow-hidden py-10 md:py-0",
         className,
       )}
     >
@@ -166,9 +166,9 @@ export default function HeaderHero({
       )}
 
       {/* Content row: left text + optional right tripper info */}
-      <div className="rt-container relative z-10 flex items-center justify-between gap-8 text-white">
+      <div className="rt-container relative z-10 flex flex-col items-start justify-start gap-6 text-white md:flex-row md:items-center md:justify-between md:gap-8">
         {/* Left: eyebrow + title + description */}
-        <div className="flex-1 text-left">
+        <div className="w-full flex-1 text-left">
           {subtitle != null && (
             <p
               className="mb-2 font-bold text-sm uppercase tracking-[2px] md:tracking-[0.4em] md:text-base"
@@ -178,7 +178,7 @@ export default function HeaderHero({
                 : { children: subtitle })}
             />
           )}
-          <h1 className="mb-6 font-barlow-condensed text-5xl md:text-7xl font-extrabold">
+          <h1 className="mb-8 font-barlow-condensed text-5xl font-extrabold md:mb-6 md:text-7xl">
             {title}
           </h1>
           <p className="text-base">{description}</p>

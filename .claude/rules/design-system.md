@@ -2,7 +2,10 @@
 description: >-
   Dashboard design tokens, component patterns, and layout rules for all
   dashboard sections. Tripper OS, client dashboard, and admin pages.
-alwaysApply: true
+alwaysApply: false
+paths:
+  - "src/components/**"
+  - "src/app/**"
 ---
 
 # Design System

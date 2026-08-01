@@ -21,7 +21,7 @@ import {
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import { JsonLd } from "@/lib/seo/JsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPersonSchema } from "@/lib/seo/schemas";
 
 // 👇 Modal de video (client component)
@@ -45,7 +45,7 @@ export async function generateMetadata(props: {
   if (!dbTripper) return { title: "Randomtrip" };
 
   const ogImage =
-    dbTripper.heroImage ?? dbTripper.avatarUrl ?? "/images/opengraph.jpg";
+    dbTripper.heroImage ?? dbTripper.avatarUrl ?? "/images/opengraph.png";
 
   return {
     title: `${dbTripper.name} | Randomtrip`,

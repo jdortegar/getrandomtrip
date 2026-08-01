@@ -27,6 +27,7 @@ vi.mock("@/lib/prisma", () => ({
     user: { findUnique: vi.fn() },
     tripRequest: {
       findUnique: vi.fn(),
+      count: vi.fn(),
     },
     tripTraveler: {
       createMany: vi.fn(),
@@ -100,6 +101,7 @@ describe("roster shape parity between trip-summary and /api/trips/[id]", () => {
       id: "buyer-1",
       email: "buyer@example.com",
     });
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
   });
 
   it("returns byte-identical `roster` from both read surfaces for the same trip", async () => {

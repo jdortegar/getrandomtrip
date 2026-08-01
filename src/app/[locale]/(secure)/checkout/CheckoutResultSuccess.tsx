@@ -1,17 +1,23 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/app/checkout/AddToCalendarButton";
 import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/Skeleton";
 import Confetti from "@/components/feedback/Confetti";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
 import Section from "@/components/layout/Section";
-import { TravelerRosterSection } from "@/components/app/travelers/TravelerRosterSection";
+import {
+  TravelerRosterSection,
+  type TravelerRosterSectionHandle,
+} from "@/components/app/travelers/TravelerRosterSection";
+import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
+import { getCardForType } from "@/lib/utils/traveler-card";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { TravelerRoster } from "@/types/traveler";
@@ -67,6 +73,17 @@ export default function CheckoutResultSuccess({
 
   const [loading, setLoading] = useState(false);
   const [tripData, setTripData] = useState<TripSummaryData | null>(null);
+  const rosterRef = useRef<TravelerRosterSectionHandle>(null);
+  const [savingTravelers, setSavingTravelers] = useState(false);
+
+  async function handleSaveTravelers() {
+    setSavingTravelers(true);
+    try {
+      await rosterRef.current?.saveAll();
+    } finally {
+      setSavingTravelers(false);
+    }
+  }
 
   const paymentIntentId =
     stripeReturn?.paymentIntent ?? searchParams.get("payment_intent");
@@ -143,6 +160,13 @@ export default function CheckoutResultSuccess({
   const videoSrc = xsedTrip
     ? "/videos/hero-xsed.mp4"
     : "/videos/hero-video-1.mp4";
+  const revealCountdown =
+    tripData?.trip.startDate != null
+      ? getRevealCountdown(new Date(tripData.trip.startDate), new Date())
+      : null;
+  const typeCard = tripData
+    ? getCardForType(tripData.trip.type, safeLocale)
+    : null;
 
   return (
     <>
@@ -156,51 +180,120 @@ export default function CheckoutResultSuccess({
         />
 
         <Section
-          subtitle={xsedTrip ? labels.xsedBody : labels.body}
-          title={xsedTrip ? labels.xsedTitle : hero.title}
+          subtitle={xsedTrip ? labels.xsedBody : undefined}
+          title={xsedTrip ? labels.xsedTitle : undefined}
         >
           <div className="flex flex-col items-center">
-            {/* Trip card — shown once data arrives */}
-            {tripData && (
-              <div className=" flex w-full max-w-xl items-start gap-6">
-                <div className="relative h-36 w-36 shrink-0 overflow-hidden rounded-xl">
-                  <Image
-                    alt={tripData.trip.type.toUpperCase()}
-                    className="object-cover"
-                    fill
-                    src={fallbackImage}
-                  />
+            {/* Trip card — skeleton while data is loading, real card once it arrives */}
+            {!tripData && (
+              <div className="flex w-full max-w-3xl items-start gap-5 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
+                <Skeleton className="h-40 w-40 shrink-0 rounded-2xl sm:h-64 sm:w-48" />
+                <div className="flex flex-1 flex-col gap-2.5 pt-1">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-3 w-28" />
+                  <Skeleton className="mt-1 h-8 w-28" />
+                  <Skeleton className="h-3 w-56" />
+                  <Skeleton className="h-3 w-44" />
+                  <Skeleton className="h-3 w-36" />
                 </div>
+              </div>
+            )}
 
-                <div className="text-left flex flex-col gap-1.5">
-                  <p className="font-bold text-gray-900">
-                    {labels.xsedTripTypeLabel}{" "}
-                    <span
-                      className={xsedTrip ? "text-amber-600" : "text-gray-900"}
-                    >
-                      | {tripData.trip.type.toUpperCase()}
-                    </span>
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {xsedTrip
-                      ? labels.xsedExperienceLabel
-                      : tripData.trip.level}
-                  </p>
-                  <p className="mt-1 text-xl font-bold text-gray-900">
-                    {tripData.payment.currency.toUpperCase()} {tripData.payment.amount}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {labels.xsedReferenceLabel}{" "}
-                    <span className="font-bold text-gray-900">
-                      {tripData.trip.id}
-                    </span>
-                  </p>
+            {tripData && (
+              <div className="flex w-full max-w-3xl items-start gap-5 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
+                {typeCard?.img ? (
+                  <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-2xl sm:h-64 sm:w-48">
+                    <Image
+                      alt={typeCard.title}
+                      className="object-cover"
+                      fill
+                      src={typeCard.img}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-40 w-40 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 sm:h-64 sm:w-48">
+                    <Image
+                      alt=""
+                      height={72}
+                      src="/assets/logos/iso-randomtrip.svg"
+                      style={{ filter: "brightness(0) saturate(0) invert(60%)" }}
+                      unoptimized
+                      width={72}
+                    />
+                  </div>
+                )}
 
-                  <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-gray-700">
+                <div className="flex flex-col justify-center gap-1.5 text-left">
+                  <div>
+                    <p className="font-barlow text-2xl font-bold">
+                      <span>{labels.xsedTripTypeLabel}</span>
+                      <span className="px-1.5">|</span>
+                      <span
+                        className={xsedTrip ? "text-amber-600" : "text-sky-600"}
+                      >
+                        {tripData.trip.type.toUpperCase()}
+                      </span>
+                    </p>
+                    <p className="font-barlow text-lg font-normal text-gray-500">
+                      {labels.experienceCaptionLabel}{" "}
+                      <span className="font-bold">
+                        {xsedTrip
+                          ? labels.xsedExperienceLabel
+                          : tripData.trip.level}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="mt-1">
+                    <p className="text-base text-gray-500">
+                      {labels.totalPaidLabel}
+                    </p>
+                    <p className="font-barlow-condensed text-3xl font-bold text-gray-900">
+                      {tripData.payment.currency.toUpperCase()}{" "}
+                      {tripData.payment.amount}
+                    </p>
+                  </div>
+
+                  <div className="mt-1 flex flex-col gap-1 text-sm text-gray-600">
+                    <span>
+                      {labels.xsedReferenceLabel}{" "}
+                      <span className="font-bold text-gray-900">
+                        {tripData.trip.id}
+                      </span>
+                      {tripData.payment.receiptUrl && (
+                        <>
+                          {" · "}
+                          <a
+                            className="text-light-blue underline transition-colors hover:text-light-blue/80"
+                            href={tripData.payment.receiptUrl}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            {labels.receiptLink}
+                          </a>
+                        </>
+                      )}
+                    </span>
                     <span className="flex items-center gap-1.5">
                       <MapPin className="h-4 w-4 shrink-0 text-gray-500" />
-                      {tripData.trip.originCity}, {tripData.trip.originCountry}
+                      {labels.departingFromLabel} {tripData.trip.originCity},{" "}
+                      {tripData.trip.originCountry}
                     </span>
+                    {revealCountdown && (
+                      <span>
+                        {revealCountdown.revealed
+                          ? labels.revealedLabel
+                          : labels.revealCountdownLabel
+                              .replace("{days}", String(revealCountdown.days))
+                              .replace(
+                                "{hours}",
+                                String(revealCountdown.hours),
+                              )}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-1">
                     <AddToCalendarButton
                       endDate={tripData.trip.endDate}
                       eventDescription={labels.calendarEventDescription}
@@ -222,6 +315,7 @@ export default function CheckoutResultSuccess({
                 <TravelerRosterSection
                   copy={travelersCopy}
                   locale={safeLocale}
+                  ref={rosterRef}
                   roster={tripData.trip.roster}
                 />
               </div>
@@ -229,19 +323,36 @@ export default function CheckoutResultSuccess({
 
             {/* Actions */}
             <div className="mt-12 flex flex-col items-center gap-2">
-              <Button asChild className="min-w-[280px]" size="lg" variant="default">
-                <Link href={`/${safeLocale}/dashboard`}>
-                  {labels.ctaMyTrips}
-                </Link>
-              </Button>
-              {tripData?.payment.receiptUrl && (
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Button asChild size="lg" variant="secondary">
+                  <Link href={`/${safeLocale}/dashboard`}>
+                    {labels.ctaMyTrips}
+                  </Link>
+                </Button>
+                {tripData?.trip.roster &&
+                  tripData.trip.roster.cap > 0 &&
+                  !tripData.trip.roster.locked && (
+                    <Button
+                      className="min-w-[280px]"
+                      disabled={savingTravelers}
+                      onClick={() => void handleSaveTravelers()}
+                      size="lg"
+                      variant="default"
+                    >
+                      {savingTravelers
+                        ? labels.savingTravelersAction
+                        : labels.saveTravelersAction}
+                    </Button>
+                  )}
+              </div>
+              {xsedTrip && tripData?.payment.receiptUrl && (
                 <a
                   className="text-sm text-gray-400 underline transition-colors hover:text-gray-600"
                   href={tripData.payment.receiptUrl}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  {xsedTrip ? labels.xsedDownloadCta : labels.receiptLink}
+                  {labels.xsedDownloadCta}
                 </a>
               )}
             </div>

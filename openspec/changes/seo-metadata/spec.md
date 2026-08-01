@@ -22,13 +22,13 @@ Site-wide metadata defaults, per-page OG images, and JSON-LD schemas. All capabi
 
 ### Requirement: Site-Wide OG / Twitter Fallback
 
-`layout.tsx` MUST define default `openGraph` and `twitter` blocks referencing `/images/opengraph.jpg` (1200×630). Per-page MAY override.
+`layout.tsx` MUST define default `openGraph` and `twitter` blocks referencing `/images/opengraph.png` (1200×630). Per-page MAY override.
 
 #### Scenario: Page without custom OG uses fallback
 
 - GIVEN a page without `generateMetadata`
 - WHEN a social crawler fetches it
-- THEN `og:image` is `<metadataBase>/images/opengraph.jpg` and `twitter:card` is `summary_large_image`
+- THEN `og:image` is `<metadataBase>/images/opengraph.png` and `twitter:card` is `summary_large_image`
 
 ---
 
@@ -72,7 +72,7 @@ The `[locale]` layout MUST set `<html lang>` and `alternates.canonical` to the a
 
 ### Requirement: Tripper Profile — Hero Image OG
 
-`generateMetadata` MUST use `heroImage` (NOT `avatarUrl`) as `og:image`, falling back to `/images/opengraph.jpg` when `heroImage` is null.
+`generateMetadata` MUST use `heroImage` (NOT `avatarUrl`) as `og:image`, falling back to `/images/opengraph.png` when `heroImage` is null.
 
 #### Scenario: heroImage set
 
@@ -84,7 +84,7 @@ The `[locale]` layout MUST set `<html lang>` and `alternates.canonical` to the a
 
 - GIVEN a tripper with null `heroImage`
 - WHEN `generateMetadata` runs
-- THEN `og:image` is `<metadataBase>/images/opengraph.jpg`
+- THEN `og:image` is `<metadataBase>/images/opengraph.png`
 
 ---
 

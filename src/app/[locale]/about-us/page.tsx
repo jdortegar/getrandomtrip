@@ -11,7 +11,7 @@ import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getTravelerTypeLabel } from "@/lib/helpers/traveler-types";
 import { FaqBlock } from "@/components/display/FaqBlock";
-import { JsonLd } from "@/lib/seo/JsonLd";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { buildFAQPageSchema } from "@/lib/seo/schemas";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };

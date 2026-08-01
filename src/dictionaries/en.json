@@ -583,8 +583,19 @@
       "tabs": {
         "users": "Users",
         "waitlist": "Waitlist",
-        "xsedNotifications": "TGIS Notifications"
+        "xsedNotifications": "TGIS Notifications",
+        "siteAccess": "Site Access"
       }
+    },
+    "siteAccess": {
+      "toggleLabel": "Waitlist gate",
+      "toggleDescription": "When on, visitors without an admin or tripper account see the early-access waitlist instead of the site. Trippers and admins always get through.",
+      "maintenanceHint": "Turn this back on during a maintenance window to show the same screen to regular visitors — flip it off when you're done.",
+      "stateOn": "On",
+      "stateOff": "Off",
+      "savedNote": "Saved.",
+      "errorLoad": "Couldn't load this setting. Try reloading the page.",
+      "errorSave": "Couldn't save this change. Try again."
     },
     "tripRequests": {
       "eyebrow": "Client requests",
@@ -897,6 +908,7 @@
     "loginCta": "Go to login",
     "grantedTitle": "You're now a Tripper!",
     "grantedBody": "We activated your Tripper role. Sign in to start creating your packages.",
+    "registerEyebrow": "You're invited",
     "registerTitle": "Complete your Tripper account",
     "registerSubtitle": "You've been invited to become a Tripper on Randomtrip. Create your account to accept.",
     "emailLockedNote": "This email comes from your invite and can't be changed.",
@@ -1069,7 +1081,7 @@
     },
     "meta": {
       "title": "Randomtrip — Curated Surprise Trips",
-      "description": "Discover your next destination with Randomtrip. Surprise trips designed by passionate trippers. Book your adventure today."
+      "description": "Discover your next destination with Randomtrip. Surprise trips designed by passionate trippers. Book your getaway today."
     }
   },
   "experiences": {
@@ -2575,6 +2587,13 @@
       "ctaBackToJourney": "Back to journey",
       "ctaHome": "Go to home",
       "ctaMyTrips": "Go to my trips",
+      "departingFromLabel": "Departing from",
+      "experienceCaptionLabel": "Experience",
+      "revealCountdownLabel": "Destination reveals in {days}d {hours}h",
+      "revealedLabel": "Destination revealed",
+      "saveTravelersAction": "Save",
+      "savingTravelersAction": "Saving…",
+      "totalPaidLabel": "Total paid",
       "calendarEventDescription": "Your Randomtrip surprise escape. Destination revealed 48 hours before departure.",
       "xsedTitle": "You've got your TGIS",
       "xsedBody": "You'll receive an email with everything you need for your escape.",
@@ -4495,6 +4514,63 @@
     "revealCountdown": "Countdown",
     "revealDestination": "View Destination"
   },
+  "tripDetail": {
+    "backToDashboard": "Back to Dashboard",
+    "notFoundTitle": "Trip not found",
+    "notFoundDescription": "The trip you're looking for doesn't exist or you don't have permission to view it.",
+    "destinationSorpresa": "Surprise Destination",
+    "detailsTitle": "Trip Details",
+    "status": {
+      "DRAFT": "Draft",
+      "SAVED": "Saved",
+      "PENDING_PAYMENT": "Pending Payment",
+      "CONFIRMED": "Confirmed",
+      "REVEALED": "Revealed",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "destinationRevealedTitle": "Destination Revealed",
+    "viewRevelationAction": "View Reveal",
+    "departureFromLabel": "Departing from",
+    "passengersLabel": "Travelers",
+    "datesLabel": "Dates",
+    "nightsLabel": "Nights",
+    "filtersTitle": "Filters & Preferences",
+    "avoidDestinationsLabel": "Destinations to avoid",
+    "cityChipLabel": "City",
+    "addonsTitle": "Add-ons",
+    "reviewTitle": "My Review",
+    "costsTitle": "Cost Summary",
+    "basePriceLabel": "Base Price",
+    "filtersCostLabel": "Filters",
+    "addonsCostLabel": "Add-ons",
+    "totalTripLabel": "Trip Total",
+    "perPersonLabel": "Per person",
+    "estimateNote": "(estimated)",
+    "paymentInfoTitle": "Payment Information",
+    "paymentStatus": {
+      "APPROVED": "Payment Approved",
+      "COMPLETED": "Payment Completed",
+      "PENDING": "Payment Pending",
+      "FAILED": "Payment Failed"
+    },
+    "amountLabel": "Amount",
+    "providerLabel": "Provider",
+    "paymentIdLabel": "Payment ID",
+    "dateLabel": "Date",
+    "timelineTitle": "Timeline",
+    "tripCreatedLabel": "Trip created",
+    "paymentConfirmedLabel": "Payment confirmed",
+    "timelineDestinationRevealedLabel": "Destination revealed",
+    "tripCompletedLabel": "Trip completed",
+    "actionsTitle": "Actions",
+    "viewItineraryAction": "View Itinerary",
+    "tripInfoTitle": "Trip Information",
+    "typeLabel": "Type",
+    "levelLabel": "Level",
+    "confirmedHint": "Your destination will be revealed 48 hours before the trip",
+    "revealedHint": "Your destination has been revealed!"
+  },
   "reviewForm": {
     "pageTitle": "How was your trip?",
     "pageSubtitle": "Your feedback helps us improve and helps other travelers make better choices.",
@@ -4545,15 +4621,19 @@
     "incompleteError": "Fill in all fields to save",
     "saveErrorGeneric": "We couldn't save these details. Please try again.",
     "sendInviteErrorGeneric": "We couldn't send the invite. Please try again.",
-    "landingBrand": "Randomtrip",
-    "landingGreeting": "{buyerFirstName} invited you to join their randomtrip — the destination is a surprise until reveal. Fill in your details below, it only takes a minute.",
+    "landingEyebrow": "You're invited",
+    "landingHeading": "Join the trip",
+    "landingGreeting": "{buyerFirstName} invited you to join their randomtrip — the destination is a surprise until reveal.",
+    "landingSignupExplainer": "Create an account or log in to complete your travel details — you'll also be able to follow this trip from your dashboard.",
+    "landingSignupCta": "Sign up to continue",
+    "landingStep2Heading": "Almost there — complete your travel details",
     "landingConsentPrefix": "I consent to Randomtrip storing my identity document details to arrange bookings for this trip, per the ",
     "landingConsentLinkLabel": "privacy policy",
     "landingConsentSuffix": ".",
     "landingSubmitLabel": "Submit my details",
     "landingSubmitting": "Submitting…",
-    "landingCreateAccountPrompt": "Want to track this trip yourself?",
-    "landingCreateAccountLink": "Create a free account (optional)",
+    "landingRedirecting": "All set! Taking you to your dashboard…",
+    "landingSessionExpiredError": "Your session expired. Please log in again to continue.",
     "landingSuccessTitle": "All set, thank you!",
     "landingSuccessBody": "We received your details. You can close this window now — see you on the trip.",
     "landingErrorTitle": "We couldn't validate this invite",
@@ -4562,6 +4642,7 @@
     "landingReasonUsed": "You've already submitted your details with this link.",
     "landingReasonLocked": "The deadline to complete details for this trip has passed. Contact support if you need to make a change.",
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
-    "landingGenericError": "Something went wrong submitting your details. Please try again."
+    "landingGenericError": "Something went wrong submitting your details. Please try again.",
+    "savingAction": "Saving…"
   }
 }
