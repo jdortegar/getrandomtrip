@@ -6,7 +6,6 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { prisma } from "@/lib/prisma";
-import type { BlogPost } from "@/types/blog";
 
 export default async function TripperBlogPage(props: {
   params: Promise<{ locale: string }>;
@@ -27,56 +26,12 @@ export default async function TripperBlogPage(props: {
     redirect(`/${params.locale}/dashboard`);
   }
 
-  const rawBlogs = await prisma.blogPost.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      authorId: true,
-      blocks: true,
-      coverUrl: true,
-      createdAt: true,
-      excuseKey: true,
-      format: true,
-      id: true,
-      isActive: true,
-      publishedAt: true,
-      slug: true,
-      status: true,
-      subtitle: true,
-      tags: true,
-      title: true,
-      travelType: true,
-      updatedAt: true,
-    },
-    // Review copies (isReviewCopy: true) share authorId with the original
-    // and must never appear in the tripper's own list.
-    where: { authorId: user.id, isReviewCopy: false },
-  });
-
-  const posts: BlogPost[] = rawBlogs.map((blog) => ({
-    ...blog,
-    blocks: blog.blocks as BlogPost["blocks"],
-    coverUrl: blog.coverUrl ?? undefined,
-    createdAt: blog.createdAt.toISOString(),
-    excuseKey: blog.excuseKey,
-    format: blog.format.toLowerCase() as BlogPost["format"],
-    publishedAt: blog.publishedAt?.toISOString(),
-    slug: blog.slug ?? undefined,
-    status: blog.status.toLowerCase() as BlogPost["status"],
-    subtitle: blog.subtitle ?? undefined,
-    travelType: blog.travelType,
-    updatedAt: blog.updatedAt.toISOString(),
-  }));
-
   const locale = params.locale;
   const dict = await getDictionary(locale);
 
   return (
     <Section>
-      <BlogPageClient
-        dict={dict.tripperBlogs}
-        locale={locale}
-        posts={posts}
-      />
+      <BlogPageClient dict={dict.tripperBlogs} locale={locale} />
     </Section>
   );
 }

@@ -14,6 +14,9 @@ import type { ExperienceFormDraft } from "@/types/tripper";
 
 export const dynamic = "force-dynamic";
 
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -34,9 +37,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const experiences = await getTripperExperiences(user.id);
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
 
-    return NextResponse.json({ experiences });
+    const { experiences, total } = await getTripperExperiences(
+      user.id,
+      { page, limit },
+      {
+        status: searchParams.get("status") ?? undefined,
+        level: searchParams.get("level") ?? undefined,
+        type: searchParams.get("type") ?? undefined,
+        search: searchParams.get("search") ?? undefined,
+      },
+    );
+
+    return NextResponse.json({ experiences, total, page, limit });
   } catch (error) {
     console.error("Error fetching tripper experiences:", error);
     return NextResponse.json(

@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
+import {
+  countTripsByStatus,
+  TRIP_STATUS_FLOW,
+  type TripRequestStatus,
+} from "@/lib/admin/trip-status";
 import type {
   AdminTripExperience,
   AdminTripPayment,
@@ -11,6 +16,10 @@ import type {
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+const ALL_STATUSES = [...TRIP_STATUS_FLOW, "CANCELLED"];
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,9 +41,34 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const tripRequests = await prisma.tripRequest.findMany({
-      orderBy: [{ startDate: "asc" }, { createdAt: "desc" }],
-    });
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
+    const statusParam = searchParams.get("status");
+    const status: TripRequestStatus | undefined =
+      statusParam && (ALL_STATUSES as string[]).includes(statusParam)
+        ? (statusParam as TripRequestStatus)
+        : undefined;
+    const where = status ? { status } : undefined;
+
+    const [tripRequests, total, allStatuses] = await Promise.all([
+      prisma.tripRequest.findMany({
+        where,
+        orderBy: [{ startDate: "asc" }, { createdAt: "desc" }],
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.tripRequest.count({ where }),
+      // Dataset-wide status counts for the KPI strip — independent of the
+      // active page/filter, matching the pre-pagination behavior where the
+      // KPI strip always summarized every trip request, not just the
+      // current filter's results.
+      prisma.tripRequest.findMany({ select: { status: true } }),
+    ]);
+    const statusCounts = countTripsByStatus(allStatuses);
 
     const experienceIds = Array.from(
       new Set(
@@ -118,7 +152,13 @@ export async function GET(request: NextRequest) {
       paymentsByTripRequestId,
     );
 
-    return NextResponse.json({ tripRequests: hydratedTripRequests });
+    return NextResponse.json({
+      tripRequests: hydratedTripRequests,
+      total,
+      page,
+      limit,
+      statusCounts,
+    });
   } catch (error) {
     console.error("Error fetching admin trip requests:", error);
     return NextResponse.json(

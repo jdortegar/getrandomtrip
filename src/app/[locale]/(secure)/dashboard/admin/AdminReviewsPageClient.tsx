@@ -3,18 +3,24 @@
 import { useEffect, useState } from "react";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { AdminReview } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
+const PAGE_SIZE = 20;
+
 export function AdminReviewsPageClient() {
   const copy = useDictionary((d) => d.adminPages.reviews);
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<AdminReview[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -22,16 +28,20 @@ export function AdminReviewsPageClient() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/reviews");
+      const res = await fetch(
+        `/api/admin/reviews?page=${page}&limit=${PAGE_SIZE}`,
+      );
       const data = (await res.json()) as {
         error?: string;
         reviews?: AdminReview[];
+        total?: number;
       };
       if (!res.ok || !data.reviews) {
         setError(data.error ?? copy.errorLoad);
         return;
       }
       setReviews(data.reviews);
+      setTotal(data.total ?? 0);
     } catch {
       setError(copy.errorLoad);
     } finally {
@@ -59,7 +69,7 @@ export function AdminReviewsPageClient() {
 
   useEffect(() => {
     void fetchReviews();
-  }, []);
+  }, [page]);
 
   if (loading) return <LoadingSpinner />;
   if (error)
@@ -68,6 +78,7 @@ export function AdminReviewsPageClient() {
   const cols = copy.columns;
   const st = copy.status;
   const act = copy.actions;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-10">
@@ -82,7 +93,7 @@ export function AdminReviewsPageClient() {
 
       <div className="flex items-center justify-end">
         <span className="text-[13px] text-neutral-400">
-          {copy.count.replace("{n}", String(reviews.length))}
+          {copy.count.replace("{n}", String(total))}
         </span>
       </div>
 
@@ -254,6 +265,15 @@ export function AdminReviewsPageClient() {
           </div>
         )}
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={setPage}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

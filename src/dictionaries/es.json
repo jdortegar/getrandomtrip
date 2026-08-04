@@ -33,7 +33,12 @@
     "newDrop": "Nuevo Drop"
   },
   "common": {
-    "siteName": "Randomtrip"
+    "siteName": "Randomtrip",
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageOf": "Página {page} de {totalPages}"
+    }
   },
   "adminDashboard": {
     "nav": {

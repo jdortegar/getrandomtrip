@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
@@ -6,7 +6,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -21,30 +24,42 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const rawReviews = await prisma.review.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        content: true,
-        createdAt: true,
-        destination: true,
-        id: true,
-        isApproved: true,
-        isPublic: true,
-        rating: true,
-        title: true,
-        tripRequestId: true,
-        tripper: {
-          select: { name: true },
-        },
-        user: {
-          select: {
-            email: true,
-            id: true,
-            name: true,
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
+
+    const [rawReviews, total] = await Promise.all([
+      prisma.review.findMany({
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          content: true,
+          createdAt: true,
+          destination: true,
+          id: true,
+          isApproved: true,
+          isPublic: true,
+          rating: true,
+          title: true,
+          tripRequestId: true,
+          tripper: {
+            select: { name: true },
+          },
+          user: {
+            select: {
+              email: true,
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.review.count(),
+    ]);
 
     const reviews = rawReviews.map((r) => ({
       ...r,
@@ -52,7 +67,7 @@ export async function GET() {
       tripper: undefined,
     }));
 
-    return NextResponse.json({ reviews });
+    return NextResponse.json({ reviews, total, page, limit });
   } catch (error) {
     console.error("[admin/reviews] GET", error);
     return NextResponse.json(

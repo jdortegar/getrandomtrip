@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
 import type { AdminPayment } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
+const PAGE_SIZE = 20;
+
 export function AdminPaymentsPageClient() {
   const copy = useDictionary((d) => d.adminPages.payments);
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const paymentStatusLabels: Record<string, string> = useDictionary(
     (d) => d.dashboard.paymentStatus,
   );
@@ -17,35 +21,42 @@ export function AdminPaymentsPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [payments, setPayments] = useState<AdminPayment[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     void (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/admin/payments");
+        const res = await fetch(
+          `/api/admin/payments?page=${page}&limit=${PAGE_SIZE}`,
+        );
         const data = (await res.json()) as {
           error?: string;
           payments?: AdminPayment[];
+          total?: number;
         };
         if (!res.ok || !data.payments) {
           setError(data.error ?? copy.errorLoad);
           return;
         }
         setPayments(data.payments);
+        setTotal(data.total ?? 0);
       } catch {
         setError(copy.errorLoad);
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [page, copy.errorLoad]);
 
   if (loading) return <LoadingSpinner />;
   if (error)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-10">
@@ -60,7 +71,7 @@ export function AdminPaymentsPageClient() {
 
       <div className="flex items-center justify-end">
         <span className="text-[13px] text-neutral-400">
-          {copy.count.replace("{n}", String(payments.length))}
+          {copy.count.replace("{n}", String(total))}
         </span>
       </div>
 
@@ -137,6 +148,15 @@ export function AdminPaymentsPageClient() {
           </div>
         )}
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={setPage}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

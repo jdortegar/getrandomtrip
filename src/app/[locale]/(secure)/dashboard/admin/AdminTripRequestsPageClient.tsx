@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
 import { TripRequestsFilterBar } from "@/components/app/admin/TripRequestsFilterBar";
 import { TripRequestsKPIStrip } from "@/components/app/admin/TripRequestsKPIStrip";
 import { TripRequestsTable } from "@/components/app/admin/TripRequestsTable";
@@ -10,16 +11,10 @@ import { TripRequestModal } from "@/components/app/admin/TripRequestModal";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useTripRequests } from "@/hooks/useTripRequests";
 import { resolveInitialStatusFilter } from "@/lib/admin/trip-status";
-import type { AdminTripRequest, StatusFilterValue } from "@/lib/admin/types";
+import type { StatusFilterValue } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
-function applyFilter(
-  trips: AdminTripRequest[],
-  filter: StatusFilterValue,
-): AdminTripRequest[] {
-  if (filter === "ALL") return trips;
-  return trips.filter((t) => t.status === filter);
-}
+const PAGE_SIZE = 20;
 
 export interface AdminTripRequestsPageClientProps {
   dict: MarketingDictionary["adminTripEditModal"];
@@ -29,20 +24,28 @@ export function AdminTripRequestsPageClient({
   dict,
 }: AdminTripRequestsPageClientProps) {
   const pageCopy = useDictionary((d) => d.adminPages.tripRequests);
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const paymentStatusLabels: Record<string, string> = useDictionary(
     (d) => d.dashboard.paymentStatus,
   );
-  const { error, loading, refresh, trips } = useTripRequests();
   const searchParams = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(() =>
     resolveInitialStatusFilter(searchParams.get("status")),
   );
+  const [page, setPage] = useState(1);
+  const { error, loading, refresh, statusCounts, total, trips } =
+    useTripRequests({ page, limit: PAGE_SIZE, status: statusFilter });
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
 
-  const visibleTrips = applyFilter(trips, statusFilter);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const selectedTrip = selectedTripId
     ? trips.find((t) => t.id === selectedTripId)
     : null;
+
+  function handleFilterChange(next: StatusFilterValue) {
+    setStatusFilter(next);
+    setPage(1);
+  }
 
   if (loading) return <LoadingSpinner />;
 
@@ -61,12 +64,12 @@ export function AdminTripRequestsPageClient({
         </h2>
       </div>
 
-      <TripRequestsKPIStrip labels={dict.tripStatus} trips={trips} />
+      <TripRequestsKPIStrip counts={statusCounts} labels={dict.tripStatus} />
 
       <TripRequestsFilterBar
         activeFilter={statusFilter}
         labels={{ all: pageCopy.filters.all, ...dict.tripStatus }}
-        onFilterChange={setStatusFilter}
+        onFilterChange={handleFilterChange}
       />
 
       <TripRequestsTable
@@ -74,8 +77,17 @@ export function AdminTripRequestsPageClient({
         onEdit={setSelectedTripId}
         paymentStatusLabels={paymentStatusLabels}
         selectedId={selectedTripId}
-        trips={visibleTrips}
+        trips={trips}
         tripStatusLabels={dict.tripStatus}
+      />
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={setPage}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
       />
 
       {selectedTrip ? (

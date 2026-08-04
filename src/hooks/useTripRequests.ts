@@ -1,27 +1,60 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { AdminTripRequest } from "@/lib/admin/types";
+import type { AdminTripRequest, StatusFilterValue } from "@/lib/admin/types";
+import type { TripRequestStatus } from "@/lib/admin/trip-status";
+
+interface UseTripRequestsParams {
+  page: number;
+  limit: number;
+  status: StatusFilterValue;
+}
 
 interface UseTripRequestsResult {
   error: string | null;
   loading: boolean;
   refresh: () => void;
+  statusCounts: Record<TripRequestStatus, number>;
+  total: number;
   trips: AdminTripRequest[];
 }
 
-export function useTripRequests(): UseTripRequestsResult {
+const EMPTY_COUNTS = {
+  DRAFT: 0,
+  SAVED: 0,
+  PENDING_PAYMENT: 0,
+  CONFIRMED: 0,
+  REVEALED: 0,
+  COMPLETED: 0,
+  CANCELLED: 0,
+} satisfies Record<TripRequestStatus, number>;
+
+export function useTripRequests({
+  page,
+  limit,
+  status,
+}: UseTripRequestsParams): UseTripRequestsResult {
   const [trips, setTrips] = useState<AdminTripRequest[]>([]);
+  const [total, setTotal] = useState(0);
+  const [statusCounts, setStatusCounts] =
+    useState<Record<TripRequestStatus, number>>(EMPTY_COUNTS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const res = await fetch("/api/admin/trip-requests");
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    if (status !== "ALL") params.set("status", status);
+    const res = await fetch(`/api/admin/trip-requests?${params.toString()}`);
     const data = (await res.json()) as {
       error?: string;
       tripRequests?: AdminTripRequest[];
+      total?: number;
+      statusCounts?: Record<TripRequestStatus, number>;
     };
     if (!res.ok) {
       setError(data.error ?? "Failed to load trip requests.");
@@ -29,12 +62,14 @@ export function useTripRequests(): UseTripRequestsResult {
       return;
     }
     setTrips(data.tripRequests ?? []);
+    setTotal(data.total ?? 0);
+    setStatusCounts(data.statusCounts ?? EMPTY_COUNTS);
     setLoading(false);
-  }, []);
+  }, [page, limit, status]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  return { error, loading, refresh: load, trips };
+  return { error, loading, refresh: load, statusCounts, total, trips };
 }

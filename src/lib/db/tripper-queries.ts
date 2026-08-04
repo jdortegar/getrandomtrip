@@ -751,22 +751,19 @@ export async function getTripperEarnings(
 /**
  * Get tripper reviews and ratings
  */
-export async function getTripperReviews(tripperId: string) {
+/**
+ * Dataset-wide review aggregate — deliberately independent of any page/limit
+ * so it can't drift when the review list is paginated. Uses a `rating`-only
+ * select instead of the full findMany used by getTripperReviews below.
+ */
+export async function getTripperReviewStats(tripperId: string) {
   try {
-    const reviews = await prisma.review.findMany({
-      where: {
-        tripperId,
-        isApproved: true,
-      },
-      include: {
-        user: {
-          select: { id: true, name: true, avatarUrl: true },
-        },
-      },
-      orderBy: { createdAt: "desc" },
+    const rows = await prisma.review.findMany({
+      where: { tripperId, isApproved: true },
+      select: { rating: true },
     });
 
-    const ratings = reviews.map((r) => r.rating);
+    const ratings = rows.map((r) => r.rating);
     const totalReviews = ratings.length;
 
     const promoters = ratings.filter((r) => r >= 4).length;
@@ -780,6 +777,42 @@ export async function getTripperReviews(tripperId: string) {
       totalReviews > 0
         ? ratings.reduce((sum, r) => sum + r, 0) / totalReviews
         : 0;
+
+    return {
+      averageRating,
+      totalReviews,
+      nps: Math.round(nps * 10) / 10,
+      promoters,
+      detractors,
+    };
+  } catch (error) {
+    console.error("Error fetching tripper review stats:", error);
+    return { averageRating: 0, totalReviews: 0, nps: 0, promoters: 0, detractors: 0 };
+  }
+}
+
+export async function getTripperReviews(
+  tripperId: string,
+  pagination: { page: number; limit: number },
+) {
+  try {
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where: {
+          tripperId,
+          isApproved: true,
+        },
+        include: {
+          user: {
+            select: { id: true, name: true, avatarUrl: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        skip: (pagination.page - 1) * pagination.limit,
+        take: pagination.limit,
+      }),
+      prisma.review.count({ where: { tripperId, isApproved: true } }),
+    ]);
 
     const mapped = reviews.map((review) => ({
       id: review.id,
@@ -796,72 +829,74 @@ export async function getTripperReviews(tripperId: string) {
       isPublic: review.isPublic,
     }));
 
-    return {
-      reviews: mapped,
-      averageRating,
-      totalReviews,
-      nps: Math.round(nps * 10) / 10,
-      promoters,
-      detractors,
-    };
+    return { reviews: mapped, total };
   } catch (error) {
     console.error("Error fetching tripper reviews:", error);
-    return {
-      reviews: [],
-      averageRating: 0,
-      totalReviews: 0,
-      nps: 0,
-      promoters: 0,
-      detractors: 0,
-    };
+    return { reviews: [], total: 0 };
   }
 }
 
 /**
  * Get all packages for tripper (for routes page)
  */
-export async function getTripperExperiences(tripperId: string) {
+export async function getTripperExperiences(
+  tripperId: string,
+  pagination: { page: number; limit: number },
+  filters: { status?: string; level?: string; type?: string; search?: string } = {},
+) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const packages = await (prisma.experience.findMany as any)({
-      where: { ownerId: tripperId, isReviewCopy: false },
-      select: {
-        id: true,
-        title: true,
-        type: true,
-        level: true,
-        status: true,
-        isActive: true,
-        pricingByType: true,
-        destinationCountry: true,
-        destinationCity: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: { updatedAt: "desc" },
-    }) as Array<{
-      id: string; title: string; type: string[]; level: string | null;
-      status: string; isActive: boolean; pricingByType: unknown;
-      destinationCountry: string; destinationCity: string;
-      createdAt: Date; updatedAt: Date;
-    }>;
+    const where: Record<string, any> = {
+      ownerId: tripperId,
+      isReviewCopy: false,
+    };
+    if (filters.status) where.status = filters.status;
+    if (filters.level) where.level = filters.level;
+    if (filters.type) where.type = { has: filters.type };
+    if (filters.search) {
+      where.title = { contains: filters.search, mode: "insensitive" };
+    }
 
-    return packages.map((pkg) => ({
-      id: pkg.id,
-      title: pkg.title,
-      slug: pkg.id, // Using ID as slug for now
-      type: pkg.type,
-      level: pkg.level,
-      status: pkg.status.toLowerCase() as any,
-      isActive: pkg.isActive,
-      pricingByType: pkg.pricingByType as Record<string, number> | null,
-      destination: `${pkg.destinationCity}, ${pkg.destinationCountry}`,
+    const [packages, total] = await Promise.all([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (prisma.experience.findMany as any)({
+        where,
+        select: {
+          id: true,
+          title: true,
+          type: true,
+          level: true,
+          status: true,
+          isActive: true,
+          pricingByType: true,
+          reviewNote: true,
+          destinationCountry: true,
+          destinationCity: true,
+          minNights: true,
+          maxNights: true,
+          minPax: true,
+          maxPax: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: "desc" },
+        skip: (pagination.page - 1) * pagination.limit,
+        take: pagination.limit,
+      }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (prisma.experience.count as any)({ where }),
+    ]);
+
+    const experiences = packages.map((pkg: (typeof packages)[number]) => ({
+      ...pkg,
       createdAt: pkg.createdAt.toISOString(),
       updatedAt: pkg.updatedAt.toISOString(),
     }));
+
+    return { experiences, total };
   } catch (error) {
     console.error("Error fetching tripper packages:", error);
-    return [];
+    return { experiences: [], total: 0 };
   }
 }
 

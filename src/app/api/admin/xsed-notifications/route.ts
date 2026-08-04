@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
@@ -7,7 +7,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -22,17 +25,29 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const entries = await prisma.xsedNotificationSignup.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        createdAt: true,
-        email: true,
-        id: true,
-        locale: true,
-      },
-    });
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
 
-    return NextResponse.json({ entries });
+    const [entries, total] = await Promise.all([
+      prisma.xsedNotificationSignup.findMany({
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          createdAt: true,
+          email: true,
+          id: true,
+          locale: true,
+        },
+      }),
+      prisma.xsedNotificationSignup.count(),
+    ]);
+
+    return NextResponse.json({ entries, total, page, limit });
   } catch (error) {
     console.error("[admin/xsed-notifications] GET", error);
     return NextResponse.json(

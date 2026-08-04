@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Calendar, Clock, Eye, MapPin, Plane, Plus, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Pagination } from "@/components/ui/Pagination";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
@@ -12,7 +12,7 @@ import type { Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 
-type StatusFilter = "all" | "upcoming" | "completed";
+export type StatusFilter = "all" | "upcoming" | "completed";
 
 interface StatusBadgeProps {
   label: string;
@@ -46,33 +46,41 @@ function StatusBadge({ label, status }: StatusBadgeProps) {
 
 interface TravelerTripsTableProps {
   copy: DashboardCopy;
+  filter: StatusFilter;
   locale: string;
+  onFilterChange: (filter: StatusFilter) => void;
+  onPageChange: (page: number) => void;
+  page: number;
   pageCopy: TravelerDashboardDict["trips"];
+  paginationCopy: { next: string; pageOf: string; previous: string };
+  total: number;
+  totalPages: number;
   trips: Trip[];
 }
 
 export function TravelerTripsTable({
   copy,
+  filter,
   locale,
+  onFilterChange,
+  onPageChange,
+  page,
   pageCopy,
+  paginationCopy,
+  total,
+  totalPages,
   trips,
 }: TravelerTripsTableProps) {
-  const [filter, setFilter] = useState<StatusFilter>("all");
-
-  const filtered = trips.filter((t) => {
-    if (filter === "upcoming")
-      return t.status === "CONFIRMED" || t.status === "REVEALED";
-    if (filter === "completed") return t.status === "COMPLETED";
-    return true;
-  });
-
   const filterOptions: Array<{ id: StatusFilter; label: string }> = [
     { id: "all", label: pageCopy.filterAll },
     { id: "upcoming", label: pageCopy.filterUpcoming },
     { id: "completed", label: pageCopy.filterCompleted },
   ];
 
-  if (trips.length === 0) {
+  // Only the unfiltered "all" view can tell us the user has zero trips ever
+  // — under "upcoming"/"completed", a total of 0 just means that filter has
+  // no matches, not that the account has no trips at all.
+  if (filter === "all" && total === 0) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-xl border border-gray-200 bg-white py-16 text-center shadow-sm">
         <Plane className="h-14 w-14 text-neutral-300" />
@@ -107,7 +115,7 @@ export function TravelerTripsTable({
                   : "border-gray-200 bg-white text-neutral-600 shadow-sm hover:border-gray-300"
               }`}
               key={opt.id}
-              onClick={() => setFilter(opt.id)}
+              onClick={() => onFilterChange(opt.id)}
               type="button"
             >
               {opt.label}
@@ -115,7 +123,7 @@ export function TravelerTripsTable({
           ))}
         </div>
         <span className="text-[13px] text-neutral-400">
-          {filtered.length} {pageCopy.of} {trips.length} {pageCopy.tripsCount}
+          {trips.length} {pageCopy.of} {total} {pageCopy.tripsCount}
         </span>
       </div>
 
@@ -146,7 +154,7 @@ export function TravelerTripsTable({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.length === 0 ? (
+              {trips.length === 0 ? (
                 <tr>
                   <td
                     className="px-5 py-10 text-center text-sm text-neutral-500"
@@ -156,7 +164,7 @@ export function TravelerTripsTable({
                   </td>
                 </tr>
               ) : (
-                filtered.map((trip) => {
+                trips.map((trip) => {
                   const { levelName, travelerTypeTitle } =
                     getTripExperienceDisplay(trip, locale);
                   const startDate = new Date(trip.startDate).toLocaleDateString(
@@ -262,6 +270,15 @@ export function TravelerTripsTable({
           </table>
         </div>
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={onPageChange}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
     </div>
   );
 }
