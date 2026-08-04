@@ -2454,6 +2454,7 @@ export interface MarketingDictionary {
   footer: {
     ariaFacebook: string;
     ariaInstagram: string;
+    ariaLinkedin: string;
     ariaTwitter: string;
     contact: string;
     contactTitle: string;
@@ -2674,6 +2675,9 @@ export interface MarketingDictionary {
     accessDeniedTitle: string;
     adminLoginAction: string;
     adminLoginLabel: string;
+    ariaFacebook: string;
+    ariaInstagram: string;
+    ariaLinkedin: string;
     emailLabel: string;
     emailPlaceholder: string;
     errorMessage: string;
