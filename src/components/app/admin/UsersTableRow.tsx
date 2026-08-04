@@ -20,11 +20,14 @@ export interface AdminUser {
 interface UsersTableRowProps {
   copy: MarketingDictionary["adminUsers"];
   invitingId: string | null;
+  isCheckedForBulk: boolean;
   isSelected: boolean;
   locale: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   onInvite: (id: string) => void;
+  onToggleBulkSelect: (id: string) => void;
+  rowLockedForBulk: boolean;
   user: AdminUser;
 }
 
@@ -36,11 +39,14 @@ const inviteChipClass: Record<"invited" | "expired", string> = {
 export function UsersTableRow({
   copy,
   invitingId,
+  isCheckedForBulk,
   isSelected,
   locale,
   onDelete,
   onEdit,
   onInvite,
+  onToggleBulkSelect,
+  rowLockedForBulk,
   user,
 }: UsersTableRowProps) {
   const displayRoles = [...user.roles].sort((a, b) => a.localeCompare(b));
@@ -55,6 +61,17 @@ export function UsersTableRow({
         isSelected && "border-l-2 border-l-gray-900 bg-blue-50",
       )}
     >
+      <td className="px-5 py-4">
+        <input
+          aria-label={copy.selectRow}
+          checked={isCheckedForBulk}
+          className="h-4 w-4 rounded border-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={rowLockedForBulk}
+          onChange={() => onToggleBulkSelect(user.id)}
+          title={rowLockedForBulk ? copy.lockedForSelectionSelf : undefined}
+          type="checkbox"
+        />
+      </td>
       <td className="px-5 py-4">
         <p className="text-sm font-semibold text-neutral-900">{user.name}</p>
         <p className="mt-0.5 text-xs text-neutral-500">{user.email}</p>

@@ -538,6 +538,7 @@ export interface TripperExperiencesDict {
     clearFilters: string;
     of: string;
     count: string;
+    searchPlaceholder: string;
   };
   table: {
     actions: string;
@@ -555,6 +556,16 @@ export interface TripperExperiencesDict {
     deleteTitle: string;
     /** Interpolated with {{title}} — the experience's name, rendered bold. */
     deleteConfirmMessage: string;
+    selectAll: string;
+    selectRow: string;
+  };
+  bulkActions: {
+    deleteSelected: string;
+    confirmTitle: string;
+    confirmBody: string;
+    cancel: string;
+    confirm: string;
+    partialFailure: string;
   };
   emptyState: {
     noExperiences: string;
@@ -1308,6 +1319,18 @@ export interface AdminPagesDict {
     tabs: {
       all: string;
       pending: string;
+    };
+    searchPlaceholder: string;
+    selectAll: string;
+    selectRow: string;
+    lockedForSelection: string;
+    bulkActions: {
+      archiveSelected: string;
+      confirmTitle: string;
+      confirmBody: string;
+      cancel: string;
+      confirm: string;
+      partialFailure: string;
     };
     review: {
       title: string;
@@ -2821,6 +2844,20 @@ export interface MarketingDictionary {
       resend: string;
     };
     inviteStatus: { invited: string; expired: string };
+    searchPlaceholder: string;
+    selectAll: string;
+    selectRow: string;
+    lockedForSelectionSelf: string;
+    bulkActions: {
+      deleteSelected: string;
+      confirmTitle: string;
+      confirmBody: string;
+      typeToConfirmLabel: string;
+      typeToConfirmPlaceholder: string;
+      cancel: string;
+      confirm: string;
+      partialFailure: string;
+    };
   };
   adminTripEditModal: {
     cancel: string;
