@@ -54,6 +54,15 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
     onChange("excuseKey", []);
   };
 
+  const handleLevelChange = (value: string) => {
+    onChange("level", value);
+    const fixedNights = MAX_NIGHTS_BY_LEVEL[value];
+    if (fixedNights != null) {
+      onChange("minNights", fixedNights);
+      onChange("maxNights", fixedNights);
+    }
+  };
+
   const monthOptions = MONTH_KEYS.map((value, i) => ({
     value,
     label: new Intl.DateTimeFormat(locale, { month: "long" }).format(
@@ -62,10 +71,6 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
   }));
 
   const maxNightsAllowed = MAX_NIGHTS_BY_LEVEL[form.level];
-  const maxNightsHint =
-    maxNightsAllowed != null
-      ? copy.fields.maxNightsHint.replace("{n}", String(maxNightsAllowed))
-      : null;
 
   return (
     <div className="space-y-5">
@@ -103,7 +108,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
           label={<>{copy.fields.level}{req}</>}
           className={ch("level")}
           value={form.level}
-          onChange={(e) => onChange("level", e.target.value)}
+          onChange={(e) => handleLevelChange(e.target.value)}
         >
           {EXPERIENCE_LEVELS.map((level) => (
             <option key={level.value} value={level.value}>
@@ -117,16 +122,15 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
       <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr] gap-4">
         <div className="flex flex-col gap-1">
           <DaysInput
+            key={form.level}
             id="exp-min-nights"
             hintTemplate={copy.fields.minNightsHint}
             label={copy.fields.minNights}
             value={form.minNights + 1}
             onChange={(days) => onChange("minNights", days - 1)}
             inputClassName={ch("minNights")}
+            disabled={maxNightsAllowed != null}
           />
-          {maxNightsHint && (
-            <p className="text-xs text-neutral-400">{maxNightsHint}</p>
-          )}
         </div>
 
         <MultiSelectInput
