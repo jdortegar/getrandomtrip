@@ -19,11 +19,11 @@ Existing tripper page content and routes SHALL remain unchanged. Visual parity w
 What works end-to-end today:
 
 - **Main dashboard** — Stats grid, recent bookings list, quick actions, notifications panel (audience=TRIPPER). All data from `/api/tripper/dashboard`.
-- **Experience CRUD** — Create, edit, and submit flows work. All wizard steps (about, activities, itinerary, pricing) are wired. Image uploads work. Draft persistence works. Experiences list has search-by-title and bulk delete (checkbox column, select-all scoped to visible/filtered rows, loops `DELETE /api/tripper/experiences/[id]`).
+- **Experience CRUD** — Create, edit, and submit flows work. All wizard steps (about, activities, itinerary, pricing) are wired. Image uploads work. Draft persistence works. Experiences list has search-by-title, bulk delete (checkbox column, select-all scoped to the current page, loops `DELETE /api/tripper/experiences/[id]`), and server-side pagination (`page`/`limit` on `GET /api/tripper/experiences`, `getTripperExperiences` does Prisma `skip`/`take`).
 - **Experience approval cycle** — Full admin-edit + tripper-review loop implemented and unit-tested: submit → admin reviews → admin edits copy → sends copy to tripper → tripper approves/rejects copy. Soft-lock, copy-merge, changed-fields diff, and tripper notifications all work.
-- **Blog CRUD** — Create, edit, preview (for existing posts), and publish/unpublish work. `POST /api/tripper/blogs`, `PATCH`, `DELETE` are wired. TinyMCE editor integrated. Blog list has search-by-title and bulk delete (checkbox column, select-all scoped to visible/filtered rows, posts locked for review — `PENDING_REVIEW`/`PENDING_TRIPPER_REVIEW` — are excluded from selection since the single-delete endpoint rejects them with `409 locked_for_review`).
+- **Blog CRUD** — Create, edit, preview (for existing posts), and publish/unpublish work. `POST /api/tripper/blogs`, `PATCH`, `DELETE` are wired. TinyMCE editor integrated. Blog list has search-by-title, bulk delete (checkbox column, select-all scoped to the current page, posts locked for review — `PENDING_REVIEW`/`PENDING_TRIPPER_REVIEW` — are excluded from selection since the single-delete endpoint rejects them with `409 locked_for_review`), and server-side pagination.
 - **Earnings** — Summary cards and earnings table render. Data from `/api/tripper/earnings`. Payout status column is always "pending" (stub — see Gaps).
-- **Reviews** — List renders from `/api/tripper/reviews`. Display only, no admin action available from tripper side.
+- **Reviews** — List renders from `/api/tripper/reviews` with server-side pagination; the NPS/rating stats strip comes from a separate dataset-wide `getTripperReviewStats` query so it stays correct across pages. Page converted from RSC-with-props to client-fetch to support pagination. Display only, no admin action available from tripper side.
 - **Notifications** — List at `/dashboard/tripper/notifications`. `NotificationsPanel` in sidebar marked as audience=TRIPPER. Mark-as-read works.
 
 ---
@@ -58,7 +58,6 @@ What works end-to-end today:
 | MEDIUM | `getTripperReviews` includes a dead `generalReviews` DB query that is never used in the UI |
 | MEDIUM | Double `SecureRoute` guards on blog pages — the layout already guards; the page-level guard is redundant |
 | MEDIUM | Earnings page has no export or download for payment history |
-| LOW | No pagination on experiences list — all experiences load at once |
 | LOW | Blog slug is auto-generated from title at create time and never editable |
 
 ---
@@ -95,4 +94,3 @@ What works end-to-end today:
 4. **Remove dead `generalReviews` query** from `getTripperReviews`.
 5. **Remove redundant `SecureRoute` guards** from blog pages — layout already guards.
 6. **Design payout tracking** — decide model: manual payout records created by admin, or webhook-driven from payment processor. Implement once the model is clear.
-7. **Add pagination to experiences list** with server-side cursor or page offset.

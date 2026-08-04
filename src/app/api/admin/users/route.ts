@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
@@ -7,7 +7,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -24,18 +27,35 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const rows = await prisma.user.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        avatarUrl: true,
-        createdAt: true,
-        email: true,
-        id: true,
-        name: true,
-        roles: true,
-        tripperSlug: true,
-      },
-    });
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
+    const searchParam = searchParams.get("search");
+    const where = searchParam
+      ? { name: { contains: searchParam, mode: "insensitive" as const } }
+      : undefined;
+
+    const [rows, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          avatarUrl: true,
+          createdAt: true,
+          email: true,
+          id: true,
+          name: true,
+          roles: true,
+          tripperSlug: true,
+        },
+      }),
+      prisma.user.count({ where }),
+    ]);
 
     const inviteStatuses = await getTripperInviteStatuses(
       rows.map((u) => u.email),
@@ -45,7 +65,7 @@ export async function GET() {
       inviteStatus: inviteStatuses.get(u.email) ?? null,
     }));
 
-    return NextResponse.json({ users });
+    return NextResponse.json({ users, total, page, limit });
   } catch (error) {
     console.error("[admin/users] GET", error);
     return NextResponse.json(

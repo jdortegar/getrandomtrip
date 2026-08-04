@@ -1761,6 +1761,12 @@ export interface MarketingDictionary {
   };
   common: {
     siteName: string;
+    pagination: {
+      previous: string;
+      next: string;
+      /** Interpolated with {page} and {totalPages}. */
+      pageOf: string;
+    };
   };
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;

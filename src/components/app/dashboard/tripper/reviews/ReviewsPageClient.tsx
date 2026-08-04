@@ -1,10 +1,15 @@
 "use client";
 
 import { MessageSquare, Star, ThumbsUp, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
+import { useDictionary } from "@/hooks/useDictionary";
 import type { TripperReviewsDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
+
+const PAGE_SIZE = 20;
 
 export interface TripperReview {
   content: string;
@@ -19,15 +24,25 @@ export interface TripperReview {
   userName: string;
 }
 
-interface ReviewsPageClientProps {
+interface ReviewsStats {
   averageRating: number;
   detractors: number;
-  dict: TripperReviewsDict;
-  locale: string;
   nps: number;
   promoters: number;
-  reviews: TripperReview[];
   totalReviews: number;
+}
+
+const EMPTY_STATS: ReviewsStats = {
+  averageRating: 0,
+  detractors: 0,
+  nps: 0,
+  promoters: 0,
+  totalReviews: 0,
+};
+
+interface ReviewsPageClientProps {
+  dict: TripperReviewsDict;
+  locale: string;
 }
 
 interface KpiCard {
@@ -46,19 +61,52 @@ function npsColor(nps: number): string {
   return "text-red-600";
 }
 
-export function ReviewsPageClient({
-  averageRating,
-  detractors,
-  dict: copy,
-  locale,
-  nps,
-  promoters,
-  reviews: initialReviews,
-  totalReviews,
-}: ReviewsPageClientProps) {
-  const [reviews, setReviews] = useState<TripperReview[]>(initialReviews);
+export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps) {
+  const paginationCopy = useDictionary((d) => d.common.pagination);
+  const [reviews, setReviews] = useState<TripperReview[]>([]);
+  const [stats, setStats] = useState<ReviewsStats>(EMPTY_STATS);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
+  const { averageRating, detractors, nps, promoters, totalReviews } = stats;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchReviews() {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/tripper/reviews?page=${page}&limit=${PAGE_SIZE}`,
+        );
+        const data = (await res.json()) as {
+          reviews?: TripperReview[];
+          total?: number;
+        } & Partial<ReviewsStats>;
+        if (cancelled) return;
+        setReviews(data.reviews ?? []);
+        setTotal(data.total ?? 0);
+        setStats({
+          averageRating: data.averageRating ?? 0,
+          detractors: data.detractors ?? 0,
+          nps: data.nps ?? 0,
+          promoters: data.promoters ?? 0,
+          totalReviews: data.totalReviews ?? 0,
+        });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void fetchReviews();
+    return () => {
+      cancelled = true;
+    };
+  }, [page]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   async function togglePublish(review: TripperReview) {
     setTogglingId(review.id);
@@ -91,6 +139,8 @@ export function ReviewsPageClient({
       setTogglingId(null);
     }
   }
+
+  if (loading) return <LoadingSpinner />;
 
   const kpis: KpiCard[] = [
     {
@@ -281,6 +331,15 @@ export function ReviewsPageClient({
           </ul>
         )}
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={setPage}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

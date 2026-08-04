@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
@@ -7,7 +7,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -22,16 +25,28 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const rows = await prisma.waitlistEntry.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        createdAt: true,
-        email: true,
-        id: true,
-        lastName: true,
-        name: true,
-      },
-    });
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
+
+    const [rows, total] = await Promise.all([
+      prisma.waitlistEntry.findMany({
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          createdAt: true,
+          email: true,
+          id: true,
+          lastName: true,
+          name: true,
+        },
+      }),
+      prisma.waitlistEntry.count(),
+    ]);
 
     const inviteStatuses = await getTripperInviteStatuses(
       rows.map((r) => r.email),
@@ -41,7 +56,7 @@ export async function GET() {
       inviteStatus: inviteStatuses.get(r.email) ?? null,
     }));
 
-    return NextResponse.json({ entries });
+    return NextResponse.json({ entries, total, page, limit });
   } catch (error) {
     console.error("[admin/waitlist] GET", error);
     return NextResponse.json(

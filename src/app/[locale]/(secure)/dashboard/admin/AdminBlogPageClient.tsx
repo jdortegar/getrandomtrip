@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
+import { Pagination } from "@/components/ui/Pagination";
+import { Select } from "@/components/ui/Select";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import type { AdminBlog } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
@@ -13,14 +15,20 @@ import { cn } from "@/lib/utils";
 type Tab = "all" | "pending";
 
 const PENDING_STATUSES = new Set(["PENDING_REVIEW", "PENDING_TRIPPER_REVIEW"]);
+const PAGE_SIZE = 20;
+const SELECT_CLASS = "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 
 export function AdminBlogPageClient() {
   const copy = useDictionary((d) => d.adminPages.blog);
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const router = useRouter();
 
   const [blogs, setBlogs] = useState<AdminBlog[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("pending");
@@ -29,16 +37,27 @@ export function AdminBlogPageClient() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/blogs");
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      });
+      if (tab === "pending") {
+        params.set("status", Array.from(PENDING_STATUSES).join(","));
+      }
+      const res = await fetch(`/api/admin/blogs?${params.toString()}`);
       const data = (await res.json()) as {
         error?: string;
         blogs?: AdminBlog[];
+        total?: number;
+        pendingCount?: number;
       };
       if (!res.ok || !data.blogs) {
         setError(data.error ?? copy.errorLoad);
         return;
       }
       setBlogs(data.blogs);
+      setTotal(data.total ?? 0);
+      setPendingCount(data.pendingCount ?? 0);
     } catch {
       setError(copy.errorLoad);
     } finally {
@@ -48,7 +67,7 @@ export function AdminBlogPageClient() {
 
   useEffect(() => {
     void fetchBlogs();
-  }, []);
+  }, [page, tab]);
 
   if (loading) return <LoadingSpinner />;
   if (error)
@@ -56,11 +75,12 @@ export function AdminBlogPageClient() {
 
   const cols = copy.columns;
   const act = copy.actions;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const pendingCount = blogs.filter((b) => PENDING_STATUSES.has(b.status)).length;
-
-  const visible =
-    tab === "pending" ? blogs.filter((b) => PENDING_STATUSES.has(b.status)) : blogs;
+  function handleTabChange(next: Tab) {
+    setTab(next);
+    setPage(1);
+  }
 
   return (
     <div className="space-y-10">
@@ -77,44 +97,27 @@ export function AdminBlogPageClient() {
       {/* Filter row */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={() => setTab("all")}
-            className={cn(
-              "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-              tab === "all"
-                ? "border-gray-900 bg-gray-900 text-white"
-                : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300",
-            )}
+          <Select
+            className={SELECT_CLASS}
+            onChange={(e) => handleTabChange(e.target.value as Tab)}
+            value={tab}
           >
-            {copy.tabs.all}
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("pending")}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-              tab === "pending"
-                ? "border-gray-900 bg-gray-900 text-white"
-                : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300",
-            )}
-          >
-            {copy.tabs.pending}
-            {pendingCount > 0 && (
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-100 px-1 text-xs font-semibold text-amber-800">
-                {pendingCount}
-              </span>
-            )}
-          </button>
+            <option value="all">{copy.tabs.all}</option>
+            <option value="pending">
+              {pendingCount > 0
+                ? `${copy.tabs.pending} (${pendingCount})`
+                : copy.tabs.pending}
+            </option>
+          </Select>
         </div>
         <span className="text-[13px] text-neutral-400">
-          {copy.count.replace("{n}", String(visible.length))}
+          {copy.count.replace("{n}", String(total))}
         </span>
       </div>
 
       {/* Table panel */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {visible.length === 0 ? (
+        {blogs.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {tab === "pending" ? copy.emptyPending : copy.empty}
           </p>
@@ -136,7 +139,7 @@ export function AdminBlogPageClient() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {visible.map((item) => {
+                {blogs.map((item) => {
                   const isPending = PENDING_STATUSES.has(item.status);
                   return (
                     <tr
@@ -201,6 +204,15 @@ export function AdminBlogPageClient() {
           </div>
         )}
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={setPage}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

@@ -22,8 +22,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getTripperExperiences } from "@/lib/db/tripper-queries";
 
 const mockSession = (userId: string) => ({
   user: { id: userId, email: "user@example.com" },
@@ -71,6 +73,67 @@ function makePostRequest(body: Record<string, unknown>): Request {
     body: JSON.stringify(body),
   });
 }
+
+describe("GET /api/tripper/experiences — pagination and filters", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (getTripperExperiences as ReturnType<typeof vi.fn>).mockResolvedValue({
+      experiences: [],
+      total: 0,
+    });
+  });
+
+  it("defaults to page 1, limit 20, no filters", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(
+      new NextRequest("http://localhost/api/tripper/experiences"),
+    );
+    const body = await res.json();
+
+    expect(body.page).toBe(1);
+    expect(body.limit).toBe(20);
+    expect(getTripperExperiences).toHaveBeenCalledWith(
+      "tripper-1",
+      { page: 1, limit: 20 },
+      { status: undefined, level: undefined, type: undefined, search: undefined },
+    );
+  });
+
+  it("forwards page/limit and search/status/level/type filters", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    (getTripperExperiences as ReturnType<typeof vi.fn>).mockResolvedValue({
+      experiences: [],
+      total: 42,
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(
+      new NextRequest(
+        "http://localhost/api/tripper/experiences?page=2&limit=10&status=ACTIVE&level=essenza&type=solo&search=patagonia",
+      ),
+    );
+    const body = await res.json();
+
+    expect(body.total).toBe(42);
+    expect(getTripperExperiences).toHaveBeenCalledWith(
+      "tripper-1",
+      { page: 2, limit: 10 },
+      { status: "ACTIVE", level: "essenza", type: "solo", search: "patagonia" },
+    );
+  });
+});
 
 describe("POST /api/tripper/experiences — role-aware source", () => {
   beforeEach(() => {

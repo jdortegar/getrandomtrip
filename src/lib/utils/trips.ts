@@ -52,6 +52,7 @@ export interface Payment {
 interface TripsApiResponse {
   error?: string;
   trips?: unknown[];
+  total?: number;
 }
 
 interface PaymentsApiResponse {
@@ -157,6 +158,36 @@ export async function getTrips(): Promise<Trip[]> {
 
   const rawTrips = data.trips ?? [];
   return rawTrips.map(mapTripFromApi);
+}
+
+export interface PaginatedTrips {
+  trips: Trip[];
+  total: number;
+}
+
+/**
+ * Paginated + status-filtered fetch for the "My Trips" table. Separate from
+ * getTrips() (used by the reviews page, dashboard home widget, and journey
+ * badge, which all need the caller's full trip list, not a page of it).
+ */
+export async function getPaginatedTrips(params: {
+  page: number;
+  limit: number;
+  /** Comma-separated statuses, e.g. "CONFIRMED,REVEALED" for "upcoming". */
+  status?: string;
+}): Promise<PaginatedTrips> {
+  const query = new URLSearchParams({
+    page: String(params.page),
+    limit: String(params.limit),
+  });
+  if (params.status) query.set("status", params.status);
+
+  const response = await fetch(`/api/trips?${query.toString()}`);
+  const data = (await response.json()) as TripsApiResponse;
+  if (data.error) throw new Error(data.error);
+
+  const rawTrips = data.trips ?? [];
+  return { trips: rawTrips.map(mapTripFromApi), total: data.total ?? 0 };
 }
 
 export async function getPayments(): Promise<Payment[]> {

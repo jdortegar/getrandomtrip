@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -16,12 +15,15 @@ import {
   X,
 } from "lucide-react";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
+import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
+import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { BLOG_TRAVEL_TYPE_OPTIONS } from "@/lib/constants/blog-filters";
 import { resolveBlogRowAction, isBlogRowLockedForDeletion } from "@/lib/blog/row-actions";
+import { useDictionary } from "@/hooks/useDictionary";
 import type { TripperBlogsDict } from "@/lib/types/dictionary";
 import type { BlogFormat, BlogPost } from "@/types/blog";
 
@@ -35,24 +37,26 @@ const BLOG_STATUSES = [
 
 const SELECT_CLASS =
   "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
+const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
 
 interface BlogPageClientProps {
   dict: TripperBlogsDict;
   locale: string;
-  posts: BlogPost[];
 }
 
-export function BlogPageClient({
-  dict: copy,
-  locale,
-  posts,
-}: BlogPageClientProps) {
-  const router = useRouter();
+export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const [isPending, startTransition] = useTransition();
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [selectedFormat, setSelectedFormat] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedTravelType, setSelectedTravelType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [unpublishTargetId, setUnpublishTargetId] = useState<string | null>(null);
@@ -76,21 +80,59 @@ export function BlogPageClient({
     selectedTravelType !== "all" ||
     searchQuery !== "";
 
+  // Debounce the search input — it now drives a server query, not an
+  // in-memory filter, so we don't want a request per keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchBlogs = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      });
+      if (selectedStatus !== "all") params.set("status", selectedStatus);
+      if (selectedFormat !== "all") params.set("format", selectedFormat);
+      if (selectedTravelType !== "all") params.set("travelType", selectedTravelType);
+      if (debouncedSearch) params.set("search", debouncedSearch);
+
+      const res = await fetch(`/api/tripper/blogs?${params.toString()}`);
+      const data = (await res.json()) as {
+        blogs?: BlogPost[];
+        total?: number;
+      };
+      setPosts(data.blogs ?? []);
+      setTotal(data.total ?? 0);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, selectedStatus, selectedFormat, selectedTravelType, debouncedSearch]);
+
+  useEffect(() => {
+    void fetchBlogs();
+  }, [fetchBlogs]);
+
   function clearFilters() {
     setSelectedFormat("all");
     setSelectedStatus("all");
     setSelectedTravelType("all");
     setSearchQuery("");
+    setDebouncedSearch("");
     setSelectedIds(new Set());
+    setPage(1);
   }
 
-  // Any filter or search change invalidates the current selection — a
-  // destructive bulk action should only ever act on rows the user can
-  // currently see, never on rows a filter/search change has hidden.
+  // Any filter, search, or page change invalidates the current selection —
+  // a destructive bulk action should only ever act on rows the user can
+  // currently see, never on rows a filter/search/page change has hidden.
   function updateFilter(setter: (value: string) => void) {
     return (value: string) => {
       setter(value);
       setSelectedIds(new Set());
+      setPage(1);
     };
   }
 
@@ -98,27 +140,18 @@ export function BlogPageClient({
   const setSelectedStatusAndClear = updateFilter(setSelectedStatus);
   const setSelectedTravelTypeAndClear = updateFilter(setSelectedTravelType);
 
-  const normalizedQuery = searchQuery.trim().toLowerCase();
+  function handlePageChange(next: number) {
+    setPage(next);
+    setSelectedIds(new Set());
+  }
 
-  const filtered = posts.filter((post) => {
-    const formatMatch =
-      selectedFormat === "all" || post.format === selectedFormat;
-    const statusMatch =
-      selectedStatus === "all" || post.status === selectedStatus;
-    const travelTypeMatch =
-      selectedTravelType === "all" ||
-      post.travelType.includes(selectedTravelType);
-    const nameMatch =
-      normalizedQuery === "" || post.title.toLowerCase().includes(normalizedQuery);
-    return formatMatch && statusMatch && travelTypeMatch && nameMatch;
-  });
-
-  const selectableFiltered = filtered.filter(
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const selectablePosts = posts.filter(
     (post) => !isBlogRowLockedForDeletion(post.status),
   );
   const allSelectableSelected =
-    selectableFiltered.length > 0 &&
-    selectableFiltered.every((post) => selectedIds.has(post.id));
+    selectablePosts.length > 0 &&
+    selectablePosts.every((post) => selectedIds.has(post.id));
   const someSelected = selectedIds.size > 0 && !allSelectableSelected;
 
   useEffect(() => {
@@ -131,7 +164,7 @@ export function BlogPageClient({
     if (allSelectableSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(selectableFiltered.map((post) => post.id)));
+      setSelectedIds(new Set(selectablePosts.map((post) => post.id)));
     }
   }
 
@@ -171,7 +204,7 @@ export function BlogPageClient({
         );
         setSelectedIds(new Set());
         setBulkDeleteConfirmOpen(false);
-        router.refresh();
+        await fetchBlogs();
       } finally {
         setIsBulkDeleting(false);
       }
@@ -187,7 +220,7 @@ export function BlogPageClient({
           method: "DELETE",
         });
         if (res.ok) {
-          router.refresh();
+          await fetchBlogs();
         }
       } finally {
         setDeletingId(null);
@@ -205,7 +238,7 @@ export function BlogPageClient({
           body: JSON.stringify({ isActive }),
         });
         if (res.ok) {
-          router.refresh();
+          await fetchBlogs();
         }
       } finally {
         setTogglingId(null);
@@ -235,6 +268,8 @@ export function BlogPageClient({
     const key = status.toUpperCase() as keyof typeof copy.status;
     return copy.status[key] ?? status;
   }
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-6 text-left">
@@ -333,8 +368,7 @@ export function BlogPageClient({
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[13px] text-neutral-400">
-            {filtered.length} {copy.filters.of} {posts.length}{" "}
-            {copy.filters.count}
+            {posts.length} {copy.filters.of} {total} {copy.filters.count}
           </span>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -343,6 +377,7 @@ export function BlogPageClient({
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setSelectedIds(new Set());
+                setPage(1);
               }}
               placeholder={copy.filters.searchPlaceholder}
               type="text"
@@ -357,14 +392,14 @@ export function BlogPageClient({
       )}
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {filtered.length === 0 ? (
+        {posts.length === 0 ? (
           <div className="py-16 text-center">
             <p className="mb-4 text-sm text-neutral-500">
-              {posts.length === 0
+              {total === 0 && !hasActiveFilters
                 ? copy.emptyState.noPosts
                 : copy.emptyState.noMatch}
             </p>
-            {posts.length === 0 && (
+            {total === 0 && !hasActiveFilters && (
               <Button asChild className="mx-auto max-w-xs" size="sm">
                 <Link href={`${basePath}/new`}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -406,7 +441,7 @@ export function BlogPageClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((post) => {
+                {posts.map((post) => {
                   const isBusy =
                     deletingId === post.id ||
                     togglingId === post.id ||
@@ -542,6 +577,15 @@ export function BlogPageClient({
           </div>
         )}
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={handlePageChange}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
 
       <ConfirmModal
         open={unpublishTargetId !== null}

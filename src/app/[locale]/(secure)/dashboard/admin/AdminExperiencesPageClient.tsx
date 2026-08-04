@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Archive,
@@ -16,6 +16,7 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
 import { ExperienceTypePills } from "@/components/common/ExperienceTypePills";
 import { Button } from "@/components/ui/Button";
+import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -26,6 +27,9 @@ import { cn } from "@/lib/utils";
 type Tab = "all" | "pending";
 
 const SELECT_CLASS = "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
+const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
+const PENDING_STATUSES = "PENDING_REVIEW,PENDING_TRIPPER_REVIEW";
 
 function isLockedForSelection(status: string): boolean {
   return status === "PENDING_REVIEW" || status === "PENDING_TRIPPER_REVIEW";
@@ -33,35 +37,33 @@ function isLockedForSelection(status: string): boolean {
 
 export function AdminExperiencesPageClient() {
   const copy = useDictionary((d) => d.adminPages.experiences);
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const router = useRouter();
 
   const [experiences, setExperiences] = useState<AdminExperience[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("pending");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [isBulkArchiving, setIsBulkArchiving] = useState(false);
   const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
   const selectAllRef = useRef<HTMLInputElement>(null);
 
-  const normalizedQuery = searchQuery.trim().toLowerCase();
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  const visible = (
-    tab === "pending"
-      ? experiences.filter(
-          (e) => e.status === "PENDING_REVIEW" || e.status === "PENDING_TRIPPER_REVIEW",
-        )
-      : experiences
-  ).filter(
-    (e) => normalizedQuery === "" || e.title.toLowerCase().includes(normalizedQuery),
-  );
-
-  const selectableVisible = visible.filter((e) => !isLockedForSelection(e.status));
+  const selectableVisible = experiences.filter((e) => !isLockedForSelection(e.status));
   const allSelectableSelected =
     selectableVisible.length > 0 &&
     selectableVisible.every((e) => selectedIds.has(e.id));
@@ -75,6 +77,12 @@ export function AdminExperiencesPageClient() {
 
   function setTabAndClear(next: Tab) {
     setTab(next);
+    setSelectedIds(new Set());
+    setPage(1);
+  }
+
+  function handlePageChange(next: number) {
+    setPage(next);
     setSelectedIds(new Set());
   }
 
@@ -133,26 +141,37 @@ export function AdminExperiencesPageClient() {
     })();
   }
 
-  async function fetchExperiences() {
+  const fetchExperiences = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/experiences");
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      });
+      if (tab === "pending") params.set("status", PENDING_STATUSES);
+      if (debouncedSearch) params.set("search", debouncedSearch);
+
+      const res = await fetch(`/api/admin/experiences?${params.toString()}`);
       const data = (await res.json()) as {
         error?: string;
         experiences?: AdminExperience[];
+        total?: number;
+        pendingCount?: number;
       };
       if (!res.ok || !data.experiences) {
         setError(data.error ?? copy.errorLoad);
         return;
       }
       setExperiences(data.experiences);
+      setTotal(data.total ?? 0);
+      setPendingCount(data.pendingCount ?? 0);
     } catch {
       setError(copy.errorLoad);
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, tab, debouncedSearch, copy.errorLoad]);
 
   async function updateExperience(
     id: string,
@@ -174,7 +193,7 @@ export function AdminExperiencesPageClient() {
 
   useEffect(() => {
     void fetchExperiences();
-  }, []);
+  }, [fetchExperiences]);
 
   if (loading) return <LoadingSpinner />;
   if (error)
@@ -183,10 +202,7 @@ export function AdminExperiencesPageClient() {
   const cols = copy.columns;
   const st = copy.status;
   const act = copy.actions;
-
-  const pendingCount = experiences.filter(
-    (e) => e.status === "PENDING_REVIEW" || e.status === "PENDING_TRIPPER_REVIEW",
-  ).length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-10">
@@ -230,7 +246,7 @@ export function AdminExperiencesPageClient() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[13px] text-neutral-400">
-            {copy.count.replace("{n}", String(visible.length))}
+            {copy.count.replace("{n}", String(total))}
           </span>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -239,6 +255,7 @@ export function AdminExperiencesPageClient() {
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setSelectedIds(new Set());
+                setPage(1);
               }}
               placeholder={copy.searchPlaceholder}
               type="text"
@@ -254,7 +271,7 @@ export function AdminExperiencesPageClient() {
 
       {/* Table panel */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {visible.length === 0 ? (
+        {experiences.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {tab === "pending" ? copy.emptyPending : copy.empty}
           </p>
@@ -291,7 +308,7 @@ export function AdminExperiencesPageClient() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {visible.map((item) => {
+                {experiences.map((item) => {
                   const isPending =
                     item.status === "PENDING_REVIEW" ||
                     item.status === "PENDING_TRIPPER_REVIEW";
@@ -434,6 +451,15 @@ export function AdminExperiencesPageClient() {
           </div>
         )}
       </div>
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={handlePageChange}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
+      />
 
       <ConfirmModal
         open={archiveConfirmOpen}

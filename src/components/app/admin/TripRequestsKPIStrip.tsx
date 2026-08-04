@@ -1,16 +1,14 @@
-import { countTripsByStatus } from "@/lib/admin/trip-status";
-import type { AdminTripRequest } from "@/lib/admin/types";
+import type { TripRequestStatus } from "@/lib/admin/trip-status";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 type TripStatusLabels = MarketingDictionary["adminTripEditModal"]["tripStatus"];
 
 interface TripRequestsKPIStripProps {
+  counts: Record<TripRequestStatus, number>;
   labels: TripStatusLabels;
-  trips: AdminTripRequest[];
 }
 
-export function TripRequestsKPIStrip({ labels, trips }: TripRequestsKPIStripProps) {
-  const counts = countTripsByStatus(trips);
+export function TripRequestsKPIStrip({ counts, labels }: TripRequestsKPIStripProps) {
   const metrics = [
     { key: "CONFIRMED", label: labels.CONFIRMED, value: counts.CONFIRMED },
     {

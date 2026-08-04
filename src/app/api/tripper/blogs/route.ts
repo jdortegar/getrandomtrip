@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
@@ -21,6 +22,9 @@ function normalizeStringArray(value: unknown): string[] {
   }
   return Array.from(seen);
 }
+
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,34 +47,65 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
+    const statusParam = searchParams.get("status");
+    const formatParam = searchParams.get("format");
+    const travelTypeParam = searchParams.get("travelType");
+    const searchParam = searchParams.get("search");
+
     // Fetch blogs from database. Review copies (isReviewCopy: true) share
     // authorId with the original and must never appear in the tripper's own
     // list — they only surface on admin review surfaces until resolved.
-    const blogs = await prisma.blogPost.findMany({
-      where: { authorId: user.id, isReviewCopy: false },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        authorId: true,
-        title: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        faq: true,
-        tags: true,
-        travelType: true,
-        excuseKey: true,
-        format: true,
-        status: true,
-        isActive: true,
-        seo: true,
-        createdAt: true,
-        updatedAt: true,
-        publishedAt: true,
-      },
-    });
+    const where: Prisma.BlogPostWhereInput = {
+      authorId: user.id,
+      isReviewCopy: false,
+    };
+    if (statusParam) {
+      where.status = statusParam.toUpperCase() as Prisma.BlogPostWhereInput["status"];
+    }
+    if (formatParam) {
+      where.format = formatParam.toUpperCase() as Prisma.BlogPostWhereInput["format"];
+    }
+    if (travelTypeParam) where.travelType = { has: travelTypeParam };
+    if (searchParam) {
+      where.title = { contains: searchParam, mode: "insensitive" };
+    }
+
+    const [blogs, total] = await Promise.all([
+      prisma.blogPost.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          authorId: true,
+          title: true,
+          subtitle: true,
+          tagline: true,
+          coverUrl: true,
+          content: true,
+          blocks: true,
+          faq: true,
+          tags: true,
+          travelType: true,
+          excuseKey: true,
+          format: true,
+          status: true,
+          isActive: true,
+          seo: true,
+          createdAt: true,
+          updatedAt: true,
+          publishedAt: true,
+        },
+      }),
+      prisma.blogPost.count({ where }),
+    ]);
 
     // Transform to match frontend type (convert enum to lowercase)
     const transformedBlogs = blogs.map((blog) => ({
@@ -82,7 +117,7 @@ export async function GET(request: NextRequest) {
       publishedAt: blog.publishedAt?.toISOString(),
     }));
 
-    return NextResponse.json({ blogs: transformedBlogs });
+    return NextResponse.json({ blogs: transformedBlogs, total, page, limit });
   } catch (error) {
     console.error("Error fetching tripper blogs:", error);
     return NextResponse.json(

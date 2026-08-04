@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Search, Trash2 } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
@@ -9,9 +9,13 @@ import { DeleteUserModal } from "@/components/app/admin/DeleteUserModal";
 import { UserRoleModal } from "@/components/app/admin/UserRoleModal";
 import { UsersTable } from "@/components/app/admin/UsersTable";
 import { Button } from "@/components/ui/Button";
+import { Pagination } from "@/components/ui/Pagination";
 import type { AdminUser } from "@/components/app/admin/UsersTableRow";
-import { useLocale } from "@/hooks/useDictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
+
+const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
 
 interface AdminUsersPageClientProps {
   copy: MarketingDictionary["adminUsers"];
@@ -23,32 +27,49 @@ function withCount(template: string, count: number): string {
 
 export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const locale = useLocale();
+  const paginationCopy = useDictionary((d) => d.common.pagination);
   const { data: session } = useSession();
   const currentUserId = session?.user?.id ?? null;
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [invitingId, setInvitingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [bulkSelectedIds, setBulkSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
   const selectAllRef = useRef<HTMLInputElement>(null);
 
-  async function fetchUsers() {
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/users");
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      });
+      if (debouncedSearch) params.set("search", debouncedSearch);
+
+      const res = await fetch(`/api/admin/users?${params.toString()}`);
       const data = (await res.json()) as {
         users?: AdminUser[];
         error?: string;
+        total?: number;
       };
       if (res.ok && data.users) {
         setUsers(data.users);
+        setTotal(data.total ?? 0);
       } else {
         setError(data.error ?? copy.errorFallback);
       }
@@ -57,11 +78,16 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, debouncedSearch, copy.errorFallback]);
 
   useEffect(() => {
     void fetchUsers();
-  }, []);
+  }, [fetchUsers]);
+
+  function handlePageChange(next: number) {
+    setPage(next);
+    setBulkSelectedIds(new Set());
+  }
 
   async function inviteAsTripper(id: string) {
     setInvitingId(id);
@@ -86,11 +112,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     ? users.find((u) => u.id === deleteTargetId)
     : null;
 
-  const normalizedQuery = searchQuery.trim().toLowerCase();
-  const visibleUsers = users.filter(
-    (u) => normalizedQuery === "" || u.name.toLowerCase().includes(normalizedQuery),
-  );
-  const selectableVisible = visibleUsers.filter((u) => u.id !== currentUserId);
+  const selectableVisible = users.filter((u) => u.id !== currentUserId);
   const allSelectableChecked =
     selectableVisible.length > 0 &&
     selectableVisible.every((u) => bulkSelectedIds.has(u.id));
@@ -159,6 +181,8 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
   }
 
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
   return (
     <div className="space-y-10">
       <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -176,7 +200,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         </Button>
         <div className="flex items-center gap-3">
           <span className="text-[13px] text-neutral-400">
-            {withCount(copy.usersCount, users.length)}
+            {withCount(copy.usersCount, total)}
           </span>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -185,6 +209,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setBulkSelectedIds(new Set());
+                setPage(1);
               }}
               placeholder={copy.searchPlaceholder}
               type="text"
@@ -212,7 +237,16 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         onToggleSelectAll={toggleSelectAll}
         selectAllRef={selectAllRef}
         selectedId={selectedUserId}
-        users={visibleUsers}
+        users={users}
+      />
+
+      <Pagination
+        nextLabel={paginationCopy.next}
+        onPageChange={handlePageChange}
+        page={page}
+        pageOfLabel={paginationCopy.pageOf}
+        previousLabel={paginationCopy.previous}
+        totalPages={totalPages}
       />
 
       <BulkDeleteUsersModal
@@ -241,6 +275,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
           onClose={() => setDeleteTargetId(null)}
           onDeleted={() => {
             setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+            setTotal((prev) => Math.max(0, prev - 1));
             setDeleteTargetId(null);
           }}
           open

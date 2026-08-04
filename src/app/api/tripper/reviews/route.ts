@@ -5,11 +5,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getTripperReviews } from "@/lib/db/tripper-queries";
+import { getTripperReviews, getTripperReviewStats } from "@/lib/db/tripper-queries";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 
 export const dynamic = "force-dynamic";
+
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,9 +35,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const reviews = await getTripperReviews(user.id);
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
+    );
 
-    return NextResponse.json(reviews);
+    const [{ reviews, total }, stats] = await Promise.all([
+      getTripperReviews(user.id, { page, limit }),
+      getTripperReviewStats(user.id),
+    ]);
+
+    return NextResponse.json({ reviews, total, page, limit, ...stats });
   } catch (error) {
     console.error("Error fetching tripper reviews:", error);
     return NextResponse.json(

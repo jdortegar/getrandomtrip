@@ -90,7 +90,7 @@ The "Edit profile" menu item SHALL be removed. Settings are accessed via dashboa
 What works end-to-end today:
 
 - **`/dashboard/traveler`** — Tabbed shell with 5 tabs (Home, My Trips, My Reviews, Notifications, Settings). Home shows KPI stat cards, `UnpaidTripsAlert`, `UpcomingTripsPanel` (max 3), quick actions.
-- **`/dashboard/traveler/trips`** — Full trips grid for all paid/approved trips.
+- **`/dashboard/traveler/trips`** — Full trips grid for all paid/approved trips, with an all/upcoming/completed status filter and server-side pagination (`getPaginatedTrips`, `GET /api/trips` accepts `page`/`limit`/`status`). The original unpaginated `getTrips()` is unchanged and still used by the reviews tab, home dashboard, and journey user badge.
 - **`/dashboard/traveler/reviews`** — KPI cards + list of completed trips with `customerRating`.
 - **`/dashboard/traveler/notifications`** — Notifications with `audience=TRAVELER`; click navigates to trip detail.
 - **`/dashboard/traveler/settings`** — `AccountSettingsPanel` with `role="traveler"`.

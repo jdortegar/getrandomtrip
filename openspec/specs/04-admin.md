@@ -12,14 +12,16 @@ What works end-to-end today:
 
 - **Experience review workflow** — The most sophisticated feature in the codebase. Full pipeline: list PENDING_REVIEW experiences → admin soft-locks a record → creates a review copy → edits copy fields → sends copy to tripper for approval → tripper approves (copy overwrites original) or rejects. Soft-lock enforcement, copy-merge, changed-fields diff, and tripper notification chain are all solid.
 - **Experience approval (fast path)** — Admin can also approve directly (setting pricing by type, transitioning to ACTIVE) or reject outright with a review note.
-- **Experiences list bulk actions** — Search-by-title and bulk archive (checkbox column, select-all scoped to visible/filtered rows, pending-review rows excluded from selection). `PATCH /api/admin/experiences/[id]` now also accepts `status: "ARCHIVED"` (ARCHIVED-only — not a general status-transition endpoint; PENDING_REVIEW/PENDING_TRIPPER_REVIEW/ACTIVE transitions still go through the dedicated review-workflow routes above).
+- **Experiences list bulk actions** — Search-by-title, bulk archive (checkbox column, select-all scoped to the current page, pending-review rows excluded from selection), and server-side pagination. `PATCH /api/admin/experiences/[id]` now also accepts `status: "ARCHIVED"` (ARCHIVED-only — not a general status-transition endpoint; PENDING_REVIEW/PENDING_TRIPPER_REVIEW/ACTIVE transitions still go through the dedicated review-workflow routes above). The "pending" count badge comes from a separate dataset-wide query, not the paginated result set.
 - **Packages list** — `/dashboard/admin/packages` lists packages. Read-only view.
-- **Payments** — `/dashboard/admin/payments` lists all payments. Read-only. No delete endpoint exists for payments (deliberate — financial/audit record).
-- **Reviews** — `/dashboard/admin/reviews` lists all reviews. Admin can approve/reject individual reviews via `PATCH /api/admin/reviews/[id]`.
-- **Users** — `/dashboard/admin/users` lists all users. Admin can update user details and roles via `PATCH /api/admin/users/[id]`, delete a user via `DELETE /api/admin/users/[id]` (blocks self-delete), and now search by name and bulk-delete via a checkbox column with a typed-confirmation modal (must type "DELETE" to confirm, given each deletion cascades across the user's trips, payments, reviews, and blog posts). The current admin's own row is excluded from bulk selection.
-- **Waitlist** — `/dashboard/admin/waitlist` lists entries. Admin can approve/reject via `PATCH /api/admin/waitlist/[id]`.
-- **XSED notifications** — `/dashboard/admin/xsed-notifications` lists XSED notification records. Admin can update via `PATCH /api/admin/xsed-notifications/[id]`.
+- **Payments** — `/dashboard/admin/payments` lists all payments with server-side pagination. Read-only. No delete endpoint exists for payments (deliberate — financial/audit record).
+- **Reviews** — `/dashboard/admin/reviews` lists all reviews with server-side pagination. Admin can approve/reject individual reviews via `PATCH /api/admin/reviews/[id]`.
+- **Trip requests** — `/dashboard/admin/trip-requests` lists trip requests with server-side pagination and status filter; the KPI strip counts come from a separate dataset-wide query so they stay correct regardless of which page or filter is active. Admin can patch status via `PATCH /api/admin/trip-requests/[id]`.
+- **Users** — `/dashboard/admin/users` lists all users with server-side pagination. Admin can update user details and roles via `PATCH /api/admin/users/[id]`, delete a user via `DELETE /api/admin/users/[id]` (blocks self-delete), and search by name and bulk-delete via a checkbox column with a typed-confirmation modal (must type "DELETE" to confirm, given each deletion cascades across the user's trips, payments, reviews, and blog posts). The current admin's own row is excluded from bulk selection, and selection is scoped to the current page.
+- **Waitlist** — `/dashboard/admin/waitlist` lists entries with server-side pagination. Admin can approve/reject via `PATCH /api/admin/waitlist/[id]`.
+- **XSED notifications** — `/dashboard/admin/xsed-notifications` lists XSED notification records with server-side pagination. Admin can update via `PATCH /api/admin/xsed-notifications/[id]`.
 - **XSED drop management** — Admin can create (`/dashboard/admin/xsed/new`) and edit (`/dashboard/admin/xsed/[id]/edit`) XSED drops. Full form with date, pricing, capacity, and destination fields.
+- **Blog moderation** — `/dashboard/admin/blog` lists tripper blog posts with status filter (dropdown, not tabs), search-by-title, and server-side pagination; the "pending" badge comes from a separate dataset-wide query, not the paginated result set.
 
 ---
 
@@ -103,6 +105,6 @@ What works end-to-end today:
 2. **Fix XSED layout role guard** — restrict to admin role only; a tripper must not be able to reach creation/edit forms.
 3. **Filter review copies from experiences list** — add `isReviewCopy: false` to the default query in `GET /api/admin/experiences`.
 4. **Build admin trip-requests management page** — list all trip requests with status filter; inline status update; link to trip details.
-5. **Add search/filter to payments and reviews lists** — date range, status, and text search at minimum. (Users list already has name search + bulk delete as of 2026-08-04.)
+5. **Add search/filter to payments and reviews lists** — date range, status, and text search at minimum. (Users list already has name search + bulk delete as of 2026-08-04; all admin tables have server-side pagination as of 2026-08-04.)
 6. **Add admin dashboard summary stats** — pending experience count, open trip requests, recent payment total.
 7. **Wire waitlist approval email** — send confirmation to the waitlisted user on `PATCH /api/admin/waitlist/[id]` approval.
