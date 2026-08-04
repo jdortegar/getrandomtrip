@@ -10,7 +10,7 @@ The operational back-office for trippers. Trippers use this area to manage their
 ## What's Implemented
 
 - Dashboard with stats grid and recent bookings via `/api/tripper/dashboard`
-- Experiences list (server-rendered) with create and edit multi-step form
+- Experiences list (server-rendered) with create and edit multi-step form; search-by-title and bulk delete (checkbox column, select-all scoped to visible/filtered rows)
 - Experience submit for review — sets status to PENDING_REVIEW and sends email to admin
 - Earnings: current period totals, 6-month history table, and CSV export
 - Reviews: average rating, NPS, promoter/detractor breakdown, individual review cards
@@ -22,7 +22,6 @@ The operational back-office for trippers. Trippers use this area to manage their
 
 - [ ] No way to re-submit a rejected experience — the submit endpoint requires DRAFT status; it is unclear whether the reject route resets status back to DRAFT
 - [ ] No earnings payout request or payout history
-- [ ] No experience deletion from the Tripper OS UI
 - [ ] No preview of how an experience listing card looks on the public catalog
 - [ ] Experience rejection → re-submit flow is not clearly defined in the UI or API
 
