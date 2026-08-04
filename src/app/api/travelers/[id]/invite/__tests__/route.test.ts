@@ -14,6 +14,9 @@ vi.mock("@/lib/prisma", () => ({
     tripTraveler: {
       findUnique: vi.fn(),
     },
+    tripRequest: {
+      count: vi.fn(),
+    },
   },
 }));
 
@@ -80,6 +83,7 @@ describe("POST /api/travelers/[id]/invite", () => {
 
   beforeEach(async () => {
     vi.resetAllMocks();
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
     const mod = await import("../route");
     POST = mod.POST;
   });
@@ -91,16 +95,33 @@ describe("POST /api/travelers/[id]/invite", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns 403 when the session user does not own the trip", async () => {
+  it("returns 403 when the session user has no access to the trip (not buyer or companion)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "someone-else" },
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue(makeAdultRow());
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(0);
 
     const res = await POST(makeRequest(), makeProps("trav-1"));
     expect(res.status).toBe(403);
+  });
+
+  it("allows a companion (non-buyer with trip access) to send an invite", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: "companion-1" },
+    });
+    (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce(makeAdultRow())
+      .mockResolvedValueOnce(makeAdultRow({ status: "INVITED", invitedAt: new Date() }));
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue(
+      "plaintext-token",
+    );
+
+    const res = await POST(makeRequest(), makeProps("trav-1"));
+    expect(res.status).toBe(200);
   });
 
   it("returns 403 when the roster is locked", async () => {
