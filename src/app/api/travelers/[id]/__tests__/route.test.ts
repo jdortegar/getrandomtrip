@@ -15,6 +15,9 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    tripRequest: {
+      count: vi.fn(),
+    },
   },
 }));
 
@@ -88,6 +91,7 @@ describe("PATCH /api/travelers/[id]", () => {
 
   beforeEach(async () => {
     vi.resetAllMocks();
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
     const mod = await import("../route");
     PATCH = mod.PATCH;
   });
@@ -111,16 +115,44 @@ describe("PATCH /api/travelers/[id]", () => {
     expect(res.status).toBe(404);
   });
 
-  it("returns 403 when the session user does not own the trip", async () => {
+  it("returns 403 when the session user has no access to the trip (not buyer or companion)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "someone-else" },
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue(makeAdultRow());
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(0);
 
     const res = await PATCH(makeRequest({}), makeProps("trav-1"));
     expect(res.status).toBe(403);
+  });
+
+  it("allows a companion (non-buyer with trip access) to save a row", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: "companion-1" },
+    });
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(makeAdultRow());
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+    (
+      prisma.tripTraveler.update as ReturnType<typeof vi.fn>
+    ).mockImplementation(({ data }: { data: Record<string, unknown> }) => ({
+      ...makeAdultRow(),
+      ...data,
+    }));
+
+    const res = await PATCH(
+      makeRequest({
+        fullName: "Companion Traveler",
+        email: "companion@example.com",
+        idDocument: "ID789",
+      }),
+      makeProps("trav-1"),
+    );
+
+    expect(res.status).toBe(200);
   });
 
   it("returns 403 when the roster is locked (past cutoff)", async () => {

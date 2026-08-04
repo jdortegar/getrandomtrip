@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isRosterLocked, serializeTraveler } from "@/lib/travelers/travelerRoster";
+import { canAccessTrip } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { sendTravelerInviteEmail } from "@/lib/email";
 
@@ -32,7 +33,10 @@ export async function POST(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    if (traveler.tripRequest.userId !== session.user.id) {
+    // Buyer-OR-companion, matching the read path (GET /api/trips/[id]):
+    // v1 grants companions the same permission level as the buyer once
+    // access is granted — narrowing is a documented follow-up.
+    if (!(await canAccessTrip(traveler.tripRequestId, session.user.id))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

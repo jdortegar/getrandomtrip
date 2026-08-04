@@ -11,7 +11,7 @@ A content channel where trippers publish travel articles that are visible to the
 
 - Public listing with infinite scroll, filterable by tripper, travel type, and excuse key
 - Article page: hero, body, image lightbox, FAQ section, testimonials, and related posts
-- Tripper authoring: list, create, edit, and preview in Tripper OS
+- Tripper authoring: list (with search-by-title and bulk delete), create, edit, and preview in Tripper OS
 - `GET /api/blogs` with pagination and filters; `GET /api/tripper/blogs` for the authoring view
 
 ## Gaps

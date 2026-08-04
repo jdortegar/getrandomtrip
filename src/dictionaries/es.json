@@ -465,6 +465,18 @@
         "all": "Todas",
         "pending": "Pendientes de revisión"
       },
+      "searchPlaceholder": "Buscar por título…",
+      "selectAll": "Seleccionar todas las experiencias",
+      "selectRow": "Seleccionar experiencia",
+      "lockedForSelection": "No se puede seleccionar mientras hay una revisión pendiente",
+      "bulkActions": {
+        "archiveSelected": "Archivar seleccionadas ({count})",
+        "confirmTitle": "¿Archivar {count} experiencias?",
+        "confirmBody": "Las experiencias archivadas dejan de aparecer en búsquedas y reservas. Esto se puede revertir después.",
+        "cancel": "Cancelar",
+        "confirm": "Archivar",
+        "partialFailure": "{success} de {total} experiencias archivadas — {failed} fallaron. Por favor, intenta de nuevo."
+      },
       "review": {
         "title": "Revisar experiencia",
         "infoHeading": "Información",
@@ -3541,7 +3553,8 @@
       "allTravelTypes": "Todos los tipos",
       "clearFilters": "Limpiar filtros",
       "of": "de",
-      "count": "posts"
+      "count": "posts",
+      "searchPlaceholder": "Buscar por título…"
     },
     "format": {
       "article": "Artículo",
@@ -3568,13 +3581,24 @@
       "view": "Ver",
       "reviewChanges": "Ver cambios",
       "waitingReview": "Esperando revisión",
-      "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer."
+      "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
+      "selectAll": "Seleccionar todos los posts",
+      "selectRow": "Seleccionar post",
+      "lockedForDeletion": "No se puede eliminar mientras hay una revisión pendiente"
     },
     "unpublishConfirm": {
       "title": "Despublicar este post",
       "body": "El post dejará de verse en tu perfil público. Puedes volver a publicarlo cuando quieras.",
       "cancel": "Cancelar",
       "confirm": "Despublicar"
+    },
+    "bulkActions": {
+      "deleteSelected": "Eliminar seleccionados ({count})",
+      "confirmTitle": "¿Eliminar {count} posts?",
+      "confirmBody": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "partialFailure": "{success} de {total} posts eliminados — {failed} fallaron. Por favor, intenta de nuevo."
     },
     "emptyState": {
       "noPosts": "Aún no tienes posts.",
@@ -3968,7 +3992,8 @@
       "allLevels": "Todos los niveles",
       "clearFilters": "Limpiar filtros",
       "of": "de",
-      "count": "experiencias"
+      "count": "experiencias",
+      "searchPlaceholder": "Buscar por título…"
     },
     "table": {
       "actions": "Acciones",
@@ -3984,7 +4009,17 @@
       "unpublish": "Despublicar",
       "delete": "Eliminar",
       "deleteTitle": "¿Eliminar experiencia?",
-      "deleteConfirmMessage": "Estás por eliminar {{title}}. Esta acción no se puede deshacer."
+      "deleteConfirmMessage": "Estás por eliminar {{title}}. Esta acción no se puede deshacer.",
+      "selectAll": "Seleccionar todas las experiencias",
+      "selectRow": "Seleccionar experiencia"
+    },
+    "bulkActions": {
+      "deleteSelected": "Eliminar seleccionadas ({count})",
+      "confirmTitle": "¿Eliminar {count} experiencias?",
+      "confirmBody": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "partialFailure": "{success} de {total} experiencias eliminadas — {failed} fallaron. Por favor, intenta de nuevo."
     },
     "emptyState": {
       "noExperiences": "Aún no tienes experiencias.",
@@ -4403,6 +4438,20 @@
     "inviteStatus": {
       "invited": "Invitado",
       "expired": "Expirado"
+    },
+    "searchPlaceholder": "Buscar por nombre…",
+    "selectAll": "Seleccionar todos los usuarios",
+    "selectRow": "Seleccionar usuario",
+    "lockedForSelectionSelf": "No puedes seleccionar tu propia cuenta",
+    "bulkActions": {
+      "deleteSelected": "Eliminar seleccionados ({count})",
+      "confirmTitle": "¿Eliminar {count} usuarios?",
+      "confirmBody": "Esto elimina permanentemente cada cuenta y todos sus datos — viajes, pagos, reseñas, posts del blog. Esta acción no se puede deshacer.",
+      "typeToConfirmLabel": "Escribe DELETE para confirmar",
+      "typeToConfirmPlaceholder": "DELETE",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "partialFailure": "{success} de {total} usuarios eliminados — {failed} fallaron. Por favor, intenta de nuevo."
     }
   },
   "contactPage": {

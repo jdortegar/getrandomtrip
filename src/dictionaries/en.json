@@ -465,6 +465,18 @@
         "all": "All",
         "pending": "Pending review"
       },
+      "searchPlaceholder": "Search by title…",
+      "selectAll": "Select all experiences",
+      "selectRow": "Select experience",
+      "lockedForSelection": "Cannot select while a review decision is pending",
+      "bulkActions": {
+        "archiveSelected": "Archive selected ({count})",
+        "confirmTitle": "Archive {count} experiences?",
+        "confirmBody": "Archived experiences stop showing in search and booking. This can be reversed later.",
+        "cancel": "Cancel",
+        "confirm": "Archive",
+        "partialFailure": "{success} of {total} experiences archived — {failed} failed. Please try again."
+      },
       "review": {
         "title": "Review experience",
         "infoHeading": "Details",
@@ -3541,7 +3553,8 @@
       "allTravelTypes": "All types",
       "clearFilters": "Clear filters",
       "of": "of",
-      "count": "posts"
+      "count": "posts",
+      "searchPlaceholder": "Search by title…"
     },
     "format": {
       "article": "Article",
@@ -3568,13 +3581,24 @@
       "view": "View",
       "reviewChanges": "Review changes",
       "waitingReview": "Awaiting review",
-      "deleteConfirm": "Delete this post? This action cannot be undone."
+      "deleteConfirm": "Delete this post? This action cannot be undone.",
+      "selectAll": "Select all posts",
+      "selectRow": "Select post",
+      "lockedForDeletion": "Cannot delete while a review decision is pending"
     },
     "unpublishConfirm": {
       "title": "Unpublish this post",
       "body": "The post will stop showing on your public profile. You can publish it again whenever you want.",
       "cancel": "Cancel",
       "confirm": "Unpublish"
+    },
+    "bulkActions": {
+      "deleteSelected": "Delete selected ({count})",
+      "confirmTitle": "Delete {count} posts?",
+      "confirmBody": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "partialFailure": "{success} of {total} posts deleted — {failed} failed. Please try again."
     },
     "emptyState": {
       "noPosts": "You have no posts yet.",
@@ -3968,7 +3992,8 @@
       "allLevels": "All levels",
       "clearFilters": "Clear filters",
       "of": "of",
-      "count": "experiences"
+      "count": "experiences",
+      "searchPlaceholder": "Search by title…"
     },
     "table": {
       "actions": "Actions",
@@ -3984,7 +4009,17 @@
       "unpublish": "Unpublish",
       "delete": "Delete",
       "deleteTitle": "Delete experience?",
-      "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone."
+      "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone.",
+      "selectAll": "Select all experiences",
+      "selectRow": "Select experience"
+    },
+    "bulkActions": {
+      "deleteSelected": "Delete selected ({count})",
+      "confirmTitle": "Delete {count} experiences?",
+      "confirmBody": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "partialFailure": "{success} of {total} experiences deleted — {failed} failed. Please try again."
     },
     "emptyState": {
       "noExperiences": "You don't have any experiences yet.",
@@ -4403,6 +4438,20 @@
     "inviteStatus": {
       "invited": "Invited",
       "expired": "Expired"
+    },
+    "searchPlaceholder": "Search by name…",
+    "selectAll": "Select all users",
+    "selectRow": "Select user",
+    "lockedForSelectionSelf": "You cannot select your own account",
+    "bulkActions": {
+      "deleteSelected": "Delete selected ({count})",
+      "confirmTitle": "Delete {count} users?",
+      "confirmBody": "This permanently removes each account and all of its data — trips, payments, reviews, blog posts. This action cannot be undone.",
+      "typeToConfirmLabel": "Type DELETE to confirm",
+      "typeToConfirmPlaceholder": "DELETE",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "partialFailure": "{success} of {total} users deleted — {failed} failed. Please try again."
     }
   },
   "contactPage": {

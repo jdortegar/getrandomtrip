@@ -28,11 +28,20 @@ export async function PATCH(
     const body = (await request.json()) as {
       isActive?: unknown;
       isFeatured?: unknown;
+      status?: unknown;
     };
-    const data: { isActive?: boolean; isFeatured?: boolean } = {};
+    const data: { isActive?: boolean; isFeatured?: boolean; status?: "ARCHIVED" } = {};
     if (typeof body.isActive === "boolean") data.isActive = body.isActive;
     if (typeof body.isFeatured === "boolean") data.isFeatured = body.isFeatured;
-    if (!("isActive" in data) && !("isFeatured" in data)) {
+    // Only ARCHIVED is accepted here — this route is not a general status
+    // transition endpoint; PENDING_REVIEW/PENDING_TRIPPER_REVIEW/ACTIVE
+    // transitions go through the dedicated review workflow routes.
+    if (body.status === "ARCHIVED") data.status = "ARCHIVED";
+    if (
+      !("isActive" in data) &&
+      !("isFeatured" in data) &&
+      !("status" in data)
+    ) {
       return NextResponse.json(
         { error: "No valid fields to update" },
         { status: 400 },
@@ -45,6 +54,7 @@ export async function PATCH(
         id: true,
         isActive: true,
         isFeatured: true,
+        status: true,
         updatedAt: true,
       },
       where: { id: params.id },

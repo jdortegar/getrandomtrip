@@ -1,7 +1,7 @@
 // src/components/app/dashboard/tripper/experiences/ExperiencesPageClient.tsx
 "use client";
 
-import { useState, useTransition, useRef, useCallback } from "react";
+import { useEffect, useState, useTransition, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
 import { ExperienceTypePills } from "@/components/common/ExperienceTypePills";
-import { Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Eye, EyeOff, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import {
   EXPERIENCE_LEVELS,
   EXPERIENCE_STATUSES,
@@ -50,11 +50,17 @@ export default function ExperiencesPageClient({
   const [selectedTravelType, setSelectedTravelType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   // Holds the id of the experience the user wants to delete. null = modal closed.
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
+  const selectAllRef = useRef<HTMLInputElement>(null);
 
   const scrollToFilters = useCallback(() => {
     filtersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -63,13 +69,29 @@ export default function ExperiencesPageClient({
   const hasActiveFilters =
     selectedStatus !== "all" ||
     selectedTravelType !== "all" ||
-    selectedLevel !== "all";
+    selectedLevel !== "all" ||
+    searchQuery !== "";
 
   function clearFilters() {
     setSelectedStatus("all");
     setSelectedTravelType("all");
     setSelectedLevel("all");
+    setSearchQuery("");
+    setSelectedIds(new Set());
   }
+
+  function updateFilter(setter: (value: string) => void) {
+    return (value: string) => {
+      setter(value);
+      setSelectedIds(new Set());
+    };
+  }
+
+  const setSelectedStatusAndClear = updateFilter(setSelectedStatus);
+  const setSelectedTravelTypeAndClear = updateFilter(setSelectedTravelType);
+  const setSelectedLevelAndClear = updateFilter(setSelectedLevel);
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const filtered = experiences.filter((experience) => {
     const travelTypeMatch =
@@ -79,8 +101,74 @@ export default function ExperiencesPageClient({
       selectedStatus === "all" || experience.status === selectedStatus;
     const levelMatch =
       selectedLevel === "all" || experience.level === selectedLevel;
-    return travelTypeMatch && statusMatch && levelMatch;
+    const nameMatch =
+      normalizedQuery === "" ||
+      experience.title.toLowerCase().includes(normalizedQuery);
+    return travelTypeMatch && statusMatch && levelMatch && nameMatch;
   });
+
+  const allSelected =
+    filtered.length > 0 && filtered.every((e) => selectedIds.has(e.id));
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
+
+  function toggleSelectAll() {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((e) => e.id)));
+    }
+  }
+
+  function toggleRowSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function handleBulkDelete() {
+    const ids = Array.from(selectedIds);
+    setIsBulkDeleting(true);
+    startTransition(async () => {
+      try {
+        const results = await Promise.allSettled(
+          ids.map((id) =>
+            fetch(`/api/tripper/experiences/${id}`, { method: "DELETE" }).then(
+              (res) => {
+                if (!res.ok) throw new Error(String(res.status));
+              },
+            ),
+          ),
+        );
+        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const successCount = ids.length - failedCount;
+        setBulkFailureMessage(
+          failedCount > 0
+            ? copy.bulkActions.partialFailure
+                .replace("{success}", String(successCount))
+                .replace("{total}", String(ids.length))
+                .replace("{failed}", String(failedCount))
+            : null,
+        );
+        setSelectedIds(new Set());
+        setBulkDeleteConfirmOpen(false);
+        router.refresh();
+      } finally {
+        setIsBulkDeleting(false);
+      }
+    });
+  }
 
   const basePath = `/${locale}/dashboard/tripper/experiences`;
   const deleteTargetExperience = experiences.find(
@@ -160,7 +248,7 @@ export default function ExperiencesPageClient({
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {
-              setSelectedStatus(e.target.value);
+              setSelectedStatusAndClear(e.target.value);
               scrollToFilters();
             }}
             value={selectedStatus}
@@ -175,7 +263,7 @@ export default function ExperiencesPageClient({
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {
-              setSelectedTravelType(e.target.value);
+              setSelectedTravelTypeAndClear(e.target.value);
               scrollToFilters();
             }}
             value={selectedTravelType}
@@ -190,7 +278,7 @@ export default function ExperiencesPageClient({
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {
-              setSelectedLevel(e.target.value);
+              setSelectedLevelAndClear(e.target.value);
               scrollToFilters();
             }}
             value={selectedLevel}
@@ -211,12 +299,43 @@ export default function ExperiencesPageClient({
               {copy.filters.clearFilters}
             </button>
           )}
+          <Button
+            className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+            disabled={selectedIds.size === 0}
+            onClick={() => setBulkDeleteConfirmOpen(true)}
+            type="button"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            {copy.bulkActions.deleteSelected.replace(
+              "{count}",
+              String(selectedIds.size),
+            )}
+          </Button>
         </div>
-        <span className="text-[13px] text-neutral-400">
-          {filtered.length} {copy.filters.of} {experiences.length}{" "}
-          {copy.filters.count}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] text-neutral-400">
+            {filtered.length} {copy.filters.of} {experiences.length}{" "}
+            {copy.filters.count}
+          </span>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSelectedIds(new Set());
+              }}
+              placeholder={copy.filters.searchPlaceholder}
+              type="text"
+              value={searchQuery}
+            />
+          </div>
+        </div>
       </div>
+
+      {bulkFailureMessage && (
+        <p className="text-xs text-red-600">{bulkFailureMessage}</p>
+      )}
 
       {/* Table panel */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -241,6 +360,16 @@ export default function ExperiencesPageClient({
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="px-5 py-3 text-left">
+                    <input
+                      aria-label={copy.table.selectAll}
+                      checked={allSelected}
+                      className="h-4 w-4 rounded border-gray-300"
+                      onChange={toggleSelectAll}
+                      ref={selectAllRef}
+                      type="checkbox"
+                    />
+                  </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                     {copy.table.package}
                   </th>
@@ -283,6 +412,15 @@ export default function ExperiencesPageClient({
                       key={experience.id}
                       className="transition-colors hover:bg-gray-50"
                     >
+                      <td className="px-5 py-4">
+                        <input
+                          aria-label={copy.table.selectRow}
+                          checked={selectedIds.has(experience.id)}
+                          className="h-4 w-4 rounded border-gray-300"
+                          onChange={() => toggleRowSelected(experience.id)}
+                          type="checkbox"
+                        />
+                      </td>
                       {/* Experience */}
                       <td className="px-5 py-4">
                         <p className="text-sm font-semibold text-neutral-900">
@@ -418,6 +556,22 @@ export default function ExperiencesPageClient({
         }
         cancelLabel={copy.form.cancel}
         confirmLabel={copy.table.delete}
+      />
+
+      <ConfirmModal
+        open={bulkDeleteConfirmOpen}
+        onOpenChange={setBulkDeleteConfirmOpen}
+        onConfirm={handleBulkDelete}
+        isConfirming={isBulkDeleting}
+        icon={Trash2}
+        tone="danger"
+        title={copy.bulkActions.confirmTitle.replace(
+          "{count}",
+          String(selectedIds.size),
+        )}
+        description={copy.bulkActions.confirmBody}
+        cancelLabel={copy.bulkActions.cancel}
+        confirmLabel={copy.bulkActions.confirm}
       />
     </div>
   );
