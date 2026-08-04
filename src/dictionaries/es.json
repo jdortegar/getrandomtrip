@@ -3541,7 +3541,8 @@
       "allTravelTypes": "Todos los tipos",
       "clearFilters": "Limpiar filtros",
       "of": "de",
-      "count": "posts"
+      "count": "posts",
+      "searchPlaceholder": "Buscar por título…"
     },
     "format": {
       "article": "Artículo",
@@ -3568,13 +3569,24 @@
       "view": "Ver",
       "reviewChanges": "Ver cambios",
       "waitingReview": "Esperando revisión",
-      "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer."
+      "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
+      "selectAll": "Seleccionar todos los posts",
+      "selectRow": "Seleccionar post",
+      "lockedForDeletion": "No se puede eliminar mientras hay una revisión pendiente"
     },
     "unpublishConfirm": {
       "title": "Despublicar este post",
       "body": "El post dejará de verse en tu perfil público. Puedes volver a publicarlo cuando quieras.",
       "cancel": "Cancelar",
       "confirm": "Despublicar"
+    },
+    "bulkActions": {
+      "deleteSelected": "Eliminar seleccionados ({count})",
+      "confirmTitle": "¿Eliminar {count} posts?",
+      "confirmBody": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "partialFailure": "{success} de {total} posts eliminados — {failed} fallaron. Por favor, intenta de nuevo."
     },
     "emptyState": {
       "noPosts": "Aún no tienes posts.",

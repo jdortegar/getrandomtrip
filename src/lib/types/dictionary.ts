@@ -139,6 +139,14 @@ export interface TripperBlogFormDict {
 }
 
 export interface TripperBlogsDict {
+  bulkActions: {
+    cancel: string;
+    confirm: string;
+    confirmBody: string;
+    confirmTitle: string;
+    deleteSelected: string;
+    partialFailure: string;
+  };
   composer: TripperBlogComposerDict;
   description: string;
   emptyState: {
@@ -154,6 +162,7 @@ export interface TripperBlogsDict {
     clearFilters: string;
     count: string;
     of: string;
+    searchPlaceholder: string;
   };
   form: TripperBlogFormDict;
   format: {
@@ -181,9 +190,12 @@ export interface TripperBlogsDict {
     deleteConfirm: string;
     edit: string;
     format: string;
+    lockedForDeletion: string;
     post: string;
     publish: string;
     reviewChanges: string;
+    selectAll: string;
+    selectRow: string;
     status: string;
     unpublish: string;
     updated: string;

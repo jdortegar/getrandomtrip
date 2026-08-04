@@ -28,3 +28,13 @@ export function resolveBlogRowAction(status: BlogStatus): BlogRowActionKind {
       return "none";
   }
 }
+
+/**
+ * Mirrors the `locked_for_review` guard in `DELETE /api/tripper/blogs/[id]`
+ * — a post pending either review decision can't be deleted server-side, so
+ * the delete button and bulk-select checkbox are both disabled for it here
+ * rather than letting the request fail after the fact.
+ */
+export function isBlogRowLockedForDeletion(status: BlogStatus): boolean {
+  return status === "pending_review" || status === "pending_tripper_review";
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -11,6 +11,7 @@ import {
   EyeOff,
   Pencil,
   Plus,
+  Search,
   Trash2,
   X,
 } from "lucide-react";
@@ -20,7 +21,7 @@ import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { BLOG_TRAVEL_TYPE_OPTIONS } from "@/lib/constants/blog-filters";
-import { resolveBlogRowAction } from "@/lib/blog/row-actions";
+import { resolveBlogRowAction, isBlogRowLockedForDeletion } from "@/lib/blog/row-actions";
 import type { TripperBlogsDict } from "@/lib/types/dictionary";
 import type { BlogFormat, BlogPost } from "@/types/blog";
 
@@ -51,10 +52,16 @@ export function BlogPageClient({
   const [selectedFormat, setSelectedFormat] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedTravelType, setSelectedTravelType] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [unpublishTargetId, setUnpublishTargetId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
+  const selectAllRef = useRef<HTMLInputElement>(null);
 
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const basePath = `/${locale}/dashboard/tripper/blog`;
@@ -66,13 +73,32 @@ export function BlogPageClient({
   const hasActiveFilters =
     selectedFormat !== "all" ||
     selectedStatus !== "all" ||
-    selectedTravelType !== "all";
+    selectedTravelType !== "all" ||
+    searchQuery !== "";
 
   function clearFilters() {
     setSelectedFormat("all");
     setSelectedStatus("all");
     setSelectedTravelType("all");
+    setSearchQuery("");
+    setSelectedIds(new Set());
   }
+
+  // Any filter or search change invalidates the current selection — a
+  // destructive bulk action should only ever act on rows the user can
+  // currently see, never on rows a filter/search change has hidden.
+  function updateFilter(setter: (value: string) => void) {
+    return (value: string) => {
+      setter(value);
+      setSelectedIds(new Set());
+    };
+  }
+
+  const setSelectedFormatAndClear = updateFilter(setSelectedFormat);
+  const setSelectedStatusAndClear = updateFilter(setSelectedStatus);
+  const setSelectedTravelTypeAndClear = updateFilter(setSelectedTravelType);
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const filtered = posts.filter((post) => {
     const formatMatch =
@@ -82,8 +108,75 @@ export function BlogPageClient({
     const travelTypeMatch =
       selectedTravelType === "all" ||
       post.travelType.includes(selectedTravelType);
-    return formatMatch && statusMatch && travelTypeMatch;
+    const nameMatch =
+      normalizedQuery === "" || post.title.toLowerCase().includes(normalizedQuery);
+    return formatMatch && statusMatch && travelTypeMatch && nameMatch;
   });
+
+  const selectableFiltered = filtered.filter(
+    (post) => !isBlogRowLockedForDeletion(post.status),
+  );
+  const allSelectableSelected =
+    selectableFiltered.length > 0 &&
+    selectableFiltered.every((post) => selectedIds.has(post.id));
+  const someSelected = selectedIds.size > 0 && !allSelectableSelected;
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      selectAllRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
+
+  function toggleSelectAll() {
+    if (allSelectableSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(selectableFiltered.map((post) => post.id)));
+    }
+  }
+
+  function toggleRowSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function handleBulkDelete() {
+    const ids = Array.from(selectedIds);
+    setIsBulkDeleting(true);
+    startTransition(async () => {
+      try {
+        const results = await Promise.allSettled(
+          ids.map((id) =>
+            fetch(`/api/tripper/blogs/${id}`, { method: "DELETE" }).then((res) => {
+              if (!res.ok) throw new Error(String(res.status));
+            }),
+          ),
+        );
+        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const successCount = ids.length - failedCount;
+        setBulkFailureMessage(
+          failedCount > 0
+            ? copy.bulkActions.partialFailure
+                .replace("{success}", String(successCount))
+                .replace("{total}", String(ids.length))
+                .replace("{failed}", String(failedCount))
+            : null,
+        );
+        setSelectedIds(new Set());
+        setBulkDeleteConfirmOpen(false);
+        router.refresh();
+      } finally {
+        setIsBulkDeleting(false);
+      }
+    });
+  }
 
   function handleDelete(id: string) {
     if (!confirm(copy.table.deleteConfirm)) return;
@@ -173,7 +266,7 @@ export function BlogPageClient({
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {
-              setSelectedStatus(e.target.value);
+              setSelectedStatusAndClear(e.target.value);
               scrollToFilters();
             }}
             value={selectedStatus}
@@ -188,7 +281,7 @@ export function BlogPageClient({
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {
-              setSelectedFormat(e.target.value);
+              setSelectedFormatAndClear(e.target.value);
               scrollToFilters();
             }}
             value={selectedFormat}
@@ -203,7 +296,7 @@ export function BlogPageClient({
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {
-              setSelectedTravelType(e.target.value);
+              setSelectedTravelTypeAndClear(e.target.value);
               scrollToFilters();
             }}
             value={selectedTravelType}
@@ -225,12 +318,43 @@ export function BlogPageClient({
               {copy.filters.clearFilters}
             </button>
           )}
+          <Button
+            className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-4 text-[13px] font-semibold uppercase tracking-[1px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+            disabled={selectedIds.size === 0}
+            onClick={() => setBulkDeleteConfirmOpen(true)}
+            type="button"
+          >
+            <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+            {copy.bulkActions.deleteSelected.replace(
+              "{count}",
+              String(selectedIds.size),
+            )}
+          </Button>
         </div>
-        <span className="text-[13px] text-neutral-400">
-          {filtered.length} {copy.filters.of} {posts.length}{" "}
-          {copy.filters.count}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] text-neutral-400">
+            {filtered.length} {copy.filters.of} {posts.length}{" "}
+            {copy.filters.count}
+          </span>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSelectedIds(new Set());
+              }}
+              placeholder={copy.filters.searchPlaceholder}
+              type="text"
+              value={searchQuery}
+            />
+          </div>
+        </div>
       </div>
+
+      {bulkFailureMessage && (
+        <p className="text-xs text-red-600">{bulkFailureMessage}</p>
+      )}
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {filtered.length === 0 ? (
@@ -254,6 +378,16 @@ export function BlogPageClient({
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="px-5 py-3 text-left">
+                    <input
+                      aria-label={copy.table.selectAll}
+                      checked={allSelectableSelected}
+                      className="h-4 w-4 rounded border-gray-300"
+                      onChange={toggleSelectAll}
+                      ref={selectAllRef}
+                      type="checkbox"
+                    />
+                  </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                     {copy.table.post}
                   </th>
@@ -283,12 +417,24 @@ export function BlogPageClient({
                     ? `/${locale}/blog/${post.slug}`
                     : null;
                   const rowAction = resolveBlogRowAction(post.status);
+                  const rowLocked = isBlogRowLockedForDeletion(post.status);
 
                   return (
                     <tr
                       className="transition-colors hover:bg-gray-50"
                       key={post.id}
                     >
+                      <td className="px-5 py-4">
+                        <input
+                          aria-label={copy.table.selectRow}
+                          checked={selectedIds.has(post.id)}
+                          className="h-4 w-4 rounded border-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                          disabled={rowLocked}
+                          onChange={() => toggleRowSelected(post.id)}
+                          title={rowLocked ? copy.table.lockedForDeletion : undefined}
+                          type="checkbox"
+                        />
+                      </td>
                       <td className="px-5 py-4">
                         <p className="text-sm font-semibold text-neutral-900">
                           {post.title}
@@ -376,9 +522,13 @@ export function BlogPageClient({
                           )}
                           <TableIconButton
                             danger
-                            disabled={isBusy}
+                            disabled={isBusy || rowLocked}
                             onClick={() => handleDelete(post.id)}
-                            title={copy.table.delete}
+                            title={
+                              rowLocked
+                                ? copy.table.lockedForDeletion
+                                : copy.table.delete
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </TableIconButton>
@@ -406,6 +556,22 @@ export function BlogPageClient({
         description={copy.unpublishConfirm.body}
         cancelLabel={copy.unpublishConfirm.cancel}
         confirmLabel={copy.unpublishConfirm.confirm}
+      />
+
+      <ConfirmModal
+        open={bulkDeleteConfirmOpen}
+        onOpenChange={setBulkDeleteConfirmOpen}
+        onConfirm={handleBulkDelete}
+        isConfirming={isBulkDeleting}
+        icon={Trash2}
+        tone="danger"
+        title={copy.bulkActions.confirmTitle.replace(
+          "{count}",
+          String(selectedIds.size),
+        )}
+        description={copy.bulkActions.confirmBody}
+        cancelLabel={copy.bulkActions.cancel}
+        confirmLabel={copy.bulkActions.confirm}
       />
     </div>
   );

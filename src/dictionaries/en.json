@@ -3541,7 +3541,8 @@
       "allTravelTypes": "All types",
       "clearFilters": "Clear filters",
       "of": "of",
-      "count": "posts"
+      "count": "posts",
+      "searchPlaceholder": "Search by title…"
     },
     "format": {
       "article": "Article",
@@ -3568,13 +3569,24 @@
       "view": "View",
       "reviewChanges": "Review changes",
       "waitingReview": "Awaiting review",
-      "deleteConfirm": "Delete this post? This action cannot be undone."
+      "deleteConfirm": "Delete this post? This action cannot be undone.",
+      "selectAll": "Select all posts",
+      "selectRow": "Select post",
+      "lockedForDeletion": "Cannot delete while a review decision is pending"
     },
     "unpublishConfirm": {
       "title": "Unpublish this post",
       "body": "The post will stop showing on your public profile. You can publish it again whenever you want.",
       "cancel": "Cancel",
       "confirm": "Unpublish"
+    },
+    "bulkActions": {
+      "deleteSelected": "Delete selected ({count})",
+      "confirmTitle": "Delete {count} posts?",
+      "confirmBody": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "partialFailure": "{success} of {total} posts deleted — {failed} failed. Please try again."
     },
     "emptyState": {
       "noPosts": "You have no posts yet.",
