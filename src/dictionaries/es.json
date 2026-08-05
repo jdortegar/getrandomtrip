@@ -2664,6 +2664,7 @@
     "support": "Soporte",
     "ariaFacebook": "Facebook",
     "ariaInstagram": "Instagram",
+    "ariaLinkedin": "LinkedIn",
     "ariaTwitter": "Twitter",
     "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, EE. UU.",
     "entityNotice": "Randomtrip y getrandomtrip.com son marcas operadas por Randomtrip Inc.",
@@ -3211,7 +3212,10 @@
     "adminLoginAction": "Iniciar sesión",
     "accessDeniedTitle": "Acceso no permitido",
     "accessDeniedBody": "Esta sección está restringida a admins y trippers. Contacta a tu administrador si crees que esto es un error.",
-    "signOutLabel": "Cerrar sesión"
+    "signOutLabel": "Cerrar sesión",
+    "ariaFacebook": "Facebook",
+    "ariaInstagram": "Instagram",
+    "ariaLinkedin": "LinkedIn"
   },
   "profile": {
     "actionsAria": "Acciones de cuenta",
