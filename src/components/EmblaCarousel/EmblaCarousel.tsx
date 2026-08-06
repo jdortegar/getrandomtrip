@@ -70,7 +70,7 @@ const EmblaCarousel = ({
     ? { backgroundColor: accentColor }
     : undefined;
 
-  const arrows = slides.length > 1 && (
+  const arrows = (!prevBtnDisabled || !nextBtnDisabled) && (
     <div className="flex items-center justify-end gap-2.5 mb-6">
       <PrevButton
         disabled={prevBtnDisabled}
@@ -85,11 +85,13 @@ const EmblaCarousel = ({
     </div>
   );
 
-  const dots = slides.length > 1 && (
+  const dots = scrollSnaps.length > 1 && (
     <div className="mt-7 flex items-center justify-center gap-2">
       {scrollSnaps.map((_, i) => (
         <DotButton
           key={i}
+          index={i}
+          selected={i === selectedIndex}
           className={cn(
             "h-2 rounded-full transition-all",
             i === selectedIndex

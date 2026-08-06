@@ -2823,6 +2823,7 @@ export interface MarketingDictionary {
     errorFallback: string;
     headers: {
       actions: string;
+      commission: string;
       joined: string;
       roles: string;
       status: string;
@@ -2833,6 +2834,9 @@ export interface MarketingDictionary {
       admin: string;
       cancel: string;
       travelerBase: string;
+      commissionError: string;
+      commissionLabel: string;
+      commissionPlaceholder: string;
       confirmDelete: string;
       delete: string;
       deleteError: string;

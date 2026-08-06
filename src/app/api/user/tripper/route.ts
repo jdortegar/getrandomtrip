@@ -68,13 +68,17 @@ export async function PATCH(request: NextRequest) {
       tierLevel,
       destinations,
       tripperSlug: requestedSlug,
-      commission,
       availableTypes,
     } = body;
+    // `commission` is deliberately NOT read from the body: it is admin-owned
+    // and writable only via PATCH /api/admin/users/[id].
 
     // Validate required fields for trippers (tripperSlug is optional — we
-    // derive one from the user's name below if they didn't provide it)
-    if (!commission || !availableTypes?.length) {
+    // derive one from the user's name below if they didn't provide it).
+    // Commission is no longer a client-supplied field, so it is not part of
+    // this check — the shared `?? 0.15` default covers a tripper with no
+    // assigned rate.
+    if (!Array.isArray(availableTypes) || availableTypes.length === 0) {
       return NextResponse.json(
         { error: "Missing required tripper fields" },
         { status: 400 },
@@ -131,7 +135,6 @@ export async function PATCH(request: NextRequest) {
         tierLevel,
         destinations,
         tripperSlug,
-        commission,
         availableTypes,
         roles: { set: roles },
       },

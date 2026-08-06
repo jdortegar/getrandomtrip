@@ -1,0 +1,24 @@
+change: tripper-commission-management
+status: archive
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: done
+artifacts:
+  proposal: openspec/changes/archive/2026-08-06-tripper-commission-management/proposal.md
+  spec: openspec/changes/archive/2026-08-06-tripper-commission-management/spec.md
+  design: openspec/changes/archive/2026-08-06-tripper-commission-management/design.md
+  tasks: openspec/changes/archive/2026-08-06-tripper-commission-management/tasks.md
+  verify-report: openspec/changes/archive/2026-08-06-tripper-commission-management/verify-report.md
+  archive-report: openspec/changes/archive/2026-08-06-tripper-commission-management/archive-report.md
+created: 2026-08-05
+verification_verdict: "PASS WITH WARNINGS"
+critical_issues: 0
+warnings: 3
+suggestions: 2
+archived: 2026-08-06

@@ -50,13 +50,21 @@ export const useDotButton = (
   };
 };
 
-type PropType = ComponentPropsWithRef<"button">;
+type PropType = ComponentPropsWithRef<"button"> & {
+  index: number;
+  selected: boolean;
+};
 
 export const DotButton = (props: PropType) => {
-  const { children, ...restProps } = props;
+  const { children, index, selected, ...restProps } = props;
 
   return (
-    <button type="button" {...restProps}>
+    <button
+      aria-current={selected}
+      aria-label={`Go to slide ${index + 1}`}
+      type="button"
+      {...restProps}
+    >
       {children}
     </button>
   );

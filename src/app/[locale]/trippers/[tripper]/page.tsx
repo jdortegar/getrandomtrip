@@ -111,7 +111,7 @@ export default async function Page(props: {
             id: tripperData.id,
             name: tripperData.name,
             slug: tripperData.tripperSlug,
-            commission: tripperData.commission || 0,
+            commission: tripperData.commission,
             availableTypes: tripperData.availableTypes as string[],
             destinations: tripperData.destinations?.length
               ? tripperData.destinations

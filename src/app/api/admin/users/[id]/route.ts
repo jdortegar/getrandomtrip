@@ -8,6 +8,10 @@ import {
 } from "@/lib/auth/prismaUserRoles";
 import { prisma } from "@/lib/prisma";
 import { generateUniqueTripperSlug } from "@/lib/db/tripper-queries";
+import {
+  commissionPercentToFraction,
+  isValidCommissionPercent,
+} from "@/lib/tripper/commission";
 import type { UserRole } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -101,7 +105,11 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const body = (await request.json()) as { role?: unknown; roles?: unknown };
+    const body = (await request.json()) as {
+      role?: unknown;
+      roles?: unknown;
+      commission?: unknown;
+    };
     let nextRoles: UserRole[] | null = parseUserRolesPayload(body.roles);
     if (!nextRoles && isValidRoleToken(body.role)) {
       nextRoles = [body.role];
@@ -113,6 +121,18 @@ export async function PATCH(
 
     if (!nextRoles.includes("TRAVELER")) {
       return NextResponse.json({ error: "Invalid roles" }, { status: 400 });
+    }
+
+    // Commission is admin-owned and optional on this PATCH; when present it
+    // MUST validate before anything is written so an invalid commission
+    // rejects the whole request (roles included) — no partial save.
+    const hasCommission =
+      body.commission !== undefined && body.commission !== null;
+    if (hasCommission && !isValidCommissionPercent(body.commission)) {
+      return NextResponse.json(
+        { error: "Invalid commission" },
+        { status: 400 },
+      );
     }
 
     // Prevent admins from demoting themselves
@@ -145,8 +165,15 @@ export async function PATCH(
       data: {
         roles: { set: roles },
         ...(tripperSlug ? { tripperSlug } : {}),
+        ...(hasCommission
+          ? {
+              commission: commissionPercentToFraction(
+                body.commission as number,
+              ),
+            }
+          : {}),
       },
-      select: { id: true, roles: true, tripperSlug: true },
+      select: { id: true, roles: true, tripperSlug: true, commission: true },
       where: { id: params.id },
     });
 

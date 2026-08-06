@@ -4414,6 +4414,7 @@
     "errorFallback": "No se pudieron cargar los usuarios",
     "headers": {
       "actions": "Acciones",
+      "commission": "Comisión",
       "joined": "Alta",
       "roles": "Roles",
       "status": "Estado",
@@ -4424,6 +4425,9 @@
       "admin": "ADMIN",
       "cancel": "Cancelar",
       "travelerBase": "TRAVELER (base)",
+      "commissionError": "Ingresá un número entero entre 0 y 100",
+      "commissionLabel": "Comisión (%)",
+      "commissionPlaceholder": "15",
       "confirmDelete": "¿Confirmar eliminación?",
       "delete": "Eliminar usuario",
       "deleteError": "No se pudo eliminar el usuario",
