@@ -4414,6 +4414,7 @@
     "errorFallback": "Failed to load users",
     "headers": {
       "actions": "Actions",
+      "commission": "Commission",
       "joined": "Joined",
       "roles": "Roles",
       "status": "Status",
@@ -4424,6 +4425,9 @@
       "admin": "ADMIN",
       "cancel": "Cancel",
       "travelerBase": "TRAVELER (base)",
+      "commissionError": "Enter a whole number between 0 and 100",
+      "commissionLabel": "Commission (%)",
+      "commissionPlaceholder": "15",
       "confirmDelete": "Confirm deletion?",
       "delete": "Delete user",
       "deleteError": "Failed to delete user",

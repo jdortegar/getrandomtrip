@@ -39,6 +39,7 @@ export function UsersTable({
   const headers = [
     copy.headers.user,
     copy.headers.roles,
+    copy.headers.commission,
     copy.headers.tripperSlug,
     copy.headers.joined,
     copy.headers.status,

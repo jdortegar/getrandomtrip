@@ -61,8 +61,10 @@ export const PrevButton = (props: PropType) => {
 
   return (
     <button
+      aria-label="Previous slide"
       className={cn(
-        "h-8 w-8 rounded-full bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center ",
+        buttonBaseClass,
+        "h-8 w-8 bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center disabled:bg-light-blue/40 disabled:pointer-events-none",
         className,
       )}
       disabled={disabled}
@@ -79,8 +81,10 @@ export const NextButton = (props: PropType) => {
 
   return (
     <button
+      aria-label="Next slide"
       className={cn(
-        "h-8 w-8 rounded-full bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center ",
+        buttonBaseClass,
+        "h-8 w-8 bg-light-blue text-white hover:bg-light-blue-600 md:h-10 md:w-10 flex items-center justify-center disabled:bg-light-blue/40 disabled:pointer-events-none",
         className,
       )}
       disabled={disabled}

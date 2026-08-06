@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
         take: limit,
         select: {
           avatarUrl: true,
+          commission: true,
           createdAt: true,
           email: true,
           id: true,

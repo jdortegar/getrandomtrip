@@ -2,12 +2,14 @@ import { Loader2, Pencil, Trash2, UserPlus } from "lucide-react";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
+import { toCommissionPercent } from "@/lib/tripper/commission";
 import { StatusBadge } from "./StatusBadge";
 
 export type UserRole = "TRAVELER" | "TRIPPER" | "ADMIN";
 
 export interface AdminUser {
   avatarUrl: string | null;
+  commission: number | null;
   createdAt: string;
   email: string;
   id: string;
@@ -87,6 +89,11 @@ export function UsersTableRow({
             />
           ))}
         </div>
+      </td>
+      <td className="px-5 py-4 text-sm text-neutral-500">
+        {user.roles.includes("TRIPPER")
+          ? `${toCommissionPercent(user.commission)}%`
+          : "—"}
       </td>
       <td className="px-5 py-4 text-sm text-neutral-500">
         {user.tripperSlug ?? "—"}

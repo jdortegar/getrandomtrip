@@ -25,12 +25,16 @@ import type {
   TripperSettingsStats,
   TripperTierCopy,
 } from "@/types/tripper";
+import {
+  DEFAULT_COMMISSION,
+  effectiveCommission,
+} from "@/lib/tripper/commission";
 
 function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
   return {
     availableTypes: extras.availableTypes ?? [],
     bio: extras.bio ?? "",
-    commission: typeof extras.commission === "number" ? extras.commission : 0,
+    commission: effectiveCommission(extras.commission),
     destinations: extras.destinations ?? [],
     heroImage: extras.heroImage ?? "",
     location: extras.location ?? "",
@@ -51,7 +55,7 @@ const EMPTY_FORM: TripperSettingsFormState = {
   tierLevel: "",
   destinations: [],
   tripperSlug: "",
-  commission: 0,
+  commission: DEFAULT_COMMISSION,
   availableTypes: [],
   socialLinks: [],
 };
@@ -73,7 +77,7 @@ export default function TripperSettingsPage() {
   const [profile, setProfile] = useState<TripperSessionExtras>({
     availableTypes: [],
     bio: "",
-    commission: 0,
+    commission: DEFAULT_COMMISSION,
     destinations: [],
     heroImage: "",
     location: "",
@@ -226,7 +230,9 @@ export default function TripperSettingsPage() {
           tierLevel: formData.tierLevel,
           destinations: formData.destinations,
           tripperSlug: formData.tripperSlug,
-          commission: formData.commission,
+          // commission is admin-owned and read-only here; the server ignores
+          // it even if sent, but we don't send it at all — see PATCH
+          // /api/admin/users/[id] for the write path.
           availableTypes: formData.availableTypes,
         }),
       });

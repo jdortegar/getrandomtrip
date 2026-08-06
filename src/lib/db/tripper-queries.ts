@@ -5,6 +5,7 @@
 import { prisma } from "@/lib/prisma";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
+import { effectiveCommission } from "@/lib/tripper/commission";
 import type {
   ActivityEntry,
   FeaturedTrip,
@@ -72,7 +73,7 @@ export async function getTripperBySlug(
       avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
       role: primaryRoleFromMembership(roles),
       tripperSlug: tripper.tripperSlug,
-      commission: tripper.commission || 0,
+      commission: effectiveCommission(tripper.commission),
       availableTypes,
     } as TripperProfile;
   } catch (error) {
@@ -710,7 +711,7 @@ export async function getTripperEarnings(
         };
       }
 
-      const commission = tr.experience.owner.commission || 0;
+      const commission = effectiveCommission(tr.experience.owner.commission);
       const baseCommission = tr.payment.amount * commission;
       // Bonus calculation could be added based on tier level or performance
       const bonus = 0;
