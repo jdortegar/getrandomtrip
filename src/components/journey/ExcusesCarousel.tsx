@@ -13,6 +13,8 @@ interface ExcusesCarouselProps {
   /** Localized excuse titles/descriptions by key (e.g. journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
   onSelect?: (excuseKey: string) => void;
+  /** Attribution shown under the carousel — these card photos are hotlinked from Unsplash. */
+  photoCreditLabel?: string;
   selectedExcuse?: string;
 }
 
@@ -22,6 +24,7 @@ export function ExcusesCarousel({
   itemsPerView = 3,
   localizedExcuses,
   onSelect,
+  photoCreditLabel,
   selectedExcuse,
 }: ExcusesCarouselProps) {
   const handleCardClick = (excuse: ExcuseData) => {
@@ -47,7 +50,7 @@ export function ExcusesCarousel({
         overflow="right"
         wrapperClassName="px-0!"
       >
-        {excuses.map((excuse) => {
+        {excuses.map((excuse, index) => {
           const isSelected = selectedExcuse === excuse.key;
 
           return (
@@ -58,12 +61,24 @@ export function ExcusesCarousel({
               description={getDescription(excuse)}
               imageUrl={excuse.img}
               onClick={onSelect ? () => handleCardClick(excuse) : undefined}
+              priority={index === 0}
               selected={isSelected}
               title={getTitle(excuse)}
             />
           );
         })}
       </EmblaCarousel>
+      {photoCreditLabel ? (
+        <p className="mt-2 text-right text-xs text-neutral-400">
+          <a
+            href="https://unsplash.com"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {photoCreditLabel}
+          </a>
+        </p>
+      ) : null}
     </motion.div>
   );
 }

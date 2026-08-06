@@ -1,5 +1,6 @@
-// Cache for images to avoid repeated calls to our own /api/city-image route.
+// Caches to avoid repeated calls to our own /api/*-image routes.
 const imageCache: Record<string, string | null> = {};
+const topicImageCache: Record<string, string | null> = {};
 
 /**
  * Get an image for a city, or null when no confidently-relevant photo was
@@ -28,6 +29,31 @@ export async function getCityImage(
   } catch (error) {
     console.warn(`Failed to fetch image for ${cityName}:`, error);
     imageCache[cacheKey] = null;
+    return null;
+  }
+}
+
+/**
+ * Get an image for a free-text topic (e.g. an excuse card's title), used as
+ * a live fallback when a hardcoded photo URL 404s. Proxies through
+ * /api/topic-image so the Unsplash access key stays server-side.
+ */
+export async function getTopicImage(query: string): Promise<string | null> {
+  if (query in topicImageCache) return topicImageCache[query];
+
+  try {
+    const url = `/api/topic-image?q=${encodeURIComponent(query)}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`topic-image request failed: ${res.status}`);
+    }
+
+    const data: { image: string | null } = await res.json();
+    topicImageCache[query] = data.image;
+    return data.image;
+  } catch (error) {
+    console.warn(`Failed to fetch topic image for "${query}":`, error);
+    topicImageCache[query] = null;
     return null;
   }
 }
