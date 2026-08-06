@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { Button } from "@/components/ui/Button";
 import Badge from "@/components/badge";
-import CitySearchSelector from "./CitySearchSelector";
-import type { AvoidCity } from "@/lib/helpers/avoid-cities";
+import CitySelector from "@/components/journey/CitySelector";
+import type { CityResult } from "@/lib/geo/types";
 import {
   avoidCityLabelsEqual,
   canonicalAvoidCityLabel,
@@ -82,7 +82,7 @@ export default function AvoidSearchModal({
     setQuery("");
   };
 
-  const handleCitySelect = (city: AvoidCity) => {
+  const handleCitySelect = (city: CityResult) => {
     add(city.name);
   };
 
@@ -138,20 +138,20 @@ export default function AvoidSearchModal({
         <p className="mt-1 text-sm text-gray-500">{selectedCountText}</p>
 
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
-          <CitySearchSelector
-            className="min-w-0 flex-1"
+          <CitySelector
+            containerClassName="min-w-0 flex-1"
             onChange={setQuery}
             onKeyDown={onKeyDown}
             onSelect={handleCitySelect}
+            placeholder="Buscar ciudad..."
             value={query}
           />
           <Button
-            className="h-9 rounded-md text-sm font-normal normal-case"
+            className="h-10 min-h-10"
             disabled={!query.trim() || totalCount >= max}
             onClick={() => add(query)}
             size="sm"
             type="button"
-            variant="default"
           >
             {labels.addButton}
           </Button>
@@ -188,21 +188,11 @@ export default function AvoidSearchModal({
           </div>
         )}
 
-        <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
-          <button
-            className="text-sm font-medium text-gray-900 underline hover:no-underline"
-            onClick={onClose}
-            type="button"
-          >
+        <div className="mt-8 flex items-center justify-center gap-2 border-t border-gray-200 pt-6">
+          <Button onClick={onClose} size="sm" type="button" variant="secondary">
             {labels.cancelButton}
-          </button>
-          <Button
-            className="text-sm font-normal normal-case"
-            onClick={save}
-            size="md"
-            type="button"
-            variant="default"
-          >
+          </Button>
+          <Button onClick={save} size="sm" type="button">
             {labels.saveDestinationsButton}
           </Button>
         </div>
