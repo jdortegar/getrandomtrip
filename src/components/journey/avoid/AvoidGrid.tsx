@@ -63,7 +63,12 @@ export default function AvoidGrid({
 }: AvoidGridProps) {
   const [showSearch, setShowSearch] = useState(false);
   const [suggestions, setSuggestions] = useState<
-    Array<{ slug: string; city: string; country: string; image?: string }>
+    Array<{
+      slug: string;
+      city: string;
+      country: string;
+      image?: string | null;
+    }>
   >([]);
   // Tracks whether getAvoidCities/image-loading has resolved at least once,
   // so an empty result can be told apart from "still loading" — without this,
@@ -79,6 +84,7 @@ export default function AvoidGrid({
   const avoidCities = getAvoidCities(originCountry, originCity, level, 12);
 
   useEffect(() => {
+    let cancelled = false;
     setHasLoaded(false);
 
     if (avoidCities.length === 0) {
@@ -87,24 +93,10 @@ export default function AvoidGrid({
       return;
     }
 
-    if (!showImages) {
-      const chips = filterOutPackageDestinations(
-        avoidCities.map((city) => ({
-          slug: city.id,
-          city: city.name,
-          country: city.country,
-        })),
-        tripperExperienceDestinations,
-      );
-      setSuggestions(chips);
-      setHasLoaded(true);
-      return;
-    }
-
     async function loadCityImages() {
       const citiesWithImages = await Promise.all(
         avoidCities.map(async (city) => {
-          const image = await getCityImage(city.name, city.countryCode);
+          const image = await getCityImage(city.name, city.country);
           return {
             slug: city.id,
             city: city.name,
@@ -113,6 +105,8 @@ export default function AvoidGrid({
           };
         }),
       );
+
+      if (cancelled) return;
 
       setSuggestions(
         filterOutPackageDestinations(
@@ -124,33 +118,21 @@ export default function AvoidGrid({
     }
 
     void loadCityImages();
-  }, [
-    originCountry,
-    originCity,
-    level,
-    showImages,
-    tripperExperienceDestinations,
-  ]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [originCountry, originCity, level, tripperExperienceDestinations]);
 
   return (
     <div className="space-y-4">
       <div className="w-full">
         {/* Grid 3 filas x 4 col */}
         <div
-          className={
-            showImages
-              ? "grid w-full grid-cols-4 gap-4"
-              : "flex w-full flex-wrap gap-2"
-          }
+          className={`grid w-full grid-cols-4 ${showImages ? "gap-4" : "gap-2"}`}
         >
           {suggestions.length === 0 ? (
-            <div
-              className={
-                showImages
-                  ? "col-span-4 py-8 text-center text-neutral-500"
-                  : "w-full py-8 text-center text-neutral-500"
-              }
-            >
+            <div className="col-span-4 py-8 text-center text-neutral-500">
               {hasLoaded ? labels.empty : labels.loading}
             </div>
           ) : (

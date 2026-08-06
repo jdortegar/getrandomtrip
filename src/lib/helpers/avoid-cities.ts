@@ -220,32 +220,6 @@ export function getAvoidCities(
 }
 
 /**
- * Search cities by name across all American countries
- */
-export function searchCities(query: string, limit: number = 20): AvoidCity[] {
-  if (!query || query.length < 2) return [];
-
-  const results: AvoidCity[] = [];
-  const lowerQuery = query.toLowerCase();
-
-  AMERICAN_COUNTRIES.forEach((country) => {
-    country.cities.forEach((city) => {
-      if (city.toLowerCase().includes(lowerQuery)) {
-        results.push({
-          id: `${country.code}-${city}`.toLowerCase().replace(/\s+/g, "-"),
-          name: city,
-          country: country.name,
-          countryCode: country.code,
-          image: "",
-        });
-      }
-    });
-  });
-
-  return results.slice(0, limit);
-}
-
-/**
  * Get all cities from American countries
  */
 export function getAllCities(): AvoidCity[] {

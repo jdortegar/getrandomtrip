@@ -9,11 +9,20 @@ import type { CityResult } from "@/lib/geo/types";
 
 interface CitySelectorProps {
   className?: string;
-  /** ISO alpha-2 country code used to scope city search via /api/geo/cities */
-  countryCode: string;
+  /** Classes for the outer wrapper (e.g. flex sizing in a parent row) — className above targets the input itself. */
+  containerClassName?: string;
+  /**
+   * ISO alpha-2 country code used to scope city search via /api/geo/cities.
+   * Omit entirely (not "") for a global search across all countries — an
+   * empty string means "scoped mode, country not chosen yet" and disables
+   * the input until one is set.
+   */
+  countryCode?: string;
   disabled?: boolean;
   onChange: (value: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onOptionSelect?: () => void;
+  onSelect?: (city: CityResult) => void;
   placeholder?: string;
   size?: "sm" | "md" | "lg";
   value: string;
@@ -21,10 +30,13 @@ interface CitySelectorProps {
 
 export default function CitySelector({
   className = "",
+  containerClassName = "",
   countryCode,
   disabled = false,
   onChange,
+  onKeyDown,
   onOptionSelect,
+  onSelect,
   placeholder = "Ciudad de salida",
   size = "md",
   value,
@@ -37,7 +49,8 @@ export default function CitySelector({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const hasCountry = Boolean(countryCode);
+  const isScoped = countryCode !== undefined;
+  const hasCountry = !isScoped || Boolean(countryCode);
 
   const fetchCities = useCallback(
     async (query: string) => {
@@ -46,18 +59,17 @@ export default function CitySelector({
         return;
       }
 
-      if (!countryCode) {
+      if (isScoped && !countryCode) {
         setCities([]);
         return;
       }
 
       setLoading(true);
       try {
-        const params = new URLSearchParams({
-          q: query,
-          countryCode,
-          lang,
-        });
+        const params = new URLSearchParams({ q: query, lang });
+        if (countryCode) {
+          params.set("countryCode", countryCode);
+        }
         const res = await fetch(`/api/geo/cities?${params.toString()}`);
         if (!res.ok) {
           setCities([]);
@@ -72,7 +84,7 @@ export default function CitySelector({
         setLoading(false);
       }
     },
-    [countryCode, lang],
+    [countryCode, isScoped, lang],
   );
 
   // Debounced search — 100ms
@@ -100,10 +112,11 @@ export default function CitySelector({
     onChange(city.name);
     setOpen(false);
     onOptionSelect?.();
+    onSelect?.(city);
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className={cn("relative", containerClassName)} ref={ref}>
       <div className="relative">
         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-600" />
         <Input
@@ -124,6 +137,7 @@ export default function CitySelector({
             onChange(e.target.value);
             setOpen(true);
           }}
+          onKeyDown={onKeyDown}
           placeholder={hasCountry ? placeholder : "Selecciona un país primero"}
           type="text"
           value={value}

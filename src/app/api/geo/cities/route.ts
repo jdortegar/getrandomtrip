@@ -18,26 +18,33 @@ export async function GET(request: Request): Promise<NextResponse> {
 
   const { searchParams } = new URL(request.url);
   const q = (searchParams.get("q") ?? "").trim();
+  // Optional — omit to search cities across all countries.
   const countryCode = (searchParams.get("countryCode") ?? "").trim();
   const lang = searchParams.get("lang") === "en" ? "en" : "es";
-
-  if (!countryCode) {
-    return NextResponse.json({ results: [] }, { status: 400 });
-  }
 
   if (q.length < 2) {
     return NextResponse.json({ results: [] });
   }
 
-  const cacheKey = `${lang}:${countryCode.toUpperCase()}:${q.toLowerCase()}`;
+  const cacheKey = `${lang}:${countryCode.toUpperCase() || "ALL"}:${q.toLowerCase()}`;
   const cached = cache.get(cacheKey);
   if (cached) {
     return NextResponse.json({ results: cached });
   }
 
   try {
-    const iso2 = countryCode.toLowerCase();
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${token}&language=${lang}&types=place&country=${iso2}&autocomplete=true&limit=10`;
+    const mapboxParams = new URLSearchParams({
+      access_token: token,
+      language: lang,
+      types: "place",
+      autocomplete: "true",
+      limit: "10",
+    });
+    if (countryCode) {
+      mapboxParams.set("country", countryCode.toLowerCase());
+    }
+
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?${mapboxParams.toString()}`;
     const res = await fetch(url);
 
     if (!res.ok) {

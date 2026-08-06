@@ -40,12 +40,22 @@ describe("GET /api/geo/cities", () => {
     expect(res.status).toBe(500);
   });
 
-  it("returns 400/empty when countryCode is missing", async () => {
+  it("performs a global search and derives countryCode from context when countryCode is omitted", async () => {
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      new Response(JSON.stringify(MAPBOX_CITY_RESPONSE), { status: 200 }),
+    );
     const { GET } = await import("../cities/route");
     const res = await GET(makeRequest("bue"));
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(200);
+
+    const calledUrl = (fetch as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    expect(calledUrl).not.toContain("country=");
+
     const body = await res.json();
-    expect(body).toEqual({ results: [] });
+    expect(body.results[0]).toMatchObject({
+      name: "Buenos Aires",
+      countryCode: "AR",
+    });
   });
 
   it("returns { results: [] } when query is shorter than 2 chars", async () => {

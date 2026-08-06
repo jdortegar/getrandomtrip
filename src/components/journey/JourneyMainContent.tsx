@@ -79,6 +79,7 @@ interface JourneyMainContentLabels {
   refineDetailsOneSelected: string;
   refineDetailsCountSelected: string;
   refineDetailsStepDescription: string;
+  photoCreditUnsplash: string;
   travelTypeLabel: string;
   travelTypePlaceholder: string;
   viewCheckout: string;
@@ -685,6 +686,7 @@ export default function JourneyMainContent({
               excuseLabel: labels.excuseLabel,
               excuseStepDescription: labels.excuseStepDescription,
               next: labels.next,
+              photoCreditUnsplash: labels.photoCreditUnsplash,
               refineDetailsLabel: labels.refineDetailsLabel,
               refineDetailsPlaceholder: labels.refineDetailsPlaceholder,
               refineDetailsStepDescription: labels.refineDetailsStepDescription,

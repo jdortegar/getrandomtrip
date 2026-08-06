@@ -32,15 +32,23 @@ export function normalizeCountryFeature(
 /**
  * Normalizes a Mapbox place feature into a CityResult.
  * The city name is the first comma-separated segment of place_name.
+ *
+ * When the search was scoped to a country, that code is trusted as-is.
+ * For an unscoped (global) search, countryCode is "" and the country is
+ * instead read off the feature's own context entry.
  */
 export function normalizeCityFeature(
   feature: MapboxCityFeature,
   countryCode: string,
 ): CityResult {
   const name = feature.place_name.split(",")[0]?.trim() ?? feature.text;
+  const resolvedCountryCode =
+    countryCode ||
+    feature.context?.find((c) => c.id.startsWith("country."))?.short_code ||
+    "";
   return {
     name,
     placeName: feature.place_name,
-    countryCode: countryCode.toUpperCase(),
+    countryCode: resolvedCountryCode.toUpperCase(),
   };
 }

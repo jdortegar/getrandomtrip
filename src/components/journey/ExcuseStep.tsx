@@ -28,6 +28,7 @@ export interface ExcuseStepLabels {
   excuseLabel: string;
   excuseStepDescription: string;
   next: string;
+  photoCreditUnsplash: string;
   refineDetailsLabel: string;
   refineDetailsPlaceholder: string;
   refineDetailsStepDescription: string;
@@ -117,6 +118,7 @@ export default function ExcuseStep({
                 itemsPerView={3}
                 localizedExcuses={localizedExcuses}
                 onSelect={onSelectExcuse}
+                photoCreditLabel={labels.photoCreditUnsplash}
                 selectedExcuse={excuse}
               />
             </div>
@@ -144,6 +146,7 @@ export default function ExcuseStep({
                   itemsPerView={3}
                   onSelect={onSelectRefineDetails}
                   options={refineDetailsOptions}
+                  photoCreditLabel={labels.photoCreditUnsplash}
                   selectedOptions={refineDetails}
                 />
               ) : (

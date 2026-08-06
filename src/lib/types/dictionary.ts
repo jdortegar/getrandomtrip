@@ -2099,6 +2099,7 @@ export interface MarketingDictionary {
       refineDetailsOneSelected: string;
       refineDetailsCountSelected: string;
       refineDetailsStepDescription: string;
+      photoCreditUnsplash: string;
       travelTypeLabel: string;
       travelTypePlaceholder: string;
       viewCheckout: string;

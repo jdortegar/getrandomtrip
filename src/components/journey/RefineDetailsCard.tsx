@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Img from "@/components/common/Img";
+import { getTopicImage } from "@/lib/api/unsplash";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +11,7 @@ interface RefineDetailsCardProps {
   description: string;
   imageUrl: string;
   onClick?: () => void;
+  priority?: boolean;
   selected?: boolean;
   title: string;
 }
@@ -19,9 +21,22 @@ export default function RefineDetailsCard({
   description,
   imageUrl,
   onClick,
+  priority = false,
   selected = false,
   title,
 }: RefineDetailsCardProps) {
+  const [src, setSrc] = useState(imageUrl);
+
+  useEffect(() => {
+    setSrc(imageUrl);
+  }, [imageUrl]);
+
+  const handleImageError = () => {
+    void getTopicImage(title).then((found) => {
+      if (found) setSrc(found);
+    });
+  };
+
   return (
     <button
       className={cn(
@@ -44,13 +59,14 @@ export default function RefineDetailsCard({
           selected ? "border-[#172C36]" : "border-transparent",
         )}
       >
-        <Image
+        <Img
           alt={title}
-          className="transition-transform duration-300 group-hover:scale-110"
-          fill
-          priority
-          src={imageUrl}
-          style={{ objectFit: "cover" }}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+          height={348}
+          onError={handleImageError}
+          priority={priority}
+          src={src}
+          width={294}
         />
         <div className="absolute inset-0 z-10 bg-linear-to-t from-black/75 to-transparent" />
 
