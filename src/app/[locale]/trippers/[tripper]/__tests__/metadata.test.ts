@@ -45,7 +45,7 @@ function extractOgImageUrl(metadata: Awaited<ReturnType<PageModule["generateMeta
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
-const BASE_TRIPPER = {
+const BASE_TRIPPER_PROFILE = {
   avatarUrl: "https://example.com/avatar.jpg",
   availableTypes: [] as string[],
   bio: "Travel guide",
@@ -54,8 +54,11 @@ const BASE_TRIPPER = {
   destinations: [] as string[],
   email: "jane@example.com",
   heroImage: null as string | null,
+  heroImagePositionX: null as number | null,
+  heroImagePositionY: null as number | null,
   id: "tripper-1",
   interests: [] as string[],
+  isActive: true,
   location: null as string | null,
   name: "Jane Doe",
   role: "TRIPPER" as const,
@@ -63,6 +66,8 @@ const BASE_TRIPPER = {
   tripperSlug: "jane-doe",
   updatedAt: new Date("2024-01-01"),
 };
+
+const BASE_TRIPPER = { outcome: "active" as const, tripper: BASE_TRIPPER_PROFILE };
 
 // ── Tests ──────────────────────────────────────────────────────────────────────
 
@@ -77,8 +82,8 @@ describe("generateMetadata — tripper hero-image OG fallback", () => {
   it("uses heroImage as og:image when heroImage is set", async () => {
     const heroUrl = "https://example.com/hero.jpg";
     vi.mocked(getTripperBySlug).mockResolvedValue({
-      ...BASE_TRIPPER,
-      heroImage: heroUrl,
+      outcome: "active",
+      tripper: { ...BASE_TRIPPER_PROFILE, heroImage: heroUrl },
     });
 
     const metadata = await generateMetadata({
@@ -90,9 +95,12 @@ describe("generateMetadata — tripper hero-image OG fallback", () => {
 
   it("falls back to avatarUrl when heroImage is null but avatarUrl is set", async () => {
     vi.mocked(getTripperBySlug).mockResolvedValue({
-      ...BASE_TRIPPER,
-      avatarUrl: "https://example.com/avatar.jpg",
-      heroImage: null,
+      outcome: "active",
+      tripper: {
+        ...BASE_TRIPPER_PROFILE,
+        avatarUrl: "https://example.com/avatar.jpg",
+        heroImage: null,
+      },
     });
 
     const metadata = await generateMetadata({
@@ -104,9 +112,8 @@ describe("generateMetadata — tripper hero-image OG fallback", () => {
 
   it("falls back to /images/opengraph.png when both heroImage and avatarUrl are null", async () => {
     vi.mocked(getTripperBySlug).mockResolvedValue({
-      ...BASE_TRIPPER,
-      avatarUrl: null,
-      heroImage: null,
+      outcome: "active",
+      tripper: { ...BASE_TRIPPER_PROFILE, avatarUrl: null, heroImage: null },
     });
 
     const metadata = await generateMetadata({
@@ -117,7 +124,7 @@ describe("generateMetadata — tripper hero-image OG fallback", () => {
   });
 
   it("returns minimal metadata when tripper is not found", async () => {
-    vi.mocked(getTripperBySlug).mockResolvedValue(null);
+    vi.mocked(getTripperBySlug).mockResolvedValue({ outcome: "not_found" });
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ tripper: "unknown" }),

@@ -40,18 +40,18 @@ export async function generateMetadata(props: {
   params: Promise<{ tripper: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const dbTripper = await getTripperBySlug(params.tripper);
+  const result = await getTripperBySlug(params.tripper);
 
-  if (!dbTripper) return { title: "Randomtrip" };
+  if (result.outcome !== "active") return { title: "Randomtrip" };
 
-  const ogImage =
-    dbTripper.heroImage ?? dbTripper.avatarUrl ?? "/images/opengraph.png";
+  const { tripper } = result;
+  const ogImage = tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
 
   return {
-    title: `${dbTripper.name} | Randomtrip`,
+    title: `${tripper.name} | Randomtrip`,
     openGraph: {
       images: [{ url: ogImage, width: 1200, height: 630 }],
-      title: `${dbTripper.name} | Randomtrip`,
+      title: `${tripper.name} | Randomtrip`,
     },
   };
 }
@@ -72,16 +72,34 @@ export default async function Page(props: {
     ctaScrollTarget: `#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`,
   };
 
-  // Fetch from database
-  const tripperData = await getTripperBySlug(params.tripper);
-  const featuredTrips = await getTripperFeaturedTrips(params.tripper, 3);
+  // Fetch from database — three-way discriminated result
+  const tripperResult = await getTripperBySlug(params.tripper);
 
-  // Must have database tripper data
-  if (!tripperData) return notFound();
+  if (tripperResult.outcome === "not_found") return notFound();
 
-  const tripperPackagesByType = await getTripperExperiencesByTypeAndLevel(
-    tripperData.id,
-  );
+  if (tripperResult.outcome === "inactive") {
+    const { unavailable } = dict.tripperProfilePage;
+    return (
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-6 bg-white px-6 py-24 text-center">
+        <h1 className="font-barlow-condensed text-4xl font-extrabold uppercase text-gray-900">
+          {unavailable.title}
+        </h1>
+        <p className="max-w-md text-base text-gray-500">{unavailable.body}</p>
+        <a
+          className="rounded-full bg-light-blue px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          href={pathForLocale(locale, "/trippers")}
+        >
+          {unavailable.cta}
+        </a>
+      </main>
+    );
+  }
+
+  const tripperData = tripperResult.tripper;
+  const [featuredTrips, tripperPackagesByType] = await Promise.all([
+    getTripperFeaturedTrips(params.tripper, 3),
+    getTripperExperiencesByTypeAndLevel(tripperData.id),
+  ]);
   // availableTypesFromPackages = distinct types from this tripper's packages (from getTripperBySlug)
   const availableTypesFromPackages = tripperData.availableTypes ?? [];
 

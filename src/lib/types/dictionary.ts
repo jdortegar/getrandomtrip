@@ -292,6 +292,9 @@ export interface TripperDashboardDict {
       save: string;
       saving: string;
       uploadHint: string;
+      changePhoto: string;
+      dragToReposition: string;
+      resetPosition: string;
       nameFallback: string;
       namePlaceholder: string;
       nicknameHint: string;
@@ -326,6 +329,8 @@ export interface TripperDashboardDict {
       copyLink: string;
       copied: string;
       openLink: string;
+      visibilityLabel: string;
+      visibilityDisabledHint: string;
     };
     account: {
       eyebrow: string;
@@ -794,6 +799,11 @@ export interface TripperProfilePageDict {
     ctaHome: string;
     description: string;
     title: string;
+  };
+  unavailable: {
+    title: string;
+    body: string;
+    cta: string;
   };
   card: {
     editProfile: string;

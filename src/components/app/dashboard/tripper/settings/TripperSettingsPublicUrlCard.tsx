@@ -4,16 +4,19 @@ import { Check, Clipboard, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Switch } from "@/components/ui/Switch";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 interface TripperSettingsPublicUrlCardProps {
   copy: TripperDashboardDict["settingsProfile"]["publicUrl"];
-  locale: Locale;
-  slug: string;
+  isActive: boolean;
   isEditing: boolean;
+  locale: Locale;
+  onIsActiveChange: (isActive: boolean) => void;
   onSlugChange: (slug: string) => void;
+  slug: string;
 }
 
 function slugify(value: string): string {
@@ -27,12 +30,15 @@ function slugify(value: string): string {
 
 export function TripperSettingsPublicUrlCard({
   copy,
-  locale,
-  slug,
+  isActive,
   isEditing,
+  locale,
+  onIsActiveChange,
   onSlugChange,
+  slug,
 }: TripperSettingsPublicUrlCardProps) {
   const [copied, setCopied] = useState(false);
+  const hasSlug = Boolean(slug);
   const publicPath = pathForLocale(locale, `/trippers/${slug}`);
 
   async function handleCopy() {
@@ -96,6 +102,25 @@ export function TripperSettingsPublicUrlCard({
             <ExternalLink className="h-4 w-4" />
           </Link>
         </Button>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-medium text-gray-900">
+            {copy.visibilityLabel}
+          </span>
+          {!hasSlug && (
+            <span className="text-xs text-gray-400">
+              {copy.visibilityDisabledHint}
+            </span>
+          )}
+        </div>
+        <Switch
+          checked={isActive}
+          disabled={!hasSlug}
+          id="tripper-visibility-toggle"
+          onCheckedChange={onIsActiveChange}
+        />
       </div>
     </div>
   );

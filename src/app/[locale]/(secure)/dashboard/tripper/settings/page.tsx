@@ -37,6 +37,9 @@ function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
     commission: effectiveCommission(extras.commission),
     destinations: extras.destinations ?? [],
     heroImage: extras.heroImage ?? "",
+    heroImagePositionX: extras.heroImagePositionX ?? null,
+    heroImagePositionY: extras.heroImagePositionY ?? null,
+    isActive: extras.isActive ?? true,
     location: extras.location ?? "",
     nickname: extras.nickname ?? "",
     socialLinks: Array.isArray(extras.socialLinks) ? extras.socialLinks : [],
@@ -51,6 +54,9 @@ const EMPTY_FORM: TripperSettingsFormState = {
   email: "",
   bio: "",
   heroImage: "",
+  heroImagePositionX: 50,
+  heroImagePositionY: 50,
+  isActive: true,
   location: "",
   tierLevel: "",
   destinations: [],
@@ -80,6 +86,9 @@ export default function TripperSettingsPage() {
     commission: DEFAULT_COMMISSION,
     destinations: [],
     heroImage: "",
+    heroImagePositionX: null,
+    heroImagePositionY: null,
+    isActive: true,
     location: "",
     nickname: "",
     socialLinks: [],
@@ -126,6 +135,9 @@ export default function TripperSettingsPage() {
             setFormData((prev) => ({
               ...prev,
               ...normalized,
+              heroImagePositionX: normalized.heroImagePositionX ?? 50,
+              heroImagePositionY: normalized.heroImagePositionY ?? 50,
+              isActive: normalized.isActive ?? true,
               name: currentUser.name || "",
               email: currentUser.email || "",
             }));
@@ -209,6 +221,9 @@ export default function TripperSettingsPage() {
     setFormData((prev) => ({
       ...prev,
       ...profile,
+      heroImagePositionX: profile.heroImagePositionX ?? 50,
+      heroImagePositionY: profile.heroImagePositionY ?? 50,
+      isActive: profile.isActive ?? true,
       name: currentUser?.name || "",
       email: currentUser?.email || "",
     }));
@@ -224,6 +239,8 @@ export default function TripperSettingsPage() {
         body: JSON.stringify({
           bio: formData.bio,
           heroImage: formData.heroImage,
+          heroImagePositionX: formData.heroImagePositionX,
+          heroImagePositionY: formData.heroImagePositionY,
           location: formData.location,
           nickname: formData.nickname,
           socialLinks: formData.socialLinks,
@@ -237,11 +254,13 @@ export default function TripperSettingsPage() {
         }),
       });
 
-      if (response.ok) {
-        const data = (await response.json()) as {
-          user: TripperSessionExtras & { id?: string };
-        };
-        const nextProfile = normalizeExtras(data.user);
+      const responseBody = await response.json().catch(() => ({})) as {
+        user?: TripperSessionExtras & { id?: string };
+        error?: string;
+      };
+
+      if (response.ok && responseBody.user) {
+        const nextProfile = normalizeExtras(responseBody.user);
         setProfile(nextProfile);
         await updateSession({
           ...session,
@@ -249,6 +268,8 @@ export default function TripperSettingsPage() {
             ...session?.user,
             bio: nextProfile.bio,
             heroImage: nextProfile.heroImage,
+            heroImagePositionX: nextProfile.heroImagePositionX,
+            heroImagePositionY: nextProfile.heroImagePositionY,
             location: nextProfile.location,
             nickname: nextProfile.nickname,
             socialLinks: nextProfile.socialLinks,
@@ -262,11 +283,13 @@ export default function TripperSettingsPage() {
         toast.success(dict.tripperProfilePage.toasts.success);
         setIsEditing(false);
       } else {
-        toast.error(dict.tripperProfilePage.toasts.error);
+        const detail = responseBody.error;
+        toast.error(detail ? `${dict.tripperProfilePage.toasts.error}: ${detail}` : dict.tripperProfilePage.toasts.error);
       }
     } catch (error) {
       console.error("Error updating tripper profile:", error);
-      toast.error(dict.tripperProfilePage.toasts.error);
+      const detail = error instanceof Error ? error.message : null;
+      toast.error(detail ? `${dict.tripperProfilePage.toasts.error}: ${detail}` : dict.tripperProfilePage.toasts.error);
     } finally {
       setIsSaving(false);
     }
@@ -288,9 +311,14 @@ export default function TripperSettingsPage() {
         body: upload,
         method: "POST",
       });
-      if (!response.ok) throw new Error("upload failed");
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({})) as { error?: string };
+        throw new Error(body?.error ?? "Upload failed");
+      }
+
       const data = (await response.json()) as { url?: string };
-      if (!data.url) throw new Error("missing url");
+      if (!data.url) throw new Error("No URL returned from upload");
       setFormData((prev) => ({ ...prev, heroImage: data.url as string }));
       setProfile((prev) => ({ ...prev, heroImage: data.url as string }));
       // Delete old blob (fire-and-forget)
@@ -299,7 +327,8 @@ export default function TripperSettingsPage() {
       }
     } catch (error) {
       console.error("Error uploading tripper cover image:", error);
-      toast.error(copy.hero.imageUploadError);
+      const detail = error instanceof Error ? error.message : null;
+      toast.error(detail ? `${copy.hero.imageUploadError}: ${detail}` : copy.hero.imageUploadError);
     } finally {
       setIsUploadingHeroImage(false);
     }
@@ -356,8 +385,27 @@ export default function TripperSettingsPage() {
                 <div className="flex flex-col gap-6">
                   <TripperSettingsPublicUrlCard
                     copy={copy.publicUrl}
+                    isActive={formData.isActive}
                     isEditing={isEditing}
                     locale={locale}
+                    onIsActiveChange={async (next) => {
+                      setFormData((prev) => ({ ...prev, isActive: next }));
+                      try {
+                        const res = await fetch("/api/user/tripper/status", {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ isActive: next }),
+                        });
+                        if (!res.ok) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            isActive: !next,
+                          }));
+                        }
+                      } catch {
+                        setFormData((prev) => ({ ...prev, isActive: !next }));
+                      }
+                    }}
                     onSlugChange={(slug) =>
                       setFormData((prev) => ({ ...prev, tripperSlug: slug }))
                     }

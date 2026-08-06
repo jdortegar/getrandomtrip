@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const where: any = {
       isActive: true,
       ownerId: tripperId,
+      owner: { isActive: true },
     };
 
     if (type) where.type = type;

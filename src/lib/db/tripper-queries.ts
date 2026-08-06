@@ -10,6 +10,7 @@ import type {
   ActivityEntry,
   FeaturedTrip,
   FeaturedTripCard,
+  TripperBySlugResult,
   TripperListItem,
   TripperProfile,
 } from "@/types/tripper";
@@ -18,11 +19,14 @@ import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
 import { slugify } from "@/lib/helpers/slugify";
 
 /**
- * Get tripper profile by slug
+ * Get tripper profile by slug with a three-way discriminated outcome:
+ * - not_found: no User row matches the slug
+ * - inactive: User exists but isActive is false (render unavailable state, not 404)
+ * - active: User is active and profile is ready to render
  */
 export async function getTripperBySlug(
   slug: string,
-): Promise<TripperProfile | null> {
+): Promise<TripperBySlugResult> {
   try {
     const tripper = await prisma.user.findUnique({
       where: {
@@ -41,6 +45,9 @@ export async function getTripperBySlug(
         interests: true,
         bio: true,
         heroImage: true,
+        heroImagePositionX: true,
+        heroImagePositionY: true,
+        isActive: true,
         location: true,
         tierLevel: true,
         destinations: true,
@@ -49,7 +56,8 @@ export async function getTripperBySlug(
       },
     });
 
-    if (!tripper || !tripper.tripperSlug) return null;
+    if (!tripper || !tripper.tripperSlug) return { outcome: "not_found" };
+    if (!tripper.isActive) return { outcome: "inactive" };
 
     // Dynamically calculate availableTypes based on actual ACTIVE packages
     const packages = await prisma.experience.findMany({
@@ -58,27 +66,27 @@ export async function getTripperBySlug(
         isActive: true,
         status: "ACTIVE",
       },
-      select: {
-        type: true,
-      },
+      select: { type: true },
     });
 
     const availableTypes = [...new Set(packages.flatMap((pkg) => pkg.type))];
-
     const { roles, nickname, ...tripperRest } = tripper;
 
     return {
-      ...tripperRest,
-      name: nickname || tripper.name,
-      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
-      role: primaryRoleFromMembership(roles),
-      tripperSlug: tripper.tripperSlug,
-      commission: effectiveCommission(tripper.commission),
-      availableTypes,
-    } as TripperProfile;
+      outcome: "active",
+      tripper: {
+        ...tripperRest,
+        name: nickname || tripper.name,
+        avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+        role: primaryRoleFromMembership(roles),
+        tripperSlug: tripper.tripperSlug,
+        commission: effectiveCommission(tripper.commission),
+        availableTypes,
+      } as unknown as TripperProfile,
+    };
   } catch (error) {
     console.error("Error fetching tripper by slug:", error);
-    return null;
+    return { outcome: "not_found" };
   }
 }
 
@@ -120,7 +128,7 @@ export async function getTripperFeaturedTrips(
 ): Promise<FeaturedTripCard[]> {
   try {
     const tripper = await prisma.user.findUnique({
-      where: { tripperSlug, roles: { has: "TRIPPER" } },
+      where: { tripperSlug, roles: { has: "TRIPPER" }, isActive: true },
     });
 
     if (!tripper) return [];
@@ -183,11 +191,16 @@ export async function getTripperFeaturedTrips(
 
 /**
  * Get all trippers (for listings/search)
+ * Only returns trippers who have completed onboarding (tripperSlug set) and are active.
  */
 export async function getAllTrippers(): Promise<TripperListItem[]> {
   try {
     const trippers = await prisma.user.findMany({
-      where: { roles: { has: "TRIPPER" } },
+      where: {
+        roles: { has: "TRIPPER" },
+        tripperSlug: { not: null },
+        isActive: true,
+      },
       select: {
         id: true,
         name: true,
@@ -326,6 +339,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         ownerId: tripperId,
         isActive: true,
         status: "ACTIVE",
+        owner: { isActive: true },
       },
       select: {
         id: true,
@@ -397,6 +411,7 @@ export async function getTripperJourneyContext(
       where: {
         tripperSlug: slug,
         roles: { has: "TRIPPER" },
+        isActive: true,
       },
       select: {
         id: true,
