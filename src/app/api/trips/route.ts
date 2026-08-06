@@ -5,11 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
-import {
-  normalizeJourneyFilterValue,
-  normalizeMaxTravelTimeKey,
-  normalizeTransportId,
-} from "@/lib/helpers/transport";
+import { revertExpiredPendingPaymentsForUser } from "@/lib/db/tripRequest";
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -36,6 +32,13 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Persist any stale PENDING_PAYMENT → SAVED revert BEFORE the paginated
+    // read, so the query is the single source of truth (a stale row would
+    // otherwise contradict a `?status=` filter and make `total` stale).
+    // Scoped to owned rows only — a companion's read must not write to
+    // another buyer's trip.
+    await revertExpiredPendingPaymentsForUser(user.id);
 
     const searchParams = request.nextUrl.searchParams;
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
@@ -101,123 +104,6 @@ export async function GET(request: NextRequest) {
         error: "Internal server error",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 },
-    );
-  }
-}
-
-// POST /api/trips - Create or update a trip
-export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Find user by email
-    console.log("Finding user by email:", session.user.email);
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      console.error("User not found:", session.user.email);
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    console.log("User found:", user.id);
-    const body = await request.json();
-    console.log("Trip data received:", body);
-    const {
-      id, // If provided, update existing trip
-      from,
-      type,
-      level,
-      originCountry: country,
-      originCity: city,
-      startDate,
-      endDate,
-      nights,
-      pax,
-      transport,
-      accommodationType,
-      climate,
-      maxTravelTime,
-      departPref,
-      arrivePref,
-      avoidDestinations,
-      addons,
-      basePriceUsd,
-      displayPrice,
-      filtersCostUsd,
-      addonsCostUsd,
-      totalPerPaxUsd,
-      totalTripUsd,
-      status,
-    } = body;
-
-    // Validate required fields
-    if (!type || !level || !country || !city) {
-      return NextResponse.json(
-        { error: "Missing required fields: type, level, country, city" },
-        { status: 400 },
-      );
-    }
-
-    // Create or update trip
-    const tripData = {
-      userId: user.id,
-      from: from || "",
-      type,
-      level,
-      originCountry: country,
-      originCity: city,
-      startDate: startDate ? new Date(startDate) : null,
-      endDate: endDate ? new Date(endDate) : null,
-      nights: nights || 1,
-      pax: pax || 1,
-      transport: normalizeTransportId(transport) || "plane",
-      accommodationType:
-        normalizeJourneyFilterValue(accommodationType) || "any",
-      climate: normalizeJourneyFilterValue(climate) || "any",
-      maxTravelTime: normalizeMaxTravelTimeKey(maxTravelTime) || "no-limit",
-      departPref: normalizeJourneyFilterValue(departPref) || "any",
-      arrivePref: normalizeJourneyFilterValue(arrivePref) || "any",
-      avoidDestinations: avoidDestinations || [],
-      addons: addons || [],
-      basePriceUsd: basePriceUsd || 0,
-      displayPrice: displayPrice || "",
-      filtersCostUsd: filtersCostUsd || 0,
-      addonsCostUsd: addonsCostUsd || 0,
-      totalPerPaxUsd: totalPerPaxUsd || 0,
-      totalTripUsd: totalTripUsd || 0,
-      status: status || "SAVED",
-    };
-
-    let trip;
-    if (id) {
-      // Update existing trip
-      console.log("Updating trip:", id);
-      trip = await prisma.tripRequest.update({
-        where: { id },
-        data: tripData,
-      });
-      console.log("Trip updated:", trip.id);
-    } else {
-      // Create new trip
-      console.log("Creating new trip for user:", user.id);
-      trip = await prisma.tripRequest.create({
-        data: tripData,
-      });
-      console.log("Trip created:", trip.id);
-    }
-
-    return NextResponse.json({ trip }, { status: id ? 200 : 201 });
-  } catch (error) {
-    console.error("Error saving trip:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
       { status: 500 },
     );
   }
