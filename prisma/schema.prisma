@@ -36,10 +36,13 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
+  isActive       Boolean @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
   nickname       String? // Public display name shown to clients instead of the legal name, if set
   bio            String? // Tripper biography/description
-  heroImage      String? // Hero banner image
-  location       String? // Tripper location
+  heroImage          String? // Hero banner image
+  heroImagePositionX Float?  // Hero image horizontal focal point (0–100, null = 50)
+  heroImagePositionY Float?  // Hero image vertical focal point (0–100, null = 50)
+  location           String? // Tripper location
   motto          String? // Inspirational quote for testimonial banner
   specialization String? // e.g. "Tripper especializada en aventuras acuáticas"
   tierLevel      String? // Tripper tier level

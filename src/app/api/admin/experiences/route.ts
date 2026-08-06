@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Build additive AND where clause from optional query params
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = {};
+    const where: Record<string, any> = { owner: { isActive: true } };
     if (filterTripperId) where.ownerId = filterTripperId;
     if (filterLevel) where.level = filterLevel;
     if (filterType) where.type = { has: filterType };

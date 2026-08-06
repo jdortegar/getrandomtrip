@@ -3731,6 +3731,9 @@
         "save": "Guardar",
         "saving": "Guardando…",
         "uploadHint": "Cambiar foto de portada",
+        "changePhoto": "Cambiar foto",
+        "dragToReposition": "Arrastra para reposicionar",
+        "resetPosition": "Centrar",
         "nameFallback": "Tripper",
         "namePlaceholder": "Tu nombre",
         "nicknameHint": "Así te verán tus clientes, en vez de tu nombre de cuenta",
@@ -3764,7 +3767,9 @@
         "slugPlaceholder": "tu-slug",
         "copyLink": "Copiar enlace",
         "copied": "¡Copiado!",
-        "openLink": "Abrir perfil público"
+        "openLink": "Abrir perfil público",
+        "visibilityLabel": "Perfil público visible",
+        "visibilityDisabledHint": "Configura tu URL de perfil primero para activar la visibilidad"
       },
       "account": {
         "eyebrow": "Solo lectura",
@@ -4298,6 +4303,11 @@
       "title": "Acceso restringido",
       "description": "Esta página es solo para trippers.",
       "ctaHome": "Volver a la página principal"
+    },
+    "unavailable": {
+      "title": "Tripper no disponible",
+      "body": "Este tripper no está disponible en este momento. ¡Pronto volverá!",
+      "cta": "Ver todos los trippers"
     },
     "hero": {
       "eyebrow": "Cuenta tripper",

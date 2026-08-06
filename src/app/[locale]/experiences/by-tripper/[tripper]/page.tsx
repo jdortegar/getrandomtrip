@@ -58,19 +58,20 @@ export async function generateMetadata(props: {
   params: Promise<{ tripper: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const dbTripper = await getTripperBySlug(params.tripper);
+  const result = await getTripperBySlug(params.tripper);
 
-  if (!dbTripper) return { title: "Randomtrip" };
+  if (result.outcome !== "active") return { title: "Randomtrip" };
 
+  const { tripper } = result;
   return {
-    title: `Paquetes de ${dbTripper.name} | Randomtrip`,
-    description: `Explora los paquetes de viaje únicos creados por ${dbTripper.name}. Descubre aventuras personalizadas y experiencias auténticas.`,
+    title: `Paquetes de ${tripper.name} | Randomtrip`,
+    description: `Explora los paquetes de viaje únicos creados por ${tripper.name}. Descubre aventuras personalizadas y experiencias auténticas.`,
     openGraph: {
-      title: `Paquetes de ${dbTripper.name} | Randomtrip`,
-      description: `Explora los paquetes de viaje únicos creados por ${dbTripper.name}.`,
+      title: `Paquetes de ${tripper.name} | Randomtrip`,
+      description: `Explora los paquetes de viaje únicos creados por ${tripper.name}.`,
       images: [
         {
-          url: dbTripper.avatarUrl || "/images/fallback-profile.jpg",
+          url: tripper.avatarUrl || "/images/fallback-profile.jpg",
           width: 1200,
           height: 630,
         },
@@ -88,11 +89,14 @@ export default async function Page(props: {
     redirect("/experiences/by-type/group");
   }
 
-  // Fetch from database
-  const dbTripper = await getTripperBySlug(params.tripper);
+  // Fetch from database — three-way discriminated result
+  const tripperResult = await getTripperBySlug(params.tripper);
 
-  // Must have database tripper data
-  if (!dbTripper) return notFound();
+  if (tripperResult.outcome === "not_found") return notFound();
+  // Treat inactive trippers same as not found on this secondary page
+  if (tripperResult.outcome === "inactive") return notFound();
+
+  const dbTripper = tripperResult.tripper;
 
   // Fetch tripper experiences organized by type and level
   const tripperExperiencesByType = await getTripperExperiencesByTypeAndLevel(

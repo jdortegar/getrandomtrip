@@ -102,19 +102,25 @@ export async function PATCH(
     // When an experience is assigned, derive actualDestination from its city + country.
     // actualDestination is NOT set directly by the admin — only derived here.
     if (experienceId) {
-      const assignedExperience = await prisma.experience.findUnique({
-        where: { id: experienceId },
+      // Reject assignment if the experience owner is inactive (spec: owner-active filter)
+      const assignedExperience = await prisma.experience.findFirst({
+        where: { id: experienceId, owner: { isActive: true } },
         select: { destinationCity: true, destinationCountry: true },
       });
 
-      if (assignedExperience) {
-        tripRequest = await prisma.tripRequest.update({
-          where: { id: params.id },
-          data: {
-            actualDestination: `${assignedExperience.destinationCity}, ${assignedExperience.destinationCountry}`,
-          },
-        });
+      if (!assignedExperience) {
+        return NextResponse.json(
+          { error: "Experience not found or its owner is inactive." },
+          { status: 422 },
+        );
       }
+
+      tripRequest = await prisma.tripRequest.update({
+        where: { id: params.id },
+        data: {
+          actualDestination: `${assignedExperience.destinationCity}, ${assignedExperience.destinationCountry}`,
+        },
+      });
     }
 
     if (nextStatus === "REVEALED") {

@@ -1,0 +1,182 @@
+change: tripper-profile-visibility
+status: tasks
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: pending
+  verify: pending
+  archive: pending
+artifacts:
+  proposal: openspec/changes/tripper-profile-visibility/proposal.md
+  spec: openspec/changes/tripper-profile-visibility/spec.md
+  design: openspec/changes/tripper-profile-visibility/design.md
+  tasks: openspec/changes/tripper-profile-visibility/tasks.md
+updated: 2026-08-06
+revisions:
+  - artifact: proposal
+    date: 2026-08-06
+    note: >
+      Proposal written from a finalized grill-me design interview — all 14
+      decisions were resolved live against the code with file/line citations,
+      so no open questions remain. Change bundles two related concerns on the
+      same read path: (1) bugfix for the tripper-card 404 caused by
+      getAllTrippers() not filtering tripperSlug plus synthesized name-derived
+      slug fallbacks in TopTrippersGrid/TripperSearchModal, and (2) a new
+      tripper self-service isActive visibility toggle (Boolean @default(true)
+      on User) whose scope covers directory hiding, a dedicated
+      "tripper unavailable" state on both the public profile page and the
+      journey flow (distinct from notFound()), and exclusion from all new
+      trip-request/experience matching. Key implementation hazard flagged: the
+      isActive check must land on the User-lookup step, not the Experience
+      query, in the two-step patterns in tripper-queries.ts and
+      tripper-trips.ts. New endpoint PATCH /api/user/tripper/status is
+      deliberately NOT an extension of PATCH /api/user/tripper, which 400s
+      without availableTypes and silently regenerates tripperSlug when it is
+      absent from the body. Out of scope: any admin-side control, changes to
+      already-assigned TripRequests, and destination-reveal. Size flagged as
+      High 400-line budget risk (~14 files + new route + migration) with a
+      suggested 3-slice boundary; delivery_strategy=ask-on-risk so the
+      chaining decision belongs to the user after sdd-tasks.
+  - artifact: spec
+    date: 2026-08-06
+    note: >
+      Full new-capability spec written at openspec/changes/tripper-profile-visibility/spec.md
+      (verified openspec/specs/tripper/spec.md has no existing
+      tripper-profile-visibility section — confirmed full spec, not delta).
+      Formalized all 14 proposal decisions into 10 requirements: two
+      independent getAllTrippers() gates (slug-completeness vs isActive) kept
+      as separate requirements per instruction; three-way getTripperBySlug
+      outcome (not-found / inactive / active) with explicit render behavior
+      per case; journey-flow unavailable state mirroring the profile page;
+      one matching-exclusion requirement with a table covering all 8 sites
+      named in the proposal plus a scenario per site (including the
+      admin/trip-requests/[id] experienceId lookup that currently has no
+      owner filter) so none get silently dropped; PATCH
+      /api/user/tripper/status contract (auth, {isActive}-only body, 400 on
+      null tripperSlug, slug-immutability scenario); toggle UI gating; dual-
+      locale copy requirement. Added an explicit "Explicitly Not Required"
+      section listing all proposal non-goals (no admin control, no effect on
+      already-assigned trips, destination-reveal untouched, no
+      migration/cancellation, no scheduled/admin deactivation) so sdd-verify
+      does not flag their absence as a gap. No open questions — proposal was
+      fully resolved. Exceeds the skill's 650-word soft budget given the
+      exhaustive per-site scenario coverage explicitly requested; accepted as
+      justified given the proposal's own high-risk callout on the matching
+      exclusion.
+  - artifact: design
+    date: 2026-08-06
+    note: >
+      Design written at openspec/changes/tripper-profile-visibility/design.md
+      after reading every file/line the proposal cites. Six architecture
+      decisions: (1) getTripperBySlug returns a tagged union
+      TripperLookupResult = not_found | inactive{name} | ok{tripper}, chosen
+      over two functions or a typed throw; (2) a genuine DB error now RETHROWS
+      instead of collapsing to 404, because a cached 404 on a transient blip
+      can de-index a live profile and src/app/error.tsx already exists — a 4th
+      "error" variant was rejected as noise; (3) the journey-context API
+      answers 410 Gone for inactive (404 stays for unknown slug) so the
+      existing `if (!res.ok) return null` fails CLOSED, whereas a 200 + status
+      body would let any res.ok-only consumer silently render the branded
+      journey — the exact degrade decision #8 rejected; (4) one shared
+      non-"use client" presentational component
+      src/components/tripper/TripperUnavailableNotice.tsx so the server profile
+      page and the client JourneyPageClient render identical markup, with a
+      single copy key set at dict.trippers.unavailable; (5) owner.isActive on
+      /api/admin/experiences is OPT-IN via ?ownerActive=true because that route
+      also feeds AdminExperiencesPageClient, and an unconditional filter would
+      change admin-side display, which is out of scope; (6) schema lands via
+      prisma db push, not a migration file.
+      Three gaps in the proposal were found and closed: (a) the repo has NO
+      Prisma migrations — prisma/migrations/ is just .gitkeep and db:migrate is
+      aliased to `prisma db push` (package.json:18), so "exact migration" is a
+      schema edit + db:push + db:generate; no index (low-cardinality boolean
+      always ANDed with the unique tripperSlug or roles, matching the
+      unindexed Experience.isActive and BlogPost.isActive precedent); ordering
+      is compiler-enforced since every where addition is a Prisma type error
+      until generate runs; (b) getTripperBySlug has a FOURTH consumer the
+      proposal missed — experiences/by-tripper/[tripper]/page.tsx:61,92 — where
+      inactive collapses to notFound() (open question, that page is 100%
+      hardcoded Spanish); (c) GET /api/user/tripper does not select isActive,
+      so the toggle had nothing to hydrate from — added along with
+      TripperSessionExtras.isActive and normalizeExtras.
+      Also corrected/expanded vs the proposal: getTripperExperiencesByTypeAndLevel
+      and all four tripper-trips.ts functions have NO User lookup at all (they
+      take a tripperId), so each needs a new preceding
+      user.findFirst({ id, isActive: true }) guard — adding isActive to their
+      Experience where would filter Experience.isActive, which already exists
+      and means something else, i.e. the precise silent no-op the spec's last
+      scenario forbids; admin/trip-requests/[id] has an ORDERING bug where
+      tripRequest.update persists experienceId at :97 BEFORE the experience is
+      looked up at :105, so the owner-active check must become a pre-update
+      guard (and can absorb the destination lookup, keeping query count flat);
+      TopTrippersGrid has the slug synthesis TWICE (32-35 href and 37-40
+      instagramUrl), not once; getAllTrippers narrows tripperSlug via the
+      existing type-predicate filter idiom from getTripperPublishedBlogs:969
+      rather than a `!` assertion, letting TripperListItem/TripperSearchItem
+      narrow string|null -> string; the settings toggle must gate on
+      profile.tripperSlug NOT formData.tripperSlug (an unsaved typed slug would
+      enable a switch the API still 400s); and the existing test
+      trippers/[tripper]/__tests__/metadata.test.ts is a REQUIRED edit (4 mock
+      returns stop typechecking under the union).
+      Exceeds the skill's 800-word budget deliberately — the brief demanded
+      exact before/after diffs at all ~9 matching sites plus full lookup,
+      endpoint, UI, and i18n contracts, and the proposal's own top risk is a
+      filter landing on the wrong query.
+  - artifact: design
+    date: 2026-08-06
+    note: >
+      Design revised — both open questions resolved by the user; phases.design
+      stays done. (1) experiences/by-tripper/[tripper]/page.tsx is now
+      explicitly OUT OF BEHAVIORAL SCOPE, in a new design-level "Out of Scope"
+      section: no unavailable state, no i18n remediation of its hardcoded
+      Spanish, and nothing changed in getTripperExperiencesByTypeAndLevel /
+      getTripperAvailableTypesAndLevels on its account (those two are still
+      modified, but only for the matching-exclusion requirement the rest of the
+      platform needs). Rationale recorded: the page lists a tripper's packages
+      and types openly by name on a public URL, which runs against the
+      platform's mystery-trip premise, so it is likely vestigial and a
+      candidate for outright removal in its own future change — flagged
+      informationally so sdd-verify reads the surviving 404 path and the
+      untouched i18n violation as intentional, NOT as gaps, and so sdd-tasks
+      does not generate work for it. Honest caveat documented in the design: the
+      page cannot be literally zero-diff, because the union return type is
+      always a truthy object, so `if (!dbTripper)` at :63/:95 becomes dead code
+      and dbTripper.name stops typechecking. A compile-only adaptation is
+      type-forced at both call sites (3 lines each, `if (lookup.status !== "ok")
+      return notFound()` — inactive deliberately lumped with not_found, i.e.
+      bare 404 with no unavailable state). Rejected alternative recorded: a
+      backward-compatible getActiveTripperBySlug(): Promise<TripperProfile|null>
+      wrapper would keep the file byte-identical, but it adds a second exported
+      lookup that outlives a page slated for deletion and gives future callers
+      a way to bypass the union — worse than six mechanical lines. (2) The
+      /api/admin/experiences filter param is confirmed as ownerActive=true, with
+      the rationale added to that decision: it matches the flat
+      one-concept-per-key style the route already uses (status=, tripperId=,
+      level=, type=, search=), whereas excludeInactiveOwners= uses a
+      negated-verb-phrase form that appears nowhere in the codebase's query
+      params and reads as a directive rather than a filter value. Open Questions
+      section now reads "None".
+  - artifact: tasks
+    date: 2026-08-06
+    note: >
+      Tasks written at openspec/changes/tripper-profile-visibility/tasks.md.
+      Corrected the orchestrator's initial 3-slice hypothesis: design.md's
+      getAllTrippers diff bundles tripperSlug and isActive into the same where
+      clause, and Rollout step 1 states schema must land first (every ~9 where
+      addition is a Prisma type error pre-generate) — so Slice A depends on
+      the schema, not just B/C. Restructured into 6 work units: Phase 0
+      (schema, blocks all), then A/B/C1/C2 as independent siblings depending
+      only on Phase 0, then C3 (journey flow) depending on Phase 0 + C1 (reuses
+      TripperUnavailableNotice). Flagged trippers/[tripper]/__tests__/metadata.test.ts
+      as its own required task (4 mock migrations), and gave getTripperBySlug's
+      tagged-union restructuring and the 8-site matching-exclusion sweep explicit
+      RED/GREEN pairs per strict TDD mode. Review Workload Forecast: ~950-1150
+      estimated changed lines across all units, 400-line budget risk High,
+      chained PRs recommended Yes, chain strategy left "pending" — user has not
+      chosen stacked-to-main vs feature-branch-chain, decision needed before
+      apply per ask-on-risk delivery strategy. Exceeds the tasks skill's
+      530-word soft budget, accepted deliberately per the same precedent set by
+      spec.md/design.md for this change.

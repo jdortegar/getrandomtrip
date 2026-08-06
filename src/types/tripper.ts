@@ -93,6 +93,9 @@ export interface TripperSessionExtras {
   commission?: number;
   destinations?: string[];
   heroImage?: string;
+  heroImagePositionX?: number | null;
+  heroImagePositionY?: number | null;
+  isActive?: boolean;
   location?: string;
   nickname?: string;
   socialLinks?: SocialLink[];
@@ -107,6 +110,11 @@ export interface TripperSettingsFormState {
   email: string;
   bio: string;
   heroImage: string;
+  /** Hero image horizontal focal point (0–100). Defaults to 50 (center). */
+  heroImagePositionX: number;
+  /** Hero image vertical focal point (0–100). Defaults to 50 (center). */
+  heroImagePositionY: number;
+  isActive: boolean;
   location: string;
   tierLevel: string;
   destinations: string[];
@@ -164,12 +172,26 @@ export interface TripperProfile {
   interests: string[];
   bio: string | null;
   heroImage: string | null;
+  heroImagePositionX: number | null;
+  heroImagePositionY: number | null;
+  isActive: boolean;
   location: string | null;
   tierLevel: string | null;
   destinations: string[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+/**
+ * Discriminated result from getTripperBySlug.
+ * - not_found: no User row matches the slug
+ * - inactive: User exists but isActive is false
+ * - active: User is active and profile is ready to render
+ */
+export type TripperBySlugResult =
+  | { outcome: "not_found" }
+  | { outcome: "inactive" }
+  | { outcome: "active"; tripper: TripperProfile };
 
 // Featured Trip from Database
 export interface FeaturedTrip {

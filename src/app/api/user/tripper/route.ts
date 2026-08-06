@@ -23,6 +23,9 @@ export async function GET() {
         commission: true,
         destinations: true,
         heroImage: true,
+        heroImagePositionX: true,
+        heroImagePositionY: true,
+        isActive: true,
         location: true,
         nickname: true,
         socialLinks: true,
@@ -43,8 +46,9 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching tripper profile:", error);
+    const detail = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: `Internal server error: ${detail}` },
       { status: 500 },
     );
   }
@@ -62,6 +66,8 @@ export async function PATCH(request: NextRequest) {
     const {
       bio,
       heroImage,
+      heroImagePositionX,
+      heroImagePositionY,
       location,
       nickname,
       socialLinks,
@@ -78,9 +84,9 @@ export async function PATCH(request: NextRequest) {
     // Commission is no longer a client-supplied field, so it is not part of
     // this check — the shared `?? 0.15` default covers a tripper with no
     // assigned rate.
-    if (!Array.isArray(availableTypes) || availableTypes.length === 0) {
+    if (!Array.isArray(availableTypes)) {
       return NextResponse.json(
-        { error: "Missing required tripper fields" },
+        { error: "availableTypes must be an array" },
         { status: 400 },
       );
     }
@@ -129,6 +135,8 @@ export async function PATCH(request: NextRequest) {
       data: {
         bio,
         heroImage,
+        heroImagePositionX: typeof heroImagePositionX === "number" ? heroImagePositionX : undefined,
+        heroImagePositionY: typeof heroImagePositionY === "number" ? heroImagePositionY : undefined,
         location,
         nickname,
         socialLinks,
@@ -146,6 +154,9 @@ export async function PATCH(request: NextRequest) {
         roles: true,
         bio: true,
         heroImage: true,
+        heroImagePositionX: true,
+        heroImagePositionY: true,
+        isActive: true,
         location: true,
         nickname: true,
         socialLinks: true,
@@ -170,8 +181,9 @@ export async function PATCH(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error updating tripper profile:", error);
+    const detail = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: `Internal server error: ${detail}` },
       { status: 500 },
     );
   }

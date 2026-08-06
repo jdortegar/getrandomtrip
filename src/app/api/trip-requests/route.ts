@@ -412,6 +412,7 @@ export async function POST(request: NextRequest) {
         where: {
           tripperSlug: tripperSlug.trim(),
           roles: { has: "TRIPPER" },
+          isActive: true,
         },
         select: { id: true },
       });
