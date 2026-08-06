@@ -10,6 +10,7 @@ import {
   normalizeTransportId,
 } from "@/lib/helpers/transport";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
+import { findActiveTripRequest, tripFamilyOf } from "@/lib/db/tripRequest";
 import { Prisma, TripRequestStatus } from "@prisma/client";
 
 /**
@@ -122,6 +123,122 @@ function buildTripRequestPartialUpdate(
   return data;
 }
 
+/** Fields produced for a fresh row — shared by both `create` and the
+ * family-scoped `update` fallback so a reused xsed row still gets
+ * canonical dates / `experienceId` resolution instead of stale values. */
+type TripRequestCreateFields = {
+  from: string;
+  type: string;
+  level: string;
+  originCountry: string;
+  originCity: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  nights: number;
+  pax: number;
+  transport: string;
+  accommodationType: string;
+  climate: string;
+  maxTravelTime: string;
+  departPref: string;
+  arrivePref: string;
+  avoidDestinations: string[];
+  addons: Prisma.InputJsonValue;
+  status: TripRequestStatus;
+  paxDetails?: Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput;
+  experienceId?: string;
+};
+
+async function buildTripRequestCreateFields(
+  body: Record<string, unknown>,
+  paxDetailsValue:
+    | Prisma.InputJsonValue
+    | Prisma.NullableJsonNullValueInput
+    | undefined,
+): Promise<TripRequestCreateFields> {
+  const {
+    from,
+    type,
+    level,
+    originCountry,
+    originCity,
+    startDate,
+    endDate,
+    nights,
+    pax,
+    transport,
+    accommodationType,
+    climate,
+    maxTravelTime,
+    departPref,
+    arrivePref,
+    avoidDestinations,
+    addons,
+    status,
+    experienceId,
+  } = body;
+
+  // For Xsed trips, dates are authoritative server-side.
+  // Priority: Experience.tripDate (if linked) → canonical formula.
+  // Never trust the client-sent startDate/endDate for xsed.
+  let resolvedStartDate: Date | null = startDate
+    ? new Date(String(startDate))
+    : null;
+  let resolvedEndDate: Date | null = endDate
+    ? new Date(String(endDate))
+    : null;
+
+  if ((type as string) === "xsed") {
+    if (experienceId) {
+      const exp = await prisma.experience.findUnique({
+        where: { id: String(experienceId) },
+        select: { tripDate: true },
+      });
+      if (exp?.tripDate) {
+        resolvedStartDate = exp.tripDate;
+        resolvedEndDate = new Date(exp.tripDate.getTime() + 86400000); // +1 day
+      } else {
+        const canonical = xsedCanonicalDates();
+        resolvedStartDate = canonical.startDate;
+        resolvedEndDate = canonical.endDate;
+      }
+    } else {
+      const canonical = xsedCanonicalDates();
+      resolvedStartDate = canonical.startDate;
+      resolvedEndDate = canonical.endDate;
+    }
+  }
+
+  return {
+    from: (from as string) || "admin",
+    type: type as string,
+    level: level as string,
+    originCountry: originCountry as string,
+    originCity: originCity as string,
+    startDate: resolvedStartDate,
+    endDate: resolvedEndDate,
+    nights: (typeof nights === "number" ? nights : Number(nights)) || 1,
+    pax: (typeof pax === "number" ? pax : Number(pax)) || 1,
+    transport: normalizeTransportId(String(transport ?? "")) || "plane",
+    accommodationType:
+      normalizeJourneyFilterValue(String(accommodationType ?? "")) || "any",
+    climate: normalizeJourneyFilterValue(String(climate ?? "")) || "any",
+    maxTravelTime:
+      normalizeMaxTravelTimeKey(String(maxTravelTime ?? "")) || "no-limit",
+    departPref:
+      normalizeJourneyFilterValue(String(departPref ?? "")) || "any",
+    arrivePref:
+      normalizeJourneyFilterValue(String(arrivePref ?? "")) || "any",
+    avoidDestinations: Array.isArray(avoidDestinations)
+      ? (avoidDestinations as string[])
+      : [],
+    addons: (addons ?? []) as Prisma.InputJsonValue,
+    status: (status as TripRequestStatus) || TripRequestStatus.DRAFT,
+    ...(paxDetailsValue !== undefined ? { paxDetails: paxDetailsValue } : {}),
+    ...(experienceId ? { experienceId: String(experienceId) } : {}),
+  };
+}
+
 // GET /api/trip-requests - Get all trip requests for the authenticated user
 export async function GET(request: NextRequest) {
   try {
@@ -207,26 +324,11 @@ export async function POST(request: NextRequest) {
     console.log("Trip request data received:", body);
     const {
       id, // If provided, update existing trip request
-      from,
       type,
       level,
       originCountry,
       originCity,
-      startDate,
-      endDate,
-      nights,
-      pax,
       paxDetails: paxDetailsRaw,
-      transport,
-      accommodationType,
-      climate,
-      maxTravelTime,
-      departPref,
-      arrivePref,
-      avoidDestinations,
-      addons,
-      status,
-      experienceId,
       tripper: tripperSlug,
     } = body;
 
@@ -249,9 +351,63 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Resolve tripper slug → tripperId (only on create; updates do not change attribution)
+    // Step 1-2: a client-supplied id that resolves to a row this user owns
+    // is always updated directly (partial update), regardless of whether a
+    // family-scoped active row also exists.
+    const clientId = id ? String(id) : undefined;
+    if (clientId) {
+      const owned = await prisma.tripRequest.findFirst({
+        where: { id: clientId, userId: user.id },
+        select: { id: true },
+      });
+
+      if (owned) {
+        const updateData = buildTripRequestPartialUpdate(body, paxDetailsValue);
+        if (Object.keys(updateData).length === 0) {
+          return NextResponse.json(
+            { error: "No fields to update" },
+            { status: 400 },
+          );
+        }
+        console.log("Updating trip request:", owned.id);
+        const tripRequest = await prisma.tripRequest.update({
+          where: { id: owned.id },
+          data: updateData,
+        });
+        console.log("Trip request updated:", tripRequest.id);
+        return NextResponse.json({ tripRequest }, { status: 200 });
+      }
+
+      // Stale/unowned id. Only fall through to family resolution when the
+      // body still carries a `type` to resolve a family from — otherwise a
+      // partial body (e.g. `{ id, pax, paxDetails }`) could bind onto the
+      // wrong family's row. 404 is a strict improvement over the previous
+      // uncaught Prisma P2025 → 500.
+      if (!type) {
+        return NextResponse.json(
+          { error: "Trip request not found" },
+          { status: 404 },
+        );
+      }
+    }
+
+    // Step 3-4: family resolution + required-field validation.
+    if (!type || !level || !originCountry || !originCity) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing required fields: type, level, originCountry, originCity",
+        },
+        { status: 400 },
+      );
+    }
+
+    const family = tripFamilyOf(type as string);
+
+    // Resolve tripper slug → tripperId. Used only when the active row (if
+    // any) doesn't already carry attribution — updates never clobber it.
     let resolvedTripperId: string | null = null;
-    if (!id && typeof tripperSlug === "string" && tripperSlug.trim() !== "") {
+    if (typeof tripperSlug === "string" && tripperSlug.trim() !== "") {
       const tripperUser = await prisma.user.findFirst({
         where: {
           tripperSlug: tripperSlug.trim(),
@@ -262,111 +418,38 @@ export async function POST(request: NextRequest) {
       resolvedTripperId = tripperUser?.id ?? null;
     }
 
+    const fields = await buildTripRequestCreateFields(body, paxDetailsValue);
+    const active = await findActiveTripRequest(user.id, family);
+
     let tripRequest;
-    if (id) {
-      const updateData = buildTripRequestPartialUpdate(body, paxDetailsValue);
-      if (Object.keys(updateData).length === 0) {
-        return NextResponse.json(
-          { error: "No fields to update" },
-          { status: 400 },
-        );
-      }
-      console.log("Updating trip request:", id);
+    let statusCode: 200 | 201;
+    if (active) {
+      console.log("Updating active trip request for family:", family, active.id);
       tripRequest = await prisma.tripRequest.update({
-        where: { id: String(id), userId: user.id },
-        data: updateData,
+        where: { id: active.id },
+        data: { ...fields, tripperId: active.tripperId ?? resolvedTripperId },
       });
-      console.log("Trip request updated:", tripRequest.id);
+      statusCode = 200;
     } else {
-      if (!type || !level || !originCountry || !originCity) {
-        return NextResponse.json(
-          {
-            error:
-              "Missing required fields: type, level, originCountry, originCity",
-          },
-          { status: 400 },
-        );
-      }
-
-      // For Xsed trips, dates are authoritative server-side.
-      // Priority: Experience.tripDate (if linked) → canonical formula.
-      // Never trust the client-sent startDate/endDate for xsed.
-      let resolvedStartDate: Date | null = startDate
-        ? new Date(String(startDate))
-        : null;
-      let resolvedEndDate: Date | null = endDate
-        ? new Date(String(endDate))
-        : null;
-
-      if ((type as string) === "xsed") {
-        if (experienceId) {
-          const exp = await prisma.experience.findUnique({
-            where: { id: String(experienceId) },
-            select: { tripDate: true },
-          });
-          if (exp?.tripDate) {
-            resolvedStartDate = exp.tripDate;
-            resolvedEndDate = new Date(exp.tripDate.getTime() + 86400000); // +1 day
-          } else {
-            const canonical = xsedCanonicalDates();
-            resolvedStartDate = canonical.startDate;
-            resolvedEndDate = canonical.endDate;
-          }
-        } else {
-          const canonical = xsedCanonicalDates();
-          resolvedStartDate = canonical.startDate;
-          resolvedEndDate = canonical.endDate;
-        }
-      }
-
-      const tripFields = {
-        from: (from as string) || "admin",
-        type: type as string,
-        level: level as string,
-        originCountry: originCountry as string,
-        originCity: originCity as string,
-        startDate: resolvedStartDate,
-        endDate: resolvedEndDate,
-        nights: (typeof nights === "number" ? nights : Number(nights)) || 1,
-        pax: (typeof pax === "number" ? pax : Number(pax)) || 1,
-        transport: normalizeTransportId(String(transport ?? "")) || "plane",
-        accommodationType:
-          normalizeJourneyFilterValue(String(accommodationType ?? "")) || "any",
-        climate: normalizeJourneyFilterValue(String(climate ?? "")) || "any",
-        maxTravelTime:
-          normalizeMaxTravelTimeKey(String(maxTravelTime ?? "")) || "no-limit",
-        departPref:
-          normalizeJourneyFilterValue(String(departPref ?? "")) || "any",
-        arrivePref:
-          normalizeJourneyFilterValue(String(arrivePref ?? "")) || "any",
-        avoidDestinations: Array.isArray(avoidDestinations)
-          ? (avoidDestinations as string[])
-          : [],
-        addons: (addons ?? []) as Prisma.InputJsonValue,
-        status: (status as TripRequestStatus) || TripRequestStatus.DRAFT,
-        ...(paxDetailsValue !== undefined
-          ? { paxDetails: paxDetailsValue }
-          : {}),
-        ...(experienceId ? { experienceId: String(experienceId) } : {}),
-        tripperId: resolvedTripperId,
-      };
-
       console.log("Creating new trip request for user:", user.id);
       tripRequest = await prisma.tripRequest.create({
-        data: { userId: user.id, ...tripFields },
+        data: { userId: user.id, ...fields, tripperId: resolvedTripperId },
       });
-      console.log("Trip request created:", tripRequest.id);
+      statusCode = 201;
+    }
+    console.log("Trip request saved:", tripRequest.id);
 
-      // Revalidate XSED pages so soldCount reflects the new booking immediately.
-      if (tripRequest.type === "xsed") {
-        revalidatePath("/es/xsed");
-        revalidatePath("/en/xsed");
-        revalidatePath("/es/xsed/drops");
-        revalidatePath("/en/xsed/drops");
-      }
+    // Revalidate XSED pages so soldCount reflects the new/changed booking
+    // immediately — fires on both create and a reused row whose
+    // experienceId just changed.
+    if (tripRequest.type === "xsed") {
+      revalidatePath("/es/xsed");
+      revalidatePath("/en/xsed");
+      revalidatePath("/es/xsed/drops");
+      revalidatePath("/en/xsed/drops");
     }
 
-    return NextResponse.json({ tripRequest }, { status: id ? 200 : 201 });
+    return NextResponse.json({ tripRequest }, { status: statusCode });
   } catch (error) {
     console.error("Error saving trip request:", error);
     return NextResponse.json(

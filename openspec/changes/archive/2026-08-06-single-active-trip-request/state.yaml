@@ -1,0 +1,74 @@
+change: single-active-trip-request
+status: archive
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: partial
+  verify: done
+  archive: done
+artifacts:
+  verify_report: openspec/changes/archive/2026-08-06-single-active-trip-request/verify-report.md
+  proposal: openspec/changes/archive/2026-08-06-single-active-trip-request/proposal.md
+  spec: openspec/changes/archive/2026-08-06-single-active-trip-request/spec.md
+  design: openspec/changes/archive/2026-08-06-single-active-trip-request/design.md
+  tasks: openspec/changes/archive/2026-08-06-single-active-trip-request/tasks.md
+  apply_progress: openspec/changes/archive/2026-08-06-single-active-trip-request/apply-progress.md
+  archive_report: sdd/single-active-trip-request/archive-report (engram)
+updated: 2026-08-06
+revisions:
+  - artifact: archive
+    date: 2026-08-06
+    note: >
+      Archive phase complete. All artifacts migrated to openspec/changes/archive/2026-08-06-single-active-trip-request/.
+      New trip-request-lifecycle capability spec created at openspec/specs/trip-request-lifecycle/spec.md.
+      Updated tasks.md task 6.2 to [x] PASSED (manual QA confirmed against live dev DB/browser).
+      Archive report persisted to Engram (topic_key: sdd/single-active-trip-request/archive-report).
+      Change is now closed with PASS WITH WARNINGS verdict. 0 CRITICAL issues. 39/40 tasks complete (6.2 manual QA passed post-apply).
+  - artifact: verify
+    date: 2026-08-06
+    note: >
+      Verify phase re-executed full vitest suite (111 files / 856 tests,
+      all passing) and typecheck (clean) independently. Verdict: PASS WITH
+      WARNINGS. 0 CRITICAL issues. Confirmed via git-stash-to-clean-HEAD that
+      the reported lint failure is pre-existing (Next 16 / eslint 8.57
+      incompatibility), not introduced by this change. Verified both
+      highest-risk items via direct code read: family-scoped upsert in
+      trip-requests/route.ts, and the stale-intent amount guard in
+      payment-intent/route.ts (cancel-before-create, 409 on cancel failure,
+      no double-charge path). 3 WARNINGs: two inline type === "xsed" checks
+      not routed through tripFamilyOf (spec-wording gap, functionally
+      harmless, baked into design.md itself); an apply-progress test-count
+      inaccuracy (claimed 14 new POST tests, actual 11); and task 6.2 manual
+      QA still pending (correctly deferred, requires live DB/browser). See
+      verify-report.md for the full compliance matrix.
+  - artifact: apply
+    date: 2026-08-06
+    note: >
+      First and only apply batch. 39/40 tasks complete (Phases 1-5 fully done;
+      Phase 6.1 typecheck+tests done, lint blocked by a pre-existing Next 16 /
+      eslint 8.57 tooling incompatibility unrelated to this change; 6.2 manual
+      QA deferred — requires a live dev DB/browser session). Delivered as a
+      single PR with user-confirmed size:exception per the cached
+      delivery_strategy. Full vitest suite: 111 files / 856 tests passing,
+      zero regressions. See apply-progress.md for the full TDD Cycle
+      Evidence table and file-by-file breakdown.
+  - artifact: spec
+    date: 2026-08-06
+    note: >
+      Added "Reused PaymentIntent Amount Revalidation" requirement to
+      trip-request-lifecycle spec — surfaced by design-phase review: the
+      payment-intent idempotency short-circuit must recompute and compare
+      the current amount before reusing an existing PaymentIntent, cancelling
+      and recreating on mismatch.
+  - artifact: tasks
+    date: 2026-08-06
+    note: >
+      Estimated ~1750 changed lines across 5 files touched/created + 5 new
+      test files + package.json. Review Workload Forecast: High risk,
+      chained PRs recommended (PR1 helper -> PR2 upsert -> PR3 trips route ->
+      PR4 payment-intent -> PR5 cleanup script). Chain strategy left pending
+      per delivery_strategy=ask-on-risk — orchestrator must ask the user
+      before sdd-apply.
