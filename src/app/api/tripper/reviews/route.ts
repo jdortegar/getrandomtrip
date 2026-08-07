@@ -41,9 +41,15 @@ export async function GET(request: NextRequest) {
       MAX_LIMIT,
       Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
     );
+    const rawStatus = searchParams.get("status");
+    const status =
+      rawStatus === "approved" || rawStatus === "unapproved"
+        ? rawStatus
+        : "all";
+    const search = searchParams.get("search")?.trim() || undefined;
 
     const [{ reviews, total }, stats] = await Promise.all([
-      getTripperReviews(user.id, { page, limit }),
+      getTripperReviews(user.id, { page, limit, status, search }),
       getTripperReviewStats(user.id),
     ]);
 

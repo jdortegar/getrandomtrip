@@ -416,6 +416,7 @@ model Review {
   tripRequest TripRequest? @relation(fields: [tripRequestId], references: [id])
   tripper    User?        @relation("TripperReviews", fields: [tripperId], references: [id])
 
+  @@index([tripperId, isApproved])
   @@map("reviews")
 }
 
