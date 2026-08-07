@@ -1,3 +1,6 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getUserProfileMe } from "@/lib/db/user-queries";
 import Section from "@/components/layout/Section";
 import { AccountSettingsPanel } from "@/components/app/account/AccountSettingsPanel";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -11,6 +14,11 @@ export default async function TravelerSettingsPage(props: {
   const dict = await getDictionary(locale);
   const copy = dict.travelerDashboard.settingsProfile;
 
+  const session = await getServerSession(authOptions);
+  const initialProfile = session?.user?.email
+    ? await getUserProfileMe(session.user.email)
+    : null;
+
   return (
     <Section className="py-10!">
       <div className="rt-container text-left">
@@ -23,7 +31,7 @@ export default async function TravelerSettingsPage(props: {
               {copy.heading}
             </h1>
           </div>
-          <AccountSettingsPanel role="traveler" />
+          <AccountSettingsPanel initialProfile={initialProfile} role="traveler" />
         </div>
       </div>
     </Section>

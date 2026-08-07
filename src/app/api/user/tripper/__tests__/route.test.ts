@@ -104,3 +104,50 @@ describe("PATCH /api/user/tripper — commission lockdown", () => {
     expect(prisma.user.update).not.toHaveBeenCalled();
   });
 });
+
+describe("PATCH /api/user/tripper — tripperSince", () => {
+  let PATCH: RouteModule["PATCH"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "tripper-1",
+      roles: ["TRAVELER", "TRIPPER"],
+      tripperSlug: "some-slug",
+      availableTypes: ["classic"],
+    });
+    const mod = (await import("../route")) as RouteModule;
+    PATCH = mod.PATCH;
+  });
+
+  it("sets tripperSince the first time a traveler saves as a tripper", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      name: "Some Traveler",
+      roles: ["TRAVELER"],
+    });
+
+    const res = await PATCH(makeRequest({ availableTypes: ["classic"] }));
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateArgs.data.tripperSince).toBeInstanceOf(Date);
+  });
+
+  it("does not overwrite tripperSince on a subsequent save by an existing tripper", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      name: "Some Tripper",
+      roles: ["TRAVELER", "TRIPPER"],
+    });
+
+    const res = await PATCH(makeRequest({ availableTypes: ["classic"] }));
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateArgs.data.tripperSince).toBeUndefined();
+  });
+});

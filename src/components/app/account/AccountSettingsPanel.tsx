@@ -95,9 +95,19 @@ function profileToDetailsForm(p: UserProfileMe): DetailsFormState {
 
 interface AccountSettingsPanelProps {
   role: "traveler" | "tripper";
+  /**
+   * Server-fetched profile, when the parent page is a server component that
+   * already has the session (e.g. traveler settings page). Renders on first
+   * paint with real data instead of a loading spinner; the component still
+   * re-fetches client-side afterward to stay in sync with in-page edits.
+   */
+  initialProfile?: UserProfileMe | null;
 }
 
-export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
+export function AccountSettingsPanel({
+  role,
+  initialProfile = null,
+}: AccountSettingsPanelProps) {
   const params = useParams();
   const localeParam = (params?.locale as string) ?? "es";
   const resolvedLocale = hasLocale(localeParam) ? localeParam : "es";
@@ -106,8 +116,10 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
   const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
   const [dict, setDict] = useState<Dictionary | null>(null);
-  const [profileMe, setProfileMe] = useState<UserProfileMe | null>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileMe, setProfileMe] = useState<UserProfileMe | null>(
+    initialProfile,
+  );
+  const [profileLoading, setProfileLoading] = useState(!initialProfile);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [isDetailsEditing, setIsDetailsEditing] = useState(false);
@@ -203,6 +215,8 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
     (currentUser as { roles?: string[] } | null | undefined)?.roles ??
     [];
   const isTripper = userRoles.some((r) => r?.toLowerCase() === "tripper");
+  const isAdmin = userRoles.some((r) => r?.toLowerCase() === "admin");
+  const isTraveler = userRoles.some((r) => r?.toLowerCase() === "traveler");
 
   const handleStartDetailsEdit = () => {
     if (!profileMe) return;
@@ -394,6 +408,13 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
       })
     : "";
 
+  const tripperSince = profileMe?.tripperSince
+    ? new Date(profileMe.tripperSince).toLocaleDateString(dateLocaleTag, {
+        month: "long",
+        year: "numeric",
+      })
+    : "";
+
   const TABS: { id: TabId; label: string; Icon: LucideIcon }[] = [
     { id: "overview", label: p.nav.summary, Icon: User },
     { id: "personal", label: p.nav.personal, Icon: Pencil },
@@ -452,11 +473,6 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
     );
   }
 
-  const hasPreferences =
-    detailsForm.travelerType ||
-    detailsForm.interests.length > 0 ||
-    detailsForm.dislikes.length > 0;
-
   const passwordsMatch =
     securityForm.newPassword.length > 0 &&
     securityForm.newPassword === securityForm.confirmPassword;
@@ -497,21 +513,27 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
               <p className="text-sm text-neutral-500">
                 {currentUser?.email || p.header.emailFallback}
               </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {isTripper ? (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {isTraveler && (
+                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                    {p.header.badgeActiveTraveler}
+                  </span>
+                )}
+                {isTripper && (
                   <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
                     {p.header.badgeTripper}
                   </span>
-                ) : (
+                )}
+                {isAdmin && (
                   <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
-                    {p.header.badgeActiveTraveler}
+                    {p.header.badgeAdmin}
                   </span>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                 <Calendar className="h-4 w-4 text-light-blue" />
@@ -521,6 +543,17 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
                 {memberSince || "—"}
               </span>
             </div>
+            {isTripper && (
+              <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <Calendar className="h-4 w-4 text-light-blue" />
+                  {p.labels.tripperSince}
+                </div>
+                <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
+                  {tripperSince || "—"}
+                </span>
+              </div>
+            )}
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                 <Globe className="h-4 w-4 text-light-blue" />
@@ -542,69 +575,6 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
               </span>
             </div>
           </div>
-
-          {hasPreferences && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-neutral-900">
-                  {p.preferencesSectionTitle}
-                </h3>
-                <button
-                  onClick={() => setActiveTab("preferences")}
-                  className="text-sm text-light-blue hover:underline"
-                >
-                  {p.buttons.editDetails} →
-                </button>
-              </div>
-              <div className="space-y-3">
-                {detailsForm.travelerType && (
-                  <div className="flex items-center gap-3">
-                    <span className="w-[90px] shrink-0 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                      {p.labels.travelerType}
-                    </span>
-                    <span className="text-sm text-neutral-800">
-                      {tt[detailsForm.travelerType as keyof typeof tt] ??
-                        detailsForm.travelerType}
-                    </span>
-                  </div>
-                )}
-                {detailsForm.interests.length > 0 && (
-                  <div className="flex items-start gap-3">
-                    <span className="w-[90px] shrink-0 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                      {p.labels.interests}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {detailsForm.interests.map((i) => (
-                        <span
-                          key={i}
-                          className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700"
-                        >
-                          {i}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {detailsForm.dislikes.length > 0 && (
-                  <div className="flex items-start gap-3">
-                    <span className="w-[90px] shrink-0 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                      {p.labels.dislikes}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {detailsForm.dislikes.map((d) => (
-                        <span
-                          key={d}
-                          className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700"
-                        >
-                          {d}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {tripperNavLinks.length > 0 && (
             <div className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row">

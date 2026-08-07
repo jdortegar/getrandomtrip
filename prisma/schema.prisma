@@ -36,6 +36,7 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
+  tripperSince   DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after
   isActive       Boolean @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
   nickname       String? // Public display name shown to clients instead of the legal name, if set
   bio            String? // Tripper biography/description

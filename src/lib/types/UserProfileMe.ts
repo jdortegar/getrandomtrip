@@ -7,6 +7,8 @@ export interface UserProfileMe {
   phone: string | null;
   address: UserProfileAddress | null;
   createdAt: string;
+  /** ISO date the TRIPPER role was first granted; null for non-trippers. */
+  tripperSince: string | null;
   travelerType: string | null;
   interests: string[];
   dislikes: string[];

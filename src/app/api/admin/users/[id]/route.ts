@@ -146,15 +146,18 @@ export async function PATCH(
     const { roles } = buildUserRoleUpdate(nextRoles);
 
     let tripperSlug: string | undefined;
+    let isNewTripper = false;
     if (roles.includes("TRIPPER")) {
       const target = await prisma.user.findUnique({
-        select: { name: true, tripperSlug: true },
+        select: { name: true, roles: true, tripperSlug: true },
         where: { id: params.id },
       });
 
       if (!target) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
+
+      isNewTripper = !target.roles.includes("TRIPPER");
 
       if (!target.tripperSlug) {
         tripperSlug = await generateUniqueTripperSlug(target.name, params.id);
@@ -165,6 +168,7 @@ export async function PATCH(
       data: {
         roles: { set: roles },
         ...(tripperSlug ? { tripperSlug } : {}),
+        ...(isNewTripper ? { tripperSince: new Date() } : {}),
         ...(hasCommission
           ? {
               commission: commissionPercentToFraction(

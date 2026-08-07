@@ -6,7 +6,10 @@ import {
   buildUserRoleUpdate,
 } from "@/lib/auth/prismaUserRoles";
 import { prisma } from "@/lib/prisma";
-import { generateUniqueTripperSlug } from "@/lib/db/tripper-queries";
+import {
+  generateUniqueTripperSlug,
+  getTripperSettingsExtras,
+} from "@/lib/db/tripper-queries";
 
 export async function GET() {
   try {
@@ -15,35 +18,13 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        availableTypes: true,
-        bio: true,
-        commission: true,
-        destinations: true,
-        heroImage: true,
-        heroImagePositionX: true,
-        heroImagePositionY: true,
-        isActive: true,
-        location: true,
-        nickname: true,
-        socialLinks: true,
-        tierLevel: true,
-        tripperSlug: true,
-      },
-    });
+    const user = await getTripperSettingsExtras(session.user.id);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({
-      user: {
-        ...user,
-        socialLinks: Array.isArray(user.socialLinks) ? user.socialLinks : [],
-      },
-    });
+    return NextResponse.json({ user });
   } catch (error) {
     console.error("Error fetching tripper profile:", error);
     const detail = error instanceof Error ? error.message : "Unknown error";
@@ -125,6 +106,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const isNewTripper = !existing.roles.includes("TRIPPER");
     const { roles } = buildUserRoleUpdate(
       addMembershipRole(existing.roles, "TRIPPER"),
     );
@@ -135,6 +117,7 @@ export async function PATCH(request: NextRequest) {
       data: {
         bio,
         heroImage,
+        ...(isNewTripper ? { tripperSince: new Date() } : {}),
         heroImagePositionX: typeof heroImagePositionX === "number" ? heroImagePositionX : undefined,
         heroImagePositionY: typeof heroImagePositionY === "number" ? heroImagePositionY : undefined,
         location,

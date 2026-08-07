@@ -1,42 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import {
-  primaryRoleFromMembership,
-  prismaUserRoleToAppRole,
-  prismaUserRolesToAppRoles,
-} from "@/lib/auth/prismaUserRoles";
-import type { UserProfileAddress } from "@/lib/types/UserProfileAddress";
-import type { UserProfileMe } from "@/lib/types/UserProfileMe";
+import { getUserProfileMe } from "@/lib/db/user-queries";
 
 export const dynamic = "force-dynamic";
-
-function toAddress(val: unknown): UserProfileAddress | null {
-  if (!val || typeof val !== "object" || Array.isArray(val)) {
-    return null;
-  }
-  const o = val as Record<string, unknown>;
-  const street = typeof o.street === "string" ? o.street : "";
-  const city = typeof o.city === "string" ? o.city : "";
-  const state = typeof o.state === "string" ? o.state : "";
-  const zipCode = typeof o.zipCode === "string" ? o.zipCode : "";
-  const country = typeof o.country === "string" ? o.country : "";
-  const idDocument =
-    typeof o.idDocument === "string" && o.idDocument.trim()
-      ? o.idDocument.trim()
-      : undefined;
-  const hasAny = street || city || state || zipCode || country || idDocument;
-  if (!hasAny) return null;
-  return {
-    city,
-    country,
-    ...(idDocument ? { idDocument } : {}),
-    state,
-    street,
-    zipCode,
-  };
-}
 
 export async function GET() {
   try {
@@ -46,42 +13,11 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const u = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        address: true,
-        createdAt: true,
-        travelerType: true,
-        interests: true,
-        dislikes: true,
-        roles: true,
-        avatarUrl: true,
-      },
-    });
+    const user = await getUserProfileMe(session.user.email);
 
-    if (!u) {
+    if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    const roles = prismaUserRolesToAppRoles(u.roles);
-    const user: UserProfileMe = {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      phone: u.phone,
-      address: toAddress(u.address),
-      createdAt: u.createdAt.toISOString(),
-      travelerType: u.travelerType,
-      interests: u.interests,
-      dislikes: u.dislikes,
-      role: prismaUserRoleToAppRole(primaryRoleFromMembership(u.roles)),
-      roles,
-      avatarUrl: u.avatarUrl,
-    };
 
     return NextResponse.json({ user });
   } catch (error) {

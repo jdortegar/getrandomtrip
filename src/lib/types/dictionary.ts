@@ -2725,6 +2725,7 @@ export interface MarketingDictionary {
     comingSoonDescription: string;
     header: {
       badgeActiveTraveler: string;
+      badgeAdmin: string;
       badgeTripper: string;
       emailFallback: string;
       userFallback: string;
@@ -2742,6 +2743,7 @@ export interface MarketingDictionary {
       email: string;
       interests: string;
       memberSince: string;
+      tripperSince: string;
       name: string;
       phone: string;
       state: string;
