@@ -3,6 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import {
+  ADMIN_REVIEW_SORT_FIELDS,
+  parseReviewSortBy,
+  parseReviewSortOrder,
+  reviewListOrderBy,
+} from "@/lib/reviews/sort";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +38,11 @@ export async function GET(request: NextRequest) {
     );
     const rawStatus = searchParams.get("status");
     const search = searchParams.get("search")?.trim() || undefined;
+    const sortBy = parseReviewSortBy(
+      searchParams.get("sortBy"),
+      ADMIN_REVIEW_SORT_FIELDS,
+    );
+    const sortOrder = parseReviewSortOrder(searchParams.get("sortOrder"));
     const where = {
       ...(rawStatus === "approved" ? { isApproved: true } : {}),
       ...(rawStatus === "unapproved" ? { isApproved: false } : {}),
@@ -43,7 +54,7 @@ export async function GET(request: NextRequest) {
     const [rawReviews, total] = await Promise.all([
       prisma.review.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: reviewListOrderBy(sortBy, sortOrder),
         skip: (page - 1) * limit,
         take: limit,
         select: {

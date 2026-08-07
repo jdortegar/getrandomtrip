@@ -1,0 +1,318 @@
+change: reviews-table-sorting
+status: apply
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: pending
+  archive: pending
+artifacts:
+  proposal: openspec/changes/reviews-table-sorting/proposal.md
+  spec: openspec/changes/reviews-table-sorting/specs/reviews-list-sorting/spec.md
+  design: openspec/changes/reviews-table-sorting/design.md
+  tasks: openspec/changes/reviews-table-sorting/tasks.md
+updated: 2026-08-07
+revisions:
+  - artifact: apply
+    date: 2026-08-07
+    note: >
+      All 8 tasks (A1-A4, B1-B3, B5) implemented in a single batch, size:exception
+      (one PR, not chained) per explicit user decision after the Medium-high-side
+      workload forecast. Strict TDD followed throughout: src/lib/reviews/sort.ts
+      built RED-then-GREEN with 20 triangulated tests including the corrected
+      null-placement regression guard (no `nulls` key, no `tripperId` filter,
+      both directions), whitelist fallback, and the deliberate `{id:"asc"}`
+      tiebreaker. getTripperReviews and the admin route extended additively and
+      RED-then-GREEN verified backward compatible (byte-identical `where` with/
+      without sort params). Tripper route forwarding covered via its existing
+      mocked-getTripperReviews route test. Both client components
+      (ReviewsPageClient, AdminReviewsPageClient) got new RED-then-GREEN test
+      files (createRoot/act precedent from RoleNotificationsPageClient.test.tsx)
+      covering default-sort-active-on-load, toggle direction, and the combined
+      sort+filter+search+page-reset scenario. Dual-locale copy added to
+      TripperReviewsDict.sort and admin reviews dict's sort block in both
+      es.json/en.json plus dictionary.ts. Full suite (138 files / 1022 tests) and
+      typecheck pass. Manual QA (real Postgres null-placement) explicitly NOT
+      automated per design's own instruction — flagged for the user to verify
+      against a live DB. Actual changed-line total (~1172 lines across new +
+      modified files) came in well above the tasks.md 330-430 forecast, driven
+      almost entirely by the two new client test files (495 lines combined) and
+      sort.test.ts's 20-case triangulation — both requested explicitly by the
+      hazard-scenario checklist, not scope creep. Reported to the user as a
+      deviation from the estimate, not silently absorbed.
+  - artifact: tasks
+    date: 2026-08-07
+    note: >
+      Decomposed into Slice A (data layer: src/lib/reviews/sort.ts pure
+      module + its RED/GREEN test, getTripperReviews extension, admin route
+      extension, tripper route param forwarding) and Slice B (UI: shared
+      SortButton primitive, tripper page sort strip, admin sortable <th>,
+      dual-locale copy), matching the proposal/design's A-precedes-B slice
+      boundary. A2/A3 marked parallel-safe (both depend only on A1, disjoint
+      files); B2/B3 marked parallel-safe (both depend on A1+B1, disjoint
+      files). Confirmed no review-sort-query.ts or partitioned-pagination
+      task was generated — the corrected null-placement decision (native
+      Postgres behavior, no workaround module) is reflected throughout.
+      Added an explicit regression-guard test to A1 (no `nulls` key, no
+      `tripperId` filter on the tripper sort case) to compensate for the
+      coverage the deleted workaround module would have carried. Manual QA
+      section explicitly scoped to real Postgres null-ordering only, with
+      rationale for why it cannot be a mocked unit test (every lib test in
+      this repo mocks Prisma). Review Workload Forecast: recalculated against
+      the concrete task list, not repeated from design — lands at Medium but
+      the high side of it (~330-430 changed lines), because 2 of 3 test files
+      are net-new client component tests (ReviewsPageClient.test.tsx,
+      AdminReviewsPageClient.test.tsx have no prior coverage) rather than
+      extensions. Chained-PR decision explicitly left open for the user per
+      ask-on-risk delivery strategy — chain_strategy not assumed.
+  - artifact: design
+    date: 2026-08-07
+    note: >
+      CORRECTION (supersedes the null-placement portion of the design revision
+      below) — user decided to relax to Postgres' NATIVE null placement rather
+      than build the ~80-line workaround. "Randomtrip" (tripperId: null) reviews
+      land LAST on ascending and FIRST on descending, and that is now the
+      accepted correct behavior, not a compromise. REMOVED from the design: the
+      entire src/lib/db/review-sort-query.ts module
+      (paginateTripperNullsLast — partitioned named-tripper / null-tripper
+      pagination with skip/take repagination across the boundary, query/count
+      injected as callbacks), its dedicated test file plan
+      (src/lib/db/__tests__/review-sort-query.test.ts), and the admin route's
+      second branch. The tripper-name sort is now plain
+      orderBy: [{ tripper: { name: sortOrder } }, { createdAt: "desc" },
+      { id: "asc" }] — identical in shape to traveler (user.name), rating, and
+      created — so reviewListOrderBy in src/lib/reviews/sort.ts is the ONLY sort
+      logic in the change: one findMany, one orderBy, no special-casing, no
+      extra query, no branch. The admin route's where / select / skip / take /
+      count and its rawReviews -> tripperName mapping (route.ts:74-78) are all
+      untouched. The underlying Prisma finding is unchanged and still
+      load-bearing for anyone revisiting this: nested relation orderBy IS
+      supported (index.d.ts:22332) but nulls placement is NOT reachable through
+      it (:21208 types UserOrderByWithRelationInput.name as plain SortOrder
+      because User.name is non-nullable at schema.prisma:23), which is exactly
+      why native placement was the only cheap option. Review workload: this
+      deletes the module that was pushing the change from Medium toward High
+      400-line risk, so it sits back at MEDIUM (2 new files — one pure module,
+      one small UI primitive — 5 modified files, dual-locale copy, 3 test
+      files); tasks.md has not been written yet, so it forecasts against the
+      reduced shape from the start rather than inheriting a High estimate. One
+      test scenario was ADDED to compensate for the deleted module's coverage:
+      the pure sort test now asserts the tripper case carries no nulls key AND
+      no tripperId filter, so a future "fix" that filters nulls out cannot
+      silently drop Randomtrip rows; manual QA now checks last-on-asc /
+      first-on-desc plus unchanged row count. Verified that sdd-spec had already
+      amended spec.md:124-140 to two direction-specific scenarios in parallel,
+      so design and spec now agree and the design's earlier
+      "spec amendment required" open question is closed — nothing left for
+      sdd-verify to reconcile on null placement.
+  - artifact: spec
+    date: 2026-08-07
+    note: >
+      Correction to the "Null Placement for Tripper-Name Sort" requirement.
+      Design found that Prisma's nulls:"last" modifier does not apply to this
+      shape — User.name (the tripper relation's sorted field) is non-nullable,
+      so NullsOrder is only reachable on the nullable scalar (tripperId), not
+      on the relation's name field — and that forcing "nulls always last
+      regardless of direction" required a bespoke workaround
+      (review-sort-query.ts: partitioned named-tripper/null-tripper pagination
+      across a skip/take boundary, ~80 lines, 2 extra queries, its own test),
+      pushing this from Medium to High risk for one edge case on one of four
+      sort fields. User accepted Postgres' native null-placement behavior
+      instead (nulls sort as "greatest" by default): ascending places
+      tripperId: null ("Randomtrip") rows LAST, descending places them FIRST.
+      This is now the correct, accepted behavior, not a flagged gap. Replaced
+      the single "always last regardless of direction" scenario with two
+      explicit scenarios (ascending -> Randomtrip last; descending ->
+      Randomtrip first) in
+      specs/reviews-list-sorting/spec.md. Downstream effect: the
+      review-sort-query.ts workaround and its route branch, described in the
+      design revision below, are no longer required by the spec and should be
+      dropped in a design/tasks follow-up.
+  - artifact: design
+    date: 2026-08-07
+    note: >
+      Design resolved all 7 deferred technical questions against the real code,
+      not assumptions. Param convention: sortBy (rating|created|traveler|tripper)
+      + sortOrder (asc|desc), tokens deliberately decoupled from schema column
+      names. ONE shared pure module src/lib/reviews/sort.ts holds the token
+      vocabulary, both per-surface whitelists, REVIEW_SORT_DEFAULT, never-throw
+      parsers, and reviewListOrderBy — chosen over two local maps because the
+      exact precedent exists in src/lib/notifications/list-query.ts from last
+      night's change (parseNotificationStatus: never-throw parser + one shared
+      builder used by both route and query layer), and because a whitelist is a
+      security control worth one test target, unlike the prior filter/search
+      change's 3-line where spread. KEY VERIFIED FINDING (read the generated
+      client, did not assume): Prisma 7.4.1 DOES support nested relation sorts —
+      node_modules/.prisma/client/index.d.ts:22332 exposes
+      ReviewOrderByWithRelationInput.user / .tripper as
+      UserOrderByWithRelationInput — BUT nulls placement is NOT available on
+      them, because :21208 types UserOrderByWithRelationInput.name as plain
+      SortOrder (not SortOrderInput | SortOrder) since User.name is
+      non-nullable at schema.prisma:23. NullsOrder exists (:20887) but is
+      reachable only on nullable scalars (tripperId, :22343). Postgres therefore
+      sorts NULL as greatest → nulls last on asc, nulls FIRST on desc, which
+      CONTRADICTS the spec requirement "nulls last regardless of direction"
+      (spec.md:124-140, written in parallel by sdd-spec). Resolved
+      spec-compliant via a new src/lib/db/review-sort-query.ts exporting
+      paginateTripperNullsLast: partitions into a named-tripper group
+      (tripperId: { not: null }, ordered by tripper.name) followed by the
+      tripperId: null group, with skip/take math across the boundary; takes
+      query/count as callbacks so the admin route keeps its own select and stays
+      typed; only sortBy=tripper takes this branch; prisma.review.count({ where })
+      total is untouched so pagination stays correct. Rejected $queryRaw (would
+      duplicate the whole status+insensitive-search where as SQL, need two manual
+      joins, discard the typed select) and rejected
+      [{ tripperId: { sort, nulls: "last" } }, { tripper: { name } }] (type-legal
+      but makes an opaque cuid the primary sort key, destroying name order). Side
+      benefit: the explicit tripperId: { not: null } filter ELIMINATES proposal
+      risk #5 (Prisma relation join dropping null rows) rather than just testing
+      for it. Flagged as the one open question: if the reviewer accepts Postgres'
+      native placement (Randomtrip last on asc, first on desc), amending that
+      single spec requirement deletes review-sort-query.ts + its test + the route
+      branch, about 80 lines off the diff. Also decided: deterministic
+      tiebreakers on every sort ({ createdAt: desc } then { id: asc }; created
+      sort gets { id: asc } only) because tied ORDER BY under skip/take silently
+      duplicates and drops rows across pages — this is a deliberate superset of
+      today's single { createdAt: desc } and must not be read as a regression.
+      getTripperReviews stays additive: options gains sortBy?: TripperReviewSortBy
+      and sortOrder?: ReviewSortOrder, both defaulted from REVIEW_SORT_DEFAULT so
+      omitting them reproduces today's order; the reviewListOrderBy switch's
+      default branch is a second whitelist gate for callers bypassing the route.
+      Default sort state (question 3) solved with ONE shared constant
+      REVIEW_SORT_DEFAULT imported by BOTH client components and BOTH server
+      paths, with clients always sending both params explicitly — client and
+      server cannot drift and no round trip is needed to discover the current
+      sort. UI: one new shared primitive src/components/ui/SortButton.tsx
+      (lucide ArrowUpDown inactive / ArrowUp asc / ArrowDown desc at h-3.5 w-3.5,
+      inactive arrow kept VISIBLE at text-neutral-300 rather than
+      opacity-hidden, per the design-system rule against opacity as an
+      off-state; active arrow text-light-blue; button carries the
+      text-[11px] font-semibold uppercase tracking-wider header type). Tripper
+      page gets an inline strip (no new local component) between the existing h3
+      panel header and the <ul>, styled as the design-system table header row
+      (bg-gray-50 border-b border-gray-200 px-5 py-3) with role="group" +
+      aria-pressed per button — deliberately NOT aria-sort, which is only valid
+      on columnheader. Admin's 4 sortable <th> drop their text classes (SortButton
+      carries them), keep px-5 py-3 text-left, and gain aria-sort
+      ascending/descending/none; the 4 non-sortable <th> (review, status, tripId,
+      actions) stay byte-identical. Sort state is NOT extracted into a shared
+      hook (question 6): the prior filter/search change left statusFilter /
+      searchQuery / debouncedSearch / updateStatusFilter / clearFilters duplicated
+      in both clients, and a hook owning sortBy+sortOrder but not
+      page/status/search would split one fetch's state across two owners — extract
+      only when the whole query state moves together. First-click direction per
+      field via REVIEW_SORT_INITIAL_ORDER: rating/created → desc, traveler/tripper
+      → asc. Testing (strict TDD): new pure src/lib/reviews/__tests__/sort.test.ts
+      (exact orderBy per token including relation nesting; invalid sortBy falls
+      back to created while a VALID sortOrder is still honored; garbage sortOrder
+      → desc; containment assertion that no emitted key falls outside
+      {rating, createdAt, user, tripper, id} so future edits can't widen the
+      whitelist; every result ends with a tiebreaker); extend the existing
+      src/lib/db/__tests__/tripper-queries.getTripperReviews.test.ts (same prisma
+      mock, currently asserts only where); new
+      src/lib/db/__tests__/review-sort-query.test.ts with injected fakes covering
+      null placement in BOTH directions plus the three pagination-boundary cases;
+      new client tests per the RoleNotificationsPageClient.test.tsx precedent
+      (first fetch URL carries sortBy=created&sortOrder=desc with zero extra
+      requests, toggle flips direction, combined sort+status=approved+search=Ana
+      on page 3 resets to page=1 keeping all three, exactly 4 buttons in thead).
+      No DB-backed test infra exists (every lib test mocks prisma), so true
+      SQL-level null ordering is a manual QA line, honestly labeled as such.
+  - artifact: spec
+    date: 2026-08-07
+    note: >
+      New capability `reviews-list-sorting` (verified no existing spec under
+      openspec/specs/ constrains reviews ordering — the only ordering
+      requirement anywhere, 05-traveler-dashboard.md:54, is about
+      notifications, not reviews). Formalized all 9 proposal decisions into
+      requirements + Given/When/Then scenarios: per-surface sortable fields
+      (tripper: rating/created only; admin: rating/created/traveler/tripper),
+      explicit non-goal scenarios for status/isApproved, review content, and
+      tripId (and traveler/tripper-name on the tripper page) so their absence
+      isn't read as a gap, null-placement contract for tripper-name sort
+      (tripperId: null "Randomtrip" rows sort last regardless of direction —
+      resolves the proposal's open design question with a concrete
+      requirement), created-descending active-by-default on initial load
+      (distinct from user-triggered sort scenarios), whitelist validation
+      with safe fallback for unknown sortBy/sortOrder (security-adjacent, not
+      happy-path only), a dedicated global-vs-page-scoped ordering
+      requirement (pagination risk from the proposal), and a combined
+      sort+filter+search+pagination-reset scenario proving composition rather
+      than override. Non-Goals section restates proposal Out of Scope
+      verbatim. File path follows the notifications-filter-and-bulk-delete
+      per-capability convention:
+      specs/{capability}/spec.md under the change directory.
+  - artifact: proposal
+    date: 2026-08-07
+    note: >
+      Proposal written from a finalized grill-me design interview — all 9
+      decisions were resolved live against the code with file/line citations,
+      so no open questions remain. Ask was "add sorting to the reviews tables
+      (tripper's own reviews page and admin reviews page) for rating, status,
+      created, and the ones that make more sense", following tonight's
+      notifications-filter-and-bulk-delete change and a reviews filter+search
+      change. Key finding driving scope: NO sorting convention exists anywhere
+      in this codebase — zero sortBy/sortOrder/sortDirection/SortableHeader
+      matches under src/components/app/dashboard/ or src/app/api/, all 16
+      orderBy occurrences across API routes are hardcoded literals, and no
+      clickable sort header exists on any table (RecentPaymentsTable,
+      ExperiencesPageClient, TravelerTripsTable, AdminPaymentsPageClient,
+      AdminExperiencesPageClient, AdminBlogPageClient all checked). This
+      change therefore SETS the first sort precedent: query-param naming,
+      icon language, and whitelist validation chosen here are what the next
+      table will copy. Second key finding: the two surfaces have different
+      markup shapes — the tripper page
+      (src/components/app/dashboard/tripper/reviews/ReviewsPageClient.tsx) is
+      a card/list <ul><li> with NO header row at all, while the admin page
+      (src/app/[locale]/(secure)/dashboard/admin/AdminReviewsPageClient.tsx)
+      is a real 8-column <table>. User explicitly chose (after two
+      clarification rounds) to RETROFIT a clickable header row above the
+      tripper card list rather than use a dropdown sort control or skip the
+      tripper page. Sortable fields finalized per surface: tripper = rating +
+      created only (the page is already scoped to one tripper via
+      where: { tripperId }, so tripper-name sort is meaningless); admin =
+      rating + created + traveler name (user.name) + tripper name
+      (tripper.name, nullable relation). status/isApproved was in the user's
+      original ask but was DROPPED after the interview surfaced that a
+      filter dropdown (All/Approved/Unapproved) already expresses exactly
+      that distinction, there is zero precedent for sorting a boolean
+      anywhere in the app, and a 2-value sort is really "group X first" — a
+      filter concern. review (title/content) and tripId are explicitly NOT
+      sortable (free text and an opaque cuid have no natural order) and are
+      recorded as non-goals so sdd-verify does not read their absence as a
+      gap. Two accuracy decisions worth carrying forward: (a) "Created" must
+      render as ACTIVELY sorted descending on first load, not neutral, since
+      both pages genuinely ARE createdAt desc today (hardcoded at
+      src/lib/db/tripper-queries.ts:874 and
+      src/app/api/admin/reviews/route.ts:46) and a neutral header would
+      misrepresent ordered data; (b) sorting MUST be server-side via Prisma
+      orderBy driven by query params — both pages are server-paginated, so
+      client-side re-sorting would reorder only the current page and produce
+      a wrong global order. Hard technical constraint. Whitelist validation
+      of the sort field is a security requirement, not hygiene: never pass a
+      raw client string into a dynamic orderBy key. Verified the prior
+      change's base signature exists in the working tree:
+      getTripperReviews(tripperId, { page, limit, status?, search? }) at
+      tripper-queries.ts:846-864 — extending it with sortBy?/sortOrder? is
+      additive, not breaking. Verified no existing spec under openspec/specs/
+      constrains reviews ordering (the only ordering requirement anywhere is
+      05-traveler-dashboard.md:54, about notifications), so Capabilities is
+      new `reviews-list-sorting` with Modified: None. Size flagged as Medium
+      400-line budget risk — materially smaller than
+      notifications-filter-and-bulk-delete (no new endpoints, no mutations,
+      no schema change, no data-flow inversion, both read paths already
+      opened up by tonight's change) but touching 2 UIs, 2 query paths, a new
+      shared sort-header component, and dual-locale copy under strict TDD.
+      Suggested 2-slice boundary if chaining is chosen: A (data layer — param
+      convention + both whitelists + relation/null ordering) precedes B (UI —
+      shared sort header, both surfaces, copy). Flagged as a hard
+      prerequisite that tonight's reviews filter+search change is present but
+      UNCOMMITTED, so apply must not run against a reverted or partially
+      landed base. Open design questions deliberately deferred: exact query
+      param names, exact lucide icon choice, null placement for tripper-name
+      sort (tripperId: null rows display as "Randomtrip"), and whether the
+      two whitelists share one helper with per-surface allowed sets or stay
+      two local maps.

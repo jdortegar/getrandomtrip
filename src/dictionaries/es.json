@@ -560,6 +560,11 @@
         "publish": "Publicar",
         "showMore": "Ver más",
         "showLess": "Ver menos"
+      },
+      "sort": {
+        "ariaSortBy": "Ordenar por {field}",
+        "ariaAscending": "ascendente",
+        "ariaDescending": "descendente"
       }
     },
     "waitlist": {
@@ -1139,6 +1144,10 @@
       "searchCardTitle": "Busca tu Tripper",
       "searchCardDescription": "Encuentra el experto perfecto para tu aventura.",
       "searchCardCta": "Explorar Trippers"
+    },
+    "meta": {
+      "title": "Nuestros Trippers | Randomtrip",
+      "description": "Explorá perfiles de viajeros expertos que curan experiencias auténticas y memorables. Encontrá tu Tripper ideal."
     },
     "unavailable": {
       "title": "Este perfil no está disponible",
@@ -3986,6 +3995,14 @@
     "emptyState": {
       "title": "Aún no tienes reseñas",
       "description": "Las reseñas aparecerán aquí cuando los clientes completen sus viajes y califiquen su experiencia."
+    },
+    "sort": {
+      "groupLabel": "Ordenar reseñas",
+      "rating": "Calificación",
+      "created": "Creado",
+      "ariaSortBy": "Ordenar por {field}",
+      "ariaAscending": "ascendente",
+      "ariaDescending": "descendente"
     }
   },
   "tripperEarnings": {

@@ -6,7 +6,14 @@ import type { LucideIcon } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
+import { SortButton } from "@/components/ui/SortButton";
 import { useDictionary } from "@/hooks/useDictionary";
+import {
+  REVIEW_SORT_DEFAULT,
+  REVIEW_SORT_INITIAL_ORDER,
+  type ReviewSortOrder,
+  type TripperReviewSortBy,
+} from "@/lib/reviews/sort";
 import type { TripperReviewsDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 
@@ -74,10 +81,17 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [sortBy, setSortBy] = useState<TripperReviewSortBy>(
+    REVIEW_SORT_DEFAULT.sortBy,
+  );
+  const [sortOrder, setSortOrder] = useState<ReviewSortOrder>(
+    REVIEW_SORT_DEFAULT.sortOrder,
+  );
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const { averageRating, detractors, nps, promoters, totalReviews } = stats;
   const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
@@ -99,6 +113,8 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
         const params = new URLSearchParams({
           page: String(page),
           limit: String(PAGE_SIZE),
+          sortBy,
+          sortOrder,
         });
         if (statusFilter !== "all") params.set("status", statusFilter);
         if (debouncedSearch) params.set("search", debouncedSearch);
@@ -119,7 +135,10 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           totalReviews: data.totalReviews ?? 0,
         });
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setHasLoadedOnce(true);
+        }
       }
     }
 
@@ -127,7 +146,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     return () => {
       cancelled = true;
     };
-  }, [page, statusFilter, debouncedSearch]);
+  }, [page, statusFilter, debouncedSearch, sortBy, sortOrder]);
 
   function updateStatusFilter(value: StatusFilter) {
     setStatusFilter(value);
@@ -138,6 +157,16 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     setStatusFilter("all");
     setSearchQuery("");
     setDebouncedSearch("");
+    setPage(1);
+  }
+
+  function toggleSort(field: TripperReviewSortBy) {
+    if (field === sortBy) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder(REVIEW_SORT_INITIAL_ORDER[field]);
+    }
     setPage(1);
   }
 
@@ -175,7 +204,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     }
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
 
   const kpis: KpiCard[] = [
     {
@@ -324,99 +353,129 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           </h3>
         </div>
 
-        {reviews.length === 0 ? (
-          <div className="py-16 text-center">
-            <p className="mb-2 text-sm font-semibold text-neutral-700">
-              {copy.emptyState.title}
-            </p>
-            <p className="mx-auto max-w-md text-sm text-neutral-500">
-              {copy.emptyState.description}
-            </p>
-          </div>
-        ) : (
-          <ul className="divide-y divide-gray-100">
-            {reviews.map((review) => (
-              <li className="px-5 py-5" key={review.id}>
-                <div className="flex items-start gap-4">
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-light-blue/10 font-barlow-condensed text-lg font-bold text-light-blue">
-                    {review.userName.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-neutral-900">
-                          {review.userName}
-                        </p>
-                        {(review.packageTitle || review.destination) && (
-                          <p className="mt-0.5 text-xs text-neutral-500">
-                            {[review.packageTitle, review.destination]
-                              .filter(Boolean)
-                              .join(" • ")}
+        <div
+          aria-label={copy.sort.groupLabel}
+          className="flex items-center gap-6 border-b border-gray-200 bg-gray-50 px-5 py-3"
+          role="group"
+        >
+          <SortButton
+            active={sortBy === "rating"}
+            ariaLabel={copy.sort.ariaSortBy.replace("{field}", copy.sort.rating)}
+            ariaPressed={sortBy === "rating"}
+            label={copy.sort.rating}
+            onSort={() => toggleSort("rating")}
+            order={sortOrder}
+          />
+          <SortButton
+            active={sortBy === "created"}
+            ariaLabel={copy.sort.ariaSortBy.replace("{field}", copy.sort.created)}
+            ariaPressed={sortBy === "created"}
+            label={copy.sort.created}
+            onSort={() => toggleSort("created")}
+            order={sortOrder}
+          />
+        </div>
+
+        <div
+          className={cn(
+            "transition-opacity",
+            loading && "pointer-events-none opacity-50",
+          )}
+        >
+          {reviews.length === 0 ? (
+            <div className="py-16 text-center">
+              <p className="mb-2 text-sm font-semibold text-neutral-700">
+                {copy.emptyState.title}
+              </p>
+              <p className="mx-auto max-w-md text-sm text-neutral-500">
+                {copy.emptyState.description}
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {reviews.map((review) => (
+                <li className="px-5 py-5" key={review.id}>
+                  <div className="flex items-start gap-4">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-light-blue/10 font-barlow-condensed text-lg font-bold text-light-blue">
+                      {review.userName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-neutral-900">
+                            {review.userName}
                           </p>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5">
-                        <div className="flex items-center gap-0.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              className={cn(
-                                "h-4 w-4",
-                                i < review.rating
-                                  ? "fill-current text-yellow-500"
-                                  : "text-neutral-300",
-                              )}
-                              key={i}
-                            />
-                          ))}
-                        </div>
-                        <span
-                          className={cn(
-                            "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
-                            review.isApproved
-                              ? "border-green-200 bg-green-50 text-green-700"
-                              : "border-amber-200 bg-amber-50 text-amber-700",
+                          {(review.packageTitle || review.destination) && (
+                            <p className="mt-0.5 text-xs text-neutral-500">
+                              {[review.packageTitle, review.destination]
+                                .filter(Boolean)
+                                .join(" • ")}
+                            </p>
                           )}
-                        >
-                          {review.isApproved
-                            ? copy.status.approved
-                            : copy.status.pending}
-                        </span>
+                        </div>
+                        <div className="flex flex-col items-end gap-1.5">
+                          <div className="flex items-center gap-0.5">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                className={cn(
+                                  "h-4 w-4",
+                                  i < review.rating
+                                    ? "fill-current text-yellow-500"
+                                    : "text-neutral-300",
+                                )}
+                                key={i}
+                              />
+                            ))}
+                          </div>
+                          <span
+                            className={cn(
+                              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
+                              review.isApproved
+                                ? "border-green-200 bg-green-50 text-green-700"
+                                : "border-amber-200 bg-amber-50 text-amber-700",
+                            )}
+                          >
+                            {review.isApproved
+                              ? copy.status.approved
+                              : copy.status.pending}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    {review.title && (
-                      <p className="mt-2 text-sm font-medium text-neutral-900">
-                        {review.title}
-                      </p>
-                    )}
-                    {review.content && (
-                      <p className="mt-1 text-sm text-neutral-700">
-                        {review.content}
-                      </p>
-                    )}
-                    <div className="mt-3 flex items-center justify-between">
-                      <p className="text-xs text-neutral-400">
-                        {formatDate(review.createdAt)}
-                      </p>
-                      <button
-                        className={cn(
-                          "rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-50",
-                          review.isPublic
-                            ? "bg-green-100 text-green-700 hover:bg-green-200"
-                            : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
-                        )}
-                        disabled={togglingId === review.id}
-                        onClick={() => void togglePublish(review)}
-                        type="button"
-                      >
-                        {review.isPublic ? "Publicado" : "Publicar"}
-                      </button>
+                      {review.title && (
+                        <p className="mt-2 text-sm font-medium text-neutral-900">
+                          {review.title}
+                        </p>
+                      )}
+                      {review.content && (
+                        <p className="mt-1 text-sm text-neutral-700">
+                          {review.content}
+                        </p>
+                      )}
+                      <div className="mt-3 flex items-center justify-between">
+                        <p className="text-xs text-neutral-400">
+                          {formatDate(review.createdAt)}
+                        </p>
+                        <button
+                          className={cn(
+                            "rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-50",
+                            review.isPublic
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
+                          )}
+                          disabled={togglingId === review.id}
+                          onClick={() => void togglePublish(review)}
+                          type="button"
+                        >
+                          {review.isPublic ? "Publicado" : "Publicar"}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       <Pagination

@@ -5,6 +5,12 @@
 import { prisma } from "@/lib/prisma";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
+import {
+  REVIEW_SORT_DEFAULT,
+  reviewListOrderBy,
+  type ReviewSortOrder,
+  type TripperReviewSortBy,
+} from "@/lib/reviews/sort";
 import { effectiveCommission } from "@/lib/tripper/commission";
 import type {
   ActivityEntry,
@@ -850,9 +856,18 @@ export async function getTripperReviews(
     limit: number;
     status?: "all" | "approved" | "unapproved";
     search?: string;
+    sortBy?: TripperReviewSortBy;
+    sortOrder?: ReviewSortOrder;
   },
 ) {
-  const { page, limit, status = "all", search } = options;
+  const {
+    page,
+    limit,
+    status = "all",
+    search,
+    sortBy = REVIEW_SORT_DEFAULT.sortBy,
+    sortOrder = REVIEW_SORT_DEFAULT.sortOrder,
+  } = options;
   try {
     const where = {
       tripperId,
@@ -871,7 +886,7 @@ export async function getTripperReviews(
             select: { id: true, name: true, avatarUrl: true },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: reviewListOrderBy(sortBy, sortOrder),
         skip: (page - 1) * limit,
         take: limit,
       }),

@@ -507,6 +507,14 @@ export interface TripperReviewsDict {
     description: string;
     title: string;
   };
+  sort: {
+    ariaAscending: string;
+    ariaDescending: string;
+    ariaSortBy: string;
+    created: string;
+    groupLabel: string;
+    rating: string;
+  };
 }
 
 export interface TripperEarningsDict {
@@ -1432,6 +1440,11 @@ export interface AdminPagesDict {
       showMore: string;
       showLess: string;
     };
+    sort: {
+      ariaAscending: string;
+      ariaDescending: string;
+      ariaSortBy: string;
+    };
   };
   waitlist: {
     count: string;
@@ -2066,6 +2079,10 @@ export interface MarketingDictionary {
       searchCardCta: string;
       searchCardDescription: string;
       searchCardTitle: string;
+    };
+    meta: {
+      description: string;
+      title: string;
     };
     /** Shared "tripper unavailable" copy — used by both the profile page and the journey flow. */
     unavailable: {
