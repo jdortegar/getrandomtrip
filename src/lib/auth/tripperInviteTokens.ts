@@ -129,13 +129,17 @@ export async function grantTripperAndCleanup(
   });
 
   const currentRoles: UserRole[] = user?.roles ?? ["TRAVELER"];
+  const isNewTripper = !currentRoles.includes("TRIPPER");
   const { roles } = buildUserRoleUpdate(
     addMembershipRole(currentRoles, "TRIPPER"),
   );
 
   await prisma.user.update({
     where: { id: userId },
-    data: { roles: { set: roles } },
+    data: {
+      roles: { set: roles },
+      ...(isNewTripper ? { tripperSince: new Date() } : {}),
+    },
   });
 
   await prisma.waitlistEntry.deleteMany({ where: { email } });

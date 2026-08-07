@@ -140,3 +140,78 @@ describe("PATCH /api/admin/users/[id] — commission", () => {
     expect(res.status).toBe(403);
   });
 });
+
+describe("PATCH /api/admin/users/[id] — tripperSince", () => {
+  let PATCH: RouteModule["PATCH"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "target-1",
+      roles: ["TRAVELER", "TRIPPER"],
+      tripperSlug: "some-slug",
+      commission: null,
+    });
+    const mod = (await import("../route")) as RouteModule;
+    PATCH = mod.PATCH;
+  });
+
+  it("sets tripperSince when granting TRIPPER to a user who didn't already have it", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce(mockAdminCaller("admin-1")) // caller lookup
+      .mockResolvedValueOnce({
+        name: "Alice",
+        roles: ["TRAVELER"],
+        tripperSlug: null,
+      }); // target lookup
+
+    const res = await PATCH(
+      makeRequest({ roles: ["TRAVELER", "TRIPPER"] }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateArgs.data.tripperSince).toBeInstanceOf(Date);
+  });
+
+  it("does not set tripperSince when the target already has TRIPPER", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce(mockAdminCaller("admin-1")) // caller lookup
+      .mockResolvedValueOnce({
+        name: "Bob",
+        roles: ["TRAVELER", "TRIPPER"],
+        tripperSlug: "bob-slug",
+      }); // target lookup
+
+    const res = await PATCH(
+      makeRequest({ roles: ["TRAVELER", "TRIPPER"] }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateArgs.data.tripperSince).toBeUndefined();
+  });
+
+  it("does not touch tripperSince when TRIPPER isn't in the target roles at all", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockAdminCaller("admin-1"),
+    ); // caller lookup only — target lookup is skipped since roles has no TRIPPER
+
+    const res = await PATCH(
+      makeRequest({ roles: ["TRAVELER"] }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateArgs.data.tripperSince).toBeUndefined();
+  });
+});

@@ -3233,6 +3233,7 @@
       "userFallback": "User",
       "emailFallback": "user@email.com",
       "badgeActiveTraveler": "Active traveler",
+      "badgeAdmin": "Admin",
       "badgeTripper": "Tripper"
     },
     "nav": {
@@ -3288,6 +3289,7 @@
       "zipCode": "Postal code",
       "country": "Country",
       "memberSince": "Member since",
+      "tripperSince": "Tripper since",
       "totalTrips": "Total trips",
       "avgRating": "Avg. rating",
       "addressSection": "Address",

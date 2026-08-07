@@ -125,6 +125,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const isNewTripper = !existing.roles.includes("TRIPPER");
     const { roles } = buildUserRoleUpdate(
       addMembershipRole(existing.roles, "TRIPPER"),
     );
@@ -135,6 +136,7 @@ export async function PATCH(request: NextRequest) {
       data: {
         bio,
         heroImage,
+        ...(isNewTripper ? { tripperSince: new Date() } : {}),
         heroImagePositionX: typeof heroImagePositionX === "number" ? heroImagePositionX : undefined,
         heroImagePositionY: typeof heroImagePositionY === "number" ? heroImagePositionY : undefined,
         location,
