@@ -1,9 +1,24 @@
+import type { Metadata } from "next";
 import React from "react";
 import TopTrippersGrid from "@/components/tripper/TopTrippersGrid";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
+  const locale = hasLocale(params.locale) ? params.locale : "es";
+  const dict = await getDictionary(locale);
+  const { title, description } = dict.trippers.meta;
+  return {
+    description,
+    openGraph: { description, title },
+    title,
+  };
+}
 
 export default async function TrippersPage(props: {
   params: Promise<{ locale: string }>;

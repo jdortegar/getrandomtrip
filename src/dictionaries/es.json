@@ -1140,6 +1140,10 @@
       "searchCardDescription": "Encuentra el experto perfecto para tu aventura.",
       "searchCardCta": "Explorar Trippers"
     },
+    "meta": {
+      "title": "Nuestros Trippers | Randomtrip",
+      "description": "Explorá perfiles de viajeros expertos que curan experiencias auténticas y memorables. Encontrá tu Tripper ideal."
+    },
     "unavailable": {
       "title": "Este perfil no está disponible",
       "description": "{name} pausó su perfil por ahora. Podés explorar otros trippers mientras tanto.",
