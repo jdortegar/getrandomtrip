@@ -1,5 +1,6 @@
 "use client";
 
+import { StatusBadge } from "@/components/app/admin/StatusBadge";
 import GlassCard from "@/components/ui/GlassCard";
 import { formatUSDWithCents } from "@/lib/format";
 import { formatDateISO } from "@/lib/datetime";
@@ -31,18 +32,11 @@ export default function PaymentHistory({ items }: { items: PaymentItem[] }) {
                     {formatUSDWithCents(p.amountUsd)}
                   </td>
                   <td className="py-2">
-                    <span
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1
-                      ${
-                        p.status === "Completed"
-                          ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-                          : p.status === "Pending"
-                            ? "bg-amber-50 text-amber-700 ring-amber-200"
-                            : "bg-rose-50 text-rose-700 ring-rose-200"
-                      }`}
-                    >
-                      {p.status}
-                    </span>
+                    <StatusBadge
+                      label={p.status}
+                      status={p.status.toUpperCase()}
+                      variant="payment"
+                    />
                   </td>
                 </tr>
               ))}

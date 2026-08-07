@@ -1,30 +1,7 @@
 import { CreditCard } from "lucide-react";
+import { StatusBadge } from "@/components/app/admin/StatusBadge";
 import type { Payment } from "@/lib/utils/trips";
 import type { DashboardCopy } from "./types";
-
-function PaymentStatusBadge({
-  status,
-  label,
-}: {
-  status: string;
-  label: string;
-}) {
-  const styles: Record<string, string> = {
-    APPROVED: "bg-green-100 text-green-800 border-green-200",
-    COMPLETED: "bg-green-100 text-green-800 border-green-200",
-    PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    FAILED: "bg-red-100 text-red-800 border-red-200",
-    REJECTED: "bg-red-100 text-red-800 border-red-200",
-  };
-  const cls = styles[status] ?? "bg-gray-100 text-gray-800 border-gray-200";
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cls}`}
-    >
-      {label}
-    </span>
-  );
-}
 
 interface RecentPaymentsTableProps {
   copy: DashboardCopy;
@@ -105,11 +82,12 @@ export function RecentPaymentsTable({
                         ${(payment.amount ?? 0).toFixed(2)}
                       </td>
                       <td className="py-4 px-4">
-                        <PaymentStatusBadge
+                        <StatusBadge
                           label={
                             copy.paymentStatus[payment.status] ?? payment.status
                           }
                           status={payment.status}
+                          variant="payment"
                         />
                       </td>
                     </tr>

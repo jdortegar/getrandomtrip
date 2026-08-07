@@ -35,7 +35,7 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
           <span className="font-bold text-xsed">Nº{drop.number}</span>
         </div>
         {drop.soldOut && (
-          <div className="absolute right-3 top-3 rounded-full bg-xsed px-3 py-1 text-xs text-white">
+          <div className="absolute right-3 top-3 rounded-[6px] bg-xsed px-3 py-1 text-xs text-white">
             <span className="font-bold">SOLD OUT</span>
             {drop.soldOutDetail && (
               <span className="ml-1 font-normal">{drop.soldOutDetail}</span>

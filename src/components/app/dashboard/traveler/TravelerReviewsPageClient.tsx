@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
 import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import { getTrips, type Trip } from "@/lib/utils/trips";
@@ -117,8 +117,8 @@ export function TravelerReviewsPageClient({
                   </div>
 
                   {submitted ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                      <CheckCircle className="h-3.5 w-3.5" />
+                    <span className="inline-flex items-center gap-1.5 rounded-[6px] border border-green-200 bg-green-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-green-800">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" />
                       Enviada
                     </span>
                   ) : (

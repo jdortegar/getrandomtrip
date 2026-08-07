@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
 import type { BlogPost } from "@/components/tripper/blog/types";
 import { useLocale } from "@/hooks/useDictionary";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -50,11 +51,10 @@ export default function BlogList({ posts }: BlogListProps) {
               <p className="text-sm text-neutral-600 mb-3">{post.subtitle}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {post.status && (
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === "published" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
-                  >
-                    {post.status === "published" ? "Publicado" : "Borrador"}
-                  </span>
+                  <BlogStatusBadge
+                    label={post.status === "published" ? "Publicado" : "Borrador"}
+                    status={post.status}
+                  />
                 )}
                 {post.tags?.map((tag) => (
                   <span
