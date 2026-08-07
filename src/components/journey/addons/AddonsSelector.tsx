@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Check } from "lucide-react";
+import Chip from "@/components/Chip";
 import { Button } from "@/components/ui/Button";
 import { ADDONS, type Addon } from "@/lib/data/shared/addons-catalog";
 import { cn } from "@/lib/utils";
@@ -149,17 +151,14 @@ export function AddonsSelector({
                   const title =
                     labels.addonLabels?.[addon.id]?.title ?? addon.title;
                   return (
-                    <button
-                      className={cn(
-                        "rounded-full border px-3 py-1.5 text-sm transition",
-                        isSelected
-                          ? "border-gray-800 bg-gray-800 text-white"
-                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
-                      )}
+                    <Chip
+                      active={isSelected}
                       key={addon.id}
                       onClick={() => handleToggle(addon.id)}
-                      type="button"
+                      size="md"
+                      variant="default"
                     >
+                      {isSelected && <Check className="h-3.5 w-3.5" />}
                       <span>{title}</span>
                       <span
                         className={cn(
@@ -169,7 +168,7 @@ export function AddonsSelector({
                       >
                         ({formatAddonPrice(addon)})
                       </span>
-                    </button>
+                    </Chip>
                   );
                 })}
               </div>

@@ -9,7 +9,7 @@ import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
-import Chip from "@/components/badge";
+import RemovableTag from "@/components/RemovableTag";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
 import {
   ArrowLeft,
@@ -410,7 +410,7 @@ function TripDetailsContent() {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {filterChips.map((chip, index) => (
-                    <Chip
+                    <RemovableTag
                       color="primary"
                       item={{
                         key: chip.category ?? String(index),
@@ -430,7 +430,7 @@ function TripDetailsContent() {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {trip.avoidDestinations.map((dest, index) => (
-                        <Chip
+                        <RemovableTag
                           key={index}
                           item={{
                             key: dest,
@@ -454,7 +454,7 @@ function TripDetailsContent() {
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {addonChips.map((addon: any, index: number) => (
-                      <Chip
+                      <RemovableTag
                         key={index}
                         item={{
                           key: addon.id,

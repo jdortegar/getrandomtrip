@@ -84,9 +84,9 @@ export async function PATCH(request: NextRequest) {
     // Commission is no longer a client-supplied field, so it is not part of
     // this check — the shared `?? 0.15` default covers a tripper with no
     // assigned rate.
-    if (!Array.isArray(availableTypes)) {
+    if (!Array.isArray(availableTypes) || availableTypes.length === 0) {
       return NextResponse.json(
-        { error: "availableTypes must be an array" },
+        { error: "availableTypes must be a non-empty array" },
         { status: 400 },
       );
     }

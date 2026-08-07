@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner";
 
 import { useUserStore } from "@/store/slices/userStore";
-import Badge from "@/components/badge";
+import Chip from "@/components/Chip";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import { UserAvatar } from "@/components/ui/UserAvatar";
@@ -499,20 +499,13 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {isTripper ? (
-                  <Badge
-                    color="secondary"
-                    item={{ key: "badge-tripper", value: p.header.badgeTripper }}
-                    size="md"
-                  />
+                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                    {p.header.badgeTripper}
+                  </span>
                 ) : (
-                  <Badge
-                    color="primary"
-                    item={{
-                      key: "badge-active",
-                      value: p.header.badgeActiveTraveler,
-                    }}
-                    size="md"
-                  />
+                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                    {p.header.badgeActiveTraveler}
+                  </span>
                 )}
               </div>
             </div>
@@ -584,7 +577,7 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
                       {detailsForm.interests.map((i) => (
                         <span
                           key={i}
-                          className="rounded-full border border-gray-200 bg-neutral-100 px-2 py-0.5 text-xs text-neutral-700"
+                          className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700"
                         >
                           {i}
                         </span>
@@ -601,7 +594,7 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
                       {detailsForm.dislikes.map((d) => (
                         <span
                           key={d}
-                          className="rounded-full border border-gray-200 bg-neutral-100 px-2 py-0.5 text-xs text-neutral-700"
+                          className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700"
                         >
                           {d}
                         </span>
@@ -748,29 +741,19 @@ export function AccountSettingsPanel({ role }: AccountSettingsPanelProps) {
                 {TRAVELER_TYPE_KEYS.map((key) => {
                   const active = detailsForm.travelerType === key;
                   return (
-                    <button
-                      key={key}
-                      type="button"
+                    <Chip
+                      active={active}
                       disabled={!isDetailsEditing}
+                      key={key}
                       onClick={() =>
                         setDetailsForm((f) => ({ ...f, travelerType: key }))
                       }
-                      className={cn(
-                        "flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm transition-colors",
-                        active
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-200 bg-white text-neutral-500",
-                        !isDetailsEditing &&
-                          !active &&
-                          "opacity-40 cursor-not-allowed",
-                        isDetailsEditing &&
-                          !active &&
-                          "hover:border-gray-400",
-                      )}
+                      size="md"
+                      variant="default"
                     >
                       {active && <Check className="h-3.5 w-3.5" />}
                       {tt[key]}
-                    </button>
+                    </Chip>
                   );
                 })}
               </div>

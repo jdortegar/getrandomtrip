@@ -1,3 +1,5 @@
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
+
 const STATUS_STYLES: Record<string, { badge: string; dot: string }> = {
   DRAFT: {
     badge: "bg-amber-50 text-amber-800 border-amber-200",
@@ -24,15 +26,7 @@ interface BlogStatusBadgeProps {
 
 export function BlogStatusBadge({ label, status }: BlogStatusBadgeProps) {
   const normalizedStatus = status.toUpperCase();
-  const { badge, dot } =
-    STATUS_STYLES[normalizedStatus] ?? STATUS_STYLES.DRAFT;
+  const styles = STATUS_STYLES[normalizedStatus] ?? STATUS_STYLES.DRAFT;
 
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${badge}`}
-    >
-      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-      {label}
-    </span>
-  );
+  return <StatusIndicatorBadge label={label} styles={styles} />;
 }

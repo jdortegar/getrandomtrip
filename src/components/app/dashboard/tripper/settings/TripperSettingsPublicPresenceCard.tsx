@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { AccountSettingsTagList } from "@/components/app/account/AccountSettingsTagList";
 import { TripperSettingsSocialLinks } from "@/components/app/dashboard/tripper/settings/TripperSettingsSocialLinks";
+import Chip from "@/components/Chip";
 import { cn } from "@/lib/utils";
 import type { TripperDashboardDict, MarketingDictionary } from "@/lib/types/dictionary";
 import type { TripperSettingsFormState } from "@/types/tripper";
@@ -136,23 +137,17 @@ export function TripperSettingsPublicPresenceCard({
           {TRAVELER_TYPE_KEYS.map((key) => {
             const active = formData.availableTypes.includes(key);
             return (
-              <button
-                className={cn(
-                  "flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm transition-colors",
-                  active
-                    ? "border-gray-900 bg-gray-900 text-white"
-                    : "border-gray-200 bg-white text-neutral-500",
-                  !isEditing && !active && "cursor-not-allowed",
-                  isEditing && !active && "hover:border-gray-400",
-                )}
+              <Chip
+                active={active}
                 disabled={!isEditing}
                 key={key}
                 onClick={() => toggleType(key)}
-                type="button"
+                size="md"
+                variant="default"
               >
                 {active && <Check className="h-3.5 w-3.5" />}
                 {travelerTypesCopy[key]}
-              </button>
+              </Chip>
             );
           })}
         </div>

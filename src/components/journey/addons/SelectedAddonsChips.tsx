@@ -3,7 +3,7 @@
 import React from "react";
 import { useStore } from "@/store/store";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
-import { X } from "lucide-react";
+import RemovableTag from "@/components/RemovableTag";
 
 export default function SelectedAddonsChips() {
   const { addons, removeAddon } = useStore();
@@ -20,21 +20,16 @@ export default function SelectedAddonsChips() {
           const a = ADDONS.find((x) => x.id === s.id);
           if (!a) return null;
           return (
-            <span
+            <RemovableTag
               key={s.id}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-violet-50 text-violet-800 border border-violet-200"
-            >
-              {a.title}
-              {s.qty > 1 ? ` ×${s.qty}` : ""}
-              <button
-                type="button"
-                onClick={() => removeAddon(s.id)}
-                className="ml-1 -mr-1 rounded p-0.5 hover:bg-violet-200"
-                aria-label={`Quitar ${a.title}`}
-              >
-                <X size={14} />
-              </button>
-            </span>
+              item={{
+                key: s.id,
+                value: `${a.title}${s.qty > 1 ? ` ×${s.qty}` : ""}`,
+                onRemove: () => removeAddon(s.id),
+              }}
+              color="secondary"
+              size="sm"
+            />
           );
         })}
       </div>

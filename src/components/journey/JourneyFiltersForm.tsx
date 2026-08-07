@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Check,
   Cloud,
   Info,
   Snowflake,
@@ -9,6 +10,7 @@ import {
   Thermometer,
 } from "lucide-react";
 import AvoidGrid from "@/components/journey/avoid/AvoidGrid";
+import Chip from "@/components/Chip";
 import { cn } from "@/lib/utils";
 
 export interface FilterOption {
@@ -27,29 +29,28 @@ interface FilterSegProps {
 function FilterSeg({ onChange, options, value }: FilterSegProps) {
   return (
     <div className="inline-flex flex-wrap gap-2">
-      {options.map((opt) => (
+      {options.map((opt) => {
+        const active = value === opt.key;
+        return (
         <div className="group relative inline-flex" key={opt.key}>
-          <button
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition cursor-pointer",
-              value === opt.key
-                ? "border-gray-800 bg-gray-800 text-white"
-                : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
-            )}
+          <Chip
+            active={active}
             onClick={() => onChange(opt.key)}
-            type="button"
+            size="md"
+            variant="default"
           >
+            {active && <Check className="h-3.5 w-3.5" />}
             <span>{opt.label}</span>
             {opt.tooltip ? (
               <Info
                 aria-hidden
                 className={cn(
                   "h-3.5 w-3.5 shrink-0",
-                  value === opt.key ? "text-white" : "text-gray-500",
+                  active ? "text-white" : "text-gray-500",
                 )}
               />
             ) : null}
-          </button>
+          </Chip>
           {opt.tooltip ? (
             <span
               className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 min-w-[320px] max-w-[320px] -translate-x-1/2 rounded-md border border-gray-200 bg-gray-900 px-3 py-2 text-left text-xs font-normal leading-snug text-white shadow-lg opacity-0 transition-opacity duration-150 group-hover:opacity-100 w-[320px]"
@@ -59,7 +60,8 @@ function FilterSeg({ onChange, options, value }: FilterSegProps) {
             </span>
           ) : null}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -249,20 +251,17 @@ export function JourneyFiltersForm({
             const Icon = CLIMATE_ICONS[opt.key];
             const isSelected = climate === opt.key;
             return (
-              <button
-                className={cn(
-                  "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition",
-                  isSelected
-                    ? "border-gray-800 bg-gray-800 text-white"
-                    : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
-                )}
+              <Chip
+                active={isSelected}
                 key={opt.key}
                 onClick={() => onClimateChange(opt.key)}
-                type="button"
+                size="md"
+                variant="default"
               >
+                {isSelected && <Check className="h-3.5 w-3.5" />}
                 {Icon ? <Icon size={16} /> : null}
                 {opt.label}
-              </button>
+              </Chip>
             );
           })}
         </div>

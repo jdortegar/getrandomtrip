@@ -190,9 +190,22 @@ Count format: `{filtered} of {total} {localized-noun}` — both keys must exist 
 
 ---
 
-## Experience Status Badges
+## Badges, Chips & Tags — Four Roles, Not One Shape
 
-Use `<ExperienceStatusBadge>` from `@/components/common/ExperienceStatusBadge`. Never write inline badge styles for experience statuses.
+There are four distinct semantic roles for a small rounded label. Each has exactly one canonical treatment. **Do not invent a fifth role or a second treatment for an existing role** — that's how this app ended up with 4 duplicate status-badge components and 3 overlapping generic pill primitives before this rule existed. Pick the role by what the label *does*, then use its canonical component:
+
+| Role | Question to ask | Shape | Canonical component |
+| --- | --- | --- | --- |
+| Status indicator | Is this reporting a system-owned state the viewer can't act on directly? | `rounded-[6px]` + dot | `ExperienceStatusBadge` / `StatusBadge` (see below) |
+| Category / type label | Is this describing what something *is*, not what state it's in? | `rounded-[6px]`, no dot | `ExperienceTypePills` / the manual chip style below |
+| Toggleable filter chip | Can the viewer click this to turn it on/off? | `rounded-full` | `components/Chip.tsx` |
+| Removable tag | Did the viewer type or pick this, with an ✕ to take it back out? | `rounded-full` | `components/RemovableTag.tsx` |
+
+`rounded-[6px]` is for **read-only** roles (status, type) that live in dense tables and cards. `rounded-full` is for roles the viewer **interacts with** (toggle, remove) — they need the larger touch target a pill gives. Don't collapse the two shapes into one: a toggleable chip forced into `rounded-[6px]` loses its obvious "this is clickable" affordance.
+
+### Status indicator (read-only)
+
+Use `<ExperienceStatusBadge>` from `@/components/common/ExperienceStatusBadge`, `<StatusBadge>` from `@/components/app/admin/StatusBadge`, `<BlogStatusBadge>`, `<EarningStatusBadge>`, or `<TravelerStatusBadge>` — whichever matches the domain. Never write inline badge styles for a status, and never add a 6th status-badge component: all five above render through the shared `<StatusIndicatorBadge>` (`@/components/common/StatusIndicatorBadge`), which owns the actual markup. If a new domain needs a status badge, give it its own color map and fallback logic, then render through `StatusIndicatorBadge` — don't copy/paste the JSX again.
 
 ```tsx
 <ExperienceStatusBadge
@@ -212,11 +225,9 @@ Shape: `rounded-[6px]` with a colored dot — never `rounded-full`. Dict keys mu
 | `INACTIVE`              | red-50      | red-800     | red-200     | red-500     |
 | `ARCHIVED`              | neutral-50  | neutral-600 | neutral-200 | neutral-400 |
 
-Admin trip/payment status badges and user-role badges use `<StatusBadge>` from `@/components/app/admin/StatusBadge` (`variant="trip" | "payment" | "role"`), which renders the same `rounded-[6px]` + dot shape as `ExperienceStatusBadge` — colors are defined in `src/lib/admin/trip-status.ts`. Always pass a translated `label`; never render the raw enum `status` as text.
+`<StatusBadge>` (`variant="trip" | "payment" | "role"`) colors are defined in `src/lib/admin/trip-status.ts`. Always pass a translated `label`; never render the raw enum `status` as text.
 
----
-
-## Experience Type Chips
+### Category / type label (read-only)
 
 Use `<ExperienceTypePills>` from `@/components/common/ExperienceTypePills`. Never write inline chip styles.
 
@@ -233,6 +244,28 @@ Manual chip style when needed outside the component:
 ```
 
 Level label (below chips): plain `text-xs text-neutral-500 mt-1` — no chip treatment.
+
+### Toggleable filter chip (viewer clicks to select/deselect)
+
+Use `Chip` from `@/components/Chip` for any single- or multi-select toggle — traveler-type pickers, addon selectors, segmented filters. Its `active` boolean is the on/off state; don't hand-roll `active ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 bg-white text-neutral-500"` inline at a new call site.
+
+```tsx
+<Chip active={isSelected} onClick={() => toggle(key)}>
+  {label}
+</Chip>
+```
+
+Never reduce an unselected chip's opacity (e.g. `opacity-40`) to signal "not selected" in a read-only display — that reads as a broken/loading state, not a deliberate off-state. Use the border/fill contrast instead (see Traveler Types example in the tripper settings page).
+
+### Removable tag (viewer-entered value, has a functional ✕)
+
+Use `RemovableTag` (default export) from `@/components/RemovableTag` for anything the viewer added and can remove — destinations, selected addons, uploaded document tags.
+
+```tsx
+<RemovableTag item={{ key, value, onRemove: () => remove(key) }} color="secondary" />
+```
+
+The ✕ only renders when `onRemove` is passed. **Never render a bare `✕`/`X` icon next to a label to *imply* removability on a read-only review/summary screen** (e.g. an order-confirmation step) — if the viewer can't actually remove it there, don't show the affordance.
 
 ---
 
