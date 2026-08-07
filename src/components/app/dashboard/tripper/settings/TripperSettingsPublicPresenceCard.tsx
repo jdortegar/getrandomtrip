@@ -128,7 +128,7 @@ export function TripperSettingsPublicPresenceCard({
           {copy.travelerTypesLabel}
         </p>
         {!isEditing && (
-          <p className="mb-2 text-xs text-neutral-400">
+          <p className="mb-2 text-sm text-neutral-700">
             {copy.travelerTypesHelper}
           </p>
         )}
@@ -142,7 +142,7 @@ export function TripperSettingsPublicPresenceCard({
                   active
                     ? "border-gray-900 bg-gray-900 text-white"
                     : "border-gray-200 bg-white text-neutral-500",
-                  !isEditing && !active && "cursor-not-allowed opacity-40",
+                  !isEditing && !active && "cursor-not-allowed",
                   isEditing && !active && "hover:border-gray-400",
                 )}
                 disabled={!isEditing}

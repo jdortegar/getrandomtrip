@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { SOCIAL_NETWORK_CONFIG } from "@/lib/socialNetworks";
 import type { SocialLink, SocialNetwork } from "@/types/tripper";
 
@@ -84,19 +84,20 @@ function SocialIcon({ color, network, size = 16 }: SocialIconProps) {
   }
 }
 
+const NETWORK_BADGE_COLOR = "#6B7280"; // neutral-500 — same grayish tone for every network
+
 function NetworkBadge({ network, size }: { network: SocialNetwork; size: number }) {
-  const config = SOCIAL_NETWORK_CONFIG[network];
   return (
     <span
       className="flex shrink-0 items-center justify-center rounded-full border"
       style={{
-        backgroundColor: `${config.color}26`,
-        borderColor: `${config.color}54`,
+        backgroundColor: `${NETWORK_BADGE_COLOR}26`,
+        borderColor: `${NETWORK_BADGE_COLOR}54`,
         height: size,
         width: size,
       }}
     >
-      <SocialIcon color={config.color} network={network} size={size * 0.44} />
+      <SocialIcon color={NETWORK_BADGE_COLOR} network={network} size={size * 0.44} />
     </span>
   );
 }
@@ -190,10 +191,13 @@ export function TripperSettingsSocialLinks({
                     </button>
                   </div>
                 ) : (
-                  <span className="text-sm text-neutral-600">
-                    {config.prefix}
-                    {link.handle}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm text-neutral-600">
+                      {config.prefix}
+                      {link.handle}
+                    </span>
+                    <Check className="h-4 w-4 shrink-0 text-green-600" />
+                  </div>
                 )}
               </div>
             );
