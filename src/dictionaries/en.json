@@ -1140,6 +1140,10 @@
       "searchCardDescription": "Find the perfect expert for your adventure.",
       "searchCardCta": "Explore Trippers"
     },
+    "meta": {
+      "title": "Our Trippers | Randomtrip",
+      "description": "Explore profiles of expert travelers who curate authentic and memorable experiences. Find your ideal Tripper."
+    },
     "unavailable": {
       "title": "This profile isn't available",
       "description": "{name} has paused their profile for now. You can explore other trippers in the meantime.",

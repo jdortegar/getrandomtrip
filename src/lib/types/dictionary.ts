@@ -2067,6 +2067,10 @@ export interface MarketingDictionary {
       searchCardDescription: string;
       searchCardTitle: string;
     };
+    meta: {
+      description: string;
+      title: string;
+    };
     /** Shared "tripper unavailable" copy — used by both the profile page and the journey flow. */
     unavailable: {
       ctaLabel: string;
