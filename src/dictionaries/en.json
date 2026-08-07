@@ -1125,7 +1125,7 @@
   "trippers": {
     "hero": {
       "description": "Explore profiles of expert travelers who curate authentic and memorable experiences.",
-      "subtitle": "OUR TRIPPERS",
+      "subtitle": "MEET THE TEAM",
       "title": "Our Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
     },
@@ -1133,6 +1133,11 @@
       "searchCardTitle": "Find your Tripper",
       "searchCardDescription": "Find the perfect expert for your adventure.",
       "searchCardCta": "Explore Trippers"
+    },
+    "unavailable": {
+      "title": "This profile isn't available",
+      "description": "{name} has paused their profile for now. You can explore other trippers in the meantime.",
+      "ctaLabel": "See all trippers"
     }
   },
   "blogPage": {
@@ -3769,7 +3774,8 @@
         "copied": "Copied!",
         "openLink": "Open public profile",
         "visibilityLabel": "Public profile visible",
-        "visibilityDisabledHint": "Set up your profile URL first to enable visibility"
+        "visibilityDisabledHint": "Set up your profile URL first to enable visibility",
+        "visibilityError": "We couldn't update your profile visibility. Please try again."
       },
       "account": {
         "eyebrow": "Read-only",

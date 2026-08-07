@@ -37,6 +37,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
   const tripperHeroImage = tripper.heroImage || tripper.avatarUrl || null;
   const tripperBio = tripper.bio;
   const tripperLocation = tripper.location;
+  const heroObjectPosition = `${tripper.heroImagePositionX ?? 50}% ${tripper.heroImagePositionY ?? 50}%`;
 
   const tagline = truncateTagline(tripperBio, 50);
   const countryForFlag = getCountryFromLocation(tripperLocation);
@@ -66,6 +67,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
           priority
           sizes="100vw"
           src={bannerSrc}
+          style={{ objectPosition: heroObjectPosition }}
         />
         <div className="absolute inset-0 bg-linear-to-b from-slate-950/50 to-slate-950/80" />
 

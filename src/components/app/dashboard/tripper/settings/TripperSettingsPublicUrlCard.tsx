@@ -10,6 +10,8 @@ import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 interface TripperSettingsPublicUrlCardProps {
+  /** False until a tripperSlug is actually persisted — mirrors the API's 400 guard. Must derive from the persisted profile, not from an unsaved form draft. */
+  canToggleVisibility: boolean;
   copy: TripperDashboardDict["settingsProfile"]["publicUrl"];
   isActive: boolean;
   isEditing: boolean;
@@ -29,6 +31,7 @@ function slugify(value: string): string {
 }
 
 export function TripperSettingsPublicUrlCard({
+  canToggleVisibility,
   copy,
   isActive,
   isEditing,
@@ -38,7 +41,6 @@ export function TripperSettingsPublicUrlCard({
   slug,
 }: TripperSettingsPublicUrlCardProps) {
   const [copied, setCopied] = useState(false);
-  const hasSlug = Boolean(slug);
   const publicPath = pathForLocale(locale, `/trippers/${slug}`);
 
   async function handleCopy() {
@@ -109,7 +111,7 @@ export function TripperSettingsPublicUrlCard({
           <span className="text-sm font-medium text-gray-900">
             {copy.visibilityLabel}
           </span>
-          {!hasSlug && (
+          {!canToggleVisibility && (
             <span className="text-xs text-gray-400">
               {copy.visibilityDisabledHint}
             </span>
@@ -117,7 +119,7 @@ export function TripperSettingsPublicUrlCard({
         </div>
         <Switch
           checked={isActive}
-          disabled={!hasSlug}
+          disabled={!canToggleVisibility}
           id="tripper-visibility-toggle"
           onCheckedChange={onIsActiveChange}
         />

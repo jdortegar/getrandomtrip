@@ -8,6 +8,8 @@ import {
   getTripperPublishedBlogs,
 } from "@/lib/db/tripper-queries";
 import TripperHero from "@/components/tripper/TripperHero";
+import { TripperUnavailableNotice } from "@/components/tripper/TripperUnavailableNotice";
+import { DashboardNavbarPrimaryLayout } from "@/components/app/dashboard/DashboardNavbarPrimaryLayout";
 import TripperPlanner from "@/components/tripper/TripperPlanner";
 import TripperInspirationGallery from "@/components/tripper/TripperInspirationGallery";
 import Blog from "@/components/Blog";
@@ -42,7 +44,7 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const result = await getTripperBySlug(params.tripper);
 
-  if (result.outcome !== "active") return { title: "Randomtrip" };
+  if (result.status !== "ok") return { title: "Randomtrip" };
 
   const { tripper } = result;
   const ogImage = tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
@@ -75,23 +77,17 @@ export default async function Page(props: {
   // Fetch from database — three-way discriminated result
   const tripperResult = await getTripperBySlug(params.tripper);
 
-  if (tripperResult.outcome === "not_found") return notFound();
+  if (tripperResult.status === "not_found") return notFound();
 
-  if (tripperResult.outcome === "inactive") {
-    const { unavailable } = dict.tripperProfilePage;
+  if (tripperResult.status === "inactive") {
     return (
-      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-6 bg-white px-6 py-24 text-center">
-        <h1 className="font-barlow-condensed text-4xl font-extrabold uppercase text-gray-900">
-          {unavailable.title}
-        </h1>
-        <p className="max-w-md text-base text-gray-500">{unavailable.body}</p>
-        <a
-          className="rounded-full bg-light-blue px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          href={pathForLocale(locale, "/trippers")}
-        >
-          {unavailable.cta}
-        </a>
-      </main>
+      <DashboardNavbarPrimaryLayout>
+        <TripperUnavailableNotice
+          copy={dict.trippers.unavailable}
+          ctaHref={pathForLocale(locale, "/trippers")}
+          tripperName={tripperResult.name}
+        />
+      </DashboardNavbarPrimaryLayout>
     );
   }
 

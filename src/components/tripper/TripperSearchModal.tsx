@@ -10,7 +10,7 @@ const DEBOUNCE_MS = 300;
 export interface TripperSearchItem {
   id: string;
   name: string;
-  tripperSlug: string | null;
+  tripperSlug: string;
   avatarUrl: string | null;
   bio: string | null;
 }
@@ -157,14 +157,11 @@ export default function TripperSearchModal({
             ) : (
               <ul className="divide-y divide-gray-100">
                 {matches.map((tripper) => {
-                  const slug =
-                    tripper.tripperSlug ||
-                    tripper.name.toLowerCase().replace(/\s+/g, "-");
                   return (
                     <li key={tripper.id}>
                       <Link
                         className="flex items-center gap-3 p-3 transition-colors hover:bg-gray-50"
-                        href={`/trippers/${slug}`}
+                        href={`/trippers/${tripper.tripperSlug}`}
                         onClick={onClose}
                       >
                         <TripperAvatarThumb

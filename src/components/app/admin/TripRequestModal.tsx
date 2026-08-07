@@ -40,6 +40,23 @@ interface Draft {
   status: TripRequestStatus;
 }
 
+/**
+ * Builds the query string for the assignable-experiences lookup.
+ * `ownerActive: "true"` excludes experiences owned by an inactive tripper
+ * from the assignment list — GET /api/admin/experiences only applies that
+ * owner filter when this flag is present, since the same route also backs
+ * admin catalog browsing, which must keep showing inactive owners.
+ */
+export function buildAssignableExperiencesQuery(trip: {
+  tripperId: string | null;
+  type: string;
+}): URLSearchParams {
+  const params = new URLSearchParams({ status: "ACTIVE", ownerActive: "true" });
+  if (trip.tripperId) params.set("tripperId", trip.tripperId);
+  if (trip.type) params.set("type", trip.type);
+  return params;
+}
+
 type TripEditCopy = MarketingDictionary["adminTripEditModal"];
 
 interface TripRequestModalProps {
@@ -84,9 +101,7 @@ export function TripRequestModal({
   }, [trip.id]);
 
   useEffect(() => {
-    const params = new URLSearchParams({ status: "ACTIVE" });
-    if (trip.tripperId) params.set("tripperId", trip.tripperId);
-    if (trip.type) params.set("type", trip.type);
+    const params = buildAssignableExperiencesQuery(trip);
 
     fetch(`/api/admin/experiences?${params.toString()}`)
       .then((res) => res.json())

@@ -147,11 +147,17 @@ export interface TripperOwnExperienceListItem {
   type: string[];
 }
 
-/** Public fields returned by listing queries (grids, home, GET /api/trippers). */
+/**
+ * Public fields returned by listing queries (grids, home, GET /api/trippers).
+ * `tripperSlug` is narrowed to `string` — `getAllTrippers` already filters
+ * `tripperSlug: { not: null }` at the DB level and drops any null-slug row
+ * from the mapped result, so every listed Tripper is guaranteed to carry
+ * one. No downstream consumer needs a name-derived fallback.
+ */
 export interface TripperListItem {
   id: string;
   name: string;
-  tripperSlug: string | null;
+  tripperSlug: string;
   avatarUrl: string | null;
   bio: string | null;
   location: string | null;
@@ -189,9 +195,9 @@ export interface TripperProfile {
  * - active: User is active and profile is ready to render
  */
 export type TripperBySlugResult =
-  | { outcome: "not_found" }
-  | { outcome: "inactive" }
-  | { outcome: "active"; tripper: TripperProfile };
+  | { status: "not_found" }
+  | { status: "inactive"; name: string }
+  | { status: "ok"; tripper: TripperProfile };
 
 // Featured Trip from Database
 export interface FeaturedTrip {

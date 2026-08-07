@@ -1,12 +1,30 @@
 import { prisma } from "@/lib/prisma";
 
 /**
+ * Guards every function below, all of which take a raw `tripperId` and
+ * query `Experience` directly with no User join of their own. The
+ * isActive gate belongs on this User-lookup step — adding `isActive: true`
+ * to the Experience queries here would filter `Experience.isActive`
+ * (an unrelated existing field), silently failing to exclude an inactive
+ * owner's experiences.
+ */
+async function isOwnerActive(tripperId: string): Promise<boolean> {
+  const owner = await prisma.user.findFirst({
+    where: { id: tripperId, isActive: true },
+    select: { id: true },
+  });
+  return owner !== null;
+}
+
+/**
  * Fetches packages for a specific tripper and extracts unique type/level combinations
  * @param tripperId - The ID of the tripper (User.id)
  * @returns Array of { type, level } objects representing available combinations
  */
 export async function getTripperAvailableTypesAndLevels(tripperId: string) {
   try {
+    if (!(await isOwnerActive(tripperId))) return [];
+
     const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId, // Packages are owned by trippers
@@ -42,6 +60,8 @@ export async function tripperHasExperiencesForTypeAndLevel(
   level: string,
 ): Promise<boolean> {
   try {
+    if (!(await isOwnerActive(tripperId))) return false;
+
     const pkg = await prisma.experience.findFirst({
       where: {
         ownerId: tripperId,
@@ -67,6 +87,8 @@ export async function getTripperAvailableTypes(
   tripperId: string,
 ): Promise<string[]> {
   try {
+    if (!(await isOwnerActive(tripperId))) return [];
+
     const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
@@ -96,6 +118,8 @@ export async function getTripperAvailableLevelsForType(
   type: string,
 ): Promise<string[]> {
   try {
+    if (!(await isOwnerActive(tripperId))) return [];
+
     const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
