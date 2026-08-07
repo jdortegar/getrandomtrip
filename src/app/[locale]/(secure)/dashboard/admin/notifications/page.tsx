@@ -7,10 +7,16 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import Section from "@/components/layout/Section";
 import { AdminNotificationsPageClient } from "../AdminNotificationsPageClient";
-import type { ClientNotification, NotificationMetadata } from "@/types/notifications";
+import {
+  NOTIFICATIONS_PAGE_SIZE,
+  notificationListWhere,
+  parseNotificationStatus,
+  toClientNotification,
+} from "@/lib/notifications/list-query";
 
 export default async function AdminNotificationsPage(props: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await props.params;
   const session = await getServerSession(authOptions);
@@ -31,31 +37,34 @@ export default async function AdminNotificationsPage(props: {
   const locale = hasLocale(params.locale) ? params.locale : "es";
   const dict = await getDictionary(locale);
 
-  const rawNotifications = await prisma.notification.findMany({
-    where: {
-      userId: user.id,
-      audience: "ADMIN",
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const sp = await props.searchParams;
+  const status = parseNotificationStatus(sp.status);
+  const page = Math.max(1, Number(sp.page) || 1);
+  const where = notificationListWhere({ userId: user.id, audience: "ADMIN", status });
 
-  const notifications: ClientNotification[] = rawNotifications.map((n) => ({
-    id: n.id,
-    userId: n.userId,
-    type: n.type,
-    audience: n.audience,
-    isRead: n.isRead,
-    title: n.title,
-    body: n.body,
-    metadata: n.metadata as NotificationMetadata,
-    createdAt: n.createdAt.toISOString(),
-  }));
+  const [rows, total, unreadTotal] = await Promise.all([
+    prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * NOTIFICATIONS_PAGE_SIZE,
+      take: NOTIFICATIONS_PAGE_SIZE,
+    }),
+    prisma.notification.count({ where }),
+    prisma.notification.count({
+      where: notificationListWhere({ userId: user.id, audience: "ADMIN", status: "unread" }),
+    }),
+  ]);
 
   return (
     <Section>
       <AdminNotificationsPageClient
+        audience="ADMIN"
         copy={dict.notifications}
-        initialNotifications={notifications}
+        initialNotifications={rows.map(toClientNotification)}
+        initialPage={page}
+        initialStatus={status}
+        initialTotal={total}
+        initialUnreadTotal={unreadTotal}
         locale={locale}
       />
     </Section>

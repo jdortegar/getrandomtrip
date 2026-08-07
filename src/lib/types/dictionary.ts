@@ -1494,6 +1494,28 @@ export interface NotificationsDict {
   actionView: string;
   actionReview: string;
   types: Record<string, string>;
+  filters: {
+    statusLabel: string;
+    all: string;
+    unread: string;
+    read: string;
+    of: string;
+    count: string;
+  };
+  table: {
+    selectAll: string;
+    selectRow: string;
+  };
+  bulkActions: {
+    deleteSelected: string;
+    confirmTitle: string;
+    confirmBody: string;
+    confirm: string;
+    cancel: string;
+    partialFailure: string;
+  };
+  /** Empty-state copy shown when a status filter is active and matches nothing (distinct from the unfiltered `emptyState`). */
+  emptyStateFiltered: string;
 }
 
 export interface TripReviewDict {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { NotificationAudience } from "@/components/app/dashboard/config/dashboardNavTypes";
+import { subscribeUnreadRefresh } from "@/lib/notifications/unreadDotBus";
 
 interface DashboardUnreadDotProps {
   audience: NotificationAudience;
@@ -14,7 +15,7 @@ export function DashboardUnreadDot({
 }: DashboardUnreadDotProps) {
   const [count, setCount] = useState(0);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     fetch(`/api/notifications/unread-count?audience=${audience}`)
       .then((res) => {
         if (!res.ok) throw new Error("non-2xx");
@@ -23,6 +24,13 @@ export function DashboardUnreadDot({
       .then(({ count: nextCount }) => setCount(nextCount))
       .catch(() => setCount(0));
   }, [audience]);
+
+  useEffect(() => {
+    refresh();
+    // Refresh on mark-read, mark-all-read, and bulk delete without a remount —
+    // one shared channel published from every mutation path.
+    return subscribeUnreadRefresh(refresh);
+  }, [refresh]);
 
   if (count === 0) return null;
 
