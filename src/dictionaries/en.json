@@ -4544,6 +4544,27 @@
     "unreadBadge": "Unread",
     "actionView": "View",
     "actionReview": "Review",
+    "filters": {
+      "statusLabel": "Filter by status",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read",
+      "of": "of",
+      "count": "notifications"
+    },
+    "table": {
+      "selectAll": "Select all",
+      "selectRow": "Select notification"
+    },
+    "bulkActions": {
+      "deleteSelected": "Delete selected ({count})",
+      "confirmTitle": "Delete {count} notifications?",
+      "confirmBody": "This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel",
+      "partialFailure": "Deleted {success} of {total}. {failed} could not be deleted."
+    },
+    "emptyStateFiltered": "No notifications match this filter.",
     "types": {
       "EXPERIENCE_APPROVED": "Experience approved",
       "EXPERIENCE_REJECTED": "Experience rejected",

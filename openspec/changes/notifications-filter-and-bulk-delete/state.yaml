@@ -1,0 +1,249 @@
+change: notifications-filter-and-bulk-delete
+status: verify
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: pending
+artifacts:
+  proposal: openspec/changes/notifications-filter-and-bulk-delete/proposal.md
+  spec:
+    - openspec/changes/notifications-filter-and-bulk-delete/specs/notifications-management/spec.md
+    - openspec/changes/notifications-filter-and-bulk-delete/specs/dashboard-shell/spec.md
+  design: openspec/changes/notifications-filter-and-bulk-delete/design.md
+  tasks: openspec/changes/notifications-filter-and-bulk-delete/tasks.md
+  verify: openspec/changes/notifications-filter-and-bulk-delete/verify-report.md
+updated: 2026-08-07
+revisions:
+  - artifact: verify
+    date: 2026-08-07
+    note: >
+      Independent fresh-context verification (skeptical of the apply-progress
+      claim per instructions). Re-ran npm run typecheck (clean) and npm run
+      test (132 files / 963 tests passed) from scratch rather than trusting
+      the prior report. Read every implementing file directly: both
+      click-to-mark-read paths, DELETE ownership scoping (deleteMany in the
+      where itself, 404 on count===0, real cross-user test), read-all's
+      no-skip/no-take global updateMany with a beyond-page-1 proof test, the
+      ?audience=ADMIN D9 regression fix plus its regression test,
+      select-all's current-page-only scoping with a page-navigation test,
+      Promise.allSettled bulk delete with no batch DELETE route, and
+      stopPropagation on BOTH onClick and onKeyDown on the row checkbox
+      (the highest-probability apply-time bug per the brief) with a test
+      proving it. Confirmed all 3 publishUnreadRefresh() call sites
+      individually (markRead, markAllRead, handleBulkDelete) rather than
+      assuming from one. Confirmed dead-code files are actually deleted
+      (git status D) with zero remaining importers anywhere in src (rg
+      returns no matches) and typecheck passing as corroborating evidence.
+      Confirmed git diff prisma/schema.prisma is empty and all ~15 i18n
+      keys exist in both es.json and en.json matching the NotificationsDict
+      type. Verdict: PASS, 0 CRITICAL / 0 WARNING / 0 SUGGESTION. Full
+      report at openspec/changes/notifications-filter-and-bulk-delete/
+      verify-report.md and Engram topic
+      sdd/notifications-filter-and-bulk-delete/verify-report.
+  - artifact: apply
+    date: 2026-08-07
+    note: >
+      Single apply batch, all 4 work units (A, B1, B2, C) implemented
+      together per the user's explicit size:exception decision — one PR,
+      not chained, despite the tasks.md forecast flagging High 400-line
+      budget risk. Delivery strategy resolved as size:exception. 41/42
+      tasks complete; only D.3 (manual QA in a running browser) is
+      deferred, since it requires human/browser interaction unavailable
+      to this agent. Actual diff: 26 files changed, 1,849 insertions(+),
+      335 deletions(-) = ~2,184 changed lines — HIGHER than tasks.md's
+      already-corrected 1,600-1,750 estimate (see apply-progress in
+      Engram, topic key sdd/notifications-filter-and-bulk-delete/apply-
+      progress, for the full per-file breakdown and TDD Cycle Evidence
+      table). Strict TDD followed throughout: all 5 flagged hazard
+      scenarios got standalone RED-before-GREEN tests (click-to-mark-read
+      characterization approval tests run against the CURRENT component
+      first and re-confirmed passing after the rearchitecture; DELETE
+      cross-user 404; read-all reaching rows beyond page 1; the
+      ?audience=ADMIN D9 regression; select-all page-scoping). Full
+      `npm run test` (132 files / 963 tests) and `npm run typecheck` both
+      pass clean. `npm run lint` fails with a pre-existing, unrelated
+      repo-level error (`next lint` / Next 16 removed the command) — not
+      caused by this change. `git diff prisma/schema.prisma` is empty —
+      confirmed no migration. Nothing was committed; all changes are left
+      uncommitted in the working tree for explicit user review per the
+      Never-Auto-Commit rule.
+  - artifact: tasks
+    date: 2026-08-07
+    note: >
+      4 work units mirroring the design's A/B/C slices, with B split into
+      B1 (client data layer: filter/pagination/props/server pages) and B2
+      (bulk delete UI) since Slice B alone was ~750-800 estimated lines.
+      Review Workload Forecast: ~1,600-1,750 total estimated changed lines,
+      High 400-line budget risk, Chained PRs recommended = Yes, Decision
+      needed before apply = Yes (delivery_strategy=ask-on-risk), chain
+      strategy left as `pending` since the user has not chosen
+      stacked-to-main vs feature-branch-chain yet. This CORRECTS the
+      proposal/design's 950-1150 line estimate upward after checking
+      against real file sizes: GET/DELETE/read-all all need net-new test
+      files with full next-auth/prisma mock boilerplate (no existing
+      notifications route tests exist at all), and the 3 dead files
+      total a confirmed 157 deletion lines. Each of the 5 hazard
+      scenarios called out in spec.md/design.md is its own numbered
+      RED/GREEN task rather than a footnote: click-to-mark-read
+      characterization tests written FIRST against current behavior
+      (B1.1, before the rearchitecture can regress them), DELETE
+      ownership-scoping cross-user rejection (A.7), mark-all-read reaching
+      unread rows beyond page 1 (A.9), the ?audience=ADMIN whitelist
+      regression (A.5, D9's latent bug fix), and select-all scoped to the
+      current page only (B2.4). Flagged one cross-slice technical
+      dependency the design's "C is independent" framing under-states:
+      unreadDotBus.ts must exist (C.1) before B1/B2's
+      publishUnreadRefresh() calls can compile, even though the dot-wiring
+      and dead-code deletion in the rest of Phase C can land in any order
+      relative to A/B.
+  - artifact: design
+    date: 2026-08-07
+    note: >
+      Design written against the real code (read ExperiencesPageClient,
+      BlogPageClient, RoleNotificationsPageClient, all 3 notification API
+      routes, DashboardUnreadDot, StrictDashboardLayout/DashboardRoleShell/
+      DashboardNavTabs, ui/Pagination, ui/Select, the 3 role server pages, the
+      3 pass-through clients, and the just-finished spec). Nine numbered ADRs.
+      Load-bearing decisions: (D1) a new shared
+      src/lib/notifications/list-query.ts owns the Prisma where + status/
+      audience parsers + toClientNotification, imported by BOTH
+      GET /api/notifications and the 3 server pages, because those 3 pages
+      already duplicate the row->ClientNotification map verbatim and a filter
+      that must agree between SSR and client fetch cannot survive 4 copies.
+      (D2) deliberate deviation from experiences/blog: notifications KEEP their
+      SSR seed (initialNotifications + initialTotal + initialUnreadTotal +
+      initialPage + initialStatus) and skip the mount fetch via a hydratedRef,
+      instead of the pure client-fetch + LoadingSpinner shape, since the page
+      renders server-side today and a spinner on every visit is a UX
+      regression. (D3) server pages honour page/status from searchParams but
+      the client does NOT push state back to the URL (experiences/blog have no
+      URL sync either; accepted consequence: URL goes stale after filtering).
+      (D4) keep the <ul>/<li> feed rather than converting to <table>: the
+      pattern being matched is the interaction pattern, not the table element;
+      checkbox becomes the first flex child of the existing
+      `flex items-start gap-4` row and select-all moves into a gray-50 header
+      strip standing in for the missing <thead>; rounded-t/b-xl drop off rows
+      in favour of overflow-hidden on the panel, and `index` leaves the .map().
+      Real gotcha found and documented: the row div already carries
+      onClick=markRead plus an Enter/Space onKeyDown when clickToMarkRead is
+      true, so the new checkbox REQUIRES stopPropagation on both onClick and
+      onKeyDown or ticking a box also marks the row read (and under the Unread
+      filter the row vanishes mid-selection). (D5) DELETE uses
+      deleteMany({ where: { id, userId } }) — one atomic statement, count===0
+      means "missing or not yours" -> 404 (not 403, which would confirm another
+      user's id exists), 200 { success: true } (not 204, since every route here
+      answers via NextResponse.json and a 204 cannot carry a body); a bare
+      delete() cannot express the ownership filter and throws P2025 instead of
+      returning a status. (D6) read-all mirrors unread-count's param PARSING
+      but returns 400 on missing/invalid audience instead of copying its
+      `?? "TRIPPER"` fallback — silently defaulting a WRITE would let an admin
+      with a dropped param mark their TRIPPER rows read while the admin dot
+      stays lit. (D7) unread-dot freshness = a 12-line module-level pub/sub
+      singleton at src/lib/notifications/unreadDotBus.ts, NOT lifted state and
+      NOT a Context provider: DashboardUnreadDot is a SIBLING of the page
+      (StrictDashboardLayout renders <DashboardRoleShell/> then {children}), so
+      lifting would require turning the shared async server layout into a
+      client boundary wrapping every dashboard page for all 3 roles; both
+      components are client components in the same module graph, so a typed
+      singleton is the smallest correct channel, published from all three
+      mutation paths and consumed by a useCallback refresh in the dot.
+      (D8) GET also returns unreadTotal (a 3rd count) so the global
+      "Mark all read" button cannot hide itself when page 1 happens to be
+      all-read while unread rows sit on page 3. (D9) latent bug fixed in
+      passing: route.ts:21 whitelists only TRAVELER/TRIPPER, so
+      ?audience=ADMIN silently drops the audience filter and returns every
+      audience. Two proposal claims re-verified this phase rather than trusted:
+      the dead NotificationsPanel/NotificationsList/NotificationItem stack has
+      zero external importers (only mutual imports), and
+      prisma/schema.prisma:590-606 already has isRead +
+      @@index([userId, isRead]) + @@index([userId, createdAt]) so there is
+      genuinely NO schema diff. Also discovered that after the dead stack is
+      deleted the rearchitected client becomes the ONLY consumer of
+      GET /api/notifications, so its contract can be redefined with no
+      back-compat shim. 15 new dict keys specified with both en and es values,
+      extending the existing notifications section (flat emptyState /
+      emptyStateTitle left untouched; emptyStateFiltered added as a sibling to
+      avoid churning unrelated call sites); common.pagination reused, not added.
+      A short "Spec reconciliation" section records the two places the design
+      refines the spec's wording ("checkbox column" in a <ul>; "clicks anywhere
+      on the row" excluding the checkbox control) so sdd-verify does not read
+      them as violations. Slice ordering restated as a hard constraint: A
+      (shared module + 3 routes) precedes B (client + pages + copy); C (bus +
+      dead-code deletion) is independent of both. Exceeds the design skill's
+      800-word budget, accepted deliberately and for the same reason the
+      proposal did: the brief asked 8 specific technical questions requiring
+      exact route handlers, exact state shape and exact JSX, and compressing
+      them would push those decisions back onto sdd-apply.
+  - artifact: spec
+    date: 2026-08-07
+    note: >
+      New full spec for `notifications-management` (7 requirements: preserve
+      click-to-mark-read semantics across both click paths + unread-filter
+      disappearance, paginated/filtered list uniform across roles, per-id
+      DELETE with ownership scoped in the Prisma where clause, bulk delete
+      with page-scoped select-all + Promise.allSettled + partial-failure
+      banner + selection-clear on filter/page change, global mark-all-read
+      verified beyond page 1) plus an explicit Non-Goals section (no search,
+      no cross-page select-all, no type/audience filter, no locked-row
+      concept, dead-code removal has no independent behavioral contract, no
+      schema change, no batch DELETE). MODIFIED delta for `dashboard-shell`
+      extends the existing "Admin Notifications Tab" requirement
+      (spec.md:54-68) with a freshness scenario (shared refresh signal on
+      mark-read/mark-all-read/delete) without altering its two existing
+      scenarios, per the copy-full-then-edit MODIFIED workflow.
+  - artifact: proposal
+    date: 2026-08-07
+    note: >
+      Proposal written from a finalized grill-me design interview — all 11
+      decisions were resolved live against the code with file/line citations,
+      so no open questions remain. Ask was "dropdown filter (All/Unread/Read)
+      + row-select + bulk-delete on the notifications pages for all three
+      roles, same as other tables"; research showed the three role pages are
+      ~10-line pass-throughs into ONE shared component
+      (src/components/app/dashboard/shared/RoleNotificationsPageClient.tsx,
+      227 lines) whose only role variance is resolveHref + audience, so the
+      whole feature is written once. Key finding driving scope: notifications
+      have none of the plumbing the experiences/blog pattern assumes — the
+      server pages call prisma.notification.findMany directly with no query
+      params and no pagination, and src/app/api/notifications/ contains only
+      route.ts (GET), unread-count/route.ts (GET) and [id]/read/route.ts
+      (PATCH), i.e. NO DELETE endpoint exists at all. User explicitly chose
+      full rearchitecture (page/limit/status params + client-fetch + shared
+      ui/Pagination.tsx) over a lightweight in-memory filter, and explicitly
+      chose per-id DELETE under Promise.allSettled over a batch endpoint to
+      match both live precedents (ExperiencesPageClient, BlogPageClient — no
+      bulk DELETE collection route exists for either). Deliberately NOT
+      copied from blog: the isBlogRowLockedForDeletion locked-row guard, which
+      exists only because blog review copies reference parentId with no
+      FK/cascade — notifications are self-contained, so every row is always
+      deletable. "Mark all read" stays GLOBAL for behavior parity despite the
+      new pagination, which forces a second new endpoint
+      (PATCH /api/notifications/read-all) since the current
+      N-parallel-PATCH-per-visible-id approach stops covering "everything".
+      Two extras pulled in by explicit user choice: deleting the confirmed-dead
+      NotificationsPanel/NotificationsList/NotificationItem stack (grep: zero
+      importers outside each other), and fixing the pre-existing
+      DashboardUnreadDot.tsx mount-only staleness, bundled because the latent
+      single-click bug and the new bulk-action case share one root cause.
+      Out of scope: search box, locked rows, cross-page select-all, type/
+      audience filtering, and ANY schema change (no readAt, no soft delete —
+      hard delete only, so there is no migration and rollback is code-only).
+      Capabilities contract: new `notifications-management`; modified
+      `dashboard-shell` (the existing unread-dot requirement at
+      openspec/specs/dashboard-shell/spec.md:54-68 constrains the dot's source
+      but not its freshness). Size flagged as High 400-line budget risk
+      (3 API surfaces + a 227-line component rearchitecture + a cross-component
+      freshness mechanism + dual-locale copy) with a suggested 3-slice boundary
+      (A: API layer, B: client rearchitecture, C: unread-dot + dead code) and a
+      hard ordering constraint that A precedes B; delivery_strategy=ask-on-risk
+      so the chaining decision belongs to the user after sdd-tasks. Exceeds the
+      propose skill's 450-word soft budget, accepted deliberately per the
+      precedent set by tripper-profile-visibility's proposal in this repo — the
+      brief was a finalized decision record with 11 cited decisions plus an
+      exhaustive current-state audit, and compressing it would drop the
+      file/line evidence downstream phases depend on.

@@ -4544,6 +4544,27 @@
     "unreadCount": "{count} sin leer",
     "actionView": "Ver",
     "actionReview": "Revisar",
+    "filters": {
+      "statusLabel": "Filtrar por estado",
+      "all": "Todas",
+      "unread": "Sin leer",
+      "read": "Leídas",
+      "of": "de",
+      "count": "notificaciones"
+    },
+    "table": {
+      "selectAll": "Seleccionar todo",
+      "selectRow": "Seleccionar notificación"
+    },
+    "bulkActions": {
+      "deleteSelected": "Eliminar seleccionadas ({count})",
+      "confirmTitle": "¿Eliminar {count} notificaciones?",
+      "confirmBody": "Esta acción no se puede deshacer.",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar",
+      "partialFailure": "Se eliminaron {success} de {total}. No se pudieron eliminar {failed}."
+    },
+    "emptyStateFiltered": "No hay notificaciones que coincidan con este filtro.",
     "types": {
       "EXPERIENCE_APPROVED": "Experiencia aprobada",
       "EXPERIENCE_REJECTED": "Experiencia rechazada",
