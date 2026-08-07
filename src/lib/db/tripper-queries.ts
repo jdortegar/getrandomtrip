@@ -13,6 +13,7 @@ import type {
   TripperBySlugResult,
   TripperListItem,
   TripperProfile,
+  TripperSessionExtras,
 } from "@/types/tripper";
 import type { TestimonialData } from "@/components/Testimonials/types";
 import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
@@ -1058,6 +1059,49 @@ export async function getReviewsForTripType(
     console.error("Error fetching trip type testimonials:", error);
     return [];
   }
+}
+
+/**
+ * Shared shaping logic behind GET /api/user/tripper, also used for
+ * server-side initial data on the tripper settings page.
+ */
+export async function getTripperSettingsExtras(
+  userId: string,
+): Promise<TripperSessionExtras | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      availableTypes: true,
+      bio: true,
+      commission: true,
+      destinations: true,
+      heroImage: true,
+      heroImagePositionX: true,
+      heroImagePositionY: true,
+      isActive: true,
+      location: true,
+      nickname: true,
+      socialLinks: true,
+      tierLevel: true,
+      tripperSlug: true,
+    },
+  });
+
+  if (!user) return null;
+
+  return {
+    ...user,
+    bio: user.bio ?? undefined,
+    commission: user.commission ?? undefined,
+    heroImage: user.heroImage ?? undefined,
+    location: user.location ?? undefined,
+    nickname: user.nickname ?? undefined,
+    socialLinks: (Array.isArray(user.socialLinks)
+      ? user.socialLinks
+      : []) as unknown as TripperSessionExtras["socialLinks"],
+    tierLevel: user.tierLevel ?? undefined,
+    tripperSlug: user.tripperSlug ?? undefined,
+  };
 }
 
 export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
