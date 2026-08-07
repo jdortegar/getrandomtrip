@@ -72,6 +72,7 @@ export const PAYMENT_STATUS_COLORS: Record<string, StatusColors> = {
     badge: "bg-gray-50 text-gray-700 border-gray-200",
     dot: "bg-gray-400",
   },
+  REJECTED: { badge: "bg-red-50 text-red-800 border-red-200", dot: "bg-red-500" },
 };
 
 export const USER_ROLE_COLORS: Record<"ADMIN" | "TRAVELER" | "TRIPPER", StatusColors> = {

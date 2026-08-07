@@ -4,7 +4,8 @@ import SelectedFiltersChips from "./SelectedFiltersChips";
 import { useStore } from "@/store/store";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { useSearchParams } from "next/navigation";
-import { Info } from "lucide-react";
+import { Check, Info } from "lucide-react";
+import Chip from "@/components/Chip";
 import { cn } from "@/lib/utils";
 import { FILTER_OPTIONS, FilterOption } from "@/store/slices/journeyStore";
 
@@ -25,17 +26,21 @@ const Seg = ({
   className?: string;
 }) => (
   <div className={cn("inline-flex flex-wrap gap-2", className)}>
-    {options.map((opt) => (
-      <button
-        key={opt.key}
-        type="button"
-        onClick={() => onChange(opt.key)}
-        className={`px-3 py-1.5 rounded-full text-sm border transition
-          ${value === opt.key ? "bg-primary-900 text-white border-primary-900" : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200"}`}
-      >
-        {opt.label}
-      </button>
-    ))}
+    {options.map((opt) => {
+      const active = value === opt.key;
+      return (
+        <Chip
+          active={active}
+          key={opt.key}
+          onClick={() => onChange(opt.key)}
+          size="md"
+          variant="default"
+        >
+          {active && <Check className="h-3.5 w-3.5" />}
+          {opt.label}
+        </Chip>
+      );
+    })}
   </div>
 );
 

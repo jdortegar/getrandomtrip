@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useStore } from "@/store/store";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { FILTER_OPTIONS, Filters } from "@/store/slices/journeyStore";
-import Chip from "@/components/badge";
+import RemovableTag from "@/components/RemovableTag";
 
 type Item = {
   key: string;
@@ -82,7 +82,7 @@ export default function SelectedFiltersChips() {
       </div>
       <div className="flex flex-wrap gap-2 justify-center py-2">
         {items.map((it) => (
-          <Chip key={it.key} item={it} color="primary" />
+          <RemovableTag key={it.key} item={it} color="primary" />
         ))}
       </div>
     </div>

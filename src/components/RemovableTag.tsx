@@ -18,7 +18,7 @@ type ColorVariant =
 
 type SizeVariant = "sm" | "md" | "lg";
 
-export default function Chip({
+export default function RemovableTag({
   item,
   color = "default",
   size = "sm",

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Calendar, Loader2, MapPin, X } from "lucide-react";
+import { Calendar, Loader2, MapPin } from "lucide-react";
 
 import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
 import {
@@ -785,7 +785,6 @@ function CheckoutContent() {
                     key={key}
                   >
                     <span>{detailLabel}</span>
-                    <X aria-hidden className="h-3.5 w-3.5 text-gray-400" />
                   </div>
                 ))
               ) : (
@@ -849,7 +848,6 @@ function CheckoutContent() {
               key={filterId}
             >
               <span>{filterLabel}</span>
-              <X aria-hidden className="h-3.5 w-3.5 text-gray-400" />
             </div>
           ))
         ) : (
@@ -882,7 +880,6 @@ function CheckoutContent() {
                   ? ` — USD ${addon.price}`
                   : ` — ${addon.price}%`}
               </span>
-              <X aria-hidden className="h-3.5 w-3.5 text-gray-400" />
             </div>
           ))
         ) : (

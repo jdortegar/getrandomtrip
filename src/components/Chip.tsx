@@ -32,7 +32,7 @@ export default function Chip({
 
   const variantClasses = {
     default: active
-      ? "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200"
+      ? "bg-gray-900 text-white border-gray-900"
       : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200",
     outline: active
       ? "bg-primary text-white border-primary shadow-sm"
@@ -42,9 +42,10 @@ export default function Chip({
       : "bg-white text-neutral-700 border-gray-300 hover:bg-neutral-200",
   };
 
-  const disabledClasses = disabled
-    ? "opacity-50 cursor-not-allowed"
-    : "cursor-pointer";
+  // Disabled chips (read-only display) keep full color contrast — an
+  // opacity fade reads as a broken/loading state, not a deliberate
+  // off-state, whether the chip is selected or not.
+  const disabledClasses = disabled ? "cursor-not-allowed" : "cursor-pointer";
 
   return (
     <button

@@ -324,7 +324,7 @@ export function TripperSettingsHeroCard({
                 </h2>
               )}
               <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
-                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-[6px] bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
                   <Shield className="h-3.5 w-3.5" />
                   {tierLabels[tierKey]}
                 </span>

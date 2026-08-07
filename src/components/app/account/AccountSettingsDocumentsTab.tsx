@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BookOpen, CreditCard, Edit, Globe, Search, X } from "lucide-react";
+import { BookOpen, CreditCard, Edit, Globe, Search } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
+import RemovableTag from "@/components/RemovableTag";
 import { cn } from "@/lib/utils";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { TravelDocumentsFormState } from "@/types/documents";
@@ -337,21 +338,16 @@ export function AccountSettingsDocumentsTab({
               </p>
             ) : (
               form.approvedVisas.map((visa) => (
-                <span
-                  className="inline-flex items-center gap-1.5 rounded-full bg-light-blue/10 px-3 py-1 text-xs font-medium text-light-blue"
+                <RemovableTag
                   key={visa}
-                >
-                  {visa}
-                  {isEditing && (
-                    <button
-                      aria-label={copy.tagList.removeAriaLabel}
-                      onClick={() => removeVisa(visa)}
-                      type="button"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  )}
-                </span>
+                  item={{
+                    key: visa,
+                    value: visa,
+                    onRemove: isEditing ? () => removeVisa(visa) : undefined,
+                  }}
+                  color="secondary"
+                  size="sm"
+                />
               ))
             )}
           </div>

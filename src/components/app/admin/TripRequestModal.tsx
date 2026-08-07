@@ -183,7 +183,7 @@ export function TripRequestModal({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-wrap gap-1.5 border-b border-gray-200 px-6 py-3">
-          <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
+          <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
             {trip.type}
           </span>
           <StatusBadge
@@ -191,7 +191,7 @@ export function TripRequestModal({
             status={trip.status}
             variant="trip"
           />
-          <span className="inline-block rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
+          <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
             {trip.level}
           </span>
           {trip.payment ? (

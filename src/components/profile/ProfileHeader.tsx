@@ -53,7 +53,7 @@ export default function ProfileHeader({
               {name}
             </h1>
             {verified && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2 py-0.5 text-xs font-semibold text-white">
+              <span className="inline-flex items-center gap-1 rounded-[6px] bg-emerald-500/90 px-2 py-0.5 text-xs font-semibold text-white">
                 <ShieldCheck size={14} /> Verificado
               </span>
             )}

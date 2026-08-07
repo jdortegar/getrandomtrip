@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command as CommandPrimitive } from "cmdk";
 import { cn } from "@/lib/utils";
+import RemovableTag from "@/components/RemovableTag";
 
 export interface MultiSelectOption {
   value: string;
@@ -68,12 +69,16 @@ export function MultiSelectInput({
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <button
+          {/* A real <button> can't contain RemovableTag's own remove <button> —
+              nested buttons are invalid HTML — so this trigger is a div with
+              role="combobox", not a <button>. Radix's asChild still wires up
+              the same click/keyboard/ARIA behavior onto it. */}
+          <div
             id={id}
-            type="button"
             role="combobox"
+            tabIndex={0}
             aria-expanded={open}
-            className={cn("min-h-[56px] w-full bg-gray-100 rounded-xl px-4 py-3 flex flex-wrap gap-2 items-center text-left", triggerClassName)}
+            className={cn("min-h-[56px] w-full bg-gray-100 rounded-xl px-4 py-3 flex flex-wrap gap-2 items-center text-left cursor-pointer", triggerClassName)}
           >
             {selected.length === 0 && (
               <span className="text-gray-400 text-base flex-1">
@@ -81,26 +86,20 @@ export function MultiSelectInput({
               </span>
             )}
             {selected.map((o) => (
-              <span
-                key={o.value}
-                className="flex items-center gap-1 bg-light-blue text-white text-sm px-2.5 py-0.5 rounded-full"
-              >
-                {o.label}
-                <span
-                  role="button"
-                  aria-label={`Remove ${o.label}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChange(value.filter((v) => v !== o.value));
+              <span key={o.value} onClick={(e) => e.stopPropagation()}>
+                <RemovableTag
+                  item={{
+                    key: o.value,
+                    value: o.label,
+                    onRemove: () => onChange(value.filter((v) => v !== o.value)),
                   }}
-                  className="hover:opacity-75 cursor-pointer"
-                >
-                  <X className="h-3 w-3" />
-                </span>
+                  color="secondary"
+                  size="sm"
+                />
               </span>
             ))}
             <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 text-gray-400" />
-          </button>
+          </div>
         </PopoverTrigger>
 
         <PopoverContent

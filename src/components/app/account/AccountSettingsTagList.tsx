@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, type KeyboardEvent } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus } from "lucide-react";
+import RemovableTag from "@/components/RemovableTag";
 
 interface AccountSettingsTagListProps {
   items: string[];
@@ -41,22 +42,16 @@ export function AccountSettingsTagList({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {items.map((item) => (
-        <span
+        <RemovableTag
           key={item}
-          className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-neutral-100 px-3 py-1 text-sm text-neutral-700"
-        >
-          {item}
-          {editing && (
-            <button
-              aria-label={removeAriaLabel}
-              className="text-neutral-400 transition-colors hover:text-neutral-700"
-              onClick={() => onRemove(item)}
-              type="button"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </span>
+          item={{
+            key: item,
+            value: item,
+            onRemove: editing ? () => onRemove(item) : undefined,
+          }}
+          color="secondary"
+          size="sm"
+        />
       ))}
       {editing && (
         <span className="flex items-center gap-1.5">

@@ -1,3 +1,5 @@
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
+
 const STATUS_STYLES: Record<string, { dot: string; badge: string }> = {
   ACTIVE: {
     dot: "bg-green-500",
@@ -34,14 +36,7 @@ export function ExperienceStatusBadge({
   status,
   label,
 }: ExperienceStatusBadgeProps) {
-  const { dot, badge } = STATUS_STYLES[status] ?? STATUS_STYLES.DRAFT;
+  const styles = STATUS_STYLES[status] ?? STATUS_STYLES.DRAFT;
 
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${badge}`}
-    >
-      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
-      {label}
-    </span>
-  );
+  return <StatusIndicatorBadge label={label} styles={styles} />;
 }

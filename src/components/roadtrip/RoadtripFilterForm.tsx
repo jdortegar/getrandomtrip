@@ -3,6 +3,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Check } from "lucide-react";
+import Chip from "@/components/Chip";
 import { track } from "@/components/common/analytics";
 
 type Step = 1 | 2 | 3;
@@ -211,29 +213,25 @@ export default function RoadtripFilterForm() {
               <div>
                 <label className="block text-sm font-medium mb-2">Ritmo</label>
                 <div className="flex gap-2">
-                  {(["relax", "balanced", "intense"] as const).map((p) => (
-                    <label
-                      key={p}
-                      className={`cursor-pointer rounded-full border px-4 py-2 text-sm ${
-                        pace === p
-                          ? "border-black ring-1 ring-black"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="pace"
-                        className="sr-only"
-                        checked={pace === p}
-                        onChange={() => setPace(p)}
-                      />
-                      {p === "relax"
-                        ? "Relax"
-                        : p === "balanced"
-                          ? "Balanceado"
-                          : "Intenso"}
-                    </label>
-                  ))}
+                  {(["relax", "balanced", "intense"] as const).map((p) => {
+                    const active = pace === p;
+                    return (
+                      <Chip
+                        active={active}
+                        key={p}
+                        onClick={() => setPace(p)}
+                        size="md"
+                        variant="default"
+                      >
+                        {active && <Check className="h-3.5 w-3.5" />}
+                        {p === "relax"
+                          ? "Relax"
+                          : p === "balanced"
+                            ? "Balanceado"
+                            : "Intenso"}
+                      </Chip>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -242,29 +240,25 @@ export default function RoadtripFilterForm() {
                   Nivel de presupuesto
                 </label>
                 <div className="flex gap-2">
-                  {(["smart", "comfort", "premium"] as const).map((b) => (
-                    <label
-                      key={b}
-                      className={`cursor-pointer rounded-full border px-4 py-2 text-sm ${
-                        budgetLevel === b
-                          ? "border-black ring-1 ring-black"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="budget"
-                        className="sr-only"
-                        checked={budgetLevel === b}
-                        onChange={() => setBudgetLevel(b)}
-                      />
-                      {b === "smart"
-                        ? "Smart"
-                        : b === "comfort"
-                          ? "Comfort"
-                          : "Premium"}
-                    </label>
-                  ))}
+                  {(["smart", "comfort", "premium"] as const).map((b) => {
+                    const active = budgetLevel === b;
+                    return (
+                      <Chip
+                        active={active}
+                        key={b}
+                        onClick={() => setBudgetLevel(b)}
+                        size="md"
+                        variant="default"
+                      >
+                        {active && <Check className="h-3.5 w-3.5" />}
+                        {b === "smart"
+                          ? "Smart"
+                          : b === "comfort"
+                            ? "Comfort"
+                            : "Premium"}
+                      </Chip>
+                    );
+                  })}
                 </div>
               </div>
             </div>

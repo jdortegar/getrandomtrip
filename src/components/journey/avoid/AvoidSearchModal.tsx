@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { Button } from "@/components/ui/Button";
-import Badge from "@/components/badge";
+import RemovableTag from "@/components/RemovableTag";
 import CitySelector from "@/components/journey/CitySelector";
 import type { CityResult } from "@/lib/geo/types";
 import {
@@ -164,7 +164,7 @@ export default function AvoidSearchModal({
             </p>
             <div className="flex flex-wrap gap-2">
               {current.map((n) => (
-                <Badge
+                <RemovableTag
                   color="secondary"
                   item={{
                     key: `cur-${n}`,
@@ -174,7 +174,7 @@ export default function AvoidSearchModal({
                 />
               ))}
               {local.map((n) => (
-                <Badge
+                <RemovableTag
                   color="primary"
                   item={{
                     key: `loc-${n}`,
