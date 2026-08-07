@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getStore } from "@netlify/blobs";
+import sharp from "sharp";
 import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -106,6 +107,43 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
+/**
+ * Max pixel dimensions per upload feature.
+ * Images are resized to fit within these bounds (aspect ratio preserved).
+ * SVG files are never processed by sharp.
+ */
+const FEATURE_MAX_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  avatar: { width: 400, height: 400 },
+  "tripper-hero": { width: 1920, height: 1080 },
+  blog: { width: 1600, height: 1200 },
+  experience: { width: 1600, height: 1200 },
+};
+const DEFAULT_MAX_DIMENSIONS = { width: 1600, height: 1200 };
+
+const COMPRESSIBLE_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+]);
+
+export async function optimizeImage(
+  buffer: Buffer,
+  mimeType: string,
+  feature: string,
+): Promise<{ buffer: Buffer; contentType: string }> {
+  if (!COMPRESSIBLE_MIME.has(mimeType)) {
+    return { buffer, contentType: mimeType };
+  }
+  const dims = FEATURE_MAX_DIMENSIONS[feature] ?? DEFAULT_MAX_DIMENSIONS;
+  const optimized = await sharp(buffer)
+    .resize(dims.width, dims.height, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toBuffer();
+  return { buffer: optimized, contentType: "image/webp" };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -160,11 +198,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const contentType = file.type || "application/octet-stream";
+    const rawBuffer = Buffer.from(await file.arrayBuffer());
+    const { buffer: optimizedBuffer, contentType } = await optimizeImage(
+      rawBuffer,
+      file.type,
+      rawFeature,
+    );
 
     const store = getBlobStore(rawFeature);
-    await store.set(key, arrayBuffer, { metadata: { contentType } });
+    await store.set(key, new Uint8Array(optimizedBuffer).buffer, {
+      metadata: { contentType },
+    });
 
     const url = `/api/upload/${session.user.id}/${rawFeature}/${filename}`;
     return NextResponse.json({ url });

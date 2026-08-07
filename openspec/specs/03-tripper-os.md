@@ -86,6 +86,41 @@ What works end-to-end today:
 
 ---
 
+---
+
+## Feature: Hero Image Repositioning (2026-08-06)
+
+Trippers can reposition their hero/cover image from the settings page so the focal point is preserved when the image is cropped to the banner aspect ratio.
+
+### Data Model
+
+Two nullable `Float` columns added to `User`:
+- `heroImagePositionX Float?` — horizontal focal point, 0–100 (null = 50, center)
+- `heroImagePositionY Float?` — vertical focal point, 0–100 (null = 50, center)
+
+Values are persisted as percentages and map directly to CSS `object-position` / `background-position`.
+
+### Settings UX (`/dashboard/tripper/settings`)
+
+- Entering edit mode (clicking "Edit Profile") activates drag-to-reposition on the hero image area.
+- The full image surface becomes a drag target (Pointer Events API — `onPointerDown` / `onPointerMove` / `onPointerUp` + `setPointerCapture`). Works for both mouse and touch.
+- Cursor changes to `grab` in edit mode; `grabbing` while dragging.
+- A "Drag to reposition" pill hint is shown when the image is present and not actively being dragged.
+- A dedicated "Change photo" camera button overlay (top-left of the image) triggers the file picker. The image surface itself is no longer a click-to-upload target.
+- A "Reset" / "Center" button snaps `heroImagePositionX` and `heroImagePositionY` back to 50.
+- Position is staged in `formData` (same pattern as `nickname`, `location`) and only persisted when the tripper clicks "Save".
+- Cancelling reverts position to the last-saved DB values.
+
+### API
+
+`GET /api/user/tripper` and `PATCH /api/user/tripper` both include `heroImagePositionX` and `heroImagePositionY`. The PATCH body passes the current percentage values; the server guards against non-number submissions with a `typeof` check.
+
+### Public Profile Rendering (`/trippers/[tripper]`)
+
+`getTripperBySlug` selects both position fields. `TripperHero` applies `style={{ objectPosition: \`${x}% ${y}%\` }}` to the full-bleed `<SafeImage>` banner, preserving Next.js image optimization (lazy loading, format conversion, CDN caching).
+
+---
+
 ## Next Steps
 
 1. **Fix blog link locale prefix** — prepend `/${locale}` to all blog navigation links in `BlogPostsList`, `BlogPostRow`, and `TripperQuickActions`.
