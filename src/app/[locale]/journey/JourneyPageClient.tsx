@@ -9,6 +9,7 @@ import JourneyMainContent from "@/components/journey/JourneyMainContent";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
 import JourneySummary from "@/components/journey/JourneySummary";
 import { TripperUnavailableNotice } from "@/components/tripper/TripperUnavailableNotice";
+import { DashboardNavbarPrimaryLayout } from "@/components/app/dashboard/DashboardNavbarPrimaryLayout";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -231,11 +232,13 @@ function JourneyPageContent({ locale }: { locale?: string }) {
 
   if (tripperState.status === "unavailable") {
     return (
-      <TripperUnavailableNotice
-        copy={dict.trippers.unavailable}
-        ctaHref={pathForLocale(resolvedLocale, "/trippers")}
-        tripperName={tripperState.name}
-      />
+      <DashboardNavbarPrimaryLayout>
+        <TripperUnavailableNotice
+          copy={dict.trippers.unavailable}
+          ctaHref={pathForLocale(resolvedLocale, "/trippers")}
+          tripperName={tripperState.name}
+        />
+      </DashboardNavbarPrimaryLayout>
     );
   }
 

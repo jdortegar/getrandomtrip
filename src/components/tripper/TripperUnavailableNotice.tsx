@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface TripperUnavailableNoticeProps {
@@ -29,12 +30,9 @@ export function TripperUnavailableNotice({
         {copy.title}
       </h1>
       <p className="max-w-md text-base text-gray-500">{description}</p>
-      <Link
-        className="rounded-full bg-light-blue px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-        href={ctaHref}
-      >
-        {copy.ctaLabel}
-      </Link>
+      <Button asChild variant="default">
+        <Link href={ctaHref}>{copy.ctaLabel}</Link>
+      </Button>
     </main>
   );
 }

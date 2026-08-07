@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/tripper-queries";
 import TripperHero from "@/components/tripper/TripperHero";
 import { TripperUnavailableNotice } from "@/components/tripper/TripperUnavailableNotice";
+import { DashboardNavbarPrimaryLayout } from "@/components/app/dashboard/DashboardNavbarPrimaryLayout";
 import TripperPlanner from "@/components/tripper/TripperPlanner";
 import TripperInspirationGallery from "@/components/tripper/TripperInspirationGallery";
 import Blog from "@/components/Blog";
@@ -80,11 +81,13 @@ export default async function Page(props: {
 
   if (tripperResult.status === "inactive") {
     return (
-      <TripperUnavailableNotice
-        copy={dict.trippers.unavailable}
-        ctaHref={pathForLocale(locale, "/trippers")}
-        tripperName={tripperResult.name}
-      />
+      <DashboardNavbarPrimaryLayout>
+        <TripperUnavailableNotice
+          copy={dict.trippers.unavailable}
+          ctaHref={pathForLocale(locale, "/trippers")}
+          tripperName={tripperResult.name}
+        />
+      </DashboardNavbarPrimaryLayout>
     );
   }
 
