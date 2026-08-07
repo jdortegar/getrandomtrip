@@ -9,11 +9,17 @@ export async function GET(
 ) {
   const { slug } = await props.params;
 
-  const context = await getTripperJourneyContext(slug);
+  const result = await getTripperJourneyContext(slug);
 
-  if (!context) {
+  if (result.status === "not_found") {
     return NextResponse.json({ error: "Tripper not found" }, { status: 404 });
   }
+  if (result.status === "inactive") {
+    return NextResponse.json(
+      { error: "tripper_inactive", name: result.name },
+      { status: 410 },
+    );
+  }
 
-  return NextResponse.json(context);
+  return NextResponse.json(result.context);
 }

@@ -1133,6 +1133,11 @@
       "searchCardTitle": "Busca tu Tripper",
       "searchCardDescription": "Encuentra el experto perfecto para tu aventura.",
       "searchCardCta": "Explorar Trippers"
+    },
+    "unavailable": {
+      "title": "Este perfil no está disponible",
+      "description": "{name} pausó su perfil por ahora. Podés explorar otros trippers mientras tanto.",
+      "ctaLabel": "Ver todos los trippers"
     }
   },
   "blogPage": {
@@ -3769,7 +3774,8 @@
         "copied": "¡Copiado!",
         "openLink": "Abrir perfil público",
         "visibilityLabel": "Perfil público visible",
-        "visibilityDisabledHint": "Configura tu URL de perfil primero para activar la visibilidad"
+        "visibilityDisabledHint": "Configura tu URL de perfil primero para activar la visibilidad",
+        "visibilityError": "No pudimos actualizar la visibilidad de tu perfil. Intenta de nuevo."
       },
       "account": {
         "eyebrow": "Solo lectura",

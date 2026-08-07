@@ -1,20 +1,21 @@
 change: tripper-profile-visibility
-status: tasks
+status: verify
 artifact_store: openspec
 phases:
   proposal: done
   spec: done
   design: done
   tasks: done
-  apply: pending
-  verify: pending
+  apply: done
+  verify: done
   archive: pending
 artifacts:
+  verify: openspec/changes/tripper-profile-visibility/verify-report.md
   proposal: openspec/changes/tripper-profile-visibility/proposal.md
   spec: openspec/changes/tripper-profile-visibility/spec.md
   design: openspec/changes/tripper-profile-visibility/design.md
   tasks: openspec/changes/tripper-profile-visibility/tasks.md
-updated: 2026-08-06
+updated: 2026-08-07
 revisions:
   - artifact: proposal
     date: 2026-08-06
@@ -180,3 +181,89 @@ revisions:
       apply per ask-on-risk delivery strategy. Exceeds the tasks skill's
       530-word soft budget, accepted deliberately per the same precedent set by
       spec.md/design.md for this change.
+  - artifact: apply
+    date: 2026-08-07
+    note: >
+      Branch tripper-profile-visibility-followup, fix-forward on top of PR #94
+      (an out-of-process merge to main/develop by a separate concurrent tool,
+      done independently of this SDD session using this change's openspec
+      artifacts as its brief). Verified all 6 flagged deviations against actual
+      file content rather than trusting prior checkboxes: naming
+      (outcome/"active" -> status/"ok"), missing name on inactive, error-
+      swallowing in getTripperBySlug's catch, toggle gating on persisted
+      profile.tripperSlug, admin/experiences ownerActive opt-in scoping, and
+      admin/trip-requests/[id] 400-before-write ordering were ALL already
+      correctly fixed by an earlier interrupted continuation attempt on this
+      same branch — confirmed via direct file read + full-suite test pass, not
+      just tasks.md's stale checkboxes. Phase 5 (Journey Flow) was the one
+      genuinely unimplemented unit: getTripperJourneyContext still returned a
+      bare nullable type, the journey-context route still 404'd unconditionally,
+      and JourneyPageClient had no unavailable-state handling — implemented from
+      scratch this pass (tagged union, 410 route response, TripperContextState
+      in the client, TripperUnavailableNotice render). Corrected one pre-existing
+      RED test (tripper-queries.getTripperJourneyContext.test.ts) that asserted
+      isActive:true in the where clause, which would have made the "inactive"
+      branch unreachable against a real DB — fixed to assert isActive is
+      selected but not filtered in where, matching getTripperBySlug's pattern.
+      Also closed test-coverage gaps where implementation already matched design
+      but no test existed: PATCH /api/user/tripper/status, GET /api/experiences
+      owner.isActive, getTripperFeaturedTrips isActive, and the ?tripper= slug
+      resolution in POST /api/trip-requests. Full suite: 906 tests, 905 pass;
+      1 pre-existing failure in src/app/api/user/tripper/__tests__/route.test.ts
+      (commission-lockdown "still rejects empty availableTypes" test) is
+      unrelated to this change — it predates this branch's diff entirely (traces
+      to a different merged feature, "make tripper commission admin-owned"), out
+      of this change's scope, left untouched. Typecheck: one pre-existing error
+      in src/app/api/upload/route.ts (Buffer/BlobInput mismatch), explicitly
+      flagged as belonging to a concurrent, unrelated hero-image-positioning
+      change sharing this working directory — left untouched per instruction.
+      `npm run lint` / `next lint` is broken at the repo/tooling level under
+      Next 16 (command removed) and a direct `eslint` invocation also fails
+      (circular-config error in eslint.config.mjs's flat-config react plugin) —
+      pre-existing environment issue, not introduced by this branch, not fixed
+      here (out of scope for a fix-forward apply pass). No commits were made;
+      all changes are staged as uncommitted edits on
+      tripper-profile-visibility-followup for human review, per explicit
+      constraint against autonomous git writes.
+  - artifact: verify
+    date: 2026-08-07
+    note: >
+      Independent fresh-context verify pass on branch
+      tripper-profile-visibility-followup. Treated apply-progress and
+      tasks.md checkboxes as claims, not facts — every requirement in
+      spec.md was checked against live file content via direct Read/grep,
+      and npm run typecheck / npm run test / npm run lint were all re-run
+      fresh rather than trusted from the prior report. Result: 0 CRITICAL,
+      3 WARNING, 3 SUGGESTION. All 10 spec.md requirements confirmed
+      correctly implemented; the outcome/"active" -> status/"ok" naming
+      migration is complete and consistent (confirmed via the
+      experiences/by-tripper page's diff, which shows the one remaining
+      stale reference being fixed in this pass); getTripperBySlug's catch
+      rethrows unconditionally; the journey-context 404/410/200 contract
+      and JourneyPageClient's tri-state branch are correct; all 9
+      matching-exclusion sites are correctly placed; the status endpoint,
+      admin/trip-requests/[id] 400-before-write ordering, and
+      admin/experiences opt-in filter all match spec exactly. Confirmed
+      independently: 906 tests/905 pass with the same 1 pre-existing
+      unrelated failure, 1 pre-existing unrelated typecheck error in
+      upload/route.ts, and lint broken at the repo level (next lint fails
+      differently than described but is equally non-functional; direct
+      eslint hits the same circular flat-config error). Three WARNINGs
+      found, none CRITICAL: (W1) the visibility Switch can show a stale
+      value after Cancel following a successful toggle, because
+      profile.isActive is never updated on toggle success while
+      cancelEdit() resets formData (which drives the Switch) from
+      profile — a UI-only staleness bug, DB state stays correct; (W2) the
+      toggle's failure path shows no toast.error and design.md's specified
+      visibilityError copy key was never added to either dictionary or the
+      dict type; (W3) getTripperExperiencesByTypeAndLevel guards
+      owner-active via a relation filter on the Experience query instead of
+      design.md's separate User.findFirst pre-check used by its sibling
+      tripper-trips.ts functions — functionally correct and tested, but an
+      inconsistent pattern. Three SUGGESTIONs: unrelated concurrent
+      hero-image-positioning work (drag-to-reposition, sharp-based upload
+      optimization) sits uncommitted in the same working tree and will need
+      separating before a clean commit; sharp is used but not declared in
+      package.json; isActive's presence in TripperSettingsFormState
+      contradicts design.md's explicit decision and is the root cause of
+      W1. No CRITICAL findings, no scope leaks, no spec violations.

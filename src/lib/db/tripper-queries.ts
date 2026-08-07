@@ -19,10 +19,14 @@ import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
 import { slugify } from "@/lib/helpers/slugify";
 
 /**
- * Get tripper profile by slug with a three-way discriminated outcome:
+ * Get tripper profile by slug with a three-way discriminated result:
  * - not_found: no User row matches the slug
  * - inactive: User exists but isActive is false (render unavailable state, not 404)
- * - active: User is active and profile is ready to render
+ * - ok: User is active and the profile is ready to render
+ *
+ * A genuine DB failure (from either query) is rethrown rather than
+ * collapsed into `not_found` — a 404 is a semantic claim the resource
+ * does not exist, and a transient blip must not de-index a real profile.
  */
 export async function getTripperBySlug(
   slug: string,
@@ -56,8 +60,10 @@ export async function getTripperBySlug(
       },
     });
 
-    if (!tripper || !tripper.tripperSlug) return { outcome: "not_found" };
-    if (!tripper.isActive) return { outcome: "inactive" };
+    if (!tripper || !tripper.tripperSlug) return { status: "not_found" };
+    if (!tripper.isActive) {
+      return { status: "inactive", name: tripper.nickname || tripper.name };
+    }
 
     // Dynamically calculate availableTypes based on actual ACTIVE packages
     const packages = await prisma.experience.findMany({
@@ -73,7 +79,7 @@ export async function getTripperBySlug(
     const { roles, nickname, ...tripperRest } = tripper;
 
     return {
-      outcome: "active",
+      status: "ok",
       tripper: {
         ...tripperRest,
         name: nickname || tripper.name,
@@ -86,7 +92,7 @@ export async function getTripperBySlug(
     };
   } catch (error) {
     console.error("Error fetching tripper by slug:", error);
-    return { outcome: "not_found" };
+    throw error;
   }
 }
 
@@ -214,16 +220,21 @@ export async function getAllTrippers(): Promise<TripperListItem[]> {
       orderBy: { name: "asc" },
     });
 
-    return trippers.map((tripper) => ({
-      id: tripper.id,
-      name: tripper.name,
-      tripperSlug: tripper.tripperSlug,
-      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
-      bio: tripper.bio,
-      location: tripper.location,
-      commission: tripper.commission,
-      travelerType: tripper.travelerType,
-    }));
+    return trippers
+      .filter(
+        (t): t is typeof t & { tripperSlug: string } =>
+          t.tripperSlug !== null,
+      )
+      .map((tripper) => ({
+        id: tripper.id,
+        name: tripper.name,
+        tripperSlug: tripper.tripperSlug,
+        avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+        bio: tripper.bio,
+        location: tripper.location,
+        commission: tripper.commission,
+        travelerType: tripper.travelerType,
+      }));
   } catch (error) {
     console.error("Error fetching all trippers:", error);
     return [];
@@ -333,13 +344,18 @@ export async function getTripById(
  */
 export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
   try {
+    const owner = await prisma.user.findFirst({
+      where: { id: tripperId, isActive: true },
+      select: { id: true },
+    });
+    if (!owner) return {};
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const packages = await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripperId,
         isActive: true,
         status: "ACTIVE",
-        owner: { isActive: true },
       },
       select: {
         id: true,
@@ -400,28 +416,41 @@ export interface TripperJourneyContext {
 }
 
 /**
+ * Discriminated result from getTripperJourneyContext, mirroring
+ * getTripperBySlug's shape:
+ * - not_found: no User row matches the slug
+ * - inactive: User exists but isActive is false (no Experience query issued)
+ * - ok: branding + allowed types/levels are ready
+ */
+export type TripperJourneyContextResult =
+  | { status: "not_found" }
+  | { status: "inactive"; name: string }
+  | { status: "ok"; context: TripperJourneyContext };
+
+/**
  * Returns branding + allowed types/levels for a tripper's curated journey.
  * Only considers experiences with status = ACTIVE.
  */
 export async function getTripperJourneyContext(
   slug: string,
-): Promise<TripperJourneyContext | null> {
+): Promise<TripperJourneyContextResult> {
   try {
     const tripper = await prisma.user.findUnique({
       where: {
         tripperSlug: slug,
         roles: { has: "TRIPPER" },
-        isActive: true,
       },
       select: {
         id: true,
         name: true,
         avatarUrl: true,
         location: true,
+        isActive: true,
       },
     });
 
-    if (!tripper) return null;
+    if (!tripper) return { status: "not_found" };
+    if (!tripper.isActive) return { status: "inactive", name: tripper.name };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const experiences = await (prisma.experience.findMany as any)({
@@ -452,15 +481,21 @@ export async function getTripperJourneyContext(
     }
 
     return {
-      name: tripper.name,
-      avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
-      location: tripper.location ?? null,
-      allowedTypes,
-      allowedLevelsByType,
+      status: "ok",
+      context: {
+        name: tripper.name,
+        avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+        location: tripper.location ?? null,
+        allowedTypes,
+        allowedLevelsByType,
+      },
     };
   } catch (error) {
+    // Supplementary data for an otherwise-functional generic journey — a
+    // transient DB blip degrades to "not_found" (unbranded journey) rather
+    // than rethrowing, unlike getTripperBySlug's page-identity 404/500 split.
     console.error("Error fetching tripper journey context:", error);
-    return null;
+    return { status: "not_found" };
   }
 }
 

@@ -8,8 +8,10 @@ import HeaderHero from "@/components/journey/HeaderHero";
 import JourneyMainContent from "@/components/journey/JourneyMainContent";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
 import JourneySummary from "@/components/journey/JourneySummary";
+import { TripperUnavailableNotice } from "@/components/tripper/TripperUnavailableNotice";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
 import { filterContentTabsForUI, getAccordionForStep } from "@/lib/helpers/journey";
@@ -77,14 +79,25 @@ interface TripperJourneyContext {
   allowedLevelsByType: Record<string, string[]>;
 }
 
+/**
+ * Explicit tri-state so "no tripper in the URL" (`none`) can never be
+ * confused with "tripper unavailable" (`unavailable`) — a nullable
+ * `TripperJourneyContext | null` could not distinguish the two.
+ */
+type TripperContextState =
+  | { status: "none" }
+  | { status: "ok"; context: TripperJourneyContext }
+  | { status: "unavailable"; name?: string };
+
 function JourneyPageContent({ locale }: { locale?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState("budget");
   const [openSectionId, setOpenSectionId] = useState("travel-type");
-  const [tripperContext, setTripperContext] =
-    useState<TripperJourneyContext | null>(null);
+  const [tripperState, setTripperState] = useState<TripperContextState>({
+    status: "none",
+  });
   const hasSyncedJourneyStateFromUrl = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -129,20 +142,27 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   useEffect(() => {
     const tripperSlug = searchParams.get("tripper");
     if (!tripperSlug) {
-      setTripperContext(null);
+      setTripperState({ status: "none" });
       return;
     }
     let cancelled = false;
     fetch(`/api/trippers/${encodeURIComponent(tripperSlug)}/journey-context`)
-      .then((res) => {
-        if (!res.ok) return null;
-        return res.json() as Promise<TripperJourneyContext>;
+      .then(async (res) => {
+        if (res.status === 410) {
+          const body = (await res.json().catch(() => ({}))) as {
+            name?: string;
+          };
+          return { status: "unavailable" as const, name: body.name };
+        }
+        if (!res.ok) return { status: "none" as const };
+        const context = (await res.json()) as TripperJourneyContext;
+        return { status: "ok" as const, context };
       })
-      .then((data) => {
-        if (!cancelled) setTripperContext(data);
+      .then((next) => {
+        if (!cancelled) setTripperState(next);
       })
       .catch(() => {
-        if (!cancelled) setTripperContext(null);
+        if (!cancelled) setTripperState({ status: "none" });
       });
     return () => {
       cancelled = true;
@@ -209,7 +229,19 @@ function JourneyPageContent({ locale }: { locale?: string }) {
     );
   }
 
+  if (tripperState.status === "unavailable") {
+    return (
+      <TripperUnavailableNotice
+        copy={dict.trippers.unavailable}
+        ctaHref={pathForLocale(resolvedLocale, "/trippers")}
+        tripperName={tripperState.name}
+      />
+    );
+  }
+
   const journey = dict.journey;
+  const tripperContext =
+    tripperState.status === "ok" ? tripperState.context : undefined;
   const travelType = searchParams.get("travelType");
   const experience = searchParams.get("experience");
   const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");

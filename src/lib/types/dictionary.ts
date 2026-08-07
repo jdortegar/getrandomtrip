@@ -331,6 +331,7 @@ export interface TripperDashboardDict {
       openLink: string;
       visibilityLabel: string;
       visibilityDisabledHint: string;
+      visibilityError: string;
     };
     account: {
       eyebrow: string;
@@ -2027,6 +2028,13 @@ export interface MarketingDictionary {
       searchCardCta: string;
       searchCardDescription: string;
       searchCardTitle: string;
+    };
+    /** Shared "tripper unavailable" copy — used by both the profile page and the journey flow. */
+    unavailable: {
+      ctaLabel: string;
+      /** Contains a literal "{name}" placeholder interpolated at render time. */
+      description: string;
+      title: string;
     };
   };
   blogPage: {

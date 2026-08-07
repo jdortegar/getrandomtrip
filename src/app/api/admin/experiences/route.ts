@@ -33,15 +33,21 @@ export async function GET(request: NextRequest) {
     // statuses (PENDING_REVIEW, PENDING_TRIPPER_REVIEW).
     const filterStatus = searchParams.get("status");
     const searchParam = searchParams.get("search");
+    const ownerActive = searchParams.get("ownerActive") === "true";
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
     const limit = Math.min(
       MAX_LIMIT,
       Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
     );
 
-    // Build additive AND where clause from optional query params
+    // Build additive AND where clause from optional query params.
+    // owner: { isActive: true } is opt-in via ?ownerActive=true — this
+    // route also backs the admin catalog browsing view, which must keep
+    // showing inactive owners' experiences (no admin-side isActive
+    // display/filter is in scope for that use case).
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = { owner: { isActive: true } };
+    const where: Record<string, any> = {};
+    if (ownerActive) where.owner = { isActive: true };
     if (filterTripperId) where.ownerId = filterTripperId;
     if (filterLevel) where.level = filterLevel;
     if (filterType) where.type = { has: filterType };

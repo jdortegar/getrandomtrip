@@ -102,4 +102,20 @@ describe("GET /api/admin/experiences", () => {
       status: { in: ["PENDING_REVIEW", "PENDING_TRIPPER_REVIEW"] },
     });
   });
+
+  it("does NOT filter by owner.isActive when ownerActive is absent (admin catalog browsing stays unaffected)", async () => {
+    await GET(makeRequest("?status=ACTIVE"));
+
+    const findManyArgs = (prisma.experience.findMany as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(findManyArgs.where.owner).toBeUndefined();
+  });
+
+  it("filters by owner: { isActive: true } only when ownerActive=true is present (assignment use case)", async () => {
+    await GET(makeRequest("?status=ACTIVE&ownerActive=true"));
+
+    const findManyArgs = (prisma.experience.findMany as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(findManyArgs.where.owner).toEqual({ isActive: true });
+  });
 });

@@ -384,6 +384,7 @@ export default function TripperSettingsPage() {
                 </div>
                 <div className="flex flex-col gap-6">
                   <TripperSettingsPublicUrlCard
+                    canToggleVisibility={Boolean(profile.tripperSlug)}
                     copy={copy.publicUrl}
                     isActive={formData.isActive}
                     isEditing={isEditing}
@@ -396,14 +397,18 @@ export default function TripperSettingsPage() {
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ isActive: next }),
                         });
-                        if (!res.ok) {
+                        if (res.ok) {
+                          setProfile((prev) => ({ ...prev, isActive: next }));
+                        } else {
                           setFormData((prev) => ({
                             ...prev,
                             isActive: !next,
                           }));
+                          toast.error(copy.publicUrl.visibilityError);
                         }
                       } catch {
                         setFormData((prev) => ({ ...prev, isActive: !next }));
+                        toast.error(copy.publicUrl.visibilityError);
                       }
                     }}
                     onSlugChange={(slug) =>

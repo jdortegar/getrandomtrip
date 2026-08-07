@@ -300,6 +300,51 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     );
   });
 
+  // Matching exclusion: ?tripper=<slug> resolution must exclude inactive owners
+  it("includes isActive: true in the tripper-slug User lookup, and leaves tripperId unset when the slug matches nothing", async () => {
+    (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.tripRequest.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "new-9",
+    });
+    (prisma.user.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+
+    await POST(makePostRequest({ ...fullJourneyBody, tripper: "inactive-tripper" }));
+
+    const findFirstArgs = (prisma.user.findFirst as ReturnType<typeof vi.fn>)
+      .mock.calls[0][0];
+    expect(findFirstArgs.where).toMatchObject({
+      tripperSlug: "inactive-tripper",
+      isActive: true,
+    });
+    expect(prisma.tripRequest.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tripperId: null }),
+      }),
+    );
+  });
+
+  it("resolves tripperId from the slug when the tripper is active", async () => {
+    (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.tripRequest.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "new-10",
+    });
+    (prisma.user.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "active-tripper-id",
+    });
+
+    await POST(makePostRequest({ ...fullJourneyBody, tripper: "active-tripper" }));
+
+    expect(prisma.tripRequest.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ tripperId: "active-tripper-id" }),
+      }),
+    );
+  });
+
   // (i) "family" classifies as journey — regression test for the naming collision
   it("classifies type: 'family' as the journey family, not a separate slot", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(

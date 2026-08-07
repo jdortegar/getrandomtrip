@@ -60,7 +60,7 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const result = await getTripperBySlug(params.tripper);
 
-  if (result.outcome !== "active") return { title: "Randomtrip" };
+  if (result.status !== "ok") return { title: "Randomtrip" };
 
   const { tripper } = result;
   return {
@@ -92,9 +92,9 @@ export default async function Page(props: {
   // Fetch from database — three-way discriminated result
   const tripperResult = await getTripperBySlug(params.tripper);
 
-  if (tripperResult.outcome === "not_found") return notFound();
-  // Treat inactive trippers same as not found on this secondary page
-  if (tripperResult.outcome === "inactive") return notFound();
+  // status !== "ok" lumps not_found and inactive together — bare 404, no
+  // unavailable state on this secondary page (out of behavioral scope).
+  if (tripperResult.status !== "ok") return notFound();
 
   const dbTripper = tripperResult.tripper;
 
