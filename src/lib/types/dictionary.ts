@@ -493,6 +493,16 @@ export interface TripperReviewsDict {
   list: {
     title: string;
   };
+  filters: {
+    allStatuses: string;
+    approved: string;
+    unapproved: string;
+    searchPlaceholder: string;
+  };
+  status: {
+    approved: string;
+    pending: string;
+  };
   emptyState: {
     description: string;
     title: string;
@@ -1392,6 +1402,12 @@ export interface AdminPagesDict {
     count: string;
     errorLoad: string;
     empty: string;
+    filters: {
+      allStatuses: string;
+      approved: string;
+      unapproved: string;
+      searchPlaceholder: string;
+    };
     columns: {
       traveler: string;
       review: string;

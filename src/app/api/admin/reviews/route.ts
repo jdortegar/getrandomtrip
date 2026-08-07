@@ -30,9 +30,19 @@ export async function GET(request: NextRequest) {
       MAX_LIMIT,
       Math.max(1, Number(searchParams.get("limit")) || DEFAULT_LIMIT),
     );
+    const rawStatus = searchParams.get("status");
+    const search = searchParams.get("search")?.trim() || undefined;
+    const where = {
+      ...(rawStatus === "approved" ? { isApproved: true } : {}),
+      ...(rawStatus === "unapproved" ? { isApproved: false } : {}),
+      ...(search
+        ? { user: { name: { contains: search, mode: "insensitive" as const } } }
+        : {}),
+    };
 
     const [rawReviews, total] = await Promise.all([
       prisma.review.findMany({
+        where,
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
@@ -58,7 +68,7 @@ export async function GET(request: NextRequest) {
           },
         },
       }),
-      prisma.review.count(),
+      prisma.review.count({ where }),
     ]);
 
     const reviews = rawReviews.map((r) => ({

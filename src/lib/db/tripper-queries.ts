@@ -845,25 +845,37 @@ export async function getTripperReviewStats(tripperId: string) {
 
 export async function getTripperReviews(
   tripperId: string,
-  pagination: { page: number; limit: number },
+  options: {
+    page: number;
+    limit: number;
+    status?: "all" | "approved" | "unapproved";
+    search?: string;
+  },
 ) {
+  const { page, limit, status = "all", search } = options;
   try {
+    const where = {
+      tripperId,
+      ...(status === "approved" ? { isApproved: true } : {}),
+      ...(status === "unapproved" ? { isApproved: false } : {}),
+      ...(search
+        ? { user: { name: { contains: search, mode: "insensitive" as const } } }
+        : {}),
+    };
+
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
-        where: {
-          tripperId,
-          isApproved: true,
-        },
+        where,
         include: {
           user: {
             select: { id: true, name: true, avatarUrl: true },
           },
         },
         orderBy: { createdAt: "desc" },
-        skip: (pagination.page - 1) * pagination.limit,
-        take: pagination.limit,
+        skip: (page - 1) * limit,
+        take: limit,
       }),
-      prisma.review.count({ where: { tripperId, isApproved: true } }),
+      prisma.review.count({ where }),
     ]);
 
     const mapped = reviews.map((review) => ({
@@ -879,6 +891,7 @@ export async function getTripperReviews(
       packageTitle: "",
       createdAt: review.createdAt,
       isPublic: review.isPublic,
+      isApproved: review.isApproved,
     }));
 
     return { reviews: mapped, total };

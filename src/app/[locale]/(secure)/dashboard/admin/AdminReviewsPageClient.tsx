@@ -1,14 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Eye, EyeOff, X } from "lucide-react";
+import { Check, Eye, EyeOff, Search, X } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
+import { Select } from "@/components/ui/Select";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { AdminReview } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
+const SELECT_CLASS =
+  "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
+type StatusFilter = "all" | "approved" | "unapproved";
 
 export function AdminReviewsPageClient() {
   const copy = useDictionary((d) => d.adminPages.reviews);
@@ -23,14 +28,31 @@ export function AdminReviewsPageClient() {
   const [page, setPage] = useState(1);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      SEARCH_DEBOUNCE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   async function fetchReviews() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
-        `/api/admin/reviews?page=${page}&limit=${PAGE_SIZE}`,
-      );
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      });
+      if (statusFilter !== "all") params.set("status", statusFilter);
+      if (debouncedSearch) params.set("search", debouncedSearch);
+
+      const res = await fetch(`/api/admin/reviews?${params.toString()}`);
       const data = (await res.json()) as {
         error?: string;
         reviews?: AdminReview[];
@@ -47,6 +69,18 @@ export function AdminReviewsPageClient() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function updateStatusFilter(value: StatusFilter) {
+    setStatusFilter(value);
+    setPage(1);
+  }
+
+  function clearFilters() {
+    setStatusFilter("all");
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setPage(1);
   }
 
   async function updateReview(
@@ -69,7 +103,7 @@ export function AdminReviewsPageClient() {
 
   useEffect(() => {
     void fetchReviews();
-  }, [page]);
+  }, [page, statusFilter, debouncedSearch]);
 
   if (loading) return <LoadingSpinner />;
   if (error)
@@ -91,10 +125,47 @@ export function AdminReviewsPageClient() {
         </h2>
       </div>
 
-      <div className="flex items-center justify-end">
-        <span className="text-[13px] text-neutral-400">
-          {copy.count.replace("{n}", String(total))}
-        </span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Select
+            className={SELECT_CLASS}
+            onChange={(e) =>
+              updateStatusFilter(e.target.value as StatusFilter)
+            }
+            value={statusFilter}
+          >
+            <option value="all">{copy.filters.allStatuses}</option>
+            <option value="approved">{copy.filters.approved}</option>
+            <option value="unapproved">{copy.filters.unapproved}</option>
+          </Select>
+          {hasActiveFilters && (
+            <button
+              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
+              onClick={clearFilters}
+              type="button"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] text-neutral-400">
+            {copy.count.replace("{n}", String(total))}
+          </span>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <input
+              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder={copy.filters.searchPlaceholder}
+              type="text"
+              value={searchQuery}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">

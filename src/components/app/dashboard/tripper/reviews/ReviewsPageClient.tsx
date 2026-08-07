@@ -1,21 +1,27 @@
 "use client";
 
-import { MessageSquare, Star, ThumbsUp, TrendingUp } from "lucide-react";
+import { MessageSquare, Search, Star, ThumbsUp, TrendingUp, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
+import { Select } from "@/components/ui/Select";
 import { useDictionary } from "@/hooks/useDictionary";
 import type { TripperReviewsDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
+const SELECT_CLASS =
+  "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
+type StatusFilter = "all" | "approved" | "unapproved";
 
 export interface TripperReview {
   content: string;
   createdAt: string;
   destination: string;
   id: string;
+  isApproved: boolean;
   isPublic: boolean;
   packageTitle: string;
   rating: number;
@@ -69,8 +75,20 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const { averageRating, detractors, nps, promoters, totalReviews } = stats;
+  const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      SEARCH_DEBOUNCE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,9 +96,14 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     async function fetchReviews() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/tripper/reviews?page=${page}&limit=${PAGE_SIZE}`,
-        );
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(PAGE_SIZE),
+        });
+        if (statusFilter !== "all") params.set("status", statusFilter);
+        if (debouncedSearch) params.set("search", debouncedSearch);
+
+        const res = await fetch(`/api/tripper/reviews?${params.toString()}`);
         const data = (await res.json()) as {
           reviews?: TripperReview[];
           total?: number;
@@ -104,7 +127,19 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     return () => {
       cancelled = true;
     };
-  }, [page]);
+  }, [page, statusFilter, debouncedSearch]);
+
+  function updateStatusFilter(value: StatusFilter) {
+    setStatusFilter(value);
+    setPage(1);
+  }
+
+  function clearFilters() {
+    setStatusFilter("all");
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setPage(1);
+  }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -244,6 +279,44 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
         })}
       </div>
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Select
+            className={SELECT_CLASS}
+            onChange={(e) =>
+              updateStatusFilter(e.target.value as StatusFilter)
+            }
+            value={statusFilter}
+          >
+            <option value="all">{copy.filters.allStatuses}</option>
+            <option value="approved">{copy.filters.approved}</option>
+            <option value="unapproved">{copy.filters.unapproved}</option>
+          </Select>
+          {hasActiveFilters && (
+            <button
+              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
+              onClick={clearFilters}
+              type="button"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+          <input
+            className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
+            placeholder={copy.filters.searchPlaceholder}
+            type="text"
+            value={searchQuery}
+          />
+        </div>
+      </div>
+
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-200 px-5 py-4">
           <h3 className="text-xl font-semibold text-neutral-900">
@@ -282,18 +355,32 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            className={cn(
-                              "h-4 w-4",
-                              i < review.rating
-                                ? "fill-current text-yellow-500"
-                                : "text-neutral-300",
-                            )}
-                            key={i}
-                          />
-                        ))}
+                      <div className="flex flex-col items-end gap-1.5">
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              className={cn(
+                                "h-4 w-4",
+                                i < review.rating
+                                  ? "fill-current text-yellow-500"
+                                  : "text-neutral-300",
+                              )}
+                              key={i}
+                            />
+                          ))}
+                        </div>
+                        <span
+                          className={cn(
+                            "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
+                            review.isApproved
+                              ? "border-green-200 bg-green-50 text-green-700"
+                              : "border-amber-200 bg-amber-50 text-amber-700",
+                          )}
+                        >
+                          {review.isApproved
+                            ? copy.status.approved
+                            : copy.status.pending}
+                        </span>
                       </div>
                     </div>
                     {review.title && (

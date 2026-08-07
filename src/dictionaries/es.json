@@ -531,6 +531,12 @@
       "count": "{n} reseñas",
       "errorLoad": "Error al cargar las reseñas",
       "empty": "No se encontraron reseñas.",
+      "filters": {
+        "allStatuses": "Todos los estados",
+        "approved": "Aprobadas",
+        "unapproved": "Sin aprobar",
+        "searchPlaceholder": "Buscar por nombre del viajero..."
+      },
       "columns": {
         "traveler": "Viajero",
         "review": "Reseña",
@@ -3966,6 +3972,16 @@
     },
     "list": {
       "title": "Reseñas de clientes"
+    },
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "approved": "Aprobadas",
+      "unapproved": "Sin aprobar",
+      "searchPlaceholder": "Buscar por nombre del viajero..."
+    },
+    "status": {
+      "approved": "Aprobada",
+      "pending": "Pendiente"
     },
     "emptyState": {
       "title": "Aún no tienes reseñas",

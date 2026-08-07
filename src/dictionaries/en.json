@@ -531,6 +531,12 @@
       "count": "{n} reviews",
       "errorLoad": "Failed to load reviews",
       "empty": "No reviews found.",
+      "filters": {
+        "allStatuses": "All statuses",
+        "approved": "Approved",
+        "unapproved": "Unapproved",
+        "searchPlaceholder": "Search by traveler name..."
+      },
       "columns": {
         "traveler": "Traveler",
         "review": "Review",
@@ -3966,6 +3972,16 @@
     },
     "list": {
       "title": "Client reviews"
+    },
+    "filters": {
+      "allStatuses": "All statuses",
+      "approved": "Approved",
+      "unapproved": "Unapproved",
+      "searchPlaceholder": "Search by traveler name..."
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending"
     },
     "emptyState": {
       "title": "No reviews yet",
