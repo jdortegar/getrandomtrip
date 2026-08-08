@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -325,6 +326,7 @@ export default function JourneyMainContent({
         return;
       }
       clearJourneyDraftStorage(searchParams.get("draftId"));
+      trackCustomEvent({ event: "generate_lead", trip_type: tripPayload.type });
       updateQuery({ tripRequestId: data.tripRequest.id });
       router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
     } catch (err) {

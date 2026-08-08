@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { CheckCircle2, Loader2, MailCheck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
@@ -248,6 +249,7 @@ function NewUserBranch({
         return;
       }
 
+      trackCustomEvent({ event: "sign_up", method: "tripper_invite" });
       setState("success");
     } catch {
       setState("form");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 
 export default function NewsletterBar() {
   const LS_KEY = "rt_newsletter_dismissed_v1";
@@ -45,7 +46,7 @@ export default function NewsletterBar() {
       });
       if (res.ok) {
         setMsg("¡Listo! Revisá tu correo para confirmar.");
-        // Podés trackear: window.dataLayer?.push({ event: "newsletter_subscribe", email });
+        trackCustomEvent({ event: "newsletter_subscribe" });
         setTimeout(dismiss, 1200);
       } else {
         setMsg("Hubo un problema. Intentá de nuevo.");

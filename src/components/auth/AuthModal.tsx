@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import { X } from "lucide-react";
@@ -179,6 +180,7 @@ export default function AuthModal({
         }
 
         // Handle successful authentication
+        trackCustomEvent({ event: "sign_up", method: "email" });
         handleAuthSuccess();
       } else {
         // Login existing user
@@ -210,6 +212,7 @@ export default function AuthModal({
         } else {
           localStorage.removeItem("auth-remember-email");
         }
+        trackCustomEvent({ event: "login", method: "email" });
         handleAuthSuccess();
       }
     } catch (err) {
@@ -236,9 +239,10 @@ export default function AuthModal({
   }, [email, password]);
 
   const handleGoogleSignIn = useCallback(async () => {
+    trackCustomEvent({ event: mode === "register" ? "sign_up" : "login", method: "google" });
     // Use current page as callback - let the page handle what happens next
     await signIn("google", { callbackUrl: window.location.href });
-  }, []);
+  }, [mode]);
 
   const toggleMode = useCallback(() => {
     setMode(mode === "login" ? "register" : "login");

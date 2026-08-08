@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { getNextWeekend, toISODate } from "@/lib/helpers/xsed-dates";
@@ -157,6 +158,7 @@ export function XsedBookClient({
         }
         return;
       }
+      trackCustomEvent({ event: "generate_lead", trip_type: "xsed" });
       router.push(`/${locale}/checkout?tripId=${data.tripRequest.id}`);
     } catch {
       toast.error("Error de conexión. Intentá de nuevo.");

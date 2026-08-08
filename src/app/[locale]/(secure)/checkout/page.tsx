@@ -58,6 +58,7 @@ import {
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 
 const usd = (n: number) => `USD ${Math.round(n)}`;
 
@@ -344,6 +345,7 @@ function CheckoutContent() {
           return;
         }
         setTrip(picked);
+        trackCustomEvent({ event: "begin_checkout", trip_type: picked.type });
       })
       .catch(() => {
         if (!cancelled)

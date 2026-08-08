@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
@@ -62,6 +63,7 @@ export function WaitlistPage({
         method: "POST",
       });
       if (res.ok) {
+        trackCustomEvent({ event: "waitlist_join" });
         setStatus("success");
         setEmail("");
         setLastName("");
