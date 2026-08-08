@@ -8,6 +8,11 @@ import { authOptions } from "@/lib/auth";
 import { getTripperReviews, getTripperReviewStats } from "@/lib/db/tripper-queries";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import {
+  TRIPPER_REVIEW_SORT_FIELDS,
+  parseReviewSortBy,
+  parseReviewSortOrder,
+} from "@/lib/reviews/sort";
 
 export const dynamic = "force-dynamic";
 
@@ -47,9 +52,14 @@ export async function GET(request: NextRequest) {
         ? rawStatus
         : "all";
     const search = searchParams.get("search")?.trim() || undefined;
+    const sortBy = parseReviewSortBy(
+      searchParams.get("sortBy"),
+      TRIPPER_REVIEW_SORT_FIELDS,
+    );
+    const sortOrder = parseReviewSortOrder(searchParams.get("sortOrder"));
 
     const [{ reviews, total }, stats] = await Promise.all([
-      getTripperReviews(user.id, { page, limit, status, search }),
+      getTripperReviews(user.id, { page, limit, status, search, sortBy, sortOrder }),
       getTripperReviewStats(user.id),
     ]);
 

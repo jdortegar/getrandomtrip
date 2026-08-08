@@ -560,6 +560,11 @@
         "publish": "Publicar",
         "showMore": "Ver más",
         "showLess": "Ver menos"
+      },
+      "sort": {
+        "ariaSortBy": "Ordenar por {field}",
+        "ariaAscending": "ascendente",
+        "ariaDescending": "descendente"
       }
     },
     "waitlist": {
@@ -3990,6 +3995,14 @@
     "emptyState": {
       "title": "Aún no tienes reseñas",
       "description": "Las reseñas aparecerán aquí cuando los clientes completen sus viajes y califiquen su experiencia."
+    },
+    "sort": {
+      "groupLabel": "Ordenar reseñas",
+      "rating": "Calificación",
+      "created": "Creado",
+      "ariaSortBy": "Ordenar por {field}",
+      "ariaAscending": "ascendente",
+      "ariaDescending": "descendente"
     }
   },
   "tripperEarnings": {

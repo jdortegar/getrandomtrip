@@ -87,3 +87,42 @@ describe("GET /api/tripper/reviews — status + search passthrough", () => {
     expect(args.search).toBeUndefined();
   });
 });
+
+describe("GET /api/tripper/reviews — sort passthrough", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: "tripper-1" },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "tripper-1",
+      roles: ["TRIPPER"],
+    });
+  });
+
+  it("defaults sortBy/sortOrder to created/desc when not provided", async () => {
+    await GET(makeRequest(""));
+
+    const args = (getTripperReviews as ReturnType<typeof vi.fn>).mock
+      .calls[0][1];
+    expect(args.sortBy).toBe("created");
+    expect(args.sortOrder).toBe("desc");
+  });
+
+  it("passes through a valid sortBy/sortOrder pair", async () => {
+    await GET(makeRequest("?sortBy=rating&sortOrder=asc"));
+
+    const args = (getTripperReviews as ReturnType<typeof vi.fn>).mock
+      .calls[0][1];
+    expect(args.sortBy).toBe("rating");
+    expect(args.sortOrder).toBe("asc");
+  });
+
+  it("falls back to 'created' for a sortBy not on the tripper whitelist (e.g. 'tripper')", async () => {
+    await GET(makeRequest("?sortBy=tripper"));
+
+    const args = (getTripperReviews as ReturnType<typeof vi.fn>).mock
+      .calls[0][1];
+    expect(args.sortBy).toBe("created");
+  });
+});

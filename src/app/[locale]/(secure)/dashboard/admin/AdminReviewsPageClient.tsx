@@ -5,9 +5,17 @@ import { Check, Eye, EyeOff, Search, X } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
+import { SortButton } from "@/components/ui/SortButton";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { AdminReview } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { cn } from "@/lib/utils";
+import {
+  REVIEW_SORT_DEFAULT,
+  REVIEW_SORT_INITIAL_ORDER,
+  type ReviewSortBy,
+  type ReviewSortOrder,
+} from "@/lib/reviews/sort";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
@@ -23,6 +31,7 @@ export function AdminReviewsPageClient() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [reviews, setReviews] = useState<AdminReview[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -31,6 +40,10 @@ export function AdminReviewsPageClient() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [sortBy, setSortBy] = useState<ReviewSortBy>(REVIEW_SORT_DEFAULT.sortBy);
+  const [sortOrder, setSortOrder] = useState<ReviewSortOrder>(
+    REVIEW_SORT_DEFAULT.sortOrder,
+  );
   const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
 
   useEffect(() => {
@@ -48,6 +61,8 @@ export function AdminReviewsPageClient() {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(PAGE_SIZE),
+        sortBy,
+        sortOrder,
       });
       if (statusFilter !== "all") params.set("status", statusFilter);
       if (debouncedSearch) params.set("search", debouncedSearch);
@@ -68,6 +83,7 @@ export function AdminReviewsPageClient() {
       setError(copy.errorLoad);
     } finally {
       setLoading(false);
+      setHasLoadedOnce(true);
     }
   }
 
@@ -80,6 +96,16 @@ export function AdminReviewsPageClient() {
     setStatusFilter("all");
     setSearchQuery("");
     setDebouncedSearch("");
+    setPage(1);
+  }
+
+  function toggleSort(field: ReviewSortBy) {
+    if (field === sortBy) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder(REVIEW_SORT_INITIAL_ORDER[field]);
+    }
     setPage(1);
   }
 
@@ -103,16 +129,26 @@ export function AdminReviewsPageClient() {
 
   useEffect(() => {
     void fetchReviews();
-  }, [page, statusFilter, debouncedSearch]);
+  }, [page, statusFilter, debouncedSearch, sortBy, sortOrder]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
   if (error)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
   const st = copy.status;
   const act = copy.actions;
+  const sortCopy = copy.sort;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  function ariaSortFor(field: ReviewSortBy): "ascending" | "descending" | "none" {
+    if (sortBy !== field) return "none";
+    return sortOrder === "asc" ? "ascending" : "descending";
+  }
+
+  function sortAriaLabel(label: string): string {
+    return sortCopy.ariaSortBy.replace("{field}", label);
+  }
 
   return (
     <div className="space-y-10">
@@ -168,7 +204,12 @@ export function AdminReviewsPageClient() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div
+        className={cn(
+          "overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-opacity",
+          loading && "pointer-events-none opacity-50",
+        )}
+      >
         {reviews.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {copy.empty}
@@ -178,26 +219,50 @@ export function AdminReviewsPageClient() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                    {cols.traveler}
+                  <th aria-sort={ariaSortFor("traveler")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "traveler"}
+                      ariaLabel={sortAriaLabel(cols.traveler)}
+                      label={cols.traveler}
+                      onSort={() => toggleSort("traveler")}
+                      order={sortOrder}
+                    />
                   </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                     {cols.review}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                    {cols.rating}
+                  <th aria-sort={ariaSortFor("rating")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "rating"}
+                      ariaLabel={sortAriaLabel(cols.rating)}
+                      label={cols.rating}
+                      onSort={() => toggleSort("rating")}
+                      order={sortOrder}
+                    />
                   </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                     {cols.status}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                    {cols.tripper}
+                  <th aria-sort={ariaSortFor("tripper")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "tripper"}
+                      ariaLabel={sortAriaLabel(cols.tripper)}
+                      label={cols.tripper}
+                      onSort={() => toggleSort("tripper")}
+                      order={sortOrder}
+                    />
                   </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                     {cols.tripId}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                    {cols.created}
+                  <th aria-sort={ariaSortFor("created")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "created"}
+                      ariaLabel={sortAriaLabel(cols.created)}
+                      label={cols.created}
+                      onSort={() => toggleSort("created")}
+                      order={sortOrder}
+                    />
                   </th>
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
                     {cols.actions}

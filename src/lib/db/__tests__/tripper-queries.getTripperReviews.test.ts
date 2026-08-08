@@ -94,6 +94,59 @@ describe("getTripperReviews — status filter + search", () => {
   });
 });
 
+describe("getTripperReviews — sort", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    findManyMock.mockResolvedValue([]);
+    countMock.mockResolvedValue(0);
+  });
+
+  it("omitted sortBy/sortOrder falls back to createdAt desc (backward compat + honest default)", async () => {
+    await getTripperReviews("tripper-1", { page: 1, limit: 20 });
+
+    const { orderBy } = findManyMock.mock.calls[0][0];
+    expect(orderBy[0]).toEqual({ createdAt: "desc" });
+  });
+
+  it("{ sortBy: 'rating', sortOrder: 'asc' } sorts by rating ascending", async () => {
+    await getTripperReviews("tripper-1", {
+      page: 1,
+      limit: 20,
+      sortBy: "rating",
+      sortOrder: "asc",
+    });
+
+    const { orderBy } = findManyMock.mock.calls[0][0];
+    expect(orderBy[0]).toEqual({ rating: "asc" });
+  });
+
+  it("where is byte-identical with and without sort params present", async () => {
+    await getTripperReviews("tripper-1", {
+      page: 1,
+      limit: 20,
+      status: "approved",
+      search: "Ana",
+    });
+    const whereWithoutSort = findManyMock.mock.calls[0][0].where;
+
+    vi.clearAllMocks();
+    findManyMock.mockResolvedValue([]);
+    countMock.mockResolvedValue(0);
+
+    await getTripperReviews("tripper-1", {
+      page: 1,
+      limit: 20,
+      status: "approved",
+      search: "Ana",
+      sortBy: "rating",
+      sortOrder: "asc",
+    });
+    const whereWithSort = findManyMock.mock.calls[0][0].where;
+
+    expect(whereWithSort).toEqual(whereWithoutSort);
+  });
+});
+
 describe("getTripperReviewStats — always approved-only, unaffected by list status filter", () => {
   beforeEach(() => {
     vi.clearAllMocks();

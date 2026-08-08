@@ -560,6 +560,11 @@
         "publish": "Publish",
         "showMore": "Show more",
         "showLess": "Show less"
+      },
+      "sort": {
+        "ariaSortBy": "Sort by {field}",
+        "ariaAscending": "ascending",
+        "ariaDescending": "descending"
       }
     },
     "waitlist": {
@@ -3990,6 +3995,14 @@
     "emptyState": {
       "title": "No reviews yet",
       "description": "Reviews will show up here once clients complete their trips and rate their experience."
+    },
+    "sort": {
+      "groupLabel": "Sort reviews",
+      "rating": "Rating",
+      "created": "Created",
+      "ariaSortBy": "Sort by {field}",
+      "ariaAscending": "ascending",
+      "ariaDescending": "descending"
     }
   },
   "tripperEarnings": {
