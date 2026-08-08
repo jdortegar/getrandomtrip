@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { TRIPPERS } from "@/content/trippers";
 import {
+  getAllTrippers,
   getTripperBySlug,
-  getTripperFeaturedTrips,
   getTripperExperiencesByTypeAndLevel,
+  getTripperFeaturedTrips,
   getTripperPublishedBlogs,
 } from "@/lib/db/tripper-queries";
 import TripperHero from "@/components/tripper/TripperHero";
@@ -33,9 +33,8 @@ import TripperIntroVideoGate from "@/components/tripper/TripperIntroVideoGate";
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-  // For now, we'll use the static TRIPPERS list
-  // In the future, this could be replaced with a database query
-  return TRIPPERS.map((t) => ({ tripper: t.slug }));
+  const trippers = await getAllTrippers();
+  return trippers.map((t) => ({ tripper: t.tripperSlug }));
 }
 
 export async function generateMetadata(props: {
