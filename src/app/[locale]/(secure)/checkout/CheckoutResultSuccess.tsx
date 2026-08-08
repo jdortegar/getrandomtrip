@@ -16,6 +16,7 @@ import {
   TravelerRosterSection,
   type TravelerRosterSectionHandle,
 } from "@/components/app/travelers/TravelerRosterSection";
+import { trackPurchase } from "@/lib/helpers/tracking/gtm";
 import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
 import { getCardForType } from "@/lib/utils/traveler-card";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
@@ -105,7 +106,15 @@ export default function CheckoutResultSuccess({
         fetch(`/api/stripe/trip-summary?paymentIntentId=${paymentIntentId}`),
       )
       .then((r) => r?.json())
-      .then((data: TripSummaryData | undefined) => data && setTripData(data))
+      .then((data: TripSummaryData | undefined) => {
+        if (!data) return;
+        setTripData(data);
+        trackPurchase({
+          transaction_id: paymentIntentId,
+          value: data.payment.amount,
+          currency: data.payment.currency.toUpperCase(),
+        });
+      })
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentIntentId]);

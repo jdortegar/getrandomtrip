@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
@@ -77,6 +78,7 @@ export default function ReviewFormClient({
         return;
       }
 
+      trackCustomEvent({ event: "review_submit", rating });
       setSubmitted(true);
     } catch {
       setError(copy.errorGeneric);

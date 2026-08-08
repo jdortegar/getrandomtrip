@@ -17,6 +17,12 @@ export type GTMEvents =
       items?: PurchaseItem[];
     }
   | { event: "sign_up"; method: string }
+  | { event: "login"; method: string }
+  | { event: "generate_lead"; trip_type?: string; origin?: string }
+  | { event: "begin_checkout"; trip_type?: string; value?: number; currency?: string }
+  | { event: "review_submit"; rating: number }
+  | { event: "newsletter_subscribe" }
+  | { event: "waitlist_join" }
   | { event: "click_button"; label: string }
   | { event: "scroll_depth"; page_path: string; percent: number }
   | { event: "set_user"; user_id: string }
