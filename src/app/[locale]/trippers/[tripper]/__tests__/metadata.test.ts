@@ -110,7 +110,7 @@ describe("generateMetadata — tripper hero-image OG fallback", () => {
     expect(extractOgImageUrl(metadata)).toBe("https://example.com/avatar.jpg");
   });
 
-  it("falls back to /images/opengraph.png when both heroImage and avatarUrl are null", async () => {
+  it("falls back to /images/opengraph.jpg when both heroImage and avatarUrl are null", async () => {
     vi.mocked(getTripperBySlug).mockResolvedValue({
       status: "ok",
       tripper: { ...BASE_TRIPPER_PROFILE, avatarUrl: null, heroImage: null },
@@ -120,7 +120,7 @@ describe("generateMetadata — tripper hero-image OG fallback", () => {
       params: Promise.resolve({ tripper: "jane-doe" }),
     });
 
-    expect(extractOgImageUrl(metadata)).toBe("/images/opengraph.png");
+    expect(extractOgImageUrl(metadata)).toBe("/images/opengraph.jpg");
   });
 
   it("returns minimal metadata when tripper is not found", async () => {

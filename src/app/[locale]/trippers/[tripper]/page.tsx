@@ -46,7 +46,7 @@ export async function generateMetadata(props: {
   if (result.status !== "ok") return { title: "Randomtrip" };
 
   const { tripper } = result;
-  const ogImage = tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
+  const ogImage = tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.jpg";
 
   return {
     title: `${tripper.name} | Randomtrip`,
