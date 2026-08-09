@@ -366,9 +366,13 @@ function CheckoutContent() {
       .then(({ clientSecret: secret }) => {
         if (!cancelled) setClientSecret(secret);
       })
-      .catch(() => {
-        if (!cancelled)
-          toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        const message =
+          error instanceof Error && error.message
+            ? error.message
+            : dict?.journey?.checkout?.errors?.connectionTryAgain;
+        toast.error(message);
       });
     return () => {
       cancelled = true;

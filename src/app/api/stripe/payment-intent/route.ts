@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -134,13 +135,45 @@ export async function POST(request: NextRequest) {
       trip.payment?.status === "PENDING" &&
       trip.payment.stripePaymentIntentId
     ) {
-      const existing = await stripe.paymentIntents.retrieve(
-        trip.payment.stripePaymentIntentId,
-      );
+      let existing: Stripe.PaymentIntent | null = null;
+      try {
+        existing = await stripe.paymentIntents.retrieve(
+          trip.payment.stripePaymentIntentId,
+        );
+      } catch (retrieveError) {
+        if (!(retrieveError instanceof Stripe.errors.StripeInvalidRequestError)) {
+          // Ambiguous/transient failure (network blip, Stripe outage, rate
+          // limit) — the stored intent might still be live. Do NOT fall
+          // through and create a second one, that is the double-charge
+          // path. Surface the error and let the caller retry.
+          console.error(
+            "PaymentIntent retrieve failed with a non-definitive error:",
+            retrieveError,
+          );
+          return NextResponse.json(
+            {
+              error:
+                retrieveError instanceof Error
+                  ? retrieveError.message
+                  : "Failed to verify existing payment intent",
+            },
+            { status: 502 },
+          );
+        }
+        // Definitive failure — Stripe has told us this id can never resolve
+        // (wrong mode, deleted, nonexistent). Safe to treat as no usable
+        // existing intent and fall through to create a fresh one.
+        console.error(
+          "Stale PaymentIntent unusable, creating a fresh one:",
+          retrieveError,
+        );
+      }
+
       if (
-        existing.status === "requires_payment_method" ||
-        existing.status === "requires_confirmation" ||
-        existing.status === "requires_action"
+        existing &&
+        (existing.status === "requires_payment_method" ||
+          existing.status === "requires_confirmation" ||
+          existing.status === "requires_action")
       ) {
         if (existing.amount === amountCents) {
           if (existing.client_secret) {
