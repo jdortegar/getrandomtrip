@@ -1465,6 +1465,23 @@ export interface AdminPagesDict {
       resend: string;
     };
     inviteStatus: { invited: string; expired: string };
+    selectAll: string;
+    selectRow: string;
+    alreadyMemberBadge: string;
+    alreadyMemberHint: string;
+    bulkActions: {
+      inviteSelected: string;
+      deleteSelected: string;
+      inviteNothingToDo: string;
+      inviteConfirmTitle: string;
+      inviteConfirmBody: string;
+      inviteSkippedNote: string;
+      deleteConfirmTitle: string;
+      deleteConfirmBody: string;
+      cancel: string;
+      confirm: string;
+      partialFailure: string;
+    };
   };
   xsedNotifications: {
     count: string;

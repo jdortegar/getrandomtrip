@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { issueTripperInvite } from "@/lib/auth/tripperInviteTokens";
 import { sendTripperInviteEmail } from "@/lib/email";
+import { findExistingUserEmails } from "@/lib/admin/waitlistMembership";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,14 @@ export async function POST(
       return NextResponse.json(
         { error: "Waitlist entry not found" },
         { status: 404 },
+      );
+    }
+
+    const existingEmails = await findExistingUserEmails([entry.email]);
+    if (existingEmails.has(entry.email)) {
+      return NextResponse.json(
+        { error: "Email already belongs to an existing user" },
+        { status: 400 },
       );
     }
 

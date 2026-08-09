@@ -588,6 +588,23 @@
       "inviteStatus": {
         "invited": "Invitado",
         "expired": "Expirado"
+      },
+      "selectAll": "Seleccionar todo",
+      "selectRow": "Seleccionar entrada",
+      "alreadyMemberBadge": "Ya es miembro",
+      "alreadyMemberHint": "Este email ya pertenece a una cuenta existente",
+      "bulkActions": {
+        "inviteSelected": "Invitar ({count})",
+        "deleteSelected": "Eliminar ({count})",
+        "inviteNothingToDo": "Todas las filas seleccionadas ya son miembros",
+        "inviteConfirmTitle": "Invitar como Tripper",
+        "inviteConfirmBody": "Se invitará a {count} entradas como Tripper.",
+        "inviteSkippedNote": "{skipped} entradas ya son miembros y no se invitarán.",
+        "deleteConfirmTitle": "Eliminar de la lista de espera",
+        "deleteConfirmBody": "Se eliminarán {count} entradas de la lista de espera. Esta acción no se puede deshacer.",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "partialFailure": "Se completaron {success} de {total}. No se pudieron completar {failed}."
       }
     },
     "xsedNotifications": {

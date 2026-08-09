@@ -588,6 +588,23 @@
       "inviteStatus": {
         "invited": "Invited",
         "expired": "Expired"
+      },
+      "selectAll": "Select all",
+      "selectRow": "Select entry",
+      "alreadyMemberBadge": "Already a member",
+      "alreadyMemberHint": "This email already belongs to an existing account",
+      "bulkActions": {
+        "inviteSelected": "Invite ({count})",
+        "deleteSelected": "Delete ({count})",
+        "inviteNothingToDo": "All selected rows are already members",
+        "inviteConfirmTitle": "Invite as Tripper",
+        "inviteConfirmBody": "{count} entries will be invited as Tripper.",
+        "inviteSkippedNote": "{skipped} entries are already members and will be skipped.",
+        "deleteConfirmTitle": "Remove from waitlist",
+        "deleteConfirmBody": "{count} entries will be removed from the waitlist. This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "partialFailure": "Completed {success} of {total}. {failed} failed."
       }
     },
     "xsedNotifications": {

@@ -153,6 +153,7 @@ export interface AdminReview {
 }
 
 export interface AdminWaitlistEntry {
+  alreadyMember: boolean;
   createdAt: string;
   email: string;
   id: string;
