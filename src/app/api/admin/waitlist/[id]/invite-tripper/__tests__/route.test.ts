@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    user: { findUnique: vi.fn() },
+    user: { findUnique: vi.fn(), findMany: vi.fn() },
     waitlistEntry: { findUnique: vi.fn() },
   },
 }));
@@ -77,6 +77,7 @@ describe("POST /api/admin/waitlist/[id]/invite-tripper", () => {
       id: "entry-1",
       email: "alice@example.com",
     });
+    (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
     const mod = await import("../route");
     const res = await mod.POST(makeRequest(), makeProps("entry-1"));
@@ -90,5 +91,33 @@ describe("POST /api/admin/waitlist/[id]/invite-tripper", () => {
       "plaintext-token",
       "es",
     );
+  });
+
+  it("rejects existing-User email with 400, no invite/email sent", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: "admin-1" },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "admin-1",
+      roles: ["ADMIN"],
+    });
+    (
+      prisma.waitlistEntry.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "entry-1",
+      email: "dana@example.com",
+    });
+    (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      { email: "dana@example.com" },
+    ]);
+
+    const mod = await import("../route");
+    const res = await mod.POST(makeRequest(), makeProps("entry-1"));
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.error).toBeDefined();
+    expect(issueTripperInvite).not.toHaveBeenCalled();
+    expect(sendTripperInviteEmail).not.toHaveBeenCalled();
   });
 });

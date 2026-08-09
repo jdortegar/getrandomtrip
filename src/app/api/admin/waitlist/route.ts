@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getTripperInviteStatuses } from "@/lib/auth/tripperInviteTokens";
+import { findExistingUserEmails } from "@/lib/admin/waitlistMembership";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -48,11 +49,14 @@ export async function GET(request: NextRequest) {
       prisma.waitlistEntry.count(),
     ]);
 
-    const inviteStatuses = await getTripperInviteStatuses(
-      rows.map((r) => r.email),
-    );
+    const emails = rows.map((r) => r.email);
+    const [inviteStatuses, existingEmails] = await Promise.all([
+      getTripperInviteStatuses(emails),
+      findExistingUserEmails(emails),
+    ]);
     const entries = rows.map((r) => ({
       ...r,
+      alreadyMember: existingEmails.has(r.email),
       inviteStatus: inviteStatuses.get(r.email) ?? null,
     }));
 

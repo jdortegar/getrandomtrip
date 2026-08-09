@@ -1,0 +1,69 @@
+change: waitlist-bulk-actions
+status: applied
+artifact_store: openspec
+phases:
+  explore: skipped
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: pending
+created: 2026-08-07
+revisions:
+  - date: 2026-08-07
+    phase: design
+    summary: >-
+      Design open questions closed and rewritten as final "Resolved Decisions".
+      (1) Row checkbox stays enabled on all rows including alreadyMember — only
+      the invite fan-out filters; accept-triggered WaitlistEntry cleanup stays
+      untouched and coexists with manual bulk delete. (2) Bulk invite resends to
+      rows with a live "Invited" chip, no special-casing. (3) Email
+      case-sensitivity gap accepted as a documented limitation, consistent with
+      the four existing exact-match call sites. Also locked down bulk-invite
+      label vs. modal count semantics. No spec change required.
+  - date: 2026-08-07
+    phase: apply
+    summary: >-
+      All 22 tasks implemented in a single batch (delivery_strategy:
+      single-pr, size:exception per the 400-line-budget risk flagged in
+      tasks.md — user explicitly chose one PR over chaining). New
+      `src/lib/admin/waitlistMembership.ts` batched exact-match
+      `findExistingUserEmails`; `400` guard added to
+      `POST .../invite-tripper` via `findMany` (not `findUnique`, to avoid
+      colliding with the existing admin-caller mock); `alreadyMember`
+      enrichment added to `GET /api/admin/waitlist`; `AdminWaitlistEntry`
+      type extended; dual-locale dictionary keys added
+      (`adminPages.waitlist.{selectAll,selectRow,alreadyMemberBadge,
+      alreadyMemberHint,bulkActions.*}`); `AdminWaitlistPageClient.tsx`
+      rewritten with `Set<string>` page-scoped selection, indeterminate
+      header checkbox, bulk-action bar (raw-count labels per spec), neutral
+      bulk-invite `ConfirmModal` (filters `alreadyMember` via
+      `invitableSelectedIds`, resends to live Invited/Expired rows,
+      no-op-skip note), danger bulk-delete `ConfirmModal` (no filter,
+      includes `alreadyMember` rows), `Promise.allSettled` fan-out over the
+      existing per-id routes, partial-failure banner, selection cleared on
+      page change and after each bulk action. `npm run typecheck`: clean.
+      `npx vitest run`: 141 files / 1042 tests passed, zero regressions.
+      `npm run lint` / `npx eslint` both fail in this environment with a
+      pre-existing `TypeError: Converting circular structure to JSON` in
+      ESLint's flat-config bridge, unrelated to this change (reproduces
+      before any file is linted). No deviations from design.md's Resolved
+      Decisions.
+  - date: 2026-08-07
+    phase: verify
+    summary: >-
+      Independent verify pass: PASS, 0 CRITICAL, 0 WARNING, 1 informational
+      SUGGESTION. Re-ran npm run typecheck (clean) and npx vitest run (141
+      files / 1042 tests passed, matches apply-progress claim exactly).
+      Confirmed by direct source read: no checkbox disabled prop tied to
+      alreadyMember anywhere; findExistingUserEmails uses findMany (not
+      findUnique) and the pre-existing invite-tripper happy-path test was
+      correctly updated with its own findMany mock; bar labels use raw
+      selectedIds.size while invite modal/button use filtered
+      invitableSelectedIds.length and delete modal uses raw size; bulk
+      invite resends to live Invited/Expired rows; bulk delete has no
+      alreadyMember filter; email match is exact/case-sensitive by design;
+      no new batch endpoint was added. Full report at
+      openspec/changes/waitlist-bulk-actions/verify-report.md.
