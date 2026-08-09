@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   ),
   openGraph: {
     images: [
-      { alt: "Randomtrip", height: 630, url: "/images/opengraph.png", width: 1200 },
+      { alt: "Randomtrip", height: 1200, url: "/images/opengraph.jpg", width: 1800 },
     ],
     siteName: "Randomtrip",
     type: "website",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   title: "Randomtrip",
   twitter: {
     card: "summary_large_image",
-    images: ["/images/opengraph.png"],
+    images: ["/images/opengraph.jpg"],
   },
 };
 

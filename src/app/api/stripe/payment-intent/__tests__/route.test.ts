@@ -46,6 +46,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+import Stripe from "stripe";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
@@ -312,5 +313,55 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
 
     expect(res.status).toBe(422);
     expect(stripeMock.paymentIntents.retrieve).not.toHaveBeenCalled();
+  });
+
+  // (f) retrieve fails with a definitive Stripe invalid-request error (e.g.
+  // wrong-mode/deleted id) → the old intent is unusable, fall through and
+  // create a fresh one. Safe because Stripe has told us this ID can never
+  // resolve, not that it *might* still be live.
+  it("falls through to create a fresh intent when retrieve fails with a definitive StripeInvalidRequestError", async () => {
+    const trip = tripWithExistingIntent();
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      trip,
+    );
+    stripeMock.paymentIntents.retrieve.mockRejectedValue(
+      new Stripe.errors.StripeInvalidRequestError({
+        message:
+          "No such payment_intent: 'pi_existing'; a similar object exists in test mode, but a live mode key was used to make this request.",
+      }),
+    );
+    stripeMock.paymentIntents.create.mockResolvedValue({
+      id: "pi_new",
+      client_secret: "secret_new",
+      amount: 20000,
+    });
+
+    const res = await POST(makeRequest("trip-1"));
+
+    expect(stripeMock.paymentIntents.cancel).not.toHaveBeenCalled();
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledTimes(1);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.paymentIntentId).toBe("pi_new");
+  });
+
+  // (g) retrieve fails with a non-invalid-request (transient) Stripe error →
+  // do NOT fall through and create a second intent (double-charge guard,
+  // same philosophy as the cancel-failure branch above); surface the error.
+  it("returns an error and never creates a second intent when retrieve fails with a transient Stripe error", async () => {
+    const trip = tripWithExistingIntent();
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      trip,
+    );
+    stripeMock.paymentIntents.retrieve.mockRejectedValue(
+      new Stripe.errors.StripeConnectionError({
+        message: "An error occurred while connecting to Stripe.",
+      }),
+    );
+
+    const res = await POST(makeRequest("trip-1"));
+
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+    expect(res.status).toBeGreaterThanOrEqual(500);
   });
 });
