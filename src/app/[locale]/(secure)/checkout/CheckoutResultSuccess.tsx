@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/app/checkout/AddToCalendarButton";
 import { Button } from "@/components/ui/Button";
@@ -65,6 +65,7 @@ export default function CheckoutResultSuccess({
   stripeReturn,
   travelersCopy,
 }: CheckoutResultSuccessProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
 
@@ -80,7 +81,11 @@ export default function CheckoutResultSuccess({
   async function handleSaveTravelers() {
     setSavingTravelers(true);
     try {
-      await rosterRef.current?.saveAll();
+      const allComplete = await rosterRef.current?.saveAll();
+      if (allComplete) {
+        router.push(`/${safeLocale}/dashboard`);
+        return;
+      }
     } finally {
       setSavingTravelers(false);
     }

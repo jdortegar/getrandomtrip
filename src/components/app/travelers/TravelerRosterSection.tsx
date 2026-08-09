@@ -16,8 +16,12 @@ import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 import { TravelerRow, type TravelerRowHandle } from "./TravelerRow";
 
 export interface TravelerRosterSectionHandle {
-  /** Persists every row's current field values. Called by the page-level Save action. */
-  saveAll: () => Promise<void>;
+  /**
+   * Persists every row's current field values. Called by the page-level
+   * Save action. Resolves `true` only when every row is COMPLETE afterward,
+   * so the caller can decide whether the roster is fully done.
+   */
+  saveAll: () => Promise<boolean>;
 }
 
 interface TravelerRosterSectionProps {
@@ -41,9 +45,10 @@ export const TravelerRosterSection = forwardRef<
 
   useImperativeHandle(ref, () => ({
     saveAll: async () => {
-      await Promise.all(
+      const saved = await Promise.all(
         Array.from(rowRefs.current.values()).map((row) => row.save()),
       );
+      return saved.every((t) => t.status === "COMPLETE");
     },
   }));
 

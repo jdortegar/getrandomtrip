@@ -13,8 +13,13 @@ import type { InviteTravelersDict } from "@/lib/types/dictionary";
 import type { TravelerDTO } from "@/types/traveler";
 
 export interface TravelerRowHandle {
-  /** Persists the row's current field values. Called by the page-level Save action. */
-  save: () => Promise<void>;
+  /**
+   * Persists the row's current field values. Called by the page-level Save
+   * action. Resolves with the server-returned traveler on success, or the
+   * original (unchanged) traveler when the save is skipped/fails — callers
+   * use the resolved status to decide whether the whole roster is complete.
+   */
+  save: () => Promise<TravelerDTO>;
 }
 
 interface TravelerRowProps {
@@ -66,14 +71,14 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
       return { ok: res.ok, data };
     }
 
-    async function saveRow(): Promise<void> {
-      if (locked || saving) return;
+    async function saveRow(): Promise<TravelerDTO> {
+      if (locked || saving) return traveler;
       if (
         !isAdult &&
         !isMinorRowFilled({ fullName, dateOfBirth, idDocument })
       ) {
         setError(copy.incompleteError);
-        return;
+        return traveler;
       }
       setSaving(true);
       setError(null);
@@ -89,12 +94,15 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
               ? copy.incompleteError
               : copy.saveErrorGeneric,
           );
-          return;
+          return traveler;
         }
         setNote(copy.savedNote);
-        onUpdated(data.traveler as TravelerDTO);
+        const updated = data.traveler as TravelerDTO;
+        onUpdated(updated);
+        return updated;
       } catch {
         setError(copy.saveErrorGeneric);
+        return traveler;
       } finally {
         setSaving(false);
       }
