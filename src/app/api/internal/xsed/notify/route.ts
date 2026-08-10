@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
+import * as React from "react";
 
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/helpers/sendMail";
+import XsedDropNotification, {
+  subjects as xsedDropNotificationSubjects,
+} from "@/emails/XsedDropNotification";
 import {
   DROP_DAY_OF_WEEK,
   LOCAL_WINDOW_START_HOUR,
@@ -31,57 +35,19 @@ function timezoneMatchesOffset(tz: string, target: number, now: Date): boolean {
   }
 }
 
-// ─── Email templates ──────────────────────────────────────────────────────────
+// ─── Email content ────────────────────────────────────────────────────────────
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
-
-function buildEmail(locale: string | null): { subject: string; html: string } {
-  const isEs = locale !== "en";
-
-  const subject = isEs
-    ? "¡Tu XSED abre en 30 minutos!"
-    : "Your XSED opens in 30 minutes!";
-
-  const html = isEs
-    ? `
-      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#1a1a1a">
-        <p style="font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#D97E4A;margin:0 0 12px">XSED · Drop semanal</p>
-        <h1 style="font-size:32px;font-weight:800;line-height:1.1;margin:0 0 16px">
-          La ventana abre<br/>en 30 minutos.
-        </h1>
-        <p style="font-size:16px;color:#555;margin:0 0 28px;line-height:1.6">
-          Los lugares se agotan rápido. Este domingo de 16 a 20hs podés reservar tu XSED — 1 noche, destino sorpresa, experiencia local.
-        </p>
-        <a href="${SITE_URL}/es/xsed" style="display:inline-block;background:#D97E4A;color:#fff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:8px;text-decoration:none">
-          Ir al drop →
-        </a>
-        <p style="font-size:12px;color:#999;margin-top:40px">
-          Te enviamos este email porque te anotaste para recibir novedades de XSED.<br/>
-          <a href="${SITE_URL}/es/xsed" style="color:#999">Desuscribirse</a>
-        </p>
-      </div>
-    `
-    : `
-      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#1a1a1a">
-        <p style="font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#D97E4A;margin:0 0 12px">TGIS · Weekly Drop</p>
-        <h1 style="font-size:32px;font-weight:800;line-height:1.1;margin:0 0 16px">
-          The window opens<br/>in 30 minutes.
-        </h1>
-        <p style="font-size:16px;color:#555;margin:0 0 28px;line-height:1.6">
-          Spots go fast. This Sunday from 4pm to 8pm you can book your XSED — 1 night, surprise destination, local experience.
-        </p>
-        <a href="${SITE_URL}/en/xsed" style="display:inline-block;background:#D97E4A;color:#fff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:8px;text-decoration:none">
-          Go to the drop →
-        </a>
-        <p style="font-size:12px;color:#999;margin-top:40px">
-          You received this email because you signed up for XSED notifications.<br/>
-          <a href="${SITE_URL}/en/xsed" style="color:#999">Unsubscribe</a>
-        </p>
-      </div>
-    `;
-
-  return { subject, html };
+function buildEmail(locale: string | null): {
+  subject: string;
+  react: React.ReactElement;
+} {
+  const resolvedLocale: "es" | "en" = locale === "en" ? "en" : "es";
+  return {
+    subject: xsedDropNotificationSubjects[resolvedLocale],
+    react: React.createElement(XsedDropNotification, {
+      locale: resolvedLocale,
+    }),
+  };
 }
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
@@ -137,8 +103,8 @@ export async function POST(request: Request) {
 
     for (const user of targets) {
       try {
-        const { subject, html } = buildEmail(user.locale);
-        await sendMail({ subject, to: user.email, content: { html } });
+        const { subject, react } = buildEmail(user.locale);
+        await sendMail({ subject, to: user.email, content: { react } });
         notifiedIds.push(user.id);
         sent++;
       } catch (err) {
