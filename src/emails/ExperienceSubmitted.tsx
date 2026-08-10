@@ -31,7 +31,7 @@ export default function ExperienceSubmitted({
   experienceTitle,
   experienceId,
 }: ExperienceSubmittedProps) {
-  const reviewUrl = `${BASE_URL}/es/admin/experiences/${experienceId}`;
+  const reviewUrl = `${BASE_URL}/es/dashboard/admin/experiences/${experienceId}`;
 
   return (
     <EmailLayout locale="es" preview={copy.preview(experienceTitle)}>

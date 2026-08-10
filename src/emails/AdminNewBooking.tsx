@@ -33,7 +33,7 @@ export default function AdminNewBooking({
   amount,
   currency,
 }: AdminNewBookingProps) {
-  const ctaHref = `${BASE_URL}/es/admin/trip-requests`;
+  const ctaHref = `${BASE_URL}/es/dashboard/admin/trip-requests`;
 
   return (
     <EmailLayout locale="es" preview={`Nueva reserva de ${clientName} — ${tripType.toUpperCase()}`}>
