@@ -219,6 +219,43 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     );
   });
 
+  // (d.1) Canonical dates are never overridden by a linked Experience's
+  // tripDate — regression guard for a real bug where a stale/mismatched
+  // Experience.tripDate silently overrode the correct next-Saturday date.
+  it("ignores a linked Experience's tripDate and always uses the canonical next-Saturday dates", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-08-09T12:00:00.000Z")); // a Sunday
+    (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.tripRequest.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "new-xsed-1",
+      type: "xsed",
+    });
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      { tripDate: new Date("2026-10-18T03:00:00.000Z") }, // stale/mismatched
+    );
+
+    await POST(
+      makePostRequest({
+        ...fullJourneyBody,
+        type: "xsed",
+        experienceId: "exp-drop-9",
+      }),
+    );
+
+    expect(prisma.experience.findUnique).not.toHaveBeenCalled();
+    expect(prisma.tripRequest.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          startDate: new Date("2026-08-15T00:00:00.000Z"),
+          endDate: new Date("2026-08-16T00:00:00.000Z"),
+        }),
+      }),
+    );
+    vi.useRealTimers();
+  });
+
   // (e) Client-supplied id still updates directly
   it("updates the owned row directly by id without invoking the family finder", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
