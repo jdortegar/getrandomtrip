@@ -359,16 +359,6 @@ export default function CheckoutResultSuccess({
                     </Button>
                   )}
               </div>
-              {xsedTrip && tripData?.payment.receiptUrl && (
-                <a
-                  className="text-sm text-gray-400 underline transition-colors hover:text-gray-600"
-                  href={tripData.payment.receiptUrl}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {labels.xsedDownloadCta}
-                </a>
-              )}
             </div>
           </div>
         </Section>

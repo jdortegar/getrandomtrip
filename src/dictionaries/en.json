@@ -2656,7 +2656,6 @@
       "xsedExperienceLabel": "TGIS Drop Experience",
       "xsedReferenceLabel": "Purchase reference number",
       "xsedPerPerson": "/person",
-      "xsedDownloadCta": "Download TGIS",
       "receiptLink": "View receipt"
     }
   },
