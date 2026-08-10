@@ -2515,7 +2515,6 @@ export interface MarketingDictionary {
       calendarEventDescription: string;
       receiptLink: string;
       xsedBody: string;
-      xsedDownloadCta: string;
       xsedExperienceLabel: string;
       xsedPerPerson: string;
       xsedReferenceLabel: string;

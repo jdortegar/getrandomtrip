@@ -12,6 +12,12 @@ XSED is a curated-drop product: a single surprise overnight trip with limited sp
 
 ---
 
+## Business Rules
+
+- **Trip dates are always canonical, never admin-configured.** Every XSED `TripRequest` runs from the upcoming Saturday to the following Sunday, computed fresh server-side at booking time via `xsedCanonicalDates()` in `POST /api/trip-requests` — regardless of any date typed into the admin drop form. `Experience.tripDate` is informational only (used for display and reveal-countdown copy); it must never be read back into a `TripRequest`'s `startDate`/`endDate`. This was a real bug: a stale `tripDate` on one drop (entered via an unconstrained `<input type="date">` with no validation) silently overrode the correct booking dates for a real purchase. Do not reintroduce any code path that lets a linked Experience's date win over the canonical computation.
+
+---
+
 ## Status
 
 What works end-to-end today:
@@ -19,7 +25,7 @@ What works end-to-end today:
 - **`/xsed`** — Landing page renders. Hero, product explanation, CTA to join waitlist or book.
 - **`/xsed/drops`** — Renders a list of XSED drops fetched from `/api/xsed/drops`. Shows active and past drops.
 - **`/xsed/drops/[slug]`** — Individual drop detail page. Fetches drop data, sold-count from `/api/xsed/drops/[slug]/sold-count`. Renders drop info, countdown, CTA.
-- **`/xsed/book`** — Booking form for XSED. Wired into the Stripe checkout flow with server-authoritative XSED-specific date handling (canonical dates override client-sent values — see `buildRevealAt` in trip-requests API).
+- **`/xsed/book`** — Booking form for XSED. Wired into the Stripe checkout flow with server-authoritative XSED-specific date handling (canonical dates override client-sent values — see `xsedCanonicalDates()` in the trip-requests API; see Business Rules above).
 - **Admin drop creation** — `/dashboard/admin/xsed/new` and `/dashboard/admin/xsed/[id]/edit` allow admins to create and edit drops with date, pricing, capacity, and destination.
 - **XSED notifications** — Admin can create and manage XSED notification records (`/api/admin/xsed-notifications`). Internal notify endpoint at `POST /api/internal/xsed/notify`.
 - **Sold-count** — `GET /api/xsed/drops/[slug]/sold-count` returns real-time booking count for a drop.

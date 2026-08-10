@@ -178,9 +178,11 @@ async function buildTripRequestCreateFields(
     experienceId,
   } = body;
 
-  // For Xsed trips, dates are authoritative server-side.
-  // Priority: Experience.tripDate (if linked) → canonical formula.
-  // Never trust the client-sent startDate/endDate for xsed.
+  // For Xsed trips, dates are always the canonical next-Saturday→Sunday
+  // pair, computed fresh here — never trusted from the client, and never
+  // overridden by a linked Experience's tripDate (that field is informational
+  // only; letting it override the booking date let a stale/mismatched value
+  // silently corrupt a real trip's dates).
   let resolvedStartDate: Date | null = startDate
     ? new Date(String(startDate))
     : null;
@@ -189,24 +191,9 @@ async function buildTripRequestCreateFields(
     : null;
 
   if ((type as string) === "xsed") {
-    if (experienceId) {
-      const exp = await prisma.experience.findUnique({
-        where: { id: String(experienceId) },
-        select: { tripDate: true },
-      });
-      if (exp?.tripDate) {
-        resolvedStartDate = exp.tripDate;
-        resolvedEndDate = new Date(exp.tripDate.getTime() + 86400000); // +1 day
-      } else {
-        const canonical = xsedCanonicalDates();
-        resolvedStartDate = canonical.startDate;
-        resolvedEndDate = canonical.endDate;
-      }
-    } else {
-      const canonical = xsedCanonicalDates();
-      resolvedStartDate = canonical.startDate;
-      resolvedEndDate = canonical.endDate;
-    }
+    const canonical = xsedCanonicalDates();
+    resolvedStartDate = canonical.startDate;
+    resolvedEndDate = canonical.endDate;
   }
 
   return {

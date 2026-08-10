@@ -346,7 +346,14 @@ export function sendAdminNewBooking(
 
       if (!user?.email || !tripRequest || !payment) return;
 
-      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const admins = await prisma.user.findMany({
+        where: { roles: { has: "ADMIN" } },
+        select: { email: true },
+      });
+      const adminEmails =
+        admins.length > 0
+          ? admins.map((a) => a.email)
+          : [process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com"];
       const departureDate = tripRequest.startDate
         ? tripRequest.startDate.toLocaleDateString("es-AR", {
             year: "numeric",
@@ -356,7 +363,7 @@ export function sendAdminNewBooking(
         : undefined;
 
       await sendMail({
-        to: adminEmail,
+        to: adminEmails,
         subject: adminNewBookingSubject,
         content: {
           react: React.createElement(AdminNewBooking, {
