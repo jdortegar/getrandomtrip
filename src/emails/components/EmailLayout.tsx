@@ -151,7 +151,7 @@ const container: React.CSSProperties = {
 };
 
 const headerSection: React.CSSProperties = {
-  backgroundColor: "#1a1a1a",
+  backgroundColor: "#111827",
   padding: "24px 40px",
   textAlign: "center",
 };
