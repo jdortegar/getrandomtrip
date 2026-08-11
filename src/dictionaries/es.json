@@ -38,6 +38,32 @@
       "previous": "Anterior",
       "next": "Siguiente",
       "pageOf": "Página {page} de {totalPages}"
+    },
+    "countries": {
+      "AR": "Argentina",
+      "BR": "Brasil",
+      "CL": "Chile",
+      "CO": "Colombia",
+      "MX": "México",
+      "PE": "Perú",
+      "UY": "Uruguay",
+      "VE": "Venezuela",
+      "EC": "Ecuador",
+      "BO": "Bolivia",
+      "PY": "Paraguay",
+      "US": "Estados Unidos",
+      "CA": "Canadá",
+      "CR": "Costa Rica",
+      "PA": "Panamá",
+      "GT": "Guatemala",
+      "HN": "Honduras",
+      "SV": "El Salvador",
+      "NI": "Nicaragua",
+      "CU": "Cuba",
+      "DO": "República Dominicana",
+      "HT": "Haití",
+      "JM": "Jamaica",
+      "TT": "Trinidad y Tobago"
     }
   },
   "adminDashboard": {
@@ -183,7 +209,9 @@
           "id": "content",
           "label": "Contenido",
           "substeps": [
-            { "id": "sections", "title": "Secciones", "description": "" }
+            { "id": "sections", "title": "Secciones", "description": "" },
+            { "id": "itinerary", "title": "Itinerario", "description": "" },
+            { "id": "inclusions", "title": "Incluye / No incluye", "description": "" }
           ]
         },
         {
@@ -234,7 +262,18 @@
         "minSpots": "Cupos mínimos",
         "maxSpots": "Cupos máximos",
         "inclusions": "Incluido",
+        "addInclusion": "Agregar algo incluido…",
         "exclusions": "No incluido",
+        "addExclusion": "Agregar algo no incluido…",
+        "itinerary": {
+          "dayLabel": "Día",
+          "titleLabel": "Título del día",
+          "titlePlaceholder": "Ej: Llegada y bienvenida",
+          "descLabel": "Descripción",
+          "descPlaceholder": "Contanos qué pasa este día...",
+          "addDay": "Agregar día",
+          "removeDay": "Eliminar día"
+        },
         "accommodation": {
           "hotelName": "Nombre del hotel *",
           "hotelNamePlaceholder": "Ej: Boutique...",
@@ -3393,7 +3432,6 @@
     "experiencePlaceholder": "Seleccionar experiencia…",
     "noTripperNotice": "No hay tripper atribuido — asignación de experiencia no disponible",
     "statusLabel": "Estado del viaje",
-    "sectionTimeline": "Hitos de cumplimiento",
     "sectionDanger": "Zona de riesgo",
     "deleteHint": "Elimina de forma permanente esta solicitud de viaje y el pago vinculado. No se puede deshacer.",
     "deleteTrip": "Eliminar viaje",
@@ -3419,6 +3457,60 @@
       "REVEALED": "Revelado",
       "COMPLETED": "Completado",
       "CANCELLED": "Cancelado"
+    }
+  },
+  "adminTripFulfillment": {
+    "eyebrow": "Cumplimiento del viaje",
+    "title": "Viaje de {{userName}}",
+    "back": "Volver a viajes",
+    "contactTraveler": "Contactar viajero",
+    "revealsInLabel": "Se revela al viajero en",
+    "revealsInDays": "{{days}} días",
+    "revealsInHours": "{{hours}}h {{minutes}}m",
+    "revealsInNow": "En cualquier momento",
+    "revealedOnLabel": "Revelado al viajero el",
+    "openInEditor": "Abrir en el Editor de Experiencias",
+    "itineraryReferenceTitle": "Itinerario",
+    "itineraryReferenceBadge": "Solo lectura · compartido por todos los viajeros de {{experience}}",
+    "itineraryReferenceBody": "Este itinerario se define una sola vez en la experiencia y aplica a todos los viajeros de este drop. Edítalo desde el Editor de Experiencias, no aquí.",
+    "itineraryEmpty": "Esta experiencia todavía no tiene itinerario cargado.",
+    "documentsTitle": "Documentos de cumplimiento",
+    "documentsNote": "No existe un estado de \"confirmado\" separado — subir un documento aquí es lo que lo marca como confirmado. Los vouchers se vuelven visibles para el viajero cuando este viaje se Revela.",
+    "documentsColumns": {
+      "document": "Documento",
+      "country": "País",
+      "uploaded": "Subido",
+      "actions": "Acciones"
+    },
+    "documentsEmpty": "Todavía no se subió ningún documento para este viaje.",
+    "view": "Ver",
+    "download": "Descargar",
+    "remove": "Eliminar",
+    "removeConfirm": "¿Eliminar este documento? Esta acción no se puede deshacer.",
+    "removing": "Eliminando…",
+    "addDocument": {
+      "title": "Agregar documento",
+      "label": "Etiqueta",
+      "labelPlaceholder": "Ej: Confirmación de hotel",
+      "country": "País de destino",
+      "countryPlaceholder": "Seleccionar país…",
+      "file": "Archivo",
+      "fileHint": "PDF, JPG o PNG · hasta 10 MB",
+      "submit": "Subir documento",
+      "submitting": "Subiendo…"
+    },
+    "save": "Guardar cambios",
+    "discard": "Descartar",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "errors": {
+      "invalid_request": "Revisá los datos del documento e intentá de nuevo.",
+      "trip_not_found": "No se encontró el viaje.",
+      "file_too_large": "El archivo supera los 10 MB permitidos.",
+      "unsupported_file_type": "Tipo de archivo no soportado. Usá PDF, JPG o PNG.",
+      "invalid_country": "Seleccioná un país válido.",
+      "storage_unavailable": "El almacenamiento no está disponible. Intentá de nuevo en unos minutos.",
+      "generic": "Algo salió mal. Intentá de nuevo."
     }
   },
   "emailSignatures": {
@@ -4643,7 +4735,15 @@
     "emptyDescription": "Una vez que tu tripper asigne la experiencia, verás el itinerario completo aquí.",
     "noExperience": "Aún no hay una experiencia asignada a este viaje.",
     "inclusions": "Incluye",
-    "exclusions": "No incluye"
+    "exclusions": "No incluye",
+    "documentsTitle": "Tus documentos",
+    "documentsNote": "Estos documentos son solo tuyos. Otros viajeros de este mismo viaje tienen su propia habitación y reservas — nada acá es compartido.",
+    "documentsCancelledNote": "Este viaje está cancelado. Conservamos estos documentos para referencia y en caso de reembolso.",
+    "documentsEmpty": "Todavía no hay documentos disponibles para este viaje.",
+    "preRevealTitle": "Todavía no revelamos tu destino",
+    "preRevealDescription": "El itinerario y los documentos de este viaje se muestran una vez que tu destino es revelado.",
+    "view": "Ver",
+    "download": "Descargar"
   },
   "tripReveal": {
     "pageTitle": "Tu Destino Sorpresa",

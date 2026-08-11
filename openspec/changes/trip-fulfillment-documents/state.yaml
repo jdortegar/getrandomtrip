@@ -1,0 +1,442 @@
+change: trip-fulfillment-documents
+status: apply
+artifact_store: openspec
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: pending
+artifacts:
+  proposal: openspec/changes/trip-fulfillment-documents/proposal.md
+  proposal_mirror: sdd/trip-fulfillment-documents/proposal (engram)
+  spec:
+    - openspec/changes/trip-fulfillment-documents/specs/trip-fulfillment-documents/spec.md
+    - openspec/changes/trip-fulfillment-documents/specs/trip-request-lifecycle/spec.md
+    - openspec/changes/trip-fulfillment-documents/specs/experience/spec.md
+    - openspec/changes/trip-fulfillment-documents/specs/admin-dashboard-overview/spec.md
+  spec_mirror: sdd/trip-fulfillment-documents/spec (engram)
+  design: openspec/changes/trip-fulfillment-documents/design.md
+  design_mirror: sdd/trip-fulfillment-documents/design (engram)
+  tasks: openspec/changes/trip-fulfillment-documents/tasks.md
+  tasks_mirror: sdd/trip-fulfillment-documents/tasks (engram)
+  verify_report: openspec/changes/trip-fulfillment-documents/verify-report.md
+  verify_report_mirror: sdd/trip-fulfillment-documents/verify-report (engram)
+source_of_truth: openspec/specs/08-trip-fulfillment-and-documents.md
+prototypes:
+  admin_trip_fulfillment_page: https://claude.ai/code/artifact/88e71b8d-eac8-4070-a803-f5cd8f8668a7
+  traveler_trip_details_documents: https://claude.ai/code/artifact/fd0b7b47-116e-45ed-8432-cde07eefe7ef
+  retrieved: true
+  retrieved_date: 2026-08-10
+  retrieved_by: orchestrator (WebFetch)
+  consistency: >-
+    Verified consistent with source doc §1 content model and Resolved Decisions
+    #1-#2. No contradiction found; no redesign needed. Prototypes are the literal
+    visual/content contract for sdd-design.
+updated: 2026-08-10
+design_must_verify:
+  - >-
+    Prototype retrieval is DONE (Resolved Decisions #3) — do NOT re-gate design on
+    fetching the URLs. Carry-overs only: (a) prototypes are English-only, so all copy
+    needs es/en dictionary keys; (b) wire the prototype View/Download actions to the
+    authenticated document route, never a raw blob URL.
+revisions:
+  - artifact: design
+    date: 2026-08-10
+    note: >
+      Design revised to fold Resolved Decisions #5-#6 in as FINAL decisions. The
+      "Open Questions — real product forks" section is REMOVED and replaced by an
+      "Open Questions: None" section that records both forks as closed with
+      checkmarks and pointers to the ADR that owns each. design.md now has ZERO
+      open questions of its own.
+
+      (1) Gate widening -> ADR-6 (renamed "fulfillment visibility is one shared pure
+      predicate over {REVEALED, COMPLETED, CANCELLED}"). FULFILLMENT_VISIBLE_STATUSES
+      gains CANCELLED. The helper SIGNATURE is unchanged — isFulfillmentVisible(status,
+      isAdmin) — because the widening lives entirely inside the status Set, so the
+      admin-exemption logic and the hardcoded isAdmin:false at the GET /api/trips/[id]
+      call site are untouched and inherit the new set automatically. Hidden statuses
+      are now exactly DRAFT/SAVED/PENDING_PAYMENT/CONFIRMED. History-independence is
+      structural (the Set is read against current status only, no reveal-history
+      input), which satisfies both CANCELLED scenarios the spec added with one
+      predicate. Test matrix widened to 7 statuses x isAdmin = 14 cases plus a named
+      guard asserting FULFILLMENT_VISIBLE_STATUSES.size === 3 and contains CANCELLED,
+      so a future narrowing fails loudly. Route tests gain "200 buyer on CANCELLED"
+      (stream) and "CANCELLED includes" (GET /api/trips/[id]).
+
+      New i18n consequence of the widening: tripItinerary gains
+      documentsCancelledNote, rendered in place of documentsNote when status ===
+      "CANCELLED" — showing vouchers next to a cancelled trip with no explanation
+      reads as a bug.
+
+      (2) Country semantics -> ADR-5, rewritten. OPERATING_MARKET_CODES and the file
+      src/lib/markets/operatingMarkets.ts are DROPPED (never created). Replaced by
+      src/lib/trips/destinationCountries.ts exporting DESTINATION_COUNTRY_CODES
+      (derived: AMERICAN_COUNTRIES.map(c => c.code), 24 codes, catalog order for
+      stable <select> options) and isDestinationCountryCode (delegates to
+      getCountryByCode). Type stays `string`, not a literal union: AMERICAN_COUNTRIES
+      is annotated Country[] so `code` widens to string and no union is derivable
+      without re-duplicating the 24 codes — exactly the duplication this ADR removes.
+      The 422 contract is unchanged. Admin <select> is sourced from the full catalog,
+      following the existing precedent at CheckoutContactCard.tsx:306
+      (AMERICAN_COUNTRIES.map -> FormSelectField, value={c.code}).
+
+      Drift-guard mechanism RE-VERIFIED for 24 entries and repointed. The old guard
+      (hand-written 5-code list resolves via getCountryByCode) is now structurally
+      unnecessary because the codes are derived — list-vs-catalog drift is impossible
+      by construction. The guard is therefore aimed at the real remaining risk: label
+      coverage. One forEach over 24 codes asserts every code has a non-empty
+      common.countries label in BOTH es.json and en.json AND that neither locale has
+      an orphan key. Still cheap, and strictly stronger than the 5-entry version — it
+      now catches "someone appended a 25th country to the catalog without adding
+      copy", which the old guard could not.
+
+      Dictionary relocation: common.markets (scoped assuming 5 entries) is NOT
+      created. Labels live in common.countries — Record<string, string> keyed by ISO
+      alpha-2, all 24 codes, both locales. `common` already exists
+      (src/lib/types/dictionary.ts:1841, src/dictionaries/*.json:35) so this is an
+      additive field on a real section. Typed as an index signature rather than 24
+      required literal keys deliberately, so the drift test can assert BOTH directions
+      (no missing key AND no orphan key) where a literal-key interface asserts only
+      one. Labels come from neither AMERICAN_COUNTRIES.name (Spanish-only) nor
+      `aliases` (a matching affordance present on only 9 of 24 entries, not a display
+      field).
+
+      Spec alignment: sdd-spec's corrections landed mid-revision and were re-read
+      directly. Both spec files now match. design.md's new "Spec Alignment" section
+      maps each corrected spec line to the design element that satisfies it. ONE
+      residual staleness flagged, not papered over: proposal.md line 170 (Resolved
+      Decision #4 body) still says "Argentina, Chile, Perú, México, Uruguay … a closed
+      list of markets". Superseded per resolved_decisions[6], and spec no longer
+      asserts it, but the proposal body was never rewritten — sdd-tasks/sdd-verify
+      must treat spec + design as authority on `country`.
+
+      Note for readers of the founder's instruction: the ADR numbers were referenced
+      swapped (admin-bypass attributed to ADR-5, dictionary to ADR-6). In design.md
+      the actual mapping is ADR-5 = country/catalog, ADR-6 = visibility gate. Both
+      substantive instructions were applied to the correct ADR.
+  - artifact: spec
+    date: 2026-08-10
+    note: >
+      Founder resolved the two open product questions design surfaced in
+      design.md's "Open Questions — real product forks" (these were not in the
+      original proposal open_questions list; they only became apparent during
+      design). Both closed FINAL -> Resolved Decisions #5-#6, spec files updated:
+
+      (1) Fulfillment-visibility gate widened from {REVEALED, COMPLETED} to
+      {REVEALED, COMPLETED, CANCELLED} in both
+      trip-fulfillment-documents/specs/trip-fulfillment-documents/spec.md
+      ("Authenticated Document Read Route") and
+      trip-fulfillment-documents/specs/trip-request-lifecycle/spec.md
+      ("Server-Side Fulfillment-Visibility Gate", renamed from "...REVEALED
+      Gate..."). Added scenarios for revealed-then-cancelled and
+      cancelled-without-ever-revealed (both show documents, since the predicate
+      reads current status only). Added a non-blocking edge-case note: a trip
+      cancelled from DRAFT/SAVED before any document existed trivially shows an
+      empty-but-visible list.
+
+      (2) "country" corrected from a closed 5-market list to the full existing
+      destination country catalog in
+      trip-fulfillment-documents/specs/trip-fulfillment-documents/spec.md
+      ("TripDocument Model — Presence Is Confirmation"). Former Resolved Decision
+      #4's 5-market select undercounted real destinations (Brazil, Colombia are
+      valid XSED/journey destinations outside AR/CL/PE/MX/UY). Requirement now
+      says "validated against the existing country catalog used elsewhere in the
+      app for destination selection" — exact constant left to sdd-design.
+
+      Design-surfaced open-question count: 2 -> 0. The proposal's own tracked
+      open_questions_remaining stays 1 (#1, tripper-step-component reuse) — an
+      implementation-detail scope note for design/tasks that never counted toward
+      the spec's open-question tally.
+  - artifact: proposal
+    date: 2026-08-10
+    note: >
+      Proposal formalizes items 1-4 of openspec/specs/08-trip-fulfillment-and-documents.md
+      §7 "Recommended sequencing" as one cohesive change. No open exploration: the content
+      model in that doc's §1 table is final (product review + 13-round founder interview +
+      two approved published prototypes). Items 5-6 (booking-capacity enforcement,
+      completion automation) explicitly out of scope, tracked in that doc's §5.
+
+      Confirmed by direct file read: (a) the assign-experience case-mismatch defect is real
+      — buildAssignableExperiencesQuery forwards lowercase TripRequest.type into
+      GET /api/admin/experiences' exact-match `where.type = { has }` against uppercase
+      Experience.type values; (b) XsedDropDraft and PUT /api/admin/xsed/[id] both omit
+      itinerary/inclusions/exclusions; (c) POST /api/upload ALLOWED_MIME_TYPES is
+      images-only; (d) the traveler details page already reads the correct experience
+      fields and has no status gate at all today.
+
+      Five open questions raised for design, three of them genuinely new relative to the
+      source doc: tripper step components are NOT drop-in reusable (different onChange
+      signature, dict type, and a required imageState contract with no XSED equivalent —
+      contradicts §7's "largely wiring" framing); blob GET at /api/upload/[...path] is
+      completely unauthenticated and DELETE is keyed to the uploader's own userId, which
+      makes the REVEALED gate UI-only and blocks multi-admin document removal; and
+      companion-traveler document visibility is unruled (canAccessTrip grants companions
+      buyer-level access). Prototype HTML was not fetchable in this context — sdd-design
+      must open both artifact URLs itself.
+  - artifact: proposal
+    date: 2026-08-10
+    note: >
+      Open Questions #2 (document blob access control) and #3 (companion document
+      visibility) CLOSED by product owner and rewritten as final "Resolved Decisions"
+      in proposal.md. Open count 6 -> 4 (#0-#3).
+
+      Decision 1 (FINAL): documents are served by a NEW authenticated API route, not
+      the existing public /api/upload/[...path] blob-URL pattern. Authorization is
+      identical to the existing guard on GET /api/trips/[id] — canAccessTrip(tripId,
+      userId) from src/lib/travelers/travelerAccess.ts (buyer OR linked companion) —
+      PLUS an admin bypass as a separate condition (never widen canAccessTrip).
+      Companions DO see documents: the access boundary is the trip, not the buyer;
+      "personal to the traveler" in source doc §1 means per-TripRequest, not
+      buyer-only. This supersedes relying on the current no-auth blob storage for
+      this feature's file type. /api/upload/[...path] is deliberately NOT modified;
+      the control is that document blob keys/URLs are never serialized to any client.
+      The REVEALED gate must also be enforced inside the new route (admins exempt).
+      Admin membership check must use hasRoleAccess(caller, "admin") over
+      User.roles[] — never role === "ADMIN".
+
+      Decision 2 (FINAL): the existing DELETE /api/upload/[...path] authorization bug
+      (key.startsWith(`${session.user.id}/`) at route.ts:99, so a second admin cannot
+      remove a colleague's upload) must NOT be carried into this feature. New-route
+      delete/remove authorization is admin-role-based generally — any admin can manage
+      any trip's documents, no uploader-ownership check. Blob deletion happens via the
+      server-side store inside the admin document handler, not by proxying the
+      ownership-checked blob route. A createdBy column, if design adds one, is audit
+      metadata only and never an authorization input. Repairing the blob route itself
+      for existing image features stays out of scope.
+
+      Still open (4): #0 prototypes NOT independently fetched/verified — sdd-design
+      MUST open both artifact URLs directly (it has WebFetch/Bash access this
+      exploration lacked) and report retrieval success; #1 tripper step components are
+      not drop-in reusable, real adaptation work needed for the XSED itinerary
+      authoring UI (left open deliberately — implementation-detail scope note, not a
+      product decision); #2 (was #4) traveler details page has no status gate today,
+      so adding REVEALED gating is a server-side behavior change; #3 (was #5) country
+      tag input type. Also added: 5 new success criteria (companion parity, 401/403
+      at the API, no blob-key leakage, admin-B-deletes-admin-A's-upload regression),
+      in-scope item 6 for the new route, and a new residual risk covering blob-key
+      exposure.
+  - artifact: proposal
+    date: 2026-08-10
+    note: >
+      Open Question #0 (prototype HTML never fetched/verified) CLOSED as RESOLVED.
+      The orchestrator fetched both artifact URLs directly and read their real HTML
+      structure and copy. Retrieval succeeded for both. NO contradiction found between
+      the prototypes and the §1 content model or Resolved Decisions #1-#2 — several
+      decisions appear in the prototypes as verbatim explanatory copy. Recorded as
+      Resolved Decisions #3. Open count 4 -> 1.
+
+      Admin page (88e71b8d) evidence: 7-state status dropdown (Draft/Saved/Pending
+      Payment/Confirmed/Revealed/Completed/Cancelled), destination-experience dropdown,
+      trip facts, danger-zone cancel. "Section 2 — Itinerary" panel labeled "Reference
+      only · shared by every traveler on Drop #9" with copy "This schedule is defined
+      once on the experience and applies to everyone booked on this drop. Edit it from
+      the Experience Editor, not here" -> confirms itinerary is shared-per-drop and
+      read-only on the admin surface. "Section 3 — Fulfillment Documents" table
+      (Document/Country/Uploaded/Actions) with note "No separate 'confirmed' flag —
+      uploading a document here is what marks it confirmed. Vouchers become visible to
+      the traveler once this trip is Revealed" -> confirms BOTH the rejected separate
+      status field AND the REVEALED gate, verbatim. "Add a Document" form has exactly a
+      free-text Label input, a Country/Market select, and a drag-and-drop zone captioned
+      "PDF, JPG or PNG · up to 10 MB" -> confirms free-text labels, country tag, and
+      PDF+image upload support.
+
+      Traveler page (fd0b7b47) evidence: "Your itinerary" day-by-day section; "Your
+      documents" section with note "These are yours alone. Other travelers on this same
+      trip have their own room and reservations — nothing here is shared" -> confirms
+      documents are individual per TripRequest, never shared. That copy is about other
+      bookings and does NOT contradict Resolved Decisions #1: companions linked to the
+      SAME TripRequest still read that trip's documents because the access boundary is
+      the trip. Five sample cards (Hotel Confirmation, Dinner Reservation, Winery
+      Experience Voucher, Private Transfer Voucher, Travel Insurance Policy), each with
+      View + Download actions.
+
+      Also closed in this revision: former Open Question #3 (country tag input type) ->
+      Resolved Decisions #4. The admin prototype uses a Country/Market SELECT over the
+      platform's operating markets (Argentina, Chile, Perú, México, Uruguay), not free
+      text and not a full ISO picker. Persisted value shape left to sdd-design; the
+      closed-list nature and server-side validation against it are settled.
+
+      Reclassified (no longer counted as an open question): former #2 "traveler details
+      page has no status gate today". It is a verified fact whose answer is already
+      fixed — the gate is a server-side behavior change in GET /api/trips/[id] (and in
+      the new document route), per in-scope item 4 and Resolved Decisions #1. Moved into
+      the Risks table with its mitigation; sdd-spec must assert the API-level gate.
+
+      Remaining open (1): #1 tripper step components are not drop-in reusable —
+      generify behind a neutral prop contract vs. thin XSED adapters, and whether XSED
+      itinerary days need per-day images. Deliberately left open as an
+      implementation-detail scope note for design/tasks, NOT a product decision.
+resolved_decisions:
+  - id: 5
+    date: 2026-08-10
+    status: final
+    surfaced_by: sdd-design (design.md "Open Questions — real product forks")
+    supersedes_spec_language:
+      - trip-fulfillment-documents/spec.md ("Authenticated Document Read Route" requirement)
+      - trip-request-lifecycle/spec.md ("Server-Side REVEALED Gate" requirement, renamed
+        "Server-Side Fulfillment-Visibility Gate")
+    summary: >-
+      Traveler-facing fulfillment-visibility gate widened from status ∈
+      {REVEALED, COMPLETED} to status ∈ {REVEALED, COMPLETED, CANCELLED}, applied
+      uniformly on both GET /api/trips/[id] and the authenticated document stream
+      route. A cancelled trip shows documents regardless of whether it was ever
+      REVEALED first — the predicate reads the CURRENT status only, not reveal
+      history. Rationale: an already-issued voucher may be needed for a refund or
+      cancellation dispute, and a cancelled trip has no future "surprise" left to
+      protect. Edge case (non-blocking): a trip cancelled from DRAFT/SAVED before
+      any document ever existed trivially shows an empty (but visible) document
+      list — not a spec gap, since admins may already attach documents at any
+      status.
+    design_binding: >-
+      ADR-6 (design.md). FULFILLMENT_VISIBLE_STATUSES = new Set(["REVEALED",
+      "COMPLETED", "CANCELLED"]) in src/lib/trips/fulfillmentVisibility.ts.
+      isFulfillmentVisible(status, isAdmin) signature UNCHANGED — the widening is
+      inside the Set only, so the admin-exemption logic and the hardcoded
+      isAdmin:false at the GET /api/trips/[id] call site are untouched.
+      History-independence is structural: the Set is read against current status,
+      with no reveal-history input. Guarded by a unit test asserting .size === 3 and
+      membership of CANCELLED. New copy key: tripItinerary.documentsCancelledNote.
+  - id: 6
+    date: 2026-08-10
+    status: final
+    surfaced_by: sdd-design (design.md "Open Questions — real product forks")
+    supersedes_open_questions: [3, 4]
+    supersedes_spec_language:
+      - trip-fulfillment-documents/spec.md ("TripDocument Model — Presence Is
+        Confirmation" requirement)
+    summary: >-
+      "country" on a TripDocument means the document's destination country, not a
+      closed traveler-market list. The former Resolved Decision #4 (5-market
+      select: AR/CL/PE/MX/UY) undercounted real destinations — e.g. Brazil,
+      Colombia are valid journey/XSED destinations outside that list. Requirement
+      now reads "validated against the existing country catalog used elsewhere in
+      the app for destination selection"; exact constant/source (design flagged
+      AMERICAN_COUNTRIES, ~24 countries, in src/lib/data/shared/countries.ts) is
+      left to sdd-design to confirm/wire, not a spec concern.
+    design_binding: >-
+      ADR-5 (design.md), CONFIRMED. Catalog is AMERICAN_COUNTRIES
+      (src/lib/data/shared/countries.ts) — exactly 24 entries: AR BR CL CO MX PE UY
+      VE EC BO PY US CA CR PA GT HN SV NI CU DO HT JM TT. New file
+      src/lib/trips/destinationCountries.ts exports DESTINATION_COUNTRY_CODES
+      (derived via AMERICAN_COUNTRIES.map(c => c.code)) and isDestinationCountryCode
+      (delegates to getCountryByCode). OPERATING_MARKET_CODES and
+      src/lib/markets/operatingMarkets.ts are DROPPED, never created. country stays
+      a plain string (no literal union derivable — AMERICAN_COUNTRIES is annotated
+      Country[]); 422 contract unchanged. Admin <select> sourced from the full
+      catalog per the existing CheckoutContactCard.tsx:306 precedent. Labels move
+      from common.markets (5-scoped, not created) to common.countries —
+      Record<string, string>, 24 codes, both locales. Drift guard repointed from
+      list-vs-catalog (now impossible by construction) to label coverage in both
+      locales, both directions (no missing key, no orphan key).
+  - id: 1
+    date: 2026-08-10
+    status: final
+    supersedes_open_questions: [2, 3]
+    summary: >-
+      Documents served via new authenticated route; authorized canAccessTrip
+      (buyer + companions) OR admin; REVEALED-gated in-route; public blob route
+      untouched and unused for documents.
+  - id: 2
+    date: 2026-08-10
+    status: final
+    summary: >-
+      Document delete/manage authorization is admin-role-based, not
+      upload-ownership; the existing uploader-keyed DELETE bug is not inherited.
+  - id: 3
+    date: 2026-08-10
+    status: final
+    supersedes_open_questions: [0]
+    summary: >-
+      Both prototype URLs fetched and read directly; retrieval successful. No
+      contradiction with the §1 content model or Resolved Decisions #1-#2 — the
+      shared-per-drop read-only itinerary, the no-separate-confirmed-flag rule, the
+      REVEALED voucher gate, and the per-TripRequest (never shared) document model
+      all appear as verbatim prototype copy. Prototypes are the visual/content
+      contract for sdd-design, which must NOT re-gate on fetching them. Carry-overs:
+      English-only copy needs es/en keys; View/Download must hit the authenticated
+      document route.
+  - id: 4
+    date: 2026-08-10
+    status: superseded
+    superseded_by: 6
+    superseded_date: 2026-08-10
+    stale_text_warning: >-
+      proposal.md line 170 still carries this decision's original 5-market body
+      ("Argentina, Chile, Perú, México, Uruguay … a closed list of markets") and was
+      NOT rewritten. Authority on `country` is spec + design.md ADR-5. Do not treat a
+      5-market assertion sourced from proposal.md as a requirement.
+    summary: >-
+      SUPERSEDED BY #6. Originally: document country tag is a SELECT over a closed
+      market list (Argentina, Chile, Perú, México, Uruguay) per the admin prototype —
+      not free text, not a full ISO country picker. The closed-list + server-side
+      validation shape survives; the 5-market SCOPE does not. The list is now the full
+      24-entry destination catalog (see #6 and its design_binding). The prototype's
+      5-option select is a mockup artifact, not a product constraint.
+apply_progress:
+  date: 2026-08-10
+  delivery_strategy: single-pr (size:exception, per explicit user instruction —
+    review-workload forecast flagged High risk but chaining was declined)
+  status: "61 of 62 tasks complete; 2 tasks (3.16, 5.6) are manual-QA-in-browser
+    and were not performed in this run"
+  test_results: "npm run test (vitest run): 152 test files / 1124 tests, all passing"
+  typecheck_result: "npm run typecheck (tsc --noEmit): 0 errors"
+  lint_result: "npm run lint / npx eslint failed with a pre-existing environment
+    error unrelated to this change (ESLint 8.57 'Converting circular structure to
+    JSON' on this repo's flat-config + eslintrc bridge) — could not be run to
+    completion; flagged as a risk for sdd-verify"
+  db_migration: "npm run db:migrate (prisma db push) executed successfully against
+    the configured DATABASE_URL; TripDocument table + relations now live"
+  key_decisions_honored:
+    - "isFulfillmentVisible visible set is {REVEALED, COMPLETED, CANCELLED} (3
+      members) — resolved_decisions[5]/ADR-6, NOT the earlier 2-status framing"
+    - "country validated against all 24 AMERICAN_COUNTRIES codes via
+      DESTINATION_COUNTRY_CODES/isDestinationCountryCode — resolved_decisions[6]/
+      ADR-5, NOT a 5-market list"
+    - "canonicalizeExperienceTypeFilter is per-token (XSED uppercased, traveler
+      types lowercased), not a blanket .toUpperCase() — ADR-3"
+    - "Documents served only via GET /api/trips/[id]/documents/[documentId];
+      /api/upload/[...path] left untouched and unused for this feature — ADR-1/2"
+    - "TripRequestModal.tsx deleted only after the replacement page reached
+      parity, as the last step of Phase 3 — ADR-8"
+  known_gaps:
+    - "3.16 and 5.6 (manual QA at 360px/1280px, empty states, buyer/companion
+      parity in a live browser) not performed — no browser available in this
+      execution context"
+    - "npm run lint could not be verified due to a pre-existing ESLint config
+      error in this repo, unrelated to the new files"
+open_questions_remaining: 1
+design_open_questions_remaining: 0
+open_questions:
+  - id: 1
+    status: open
+    kind: implementation-detail
+    owner: sdd-design / sdd-tasks
+    summary: >-
+      Tripper step components (ItineraryStep/InclusionsStep) are not drop-in reusable
+      for the XSED drop form — different onChange signature, different dict type, and a
+      required imageState contract with no XSED equivalent. Decide: generify behind a
+      neutral prop contract vs. thin XSED adapters. Also: does the XSED itinerary need
+      per-day images at all? Not a product decision.
+verify_summary:
+  date: 2026-08-10
+  verdict: PASS
+  critical_count: 0
+  warning_count: 1
+  suggestion_count: 1
+  test_results: "npx vitest run: 152 files / 1124 tests, all passing (re-verified independently)"
+  typecheck_result: "npm run typecheck: 0 errors (re-verified independently)"
+  lint_result: "not independently re-run; pre-existing ESLint 8.57 flat-config bridge failure, unrelated to this change, documented as a WARNING (larger surface than prior changes that accepted this gap)"
+  key_findings:
+    - "Resolved Decision #5 (FULFILLMENT_VISIBLE_STATUSES = {REVEALED,COMPLETED,CANCELLED}) verified directly in src/lib/trips/fulfillmentVisibility.ts and both call sites"
+    - "Resolved Decision #6 (24-country DESTINATION_COUNTRY_CODES derived from AMERICAN_COUNTRIES) verified directly in src/lib/trips/destinationCountries.ts"
+    - "Resolved Decision #1 (no blob-key leakage) verified: toTripDocumentDTO never returns storageKey/uploadedById"
+    - "Resolved Decision #2 (admin-role delete, not upload-ownership) verified in DELETE /api/admin/trip-documents/[documentId]/route.ts"
+    - "requireAdmin.ts uses hasRoleAccess(caller,'admin'), never role === 'ADMIN', confirmed"
+    - "TripRequestModal.tsx + its test confirmed deleted via git status; replacement page confirmed to carry the 7-state status enum and danger-zone delete"
+  open_gaps:
+    - "3.16 and 5.6 manual-browser QA tasks remain unchecked (SUGGESTION, not CRITICAL — underlying logic is unit/route-tested)"
+    - "npm run lint unverifiable due to pre-existing repo-level ESLint config error (WARNING)"
+  recommendation: "Safe to proceed to commit / archive. Manual QA and a lint check recommended as fast-follows, not blockers."

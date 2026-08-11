@@ -14,9 +14,10 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    tripRequest: { update: vi.fn(), delete: vi.fn() },
+    tripRequest: { findUnique: vi.fn(), update: vi.fn(), delete: vi.fn() },
     experience: { findUnique: vi.fn(), findFirst: vi.fn() },
     payment: { findUnique: vi.fn() },
+    tripDocument: { findMany: vi.fn() },
   },
 }));
 
@@ -49,6 +50,98 @@ function makePatchRequest(id: string, body: Record<string, unknown>): NextReques
     body: JSON.stringify(body),
   });
 }
+
+function makeGetRequest(id: string): NextRequest {
+  return new NextRequest(`http://localhost/api/admin/trip-requests/${id}`);
+}
+
+describe("GET /api/admin/trip-requests/[id]", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("returns 401 with no session", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("trip-1"), {
+      params: Promise.resolve({ id: "trip-1" }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 for a non-admin caller", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("u1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTravelerUser("u1"),
+    );
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("trip-1"), {
+      params: Promise.resolve({ id: "trip-1" }),
+    });
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 404 when the trip does not exist", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("trip-missing"), {
+      params: Promise.resolve({ id: "trip-missing" }),
+    });
+    expect(res.status).toBe(404);
+  });
+
+  it("returns tripRequest + experienceItinerary + documents, never status-gated (e.g. CONFIRMED)", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "trip-1",
+      userId: "user-1",
+      experienceId: "exp-1",
+      status: "CONFIRMED",
+    });
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "exp-1",
+      title: "Andes Trek",
+      itinerary: [{ title: "Day 1", description: "Arrival", image: null }],
+      inclusions: ["Breakfast"],
+      exclusions: ["Flights"],
+    });
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      {
+        id: "doc-1",
+        tripRequestId: "trip-1",
+        label: "Hotel",
+        country: "AR",
+        mimeType: "application/pdf",
+        originalFilename: "hotel.pdf",
+        sizeBytes: 100,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      },
+    ]);
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("trip-1"), {
+      params: Promise.resolve({ id: "trip-1" }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.experienceItinerary.title).toBe("Andes Trek");
+    expect(body.documents).toHaveLength(1);
+    expect(body.documents[0].href).toBe("/api/trips/trip-1/documents/doc-1");
+    expect(JSON.stringify(body)).not.toContain("storageKey");
+  });
+});
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 describe("PATCH /api/admin/trip-requests/[id]", () => {

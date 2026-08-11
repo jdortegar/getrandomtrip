@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { canonicalizeExperienceTypeFilter } from "@/lib/experiences/experienceTypeFilter";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -50,7 +51,9 @@ export async function GET(request: NextRequest) {
     if (ownerActive) where.owner = { isActive: true };
     if (filterTripperId) where.ownerId = filterTripperId;
     if (filterLevel) where.level = filterLevel;
-    if (filterType) where.type = { has: filterType };
+    if (filterType) {
+      where.type = { has: canonicalizeExperienceTypeFilter(filterType) };
+    }
     if (filterStatus) where.status = { in: filterStatus.split(",") };
     if (searchParam) where.title = { contains: searchParam, mode: "insensitive" };
 

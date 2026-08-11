@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
 import { TripRequestsFilterBar } from "@/components/app/admin/TripRequestsFilterBar";
 import { TripRequestsKPIStrip } from "@/components/app/admin/TripRequestsKPIStrip";
 import { TripRequestsTable } from "@/components/app/admin/TripRequestsTable";
-import { TripRequestModal } from "@/components/app/admin/TripRequestModal";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useTripRequests } from "@/hooks/useTripRequests";
 import { resolveInitialStatusFilter } from "@/lib/admin/trip-status";
@@ -23,6 +22,8 @@ export interface AdminTripRequestsPageClientProps {
 export function AdminTripRequestsPageClient({
   dict,
 }: AdminTripRequestsPageClientProps) {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
   const pageCopy = useDictionary((d) => d.adminPages.tripRequests);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const paymentStatusLabels: Record<string, string> = useDictionary(
@@ -33,14 +34,13 @@ export function AdminTripRequestsPageClient({
     resolveInitialStatusFilter(searchParams.get("status")),
   );
   const [page, setPage] = useState(1);
-  const { error, loading, refresh, statusCounts, total, trips } =
-    useTripRequests({ page, limit: PAGE_SIZE, status: statusFilter });
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const { error, loading, statusCounts, total, trips } = useTripRequests({
+    page,
+    limit: PAGE_SIZE,
+    status: statusFilter,
+  });
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const selectedTrip = selectedTripId
-    ? trips.find((t) => t.id === selectedTripId)
-    : null;
 
   function handleFilterChange(next: StatusFilterValue) {
     setStatusFilter(next);
@@ -74,9 +74,8 @@ export function AdminTripRequestsPageClient({
 
       <TripRequestsTable
         copy={pageCopy}
-        onEdit={setSelectedTripId}
+        locale={locale}
         paymentStatusLabels={paymentStatusLabels}
-        selectedId={selectedTripId}
         trips={trips}
         tripStatusLabels={dict.tripStatus}
       />
@@ -89,17 +88,6 @@ export function AdminTripRequestsPageClient({
         previousLabel={paginationCopy.previous}
         totalPages={totalPages}
       />
-
-      {selectedTrip ? (
-        <TripRequestModal
-          dict={dict}
-          onClose={() => setSelectedTripId(null)}
-          onSaved={refresh}
-          open
-          paymentStatusLabels={paymentStatusLabels}
-          trip={selectedTrip}
-        />
-      ) : null}
     </div>
   );
 }

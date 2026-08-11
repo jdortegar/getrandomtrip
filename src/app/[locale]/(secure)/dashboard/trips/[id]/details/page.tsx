@@ -14,6 +14,8 @@ import SecureRoute from "@/components/auth/SecureRoute";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
+import { TripDocumentsSection } from "@/components/app/dashboard/traveler/TripDocumentsSection";
+import type { TripDocumentDTO } from "@/types/tripDocument";
 
 interface ItineraryDayEntry {
   title: string;
@@ -31,6 +33,7 @@ interface TripWithExperience {
     inclusions: unknown[] | null;
     exclusions: unknown[] | null;
   } | null;
+  documents?: TripDocumentDTO[];
 }
 
 function ItineraryContent() {
@@ -71,6 +74,12 @@ function ItineraryContent() {
   const hasItinerary = Array.isArray(itinerary) && itinerary.length > 0;
   const inclusions = (trip?.experience?.inclusions ?? []).map(String).filter(Boolean);
   const exclusions = (trip?.experience?.exclusions ?? []).map(String).filter(Boolean);
+  // The API omits itinerary/inclusions/exclusions/documents entirely for a
+  // non-fulfillment-visible status (server-side gate in GET /api/trips/[id],
+  // design.md ADR-6) — the client renders whatever comes back plus a
+  // pre-reveal notice keyed off status, with no gating logic of its own.
+  const isPreReveal = !!trip && trip.documents === undefined;
+  const documents = trip?.documents ?? [];
 
   return (
     <>
@@ -94,8 +103,21 @@ function ItineraryContent() {
             </Button>
           </div>
 
+          {/* Pre-reveal: server omitted itinerary/inclusions/exclusions/documents entirely */}
+          {isPreReveal && (
+            <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
+              <Calendar className="h-10 w-10 text-gray-300" />
+              <h3 className="text-lg font-semibold text-neutral-900">
+                {copy.preRevealTitle}
+              </h3>
+              <p className="max-w-sm text-sm text-gray-500">
+                {copy.preRevealDescription}
+              </p>
+            </div>
+          )}
+
           {/* No experience assigned */}
-          {!trip?.experience && (
+          {!isPreReveal && !trip?.experience && (
             <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
               <Calendar className="h-10 w-10 text-gray-300" />
               <p className="text-sm text-gray-500">{copy.noExperience}</p>
@@ -103,7 +125,7 @@ function ItineraryContent() {
           )}
 
           {/* Experience assigned but no itinerary */}
-          {trip?.experience && !hasItinerary && (
+          {!isPreReveal && trip?.experience && !hasItinerary && (
             <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
               <Calendar className="h-10 w-10 text-gray-300" />
               <h3 className="text-lg font-semibold text-neutral-900">
@@ -178,6 +200,15 @@ function ItineraryContent() {
                 </div>
               )}
             </div>
+          )}
+
+          {/* Documents — view/download only, wired to the authenticated route */}
+          {!isPreReveal && trip && (
+            <TripDocumentsSection
+              copy={copy}
+              documents={documents}
+              status={trip.status}
+            />
           )}
         </div>
       </Section>
