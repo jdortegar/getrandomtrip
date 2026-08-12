@@ -18,17 +18,17 @@ datasource db {
 // ============================================================================
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  name      String
-  password  String?
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String
+  password      String?
   emailVerified DateTime? // null = unverified. Set on token consume, backfill, or Google create.
-  avatarUrl String?
+  avatarUrl     String?
   /**
    * Membership roles for this account.
    * `TRAVELER` is the base: trippers and admins are also travelers.
    */
-  roles     UserRole[] @default([TRAVELER])
+  roles         UserRole[] @default([TRAVELER])
 
   // Tripper-specific fields
   tripperSlug    String?  @unique // For trippers: 'dawson', 'alma', etc.
@@ -36,25 +36,25 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
-  tripperSince   DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after
-  isActive       Boolean @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
-  nickname       String? // Public display name shown to clients instead of the legal name, if set
-  bio            String? // Tripper biography/description
+  tripperSince       DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after
+  isActive           Boolean   @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
+  nickname           String? // Public display name shown to clients instead of the legal name, if set
+  bio                String? // Tripper biography/description
   heroImage          String? // Hero banner image
-  heroImagePositionX Float?  // Hero image horizontal focal point (0–100, null = 50)
-  heroImagePositionY Float?  // Hero image vertical focal point (0–100, null = 50)
+  heroImagePositionX Float? // Hero image horizontal focal point (0–100, null = 50)
+  heroImagePositionY Float? // Hero image vertical focal point (0–100, null = 50)
   location           String? // Tripper location
-  motto          String? // Inspirational quote for testimonial banner
-  specialization String? // e.g. "Tripper especializada en aventuras acuáticas"
-  tierLevel      String? // Tripper tier level
-  destinations   String[] @default([]) // Countries/cities they specialize in
+  motto              String? // Inspirational quote for testimonial banner
+  specialization     String? // e.g. "Tripper especializada en aventuras acuáticas"
+  tierLevel          String? // Tripper tier level
+  destinations       String[]  @default([]) // Countries/cities they specialize in
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // User preferences
-  locale       String?  // Preferred UI locale: "es" | "en"
+  locale       String? // Preferred UI locale: "es" | "en"
   travelerType String?
   interests    String[] @default([])
   dislikes     String[] @default([])
@@ -72,25 +72,29 @@ model User {
   passportNumber  String?
   passportCountry String?
   passportExpiry  DateTime?
-  approvedVisas   String[] @default([])
+  approvedVisas   String[]  @default([])
 
-  /** Tripper's social links. Stores: [{ network: string, handle: string }] */
+  /**
+   * Tripper's social links. Stores: [{ network: string, handle: string }]
+   */
   socialLinks Json? @default("[]")
 
   // Relations
-  tripRequests          TripRequest[]    @relation("CustomerTripRequests")
-  attributedTripRequests TripRequest[]   @relation("TripperTripRequests")
-  ownedExperiences      Experience[]     @relation("OwnedExperiences")
-  payments           Payment[]
-  reviews            Review[]
-  tripperReviews     Review[]         @relation("TripperReviews")
-  likedExperiences   ExperienceLike[]
-  blogPosts          BlogPost[]       @relation("BlogAuthor")
-  experiencesCreated Experience[]     @relation("ExperienceCreatedBy")
-  experiencesUpdated Experience[]     @relation("ExperienceUpdatedBy")
-  notifications      Notification[]
-  verificationTokens VerificationToken[]
-  tripTravelers      TripTraveler[]
+  tripRequests            TripRequest[]        @relation("CustomerTripRequests")
+  attributedTripRequests  TripRequest[]        @relation("TripperTripRequests")
+  ownedExperiences        Experience[]         @relation("OwnedExperiences")
+  payments                Payment[]
+  reviews                 Review[]
+  tripperReviews          Review[]             @relation("TripperReviews")
+  likedExperiences        ExperienceLike[]
+  blogPosts               BlogPost[]           @relation("BlogAuthor")
+  experiencesCreated      Experience[]         @relation("ExperienceCreatedBy")
+  experiencesUpdated      Experience[]         @relation("ExperienceUpdatedBy")
+  notifications           Notification[]
+  verificationTokens      VerificationToken[]
+  tripTravelers           TripTraveler[]
+  tripDocumentsUploaded   TripDocument[]       @relation("TripDocumentsUploaded")
+  tripContactMessagesSent TripContactMessage[] @relation("TripContactMessagesSent")
 
   @@map("users")
 }
@@ -158,14 +162,71 @@ model TripRequest {
   updatedAt DateTime @updatedAt
 
   // Relations
-  user       User            @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
-  experience Experience?     @relation(fields: [experienceId], references: [id], onDelete: SetNull)
-  tripper    User?           @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
-  payment    Payment?
-  review     Review?
-  travelers  TripTraveler[]
+  user            User                 @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
+  experience      Experience?          @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  tripper         User?                @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
+  payment         Payment?
+  review          Review?
+  travelers       TripTraveler[]
+  tripDocuments   TripDocument[]
+  contactMessages TripContactMessage[]
 
   @@map("trip_requests")
+}
+
+model TripDocument {
+  id               String   @id @default(cuid())
+  tripRequestId    String
+  /// Free-text admin label, e.g. "Hotel Confirmation". No fixed categories by design.
+  label            String
+  /// Destination country. ISO 3166-1 alpha-2, validated app-side against the full
+  /// AMERICAN_COUNTRIES catalog via isDestinationCountryCode (not a DB enum).
+  country          String
+  /// Opaque key in the private `trip-documents` blob store. MUST NEVER be serialized to a client.
+  storageKey       String   @unique
+  /// application/pdf | image/jpeg | image/png
+  mimeType         String
+  /// Display + download filename only; never used to build storageKey.
+  originalFilename String
+  /// Stored blob size in bytes.
+  sizeBytes        Int
+  /// Audit metadata ONLY — MUST NOT be read as an authorization input (see ADR-2).
+  uploadedById     String?
+  createdAt        DateTime @default(now())
+
+  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  uploadedBy  User?       @relation("TripDocumentsUploaded", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([tripRequestId, createdAt])
+  @@map("trip_documents")
+}
+
+/// Write-only audit trail of admin→traveler contact emails: one row per send
+/// attempt. Audit metadata ONLY — MUST NOT be read as an authorization,
+/// idempotency, or delivery-confirmation input (see design.md ADR-1/#7).
+model TripContactMessage {
+  id            String            @id @default(cuid())
+  tripRequestId String
+  /// Admin-authored subject, exactly as sent. Max 200 chars app-side.
+  subject       String
+  /// Admin-authored PLAIN TEXT body, exactly as sent. Max 4000 chars app-side.
+  body          String            @db.Text
+  /// Audit metadata ONLY — MUST NOT be read as an authorization input.
+  /// Nulled if the admin account is deleted; `adminEmail` below survives.
+  adminId       String?
+  /// Denormalized sending admin address, captured at send time so the row stays
+  /// readable for support/dispute lookups after account deletion (Decision #9).
+  adminEmail    String
+  status        TripContactStatus
+  /// Failure detail from sendMail/Resend when FAILED; null on SENT. Truncated to 500.
+  error         String?
+  createdAt     DateTime          @default(now())
+
+  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  admin       User?       @relation("TripContactMessagesSent", fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([tripRequestId, createdAt])
+  @@map("trip_contact_messages")
 }
 
 model Experience {
@@ -191,8 +252,8 @@ model Experience {
   title       String // "Aventura Urbana Misteriosa"
   teaser      String // Short description
   description String // Full description
-  heroImage     String // Main image for card
-  tags          String[] @default([]) // ['adventure', 'cultural']
+  heroImage   String // Main image for card
+  tags        String[] @default([]) // ['adventure', 'cultural']
 
   // Destination info
   destinationCountry String
@@ -206,20 +267,20 @@ model Experience {
   exclusions Json? // What's not included
 
   // Pricing
-  basePrice    Float  @default(0)
-  currency     String @default("USD")
+  basePrice     Float   @default(0)
+  currency      String  @default("USD")
   // Admin-set per-type pricing (set on approval). Shape: Record<typeKey, number>
   pricingByType Json?
   // Editorial feedback from admin rejection; cleared on approval
-  reviewNote   String? @db.Text
+  reviewNote    String? @db.Text
   // Tripper's note to the admin at submission time (opposite direction of reviewNote)
-  tripperNote  String? @db.Text
+  tripperNote   String? @db.Text
 
   // Review copy fields (lazy copy mechanism for admin edit flow)
   isReviewCopy   Boolean  @default(false)
-  parentId       String?  // foreign key to original experience (set only on copy rows)
+  parentId       String? // foreign key to original experience (set only on copy rows)
   changedFields  String[] @default([])
-  reviewLockedBy String?  // admin id holding the edit lock; null when unlocked
+  reviewLockedBy String? // admin id holding the edit lock; null when unlocked
 
   // Compatibility matching (mirrors TripRequest filter fields)
   accommodationType String @default("any")
@@ -374,7 +435,7 @@ model TripTraveler {
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   // Invite token — inline, rotated in place on resend
-  inviteTokenHash      String? @unique // SHA-256 hex; null once consumed (many NULLs allowed)
+  inviteTokenHash      String?   @unique // SHA-256 hex; null once consumed (many NULLs allowed)
   inviteTokenExpiresAt DateTime?
   invitedAt            DateTime? // last send; reminder-window anchor
   reminderSentAt       DateTime? // reminder idempotency stamp
@@ -412,9 +473,9 @@ model Review {
   updatedAt DateTime @updatedAt
 
   // Relations
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   tripRequest TripRequest? @relation(fields: [tripRequestId], references: [id])
-  tripper    User?        @relation("TripperReviews", fields: [tripperId], references: [id])
+  tripper     User?        @relation("TripperReviews", fields: [tripperId], references: [id])
 
   @@index([tripperId, isApproved])
   @@map("reviews")
@@ -511,6 +572,11 @@ enum TripRequestStatus {
   CANCELLED
 }
 
+enum TripContactStatus {
+  SENT
+  FAILED
+}
+
 enum ExperienceStatus {
   DRAFT
   PENDING_REVIEW
@@ -589,15 +655,15 @@ enum VerificationTokenType {
 // ============================================================================
 
 model Notification {
-  id       String               @id @default(cuid())
-  userId   String
-  type     NotificationType
-  audience NotificationAudience
-  isRead   Boolean              @default(false)
-  title    String
-  body     String?
-  metadata Json?
-  createdAt DateTime            @default(now())
+  id        String               @id @default(cuid())
+  userId    String
+  type      NotificationType
+  audience  NotificationAudience
+  isRead    Boolean              @default(false)
+  title     String
+  body      String?
+  metadata  Json?
+  createdAt DateTime             @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

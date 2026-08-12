@@ -4,12 +4,110 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
+import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
 import { prisma } from "@/lib/prisma";
 import {
   sendDestinationRevealed,
   sendTripCancelled,
   sendTripCompleted,
 } from "@/lib/email";
+
+/**
+ * Single fetch for the whole admin fulfillment page. Never status-gated —
+ * admins author fulfillment content pre-reveal (design.md, "GET
+ * /api/admin/trip-requests/[id]").
+ */
+export async function GET(
+  _request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const caller = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, roles: true },
+    });
+    if (!caller || !hasRoleAccess(caller, "admin")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const trip = await prisma.tripRequest.findUnique({ where: { id: params.id } });
+    if (!trip) {
+      return NextResponse.json({ error: "trip_not_found" }, { status: 404 });
+    }
+
+    const [exp, payment, tripUser, documents] = await Promise.all([
+      trip.experienceId
+        ? prisma.experience.findUnique({
+            select: {
+              excuseKey: true,
+              id: true,
+              level: true,
+              title: true,
+              type: true,
+              itinerary: true,
+              inclusions: true,
+              exclusions: true,
+            },
+            where: { id: trip.experienceId },
+          })
+        : Promise.resolve(null),
+      prisma.payment.findUnique({
+        select: { amount: true, currency: true, status: true, tripRequestId: true },
+        where: { tripRequestId: trip.id },
+      }),
+      prisma.user.findUnique({
+        select: { email: true, id: true, locale: true, name: true },
+        where: { id: trip.userId },
+      }),
+      prisma.tripDocument.findMany({
+        where: { tripRequestId: trip.id },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    const [hydratedTripRequest] = attachAdminTripRequestRelations(
+      [trip],
+      tripUser ? { [tripUser.id]: tripUser } : {},
+      exp ? { [exp.id]: exp } : {},
+      payment
+        ? {
+            [payment.tripRequestId]: {
+              amount: payment.amount,
+              currency: payment.currency,
+              status: payment.status,
+            },
+          }
+        : {},
+    );
+
+    const experienceItinerary = exp
+      ? {
+          title: exp.title,
+          itinerary: exp.itinerary,
+          inclusions: exp.inclusions,
+          exclusions: exp.exclusions,
+        }
+      : null;
+
+    return NextResponse.json({
+      tripRequest: hydratedTripRequest,
+      experienceItinerary,
+      documents: documents.map(toTripDocumentDTO),
+    });
+  } catch (error) {
+    console.error("Error fetching admin trip request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
 
 function parseStatus(status: unknown): TripRequestStatus | null {
   if (typeof status !== "string") return null;
@@ -165,6 +263,7 @@ export async function PATCH(
         select: {
           email: true,
           id: true,
+          locale: true,
           name: true,
         },
         where: { id: tripRequest.userId },

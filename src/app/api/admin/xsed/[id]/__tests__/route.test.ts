@@ -216,6 +216,46 @@ describe("PUT /api/admin/xsed/[id]", () => {
     expect(res.status).toBe(200);
   });
 
+  it("persists itinerary, inclusions, and exclusions instead of silently dropping them", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession());
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    const existingDrop = {
+      id: "drop-id",
+      type: "XSED",
+      status: "DRAFT",
+      ownerId: "admin-1",
+      destinationCity: "Madrid",
+      destinationCountry: "Spain",
+      itinerary: null,
+      inclusions: null,
+      exclusions: null,
+    };
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(existingDrop);
+
+    const itinerary = [{ title: "Day 1", description: "Arrival", image: null }];
+    const inclusions = ["Breakfast"];
+    const exclusions = ["Flights"];
+    const updatedDrop = { ...existingDrop, itinerary, inclusions, exclusions };
+    (prisma.experience.update as ReturnType<typeof vi.fn>).mockResolvedValue(updatedDrop);
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PUT(
+      makeRequest("PUT", { itinerary, inclusions, exclusions }),
+      routeParams,
+    );
+    expect(res.status).toBe(200);
+
+    const updateCall = (prisma.experience.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.itinerary).toEqual(itinerary);
+    expect(updateCall.data.inclusions).toEqual(inclusions);
+    expect(updateCall.data.exclusions).toEqual(exclusions);
+
+    const body = await res.json();
+    expect(body.drop.itinerary).toEqual(itinerary);
+    expect(body.drop.inclusions).toEqual(inclusions);
+    expect(body.drop.exclusions).toEqual(exclusions);
+  });
+
   it("returns 409 on slug conflict (P2002)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession());
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));

@@ -17,6 +17,8 @@ import { XsedSectionsStep } from "./steps/XsedSectionsStep";
 import { XsedGalleryStep } from "./steps/XsedGalleryStep";
 import { XsedAccommodationStep } from "./steps/XsedAccommodationStep";
 import { XsedActivitiesStep } from "./steps/XsedActivitiesStep";
+import { XsedItineraryStep } from "./steps/XsedItineraryStep";
+import { XsedInclusionsStep } from "./steps/XsedInclusionsStep";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
@@ -79,6 +81,23 @@ function resolveXsedStepContent(
     if (substepId === "sections")
       return (
         <XsedSectionsStep copy={dict.fields.sections} form={form} onChange={onChange} />
+      );
+    if (substepId === "itinerary")
+      return (
+        <XsedItineraryStep copy={dict.fields.itinerary} form={form} onChange={onChange} />
+      );
+    if (substepId === "inclusions")
+      return (
+        <XsedInclusionsStep
+          copy={{
+            inclusions: dict.fields.inclusions,
+            addInclusion: dict.fields.addInclusion,
+            exclusions: dict.fields.exclusions,
+            addExclusion: dict.fields.addExclusion,
+          }}
+          form={form}
+          onChange={onChange}
+        />
       );
   }
   if (activeTab === "gallery") {

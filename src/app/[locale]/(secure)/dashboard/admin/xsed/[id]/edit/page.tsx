@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import type {
   AccommodationEntry,
   ActivityEntry,
+  ItineraryDayEntry,
   XsedDropDraft,
   XsedDropStatus,
   XsedSection,
@@ -48,6 +49,11 @@ export default async function EditXsedDropPage(props: {
       ? (drop.sections as unknown as XsedSection[])
       : EMPTY_XSED_DRAFT.sections,
     gallery: Array.isArray(drop.gallery) ? (drop.gallery as string[]) : [],
+    itinerary: Array.isArray(drop.itinerary) && drop.itinerary.length > 0
+      ? (drop.itinerary as unknown as ItineraryDayEntry[])
+      : EMPTY_XSED_DRAFT.itinerary,
+    inclusions: Array.isArray(drop.inclusions) ? (drop.inclusions as string[]) : [],
+    exclusions: Array.isArray(drop.exclusions) ? (drop.exclusions as string[]) : [],
   };
 
   return (

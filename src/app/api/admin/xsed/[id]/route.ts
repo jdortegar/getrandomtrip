@@ -128,6 +128,9 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
       activities,
       sections,
       gallery,
+      itinerary,
+      inclusions,
+      exclusions,
       status,
     } = body;
 
@@ -161,6 +164,9 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
       if (activities !== undefined) updateData.activities = safeJsonParse(activities);
       if (sections !== undefined) updateData.sections = safeJsonParse(sections);
       if (gallery !== undefined) updateData.gallery = Array.isArray(gallery) ? (gallery as string[]) : [];
+      if (itinerary !== undefined) updateData.itinerary = safeJsonParse(itinerary);
+      if (inclusions !== undefined) updateData.inclusions = safeJsonParse(inclusions);
+      if (exclusions !== undefined) updateData.exclusions = safeJsonParse(exclusions);
 
       const updated = await prisma.experience.update({
         where: { id },

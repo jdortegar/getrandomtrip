@@ -1,0 +1,304 @@
+change: trip-contact-email
+status: proposal
+artifact_store: openspec
+delivery_strategy: single-pr
+size_exception:
+  status: recorded
+  date: 2026-08-11
+  reason: >-
+    tasks.md Review Workload Forecast: ~730-760 changed lines, High 400-line
+    budget risk, driven by file count (~10 new files + RED tests + 8 modified
+    files), not scope creep. User confirmed proceeding single-pr per prior
+    explicit decision rather than reopening the delivery strategy.
+phases:
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: pending
+  verify: pending
+  archive: pending
+artifacts:
+  proposal: openspec/changes/trip-contact-email/proposal.md
+  proposal_mirror: sdd/trip-contact-email/proposal (engram)
+  spec_admin_traveler_messaging: openspec/changes/trip-contact-email/specs/admin-traveler-messaging/spec.md
+  spec_admin_dashboard_overview: openspec/changes/trip-contact-email/specs/admin-dashboard-overview/spec.md
+  spec_mirror: sdd/trip-contact-email/spec (engram)
+  design: openspec/changes/trip-contact-email/design.md
+  design_mirror: sdd/trip-contact-email/design (engram)
+  tasks: openspec/changes/trip-contact-email/tasks.md
+  tasks_mirror: sdd/trip-contact-email/tasks (engram)
+updated: 2026-08-11
+scope_guardrail: >-
+  Deliberately small, single-PR change per explicit user decision ("Single PR
+  (Recommended)"): one Prisma model, one API route, one email template, one
+  modal, plus dictionary entries. Do NOT scope-creep into a message-history UI,
+  rate limiting, or an audit-log viewer — all explicitly declined in the
+  interview ("write-only for now").
+strict_tdd: true
+migration_note: >-
+  This repo uses `prisma db push`; prisma/migrations/ is empty/untracked. The
+  migration artifact is the schema.prisma diff only, not a new migration file.
+repo_rules_binding:
+  - .claude/rules/i18n-and-types.md — every new user-visible string needs es AND
+    en dictionary entries in the same change, plus a type addition in
+    src/lib/types/dictionary.ts
+  - .claude/rules/component-patterns.md — reuse existing UI primitives
+    (Modal, FormField, TextAreaInput); do not hand-roll form controls. This was
+    an explicit, repeated correction from the user earlier in this project.
+verified_facts:
+  date: 2026-08-11
+  notes:
+    - "TripFulfillmentHeader.tsx:70-73 confirmed: <a href={`mailto:${trip.user.email}`}>
+       with styles.backLink, lucide `Mail` icon, copy.contactTraveler label."
+    - "AdminTripUser (src/lib/admin/types.ts:21-25) is exactly { email, id, name } —
+       NO `locale` field. Traveler locale must be resolved SERVER-SIDE in the route
+       from prisma.user, never passed from the client."
+    - "resolveLocale (src/lib/email/index.ts:72-74) is module-PRIVATE (not exported).
+       The new send function should live in that same module to reuse it, or the
+       helper must be exported — design decision, no new behavior."
+    - "All 23 existing send* functions use the `void (async () => { try/catch } )()`
+       fire-and-forget shape (e.g. sendBookingConfirmed, index.ts:76-121). The new
+       function deliberately breaks this pattern: it must be awaitable and throw."
+    - "sendMail (src/lib/helpers/sendMail.ts) accepts replyTo, and THROWS on Resend
+       error (`throw new Error(error.message)`) and on a missing RESEND_API_KEY. The
+       route's try/catch is what produces the FAILED audit row."
+    - "AdminNewBooking.tsx pattern confirmed: named `subject` export (single-locale)
+       or `subjects` (es/en map, used by every traveler-facing template) + default
+       component wrapping EmailLayout with inline React.CSSProperties style objects."
+    - "Trip-scoped child-record convention confirmed at schema.prisma:195
+       (TripDocument) and :325 (Payment): `tripRequest TripRequest @relation(fields:
+       [tripRequestId], references: [id], onDelete: Cascade)` plus an @@index and
+       an @@map to a snake_case table name."
+    - "TripDocument.uploadedById is `String?` with onDelete: SetNull and the doc
+       comment 'Audit metadata ONLY — MUST NOT be read as an authorization input'.
+       This is the precedent for the new model's sending-admin FK."
+    - "User.email is non-nullable (`String @unique`, schema.prisma:22), so the
+       sending admin always has an address for replyTo — no fallback fork."
+    - "requireAdmin() (src/lib/admin/requireAdmin.ts) returns
+       { ok: true, adminId } | { ok: false, errorResponse } with 401/403 already
+       built, and uses hasRoleAccess(caller, 'admin') over User.roles[] — never
+       role === 'ADMIN'."
+    - "src/app/api/admin/trip-requests/[id]/route.ts already exists, so adding a
+       /contact subroute is structurally consistent."
+    - "Modal.tsx, FormField.tsx, TextAreaInput.tsx all confirmed present in
+       src/components/ui/."
+    - "openspec/specs/ currently holds: experience, blog-review-flow,
+       auth-verification, admin-dashboard-overview, dashboard-shell, tripper,
+       trip-request-lifecycle. There is NO trip-fulfillment-documents capability
+       spec promoted yet (that change is at status: apply, archive pending) — its
+       spec still lives under openspec/changes/trip-fulfillment-documents/specs/."
+capabilities:
+  new:
+    - admin-traveler-messaging
+  modified:
+    - admin-dashboard-overview
+resolved_decisions:
+  - id: 1
+    status: final
+    summary: Branded via existing EmailLayout wrapper, same shell as all other transactional email.
+  - id: 2
+    status: final
+    summary: >-
+      Rendered in resolveLocale(trip.user.locale) — the traveler's own stored
+      preference, like sendBookingConfirmed. NOT the admin's dashboard locale.
+      Requires a server-side user lookup since AdminTripUser carries no locale.
+  - id: 3
+    status: final
+    summary: >-
+      Plain text only, rendered as paragraphs split on newlines. No rich text
+      editor, no HTML input from the admin — avoids all sanitization work.
+      Compose field is the existing TextAreaInput primitive.
+  - id: 4
+    status: final
+    summary: >-
+      Modal opens with BOTH subject and body prefilled and localized (greeting
+      uses trip.user.name, sign-off from "the GetRandomTrip team"). Admin edits
+      before sending; nothing blank by default.
+  - id: 5
+    status: final
+    summary: >-
+      sendMail's replyTo is the sending admin's own email (looked up via
+      session/adminId), not a shared inbox — mirrors the mailto: behavior being
+      replaced so the traveler's reply goes straight back to the author.
+  - id: 6
+    status: final
+    summary: >-
+      Send is awaited inside the route so the modal can show a real
+      success/failure result. Deliberate divergence from the 23 existing
+      fire-and-forget send* functions, which are triggered by background system
+      events with nobody watching.
+  - id: 7
+    status: final
+    summary: >-
+      NEW Prisma model TripContactMessage required — write-only audit row per
+      send attempt (subject, body, sending admin, status SENT|FAILED, optional
+      error, createdAt, tripRequestId FK with onDelete: Cascade). No GET
+      endpoint, no history list, no admin-facing viewer in this change; read by
+      direct DB query only for later support/dispute lookups.
+  - id: 8
+    status: final
+    summary: >-
+      No status restriction — the button/modal is available on every
+      TripRequest.status (DRAFT, CANCELLED, etc.), identical to the mailto: link
+      it replaces. Do not add any gating rule.
+  - id: 9
+    status: final
+    summary: >-
+      Audit row denormalizes the sending admin's email as a plain adminEmail
+      string captured at send time, IN ADDITION to the adminId FK (onDelete:
+      SetNull, matching TripDocument.uploadedById). Resolves design_notes #1 —
+      the record must stay fully readable for support/dispute lookups even
+      after the admin account is deleted.
+  - id: 10
+    status: final
+    summary: >-
+      REVERSES design.md's Open Question #1 recommendation. Prefilled
+      subject/body is built in the TRAVELER's locale, not the admin's
+      dashboard locale, so it matches the EmailLayout shell (Decision #2) by
+      default. Requires: AdminTripUser gains `locale: string | null`; both
+      admin trip-request GET routes add `locale: true` to their existing
+      prisma.user select. Purely additive to a shared type — no existing
+      consumer breaks.
+implementation_decisions_prefixed:
+  - New Prisma model tentatively named TripContactMessage.
+  - POST /api/admin/trip-requests/[id]/contact, guarded with requireAdmin().
+  - src/emails/AdminTripContactMessage.tsx following AdminNewBooking.tsx.
+  - src/components/app/admin/trip-fulfillment/ContactTravelerModal.tsx using
+    Modal/FormField/TextAreaInput, patterned on
+    src/components/app/admin/UserRoleModal.tsx.
+  - TripFulfillmentHeader.tsx mailto <a> becomes a <button> opening the modal,
+    keeping the same Mail icon, copy.contactTraveler label, and position.
+open_questions_remaining: 0
+design_notes: []
+revisions:
+  - artifact: proposal
+    date: 2026-08-11
+    note: >
+      Initial proposal. All eight product forks arrived pre-resolved from a
+      /grill-me interview and are recorded as FINAL Resolved Decisions #1-#8;
+      the proposal's Open Questions section is empty by design.
+
+      Every claim was verified by direct file read before writing (see
+      verified_facts). Three findings sharpen the downstream phases beyond what
+      the interview supplied: (a) AdminTripUser has no `locale` field, so
+      Resolved Decision #2's traveler-locale resolution is necessarily a
+      server-side prisma.user lookup in the route, not a prop passed down from
+      the header; (b) resolveLocale is module-private in src/lib/email/index.ts,
+      so the new awaitable send function should co-locate in that module rather
+      than export the helper; (c) sendMail throws both on Resend error and on a
+      missing RESEND_API_KEY, which is precisely the mechanism that yields the
+      status: FAILED audit row Resolved Decision #7 requires — no extra error
+      plumbing needed.
+
+      One genuinely new implementation-detail fork surfaced that the interview
+      did not cover and that is NOT a product question: the sending-admin FK
+      shape on the audit model (SetNull-nullable per the
+      TripDocument.uploadedById precedent vs. additionally denormalizing the
+      admin email so the audit survives user deletion). Recorded under
+      design_notes, not open_questions.
+  - artifact: spec
+    date: 2026-08-11
+    note: >
+      Wrote two delta specs per the proposal's Capabilities section. New full
+      spec for admin-traveler-messaging (7 requirements, 18 scenarios)
+      expressing Resolved Decisions #1-9 as testable MUST/scenario pairs:
+      compose-and-send with prefilled localized plain-text content, awaitable
+      synchronous send with a real success/failure result, replyTo to the
+      sending admin, server-side traveler-locale resolution, write-only
+      TripContactMessage audit row on every attempt (SENT/FAILED + error +
+      denormalized adminEmail per decision #9, cascade delete with
+      TripRequest), requireAdmin() 401/403 guard, and no status restriction.
+
+      MODIFIED delta for admin-dashboard-overview: copied the full
+      "Dedicated Trip-Request Fulfillment Page Replaces the Modal"
+      requirement block from the not-yet-archived trip-fulfillment-documents
+      change delta (main openspec/specs/admin-dashboard-overview/spec.md has
+      no mailto-related requirement yet, per verified_facts), edited the
+      mailto references to describe the modal-button behavior, and added one
+      new scenario for the button-opens-modal behavior while preserving all
+      prior scenarios intact.
+
+      No product-level ambiguity encountered — all spec content traces
+      directly to a Resolved Decision or a verified_fact in the proposal.
+  - artifact: design
+    date: 2026-08-11
+    note: >
+      Wrote design.md with 4 ADRs, the exact Prisma model, function/route/modal
+      contracts, and RED test sequencing. Every referenced file was read
+      directly before writing (schema.prisma:20-200/318-330, email/index.ts:1-140,
+      AdminNewBooking.tsx, TripCancelled.tsx, EmailLayout.tsx, sendMail.ts,
+      requireAdmin.ts, trip-documents/route.ts, UserRoleModal.tsx,
+      FormField.tsx, TextAreaInput.tsx, interpolateTemplate.ts,
+      TripFulfillmentHeader.tsx, AdminTripFulfillmentPageClient.tsx,
+      dictionary.ts:1610-1667, and both existing test files).
+
+      Resolved design_notes #1 exactly as Resolved Decision #9 dictates:
+      adminId String? + SetNull + the TripDocument.uploadedById audit doc
+      comment, PLUS a non-null denormalized adminEmail captured at send time.
+
+      ADR-1: sendAdminTripContactMessage co-locates in src/lib/email/index.ts
+      to reuse module-private resolveLocale, and takes ALREADY-RESOLVED
+      traveler/admin data instead of IDs (unlike the 23 sibling send*
+      functions) because the route must load both anyway for its 404 check and
+      for the decision-#9 denormalization — passing IDs would duplicate both
+      queries and force a prisma mock into the send function's unit test.
+
+      ADR-2: modal open/close state is LIFTED to
+      AdminTripFulfillmentPageClient; TripFulfillmentHeader stays presentational
+      and only gains an onContactTraveler callback. This matches how every
+      other trip-fulfillment child (TripDocumentsTable, AddTripDocumentForm,
+      TripDangerZone) receives callbacks from the page, and keeps Radix Dialog
+      portals out of the header's existing createRoot-based test.
+
+      ADR-3: newline→paragraph splitting is an exported pure `toParagraphs`
+      helper in the template file, and compose prefill/canSend logic lives in
+      contactTravelerModalHelpers.ts — the userRoleModalHelpers.ts +
+      __tests__/userRoleModalHelpers.test.ts precedent, so both are RED-testable
+      without rendering react-email or Radix in jsdom.
+
+      ADR-4: a failed send returns 502 { error: "send_failed" } rather than a
+      200 envelope, so the modal reuses the existing body.error →
+      fulfillmentDict.errors[key] mapping already used by handleAddDocument.
+
+      Concrete numbers picked and justified: subject 1-200 chars, body 1-4000
+      chars, enforced identically server-side and as the modal's maxLength
+      props. NOTE for apply: TextAreaInput defaults to maxLength 280, so the
+      4000 must be passed explicitly or the body silently truncates.
+
+      Dictionary decision: extend the existing AdminTripFulfillmentDict with a
+      nested contactModal object plus errors.send_failed, rather than a sibling
+      top-level section — the header's contactTraveler label already lives
+      there and the page already slices fulfillmentDict to it. Email template
+      copy stays in the template's locale-keyed copy const (the convention for
+      all 23 templates, explicitly permitted by
+      .claude/rules/i18n-and-types.md's locale-keyed-map clause).
+
+      Two non-blocking items flagged in design.md Open Questions, both with a
+      stated recommendation and neither reopening a Resolved Decision:
+      (a) the prefill is necessarily built in the ADMIN's dashboard locale
+      (AdminTripUser carries no locale) while the EmailLayout shell renders in
+      the TRAVELER's locale per decision #2, so a Spanish-writing admin can
+      send Spanish body text inside an English shell — recommend accepting for
+      this single-PR change; (b) an audit-write failure after a successful send
+      still returns 200, per the proposal's own "log loudly" risk mitigation.
+  - artifact: tasks
+    date: 2026-08-11
+    note: >
+      Wrote tasks.md with 7 dependency-ordered phases (26 tasks): schema/types
+      foundation, email template + awaitable send function, API route,
+      dictionary (es+en same task per i18n-and-types.md), modal + helpers,
+      header/page wiring, verification. Strict TDD RED-before-GREEN pairing
+      applied to every testable unit per design.md's stated RED order
+      (toParagraphs/subjects, sendAdminTripContactMessage, route handler,
+      contactTravelerModalHelpers, TripFulfillmentHeader).
+
+      Review Workload Forecast: estimated ~730-760 changed lines across ~10
+      new files plus their RED tests and 8 modified files — High risk against
+      the 400-line budget, driven by file count, not scope creep (the
+      scope_guardrail's single model/route/template/modal footprint holds).
+      delivery_strategy is locked to single-pr (explicit user decision, not
+      re-litigated), so Chained PRs recommended is set to No and Chain
+      strategy is size-exception; Decision needed before apply is Yes per the
+      single-pr guard mapping — sdd-apply must record size:exception before
+      starting, not split into chained PRs.

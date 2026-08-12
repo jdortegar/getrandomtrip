@@ -118,6 +118,7 @@ export async function GET(request: NextRequest) {
             select: {
               email: true,
               id: true,
+              locale: true,
               name: true,
             },
             where: { id: userId },

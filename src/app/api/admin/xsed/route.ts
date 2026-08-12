@@ -96,6 +96,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       activities,
       sections,
       gallery,
+      itinerary,
+      inclusions,
+      exclusions,
     } = body ?? {};
 
     // Auto-generate slug as the next drop number
@@ -139,6 +142,9 @@ export async function POST(req: Request): Promise<NextResponse> {
           activities: safeJsonParse(activities),
           sections: safeJsonParse(sections),
           gallery: Array.isArray(gallery) ? (gallery as string[]) : [],
+          itinerary: safeJsonParse(itinerary),
+          inclusions: safeJsonParse(inclusions),
+          exclusions: safeJsonParse(exclusions),
         },
       });
 

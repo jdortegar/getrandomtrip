@@ -6,18 +6,16 @@ type TripRequestsCopy = MarketingDictionary["adminPages"]["tripRequests"];
 
 interface TripRequestsTableProps {
   copy: TripRequestsCopy;
-  onEdit: (id: string) => void;
+  locale: string;
   paymentStatusLabels: Record<string, string>;
-  selectedId: string | null;
   trips: AdminTripRequest[];
   tripStatusLabels: Record<string, string>;
 }
 
 export function TripRequestsTable({
   copy,
-  onEdit,
+  locale,
   paymentStatusLabels,
-  selectedId,
   trips,
   tripStatusLabels,
 }: TripRequestsTableProps) {
@@ -54,10 +52,9 @@ export function TripRequestsTable({
             <tbody className="divide-y divide-gray-50">
               {trips.map((trip) => (
                 <TripRequestsTableRow
+                  editHref={`/${locale}/dashboard/admin/trip-requests/${trip.id}`}
                   editTitle={copy.edit}
-                  isSelected={selectedId === trip.id}
                   key={trip.id}
-                  onEdit={onEdit}
                   paymentStatusLabels={paymentStatusLabels}
                   trip={trip}
                   tripStatusLabels={tripStatusLabels}

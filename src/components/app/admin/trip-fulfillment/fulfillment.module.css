@@ -1,0 +1,750 @@
+/* Ported verbatim from the approved prototype
+   (https://claude.ai/code/artifact/88e71b8d-eac8-4070-a803-f5cd8f8668a7).
+   Tokens match .claude/rules/design-system.md. Scoped under .root instead of
+   :root so these custom properties and base element rules don't leak into
+   the rest of the app — only the .root subtree (this page) uses them. */
+
+.root {
+  --ink: #111827;
+  --cyan: #4f96b6;
+  --cyan-600: #3d7a94;
+  --sun: #fcd34d;
+  --surface: #ffffff;
+  --ground: #f9fafb;
+  --border: #e5e7eb;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-900: #111827;
+
+  --green-50: #f0fdf4;
+  --green-200: #bbf7d0;
+  --green-500: #22c55e;
+  --green-800: #166534;
+
+  --sky-50: #f0f9ff;
+  --sky-200: #bae6fd;
+  --sky-500: #0ea5e9;
+  --sky-700: #0369a1;
+  --sky-800: #075985;
+
+  --amber-50: #fffbeb;
+  --amber-200: #fde68a;
+  --amber-400: #fbbf24;
+  --amber-800: #92400e;
+
+  --red-50: #fef2f2;
+  --red-200: #fecaca;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --red-800: #991b1b;
+  --red-900: #7f1d1d;
+
+  font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--neutral-900);
+}
+
+.root a {
+  color: inherit;
+}
+
+.root button,
+.root select,
+.root input {
+  font-family: inherit;
+}
+
+.cond {
+  font-family: "Barlow Condensed", "Barlow", sans-serif;
+}
+
+/* Layout shell */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Back link */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  text-decoration: none;
+  width: fit-content;
+}
+.backLink:hover {
+  color: var(--ink);
+}
+.backLink svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.headerTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 280px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--cyan);
+  margin: 0;
+}
+
+.pageTitle {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.02;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: var(--neutral-500);
+  margin: 0;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-600);
+  white-space: nowrap;
+}
+.chipType {
+  border-color: var(--sky-200);
+  background: var(--sky-50);
+  color: var(--sky-700);
+}
+.chipCountry {
+  border-color: var(--gray-200);
+  background: var(--gray-50);
+  color: var(--neutral-600);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--green-200);
+  background: var(--green-50);
+  color: var(--green-800);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--green-500);
+  flex: none;
+}
+
+/* Header actions */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border: 2px solid transparent;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+}
+.btnPrimary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.btnPrimary:hover:not(:disabled) {
+  background: #1f2937;
+}
+.btnSecondary {
+  background: #fff;
+  border-color: var(--gray-200);
+  color: var(--neutral-700);
+}
+.btnSecondary:hover:not(:disabled) {
+  background: var(--gray-50);
+}
+.btnDanger {
+  background: var(--red-600);
+  border-color: var(--red-600);
+  color: #fff;
+}
+.btnDanger:hover:not(:disabled) {
+  background: var(--red-700);
+}
+.btnGhost {
+  background: transparent;
+  border-color: var(--gray-200);
+  color: var(--neutral-500);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+.btnGhost:hover:not(:disabled) {
+  background: var(--gray-50);
+  color: var(--ink);
+}
+
+/* Reveal countdown callout */
+.callout {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  border: 1px solid var(--gray-200);
+  padding: 14px 20px;
+  min-width: 240px;
+}
+.calloutBar {
+  width: 4px;
+  border-radius: 999px;
+  background: var(--sun);
+  flex: none;
+}
+.calloutText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.calloutLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--neutral-500);
+}
+.calloutValue {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 0.95;
+  color: var(--ink);
+}
+.calloutCaption {
+  font-size: 11.5px;
+  color: var(--neutral-500);
+}
+
+/* Panels */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  overflow: hidden;
+}
+
+.panelBody {
+  padding: 22px 24px;
+}
+
+.sectionHeadingRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.panelTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  margin: 0;
+}
+
+.panelDesc {
+  font-size: 12.5px;
+  color: var(--neutral-500);
+  margin: 4px 0 0;
+  max-width: 62ch;
+}
+
+.sectionNumber {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--neutral-400);
+  text-transform: uppercase;
+}
+
+/* Two-up grid for Section 1 */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 860px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.derivedRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  padding: 9px 14px;
+}
+.derivedLabel {
+  font-size: 12.5px;
+  color: var(--neutral-500);
+}
+.derivedValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  text-align: right;
+}
+
+.factList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.factRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.factRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.factRow:first-child {
+  padding-top: 0;
+}
+.factLabel {
+  font-size: 13px;
+  color: var(--neutral-500);
+  flex: none;
+}
+.factValue {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  text-align: right;
+}
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+.price {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Danger zone */
+.dangerCard {
+  border: 1px solid var(--red-200);
+  background: #fffafa;
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.dangerText {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  max-width: 60ch;
+}
+.dangerIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--red-600);
+  flex: none;
+  margin-top: 2px;
+}
+.dangerTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--red-800);
+  margin: 0 0 2px;
+}
+.dangerCopy {
+  font-size: 12.5px;
+  color: var(--red-900);
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* Itinerary — deliberately distinct: dashed border, tinted ground, lock icon
+   + explicit "reference" language so it reads as un-editable here without
+   needing a disabled-looking form control. */
+.panelReference {
+  background: var(--ground);
+  border: 1px dashed var(--gray-300);
+  border-radius: 12px;
+}
+.referenceTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--neutral-500);
+}
+.referenceTag svg {
+  width: 13px;
+  height: 13px;
+}
+
+.dayList {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+.dayRow {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid var(--gray-200);
+}
+.dayRow:first-child {
+  border-top: 1px solid var(--gray-200);
+}
+.dayBadge {
+  flex: none;
+  width: 56px;
+  height: 34px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--neutral-700);
+  text-transform: uppercase;
+}
+.dayContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.dayTitle {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+.dayItem {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--neutral-600);
+}
+.dayItem svg {
+  width: 13px;
+  height: 13px;
+  color: var(--neutral-400);
+  flex: none;
+  position: relative;
+  top: 1px;
+}
+.dayTime {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--neutral-700);
+  flex: none;
+}
+
+/* Documents table */
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+}
+.docsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.docsTable thead tr {
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+.docsTable th {
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--neutral-500);
+  white-space: nowrap;
+}
+.docsTable td {
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--neutral-700);
+  vertical-align: middle;
+}
+.docsTable tbody tr {
+  border-bottom: 1px solid var(--gray-100);
+}
+.docsTable tbody tr:last-child {
+  border-bottom: none;
+}
+.docsTable tbody tr:hover {
+  background: var(--gray-50);
+}
+
+.docCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 260px;
+}
+.filePuck {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--neutral-600);
+}
+.filePuck svg {
+  width: 17px;
+  height: 17px;
+}
+.docTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+.docMeta {
+  font-size: 12px;
+  color: var(--neutral-500);
+  margin-top: 1px;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid var(--gray-200);
+  background: #fff;
+  color: var(--neutral-600);
+  cursor: pointer;
+}
+.iconBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.iconBtn svg {
+  width: 16px;
+  height: 16px;
+}
+.iconBtn:hover:not(:disabled) {
+  background: var(--gray-50);
+}
+.iconBtnDanger:hover:not(:disabled) {
+  border-color: var(--red-200);
+  background: var(--red-50);
+  color: var(--red-600);
+}
+.rowActions {
+  display: flex;
+  gap: 6px;
+}
+
+.docsNote {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--neutral-500);
+}
+.docsNote svg {
+  width: 14px;
+  height: 14px;
+  color: var(--cyan);
+  flex: none;
+  margin-top: 1px;
+}
+
+/* Add-document panel */
+.addDoc {
+  margin-top: 20px;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 18px;
+  background: var(--gray-50);
+}
+.addDocTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--neutral-600);
+  margin: 0 0 14px;
+}
+.addDocGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .addDocGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dropzone {
+  margin-top: 14px;
+  border: 1.5px dashed var(--gray-300);
+  border-radius: 10px;
+  background: #fff;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  color: var(--neutral-500);
+}
+.dropzone svg {
+  width: 22px;
+  height: 22px;
+  color: var(--neutral-400);
+  margin-bottom: 4px;
+}
+.dropzoneTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-700);
+}
+.dropzoneCaption {
+  font-size: 11.5px;
+  color: var(--neutral-400);
+}
+
+.addDocActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .pageTitle {
+    font-size: 26px;
+  }
+  .headerActions {
+    width: 100%;
+  }
+  .headerActions .btn {
+    flex: 1;
+  }
+  .callout {
+    width: 100%;
+  }
+}

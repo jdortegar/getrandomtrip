@@ -118,4 +118,20 @@ describe("GET /api/admin/experiences", () => {
       .calls[0][0];
     expect(findManyArgs.where.owner).toEqual({ isActive: true });
   });
+
+  it("normalizes a lowercase type=xsed filter to match uppercase stored ['XSED']", async () => {
+    await GET(makeRequest("?type=xsed"));
+
+    const findManyArgs = (prisma.experience.findMany as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(findManyArgs.where.type).toEqual({ has: "XSED" });
+  });
+
+  it("keeps matching type=couple as before this change (no-regression for lowercase traveler types)", async () => {
+    await GET(makeRequest("?type=couple"));
+
+    const findManyArgs = (prisma.experience.findMany as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(findManyArgs.where.type).toEqual({ has: "couple" });
+  });
 });

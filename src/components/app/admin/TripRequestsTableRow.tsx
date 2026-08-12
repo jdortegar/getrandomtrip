@@ -1,33 +1,25 @@
 import { Pencil } from "lucide-react";
-import { TableIconButton } from "@/components/ui/TableIconButton";
-import { cn } from "@/lib/utils";
+import { TableIconLink } from "@/components/ui/TableIconButton";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import { StatusBadge } from "./StatusBadge";
 
 interface TripRequestsTableRowProps {
+  editHref: string;
   editTitle: string;
-  isSelected: boolean;
-  onEdit: (id: string) => void;
   paymentStatusLabels: Record<string, string>;
   trip: AdminTripRequest;
   tripStatusLabels: Record<string, string>;
 }
 
 export function TripRequestsTableRow({
+  editHref,
   editTitle,
-  isSelected,
-  onEdit,
   paymentStatusLabels,
   trip,
   tripStatusLabels,
 }: TripRequestsTableRowProps) {
   return (
-    <tr
-      className={cn(
-        "transition-colors hover:bg-gray-50",
-        isSelected && "border-l-2 border-l-gray-900 bg-blue-50",
-      )}
-    >
+    <tr className="transition-colors hover:bg-gray-50">
       <td className="px-5 py-4">
         <p className="text-sm font-semibold text-neutral-900">
           {trip.user.name}
@@ -60,9 +52,9 @@ export function TripRequestsTableRow({
         )}
       </td>
       <td className="px-5 py-4">
-        <TableIconButton onClick={() => onEdit(trip.id)} title={editTitle}>
+        <TableIconLink href={editHref} title={editTitle}>
           <Pencil className="h-4 w-4" />
-        </TableIconButton>
+        </TableIconLink>
       </td>
     </tr>
   );

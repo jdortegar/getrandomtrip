@@ -1194,7 +1194,18 @@ export interface AdminXsedDict {
       minSpots: string;
       maxSpots: string;
       inclusions: string;
+      addInclusion: string;
       exclusions: string;
+      addExclusion: string;
+      itinerary: {
+        dayLabel: string;
+        titleLabel: string;
+        titlePlaceholder: string;
+        descLabel: string;
+        descPlaceholder: string;
+        addDay: string;
+        removeDay: string;
+      };
       accommodation: {
         hotelName: string;
         hotelNamePlaceholder: string;
@@ -1585,6 +1596,95 @@ export interface TripItineraryDict {
   noExperience: string;
   inclusions: string;
   exclusions: string;
+  documentsTitle: string;
+  documentsNote: string;
+  /** Rendered instead of `documentsNote` when `trip.status === "CANCELLED"` (ADR-6 widening). */
+  documentsCancelledNote: string;
+  documentsEmpty: string;
+  preRevealTitle: string;
+  preRevealDescription: string;
+  view: string;
+  download: string;
+}
+
+export interface AdminTripFulfillmentDict {
+  eyebrow: string;
+  /** Interpolated with {{userName}}. */
+  title: string;
+  back: string;
+  contactTraveler: string;
+  revealsInLabel: string;
+  /** Interpolated with {{days}}. */
+  revealsInDays: string;
+  /** Interpolated with {{hours}} and {{minutes}}. */
+  revealsInHours: string;
+  revealsInNow: string;
+  revealedOnLabel: string;
+  openInEditor: string;
+  itineraryReferenceTitle: string;
+  /** Interpolated with {{experience}}. */
+  itineraryReferenceBadge: string;
+  itineraryReferenceBody: string;
+  itineraryEmpty: string;
+  documentsTitle: string;
+  documentsNote: string;
+  documentsColumns: {
+    document: string;
+    country: string;
+    uploaded: string;
+    actions: string;
+  };
+  documentsEmpty: string;
+  view: string;
+  download: string;
+  remove: string;
+  removeConfirm: string;
+  removing: string;
+  addDocument: {
+    title: string;
+    label: string;
+    labelPlaceholder: string;
+    country: string;
+    countryPlaceholder: string;
+    file: string;
+    fileHint: string;
+    submit: string;
+    submitting: string;
+  };
+  save: string;
+  discard: string;
+  saving: string;
+  saved: string;
+  contactModal: {
+    title: string;
+    /** Interpolated with {{userName}}. */
+    description: string;
+    subjectLabel: string;
+    subjectPlaceholder: string;
+    bodyLabel: string;
+    bodyPlaceholder: string;
+    /** Prefilled subject (Decision #4). */
+    prefillSubject: string;
+    /** Prefilled body. Interpolated with {{userName}}; \n\n separates paragraphs. */
+    prefillBody: string;
+    send: string;
+    sending: string;
+    cancel: string;
+    close: string;
+    successTitle: string;
+    /** Interpolated with {{email}}. */
+    successBody: string;
+  };
+  errors: {
+    invalid_request: string;
+    trip_not_found: string;
+    file_too_large: string;
+    unsupported_file_type: string;
+    invalid_country: string;
+    storage_unavailable: string;
+    send_failed: string;
+    generic: string;
+  };
 }
 
 export interface TripRevealDict {
@@ -1846,6 +1946,14 @@ export interface MarketingDictionary {
       /** Interpolated with {page} and {totalPages}. */
       pageOf: string;
     };
+    /**
+     * Destination-country display labels, keyed by ISO 3166-1 alpha-2 code.
+     * Covers all 24 `AMERICAN_COUNTRIES` catalog codes in both locales.
+     * Index signature (not 24 required literal keys) so the drift-guard
+     * test can assert both directions — no missing key AND no orphan key
+     * (design.md ADR-5).
+     */
+    countries: Record<string, string>;
   };
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
@@ -2994,7 +3102,6 @@ export interface MarketingDictionary {
     sectionDanger: string;
     sectionManageTrip: string;
     sectionSummary: string;
-    sectionTimeline: string;
     statusLabel: string;
     title: string;
     tripStatus: {
@@ -3008,6 +3115,7 @@ export interface MarketingDictionary {
     };
   };
   tripperBlogs: TripperBlogsDict;
+  adminTripFulfillment: AdminTripFulfillmentDict;
   dashboard: DashboardDict;
   adminDashboard: AdminDashboardDict;
   travelerDashboard: TravelerDashboardDict;

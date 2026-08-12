@@ -17,6 +17,7 @@ vi.mock("@/lib/prisma", () => ({
       delete: vi.fn(),
       count: vi.fn(),
     },
+    tripDocument: { findMany: vi.fn().mockResolvedValue([]) },
   },
 }));
 
@@ -136,10 +137,12 @@ describe("GET /api/trips/[id]", () => {
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       ...mockTrip,
       userId: "other-buyer",
+      status: "REVEALED",
     });
     // canAccessTrip's count resolves >0 because a TripTraveler row links
     // this user to the trip, even though they are not the buyer.
     (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+    (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
     const res = await GET(makeRequest(), makeProps("trip-1"));
     expect(res.status).toBe(200);
@@ -147,6 +150,56 @@ describe("GET /api/trips/[id]", () => {
     const body = await res.json();
     expect(body.trip).toBeDefined();
   });
+
+  it("omits itinerary/inclusions/exclusions/documents for a CONFIRMED (pre-reveal) trip", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { email: "test@example.com" },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...mockTrip,
+      status: "CONFIRMED",
+    });
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+
+    const res = await GET(makeRequest(), makeProps("trip-1"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.trip.experience.itinerary).toBeUndefined();
+    expect(body.trip.experience.inclusions).toBeUndefined();
+    expect(body.trip.experience.exclusions).toBeUndefined();
+    expect(body.trip.documents).toBeUndefined();
+  });
+
+  it.each(["REVEALED", "COMPLETED", "CANCELLED"])(
+    "includes fulfillment content for status=%s",
+    async (status) => {
+      (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+        user: { email: "test@example.com" },
+      });
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+      (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ...mockTrip,
+        status,
+        experience: {
+          ...mockExperience,
+          itinerary: [{ title: "Day 1", description: "Arrival", image: null }],
+          inclusions: ["Breakfast"],
+          exclusions: ["Flights"],
+        },
+      });
+      (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+      (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+
+      const res = await GET(makeRequest(), makeProps("trip-1"));
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.trip.experience.itinerary).toBeDefined();
+      expect(body.trip.experience.inclusions).toEqual(["Breakfast"]);
+      expect(body.trip.experience.exclusions).toEqual(["Flights"]);
+      expect(Array.isArray(body.trip.documents)).toBe(true);
+    },
+  );
 });
 
 describe("DELETE /api/trips/[id]", () => {

@@ -38,6 +38,32 @@
       "previous": "Previous",
       "next": "Next",
       "pageOf": "Page {page} of {totalPages}"
+    },
+    "countries": {
+      "AR": "Argentina",
+      "BR": "Brazil",
+      "CL": "Chile",
+      "CO": "Colombia",
+      "MX": "Mexico",
+      "PE": "Peru",
+      "UY": "Uruguay",
+      "VE": "Venezuela",
+      "EC": "Ecuador",
+      "BO": "Bolivia",
+      "PY": "Paraguay",
+      "US": "United States",
+      "CA": "Canada",
+      "CR": "Costa Rica",
+      "PA": "Panama",
+      "GT": "Guatemala",
+      "HN": "Honduras",
+      "SV": "El Salvador",
+      "NI": "Nicaragua",
+      "CU": "Cuba",
+      "DO": "Dominican Republic",
+      "HT": "Haiti",
+      "JM": "Jamaica",
+      "TT": "Trinidad and Tobago"
     }
   },
   "adminDashboard": {
@@ -183,7 +209,9 @@
           "id": "content",
           "label": "Content",
           "substeps": [
-            { "id": "sections", "title": "Sections", "description": "" }
+            { "id": "sections", "title": "Sections", "description": "" },
+            { "id": "itinerary", "title": "Itinerary", "description": "" },
+            { "id": "inclusions", "title": "Inclusions / Exclusions", "description": "" }
           ]
         },
         {
@@ -234,7 +262,18 @@
         "minSpots": "Min spots",
         "maxSpots": "Max spots",
         "inclusions": "Included",
+        "addInclusion": "Add something included…",
         "exclusions": "Not included",
+        "addExclusion": "Add something not included…",
+        "itinerary": {
+          "dayLabel": "Day",
+          "titleLabel": "Day title",
+          "titlePlaceholder": "E.g. Arrival and welcome",
+          "descLabel": "Description",
+          "descPlaceholder": "Tell us what happens this day...",
+          "addDay": "Add day",
+          "removeDay": "Remove day"
+        },
         "accommodation": {
           "hotelName": "Hotel name *",
           "hotelNamePlaceholder": "E.g. Boutique...",
@@ -3393,7 +3432,6 @@
     "experiencePlaceholder": "Select experience…",
     "noTripperNotice": "No tripper attributed — experience assignment unavailable",
     "statusLabel": "Trip status",
-    "sectionTimeline": "Fulfillment milestones",
     "sectionDanger": "Danger zone",
     "deleteHint": "Permanently remove this trip request and its linked payment record. This cannot be undone.",
     "deleteTrip": "Delete trip",
@@ -3419,6 +3457,77 @@
       "REVEALED": "Revealed",
       "COMPLETED": "Completed",
       "CANCELLED": "Cancelled"
+    }
+  },
+  "adminTripFulfillment": {
+    "eyebrow": "Trip fulfillment",
+    "title": "{{userName}}'s trip",
+    "back": "Back to trips",
+    "contactTraveler": "Contact traveler",
+    "revealsInLabel": "Reveals to traveler in",
+    "revealsInDays": "{{days}} days",
+    "revealsInHours": "{{hours}}h {{minutes}}m",
+    "revealsInNow": "Any moment now",
+    "revealedOnLabel": "Revealed to traveler on",
+    "openInEditor": "Open in Experience Editor",
+    "itineraryReferenceTitle": "Itinerary",
+    "itineraryReferenceBadge": "Reference only · shared by every traveler on {{experience}}",
+    "itineraryReferenceBody": "This schedule is defined once on the experience and applies to everyone booked on this drop. Edit it from the Experience Editor, not here.",
+    "itineraryEmpty": "This experience doesn't have an itinerary yet.",
+    "documentsTitle": "Fulfillment documents",
+    "documentsNote": "No separate \"confirmed\" flag — uploading a document here is what marks it confirmed. Vouchers become visible to the traveler once this trip is Revealed.",
+    "documentsColumns": {
+      "document": "Document",
+      "country": "Country",
+      "uploaded": "Uploaded",
+      "actions": "Actions"
+    },
+    "documentsEmpty": "No documents have been uploaded for this trip yet.",
+    "view": "View",
+    "download": "Download",
+    "remove": "Remove",
+    "removeConfirm": "Remove this document? This cannot be undone.",
+    "removing": "Removing…",
+    "addDocument": {
+      "title": "Add a document",
+      "label": "Label",
+      "labelPlaceholder": "E.g. Hotel confirmation",
+      "country": "Destination country",
+      "countryPlaceholder": "Select country…",
+      "file": "File",
+      "fileHint": "PDF, JPG or PNG · up to 10 MB",
+      "submit": "Upload document",
+      "submitting": "Uploading…"
+    },
+    "save": "Save changes",
+    "discard": "Discard",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "contactModal": {
+      "title": "Contact traveler",
+      "description": "Send an email to {{userName}}. It will land directly in their inbox.",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Message subject",
+      "bodyLabel": "Message",
+      "bodyPlaceholder": "Write your message…",
+      "prefillSubject": "An update about your trip",
+      "prefillBody": "Hi {{userName}},\n\n\n\nBest,\nThe GetRandomTrip team",
+      "send": "Send message",
+      "sending": "Sending…",
+      "cancel": "Cancel",
+      "close": "Close",
+      "successTitle": "Message sent",
+      "successBody": "We sent the message to {{email}}."
+    },
+    "errors": {
+      "invalid_request": "Check the document details and try again.",
+      "trip_not_found": "Trip not found.",
+      "file_too_large": "The file exceeds the 10 MB limit.",
+      "unsupported_file_type": "Unsupported file type. Use PDF, JPG, or PNG.",
+      "invalid_country": "Select a valid country.",
+      "storage_unavailable": "Storage is unavailable. Try again in a few minutes.",
+      "send_failed": "Could not send the message. Please try again.",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "emailSignatures": {
@@ -4643,7 +4752,15 @@
     "emptyDescription": "Once your tripper assigns the experience, you'll see the full itinerary here.",
     "noExperience": "No experience has been assigned to this trip yet.",
     "inclusions": "Included",
-    "exclusions": "Not included"
+    "exclusions": "Not included",
+    "documentsTitle": "Your documents",
+    "documentsNote": "These are yours alone. Other travelers on this same trip have their own room and reservations — nothing here is shared.",
+    "documentsCancelledNote": "This trip is cancelled. We keep these documents for reference and in case you need them for a refund.",
+    "documentsEmpty": "No documents are available for this trip yet.",
+    "preRevealTitle": "We haven't revealed your destination yet",
+    "preRevealDescription": "This trip's itinerary and documents show up once your destination is revealed.",
+    "view": "View",
+    "download": "Download"
   },
   "tripReveal": {
     "pageTitle": "Your Mystery Destination",

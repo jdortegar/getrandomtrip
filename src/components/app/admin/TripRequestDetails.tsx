@@ -1,19 +1,24 @@
 import { formatAdminDate, formatAdminAmount } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
+import styles from "./trip-fulfillment/fulfillment.module.css";
 
 type DetailLabels = MarketingDictionary["adminTripEditModal"]["details"];
 
 interface DetailRowProps {
   label: string;
   value: string;
+  variant?: "mono" | "price";
 }
 
-function DetailRow({ label, value }: DetailRowProps) {
+function DetailRow({ label, value, variant }: DetailRowProps) {
+  const valueClass = variant
+    ? `${styles.factValue} ${styles[variant]}`
+    : styles.factValue;
   return (
-    <div className="flex justify-between gap-4">
-      <span className="text-sm text-neutral-500">{label}</span>
-      <span className="text-sm font-semibold text-neutral-900">{value}</span>
+    <div className={styles.factRow}>
+      <span className={styles.factLabel}>{label}</span>
+      <span className={valueClass}>{value}</span>
     </div>
   );
 }
@@ -25,7 +30,7 @@ interface TripRequestDetailsProps {
 
 export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={styles.factList}>
       <DetailRow
         label={labels.origin}
         value={`${trip.originCity}, ${trip.originCountry}`}
@@ -33,6 +38,7 @@ export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
       <DetailRow
         label={labels.dates}
         value={`${formatAdminDate(trip.startDate)} — ${formatAdminDate(trip.endDate)}`}
+        variant="mono"
       />
       <DetailRow
         label={labels.nightsPax}
@@ -43,6 +49,7 @@ export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
         <DetailRow
           label={labels.payment}
           value={formatAdminAmount(trip.payment.amount, trip.payment.currency)}
+          variant="price"
         />
       ) : null}
     </div>
