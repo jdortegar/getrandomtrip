@@ -1,6 +1,6 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { TripFulfillmentHeader } from "@/components/app/admin/trip-fulfillment/TripFulfillmentHeader";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
@@ -49,7 +49,12 @@ function baseTrip(overrides: Partial<AdminTripRequest> = {}): AdminTripRequest {
     tripPhotos: null,
     type: "couple",
     updatedAt: new Date().toISOString(),
-    user: { id: "user-1", name: "David Ortega", email: "david@example.com" },
+    user: {
+      id: "user-1",
+      name: "David Ortega",
+      email: "david@example.com",
+      locale: null,
+    },
     ...overrides,
   };
 }
@@ -57,7 +62,7 @@ function baseTrip(overrides: Partial<AdminTripRequest> = {}): AdminTripRequest {
 let container: HTMLDivElement;
 let root: Root;
 
-function render(trip: AdminTripRequest) {
+function render(trip: AdminTripRequest, onContactTraveler = vi.fn()) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -66,6 +71,7 @@ function render(trip: AdminTripRequest) {
       <TripFulfillmentHeader
         copy={copy}
         locale="en"
+        onContactTraveler={onContactTraveler}
         paymentStatusLabels={{}}
         statusLabel={(status) => status}
         trip={trip}
@@ -97,5 +103,25 @@ describe("TripFulfillmentHeader — type/level chip dedup", () => {
       (el) => el.textContent === "xsed",
     );
     expect(chips).toHaveLength(1);
+  });
+});
+
+describe("TripFulfillmentHeader — contact traveler", () => {
+  it("renders a button (not a mailto anchor) and invokes onContactTraveler on click", () => {
+    const onContactTraveler = vi.fn();
+    render(baseTrip(), onContactTraveler);
+
+    const mailtoLink = container.querySelector('a[href^="mailto:"]');
+    expect(mailtoLink).toBeNull();
+
+    const contactButton = Array.from(
+      container.querySelectorAll("button"),
+    ).find((el) => el.textContent?.includes(copy.contactTraveler));
+    expect(contactButton).toBeTruthy();
+
+    act(() => {
+      contactButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(onContactTraveler).toHaveBeenCalledTimes(1);
   });
 });

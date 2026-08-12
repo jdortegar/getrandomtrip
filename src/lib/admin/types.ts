@@ -21,6 +21,7 @@ export interface AdminTripPayment {
 export interface AdminTripUser {
   email: string;
   id: string;
+  locale: string | null;
   name: string;
 }
 

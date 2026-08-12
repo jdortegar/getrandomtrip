@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
@@ -11,6 +13,7 @@ import styles from "./fulfillment.module.css";
 interface TripFulfillmentHeaderProps {
   copy: MarketingDictionary["adminTripFulfillment"];
   locale: string;
+  onContactTraveler: () => void;
   paymentStatusLabels: Record<string, string>;
   statusLabel: (status: TripRequestStatus) => string;
   trip: AdminTripRequest;
@@ -52,6 +55,7 @@ function revealCallout(
 export function TripFulfillmentHeader({
   copy,
   locale,
+  onContactTraveler,
   paymentStatusLabels,
   statusLabel,
   trip,
@@ -67,10 +71,14 @@ export function TripFulfillmentHeader({
           <ArrowLeft />
           {copy.back}
         </Link>
-        <a className={styles.backLink} href={`mailto:${trip.user.email}`}>
+        <button
+          className={styles.backLink}
+          onClick={onContactTraveler}
+          type="button"
+        >
           <Mail />
           {copy.contactTraveler}
-        </a>
+        </button>
       </div>
 
       <div className={styles.header}>

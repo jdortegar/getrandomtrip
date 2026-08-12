@@ -11,6 +11,7 @@ import type { ExperienceItinerary } from "@/components/app/admin/trip-fulfillmen
 import { TripDocumentsTable } from "@/components/app/admin/trip-fulfillment/TripDocumentsTable";
 import { AddTripDocumentForm } from "@/components/app/admin/trip-fulfillment/AddTripDocumentForm";
 import { TripDangerZone } from "@/components/app/admin/trip-fulfillment/TripDangerZone";
+import { ContactTravelerModal } from "@/components/app/admin/trip-fulfillment/ContactTravelerModal";
 import { buildAssignableExperiencesQuery } from "@/lib/admin/assignableExperiences";
 import type { AdminTripRequest, TripRequestStatus } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
@@ -61,6 +62,7 @@ export function AdminTripFulfillmentPageClient({
   const [addDocError, setAddDocError] = useState<string | null>(null);
   const [addingDoc, setAddingDoc] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [contactOpen, setContactOpen] = useState(false);
 
   const loadTrip = useCallback(async () => {
     setLoading(true);
@@ -189,6 +191,7 @@ export function AdminTripFulfillmentPageClient({
         <TripFulfillmentHeader
           copy={fulfillmentDict}
           locale={locale}
+          onContactTraveler={() => setContactOpen(true)}
           paymentStatusLabels={paymentStatusLabels}
           statusLabel={statusLabel}
           trip={trip}
@@ -271,6 +274,14 @@ export function AdminTripFulfillmentPageClient({
           </button>
         </div>
       </div>
+
+      <ContactTravelerModal
+        copy={fulfillmentDict}
+        onClose={() => setContactOpen(false)}
+        open={contactOpen}
+        traveler={trip.user}
+        tripId={tripId}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import AdminNewBooking, {
   subject as adminNewBookingSubject,
 } from "@/emails/AdminNewBooking";
+import AdminTripContactMessage from "@/emails/AdminTripContactMessage";
 import ReviewApprovedForTripper, {
   subjects as reviewApprovedSubjects,
 } from "@/emails/ReviewApprovedForTripper";
@@ -946,6 +947,35 @@ export function sendTravelerReminderEmail(
       console.error("[email] sendTravelerReminderEmail:", err);
     }
   })();
+}
+
+/**
+ * DIVERGES from every other send* function in this module on purpose: it is
+ * `await`-able and it THROWS. A human is watching the modal for a real result
+ * (Resolved Decision #6). Do NOT wrap this in `void (async () => …)()`.
+ */
+export async function sendAdminTripContactMessage(params: {
+  /** Sending admin's own address — used as `replyTo` (Decision #5). */
+  adminEmail: string;
+  /** Admin-authored plain text, verbatim. */
+  body: string;
+  subject: string;
+  traveler: { email: string; locale: string | null; name: string };
+}): Promise<void> {
+  const locale = resolveLocale(params.traveler.locale);
+
+  await sendMail({
+    to: params.traveler.email,
+    subject: params.subject,
+    replyTo: params.adminEmail,
+    content: {
+      react: React.createElement(AdminTripContactMessage, {
+        body: params.body,
+        locale,
+        subject: params.subject,
+      }),
+    },
+  });
 }
 
 export function sendWelcomeEmail(userId: string): void {

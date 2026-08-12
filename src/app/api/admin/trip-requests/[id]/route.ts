@@ -62,7 +62,7 @@ export async function GET(
         where: { tripRequestId: trip.id },
       }),
       prisma.user.findUnique({
-        select: { email: true, id: true, name: true },
+        select: { email: true, id: true, locale: true, name: true },
         where: { id: trip.userId },
       }),
       prisma.tripDocument.findMany({
@@ -263,6 +263,7 @@ export async function PATCH(
         select: {
           email: true,
           id: true,
+          locale: true,
           name: true,
         },
         where: { id: tripRequest.userId },

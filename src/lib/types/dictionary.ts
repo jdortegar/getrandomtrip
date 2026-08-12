@@ -1655,6 +1655,26 @@ export interface AdminTripFulfillmentDict {
   discard: string;
   saving: string;
   saved: string;
+  contactModal: {
+    title: string;
+    /** Interpolated with {{userName}}. */
+    description: string;
+    subjectLabel: string;
+    subjectPlaceholder: string;
+    bodyLabel: string;
+    bodyPlaceholder: string;
+    /** Prefilled subject (Decision #4). */
+    prefillSubject: string;
+    /** Prefilled body. Interpolated with {{userName}}; \n\n separates paragraphs. */
+    prefillBody: string;
+    send: string;
+    sending: string;
+    cancel: string;
+    close: string;
+    successTitle: string;
+    /** Interpolated with {{email}}. */
+    successBody: string;
+  };
   errors: {
     invalid_request: string;
     trip_not_found: string;
@@ -1662,6 +1682,7 @@ export interface AdminTripFulfillmentDict {
     unsupported_file_type: string;
     invalid_country: string;
     storage_unavailable: string;
+    send_failed: string;
     generic: string;
   };
 }

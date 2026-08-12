@@ -3503,6 +3503,22 @@
     "discard": "Discard",
     "saving": "Saving…",
     "saved": "Saved",
+    "contactModal": {
+      "title": "Contact traveler",
+      "description": "Send an email to {{userName}}. It will land directly in their inbox.",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Message subject",
+      "bodyLabel": "Message",
+      "bodyPlaceholder": "Write your message…",
+      "prefillSubject": "An update about your trip",
+      "prefillBody": "Hi {{userName}},\n\n\n\nBest,\nThe GetRandomTrip team",
+      "send": "Send message",
+      "sending": "Sending…",
+      "cancel": "Cancel",
+      "close": "Close",
+      "successTitle": "Message sent",
+      "successBody": "We sent the message to {{email}}."
+    },
     "errors": {
       "invalid_request": "Check the document details and try again.",
       "trip_not_found": "Trip not found.",
@@ -3510,6 +3526,7 @@
       "unsupported_file_type": "Unsupported file type. Use PDF, JPG, or PNG.",
       "invalid_country": "Select a valid country.",
       "storage_unavailable": "Storage is unavailable. Try again in a few minutes.",
+      "send_failed": "Could not send the message. Please try again.",
       "generic": "Something went wrong. Please try again."
     }
   },

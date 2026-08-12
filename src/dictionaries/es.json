@@ -3503,6 +3503,22 @@
     "discard": "Descartar",
     "saving": "Guardando…",
     "saved": "Guardado",
+    "contactModal": {
+      "title": "Contactar viajero",
+      "description": "Enviale un email a {{userName}}. Va a llegar directamente a su bandeja de entrada.",
+      "subjectLabel": "Asunto",
+      "subjectPlaceholder": "Asunto del mensaje",
+      "bodyLabel": "Mensaje",
+      "bodyPlaceholder": "Escribí tu mensaje…",
+      "prefillSubject": "Novedades sobre tu viaje",
+      "prefillBody": "Hola {{userName}},\n\n\n\nSaludos,\nEl equipo de GetRandomTrip",
+      "send": "Enviar mensaje",
+      "sending": "Enviando…",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "successTitle": "Mensaje enviado",
+      "successBody": "Le enviamos el mensaje a {{email}}."
+    },
     "errors": {
       "invalid_request": "Revisá los datos del documento e intentá de nuevo.",
       "trip_not_found": "No se encontró el viaje.",
@@ -3510,6 +3526,7 @@
       "unsupported_file_type": "Tipo de archivo no soportado. Usá PDF, JPG o PNG.",
       "invalid_country": "Seleccioná un país válido.",
       "storage_unavailable": "El almacenamiento no está disponible. Intentá de nuevo en unos minutos.",
+      "send_failed": "No se pudo enviar el mensaje. Intentá de nuevo.",
       "generic": "Algo salió mal. Intentá de nuevo."
     }
   },

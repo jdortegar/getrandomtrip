@@ -80,20 +80,21 @@ model User {
   socialLinks Json? @default("[]")
 
   // Relations
-  tripRequests           TripRequest[]       @relation("CustomerTripRequests")
-  attributedTripRequests TripRequest[]       @relation("TripperTripRequests")
-  ownedExperiences       Experience[]        @relation("OwnedExperiences")
-  payments               Payment[]
-  reviews                Review[]
-  tripperReviews         Review[]            @relation("TripperReviews")
-  likedExperiences       ExperienceLike[]
-  blogPosts              BlogPost[]          @relation("BlogAuthor")
-  experiencesCreated     Experience[]        @relation("ExperienceCreatedBy")
-  experiencesUpdated     Experience[]        @relation("ExperienceUpdatedBy")
-  notifications          Notification[]
-  verificationTokens     VerificationToken[]
-  tripTravelers          TripTraveler[]
-  tripDocumentsUploaded  TripDocument[]      @relation("TripDocumentsUploaded")
+  tripRequests            TripRequest[]        @relation("CustomerTripRequests")
+  attributedTripRequests  TripRequest[]        @relation("TripperTripRequests")
+  ownedExperiences        Experience[]         @relation("OwnedExperiences")
+  payments                Payment[]
+  reviews                 Review[]
+  tripperReviews          Review[]             @relation("TripperReviews")
+  likedExperiences        ExperienceLike[]
+  blogPosts               BlogPost[]           @relation("BlogAuthor")
+  experiencesCreated      Experience[]         @relation("ExperienceCreatedBy")
+  experiencesUpdated      Experience[]         @relation("ExperienceUpdatedBy")
+  notifications           Notification[]
+  verificationTokens      VerificationToken[]
+  tripTravelers           TripTraveler[]
+  tripDocumentsUploaded   TripDocument[]       @relation("TripDocumentsUploaded")
+  tripContactMessagesSent TripContactMessage[] @relation("TripContactMessagesSent")
 
   @@map("users")
 }
@@ -161,13 +162,14 @@ model TripRequest {
   updatedAt DateTime @updatedAt
 
   // Relations
-  user          User           @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
-  experience    Experience?    @relation(fields: [experienceId], references: [id], onDelete: SetNull)
-  tripper       User?          @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
-  payment       Payment?
-  review        Review?
-  travelers     TripTraveler[]
-  tripDocuments TripDocument[]
+  user            User                 @relation("CustomerTripRequests", fields: [userId], references: [id], onDelete: Cascade)
+  experience      Experience?          @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  tripper         User?                @relation("TripperTripRequests", fields: [tripperId], references: [id], onDelete: SetNull)
+  payment         Payment?
+  review          Review?
+  travelers       TripTraveler[]
+  tripDocuments   TripDocument[]
+  contactMessages TripContactMessage[]
 
   @@map("trip_requests")
 }
@@ -197,6 +199,34 @@ model TripDocument {
 
   @@index([tripRequestId, createdAt])
   @@map("trip_documents")
+}
+
+/// Write-only audit trail of admin→traveler contact emails: one row per send
+/// attempt. Audit metadata ONLY — MUST NOT be read as an authorization,
+/// idempotency, or delivery-confirmation input (see design.md ADR-1/#7).
+model TripContactMessage {
+  id            String            @id @default(cuid())
+  tripRequestId String
+  /// Admin-authored subject, exactly as sent. Max 200 chars app-side.
+  subject       String
+  /// Admin-authored PLAIN TEXT body, exactly as sent. Max 4000 chars app-side.
+  body          String            @db.Text
+  /// Audit metadata ONLY — MUST NOT be read as an authorization input.
+  /// Nulled if the admin account is deleted; `adminEmail` below survives.
+  adminId       String?
+  /// Denormalized sending admin address, captured at send time so the row stays
+  /// readable for support/dispute lookups after account deletion (Decision #9).
+  adminEmail    String
+  status        TripContactStatus
+  /// Failure detail from sendMail/Resend when FAILED; null on SENT. Truncated to 500.
+  error         String?
+  createdAt     DateTime          @default(now())
+
+  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  admin       User?       @relation("TripContactMessagesSent", fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([tripRequestId, createdAt])
+  @@map("trip_contact_messages")
 }
 
 model Experience {
@@ -540,6 +570,11 @@ enum TripRequestStatus {
   REVEALED
   COMPLETED
   CANCELLED
+}
+
+enum TripContactStatus {
+  SENT
+  FAILED
 }
 
 enum ExperienceStatus {
