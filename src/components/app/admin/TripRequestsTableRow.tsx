@@ -1,5 +1,6 @@
 import { Pencil } from "lucide-react";
 import { TableIconLink } from "@/components/ui/TableIconButton";
+import { formatAdminDate } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import { StatusBadge } from "./StatusBadge";
 
@@ -25,6 +26,9 @@ export function TripRequestsTableRow({
           {trip.user.name}
         </p>
         <p className="mt-0.5 text-xs text-neutral-500">{trip.user.email}</p>
+      </td>
+      <td className="px-5 py-4 text-sm text-neutral-700">
+        {formatAdminDate(trip.startDate)}
       </td>
       <td className="px-5 py-4 text-sm text-neutral-700">
         {trip.originCity}, {trip.originCountry}

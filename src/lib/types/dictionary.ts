@@ -1526,15 +1526,44 @@ export interface AdminPagesDict {
     title: string;
     edit: string;
     empty: string;
-    filters: { all: string };
+    filters: {
+      allStatuses: string;
+      allTypes: string;
+      allLevels: string;
+      allPayments: string;
+      noPayment: string;
+      clearFilters: string;
+      of: string;
+      count: string;
+      searchPlaceholder: string;
+      types: {
+        solo: string;
+        couple: string;
+        family: string;
+        group: string;
+        honeymoon: string;
+        paws: string;
+        xsed: string;
+      };
+      levels: {
+        essenza: string;
+        "modo-explora": string;
+        "explora-plus": string;
+        bivouac: string;
+        "atelier-getaway": string;
+        xsed: string;
+      };
+    };
     columns: {
       traveler: string;
       origin: string;
+      tripDate: string;
       typeLevel: string;
       status: string;
       payment: string;
       actions: string;
     };
+    sort: { ariaSortBy: string };
   };
 }
 

@@ -2,7 +2,7 @@
 
 **Priority:** 4 — Operations and review  
 **Routes:** `/dashboard/admin`, `/dashboard/admin/experiences/*`, `/dashboard/admin/packages`, `/dashboard/admin/payments`, `/dashboard/admin/reviews`, `/dashboard/admin/users`, `/dashboard/admin/waitlist`, `/dashboard/admin/xsed-notifications`, `/dashboard/admin/xsed/*`  
-**Last audited:** 2026-08-04
+**Last audited:** 2026-08-12
 
 ---
 
@@ -16,7 +16,7 @@ What works end-to-end today:
 - **Packages list** — `/dashboard/admin/packages` lists packages. Read-only view.
 - **Payments** — `/dashboard/admin/payments` lists all payments with server-side pagination. Read-only. No delete endpoint exists for payments (deliberate — financial/audit record).
 - **Reviews** — `/dashboard/admin/reviews` lists all reviews with server-side pagination. Admin can approve/reject individual reviews via `PATCH /api/admin/reviews/[id]`.
-- **Trip requests** — `/dashboard/admin/trip-requests` lists trip requests with server-side pagination and status filter; the KPI strip counts come from a separate dataset-wide query so they stay correct regardless of which page or filter is active. Admin can patch status via `PATCH /api/admin/trip-requests/[id]`.
+- **Trip requests** — `/dashboard/admin/trip-requests` lists trip requests with server-side pagination and independently-composable filters (status, travel type, experience level, payment status incl. a "no payment" state, and a traveler name/email search); the KPI strip counts come from a separate dataset-wide query so they stay correct regardless of which page or filter is active. Every real column (Traveler, Trip date, Origin, Type/Level, Status, Payment) is sortable via a shared `SortButton` header. Trip date's sort is anchored to "now" rather than a plain chronological sort — the default view shows the soonest-upcoming trip first, then further-out upcoming trips, then past trips ordered most-recent-first (toggling reverses the whole sequence); every other column sorts as a normal DB-level column sort. Admin can patch status via `PATCH /api/admin/trip-requests/[id]`.
 - **Users** — `/dashboard/admin/users` lists all users with server-side pagination. Admin can update user details and roles via `PATCH /api/admin/users/[id]`, delete a user via `DELETE /api/admin/users/[id]` (blocks self-delete), and search by name and bulk-delete via a checkbox column with a typed-confirmation modal (must type "DELETE" to confirm, given each deletion cascades across the user's trips, payments, reviews, and blog posts). The current admin's own row is excluded from bulk selection, and selection is scoped to the current page.
 - **Waitlist** — `/dashboard/admin/waitlist` lists entries with server-side pagination. Admin can approve/reject via `PATCH /api/admin/waitlist/[id]`.
 - **XSED notifications** — `/dashboard/admin/xsed-notifications` lists XSED notification records with server-side pagination. Admin can update via `PATCH /api/admin/xsed-notifications/[id]`.
@@ -44,7 +44,7 @@ What works end-to-end today:
 2. Experience status → `REJECTED`; tripper receives rejection email with note
 
 **Trip request management:**
-1. Trip requests listed in admin dashboard (no dedicated page — managed inline)
+1. `/dashboard/admin/trip-requests` → filter/search/sort to find a trip → click edit action → `/dashboard/admin/trip-requests/[id]`
 2. Admin can patch status via `PATCH /api/admin/trip-requests/[id]`
 
 ---
@@ -56,7 +56,7 @@ What works end-to-end today:
 | CRITICAL | XSED list page in admin sidebar is a live 404 — the sidebar link points to a route that does not render |
 | CRITICAL | Wrong role guard on XSED admin layout — a tripper can reach `/dashboard/admin/xsed/new` directly by URL |
 | HIGH | Review copies appear in the `/dashboard/admin/experiences` list — `isReviewCopy: true` entries mix with originals, causing confusion and wrong review targets |
-| HIGH | No dedicated admin trip-requests management page — `PATCH /api/admin/trip-requests/[id]` exists but no UI surfaces it beyond the main dashboard stats. Note for whoever builds it: `DELETE /api/admin/trip-requests/[id]` exists but cascades and hard-deletes the linked `Payment` row (`Payment.tripRequestId onDelete: Cascade`) — any bulk-delete added there would be a backdoor around the fact that payments otherwise have no delete endpoint at all. Deliberately excluded from the bulk-actions rollout below for this reason. |
+| MEDIUM | Trip requests list has no bulk actions (bulk status update, bulk delete). `DELETE /api/admin/trip-requests/[id]` exists but cascades and hard-deletes the linked `Payment` row (`Payment.tripRequestId onDelete: Cascade`) — a bulk-delete would be a backdoor around the fact that payments otherwise have no delete endpoint at all. Deliberately not built for this reason. |
 | MEDIUM | Payments list has no filtering by date range, status, or tripper — full unfiltered dump |
 | MEDIUM | Reviews list has no filtering by experience, status, or tripper |
 | MEDIUM | Waitlist approval/rejection has no email notification to the waitlisted user |
@@ -104,7 +104,6 @@ What works end-to-end today:
 1. **Fix XSED sidebar link** — point to the correct route that renders the XSED list.
 2. **Fix XSED layout role guard** — restrict to admin role only; a tripper must not be able to reach creation/edit forms.
 3. **Filter review copies from experiences list** — add `isReviewCopy: false` to the default query in `GET /api/admin/experiences`.
-4. **Build admin trip-requests management page** — list all trip requests with status filter; inline status update; link to trip details.
-5. **Add search/filter to payments and reviews lists** — date range, status, and text search at minimum. (Users list already has name search + bulk delete as of 2026-08-04; all admin tables have server-side pagination as of 2026-08-04.)
-6. **Add admin dashboard summary stats** — pending experience count, open trip requests, recent payment total.
-7. **Wire waitlist approval email** — send confirmation to the waitlisted user on `PATCH /api/admin/waitlist/[id]` approval.
+4. **Add search/filter to payments and reviews lists** — date range, status, and text search at minimum. (Users and trip requests lists already have search + rich filters as of 2026-08-12; all admin tables have server-side pagination as of 2026-08-04.)
+5. **Add admin dashboard summary stats** — pending experience count, open trip requests, recent payment total.
+6. **Wire waitlist approval email** — send confirmation to the waitlisted user on `PATCH /api/admin/waitlist/[id]` approval.

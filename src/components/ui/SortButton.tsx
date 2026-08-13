@@ -45,7 +45,7 @@ export function SortButton({
       aria-label={ariaLabel}
       aria-pressed={ariaPressed}
       className={cn(
-        "inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider transition-colors",
+        "inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider transition-colors",
         active ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700",
       )}
       onClick={onSort}
