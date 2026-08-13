@@ -14,6 +14,7 @@ import {
   buildOrganizationSchema,
   buildWebSiteSchema,
 } from "@/lib/seo/schemas";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { DEFAULT_LOCALE, hasLocale } from "@/lib/i18n/config";
 
 const barlow = Barlow({
@@ -47,16 +48,14 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com",
   ),
   openGraph: {
-    images: [
-      { alt: "Randomtrip", height: 1200, url: "/images/opengraph.png", width: 1800 },
-    ],
+    images: [DEFAULT_OG_IMAGE],
     siteName: "Randomtrip",
     type: "website",
   },
   title: "Randomtrip",
   twitter: {
     card: "summary_large_image",
-    images: ["/images/opengraph.png"],
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 

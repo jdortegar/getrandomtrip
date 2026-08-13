@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ContactPageContent } from "@/components/app/contact/ContactPageContent";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import HeaderHero from "@/components/journey/HeaderHero";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
@@ -16,6 +17,7 @@ export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
     description: meta.description,
     openGraph: {
       description: meta.openGraphDescription,
+      images: [DEFAULT_OG_IMAGE],
       title: meta.openGraphTitle,
       type: "website",
     },

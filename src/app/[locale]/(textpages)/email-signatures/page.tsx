@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { EmailSignaturesClient } from "@/components/marketing/EmailSignaturesClient";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
 
@@ -33,6 +34,7 @@ export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
     description: meta.description,
     openGraph: {
       description: meta.openGraphDescription,
+      images: [DEFAULT_OG_IMAGE],
       title: meta.openGraphTitle,
       type: "website",
     },
