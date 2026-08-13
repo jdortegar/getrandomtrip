@@ -5,6 +5,7 @@ import {
   isInRevealWindow,
   isInNotifyWindow,
   getRevealCountdown,
+  getDepartureCountdown,
 } from "../getRevealCountdown";
 
 // Fixed reference: startDate is 2025-07-01T12:00:00.000Z
@@ -136,5 +137,63 @@ describe("getRevealCountdown", () => {
     expect(result.revealed).toBe(false);
     expect(result.days).toBe(0);
     expect(result.hours).toBe(2);
+  });
+
+  it("regression: still counts down to startDate − 48h (the reveal moment), not departure — axis unchanged by the countdownTo extraction (ADR-5)", () => {
+    // now is exactly 5 days before startDate, so it is 3 days before revealAt
+    // (revealAt = startDate - 48h). getRevealCountdown must report 3 days,
+    // NOT 5 — if the extraction accidentally moved the axis to departure,
+    // this would silently read 5 instead.
+    const now = new Date(START_DATE.getTime() - 5 * 24 * 60 * 60 * 1000);
+    const result = getRevealCountdown(START_DATE, now);
+
+    expect(result.revealed).toBe(false);
+    expect(result.days).toBe(3);
+  });
+});
+
+describe("getDepartureCountdown", () => {
+  it("returns a positive day count when the departure is in the future", () => {
+    // 5 days before startDate
+    const now = new Date(START_DATE.getTime() - 5 * 24 * 60 * 60 * 1000);
+    const result = getDepartureCountdown(START_DATE, now);
+
+    expect(result.elapsed).toBe(false);
+    expect(result.days).toBe(5);
+    expect(result.hours).toBe(0);
+  });
+
+  it("marks elapsed: true once now is at or after startDate", () => {
+    const result = getDepartureCountdown(START_DATE, START_DATE);
+    expect(result.elapsed).toBe(true);
+  });
+
+  it("marks elapsed: true when now is well past startDate", () => {
+    const now = new Date(START_DATE.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const result = getDepartureCountdown(START_DATE, now);
+    expect(result.elapsed).toBe(true);
+  });
+
+  it("boundary: 1 second before startDate is not yet elapsed and shows 0 days", () => {
+    const now = new Date(START_DATE.getTime() - 1000);
+    const result = getDepartureCountdown(START_DATE, now);
+
+    expect(result.elapsed).toBe(false);
+    expect(result.days).toBe(0);
+    expect(result.hours).toBe(0);
+    expect(result.minutes).toBe(0);
+    expect(result.seconds).toBe(1);
+  });
+
+  it("counts down using the SAME axis regardless of the reveal window (departure, not reveal-at)", () => {
+    // 1 day before startDate — still inside the 48h reveal window (revealed
+    // would be true), but departure countdown must still read 1 day, not 0.
+    const now = new Date(START_DATE.getTime() - 1 * 24 * 60 * 60 * 1000);
+    const departure = getDepartureCountdown(START_DATE, now);
+    const reveal = getRevealCountdown(START_DATE, now);
+
+    expect(departure.elapsed).toBe(false);
+    expect(departure.days).toBe(1);
+    expect(reveal.revealed).toBe(true);
   });
 });

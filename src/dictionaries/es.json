@@ -4760,7 +4760,65 @@
     "preRevealTitle": "Todavía no revelamos tu destino",
     "preRevealDescription": "El itinerario y los documentos de este viaje se muestran una vez que tu destino es revelado.",
     "view": "Ver",
-    "download": "Descargar"
+    "download": "Descargar",
+    "hero": {
+      "eyebrowRevealed": "Tu destino, revelado",
+      "eyebrowCompleted": "Viaje completado",
+      "eyebrowCancelled": "Viaje cancelado",
+      "destinationFallback": "Tu destino sorpresa",
+      "subtitle": "{{nights}} noches de viaje sorpresa te esperan.",
+      "travelers": "{{n}} viajeros",
+      "departsInDays": "Sale en {{n}} días",
+      "departsToday": "Sale hoy"
+    },
+    "nav": {
+      "itinerary": "Itinerario",
+      "documents": "Documentos"
+    },
+    "essentials": {
+      "lengthLabel": "Duración",
+      "nightsValue": "{{n}} noches",
+      "daysSub": "{{n}} días en total",
+      "partyLabel": "Grupo",
+      "paxValue": "{{n}} personas",
+      "originLabel": "Origen",
+      "travelTypeLabel": "Tipo de viaje",
+      "travelTypeValues": {
+        "solo": "Solo",
+        "couple": "En pareja",
+        "family": "Familiar",
+        "group": "Grupal",
+        "honeymoon": "Luna de miel",
+        "paws": "Con mascota"
+      }
+    },
+    "itinerary": {
+      "eyebrow": "Día a día",
+      "heading": "Tu itinerario",
+      "lede": "El mismo recorrido que siguen todos los viajeros de este drop. No hay nada que planificar, solo aparecer."
+    },
+    "documents": {
+      "eyebrow": "Todo lo que necesitás",
+      "heading": "Tus documentos",
+      "lede": "Vouchers y confirmaciones emitidos específicamente para tu reserva — guardalos en tu teléfono o imprimilos antes de viajar."
+    },
+    "support": {
+      "heading": "¿Algo no cierra?",
+      "body": "Nuestro equipo armó este itinerario y puede ajustar una reserva, responder una pregunta o simplemente contarte qué sigue.",
+      "cta": "Contactar a soporte",
+      "messageLabel": "Tu mensaje",
+      "messagePlaceholder": "Contanos qué necesitás...",
+      "send": "Enviar",
+      "sending": "Enviando...",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "successTitle": "¡Mensaje enviado!",
+      "successBody": "Recibimos tu mensaje y te vamos a responder a la brevedad.",
+      "errorGeneric": "No pudimos enviar tu mensaje. Intentá de nuevo."
+    },
+    "footer": {
+      "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
+    }
   },
   "tripReveal": {
     "pageTitle": "Tu Destino Sorpresa",

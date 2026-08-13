@@ -4760,7 +4760,65 @@
     "preRevealTitle": "We haven't revealed your destination yet",
     "preRevealDescription": "This trip's itinerary and documents show up once your destination is revealed.",
     "view": "View",
-    "download": "Download"
+    "download": "Download",
+    "hero": {
+      "eyebrowRevealed": "Your destination, revealed",
+      "eyebrowCompleted": "Trip completed",
+      "eyebrowCancelled": "Trip cancelled",
+      "destinationFallback": "Your surprise destination",
+      "subtitle": "{{nights}} nights of surprise travel await.",
+      "travelers": "{{n}} travelers",
+      "departsInDays": "Departs in {{n}} days",
+      "departsToday": "Departs today"
+    },
+    "nav": {
+      "itinerary": "Itinerary",
+      "documents": "Documents"
+    },
+    "essentials": {
+      "lengthLabel": "Length",
+      "nightsValue": "{{n}} Nights",
+      "daysSub": "{{n}} days total",
+      "partyLabel": "Party",
+      "paxValue": "{{n}} travelers",
+      "originLabel": "Origin",
+      "travelTypeLabel": "Travel type",
+      "travelTypeValues": {
+        "solo": "Solo",
+        "couple": "Couple",
+        "family": "Family",
+        "group": "Group",
+        "honeymoon": "Honeymoon",
+        "paws": "With pets"
+      }
+    },
+    "itinerary": {
+      "eyebrow": "Day by day",
+      "heading": "Your itinerary",
+      "lede": "The same route every traveler on this drop is following. Nothing to plan, just show up."
+    },
+    "documents": {
+      "eyebrow": "Everything you need",
+      "heading": "Your documents",
+      "lede": "Vouchers and confirmations issued for your booking specifically — keep them on your phone or print them before you go."
+    },
+    "support": {
+      "heading": "Something not adding up?",
+      "body": "Our team put this itinerary together and can adjust a reservation, answer a question, or just talk you through what's ahead.",
+      "cta": "Contact support",
+      "messageLabel": "Your message",
+      "messagePlaceholder": "Tell us what you need...",
+      "send": "Send",
+      "sending": "Sending...",
+      "cancel": "Cancel",
+      "close": "Close",
+      "successTitle": "Message sent!",
+      "successBody": "We received your message and will get back to you shortly.",
+      "errorGeneric": "We couldn't send your message. Please try again."
+    },
+    "footer": {
+      "line": "Trip #{{tripId}} · Destination revealed on {{date}}"
+    }
   },
   "tripReveal": {
     "pageTitle": "Your Mystery Destination",

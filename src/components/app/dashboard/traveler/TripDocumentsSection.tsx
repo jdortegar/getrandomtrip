@@ -1,18 +1,14 @@
 "use client";
 
-import { FileText } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Download, Eye, FileText, Image as ImageIcon, Shield } from "lucide-react";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDocumentDTO } from "@/types/tripDocument";
+import { SectionHead } from "./SectionHead";
+import styles from "./traveler-trip-details.module.css";
 
 type Copy = Pick<
   TripItineraryDict,
-  | "documentsTitle"
-  | "documentsNote"
-  | "documentsCancelledNote"
-  | "documentsEmpty"
-  | "view"
-  | "download"
+  "documentsNote" | "documentsCancelledNote" | "documentsEmpty" | "view" | "download" | "documents"
 >;
 
 interface TripDocumentsSectionProps {
@@ -21,56 +17,92 @@ interface TripDocumentsSectionProps {
   status: string;
 }
 
+/** MIME-type-derived tag only (Resolved Decision #3) — never a fabricated
+ * confirmation number, room-type name, or date range. */
+function tagForMimeType(mimeType: string): string {
+  const [type, subtype] = mimeType.split("/");
+  if (type === "image") return (subtype ?? "img").toUpperCase();
+  if (mimeType === "application/pdf") return "PDF";
+  return (subtype ?? type ?? "file").toUpperCase();
+}
+
+function formatDocDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 /**
- * View/download only, wired to the authenticated document route
- * (`doc.href` / `doc.downloadHref`) — never a raw blob URL (Resolved
- * Decision #1). Renders `documentsCancelledNote` instead of `documentsNote`
- * when the trip is CANCELLED, so a cancelled trip showing vouchers doesn't
- * read as a bug (design.md ADR-6 widening).
+ * `.docGrid` / `.docCard` restyle of the documents section (design.md
+ * ADR-2, ADR-3). View/Download stop going through `<Button asChild>` and
+ * become raw `<a className={styles.btn}>` — the same call the admin
+ * fulfillment header already shipped through review (ADR-2). Populates
+ * strictly from `TripDocumentDTO`: label, country tag, mimeType-derived
+ * tag, upload date — never a fabricated confirmation number, room-type
+ * name, or date range (Resolved Decision #3). Props and the
+ * `TripDocumentDTO` contract are unchanged; only the markup is.
  */
-export function TripDocumentsSection({
-  copy,
-  documents,
-  status,
-}: TripDocumentsSectionProps) {
+export function TripDocumentsSection({ copy, documents, status }: TripDocumentsSectionProps) {
   const note = status === "CANCELLED" ? copy.documentsCancelledNote : copy.documentsNote;
 
   return (
-    <div className="mt-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-      <h4 className="mb-1 text-sm font-semibold text-neutral-900">
-        {copy.documentsTitle}
-      </h4>
-      <p className="mb-4 text-xs text-gray-500">{note}</p>
+    <section className={styles.block} id="documents">
+      <SectionHead
+        eyebrow={copy.documents.eyebrow}
+        heading={copy.documents.heading}
+        lede={copy.documents.lede}
+      />
+
+      <div className={styles.docNote}>
+        <Shield aria-hidden="true" />
+        {note}
+      </div>
 
       {documents.length === 0 ? (
-        <p className="text-sm text-gray-500">{copy.documentsEmpty}</p>
+        <p className={styles.lede}>{copy.documentsEmpty}</p>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {documents.map((doc) => (
-            <li
-              key={doc.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <FileText className="h-4 w-4 shrink-0 text-gray-400" />
-                <span className="truncate text-sm font-medium text-neutral-900">
-                  {doc.label}
-                </span>
+        <div className={styles.docGrid}>
+          {documents.map((doc) => {
+            const Icon = doc.mimeType.startsWith("image/") ? ImageIcon : FileText;
+            const tag = tagForMimeType(doc.mimeType);
+
+            return (
+              <div className={styles.docCard} key={doc.id}>
+                <div className={styles.docCardIcon}>
+                  <Icon aria-hidden="true" />
+                </div>
+                <div className={styles.docCardBody}>
+                  <p className={styles.docCardTitle}>{doc.label}</p>
+                  <p className={styles.docCardMeta}>
+                    <span className={styles.docCardTag}>{tag}</span>
+                    {doc.country} · {formatDocDate(doc.createdAt)}
+                  </p>
+                  <div className={styles.docCardActions}>
+                    <a
+                      className={`${styles.btn} ${styles.btnFill}`}
+                      href={doc.href}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <Eye aria-hidden="true" />
+                      {copy.view}
+                    </a>
+                    <a
+                      aria-label={copy.download}
+                      className={`${styles.btn} ${styles.btnIcon}`}
+                      href={doc.downloadHref}
+                    >
+                      <Download aria-hidden="true" />
+                    </a>
+                  </div>
+                </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <Button asChild size="sm" variant="ghost">
-                  <a href={doc.href} target="_blank" rel="noopener noreferrer">
-                    {copy.view}
-                  </a>
-                </Button>
-                <Button asChild size="sm" variant="secondary">
-                  <a href={doc.downloadHref}>{copy.download}</a>
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       )}
-    </div>
+    </section>
   );
 }
