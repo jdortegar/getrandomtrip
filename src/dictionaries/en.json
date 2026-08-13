@@ -864,7 +864,7 @@
     "xsedHero": {
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
-      "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE. WILL YOU BE ONE OF THEM?",
+      "title": "NEXT SATURDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
       "helper": "We'll notify you 10 minutes before the gateway opens every Sunday. Blink and you're out.",
       "inputLabel": "Email Address",
       "inputPlaceholder": "Email Address",
@@ -1153,8 +1153,8 @@
       "trippersHref": "/en/trippers",
       "xsedIntro": {
         "eyebrow": "TGIS | THANK GOD IT'S SUNDAY",
-        "title": "A new experience every Sunday",
-        "description": "1 night, every Sunday, a new place, a meal and a unique local experience per country.",
+        "title": "A new experience every weekend.",
+        "description": "A new destination every week — 1 night away, with a meal and a unique local experience per country.",
         "ctaLabel": "LEARN MORE",
         "ctaHref": "/xsed",
         "backgroundImage": "/images/xsed-hero.jpg"
@@ -1181,7 +1181,7 @@
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "TGIS",
-      "title": "NEXT SUNDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
+      "title": "NEXT SATURDAY, A FEW WILL ESCAPE THE ROUTINE.\nWILL YOU BE ONE OF THEM?",
       "helper": "We'll notify you 10 minutes before the gateway opens every Sunday.\nBlink and you're out.",
       "inputLabel": "Email",
       "inputPlaceholder": "Email",
