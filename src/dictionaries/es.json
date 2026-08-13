@@ -687,15 +687,44 @@
       "edit": "Editar",
       "empty": "No se encontraron solicitudes de viaje.",
       "filters": {
-        "all": "Todas"
+        "allStatuses": "Todos los estados",
+        "allTypes": "Todos los tipos",
+        "allLevels": "Todos los niveles",
+        "allPayments": "Todos los pagos",
+        "noPayment": "Sin pago",
+        "clearFilters": "Limpiar filtros",
+        "of": "de",
+        "count": "solicitudes",
+        "searchPlaceholder": "Buscar por nombre o email del viajero…",
+        "types": {
+          "solo": "Solo",
+          "couple": "En pareja",
+          "family": "Familiar",
+          "group": "Grupal",
+          "honeymoon": "Luna de miel",
+          "paws": "Con mascota",
+          "xsed": "TGIS Drop"
+        },
+        "levels": {
+          "essenza": "Essenza",
+          "modo-explora": "Modo Explora",
+          "explora-plus": "Explora+",
+          "bivouac": "Bivouac",
+          "atelier-getaway": "Atelier Getaway",
+          "xsed": "TGIS Drop"
+        }
       },
       "columns": {
         "traveler": "Viajero",
         "origin": "Origen",
+        "tripDate": "Fecha del viaje",
         "typeLevel": "Tipo / Nivel",
         "status": "Estado",
         "payment": "Pago",
         "actions": "Acciones"
+      },
+      "sort": {
+        "ariaSortBy": "Ordenar por {field}"
       }
     }
   },

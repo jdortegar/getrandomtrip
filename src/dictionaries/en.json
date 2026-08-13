@@ -687,15 +687,44 @@
       "edit": "Edit",
       "empty": "No trip requests found.",
       "filters": {
-        "all": "All"
+        "allStatuses": "All statuses",
+        "allTypes": "All types",
+        "allLevels": "All levels",
+        "allPayments": "All payments",
+        "noPayment": "No payment",
+        "clearFilters": "Clear filters",
+        "of": "of",
+        "count": "requests",
+        "searchPlaceholder": "Search by traveler name or email…",
+        "types": {
+          "solo": "Solo",
+          "couple": "Couple",
+          "family": "Family",
+          "group": "Group",
+          "honeymoon": "Honeymoon",
+          "paws": "With pets",
+          "xsed": "TGIS Drop"
+        },
+        "levels": {
+          "essenza": "Essenza",
+          "modo-explora": "Modo Explora",
+          "explora-plus": "Explora+",
+          "bivouac": "Bivouac",
+          "atelier-getaway": "Atelier Getaway",
+          "xsed": "TGIS Drop"
+        }
       },
       "columns": {
         "traveler": "Traveler",
         "origin": "Origin",
+        "tripDate": "Trip date",
         "typeLevel": "Type / Level",
         "status": "Status",
         "payment": "Payment",
         "actions": "Actions"
+      },
+      "sort": {
+        "ariaSortBy": "Sort by {field}"
       }
     }
   },

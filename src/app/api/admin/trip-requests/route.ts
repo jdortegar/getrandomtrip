@@ -8,6 +8,18 @@ import {
   TRIP_STATUS_FLOW,
   type TripRequestStatus,
 } from "@/lib/admin/trip-status";
+import {
+  buildTripRequestsWhere,
+  isTripPaymentStatusFilter,
+  isTripRequestLevel,
+  isTripRequestType,
+} from "@/lib/admin/tripRequestsFilters";
+import {
+  parseTripRequestSortBy,
+  parseTripRequestSortOrder,
+  sortTripDatesByProximity,
+  tripRequestListOrderBy,
+} from "@/lib/admin/tripRequestsSort";
 import type {
   AdminTripExperience,
   AdminTripPayment,
@@ -52,16 +64,55 @@ export async function GET(request: NextRequest) {
       statusParam && (ALL_STATUSES as string[]).includes(statusParam)
         ? (statusParam as TripRequestStatus)
         : undefined;
-    const where = status ? { status } : undefined;
+    const typeParam = searchParams.get("type");
+    const type = typeParam && isTripRequestType(typeParam) ? typeParam : undefined;
+    const levelParam = searchParams.get("level");
+    const level = levelParam && isTripRequestLevel(levelParam) ? levelParam : undefined;
+    const paymentStatusParam = searchParams.get("paymentStatus");
+    const paymentStatus =
+      paymentStatusParam && isTripPaymentStatusFilter(paymentStatusParam)
+        ? paymentStatusParam
+        : undefined;
+    const search = searchParams.get("search")?.trim() || undefined;
+    const where = buildTripRequestsWhere({
+      level,
+      paymentStatus,
+      search,
+      status,
+      type,
+    });
+    const sortBy = parseTripRequestSortBy(searchParams.get("sortBy"));
+    const sortOrder = parseTripRequestSortOrder(searchParams.get("sortOrder"));
 
-    const [tripRequests, total, allStatuses] = await Promise.all([
-      prisma.tripRequest.findMany({
-        where,
-        orderBy: [{ startDate: "asc" }, { createdAt: "desc" }],
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      prisma.tripRequest.count({ where }),
+    // `tripDate` is anchored to "now" (soonest-upcoming-first, not a plain
+    // chronological column sort) — Prisma's `orderBy` can't express that
+    // declaratively, so this path fetches every matching row, sorts in
+    // memory, then paginates in memory. Every other sort field keeps the
+    // simple DB-level orderBy + skip/take path.
+    const listQuery =
+      sortBy === "tripDate"
+        ? prisma.tripRequest.findMany({ where }).then((allMatching) => {
+            const sorted = sortTripDatesByProximity(allMatching, sortOrder, new Date());
+            return {
+              total: sorted.length,
+              tripRequests: sorted.slice(
+                (page - 1) * limit,
+                (page - 1) * limit + limit,
+              ),
+            };
+          })
+        : Promise.all([
+            prisma.tripRequest.findMany({
+              where,
+              orderBy: tripRequestListOrderBy(sortBy, sortOrder),
+              skip: (page - 1) * limit,
+              take: limit,
+            }),
+            prisma.tripRequest.count({ where }),
+          ]).then(([tripRequests, total]) => ({ total, tripRequests }));
+
+    const [{ total, tripRequests }, allStatuses] = await Promise.all([
+      listQuery,
       // Dataset-wide status counts for the KPI strip — independent of the
       // active page/filter, matching the pre-pagination behavior where the
       // KPI strip always summarized every trip request, not just the
