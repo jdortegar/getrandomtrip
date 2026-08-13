@@ -1,0 +1,893 @@
+<!doctype html><html><head><!-- frame-runtime --><script>window.__FRAME_PREAMBLE={"capabilities":{"assets":"assets.hcOK0ALv.js","comments":"comments.aMuwftAG.js","db":"db.C8ehi_0m.js","downloads":"downloads.BXsoAvg9.js","mcp":"mcp.D3B2EyQu.js","permissions":"permissions.DdITF2Mk.js","room":"room.BgXZkiYR.js","sample":"sample.DpdXn9di.js","self":"self.Das6TbZs.js","user":"user.o5zdRedj.js"},"transforms":"_transforms.BI3gXbbT.js","comments":"_comments.Cp2LbYKb.js","translate":"_translate.BOzFH2D9.js"}</script><script>(function(){"use strict";var ae=["light","dark","system"],ie=/^[A-Za-z0-9_-]{1,64}$/,K=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,le=new Set(["class","hidden","value","checked"]);function ce(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||le.has(t)}var ue="http://www.w3.org/1999/xhtml",fe="http://www.w3.org/2000/svg",de=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),pe=new Set(["script","style"]);function me(e){const t=e.localName.toLowerCase();return e.namespaceURI===ue?!de.has(t):e.namespaceURI===fe?!pe.has(t):!1}function ge(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_patch;if(t===null||typeof t!="object")return!1;const{seq:n,elements:i}=t;if(typeof n!="number"||!Number.isSafeInteger(n)||!Array.isArray(i)||i.length===0||i.length>64)return!1;for(const a of i){if(a===null||typeof a!="object")return!1;const r=a;if(typeof r.target!="string"||!ie.test(r.target)||r.text!==void 0&&typeof r.text!="string")return!1;if(r.attrsSet!==void 0){if(r.attrsSet===null||typeof r.attrsSet!="object")return!1;for(const[l,c]of Object.entries(r.attrsSet))if(!K.test(l)||typeof c!="string")return!1}if(r.attrsRemoved!==void 0){if(!Array.isArray(r.attrsRemoved))return!1;for(const l of r.attrsRemoved)if(typeof l!="string"||!K.test(l))return!1}}return!0}function _e(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function ve(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function he(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const n=t.theme;return typeof n=="string"&&ae.includes(n)}function ye(e){try{typeof reportError=="function"?reportError(e):setTimeout(()=>{throw e},0)}catch{}}var G=["#62744c","#b04e72","#5b7596","#a3651f","#7a6ba8","#3f7a75"],V=e=>{let t=0;for(let n=0;n<e.length;n++)t=t*31+e.charCodeAt(n)>>>0;return G[t%G.length]??"#788c5d"},X="#c7c9d1",J=e=>"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2'%3E%3Ccircle cx='1' cy='1' r='1' fill='"+encodeURIComponent(e)+"'/%3E%3C/svg%3E",be=Object.freeze({id:null,name:"",avatarUrl:J(X),color:X,email:null,isOwner:!1,canEdit:!1}),Ee=(...e)=>{const t=e[0],n=typeof t=="string"?[t]:Array.isArray(t)?t.filter(a=>typeof a=="string"):[],i=Object.create(null);for(const a of n)i[a]={id:a,name:"",avatarUrl:J(V(a)),color:V(a),email:null,isMe:!1};return i},Z=Object.freeze(Object.assign(Object.create(null),{user:Object.freeze(Object.assign(Object.create(null),{id:null,isOwner:!1,canEdit:!1,me:be,profiles:Ee,name:"",avatarUrl:null,search:Object.freeze([]),email:null}))})),we={sample:"sample"};function Q(){const e=new Uint8Array(20);try{crypto.getRandomValues(e)}catch{for(let n=0;n<e.length;n++)e[n]=Math.floor(Math.random()*256)}let t="";for(const n of e)t+=(n%36).toString(36);return t}function Ae(e,t){const n=r=>{const l={path:r},c=r.split("/");return{id:c[c.length-1],path:r,get:()=>t("get",[l]),set:p=>t("set",[l,p]),update:p=>t("update",[l,p]),delete:()=>t("delete",[l]),acquire:p=>t("acquire",[l,p]),onSnapshot:(p,b)=>t("subscribe",[l,p,b]),collection:p=>a(r+"/"+String(p))}},i=r=>({where:(l,c,p)=>i({...r,where:[...r.where??[],{f:String(l),op:String(c),v:p}]}),orderBy:(l,c)=>i({...r,orderBy:{f:String(l),dir:c===void 0?"asc":String(c)}}),limit:l=>i({...r,limit:Number(l)}),get:()=>t("query",[r]),onSnapshot:(l,c)=>t("subscribe",[r,l,c])}),a=r=>({...i({collection:r}),path:r,doc:l=>n(r+"/"+(l===void 0?Q():String(l))),add:l=>{const c=n(r+"/"+Q());return Promise.resolve(c.set(l)).then(()=>c)}});e.doc=r=>n(String(r)),e.collection=r=>a(String(r))}var Se=Object.freeze([]);function je(e,t){let n=null,i=null;const a=()=>e.__settled;e.peers=()=>Se,e.connected=()=>!1,e.emit=()=>a()?.()??Promise.resolve(),e.presence=r=>{const l=a();if(l)return l();let c=null;if(r!==null&&typeof r=="object")try{Array.isArray(r)||(c={...r})}catch{}return c===null?Promise.reject({code:"invalid_argument",message:"presence takes an object"}):(n===null&&(n=Object.create(null),i=Promise.resolve(t("presence",[n]))),Object.assign(n,c),i)}}var D="__frame_scroll",Re=150,Oe=310,Te=160,Pe=3e4;function Le(){let e=0,t=!1,n=!1,i=!1,a=0,r=null;const l=u=>{try{sessionStorage.setItem(D,JSON.stringify({y:u}))}catch{}},c=()=>{if(clearTimeout(e),r===null)return;const u=r;r=null,l(u)},p=()=>{if(t){t=!1;return}n=!0,r=scrollY,clearTimeout(e),e=setTimeout(c,Re)};try{addEventListener("scroll",p,{passive:!0}),addEventListener("pagehide",c)}catch{}const b=()=>{let u;try{u=sessionStorage.getItem(D)}catch{return null}if(u===null)return null;let f;try{f=JSON.parse(u)}catch{f=null}const m=f?.y;if(!(typeof m=="number"&&Number.isFinite(m)&&m>=0)){try{sessionStorage.removeItem(D)}catch{}return null}return m};let P=!1;const y=u=>{try{const f=scrollY;scrollTo({top:u,left:0,behavior:"instant"}),a=u,i=!0,clearTimeout(e),r=null,l(u);const m=scrollY;m!==f&&(t=!0),m!==u&&!P&&(P=!0,addEventListener("load",()=>{try{if(scrollY===m){const v=b();y(v!==null?v:a)}}catch{}},{once:!0}))}catch{}},R=()=>{try{return!!location.hash}catch{return!0}};let A=!1;const O=()=>{try{if(A||innerWidth>Oe||innerHeight>Te)return;A=!0;const u=Date.now(),f=()=>{try{removeEventListener("resize",f)}catch{}if(Date.now()-u>Pe||n||R())return;const m=b();y(m!==null?m:a)};addEventListener("resize",f)}catch{}};let L=!1,s=!1;return{restore(){if(L||(L=!0,R()))return;const u=b();u!==null&&(y(u),O())},promoted(){if(s||(s=!0,R()))return;const u=b();u!==null?(y(u),O()):i&&y(a)}}}var ze="modulepreload",Fe=function(e){return"/"+e},$e={},Me=function(t,n,i){let a=Promise.resolve();function r(l){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=l,window.dispatchEvent(c),!c.defaultPrevented)throw l}return a.then(l=>{for(const c of l||[])c.status==="rejected"&&r(c.reason);return t().catch(r)})};(function(){const e=Object.defineProperty,t=globalThis,n=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let i=0;for(let a=0;a<n.length;a++){const r=n[a];try{e(t,r,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[r]}catch{}try{e(t,r,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[r]=="function"&&i++}if(i&&window!==top)try{parent.postMessage({__frame_rtc_lockdown_failed:i},"*")}catch{}})();var ke=1e4,Ce=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function ee(e){for(const t of Ce)if(t.endsWith(":*"))try{const n=new URL(e);if(`${n.protocol}//${n.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var U=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),x=window.__FRAME_PREAMBLE?.transforms,z=window.__FRAME_PREAMBLE?.comments,F=window.__FRAME_PREAMBLE?.translate,q=/^[\w.-]+\.js$/,Ne=/^[a-z][a-z0-9_-]{0,63}$/,I=e=>Me(()=>import("/_runtime/"+e),void 0);function Ue(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:Y,pipe:()=>({wrap:(n,i)=>(...a)=>{try{return i(...a)}catch(r){return Promise.reject(r)}}})}}var te=null,M=null;function $(e,t,n){try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:n,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var H=!1;function qe(e,t){const n=[];for(const i of e.elements){const a=document.querySelector(`[data-id="${i.target}"]`);if(!a){parent.postMessage({__frame_patch_miss:{seq:e.seq}},t);return}if([...Object.keys(i.attrsSet??{}),...i.attrsRemoved??[]].some(r=>!ce(r))){parent.postMessage({__frame_patch_miss:{seq:e.seq}},t);return}if(i.text!==void 0&&!me(a)){parent.postMessage({__frame_patch_miss:{seq:e.seq}},t);return}for(const[r,l]of Object.entries(i.attrsSet??{}))if(r.toLowerCase()!=="data-id"){try{a.setAttribute(r,l)}catch{}re(a,r,l)}for(const r of i.attrsRemoved??[])r.toLowerCase()!=="data-id"&&(a.removeAttribute(r),re(a,r,null));typeof i.text=="string"&&(a.textContent=i.text),n.push(i.target)}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function re(e,t,n){if(!(e instanceof HTMLInputElement))return;const i=t.toLowerCase();i==="value"&&e.type!=="file"?e.value=n??"":i==="checked"&&(e.checked=n!==null)}function ne(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,H=!0):H&&(delete t.dataset.theme,t.style.colorScheme="",H=!1)}var se=256,k=Object.assign(Object.create(null),{mcp:Object.assign(Object.create(null),{watchTool:{handlerArg:3}}),db:Object.assign(Object.create(null),{subscribe:{handlerArg:1,errArg:2}}),room:Object.assign(Object.create(null),{on:{handlerArg:1,errArg:2},onPeers:{handlerArg:0,errArg:1},onConnection:{handlerArg:0,errArg:1}})}),Ie=Object.assign(Object.create(null),{db:(e,t)=>Ae(e,t),room:(e,t,n)=>je(e,n)}),C=new Map;function Y(e,t){const n=C.get(e);if(!n)return;const i=Object.assign(Object.create(null),t);Object.assign(n.impl,i),n.impl.__settled=()=>Promise.reject({code:"capability_removed",message:`${e}: method not in this runtime`});const a=n.queue;n.queue=[];for(const r of a){const l=i[r.method];if(l)if(k[e]?.[r.method])try{r.resolve(l(...r.args))}catch{N(r,k[e][r.method],{code:"transform_error",message:`${e}.${r.method} rejected its arguments`})}else l(...r.args).then(r.resolve,r.reject);else{const c={code:"capability_removed",message:`${e}.${r.method} is not in this runtime`},p=k[e]?.[r.method];if(p){N(r,p,c);continue}r.reject(c)}}}function Be(e,t){const n=C.get(e);if(!n)return;n.impl.__settled=()=>Promise.reject(t);const i=n.queue;n.queue=[];for(const a of i){const r=k[e]?.[a.method];if(r){N(a,r,t);continue}a.reject(t)}}function oe(e,t){if(typeof e=="function")try{return e(...t)}catch{return Object.create(null)}return Array.isArray(e)?[...e]:e!==null&&typeof e=="object"?{...e}:e}function B(e,t){const n=Z[e];if(!n){Be(e,t);return}Y(e,Object.fromEntries(Object.entries(n).map(([i,a])=>[i,(...r)=>Promise.resolve(oe(a,r))])))}function N(e,t,n){if(e.syncState?.dead)return;const i=t.errArg===void 0?void 0:e.args[t.errArg],a=t.errArg===void 0?e.args[t.handlerArg]:i;typeof a=="function"&&queueMicrotask(()=>{if(!e.syncState?.dead)try{a(t.errArg===void 0?{type:"error",error:n}:n)}catch(r){ye(r)}})}var W=Object.getOwnPropertyDescriptor(window,"claude");if(window!==top&&!(W&&W.writable===!1)){const e=x&&q.test(x)?I(x).catch(()=>{}):Promise.resolve(void 0),t=s=>{if(s.type==="auxclick"&&s.button!==1)return;const u=s.target,f=u&&u.closest?u.closest("a[href],area[href]"):null;if(!f)return;const m=f.getAttribute("href");if(!m)return;let v,S;try{v=new URL(m,document.baseURI),S=new URL(document.baseURI).origin}catch{return}if((v.protocol==="http:"||v.protocol==="https:")&&v.origin!==S){s.preventDefault();const w=(f.getAttribute("target")??"").toLowerCase(),g=s.type==="auxclick"||s.metaKey||s.ctrlKey||s.shiftKey||s.altKey||!["","_self","_top","_parent"].includes(w);parent.postMessage({__frame_nav:!0,url:v.href,newTab:g},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const n={},i=s=>{s.isTrusted&&(n.pointer=!0)},a=s=>{s.isTrusted&&(n.click=!0)};addEventListener("pointermove",i,{capture:!0,passive:!0}),addEventListener("click",a,{capture:!0,passive:!0}),e.then(s=>{s?.wireNav&&(s.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",i,!0),removeEventListener("click",a,!0),s.wireEngagement?.(n))});let r=null;try{r=Le()}catch{}const l=W?.value??{};$(window,"claude",l);const c=s=>{const u={impl:Object.create(null),queue:[]};C.set(s,u);const f=u.impl,m=g=>({code:"queue_overflow",message:`${s}.${g}: pre-init call queue is full`}),v=(g,d)=>{if(u.queue.length>=se){const h=Z[s];return h&&g in h?Promise.resolve(oe(h[g],d)):Promise.reject(m(g))}return new Promise((h,o)=>{u.queue.push({method:g,args:d,resolve:h,reject:o})})},S=we[s],w=new Proxy(S===void 0?f:(()=>{}),{apply:(g,d,h)=>{const o=S,_=f[o]??f.__settled;return _?_(...h):v(o,h)},get:(g,d)=>{if(typeof d!="string"||d==="then"||d==="toJSON"||d==="valueOf")return;if(d==="toString")return Object.prototype.toString;if(S!==void 0&&(d==="call"||d==="apply"||d==="bind"))return Function.prototype[d];const h=k[s]?.[d];return h?(...o)=>{if(typeof o[h.handlerArg]!="function")throw new TypeError(`${s}.${d} requires a handler function`);const _=f[d];if(_)return _(...o);if(f.__settled){const j={dead:!1},De={args:[...o],syncState:j};return f.__settled().catch(xe=>N(De,h,xe)),()=>{j.dead=!0}}if(u.queue.length>=se){const j={dead:!1};return N({args:[...o],syncState:j},h,m(d)),()=>{j.dead=!0}}let E=null;const T={dead:!1};return u.queue.push({method:d,args:o,resolve:j=>{E=typeof j=="function"?j:null,T.dead&&E?.()},reject:()=>{},syncState:T}),()=>{T.dead=!0,E?.()}}:(...o)=>{const _=f[d]??f.__settled;return _?_(...o):v(d,o)}},set:()=>!1});Ie[s]?.(f,(g,d)=>w[g](...d),v),$(l,s,w)};for(const s of Object.keys(U)){if(l[s]!==void 0){$(l,s,l[s]);continue}c(s)}let p=null,b=null,P=0;const y=s=>{s.source!==parent||!ee(s.origin)||_e(s.data)&&(p=s.data.__frame_init,M=s.origin,removeEventListener("message",y),clearTimeout(P),b?.())};addEventListener("message",y),parent.postMessage({__frame_connect:!0},"*");const R=new Promise(s=>{b=s,P=setTimeout(()=>{removeEventListener("message",y),s()},ke)}),A=document.readyState==="loading"?new Promise(s=>document.addEventListener("DOMContentLoaded",()=>s(),{once:!0})):Promise.resolve();A.then(()=>{try{r?.restore()}catch{}});const O={cb:null},L=s=>{if(!(s.source!==parent||!ee(s.origin))&&ve(s.data)){try{r?.promoted()}catch{}O.cb?.()}};addEventListener("message",L),R.then(async()=>{if(!p||!M){for(const o of C.keys())B(o,{code:"not_granted",message:"frame initialization did not arrive - capability unavailable"});return}ne(p.theme);const s=M;let u=!1,f=!1;addEventListener("message",o=>{if(o.source!==parent||o.origin!==s)return;he(o.data)&&ne(o.data.__frame_theme.theme),ge(o.data)&&qe(o.data.__frame_patch,s);const _=o.data?.__fc_mode;_&&typeof _=="object"&&!u&&z&&q.test(z)&&(u=!0,I(z).then(T=>T.install?.(s,_.on===!0)).catch(()=>{}));const E=o.data?.__ft_cmd;E&&typeof E=="object"&&!f&&F&&q.test(F)&&(f=!0,I(F).then(T=>T.install?.(s,E)).catch(()=>{}))});const m=Object.keys(p.capabilities??{});for(const o of m)Object.hasOwn(U,o)||Ne.test(o)&&l[o]===void 0&&(c(o),B(o,{code:"capability_disabled",message:"capability not in this runtime generation"}));const v=m.filter(o=>Object.hasOwn(U,o)).map(o=>[o,U[o]]).filter(o=>typeof o[1]=="string"&&q.test(o[1])),S=await Promise.allSettled(v.map(([,o])=>I(o))),w=await e,g=M;w?.buildBoot||parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},g),te=w?.buildBoot?w.buildBoot(p,w.TRANSFORMS??{},{shellOrigin:g,mount:Y},o=>parent.postMessage({__frame_cap_telemetry:o},g)):Ue(p,g);const d=o=>parent.postMessage({__frame_cap_telemetry:{kind:"cap-load-error",cap:o}},g),h=te;S.forEach((o,_)=>{const E=v[_][0];if(o.status!=="fulfilled"){d(E);return}try{o.value?.install?.(h)}catch{d(E)}});for(const[o,_]of C)if(_.impl.__settled===void 0){if(m.includes(o)){B(o,{code:"capability_disabled",message:"capability not available in this session"});continue}B(o,{code:"not_granted",message:"capability not available in this session"})}await A,parent.postMessage({__frame_ready:!0},M),e.then(o=>o?.installSizeReporter?.(g,O))})}})();</script><!-- /frame-runtime --><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Your Trip — Mendoza, Argentina</title>
+<style>
+  @font-face {
+    font-family: "Barlow Condensed";
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url(data:font/BASE64_STRIPPED) format("woff2");
+  }
+  @font-face {
+    font-family: "Barlow Condensed";
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url(data:font/BASE64_STRIPPED) format("woff2");
+  }
+  @font-face {
+    font-family: "Barlow Condensed";
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+    src: url(data:font/BASE64_STRIPPED) format("woff2");
+  }
+  @font-face {
+    font-family: "Barlow";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url(data:font/BASE64_STRIPPED) format("woff2");
+  }
+  @font-face {
+    font-family: "Barlow";
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url(data:font/BASE64_STRIPPED) format("woff2");
+  }
+  @font-face {
+    font-family: "Barlow";
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url(data:font/BASE64_STRIPPED) format("woff2");
+  }
+
+  :root {
+    --ink: #111827;
+    --cyan: #4f96b6;
+    --sun: #fcd34d;
+    --surface: #ffffff;
+    --ground: #f9fafb;
+    --border: #e5e7eb;
+
+    /* shades of the two brand hues, hero backdrop only */
+    --ink-950: #0b0f19;
+    --ink-800: #161e2e;
+    --cyan-900: #1f4a5e;
+    --cyan-700: #3a7690;
+    --sun-500: #f5b94d;
+
+    --ink-rgb: 17, 24, 39;
+    --cyan-rgb: 79, 150, 182;
+
+    --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --font-body: "Barlow", -apple-system, "Segoe UI", sans-serif;
+
+    --measure: 68ch;
+    color-scheme: light;
+  }
+
+  /* This prototype mirrors a page whose product is deliberately light-only
+     (see project design system: "no dark mode, body is forced light").
+     We pin the same tokens under a dark OS/viewer preference so the page
+     never renders broken or illegible — a deliberate single-theme choice,
+     not an omission. */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #111827;
+      --cyan: #4f96b6;
+      --sun: #fcd34d;
+      --surface: #ffffff;
+      --ground: #f9fafb;
+      --border: #e5e7eb;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #111827;
+    --cyan: #4f96b6;
+    --sun: #fcd34d;
+    --surface: #ffffff;
+    --ground: #f9fafb;
+    --border: #e5e7eb;
+  }
+  :root[data-theme="light"] {
+    --ink: #111827;
+    --cyan: #4f96b6;
+    --sun: #fcd34d;
+    --surface: #ffffff;
+    --ground: #f9fafb;
+    --border: #e5e7eb;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  button { font: inherit; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap; border: 0;
+  }
+
+  .icon { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* ---------- Eyebrow / heading pattern (design-system convention) ---------- */
+  .eyebrow {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+  }
+  .heading {
+    margin: 0.4rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: 0.005em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .heading--section { font-size: clamp(1.9rem, 4.2vw, 2.75rem); }
+  .lede {
+    max-width: var(--measure);
+    margin: 0.9rem 0 0;
+    color: #4b5563;
+    font-size: 1rem;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    min-height: 78vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background:
+      radial-gradient(65% 55% at 50% 78%, rgba(245, 185, 77, 0.55), rgba(245, 185, 77, 0) 70%),
+      linear-gradient(180deg, var(--ink-950) 0%, var(--cyan-900) 46%, var(--cyan-700) 72%, #c98a4e 92%, #e7ac5c 100%);
+  }
+  .hero__stars {
+    position: absolute; inset: 0 0 45% 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1.5px 1.5px at 28% 8%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 44% 22%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 62% 12%, rgba(255,255,255,0.55), transparent),
+      radial-gradient(1px 1px at 77% 26%, rgba(255,255,255,0.65), transparent),
+      radial-gradient(1.5px 1.5px at 89% 15%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 95% 34%, rgba(255,255,255,0.5), transparent);
+    opacity: 0.9;
+  }
+  .hero__balloon {
+    position: absolute;
+    top: 16%;
+    left: 68%;
+    width: clamp(34px, 5vw, 56px);
+    color: rgba(255, 246, 224, 0.92);
+    animation: drift 14s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__balloon { animation: none; }
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-18px, 14px); }
+  }
+  .hero__mountains {
+    position: absolute;
+    left: 0; right: 0; bottom: 15%;
+    width: 100%;
+    height: 42%;
+  }
+  .hero__rows {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 15%;
+    background: repeating-linear-gradient(
+      100deg,
+      rgba(11, 15, 25, 0.94) 0px,
+      rgba(11, 15, 25, 0.94) 3px,
+      rgba(11, 15, 25, 0.72) 3px,
+      rgba(11, 15, 25, 0.72) 15px
+    );
+  }
+  .hero__scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(11,15,25,0) 40%, rgba(11,15,25,0.55) 100%);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 6rem 1.5rem 3rem;
+    color: #fff;
+  }
+  .hero__inner { max-width: 1100px; margin: 0 auto; }
+  .hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--sun);
+  }
+  .hero__eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 999px;
+    background: var(--sun);
+    box-shadow: 0 0 0 4px rgba(252, 211, 77, 0.25);
+  }
+  .hero__title {
+    margin: 0.6rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.86;
+    letter-spacing: 0.001em;
+    font-size: clamp(2.75rem, 9vw, 6.5rem);
+    text-wrap: balance;
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.25);
+  }
+  .hero__subtitle {
+    margin: 1rem 0 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    color: rgba(255,255,255,0.88);
+  }
+  .hero__meta {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem 1.6rem;
+  }
+  .hero__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.92);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(252, 211, 77, 0.16);
+    border: 1px solid rgba(252, 211, 77, 0.5);
+    color: var(--sun);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------- Layout shell ---------- */
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+  .backrow {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    padding: 1.1rem 0;
+  }
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.85rem; font-weight: 600; color: #4b5563;
+    text-decoration: none; padding: 0.3rem 0;
+  }
+  .backlink:hover { color: var(--ink); }
+  .backlink .icon { width: 16px; height: 16px; }
+
+  .jumpnav {
+    display: flex; gap: 1.4rem;
+  }
+  .jumpnav a {
+    font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; text-decoration: none; color: #6b7280;
+    padding-bottom: 0.2rem; border-bottom: 2px solid transparent;
+  }
+  .jumpnav a:hover { color: var(--ink); border-color: var(--border); }
+
+  section.block { padding: 3.2rem 0; border-top: 1px solid var(--border); }
+  section.block:first-of-type { border-top: none; padding-top: 2.2rem; }
+
+  .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+
+  /* ---------- Essentials strip ---------- */
+  .essentials {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(17,24,39,0.04);
+    overflow: hidden;
+    margin-top: 1.4rem;
+  }
+  .essentials__item {
+    padding: 1.25rem 1.4rem;
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 0.35rem;
+  }
+  .essentials__item:first-child { border-left: none; }
+  .essentials__label {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #9ca3af;
+  }
+  .essentials__label .icon { width: 14px; height: 14px; color: var(--cyan); }
+  .essentials__value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .essentials__sub { font-size: 0.78rem; color: #9ca3af; }
+
+  @media (max-width: 860px) {
+    .essentials { grid-template-columns: repeat(2, 1fr); }
+    .essentials__item:nth-child(3) { border-left: none; }
+  }
+  @media (max-width: 520px) {
+    .essentials { grid-template-columns: 1fr; }
+    .essentials__item { border-left: none !important; border-top: 1px solid var(--border); }
+    .essentials__item:first-child { border-top: none; }
+  }
+
+  /* ---------- Itinerary timeline ---------- */
+  .timeline {
+    list-style: none;
+    margin: 2.2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .day {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(17,24,39,0.04);
+    padding: 1.6rem;
+  }
+  .day__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-align: center;
+  }
+  .day__num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2.6rem;
+    line-height: 0.85;
+    color: var(--cyan);
+    font-variant-numeric: tabular-nums;
+  }
+  .day__dow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9ca3af;
+  }
+  .day__date {
+    font-size: 0.72rem;
+    color: #9ca3af;
+  }
+  .day__title {
+    margin: 0 0 1.1rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+  .stops { list-style: none; margin: 0; padding: 0; position: relative; }
+  .stop {
+    position: relative;
+    display: grid;
+    grid-template-columns: 5.5rem 1.6rem 1fr;
+    gap: 0.9rem;
+    padding-bottom: 1.3rem;
+  }
+  .stop:last-child { padding-bottom: 0; }
+  .stop__time {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.1rem;
+  }
+  .stop__rail { position: relative; display: flex; justify-content: center; }
+  .stop__dot {
+    width: 10px; height: 10px; border-radius: 999px;
+    background: var(--surface);
+    border: 2px solid var(--cyan);
+    margin-top: 0.28rem;
+    z-index: 1;
+  }
+  .stop__line {
+    position: absolute; top: 0.9rem; bottom: -1.3rem;
+    width: 1px; background: var(--border);
+  }
+  .stop:last-child .stop__line { display: none; }
+  .stop__body { min-width: 0; }
+  .stop__activity {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin: 0 0 0.25rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+  .stop__activity .icon { width: 16px; height: 16px; color: var(--cyan); }
+  .stop__desc { margin: 0; font-size: 0.88rem; color: #4b5563; }
+
+  @media (max-width: 640px) {
+    .day { grid-template-columns: 1fr; }
+    .day__marker { flex-direction: row; justify-content: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
+    .day__num { font-size: 1.9rem; }
+    .stop { grid-template-columns: 4.2rem 1.4rem 1fr; }
+    .stop__time { font-size: 0.78rem; }
+  }
+
+  /* ---------- Documents ---------- */
+  .doc-note {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    background: rgba(79, 150, 182, 0.08);
+    border: 1px solid rgba(79, 150, 182, 0.25);
+    border-radius: 0.7rem;
+    font-size: 0.85rem;
+    color: #1f4a5e;
+  }
+  .doc-note .icon { width: 16px; height: 16px; color: var(--cyan); flex-shrink: 0; }
+  .doc-grid {
+    margin-top: 1.6rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 720px) {
+    .doc-grid { grid-template-columns: 1fr; }
+  }
+  .doc-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(17,24,39,0.04);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .doc-card:hover { box-shadow: 0 8px 20px rgba(17,24,39,0.08); transform: translateY(-1px); }
+  .doc-card__icon {
+    flex-shrink: 0;
+    width: 3rem; height: 3rem;
+    border-radius: 0.65rem;
+    background: var(--ground);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink);
+  }
+  .doc-card__icon .icon { width: 22px; height: 22px; }
+  .doc-card__body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 0.55rem; }
+  .doc-card__title { margin: 0; font-weight: 700; font-size: 0.98rem; color: var(--ink); }
+  .doc-card__meta {
+    margin: 0; font-size: 0.82rem; color: #6b7280;
+    display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+  }
+  .doc-card__tag {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--cyan);
+    background: rgba(79, 150, 182, 0.12);
+    padding: 0.12rem 0.4rem; border-radius: 0.3rem;
+  }
+  .doc-card__actions { display: flex; gap: 0.5rem; margin-top: auto; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    height: 2.35rem; padding: 0 0.9rem;
+    border-radius: 0.4rem;
+    font-size: 0.8rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    text-decoration: none; cursor: pointer;
+    border: 1.5px solid var(--ink);
+    background: transparent; color: var(--ink);
+  }
+  .btn .icon { width: 15px; height: 15px; }
+  .btn:hover { background: var(--ink); color: #fff; }
+  .btn:focus-visible, a:focus-visible, .jumpnav a:focus-visible {
+    outline: 2px solid var(--cyan); outline-offset: 2px;
+  }
+  .btn--icon { width: 2.35rem; padding: 0; flex-shrink: 0; }
+  .btn--fill { background: var(--ink); color: #fff; }
+  .btn--fill:hover { background: #030712; }
+
+  /* ---------- Help strip ---------- */
+  .help {
+    display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+    padding: 1.8rem 2rem;
+    background: var(--ink);
+    border-radius: 1rem;
+    color: #fff;
+  }
+  .help__text h3 {
+    margin: 0 0 0.3rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    letter-spacing: 0.01em;
+  }
+  .help__text p { margin: 0; color: rgba(255,255,255,0.72); font-size: 0.88rem; max-width: 48ch; }
+  .help .btn { border-color: #fff; color: #fff; }
+  .help .btn:hover { background: #fff; color: var(--ink); }
+
+  footer.pagefoot {
+    text-align: center;
+    padding: 2.4rem 1.5rem 3rem;
+    font-size: 0.78rem;
+    color: #9ca3af;
+  }
+</style>
+
+<svg class="sr-only" aria-hidden="true">
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+  <symbol id="i-map-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M2 12l19-9-4 19-5-8-8-2z"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M2 9v10"/><path d="M2 14h20"/><path d="M2 9h16a4 4 0 0 1 4 4v1"/><circle cx="7" cy="9" r="1.6"/></symbol>
+  <symbol id="i-glass" viewBox="0 0 24 24"><path d="M6 3h12l-2 8a4 4 0 0 1-8 0z"/><line x1="12" y1="14" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></symbol>
+  <symbol id="i-fork" viewBox="0 0 24 24"><path d="M6 3v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3"/><line x1="8" y1="12" x2="8" y2="21"/><path d="M17 3c-1.5 0-3 1.5-3 4v3a1.5 1.5 0 0 0 1.5 1.5h0V21"/></symbol>
+  <symbol id="i-grape" viewBox="0 0 24 24"><circle cx="9" cy="8" r="2.4"/><circle cx="15" cy="8" r="2.4"/><circle cx="6" cy="13" r="2.4"/><circle cx="12" cy="13" r="2.4"/><circle cx="18" cy="13" r="2.4"/><circle cx="9" cy="18" r="2.4"/><circle cx="15" cy="18" r="2.4"/><path d="M12 3v2"/></symbol>
+  <symbol id="i-mountain" viewBox="0 0 24 24"><path d="M8 3 2 21h20L14 7l-3 5-3-9z"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17h14M5 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM3 17V11l2-5h14l2 5v6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><polyline points="7 11 12 16 17 11"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+</svg>
+
+<header class="hero" role="banner">
+  <div class="hero__stars" aria-hidden="true"></div>
+  <svg class="hero__balloon" viewBox="0 0 48 64" aria-hidden="true">
+    <ellipse cx="24" cy="22" rx="16" ry="20" fill="currentColor" opacity="0.9"/>
+    <path d="M14 40 L34 40 L30 50 L18 50 Z" fill="currentColor" opacity="0.9"/>
+    <rect x="19" y="52" width="10" height="7" rx="1.5" fill="currentColor" opacity="0.9"/>
+  </svg>
+  <svg class="hero__mountains" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,260 0,150 120,90 230,160 340,60 430,140 520,40 640,150 740,100 860,170 960,80 1080,160 1200,120 1200,260" fill="#233c50" opacity="0.55"/>
+    <polygon points="0,260 0,190 90,140 180,200 290,120 380,190 470,110 560,195 660,150 760,210 880,140 980,200 1080,175 1200,210 1200,260" fill="#152534" opacity="0.85"/>
+  </svg>
+  <div class="hero__rows" aria-hidden="true"></div>
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <div class="hero__inner">
+      <p class="hero__eyebrow"><span class="dot"></span> Your destination, revealed</p>
+      <h1 class="hero__title">Mendoza, Argentina</h1>
+      <p class="hero__subtitle">Two nights among the Malbec rows, at the foot of the Andes.</p>
+      <div class="hero__meta">
+        <span class="hero__meta-item"><svg class="icon"><use href="#i-calendar"/></svg> Sat, Aug 22 → Mon, Aug 24, 2026</span>
+        <span class="hero__meta-item"><svg class="icon"><use href="#i-users"/></svg> 2 travelers</span>
+        <span class="hero__pill"><svg class="icon"><use href="#i-plane"/></svg> Departs in 2 days</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="backrow">
+    <a class="backlink" href="#">
+      <svg class="icon"><use href="#i-arrow-left"/></svg>
+      Back to your trip
+    </a>
+    <nav class="jumpnav" aria-label="Section navigation">
+      <a href="#itinerary">Itinerary</a>
+      <a href="#documents">Documents</a>
+    </nav>
+  </div>
+
+  <section class="block essentials-block">
+    <div class="essentials">
+      <div class="essentials__item">
+        <span class="essentials__label"><svg class="icon"><use href="#i-moon"/></svg> Length</span>
+        <span class="essentials__value">2 Nights</span>
+        <span class="essentials__sub">3 days total</span>
+      </div>
+      <div class="essentials__item">
+        <span class="essentials__label"><svg class="icon"><use href="#i-users"/></svg> Party</span>
+        <span class="essentials__value">2 Pax</span>
+        <span class="essentials__sub">Double room</span>
+      </div>
+      <div class="essentials__item">
+        <span class="essentials__label"><svg class="icon"><use href="#i-map-pin"/></svg> Base</span>
+        <span class="essentials__value">Luján de Cuyo</span>
+        <span class="essentials__sub">Wine-country district</span>
+      </div>
+      <div class="essentials__item">
+        <span class="essentials__label"><svg class="icon"><use href="#i-plane"/></svg> Airport</span>
+        <span class="essentials__value">MDZ</span>
+        <span class="essentials__sub">El Plumerillo</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="itinerary">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Day by day</p>
+        <h2 class="heading heading--section">Your itinerary</h2>
+        <p class="lede">The same route every traveler on this drop is following — mornings among the vines, evenings at altitude. Nothing to plan, just show up.</p>
+      </div>
+    </div>
+
+    <ol class="timeline">
+      <li class="day">
+        <div class="day__marker">
+          <span class="day__num">01</span>
+          <span class="day__dow">Saturday</span>
+          <span class="day__date">Aug 22</span>
+        </div>
+        <div>
+          <h3 class="day__title">Touchdown in Wine Country</h3>
+          <ol class="stops">
+            <li class="stop">
+              <span class="stop__time">12:45 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-plane"/></svg> Arrival</p>
+                <p class="stop__desc">Land at Aeropuerto El Plumerillo (MDZ). Your driver is waiting at arrivals with a sign — no line to stand in.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">3:00 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-bed"/></svg> Check-in</p>
+                <p class="stop__desc">Settle into Hotel Cavas del Sol in Luján de Cuyo — your home base among the vines for the next two nights.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">5:30 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-glass"/></svg> Welcome toast</p>
+                <p class="stop__desc">A sunset walk through the estate's Malbec rows, sparkling wine in hand as the Andes go pink.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">8:30 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-fork"/></svg> Dinner</p>
+                <p class="stop__desc">Asado tasting menu at Puesto Malbec, paired course by course with the region's reserve blends.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </li>
+
+      <li class="day">
+        <div class="day__marker">
+          <span class="day__num">02</span>
+          <span class="day__dow">Sunday</span>
+          <span class="day__date">Aug 23</span>
+        </div>
+        <div>
+          <h3 class="day__title">Into the Vines</h3>
+          <ol class="stops">
+            <li class="stop">
+              <span class="stop__time">9:00 AM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-fork"/></svg> Breakfast</p>
+                <p class="stop__desc">An Andean-inspired spread on the hotel terrace, Aconcagua on the horizon.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">10:30 AM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-grape"/></svg> Winery tour</p>
+                <p class="stop__desc">Barrel-room tasting and a blending session at Bodega Piedra Infinita, guided by the estate's head winemaker.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">1:30 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-fork"/></svg> Lunch</p>
+                <p class="stop__desc">A long-table lunch under the parral, nearly everything on the plate grown on the estate.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">4:30 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-mountain"/></svg> Free time</p>
+                <p class="stop__desc">Optional detour to the Potrerillos reservoir, or a siesta by the pool — your call, nothing booked.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">9:00 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-fork"/></svg> Dinner</p>
+                <p class="stop__desc">Tasting menu at the hotel's own restaurant, built around high-altitude ingredients.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </li>
+
+      <li class="day">
+        <div class="day__marker">
+          <span class="day__num">03</span>
+          <span class="day__dow">Monday</span>
+          <span class="day__date">Aug 24</span>
+        </div>
+        <div>
+          <h3 class="day__title">One Last Pour</h3>
+          <ol class="stops">
+            <li class="stop">
+              <span class="stop__time">9:30 AM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-fork"/></svg> Farewell breakfast</p>
+                <p class="stop__desc">Coffee and pastries with one last look at the Andes over the vineyard.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">11:00 AM</span>
+              <span class="stop__rail"><span class="stop__dot"></span><span class="stop__line"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-bed"/></svg> Check-out</p>
+                <p class="stop__desc">Bags down. Take one more stroll through the rows before the car arrives.</p>
+              </div>
+            </li>
+            <li class="stop">
+              <span class="stop__time">12:30 PM</span>
+              <span class="stop__rail"><span class="stop__dot"></span></span>
+              <div class="stop__body">
+                <p class="stop__activity"><svg class="icon"><use href="#i-car"/></svg> Departure transfer</p>
+                <p class="stop__desc">Private car back to Aeropuerto El Plumerillo, timed to your flight.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block" id="documents">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Everything you need</p>
+        <h2 class="heading heading--section">Your documents</h2>
+        <p class="lede">Vouchers and confirmations issued for your booking specifically — keep them on your phone or print them before you go.</p>
+      </div>
+    </div>
+
+    <div class="doc-note">
+      <svg class="icon"><use href="#i-shield"/></svg>
+      These are yours alone. Other travelers on this same trip have their own room and reservations — nothing here is shared.
+    </div>
+
+    <div class="doc-grid">
+      <div class="doc-card">
+        <div class="doc-card__icon"><svg class="icon"><use href="#i-bed"/></svg></div>
+        <div class="doc-card__body">
+          <p class="doc-card__title">Hotel Confirmation — Hotel Cavas del Sol</p>
+          <p class="doc-card__meta"><span class="doc-card__tag">PDF</span> 2 nights · Double Vineyard Room · Conf. #CDS-58214</p>
+          <div class="doc-card__actions">
+            <a class="btn btn--fill" href="#"><svg class="icon"><use href="#i-eye"/></svg> View</a>
+            <a class="btn btn--icon" href="#" aria-label="Download hotel confirmation"><svg class="icon"><use href="#i-download"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card__icon"><svg class="icon"><use href="#i-fork"/></svg></div>
+        <div class="doc-card__body">
+          <p class="doc-card__title">Dinner Reservation — Puesto Malbec</p>
+          <p class="doc-card__meta"><span class="doc-card__tag">PDF</span> Table for 2 · Sat, Aug 22 · 8:30 PM</p>
+          <div class="doc-card__actions">
+            <a class="btn btn--fill" href="#"><svg class="icon"><use href="#i-eye"/></svg> View</a>
+            <a class="btn btn--icon" href="#" aria-label="Download dinner reservation"><svg class="icon"><use href="#i-download"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card__icon"><svg class="icon"><use href="#i-grape"/></svg></div>
+        <div class="doc-card__body">
+          <p class="doc-card__title">Winery Experience Voucher — Bodega Piedra Infinita</p>
+          <p class="doc-card__meta"><span class="doc-card__tag">PDF</span> Tour, tasting &amp; lunch · Sun, Aug 23 · 10:30 AM</p>
+          <div class="doc-card__actions">
+            <a class="btn btn--fill" href="#"><svg class="icon"><use href="#i-eye"/></svg> View</a>
+            <a class="btn btn--icon" href="#" aria-label="Download winery voucher"><svg class="icon"><use href="#i-download"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card__icon"><svg class="icon"><use href="#i-car"/></svg></div>
+        <div class="doc-card__body">
+          <p class="doc-card__title">Private Transfer Voucher — Aeropuerto El Plumerillo</p>
+          <p class="doc-card__meta"><span class="doc-card__tag">PDF</span> Round-trip · Airport ⇄ Hotel Cavas del Sol</p>
+          <div class="doc-card__actions">
+            <a class="btn btn--fill" href="#"><svg class="icon"><use href="#i-eye"/></svg> View</a>
+            <a class="btn btn--icon" href="#" aria-label="Download transfer voucher"><svg class="icon"><use href="#i-download"/></svg></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card__icon"><svg class="icon"><use href="#i-shield"/></svg></div>
+        <div class="doc-card__body">
+          <p class="doc-card__title">Travel Insurance Policy — Assist365 Coverage</p>
+          <p class="doc-card__meta"><span class="doc-card__tag">PDF</span> Policy #AR-2026-88734 · Valid Aug 22–24</p>
+          <div class="doc-card__actions">
+            <a class="btn btn--fill" href="#"><svg class="icon"><use href="#i-eye"/></svg> View</a>
+            <a class="btn btn--icon" href="#" aria-label="Download insurance policy"><svg class="icon"><use href="#i-download"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="help">
+      <div class="help__text">
+        <h3>Something not adding up?</h3>
+        <p>Your Tripper put this itinerary together and can adjust a reservation, answer a question, or just talk you through what's ahead.</p>
+      </div>
+      <a class="btn" href="#"><svg class="icon"><use href="#i-message"/></svg> Message your Tripper</a>
+    </div>
+  </section>
+</main>
+
+<footer class="pagefoot">Trip #GRT-88210 · Reveal issued Aug 20, 2026</footer>
+
+</body></html>

@@ -1,0 +1,664 @@
+/* Ported from the approved prototype (prototype-reference.html), scoped
+   under .root instead of :root so these custom properties and base
+   element rules never leak outside this route's subtree (design.md ADR-1).
+
+   Only TWO base-element rules survive the port — `.root a:not(.btn)` and
+   `.root button/input/textarea/select` — both inheritance-safe (they only
+   set color/font-family, never font-size/font-weight/line-height). The
+   `:not(.btn)` exclusion matters: `.root a` alone has higher specificity
+   (class + type) than a single-class rule like `.btnFill`, so it would
+   silently win and force `color: inherit` (ink) onto `.btnFill`'s anchors
+   instead of their intended white text/icon — invisible ink-on-ink content
+   on the filled button. Every other rule, including all icon sizing, is
+   anchored to a generated class.
+   The prototype's base64 @font-face blocks and dark-mode/[data-theme]
+   overrides are dropped: Tailwind preflight already normalizes box-sizing
+   and svg display app-wide, <body> is already locked light, and this
+   module reuses the global --font-barlow / --font-barlow-condensed vars
+   registered via next/font (ADR-8) instead of re-embedding fonts. */
+
+.root {
+  --ink: #111827;
+  --cyan: #4f96b6;
+  --sun: #fcd34d;
+  --surface: #ffffff;
+  --ground: #f9fafb;
+  --border: #e5e7eb;
+
+  --ink-950: #0b0f19;
+  --ink-800: #161e2e;
+  --cyan-900: #1f4a5e;
+  --cyan-700: #3a7690;
+  --sun-500: #f5b94d;
+
+  --measure: 68ch;
+
+  font-family: var(--font-barlow), -apple-system, "Segoe UI", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.root a:not(.btn) {
+  color: inherit;
+}
+
+.root button,
+.root input,
+.root textarea,
+.root select {
+  font-family: inherit;
+}
+
+.cond {
+  font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+}
+
+/* ---------- Eyebrow / heading pattern ---------- */
+.eyebrow {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+}
+.heading {
+  margin: 0.4rem 0 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.headingSection {
+  font-size: clamp(1.9rem, 4.2vw, 2.75rem);
+}
+.lede {
+  max-width: var(--measure);
+  margin: 0.9rem 0 0;
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+/* ---------- Hero ----------
+   Height/vertical-centering matches `HeaderHero.tsx` (`min-h-[40vh]` +
+   centered content), the dashboard pages' own hero convention. The
+   prototype's illustrated star field / mountains / balloon stood in for a
+   missing photo — now that the assigned experience's real `heroImage`
+   renders full-bleed, those are dropped in favor of a flat dark scrim,
+   mirroring how `VideoBackground` overlays a real photo/video elsewhere
+   in the app. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--ink-950) 0%, var(--cyan-900) 46%, var(--cyan-700) 72%, #c98a4e 92%, #e7ac5c 100%);
+}
+.heroImage {
+  position: absolute;
+  inset: 0;
+}
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 15, 25, 0.5) 0%, rgba(11, 15, 25, 0.4) 50%, rgba(11, 15, 25, 0.6) 100%);
+}
+.heroContent {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 3rem 1.5rem;
+  color: #fff;
+}
+.heroInner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--sun);
+}
+.heroEyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--sun);
+  box-shadow: 0 0 0 4px rgba(252, 211, 77, 0.25);
+}
+.heroTitle {
+  margin: 0.6rem 0 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: 0.001em;
+  font-size: clamp(2.75rem, 9vw, 6.5rem);
+  text-wrap: balance;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+}
+.heroSubtitle {
+  margin: 1rem 0 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  color: rgba(255, 255, 255, 0.88);
+}
+.heroMeta {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem 1.6rem;
+}
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-variant-numeric: tabular-nums;
+}
+.metaItem svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+.heroPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(252, 211, 77, 0.16);
+  border: 1px solid rgba(252, 211, 77, 0.5);
+  color: var(--sun);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.heroPill svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.75;
+}
+
+/* ---------- Layout shell ---------- */
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.backrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.1rem 0;
+}
+.backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+  text-decoration: none;
+  padding: 0.3rem 0;
+}
+.backlink:hover {
+  color: var(--ink);
+}
+.backlink:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.backlink svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.75;
+}
+
+.jumpnav {
+  display: flex;
+  gap: 1.4rem;
+}
+.jumpnav a {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  color: #6b7280;
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid transparent;
+}
+.jumpnav a:hover {
+  color: var(--ink);
+  border-color: var(--border);
+}
+.jumpnav a:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.block {
+  padding: 3.2rem 0;
+  border-top: 1px solid var(--border);
+}
+.block:first-of-type {
+  border-top: none;
+  padding-top: 2.2rem;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Essentials strip (2 backed columns only — nights/pax) ---------- */
+.essentials {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  overflow: hidden;
+  margin-top: 1.4rem;
+}
+.essentialsItem {
+  padding: 1.25rem 1.4rem;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.essentialsItem:first-child {
+  border-left: none;
+}
+.essentialsLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+}
+.essentialsLabel svg {
+  width: 14px;
+  height: 14px;
+  color: var(--cyan);
+  stroke-width: 1.75;
+}
+.essentialsValue {
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.essentialsValueCapitalize {
+  text-transform: capitalize;
+}
+.essentialsSub {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+@media (max-width: 860px) {
+  .essentials {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .essentialsItem:nth-child(3) {
+    border-left: none;
+  }
+}
+@media (max-width: 520px) {
+  .essentials {
+    grid-template-columns: 1fr;
+  }
+  .essentialsItem {
+    border-left: none !important;
+    border-top: 1px solid var(--border);
+  }
+  .essentialsItem:first-child {
+    border-top: none;
+  }
+}
+
+/* ---------- Itinerary timeline ----------
+   Resolved Decision #1 forbids a per-stop data model, so there is no
+   per-stop content to hang the prototype's `.stops`/`.stop` rail
+   (cyan ring-dot + hairline) on. The prototype's own `.day__marker`
+   (day number/weekday/date column) never had a dot/rail of its own —
+   that decoration only ever existed at stop granularity — so it is not
+   ported here either, rather than inventing a day-level connector the
+   source design never had. */
+.timeline {
+  list-style: none;
+  margin: 2.2rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+.day {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  padding: 1.6rem;
+}
+.dayMarker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  text-align: center;
+}
+.dayBody {
+  min-width: 0;
+}
+.dayNum {
+  font-weight: 800;
+  font-size: 2.6rem;
+  line-height: 0.85;
+  color: var(--cyan);
+  font-variant-numeric: tabular-nums;
+}
+.dayDow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+}
+.dayDate {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+.dayTitle {
+  margin: 0 0 0.6rem;
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+.dayDesc {
+  margin: 0;
+  max-width: var(--measure);
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+@media (max-width: 640px) {
+  .day {
+    grid-template-columns: 1fr;
+  }
+  .dayMarker {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .dayNum {
+    font-size: 1.9rem;
+  }
+}
+
+/* ---------- Documents ---------- */
+.docNote {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding: 0.85rem 1rem;
+  background: rgba(79, 150, 182, 0.08);
+  border: 1px solid rgba(79, 150, 182, 0.25);
+  border-radius: 0.7rem;
+  font-size: 0.85rem;
+  color: #1f4a5e;
+}
+.docNote svg {
+  width: 16px;
+  height: 16px;
+  color: var(--cyan);
+  flex-shrink: 0;
+  stroke-width: 1.75;
+}
+.docGrid {
+  margin-top: 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 720px) {
+  .docGrid {
+    grid-template-columns: 1fr;
+  }
+}
+.docCard {
+  display: flex;
+  gap: 1rem;
+  padding: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.docCard:hover {
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+  transform: translateY(-1px);
+}
+.docCardIcon {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.65rem;
+  background: var(--ground);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+.docCardIcon svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.75;
+}
+.docCardBody {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.docCardTitle {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+.docCardMeta {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.docCardTag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cyan);
+  background: rgba(79, 150, 182, 0.12);
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.3rem;
+}
+.docCardActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 2.35rem;
+  padding: 0 0.9rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.75;
+}
+.btn:hover {
+  background: var(--ink);
+  color: #fff;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.btnIcon {
+  width: 2.35rem;
+  padding: 0;
+  flex-shrink: 0;
+}
+.btnFill {
+  background: var(--ink);
+  color: #fff;
+}
+.btnFill:hover {
+  background: #030712;
+}
+
+/* ---------- Inclusions / exclusions ----------
+   The prototype has no equivalent section, so this was originally left as
+   plain Tailwind markup (proposal "Out of Scope") — the one part of the
+   page that never got this module's card chrome, icon convention, or
+   color tokens, which is exactly why it read as off-brand next to its
+   styled neighbors. Card shape mirrors `.day`/`.docCard`; icons replace
+   raw unicode ✓/✗ glyphs, matching every other icon on this page. */
+.inclCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  padding: 1.4rem;
+}
+.inclCardTitle {
+  margin: 0 0 0.9rem;
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+.inclList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.inclItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+.inclItem svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+.inclItemOk svg {
+  color: #22c55e;
+}
+.inclItemNo svg {
+  color: #f87171;
+}
+
+/* ---------- Help strip ---------- */
+.help {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.8rem 2rem;
+  background: var(--ink);
+  border-radius: 1rem;
+  color: #fff;
+}
+.helpText h3 {
+  margin: 0 0 0.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  letter-spacing: 0.01em;
+}
+.helpText p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.88rem;
+  max-width: 48ch;
+}
+.help .btn {
+  border-color: #fff;
+  color: #fff;
+}
+.help .btn:hover {
+  background: #fff;
+  color: var(--ink);
+}
+
+.pagefoot {
+  text-align: center;
+  padding: 2.4rem 1.5rem 3rem;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}

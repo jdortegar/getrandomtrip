@@ -1,0 +1,203 @@
+change: traveler-trip-details-redesign
+status: proposal
+artifact_store: openspec
+delivery_strategy: single-pr
+size_exception:
+  status: recorded
+  date: 2026-08-12
+  reason: >-
+    Recorded in advance at the proposal phase per the session's cached
+    single-pr delivery strategy. This is a coordinated visual port: a ~500-line
+    CSS module, its consuming subcomponents, and their es/en dictionary keys
+    are not independently shippable without landing a half-styled page in
+    production. Chained/stacked PRs must NOT be proposed at sdd-tasks.
+phases:
+  proposal: done
+  spec: pending
+  design: pending
+  tasks: pending
+  apply: pending
+  verify: pending
+  archive: pending
+artifacts:
+  explore: sdd/traveler-trip-details-redesign/explore (engram, #464)
+  prototype: openspec/changes/traveler-trip-details-redesign/prototype-reference.html
+  proposal: openspec/changes/traveler-trip-details-redesign/proposal.md
+  proposal_mirror: sdd/traveler-trip-details-redesign/proposal (engram)
+updated: 2026-08-12
+strict_tdd: true
+scope_guardrail: >-
+  Presentation-only port of an approved prototype. NO schema change, NO API
+  change, NO new backend. Do not scope-creep into traveler-to-tripper
+  messaging, a per-stop itinerary data model, or new TripRequest/TripDocument
+  fields for district, airport, room type, or confirmation numbers — all
+  explicitly rejected by the product owner.
+styling_divergence_binding: >-
+  DELIBERATE and PRECEDENT-BACKED. This page uses a .root-scoped CSS Module
+  ported verbatim from the prototype, NOT the Tailwind dashboard conventions in
+  .claude/rules/design-system.md. That rule governs admin dashboard table/KPI
+  surfaces; this is a bespoke traveler reveal surface whose sibling — the admin
+  fulfillment page (src/components/app/admin/trip-fulfillment/
+  fulfillment.module.css) — already shipped through review with exactly this
+  approach. Later phases must NOT "correct" the hero gradients, timeline rail,
+  or doc-card grid back into Tailwind utilities.
+repo_rules_binding:
+  - .claude/rules/i18n-and-types.md — every new user-visible string needs es AND
+    en dictionary entries in the same change, plus type additions to
+    TripItineraryDict in src/lib/types/dictionary.ts. Tripper-authored day
+    titles/descriptions are CONTENT, not dictionary strings.
+  - .claude/rules/component-patterns.md — one component per file under
+    src/components/app/dashboard/traveler/, no barrel index, page.tsx stays a
+    thin orchestrator, copy passed as a sliced `copy` prop.
+  - .claude/skills/refactor-component.md — extraction rules for the
+    monolith-to-subcomponents split.
+verified_facts:
+  date: 2026-08-12
+  notes:
+    - "GET /api/trips/[id] (src/app/api/trips/[id]/route.ts:33-50) returns the
+       FULL TripRequest record (startDate, endDate, nights, pax, paxDetails,
+       actualDestination, destinationRevealedAt) plus experience
+       {id,title,itinerary,inclusions,exclusions,heroImage,destinationCity,
+       destinationCountry}. NO API change is needed for the hero or essentials
+       strip."
+    - "The page's LOCAL TripWithExperience interface (details/page.tsx:26-37)
+       only declares id/status/experience/documents — the extra fields are
+       already on the wire and simply discarded client-side. Widening that
+       interface is the whole data-layer task."
+    - "isPreReveal is derived as `trip.documents === undefined` (page.tsx:81):
+       the server OMITS itinerary/inclusions/exclusions/documents entirely for
+       non-fulfillment-visible statuses via isFulfillmentVisible. The client has
+       no gating logic of its own and must keep it that way."
+    - "fulfillment.module.css:1-69 confirms the precedent: prototype CSS ported
+       verbatim, scoped under .root instead of :root so custom properties and
+       base element rules (.root a, .root button/select/input) don't leak; a
+       .cond class supplies Barlow Condensed. Fonts come from the global
+       next/font registration in globals.css, NOT re-embedded base64."
+    - "TripFulfillmentHeader.tsx confirms the icon/link conversion pattern:
+       lucide-react components (ArrowLeft, Mail) replace inline <svg><use> sprite
+       symbols; internal routing anchors become next/link <Link> with a
+       styles.* className; getRevealCountdown + interpolateTemplate produce the
+       localized countdown string."
+    - "POST /api/contact (src/app/api/contact/route.ts) is UNAUTHENTICATED,
+       requires name/email/interest/message (400 otherwise), sends via sendMail
+       to hola@getrandomtrip.com with replyTo = the submitter's email. It is
+       reused as-is; the route file is NOT modified by this change."
+    - "prisma TripRequest (schema.prisma:102-157) has originCountry/originCity,
+       startDate, endDate, nights, pax, paxDetails(Json: adults/minors/rooms),
+       actualDestination, destinationRevealedAt. It has NO district, airport
+       code/name, or resolved room-type name field — confirming Resolved
+       Decision #2's drop."
+    - "TripDocumentDTO is { id, label, country, mimeType, originalFilename,
+       sizeBytes, createdAt, href, downloadHref } — no confirmation-number or
+       date-range metadata, confirming Resolved Decision #3's drop."
+    - "ExperienceItineraryDay (src/types/tripper.ts) is { day, title,
+       description } — flat, one entry per day, no stops[] array. It is the ONLY
+       itinerary shape and backs both the admin reference view and this page."
+    - "prototype-reference.html sections confirmed by direct read: hero
+       (591-617), backrow+jumpnav (620-629), essentials 4-column (631-654),
+       itinerary timeline with per-stop rows (656-801), documents doc-note +
+       doc-grid 5 cards (803-878), help strip (880-888), pagefoot (891)."
+    - "openspec/specs/ currently holds: experience, blog-review-flow,
+       auth-verification, admin-dashboard-overview, dashboard-shell, tripper,
+       trip-request-lifecycle. There is NO traveler-facing trip-details
+       capability spec, and trip-fulfillment-documents is still un-promoted
+       under openspec/changes/trip-fulfillment-documents/specs/."
+capabilities:
+  new:
+    - traveler-trip-details
+  modified: []
+resolved_decisions:
+  - id: 1
+    status: final
+    summary: >-
+      Itinerary timeline renders the REAL ExperienceItineraryDay model (day,
+      title, description — one entry per day), styled in the prototype's
+      day-card visual language. Do NOT invent a per-stop time/icon data model.
+      Matches the admin itinerary-reference view.
+  - id: 2
+    status: final
+    summary: >-
+      Essentials strip keeps ONLY nights and pax (real TripRequest fields).
+      District, airport code/name, and room-type columns are DROPPED — no schema
+      backing, prototype-only sample flourishes. The "Departs in N days" pill IS
+      in scope via getRevealCountdown.
+  - id: 3
+    status: final
+    summary: >-
+      Document cards populate from the REAL TripDocumentDTO: label, country tag,
+      mimeType-derived tag (PDF/JPG), upload date. The prototype's invented
+      confirmation-number / room-type / date-range copy is DROPPED — that data
+      does not exist and must not be fabricated.
+  - id: 4
+    status: final
+    summary: >-
+      "Message your Tripper" is RENAMED/REPURPOSED to a traveler-to-admin
+      contact action wired to the EXISTING POST /api/contact endpoint, with trip
+      context prefilled into the message and/or a fixed `interest` value. NOT
+      traveler-to-tripper messaging (no such mechanism exists). No new backend.
+      Exact prefill/UI shape (modal vs. inline form vs. deep-link) is an
+      sdd-design call; the backend-reuse decision is FINAL.
+  - id: 5
+    status: final
+    summary: >-
+      Every user-visible string gets es/en dictionary keys per
+      .claude/rules/i18n-and-types.md, including interpolated templates like
+      "Departs in {{n}} days". Tripper-authored day titles/descriptions are
+      per-trip CONTENT and must NOT be routed through the dictionary.
+  - id: 6
+    status: final
+    summary: >-
+      Reuse the admin fulfillment module's font mechanism — the global
+      --font-barlow / --font-barlow-condensed vars registered via next/font in
+      globals.css. Do NOT re-embed the prototype's base64 @font-face blocks.
+open_questions_remaining: 0
+design_notes:
+  - >-
+    Hero data mapping needs an sdd-design call (implementation detail, not a
+    product fork): destination title from trip.actualDestination vs.
+    experience.destinationCity/destinationCountry, and the hero subtitle from
+    experience.title. Both fields are already in the API payload.
+  - >-
+    Pre-reveal and CANCELLED rendering of the new hero is unspecified by the
+    prototype (which only shows the revealed happy path). sdd-spec must state
+    what the hero renders in each case; the existing server-side omission
+    behavior must not change.
+  - >-
+    The prototype has no inclusions/exclusions section. The current page renders
+    them below the itinerary; default is to keep that markup unless sdd-design
+    justifies otherwise.
+  - >-
+    ~500 lines of CSS will be duplicated between fulfillment.module.css and the
+    new traveler module with no shared base. Accepted for now; extracting a
+    shared base would force a refactor of already-shipped admin CSS.
+revisions:
+  - artifact: proposal
+    date: 2026-08-12
+    note: >
+      Initial proposal. All six product forks arrived pre-resolved from the
+      product owner and are recorded as FINAL Resolved Decisions #1-#6; the
+      Open Questions section is empty by design.
+
+      Every claim was verified by direct file read before writing (see
+      verified_facts). The single most load-bearing finding: GET /api/trips/[id]
+      ALREADY returns every field the hero and essentials strip need — the page's
+      local TypeScript interface simply discards them. That reduces the change
+      from "port + API extension" to a pure presentation change with zero
+      backend surface, which is what makes the single-PR revert story clean.
+
+      The exploration artifact flagged five blocking scope questions (per-stop
+      itinerary model, district/airport fields, room type, document metadata
+      line, traveler-to-tripper CTA). All five are closed by Resolved Decisions
+      #1-#4 in the "drop the unbacked prototype flourish, never fabricate data"
+      direction — no schema change, no new backend.
+
+      The styling divergence from .claude/rules/design-system.md is stated
+      explicitly in the proposal's Approach section and mirrored in
+      styling_divergence_binding above, so downstream phases do not "correct"
+      the CSS-module port back into Tailwind dashboard conventions. The admin
+      fulfillment page is the shipped, reviewed precedent for exactly this.
+
+      size:exception is recorded at proposal time rather than deferred to the
+      tasks-phase Review Workload Guard, because the session's delivery strategy
+      is already locked to single-pr and the work is not meaningfully splittable
+      without shipping a half-styled page.

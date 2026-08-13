@@ -1,47 +1,42 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import HeaderHero from "@/components/journey/HeaderHero";
-import Section from "@/components/layout/Section";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import SecureRoute from "@/components/auth/SecureRoute";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { formatAdminDate } from "@/lib/admin/format";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
+import type { TripDetailsData } from "@/types/tripDetails";
+import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetailsHero";
+import { TripDetailsBackRow } from "@/components/app/dashboard/traveler/TripDetailsBackRow";
+import { TripEssentialsStrip } from "@/components/app/dashboard/traveler/TripEssentialsStrip";
+import { TripItineraryTimeline } from "@/components/app/dashboard/traveler/TripItineraryTimeline";
+import { TripDetailsHelpStrip } from "@/components/app/dashboard/traveler/TripDetailsHelpStrip";
+import { TripSupportModal } from "@/components/app/dashboard/traveler/TripSupportModal";
 import { TripDocumentsSection } from "@/components/app/dashboard/traveler/TripDocumentsSection";
-import type { TripDocumentDTO } from "@/types/tripDocument";
+import {
+  resolveTripDestination,
+  resolveTripOrigin,
+} from "@/components/app/dashboard/traveler/tripDetailsHelpers";
+import styles from "@/components/app/dashboard/traveler/traveler-trip-details.module.css";
 
-interface ItineraryDayEntry {
-  title: string;
-  description: string;
-  image: string | null;
-}
-
-interface TripWithExperience {
-  id: string;
-  status: string;
-  experience?: {
-    id: string;
-    title: string;
-    itinerary: ItineraryDayEntry[] | null;
-    inclusions: unknown[] | null;
-    exclusions: unknown[] | null;
-  } | null;
-  documents?: TripDocumentDTO[];
-}
-
-function ItineraryContent() {
+/** Named export so tests can render the data-driven content directly,
+ * bypassing the `SecureRoute` guard and the `dynamic(ssr:false)` wrapper. */
+export function ItineraryContent() {
   const params = useParams();
   const { data: session } = useSession();
-  const [trip, setTrip] = useState<TripWithExperience | null>(null);
+  const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [copy, setCopy] = useState<TripItineraryDict | null>(null);
+  const [supportOpen, setSupportOpen] = useState(false);
 
   const tripId = params.id as string;
   const rawLocale = (params.locale as string) ?? "es";
@@ -56,7 +51,7 @@ function ItineraryContent() {
     fetch(`/api/trips/${tripId}`)
       .then((r) => r.json())
       .then((data) => {
-        if (!data.error) setTrip(data.trip as TripWithExperience);
+        if (!data.error) setTrip(data.trip as TripDetailsData);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -70,114 +65,101 @@ function ItineraryContent() {
     );
   }
 
-  const itinerary = trip?.experience?.itinerary ?? null;
-  const hasItinerary = Array.isArray(itinerary) && itinerary.length > 0;
-  const inclusions = (trip?.experience?.inclusions ?? []).map(String).filter(Boolean);
-  const exclusions = (trip?.experience?.exclusions ?? []).map(String).filter(Boolean);
   // The API omits itinerary/inclusions/exclusions/documents entirely for a
   // non-fulfillment-visible status (server-side gate in GET /api/trips/[id],
-  // design.md ADR-6) — the client renders whatever comes back plus a
-  // pre-reveal notice keyed off status, with no gating logic of its own.
+  // design.md ADR-7) — the `.root` subtree is never mounted for those
+  // statuses; a plain pre-reveal notice renders instead.
   const isPreReveal = !!trip && trip.documents === undefined;
-  const documents = trip?.documents ?? [];
+
+  if (isPreReveal) {
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <div className="mb-6">
+          <Button asChild size="sm" variant="ghost">
+            <Link href={`/${locale}/dashboard/trips/${tripId}`}>
+              <ArrowLeft className="h-4 w-4" />
+              {copy.backToTrip}
+            </Link>
+          </Button>
+        </div>
+        <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
+          <Calendar className="h-10 w-10 text-gray-300" />
+          <h3 className="text-lg font-semibold text-neutral-900">{copy.preRevealTitle}</h3>
+          <p className="max-w-sm text-sm text-gray-500">{copy.preRevealDescription}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trip) return null;
+
+  const itinerary = trip.experience?.itinerary ?? null;
+  const hasItinerary = Array.isArray(itinerary) && itinerary.length > 0;
+  const inclusions = (trip.experience?.inclusions ?? []).map(String).filter(Boolean);
+  const exclusions = (trip.experience?.exclusions ?? []).map(String).filter(Boolean);
+  const documents = trip.documents ?? [];
+  const destination = resolveTripDestination(trip, copy.hero.destinationFallback);
+  const origin = resolveTripOrigin(trip);
 
   return (
-    <>
-      <HeaderHero
-        className="h-[50vh]!"
-        description={trip?.experience?.title ?? copy.title}
-        fallbackImage="/images/hero-image-1.jpeg"
-        title={copy.title}
-        videoSrc="/videos/hero-video-1.mp4"
-      />
+    <div className={styles.root}>
+      <TripDetailsHero copy={copy.hero} locale={locale} trip={trip} />
 
-      <Section>
-        <div className="mx-auto max-w-3xl">
-          {/* Back link */}
-          <div className="mb-6">
-            <Button asChild size="sm" variant="ghost">
-              <Link href={`/${locale}/dashboard/trips/${tripId}`}>
-                <ArrowLeft className="h-4 w-4" />
-                {copy.backToTrip}
-              </Link>
-            </Button>
-          </div>
+      <main className={styles.wrap}>
+        <TripDetailsBackRow copy={copy} locale={locale} tripId={tripId} />
 
-          {/* Pre-reveal: server omitted itinerary/inclusions/exclusions/documents entirely */}
-          {isPreReveal && (
-            <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
-              <Calendar className="h-10 w-10 text-gray-300" />
-              <h3 className="text-lg font-semibold text-neutral-900">
-                {copy.preRevealTitle}
-              </h3>
-              <p className="max-w-sm text-sm text-gray-500">
-                {copy.preRevealDescription}
-              </p>
-            </div>
-          )}
+        <section className={styles.block}>
+          <TripEssentialsStrip
+            copy={copy.essentials}
+            nights={trip.nights}
+            origin={origin}
+            pax={trip.pax}
+            travelType={trip.type}
+          />
+        </section>
 
-          {/* No experience assigned */}
-          {!isPreReveal && !trip?.experience && (
+        {!trip.experience && (
+          <section className={styles.block} id="itinerary">
             <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
               <Calendar className="h-10 w-10 text-gray-300" />
               <p className="text-sm text-gray-500">{copy.noExperience}</p>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Experience assigned but no itinerary */}
-          {!isPreReveal && trip?.experience && !hasItinerary && (
+        {trip.experience && !hasItinerary && (
+          <section className={styles.block} id="itinerary">
             <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
               <Calendar className="h-10 w-10 text-gray-300" />
-              <h3 className="text-lg font-semibold text-neutral-900">
-                {copy.emptyTitle}
-              </h3>
-              <p className="max-w-sm text-sm text-gray-500">
-                {copy.emptyDescription}
-              </p>
+              <h3 className="text-lg font-semibold text-neutral-900">{copy.emptyTitle}</h3>
+              <p className="max-w-sm text-sm text-gray-500">{copy.emptyDescription}</p>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Itinerary days */}
-          {hasItinerary && (
-            <ol className="flex flex-col gap-4">
-              {(itinerary as ItineraryDayEntry[]).map((day, index) => (
-                <li
-                  key={index}
-                  className="flex gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
-                >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-                    {index + 1}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-                      {copy.day} {index + 1}
-                    </p>
-                    <h3 className="text-base font-semibold text-neutral-900">
-                      {day.title}
-                    </h3>
-                    {day.description && (
-                      <p className="mt-1 text-sm leading-relaxed text-gray-600">
-                        {day.description}
-                      </p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          )}
+        {hasItinerary && (
+          <TripItineraryTimeline
+            copy={copy}
+            days={itinerary!}
+            locale={locale}
+            startDate={trip.startDate}
+          />
+        )}
 
-          {/* Inclusions / Exclusions */}
-          {(inclusions.length > 0 || exclusions.length > 0) && (
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Inclusions / exclusions — the prototype has no section for them
+            (proposal "Out of Scope"), but the card chrome, icons, and
+            colors now follow this page's own established conventions
+            instead of generic Tailwind defaults. */}
+        {(inclusions.length > 0 || exclusions.length > 0) && (
+          <section className={styles.block}>
+            <div className={styles.docGrid}>
               {inclusions.length > 0 && (
-                <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-                  <h4 className="mb-3 text-sm font-semibold text-neutral-900">
-                    {copy.inclusions}
-                  </h4>
-                  <ul className="flex flex-col gap-1.5">
+                <div className={styles.inclCard}>
+                  <h4 className={styles.inclCardTitle}>{copy.inclusions}</h4>
+                  <ul className={styles.inclList}>
                     {inclusions.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="mt-0.5 text-green-500">✓</span>
+                      <li className={`${styles.inclItem} ${styles.inclItemOk}`} key={i}>
+                        <Check aria-hidden="true" />
                         {item}
                       </li>
                     ))}
@@ -185,14 +167,12 @@ function ItineraryContent() {
                 </div>
               )}
               {exclusions.length > 0 && (
-                <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-                  <h4 className="mb-3 text-sm font-semibold text-neutral-900">
-                    {copy.exclusions}
-                  </h4>
-                  <ul className="flex flex-col gap-1.5">
+                <div className={styles.inclCard}>
+                  <h4 className={styles.inclCardTitle}>{copy.exclusions}</h4>
+                  <ul className={styles.inclList}>
                     {exclusions.map((item, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="mt-0.5 text-red-400">✗</span>
+                      <li className={`${styles.inclItem} ${styles.inclItemNo}`} key={i}>
+                        <X aria-hidden="true" />
                         {item}
                       </li>
                     ))}
@@ -200,19 +180,33 @@ function ItineraryContent() {
                 </div>
               )}
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Documents — view/download only, wired to the authenticated route */}
-          {!isPreReveal && trip && (
-            <TripDocumentsSection
-              copy={copy}
-              documents={documents}
-              status={trip.status}
-            />
-          )}
-        </div>
-      </Section>
-    </>
+        <TripDocumentsSection copy={copy} documents={documents} status={trip.status} />
+
+        <TripDetailsHelpStrip copy={copy} onOpen={() => setSupportOpen(true)} />
+      </main>
+
+      {trip.destinationRevealedAt ? (
+        <footer className={styles.pagefoot}>
+          {interpolateTemplate(copy.footer.line, {
+            date: formatAdminDate(trip.destinationRevealedAt),
+            tripId: trip.id,
+          })}
+        </footer>
+      ) : null}
+
+      <TripSupportModal
+        copy={copy}
+        destination={destination}
+        onClose={() => setSupportOpen(false)}
+        open={supportOpen}
+        startDate={trip.startDate}
+        tripId={trip.id}
+        user={{ email: session?.user?.email ?? null, name: session?.user?.name ?? null }}
+      />
+    </div>
   );
 }
 

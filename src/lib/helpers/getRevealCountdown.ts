@@ -16,6 +16,33 @@ export interface RevealCountdown {
   seconds: number;
 }
 
+interface Countdown {
+  elapsed: boolean;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+/** The existing day/hour/minute/second arithmetic, extracted so it can be
+ * reused for any target instant — the reveal moment (48h before departure)
+ * or departure itself (design.md ADR-5). Zero behavior change. */
+function countdownTo(target: Date, now: Date): Countdown {
+  const diffMs = target.getTime() - now.getTime();
+
+  if (diffMs <= 0) {
+    return { elapsed: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return { elapsed: false, days, hours, minutes, seconds };
+}
+
 /**
  * Returns the Date at which the destination will be revealed
  * (startDate minus 48 hours, in UTC).
@@ -62,18 +89,16 @@ export function getRevealCountdown(
   startDate: Date,
   now: Date,
 ): RevealCountdown {
-  const revealAt = getRevealAt(startDate);
-  const diffMs = revealAt.getTime() - now.getTime();
+  const { elapsed, ...rest } = countdownTo(getRevealAt(startDate), now);
+  return { revealed: elapsed, ...rest };
+}
 
-  if (diffMs <= 0) {
-    return { revealed: true, days: 0, hours: 0, minutes: 0, seconds: 0 };
-  }
-
-  const totalSeconds = Math.floor(diffMs / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  return { revealed: false, days, hours, minutes, seconds };
+/**
+ * Countdown to departure itself (`startDate`) — a different axis than
+ * `getRevealCountdown`, which counts down to the reveal moment (48h before
+ * departure). `elapsed: true` once the trip has started. Composes
+ * `countdownTo` rather than re-expressing the arithmetic (design.md ADR-5).
+ */
+export function getDepartureCountdown(startDate: Date, now: Date): Countdown {
+  return countdownTo(startDate, now);
 }

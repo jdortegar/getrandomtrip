@@ -1605,6 +1605,82 @@ export interface TripItineraryDict {
   preRevealDescription: string;
   view: string;
   download: string;
+
+  /** Redesigned traveler trip-details surface (design.md ADR-1..ADR-8). Every
+   * value here is destination/region-agnostic — only interpolated real trip
+   * data may vary per trip (spec: "No Destination-Specific Wording"). */
+  hero: {
+    eyebrowRevealed: string;
+    eyebrowCompleted: string;
+    eyebrowCancelled: string;
+    destinationFallback: string;
+    /** Interpolated with {{nights}}. */
+    subtitle: string;
+    /** Interpolated with {{n}}. */
+    travelers: string;
+    /** Interpolated with {{n}}. */
+    departsInDays: string;
+    departsToday: string;
+  };
+  nav: {
+    itinerary: string;
+    documents: string;
+  };
+  essentials: {
+    lengthLabel: string;
+    /** Interpolated with {{n}}. */
+    nightsValue: string;
+    /** Interpolated with {{n}}. */
+    daysSub: string;
+    partyLabel: string;
+    /** Interpolated with {{n}}. */
+    paxValue: string;
+    originLabel: string;
+    travelTypeLabel: string;
+    /** Keyed by `TripRequest.type`: solo/couple/family/group/honeymoon/paws. */
+    travelTypeValues: {
+      solo: string;
+      couple: string;
+      family: string;
+      group: string;
+      honeymoon: string;
+      paws: string;
+    };
+  };
+  itinerary: {
+    eyebrow: string;
+    heading: string;
+    lede: string;
+  };
+  /* No `privacyNote` key here: the design's i18n plan listed one, but the
+   * doc-note banner keeps using the existing flat `documentsNote` /
+   * `documentsCancelledNote` (TripDocumentsSection's copy contract is
+   * unchanged per design.md's File Changes table and Testing Strategy,
+   * which both assert on `documentsCancelledNote`). Adding a second,
+   * unused key for the same banner would be dead dictionary content. */
+  documents: {
+    eyebrow: string;
+    heading: string;
+    lede: string;
+  };
+  support: {
+    heading: string;
+    body: string;
+    cta: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    send: string;
+    sending: string;
+    cancel: string;
+    close: string;
+    successTitle: string;
+    successBody: string;
+    errorGeneric: string;
+  };
+  footer: {
+    /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
+    line: string;
+  };
 }
 
 export interface AdminTripFulfillmentDict {
