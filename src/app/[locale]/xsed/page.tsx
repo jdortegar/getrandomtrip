@@ -4,6 +4,7 @@ import { SecondaryHero } from "@/components/app/xsed/SecondaryHero";
 import { CountDown } from "@/components/app/xsed/CountDown";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { MultiColumnIconText } from "@/components/app/xsed/MultiColumnIconText";
 import Testimonials from "@/components/Testimonials/Testimonials";
 import { FaqBlock } from "@/components/display/FaqBlock";
@@ -27,6 +28,7 @@ export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
     description: meta.description,
     openGraph: {
       description: meta.openGraphDescription,
+      images: [DEFAULT_OG_IMAGE],
       title: meta.openGraphTitle,
       type: "website",
     },

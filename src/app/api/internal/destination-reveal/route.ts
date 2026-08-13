@@ -82,7 +82,7 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
         });
       }
 
-      sendDestinationAssignmentReminder(trip.id);
+      sendDestinationAssignmentReminder(trip.id, false);
 
       await prisma.tripRequest.update({
         where: { id: trip.id },
@@ -114,7 +114,7 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
         });
       }
 
-      sendDestinationAssignmentReminder(trip.id);
+      sendDestinationAssignmentReminder(trip.id, true);
 
       // Re-stamp so this re-escalation fires only once per 72h window
       await prisma.tripRequest.update({

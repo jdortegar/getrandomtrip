@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import Hero from "@/components/Hero";
 import { AboutUsValues } from "@/components/app/about-us/AboutUsValues";
 import { AboutUsPhilosophy } from "@/components/app/about-us/AboutUsPhilosophy";
@@ -27,6 +28,7 @@ export async function generateMetadata(props: LocaleParams): Promise<Metadata> {
     description: meta.description,
     openGraph: {
       description: meta.openGraphDescription,
+      images: [DEFAULT_OG_IMAGE],
       title: meta.openGraphTitle,
       type: "website",
     },

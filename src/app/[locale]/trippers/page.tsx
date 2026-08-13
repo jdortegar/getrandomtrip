@@ -5,6 +5,7 @@ import HeaderHero from "@/components/journey/HeaderHero";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 
 export async function generateMetadata(props: {
   params: Promise<{ locale: string }>;
@@ -15,7 +16,7 @@ export async function generateMetadata(props: {
   const { title, description } = dict.trippers.meta;
   return {
     description,
-    openGraph: { description, title },
+    openGraph: { description, images: [DEFAULT_OG_IMAGE], title },
     title,
   };
 }

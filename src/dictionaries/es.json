@@ -864,7 +864,7 @@
     "xsedHero": {
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
-      "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
+      "title": "EL PRÓXIMO SÁBADO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeas, te quedas fuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
@@ -1153,8 +1153,8 @@
       "trippersHref": "/trippers",
       "xsedIntro": {
         "eyebrow": "XSED | X SUERTE ES DOMINGO",
-        "title": "Una experiencia nueva todos los domingos",
-        "description": "1 noche, cada domingo, un lugar nuevo, una comida y una vivencia única por país.",
+        "title": "Una experiencia nueva todos los fines de semana.",
+        "description": "Un destino nuevo cada semana — 1 noche afuera, con una comida y una vivencia única por país.",
         "ctaLabel": "CONOCER MÁS",
         "ctaHref": "/xsed",
         "backgroundImage": "/images/xsed-hero.jpg"
@@ -1181,7 +1181,7 @@
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
-      "title": "EL PRÓXIMO DOMINGO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
+      "title": "EL PRÓXIMO SÁBADO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
       "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeas, te quedas fuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Email",

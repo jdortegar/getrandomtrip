@@ -105,7 +105,7 @@ export default function XsedCampaign() {
                 <Img
                   src={img("/images/newsletter/xsed-hero-composed.png")}
                   width="600"
-                  alt="Unite y recibí escapadas sorpresa cada domingo — XSED"
+                  alt="Unite y recibí escapadas sorpresa cada fin de semana — XSED"
                   style={{ display: "block", width: "100%" }}
                 />
               </Column>

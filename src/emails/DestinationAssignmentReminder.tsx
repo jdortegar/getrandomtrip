@@ -8,6 +8,7 @@ interface DestinationAssignmentReminderProps {
   tripId: string;
   startDate: string;
   locale: "es" | "en";
+  escalated?: boolean;
 }
 
 const BASE_URL = "https://getrandomtrip.com";
@@ -16,7 +17,10 @@ const copy = {
   es: {
     preview: (clientName: string) =>
       `Acción requerida: asignar destino para el viaje de ${clientName}`,
+    escalatedPreview: (clientName: string) =>
+      `URGENTE: asignar destino para el viaje de ${clientName} — sale en menos de 48 horas`,
     heading: "Asignación de destino pendiente",
+    escalatedHeading: "URGENTE: destino sin asignar",
     body: (adminName: string) =>
       `Hola ${adminName}, hay un viaje que requiere asignación de experiencia antes de la fecha de salida.`,
     tripIdLabel: "ID de reserva:",
@@ -24,12 +28,17 @@ const copy = {
     startDateLabel: "Fecha de salida:",
     urgency:
       "Este viaje parte en menos de 72 horas. Por favor, asigná una experiencia lo antes posible.",
+    escalatedUrgency:
+      "Este viaje parte en menos de 48 horas y AÚN no tiene experiencia asignada. Asigná una experiencia ahora.",
     cta: "IR AL PANEL ADMIN",
   },
   en: {
     preview: (clientName: string) =>
       `Action required: assign destination for ${clientName}'s trip`,
+    escalatedPreview: (clientName: string) =>
+      `URGENT: assign destination for ${clientName}'s trip — departs in less than 48 hours`,
     heading: "Destination assignment pending",
+    escalatedHeading: "URGENT: destination not assigned",
     body: (adminName: string) =>
       `Hi ${adminName}, there is a trip that requires an experience assignment before the departure date.`,
     tripIdLabel: "Booking ID:",
@@ -37,6 +46,8 @@ const copy = {
     startDateLabel: "Departure date:",
     urgency:
       "This trip departs in less than 72 hours. Please assign an experience as soon as possible.",
+    escalatedUrgency:
+      "This trip departs in less than 48 hours and STILL has no experience assigned. Assign an experience now.",
     cta: "GO TO ADMIN PANEL",
   },
 };
@@ -46,19 +57,28 @@ export const subjects = {
   en: "Action required: assign destination before departure",
 };
 
+export const escalatedSubjects = {
+  es: "URGENTE: asignar destino — sale en menos de 48 horas",
+  en: "URGENT: assign destination — departs in less than 48 hours",
+};
+
 export default function DestinationAssignmentReminder({
   adminName,
   clientName,
   tripId,
   startDate,
   locale,
+  escalated = false,
 }: DestinationAssignmentReminderProps) {
   const c = copy[locale];
   const ctaHref = `${BASE_URL}/${locale}/dashboard/admin`;
+  const preview = escalated ? c.escalatedPreview(clientName) : c.preview(clientName);
+  const heading = escalated ? c.escalatedHeading : c.heading;
+  const urgency = escalated ? c.escalatedUrgency : c.urgency;
 
   return (
-    <EmailLayout locale={locale} preview={c.preview(clientName)}>
-      <Heading style={heading}>{c.heading}</Heading>
+    <EmailLayout locale={locale} preview={preview}>
+      <Heading style={heading_style}>{heading}</Heading>
       <Text style={bodyText}>{c.body(adminName)}</Text>
 
       <Section style={summaryPanel}>
@@ -76,7 +96,7 @@ export default function DestinationAssignmentReminder({
         </Text>
       </Section>
 
-      <Text style={urgencyText}>{c.urgency}</Text>
+      <Text style={escalated ? urgencyTextEscalated : urgencyText}>{urgency}</Text>
 
       <Button href={ctaHref} style={ctaButton}>
         {c.cta}
@@ -87,7 +107,7 @@ export default function DestinationAssignmentReminder({
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const heading: React.CSSProperties = {
+const heading_style: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "38px",
   fontWeight: "800",
@@ -142,6 +162,11 @@ const urgencyText: React.CSSProperties = {
   lineHeight: "1.6",
   maxWidth: "400px",
   textAlign: "center",
+};
+
+const urgencyTextEscalated: React.CSSProperties = {
+  ...urgencyText,
+  color: "#b91c1c",
 };
 
 const ctaButton: React.CSSProperties = {

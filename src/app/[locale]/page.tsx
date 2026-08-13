@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAllTrippers, getHomepageTestimonials } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { HomePageClient } from "./HomePageClient";
 
 export async function generateMetadata(props: {
@@ -20,6 +21,7 @@ export async function generateMetadata(props: {
     description: meta.description,
     openGraph: {
       description: meta.description,
+      images: [DEFAULT_OG_IMAGE],
       title: meta.title,
       type: "website",
     },

@@ -7,6 +7,7 @@ import ReviewApprovedForTripper, {
 } from "@/emails/ReviewApprovedForTripper";
 import DestinationAssignmentReminder, {
   subjects as destinationAssignmentReminderSubjects,
+  escalatedSubjects as destinationAssignmentReminderEscalatedSubjects,
 } from "@/emails/DestinationAssignmentReminder";
 import ExperiencePendingTripperReview, {
   subjects as pendingTripperReviewSubjects,
@@ -672,7 +673,10 @@ export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
   })();
 }
 
-export function sendDestinationAssignmentReminder(tripRequestId: string): void {
+export function sendDestinationAssignmentReminder(
+  tripRequestId: string,
+  escalated = false,
+): void {
   void (async () => {
     try {
       const [tripRequest, admins] = await Promise.all([
@@ -703,7 +707,9 @@ export function sendDestinationAssignmentReminder(tripRequestId: string): void {
 
           await sendMail({
             to: admin.email,
-            subject: destinationAssignmentReminderSubjects[locale],
+            subject: escalated
+              ? destinationAssignmentReminderEscalatedSubjects[locale]
+              : destinationAssignmentReminderSubjects[locale],
             content: {
               react: React.createElement(DestinationAssignmentReminder, {
                 adminName: admin.name ?? "",
@@ -711,6 +717,7 @@ export function sendDestinationAssignmentReminder(tripRequestId: string): void {
                 tripId: tripRequestId,
                 startDate,
                 locale,
+                escalated,
               }),
             },
           });
