@@ -111,7 +111,7 @@ describe("runPass1", () => {
 
     expect(result.reminded).toBe(1);
     expect(result.escalated).toBe(0);
-    expect(sendDestinationAssignmentReminder).toHaveBeenCalledWith("trip-1");
+    expect(sendDestinationAssignmentReminder).toHaveBeenCalledWith("trip-1", false);
     expect(prisma.notification.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -160,7 +160,7 @@ describe("runPass1", () => {
     const result = await mod.runPass1(new Date());
 
     expect(result.escalated).toBe(1);
-    expect(sendDestinationAssignmentReminder).toHaveBeenCalledWith("trip-escalate");
+    expect(sendDestinationAssignmentReminder).toHaveBeenCalledWith("trip-escalate", true);
   });
 });
 
