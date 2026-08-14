@@ -509,6 +509,14 @@
         "all": "All",
         "pending": "Pending review"
       },
+      "filters": {
+        "allTypes": "All types",
+        "allLevels": "All levels",
+        "clearFilters": "Clear filters"
+      },
+      "sort": {
+        "ariaSortBy": "Sort by {field}"
+      },
       "searchPlaceholder": "Search by title…",
       "selectAll": "Select all experiences",
       "selectRow": "Select experience",

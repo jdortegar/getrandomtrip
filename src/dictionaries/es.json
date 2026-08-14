@@ -509,6 +509,14 @@
         "all": "Todas",
         "pending": "Pendientes de revisión"
       },
+      "filters": {
+        "allTypes": "Todos los tipos",
+        "allLevels": "Todos los niveles",
+        "clearFilters": "Limpiar filtros"
+      },
+      "sort": {
+        "ariaSortBy": "Ordenar por {field}"
+      },
       "searchPlaceholder": "Buscar por título…",
       "selectAll": "Seleccionar todas las experiencias",
       "selectRow": "Seleccionar experiencia",

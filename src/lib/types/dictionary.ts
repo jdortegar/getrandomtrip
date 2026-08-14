@@ -1360,6 +1360,14 @@ export interface AdminPagesDict {
       all: string;
       pending: string;
     };
+    filters: {
+      allTypes: string;
+      allLevels: string;
+      clearFilters: string;
+    };
+    sort: {
+      ariaSortBy: string;
+    };
     searchPlaceholder: string;
     selectAll: string;
     selectRow: string;
