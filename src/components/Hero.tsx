@@ -75,7 +75,7 @@ const Hero: React.FC<HeroProps> = ({
             }}
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.45, delay: 0.15 }}
           />
 
           <motion.p
@@ -83,7 +83,7 @@ const Hero: React.FC<HeroProps> = ({
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.35, delay: 0.3 }}
           />
 
           {content.tagline && (
@@ -91,7 +91,7 @@ const Hero: React.FC<HeroProps> = ({
               className="text-center md:text-left font-barlow text-base md:text-lg font-bold leading-relaxed text-white max-w-xl mb-8"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+              transition={{ duration: 0.35, delay: 0.3 }}
             >
               {content.tagline}
             </motion.p>
@@ -103,7 +103,7 @@ const Hero: React.FC<HeroProps> = ({
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
+              transition={{ duration: 0.35, delay: 0.5 }}
             >
               <Button
                 asChild
@@ -122,7 +122,7 @@ const Hero: React.FC<HeroProps> = ({
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
+              transition={{ duration: 0.35, delay: 0.5 }}
             >
               <Button
                 asChild

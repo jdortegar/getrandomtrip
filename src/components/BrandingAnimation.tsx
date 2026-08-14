@@ -13,21 +13,21 @@ const BRANDING_REPEAT_TEXT = "Repeat";
 
 function BrandingAnimation({
   className,
-  initialDelay = 1.4,
+  initialDelay = 0.5,
 }: BrandingAnimationProps) {
   const textAnimationDelay = initialDelay;
   const repeatTextAnimationDelay =
-    initialDelay + BRANDING_TEXT.length * 0.05 + 0.4 + 0.2;
+    initialDelay + BRANDING_TEXT.length * 0.03 + 0.2 + 0.1;
   const arrowAnimationDelay =
     initialDelay +
-    BRANDING_TEXT.length * 0.05 +
-    0.4 +
+    BRANDING_TEXT.length * 0.03 +
     0.2 +
-    BRANDING_REPEAT_TEXT.length * 0.05 +
-    0.4 +
+    0.1 +
+    BRANDING_REPEAT_TEXT.length * 0.03 +
     0.2 +
-    0.8 +
-    0.2;
+    0.1 +
+    0.5 +
+    0.1;
 
   return (
     <motion.div
@@ -37,7 +37,7 @@ function BrandingAnimation({
       variants={{
         visible: {
           transition: {
-            staggerChildren: 0.05,
+            staggerChildren: 0.03,
             delayChildren: textAnimationDelay,
           },
         },
@@ -53,7 +53,7 @@ function BrandingAnimation({
                 x: 0,
                 opacity: 1,
                 transition: {
-                  duration: 0.4,
+                  duration: 0.25,
                   ease: "easeOut",
                 },
               },
@@ -70,7 +70,7 @@ function BrandingAnimation({
         variants={{
           visible: {
             transition: {
-              staggerChildren: 0.05,
+              staggerChildren: 0.03,
               delayChildren: repeatTextAnimationDelay,
             },
           },
@@ -83,15 +83,8 @@ function BrandingAnimation({
           animate={{ scale: 1, opacity: 1 }}
           src="/assets/svg/yellow-circle.svg"
           transition={{
-            duration: 0.8,
-            delay:
-              initialDelay +
-              BRANDING_TEXT.length * 0.05 +
-              0.4 +
-              0.2 +
-              BRANDING_REPEAT_TEXT.length * 0.05 +
-              0.4 +
-              0.2,
+            duration: 0.5,
+            delay: repeatTextAnimationDelay,
             ease: "easeOut",
           }}
         />
@@ -106,7 +99,7 @@ function BrandingAnimation({
                     x: 0,
                     opacity: 1,
                     transition: {
-                      duration: 0.4,
+                      duration: 0.25,
                       ease: "easeOut",
                     },
                   },
@@ -123,7 +116,7 @@ function BrandingAnimation({
         animate={{ clipPath: "inset(0 0% 0 0%)" }}
         initial={{ clipPath: "inset(0 0% 0 100%)" }}
         transition={{
-          duration: 0.8,
+          duration: 0.5,
           delay: arrowAnimationDelay,
           ease: "easeOut",
         }}
