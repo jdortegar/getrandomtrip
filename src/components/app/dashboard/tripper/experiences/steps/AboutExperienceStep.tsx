@@ -32,6 +32,8 @@ interface Props {
   changedFieldSet?: Set<string>;
   /** Builds the peek toggle for an eligible field; `undefined` when peek is not available. */
   peek?: (field: string) => FieldPeek | undefined;
+  /** XSED Drop is an admin-only experience type — offered only when true. */
+  isAdmin?: boolean;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
@@ -40,12 +42,15 @@ const MONTH_KEYS = [
   "01","02","03","04","05","06","07","08","09","10","11","12",
 ];
 
-export function AboutExperienceStep({ copy, form, onChange, imageState, changedFieldSet, peek }: Props) {
+export function AboutExperienceStep({ copy, form, onChange, imageState, changedFieldSet, peek, isAdmin }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const { onHeroSelect, onHeroRemove } = imageState;
   const heroRef = useRef<HTMLInputElement>(null);
-  const experienceTypes = getExperienceTypes(locale);
+  // XSED Drop is fulfilled centrally by the admin team, not authored by individual trippers.
+  const experienceTypes = getExperienceTypes(locale).filter(
+    (t) => isAdmin || t.value !== "XSED",
+  );
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
   const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
