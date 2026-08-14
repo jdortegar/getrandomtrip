@@ -1061,6 +1061,47 @@ export async function getTripperPublishedBlogs(
   }
 }
 
+/**
+ * Get the most recently published blog posts across all trippers (for the home page).
+ */
+export async function getRecentPublishedBlogs(limit: number = 5) {
+  try {
+    const blogs = await prisma.blogPost.findMany({
+      where: {
+        status: "PUBLISHED",
+        isReviewCopy: false,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        coverUrl: true,
+        tags: true,
+        publishedAt: true,
+      },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+    });
+
+    return blogs
+      .filter(
+        (blog): blog is typeof blog & { coverUrl: string } =>
+          blog.coverUrl != null,
+      )
+      .map((blog) => ({
+        category: blog.tags[0] ?? "Viajes",
+        href: `/blog/${blog.slug ?? blog.id}`,
+        image: blog.coverUrl,
+        title: blog.title,
+      }));
+  } catch (error) {
+    console.error("Error fetching recent published blogs:", error);
+    return [];
+  }
+}
+
 /** Approved and public reviews left by travelers of a given trip type ('solo', 'family', etc). */
 export async function getReviewsForTripType(
   tripType: string,

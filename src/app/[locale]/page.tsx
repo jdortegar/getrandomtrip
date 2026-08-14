@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { getAllTrippers, getHomepageTestimonials } from "@/lib/db/tripper-queries";
+import {
+  getAllTrippers,
+  getHomepageTestimonials,
+  getRecentPublishedBlogs,
+} from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
@@ -30,9 +34,16 @@ export async function generateMetadata(props: {
 }
 
 export default async function HomePage() {
-  const [trippers, testimonials] = await Promise.all([
+  const [trippers, testimonials, blogPosts] = await Promise.all([
     getAllTrippers(),
     getHomepageTestimonials(),
+    getRecentPublishedBlogs(5),
   ]);
-  return <HomePageClient trippers={trippers} testimonials={testimonials} />;
+  return (
+    <HomePageClient
+      trippers={trippers}
+      testimonials={testimonials}
+      blogPosts={blogPosts}
+    />
+  );
 }
