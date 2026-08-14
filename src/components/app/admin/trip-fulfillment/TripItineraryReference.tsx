@@ -82,9 +82,13 @@ export function TripItineraryReference({
                 <div className={styles.dayContent}>
                   <span className={styles.dayTitle}>{day.title}</span>
                   {day.description ? (
-                    <div className={styles.dayItem}>
-                      <span>{day.description}</span>
-                    </div>
+                    // `day.description` is tripper-authored HTML from
+                    // RichTextInput/TinyMCE — same field the traveler-facing
+                    // TripItineraryTimeline renders, same trust boundary.
+                    <div
+                      className={styles.dayDesc}
+                      dangerouslySetInnerHTML={{ __html: day.description }}
+                    />
                   ) : null}
                 </div>
               </div>

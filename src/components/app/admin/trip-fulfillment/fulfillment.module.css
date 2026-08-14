@@ -542,6 +542,36 @@
   position: relative;
   top: 1px;
 }
+.dayDesc {
+  font-size: 13px;
+  color: var(--neutral-600);
+}
+/* Tripper-authored rich text (RichTextInput/TinyMCE) — toolbar is limited
+   to bold, italic, bullet/numbered lists, and blockquote. */
+.dayDesc :global(p) {
+  margin: 0 0 0.6em;
+}
+.dayDesc :global(p:last-child) {
+  margin-bottom: 0;
+}
+.dayDesc :global(strong) {
+  font-weight: 700;
+  color: var(--neutral-900);
+}
+.dayDesc :global(ul),
+.dayDesc :global(ol) {
+  margin: 0 0 0.6em;
+  padding-left: 1.25em;
+}
+.dayDesc :global(li) {
+  margin: 0.2em 0;
+}
+.dayDesc :global(blockquote) {
+  margin: 0 0 0.6em;
+  padding-left: 0.9em;
+  border-left: 2px solid var(--gray-200);
+  font-style: italic;
+}
 .dayTime {
   font-variant-numeric: tabular-nums;
   font-weight: 600;

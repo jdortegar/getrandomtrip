@@ -47,7 +47,15 @@ export function TripItineraryTimeline({
               </div>
               <div className={styles.dayBody}>
                 <h3 className={`${styles.dayTitle} ${styles.cond}`}>{day.title}</h3>
-                {day.description ? <p className={styles.dayDesc}>{day.description}</p> : null}
+                {day.description ? (
+                  // `day.description` is tripper-authored HTML from
+                  // `RichTextInput` (TinyMCE) — same trust boundary as
+                  // `BlogArticle`'s post body, rendered the same way.
+                  <div
+                    className={styles.dayDesc}
+                    dangerouslySetInnerHTML={{ __html: day.description }}
+                  />
+                ) : null}
               </div>
             </li>
           );

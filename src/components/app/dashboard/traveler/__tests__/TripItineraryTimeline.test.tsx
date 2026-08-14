@@ -16,9 +16,15 @@ const copy: Pick<TripItineraryDict, "itinerary"> = {
   },
 };
 
+// Realistic TinyMCE output (RichTextInput) — real day descriptions are
+// HTML, not plain strings; the regression test below relies on this.
 const days: ItineraryDayEntry[] = [
-  { title: "Touchdown", description: "Arrival day.", image: null },
-  { title: "Into the Vines", description: "A full day out.", image: null },
+  { title: "Touchdown", description: "<p>Arrival day.</p>", image: null },
+  {
+    title: "Into the Vines",
+    description: "<p>A full day out. <strong>Don't miss it.</strong></p>",
+    image: null,
+  },
   { title: "One Last Pour", description: "", image: null },
 ];
 
@@ -58,12 +64,24 @@ describe("TripItineraryTimeline — guards Resolved Decision #1", () => {
     expect(text).toContain("03");
   });
 
-  it("renders no <p> description for a description-less day", () => {
+  it("renders a description block only for days that have one", () => {
     render(days);
-    const paragraphs = Array.from(container.querySelectorAll("p")).map((p) => p.textContent);
-    expect(paragraphs).not.toContain("");
-    // eyebrow + lede + 2 real day descriptions (the 3rd day has no description)
-    expect(paragraphs.filter(Boolean)).toHaveLength(4);
+    const descriptions = container.querySelectorAll('[class*="dayDesc"]');
+    // 2 real day descriptions — the 3rd day has none
+    expect(descriptions).toHaveLength(2);
+  });
+
+  it("regression: renders day.description as HTML, not escaped text (RichTextInput/TinyMCE output)", () => {
+    render(days);
+    const descriptions = container.querySelectorAll('[class*="dayDesc"]');
+    const secondDayDescription = descriptions[1];
+
+    // The bug: description rendered as literal text meant the browser showed
+    // "<strong>Don't miss it.</strong>" verbatim instead of bold text.
+    expect(container.textContent).not.toContain("<strong>");
+    expect(secondDayDescription.querySelector("strong")?.textContent).toBe(
+      "Don't miss it.",
+    );
   });
 
   it("never renders a per-stop row (no time-based stop markup)", () => {
