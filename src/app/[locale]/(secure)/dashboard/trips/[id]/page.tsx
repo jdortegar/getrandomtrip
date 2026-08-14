@@ -8,6 +8,7 @@ import Link from "next/link";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
+import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetailsHero";
 import { Button } from "@/components/ui/Button";
 import RemovableTag from "@/components/RemovableTag";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
@@ -34,6 +35,7 @@ import {
 } from "@/components/app/travelers/TravelerRosterSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
+import type { TripDetailsData } from "@/types/tripDetails";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
 import { paymentTotalsInputFromTripRequest } from "@/lib/helpers/trip-request-pricing";
 import { getLevelName } from "@/lib/utils/levels";
@@ -64,6 +66,10 @@ interface TripDetails {
 
   // Addons
   addons: any;
+
+  // Assigned experience (present once admin assigns a package — may
+  // predate the reveal window per design.md ADR-6).
+  experience?: TripDetailsData["experience"];
 
   // Completed trip data
   actualDestination?: string | null;
@@ -263,16 +269,23 @@ function TripDetailsContent() {
 
   return (
     <>
-      <HeaderHero
-        className="h-[50vh]!"
-        description={`${typeLabel} • ${levelLabel}`}
-        fallbackImage="/images/hero-image-1.jpeg"
-        title={
-          canRevealDestination && trip.actualDestination
-            ? trip.actualDestination
-            : copy.destinationSorpresa
-        }
-        videoSrc="/videos/hero-video-1.mp4"
+      <TripDetailsHero
+        copy={dict.tripItinerary.hero}
+        locale={locale}
+        trip={{
+          id: trip.id,
+          status: trip.status,
+          startDate: trip.startDate,
+          endDate: trip.endDate,
+          nights: trip.nights,
+          pax: trip.pax,
+          type: trip.type,
+          originCity: trip.originCity,
+          originCountry: trip.originCountry,
+          actualDestination: trip.actualDestination ?? null,
+          destinationRevealedAt: trip.destinationRevealedAt ?? null,
+          experience: trip.experience ?? null,
+        }}
       />
 
       <Section>

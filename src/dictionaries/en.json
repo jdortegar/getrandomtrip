@@ -4794,6 +4794,7 @@
       "eyebrowRevealed": "Your destination, revealed",
       "eyebrowCompleted": "Trip completed",
       "eyebrowCancelled": "Trip cancelled",
+      "eyebrowConfirmed": "Your destination awaits",
       "destinationFallback": "Your surprise destination",
       "subtitle": "{{nights}} nights of surprise travel await.",
       "travelers": "{{n}} travelers",

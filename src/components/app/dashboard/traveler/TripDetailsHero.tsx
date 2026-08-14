@@ -2,12 +2,20 @@
 
 import { Calendar, Plane, Users } from "lucide-react";
 import Img from "@/components/common/Img";
-import { getDepartureCountdown } from "@/lib/helpers/getRevealCountdown";
+import {
+  getCalendarDaysUntilDeparture,
+  getDepartureCountdown,
+} from "@/lib/helpers/getRevealCountdown";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
 import { resolveTripDestination } from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
+
+/** Same generic hero photo the rest of the dashboard falls back to
+ * (`HeaderHero`'s default) — used whenever no experience photo is
+ * assigned yet, so the hero never renders on the bare CSS gradient alone. */
+const FALLBACK_HERO_IMAGE = "/images/hero-image-1.jpeg";
 
 const LOCALE_TAGS: Record<string, string> = {
   en: "en-US",
@@ -46,27 +54,39 @@ interface TripDetailsHeroProps {
 }
 
 /**
- * Reveal hero (design.md ADR-7). Status variants:
+ * Trip-lifecycle hero (design.md ADR-7, widened for the CONFIRMED
+ * pre-reveal state). Status variants:
+ * CONFIRMED → surprise placeholder only, no photo, no departure pill —
+ *   `GET /api/trips/[id]` may already include an assigned `experience`
+ *   (admin can assign before the reveal window opens) so its destination/
+ *   photo are deliberately ignored here rather than trusted not to leak,
  * REVEALED → departure pill shown, eyebrow dot kept,
  * COMPLETED → eyebrow dot kept, never a pill,
  * CANCELLED → no eyebrow dot, never a pill.
  * Background is the assigned experience's real `heroImage`, full-bleed,
- * under a flat dark scrim — falls back to the illustrated gradient
- * (`.hero`'s own `background`) if no experience/photo is assigned yet.
+ * under a flat dark scrim — falls back to `FALLBACK_HERO_IMAGE` (same
+ * generic photo `HeaderHero` defaults to) if no experience/photo is
+ * assigned yet, so the hero is never a bare gradient.
  */
 export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
   const isRevealed = trip.status === "REVEALED";
   const isCancelled = trip.status === "CANCELLED";
-  const heroImageUrl = trip.experience?.heroImage ?? null;
+  const isConfirmed = trip.status === "CONFIRMED";
+  const heroImageUrl =
+    (isConfirmed ? null : trip.experience?.heroImage) ?? FALLBACK_HERO_IMAGE;
 
   const eyebrow = isCancelled
     ? copy.eyebrowCancelled
     : trip.status === "COMPLETED"
       ? copy.eyebrowCompleted
-      : copy.eyebrowRevealed;
+      : isConfirmed
+        ? copy.eyebrowConfirmed
+        : copy.eyebrowRevealed;
   const showDot = !isCancelled;
 
-  const destination = resolveTripDestination(trip, copy.destinationFallback);
+  const destination = isConfirmed
+    ? copy.destinationFallback
+    : resolveTripDestination(trip, copy.destinationFallback);
   const subtitle = interpolateTemplate(copy.subtitle, {
     nights: String(trip.nights),
   });
@@ -74,25 +94,26 @@ export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
 
   let pillLabel: string | null = null;
   if (isRevealed && trip.startDate) {
-    const countdown = getDepartureCountdown(new Date(trip.startDate), new Date());
+    const startDate = new Date(trip.startDate);
+    const now = new Date();
+    const countdown = getDepartureCountdown(startDate, now);
     if (!countdown.elapsed) {
+      const calendarDays = getCalendarDaysUntilDeparture(startDate, now);
       pillLabel =
-        countdown.days > 0
-          ? interpolateTemplate(copy.departsInDays, { n: String(countdown.days) })
+        calendarDays > 0
+          ? interpolateTemplate(copy.departsInDays, { n: String(calendarDays) })
           : copy.departsToday;
     }
   }
 
   return (
     <header className={styles.hero} role="banner">
-      {heroImageUrl ? (
-        <Img
-          alt=""
-          aria-hidden="true"
-          className={`${styles.heroImage} h-full w-full object-cover`}
-          src={heroImageUrl}
-        />
-      ) : null}
+      <Img
+        alt=""
+        aria-hidden="true"
+        className={`${styles.heroImage} h-full w-full object-cover`}
+        src={heroImageUrl}
+      />
       <div className={styles.heroScrim} aria-hidden="true" />
 
       <div className={styles.heroContent}>

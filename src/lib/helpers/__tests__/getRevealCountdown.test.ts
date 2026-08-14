@@ -6,6 +6,7 @@ import {
   isInNotifyWindow,
   getRevealCountdown,
   getDepartureCountdown,
+  getCalendarDaysUntilDeparture,
 } from "../getRevealCountdown";
 
 // Fixed reference: startDate is 2025-07-01T12:00:00.000Z
@@ -195,5 +196,33 @@ describe("getDepartureCountdown", () => {
     expect(departure.elapsed).toBe(false);
     expect(departure.days).toBe(1);
     expect(reveal.revealed).toBe(true);
+  });
+});
+
+describe("getCalendarDaysUntilDeparture", () => {
+  it("regression: departure tomorrow at UTC midnight, less than 24h away this afternoon — must read 1, not 0", () => {
+    // startDate = 2025-07-02T00:00:00Z (a day after START_DATE's date).
+    // now = 2025-07-01T15:00:00Z — only 9 exact hours before startDate, so
+    // getDepartureCountdown(...).days floors to 0 (same bug this helper
+    // exists to avoid): the hero pill would wrongly read "Departs today"
+    // when the calendar gap is clearly 1 day (today is Jul 1, departure Jul 2).
+    const startDate = new Date("2025-07-02T00:00:00.000Z");
+    const now = new Date("2025-07-01T15:00:00.000Z");
+
+    expect(getCalendarDaysUntilDeparture(startDate, now)).toBe(1);
+  });
+
+  it("returns 0 when departure and now share the same UTC calendar day", () => {
+    const startDate = new Date("2025-07-01T22:00:00.000Z");
+    const now = new Date("2025-07-01T08:00:00.000Z");
+
+    expect(getCalendarDaysUntilDeparture(startDate, now)).toBe(0);
+  });
+
+  it("returns a multi-day gap correctly", () => {
+    const startDate = new Date("2025-07-05T00:00:00.000Z");
+    const now = new Date("2025-07-01T23:00:00.000Z");
+
+    expect(getCalendarDaysUntilDeparture(startDate, now)).toBe(4);
   });
 });
