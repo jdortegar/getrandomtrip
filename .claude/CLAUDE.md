@@ -13,7 +13,9 @@ User instructions always override this file.
 
 ## Project Overview
 
-**GetRandomTrip** is a mystery travel platform built with Next.js 14 (App Router). Clients configure a trip and receive a surprise destination. Trippers (travel experts) create and manage packages. Deployed on Netlify at https://getrandomtrip.netlify.app/.
+**GetRandomTrip** is a mystery travel platform built with Next.js 16 (App Router). Clients configure a trip and receive a surprise destination. Trippers (travel experts) create and manage packages. Deployed on Netlify at https://getrandomtrip.netlify.app/.
+
+> Full architecture, conventions, naming rules, and quality gate live in **`AGENTS.md`** at the repo root. Read it before making significant changes. This file covers Claude-specific behaviour rules only.
 
 ---
 
@@ -40,7 +42,7 @@ API routes live under `src/app/api/` and are not locale-prefixed.
 ### i18n
 
 - Locales: `es` (default), `en`
-- Dictionary files: `src/i18n/es.json`, `src/i18n/en.json`
+- Dictionary files: `src/dictionaries/es.json`, `src/dictionaries/en.json`
 - Middleware handles locale detection and injection: `src/middleware.ts`
 - Config in `src/lib/i18n/`
 
