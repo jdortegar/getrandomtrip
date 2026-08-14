@@ -1642,6 +1642,9 @@ export interface TripItineraryDict {
     eyebrowRevealed: string;
     eyebrowCompleted: string;
     eyebrowCancelled: string;
+    /** Shown pre-reveal (`status === "CONFIRMED"`) — never paired with the
+     * real destination or photo, which stay hidden until reveal. */
+    eyebrowConfirmed: string;
     destinationFallback: string;
     /** Interpolated with {{nights}}. */
     subtitle: string;

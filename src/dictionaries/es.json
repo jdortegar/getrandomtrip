@@ -4794,6 +4794,7 @@
       "eyebrowRevealed": "Tu destino, revelado",
       "eyebrowCompleted": "Viaje completado",
       "eyebrowCancelled": "Viaje cancelado",
+      "eyebrowConfirmed": "Tu destino te espera",
       "destinationFallback": "Tu destino sorpresa",
       "subtitle": "{{nights}} noches de viaje sorpresa te esperan.",
       "travelers": "{{n}} viajeros",

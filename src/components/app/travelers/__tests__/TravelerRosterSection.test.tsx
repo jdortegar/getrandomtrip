@@ -204,4 +204,23 @@ describe("TravelerRosterSection — locked banner days", () => {
 
     expect(container.textContent).toContain("Bloqueado hace 3 días");
   });
+
+  it("regression: departure tomorrow at UTC midnight, less than 24h away this afternoon — reads 1, not 0", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-08-14T15:00:00.000Z"));
+    try {
+      const t1 = traveler({ id: "t1" });
+      render(
+        roster([t1], {
+          locked: true,
+          startDate: "2026-08-15T00:00:00.000Z",
+          deadline: "2026-08-08T00:00:00.000Z",
+        }),
+      );
+
+      expect(container.textContent).toContain("Bloqueado hace 1 días");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

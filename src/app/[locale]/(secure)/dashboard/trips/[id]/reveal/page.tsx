@@ -11,29 +11,16 @@ import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Calendar, Sparkles } from "lucide-react";
+import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetailsHero";
 import { TripItineraryContent } from "@/components/app/dashboard/traveler/TripItineraryContent";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
-import type { TripRevealDict } from "@/lib/types/dictionary";
+import type { TripItineraryDict, TripRevealDict } from "@/lib/types/dictionary";
+import type { TripDetailsData } from "@/types/tripDetails";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
-
-interface TripRevealData {
-  id: string;
-  status: string;
-  startDate: string;
-  city: string;
-  country: string;
-  actualDestination?: string | null;
-  experience?: {
-    id: string;
-    heroImage?: string | null;
-    destinationCity?: string | null;
-    destinationCountry?: string | null;
-  } | null;
-}
 
 interface CountdownState {
   revealed: boolean;
@@ -46,10 +33,11 @@ interface CountdownState {
 function RevealContent() {
   const params = useParams();
   const { data: session } = useSession();
-  const [trip, setTrip] = useState<TripRevealData | null>(null);
+  const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copy, setCopy] = useState<TripRevealDict | null>(null);
+  const [heroCopy, setHeroCopy] = useState<TripItineraryDict["hero"] | null>(null);
   const [countdown, setCountdown] = useState<CountdownState | null>(null);
 
   const tripId = params.id as string;
@@ -57,7 +45,10 @@ function RevealContent() {
   const locale = hasLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
   useEffect(() => {
-    getDictionary(locale).then((d) => setCopy(d.tripReveal));
+    getDictionary(locale).then((d) => {
+      setCopy(d.tripReveal);
+      setHeroCopy(d.tripItinerary.hero);
+    });
   }, [locale]);
 
   useEffect(() => {
@@ -77,17 +68,17 @@ function RevealContent() {
           setNotFound(true);
           return;
         }
-        setTrip(data.trip as TripRevealData);
+        setTrip(data.trip as TripDetailsData);
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [tripId, session?.user?.id]);
 
   useEffect(() => {
-    if (!trip || trip.status !== "CONFIRMED") return;
+    if (!trip || trip.status !== "CONFIRMED" || !trip.startDate) return;
 
     function tick() {
-      const startDate = new Date(trip!.startDate);
+      const startDate = new Date(trip!.startDate!);
       setCountdown(getRevealCountdown(startDate, new Date()));
     }
 
@@ -96,7 +87,7 @@ function RevealContent() {
     return () => clearInterval(interval);
   }, [trip]);
 
-  if (loading || !copy) {
+  if (loading || !copy || !heroCopy) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <LoadingSpinner />
@@ -156,13 +147,7 @@ function RevealContent() {
 
   return (
     <>
-      <HeaderHero
-        className="h-[55vh]!"
-        description={copy.pageDescription}
-        fallbackImage="/images/hero-image-1.jpeg"
-        title={copy.pageTitle}
-        videoSrc="/videos/hero-video-1.mp4"
-      />
+      <TripDetailsHero copy={heroCopy} locale={locale} trip={trip} />
 
       <Section
         title={`${copy.countdownTitle}`}
@@ -217,12 +202,14 @@ function RevealContent() {
         >
           <Calendar className="h-3.5 w-3.5 shrink-0" />
           <span>
-            {new Date(trip.startDate).toLocaleDateString(locale, {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
+            {trip.startDate
+              ? new Date(trip.startDate).toLocaleDateString(locale, {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              : null}
           </span>
         </motion.div>
 

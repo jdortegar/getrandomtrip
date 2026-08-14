@@ -102,3 +102,28 @@ export function getRevealCountdown(
 export function getDepartureCountdown(startDate: Date, now: Date): Countdown {
   return countdownTo(startDate, now);
 }
+
+/**
+ * Calendar-day gap to departure, UTC-anchored to match how trip dates are
+ * displayed elsewhere (`formatDateRange` renders with `timeZone: "UTC"`).
+ * Deliberately NOT `getDepartureCountdown(...).days` — that field is a
+ * floor of the exact elapsed-time delta into 24h chunks, so a trip
+ * departing tomorrow at UTC midnight reads as "0 days" (and thus "today")
+ * for anyone less than 24 exact hours out, even mid-afternoon the day
+ * before. This instead answers "how many UTC calendar days from now until
+ * the departure date", which is what a "Departs today" / "Departs in N
+ * days" badge actually promises next to a "Sat, Aug 15" date label.
+ */
+export function getCalendarDaysUntilDeparture(startDate: Date, now: Date): number {
+  const startUtcMidnight = Date.UTC(
+    startDate.getUTCFullYear(),
+    startDate.getUTCMonth(),
+    startDate.getUTCDate(),
+  );
+  const nowUtcMidnight = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  );
+  return Math.round((startUtcMidnight - nowUtcMidnight) / (24 * 60 * 60 * 1000));
+}

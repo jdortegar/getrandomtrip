@@ -9,7 +9,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { Clock, Lock } from "lucide-react";
-import { getDepartureCountdown } from "@/lib/helpers/getRevealCountdown";
+import { getCalendarDaysUntilDeparture } from "@/lib/helpers/getRevealCountdown";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
@@ -100,8 +100,13 @@ export const TravelerRosterSection = forwardRef<
                   "{days}",
                   String(
                     roster.startDate
-                      ? getDepartureCountdown(new Date(roster.startDate), new Date())
-                          .days
+                      ? Math.max(
+                          0,
+                          getCalendarDaysUntilDeparture(
+                            new Date(roster.startDate),
+                            new Date(),
+                          ),
+                        )
                       : 0,
                   ),
                 )
