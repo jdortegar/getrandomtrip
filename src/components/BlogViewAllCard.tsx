@@ -26,7 +26,7 @@ export default function BlogViewAllCard({ viewAll }: BlogViewAllCardProps) {
       <div className="absolute -bottom-8 -left-8 h-36 w-36 rounded-full bg-white/5" />
 
       {/* Content */}
-      <div className="absolute inset-0 z-10 flex flex-col items-start justify-end p-5 text-white md:p-7">
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-start justify-end p-5 text-white md:p-7">
         <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">
           Blog
         </span>
@@ -37,11 +37,14 @@ export default function BlogViewAllCard({ viewAll }: BlogViewAllCardProps) {
           {viewAll.subtitle}
         </p>
         <Button
+          asChild
           variant="outline"
           className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit"
         >
-          Ver todos
-          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          <Link href={viewAll.href}>
+            Ver todos
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </Link>
         </Button>
       </div>
     </div>
