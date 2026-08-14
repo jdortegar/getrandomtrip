@@ -27,6 +27,7 @@ const ALLOWED_HOSTS = new Set([
   "randomuser.me",
   "res.cloudinary.com",
   "avatars.githubusercontent.com",
+  "lh3.googleusercontent.com",
 ]);
 
 function getHost(u?: string | null) {

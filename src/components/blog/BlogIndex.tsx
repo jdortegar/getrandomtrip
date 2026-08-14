@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Book } from "lucide-react";
@@ -12,6 +12,7 @@ import { BlogIndexCard } from "@/components/blog/BlogIndexCard";
 import HeaderHero from "@/components/journey/HeaderHero";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import Section from "@/components/layout/Section";
+import { Button } from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
 import type { TripperFilterOption } from "@/lib/constants/blog-filters";
 import { BLOG_LISTING_HERO_CONFIG } from "@/lib/constants/blog-listing-hero";
@@ -66,8 +67,6 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     tripperId: tripperId ?? null,
     travelTypeKey: "",
   });
-
-  const observerTarget = useRef<HTMLDivElement>(null);
 
   const heroTitle = tripperName
     ? copy.heroTitleByTripper.replace("{name}", tripperName)
@@ -147,25 +146,11 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     fetchBlogs(1, false);
   }, [fetchBlogs]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
-          const nextPage = page + 1;
-          setPage(nextPage);
-          fetchBlogs(nextPage, true);
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    const currentTarget = observerTarget.current;
-    if (currentTarget) observer.observe(currentTarget);
-
-    return () => {
-      if (currentTarget) observer.unobserve(currentTarget);
-    };
-  }, [hasMore, loadingMore, loading, page, fetchBlogs]);
+  const handleLoadMore = useCallback(() => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchBlogs(nextPage, true);
+  }, [page, fetchBlogs]);
 
   return (
     <>
@@ -228,11 +213,14 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
                   </div>
 
                   {hasMore && (
-                    <div
-                      className="flex justify-center py-8"
-                      ref={observerTarget}
-                    >
-                      {loadingMore && <LoadingSpinner />}
+                    <div className="flex justify-center py-8">
+                      <Button
+                        disabled={loadingMore}
+                        onClick={handleLoadMore}
+                        size="sm"
+                      >
+                        {loadingMore ? "..." : copy.loadMore}
+                      </Button>
                     </div>
                   )}
 

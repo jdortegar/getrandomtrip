@@ -2346,6 +2346,7 @@ export interface MarketingDictionary {
     heroDescription: string;
     heroTitleByTripper: string;
     heroTitleDefault: string;
+    loadMore: string;
     seenAll: string;
   };
   packagesByType: {

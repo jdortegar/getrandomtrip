@@ -1256,6 +1256,7 @@
     "heroDescription": "Discover stories, guides and experiences from our trippers",
     "heroTitleByTripper": "Blog by {name}",
     "heroTitleDefault": "TRIPPER'S INSPIRATION",
+    "loadMore": "Load more",
     "seenAll": "You've seen all available posts"
   },
   "packagesByType": {
