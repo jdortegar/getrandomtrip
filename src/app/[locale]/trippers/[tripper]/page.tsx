@@ -99,7 +99,7 @@ export default async function Page(props: {
   const availableTypesFromPackages = tripperData.availableTypes ?? [];
 
   // Fetch published blog posts for this tripper
-  const rawPublishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6);
+  const rawPublishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6, locale);
   const publishedBlogs = rawPublishedBlogs.map((p) => ({
     ...p,
     href: pathForLocale(locale, p.href),

@@ -36,6 +36,7 @@ import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
 import { paymentTotalsInputFromTripRequest } from "@/lib/helpers/trip-request-pricing";
+import { getLevelName } from "@/lib/utils/levels";
 
 interface TripDetails {
   id: string;
@@ -166,7 +167,7 @@ function TripDetailsContent() {
                 {copy.notFoundDescription}
               </p>
               <Button asChild>
-                <Link href="/dashboard">
+                <Link href={`/${locale}/dashboard/traveler`}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   {copy.backToDashboard}
                 </Link>
@@ -256,12 +257,15 @@ function TripDetailsContent() {
     ? (trip.payment?.amount ?? 0) / pax
     : (totals?.totalPerPax ?? 0);
   const isEstimate = !hasChargedAmount;
+  const typeLabel =
+    (copy.typeValues as Record<string, string>)[trip.type] ?? trip.type;
+  const levelLabel = getLevelName(trip.level);
 
   return (
     <>
       <HeaderHero
         className="h-[50vh]!"
-        description={`Viaje ${trip.type} • ${trip.level}`}
+        description={`${typeLabel} • ${levelLabel}`}
         fallbackImage="/images/hero-image-1.jpeg"
         title={
           canRevealDestination && trip.actualDestination
@@ -276,7 +280,7 @@ function TripDetailsContent() {
           {/* Back Button */}
           <div className="mb-6">
             <Button variant="ghost" size="sm" className="justify-start" asChild>
-              <Link href="/dashboard">
+              <Link href={`/${locale}/dashboard/traveler`}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 {copy.backToDashboard}
               </Link>
@@ -702,7 +706,7 @@ function TripDetailsContent() {
                       className="w-full justify-start"
                       asChild
                     >
-                      <Link href={`/${locale}/dashboard/trips/${trip.id}/details`}>
+                      <Link href={`/${locale}/dashboard/trips/${trip.id}/reveal`}>
                         <Calendar className="w-4 h-4 mr-2" />
                         {copy.viewItineraryAction}
                       </Link>
@@ -714,7 +718,7 @@ function TripDetailsContent() {
                     className="w-full justify-start"
                     asChild
                   >
-                    <Link href="/dashboard">
+                    <Link href={`/${locale}/dashboard/traveler`}>
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       {copy.backToDashboard}
                     </Link>
@@ -730,10 +734,10 @@ function TripDetailsContent() {
                 </h3>
                 <ul className="text-sm text-neutral-700 space-y-2">
                   <li>
-                    • {copy.typeLabel}: <strong>{trip.type}</strong>
+                    • {copy.typeLabel}: <strong>{typeLabel}</strong>
                   </li>
                   <li>
-                    • {copy.levelLabel}: <strong>{trip.level}</strong>
+                    • {copy.levelLabel}: <strong>{levelLabel}</strong>
                   </li>
                   {trip.status === "CONFIRMED" && <li>• {copy.confirmedHint}</li>}
                   {trip.status === "REVEALED" && <li>• {copy.revealedHint}</li>}

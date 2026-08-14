@@ -4859,10 +4859,6 @@
     "minutesLabel": "Minutes",
     "secondsLabel": "Seconds",
     "pendingAssignment": "Your destination is being carefully prepared. It's almost time!",
-    "revealedEyebrow": "Your destination revealed",
-    "revealedTitle": "Your destination has been revealed!",
-    "revealedSubtitle": "Get ready to live an incredible experience.",
-    "viewItinerary": "View Itinerary",
     "notFoundTitle": "Trip not found",
     "notFoundDescription": "The trip you're looking for doesn't exist or you don't have permission to view it.",
     "backToDashboard": "Back to Dashboard",
@@ -4922,7 +4918,16 @@
     "viewItineraryAction": "View Itinerary",
     "tripInfoTitle": "Trip Information",
     "typeLabel": "Type",
-    "levelLabel": "Level",
+    "typeValues": {
+      "solo": "Solo",
+      "couple": "Couple",
+      "family": "Family",
+      "group": "Group",
+      "honeymoon": "Honeymoon",
+      "paws": "With pets",
+      "xsed": "XSED"
+    },
+    "levelLabel": "Experience",
     "confirmedHint": "Your destination will be revealed 48 hours before the trip",
     "revealedHint": "Your destination has been revealed!"
   },

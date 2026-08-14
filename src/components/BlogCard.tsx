@@ -34,7 +34,7 @@ export default function BlogCard({ post }: BlogCardProps) {
       </div>
       <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-black/75 to-transparent" />
 
-      <div className="absolute bottom-0 left-0 z-20 w-full p-5 text-white md:p-7">
+      <div className="pointer-events-none absolute bottom-0 left-0 z-20 w-full p-5 text-white md:p-7">
         <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">
           {post.category}
         </span>
@@ -42,10 +42,16 @@ export default function BlogCard({ post }: BlogCardProps) {
           {post.title}
         </h3>
         <Button
+          asChild
           className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit"
           variant="outline"
         >
-          Explorar Trip
+          {/* The full-card Link above already provides the accessible path
+              to this same href — hide this one from keyboard/AT so it isn't
+              a redundant, adjacent duplicate stop. Still mouse-clickable. */}
+          <Link aria-hidden="true" href={href} tabIndex={-1}>
+            Explorar Trip
+          </Link>
         </Button>
       </div>
     </div>

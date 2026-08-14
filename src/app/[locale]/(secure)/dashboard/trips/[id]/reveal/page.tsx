@@ -10,8 +10,8 @@ import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { Button } from "@/components/ui/Button";
-import Img from "@/components/common/Img";
-import { ArrowLeft, Calendar, MapPin, Sparkles } from "lucide-react";
+import { ArrowLeft, Calendar, Sparkles } from "lucide-react";
+import { TripItineraryContent } from "@/components/app/dashboard/traveler/TripItineraryContent";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
@@ -118,7 +118,7 @@ function RevealContent() {
         <Section>
           <div className="mx-auto max-w-2xl text-center py-12">
             <Button asChild variant="ghost" size="sm">
-              <Link href={pathForLocale(locale as Locale, "/dashboard")}>
+              <Link href={pathForLocale(locale as Locale, "/dashboard/traveler")}>
                 <ArrowLeft className="h-4 w-4" />
                 {copy.backToDashboard}
               </Link>
@@ -133,87 +133,10 @@ function RevealContent() {
     trip.status === "REVEALED" || trip.status === "COMPLETED";
 
   // ── Post-reveal state ────────────────────────────────────────────────────────
+  // Renders the full trip-details content directly (formerly a separate
+  // /details route) instead of a summary card linking out to it.
   if (isRevealed) {
-    const destination =
-      trip.actualDestination ??
-      (trip.experience?.destinationCity && trip.experience?.destinationCountry
-        ? `${trip.experience.destinationCity}, ${trip.experience.destinationCountry}`
-        : null) ??
-      copy.revealedTitle;
-
-    const heroImage =
-      trip.experience?.heroImage ?? "/images/hero-image-1.jpeg";
-
-    return (
-      <>
-        <HeaderHero
-          className="h-[65vh]!"
-          description={copy.revealedSubtitle}
-          fallbackImage={heroImage}
-          title={destination}
-          videoSrc="/videos/hero-video-1.mp4"
-        />
-
-        <Section>
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-6">
-              <Button asChild size="sm" variant="ghost">
-                <Link href={pathForLocale(locale as Locale, `/dashboard/trips/${tripId}`)}>
-                  <ArrowLeft className="h-4 w-4" />
-                  {copy.backToDashboard}
-                </Link>
-              </Button>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden">
-              {trip.experience?.heroImage && (
-                <div className="w-full aspect-video overflow-hidden">
-                  <Img
-                    alt={destination}
-                    src={trip.experience.heroImage}
-                    className="w-full h-full object-cover"
-                    sizes="(max-width: 768px) 100vw, 768px"
-                  />
-                </div>
-              )}
-
-              <div className="p-8">
-                <p className="text-xs font-semibold uppercase tracking-widest text-light-blue mb-3">
-                  {copy.revealedEyebrow}
-                </p>
-
-                <h2 className="font-barlow-condensed font-bold text-5xl text-neutral-900 uppercase leading-none mb-4">
-                  {destination}
-                </h2>
-
-                <div className="flex items-center gap-1.5 text-sm text-neutral-500 mb-8">
-                  <MapPin className="h-4 w-4 shrink-0" />
-                  <span>
-                    {new Date(trip.startDate).toLocaleDateString(locale, {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-
-                <Button asChild>
-                  <Link
-                    href={pathForLocale(
-                      locale as Locale,
-                      `/dashboard/trips/${tripId}/details`,
-                    )}
-                  >
-                    <Calendar className="h-4 w-4" />
-                    {copy.viewItinerary}
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Section>
-      </>
-    );
+    return <TripItineraryContent />;
   }
 
   // ── Pre-reveal state (CONFIRMED) ─────────────────────────────────────────────
@@ -311,7 +234,7 @@ function RevealContent() {
           transition={{ duration: 0.6, delay: 1 }}
         >
           <Button asChild variant="ghost" size="sm">
-            <Link href={pathForLocale(locale as Locale, `/dashboard/trips/${tripId}`)}>
+            <Link href={pathForLocale(locale as Locale, "/dashboard/traveler")}>
               <ArrowLeft className="h-4 w-4" />
               {copy.backToDashboard}
             </Link>

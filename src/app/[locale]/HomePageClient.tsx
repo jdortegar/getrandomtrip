@@ -6,20 +6,25 @@ import Hero from "@/components/Hero";
 import Blog from "@/components/Blog";
 import { ExplorationSection } from "@/components/landing/exploration";
 import Testimonials from "@/components/Testimonials/Testimonials";
-import { BLOG_CONSTANTS } from "@/lib/data/constants/blog";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import type { TripperListItem } from "@/types/tripper";
 import type { TestimonialData } from "@/components/Testimonials/types";
+import type { BlogPost } from "@/lib/data/shared/blog-types";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 
 interface HomePageClientProps {
   trippers: TripperListItem[];
   testimonials?: TestimonialData[];
+  blogPosts: BlogPost[];
 }
 
-export function HomePageClient({ trippers, testimonials }: HomePageClientProps) {
+export function HomePageClient({
+  trippers,
+  testimonials,
+  blogPosts,
+}: HomePageClientProps) {
   const home = useDictionary((d) => d.home);
   const locale = useLocale();
 
@@ -32,7 +37,7 @@ export function HomePageClient({ trippers, testimonials }: HomePageClientProps) 
         eyebrow={home.blog.eyebrow}
         subtitle={home.blog.subtitle}
         title={home.blog.title}
-        posts={BLOG_CONSTANTS.posts.map((p) => ({ ...p, href: pathForLocale(locale as Locale, p.href) }))}
+        posts={blogPosts.map((p) => ({ ...p, href: pathForLocale(locale as Locale, p.href) }))}
         viewAll={home.blog.viewAll}
       />
       <XsedHero content={home.xsedHero} />

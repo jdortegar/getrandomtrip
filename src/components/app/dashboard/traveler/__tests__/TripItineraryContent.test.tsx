@@ -1,7 +1,7 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ItineraryContent } from "../page";
+import { TripItineraryContent } from "../TripItineraryContent";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -41,7 +41,7 @@ function render() {
   document.body.appendChild(container);
   root = createRoot(container);
   act(() => {
-    root.render(<ItineraryContent />);
+    root.render(<TripItineraryContent />);
   });
 }
 
@@ -81,7 +81,7 @@ afterEach(() => {
   container?.remove();
 });
 
-describe("Traveler trip-details page — ADR-7 status branching", () => {
+describe("TripItineraryContent — ADR-7 status branching", () => {
   it("renders the pre-reveal card and NOT the hero eyebrow when documents is undefined", async () => {
     vi.stubGlobal(
       "fetch",
