@@ -9,6 +9,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { Clock, Lock } from "lucide-react";
+import { getDepartureCountdown } from "@/lib/helpers/getRevealCountdown";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
@@ -97,17 +98,12 @@ export const TravelerRosterSection = forwardRef<
               copy.lockedBanner
                 .replace(
                   "{days}",
-                  roster.deadline
-                    ? String(
-                        Math.max(
-                          0,
-                          Math.ceil(
-                            (new Date(roster.deadline).getTime() - Date.now()) /
-                              (24 * 60 * 60 * 1000),
-                          ),
-                        ),
-                      )
-                    : "0",
+                  String(
+                    roster.startDate
+                      ? getDepartureCountdown(new Date(roster.startDate), new Date())
+                          .days
+                      : 0,
+                  ),
                 )
                 .split("{supportLink}")[0]
             }

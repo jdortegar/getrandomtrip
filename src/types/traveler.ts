@@ -26,6 +26,10 @@ export interface TravelerDTO {
  */
 export interface TravelerRoster {
   deadline: string | null;
+  /** Trip's actual departure date (`TripRequest.startDate`) — the roster
+   * lock `deadline` is 7 days *before* this, so callers computing
+   * days-until-departure must use this field, not `deadline`. */
+  startDate: string | null;
   locked: boolean;
   cap: number;
   submitted: number;
