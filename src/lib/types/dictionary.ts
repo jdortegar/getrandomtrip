@@ -1804,11 +1804,6 @@ export interface TripRevealDict {
   minutesLabel: string;
   secondsLabel: string;
   pendingAssignment: string;
-  // Post-reveal (REVEALED | COMPLETED)
-  revealedEyebrow: string;
-  revealedTitle: string;
-  revealedSubtitle: string;
-  viewItinerary: string;
   // Not found / error
   notFoundTitle: string;
   notFoundDescription: string;
@@ -1944,6 +1939,16 @@ export interface TripDetailDict {
   viewItineraryAction: string;
   tripInfoTitle: string;
   typeLabel: string;
+  /** Keyed by `TripRequest.type`: solo/couple/family/group/honeymoon/paws/xsed. */
+  typeValues: {
+    solo: string;
+    couple: string;
+    family: string;
+    group: string;
+    honeymoon: string;
+    paws: string;
+    xsed: string;
+  };
   levelLabel: string;
   confirmedHint: string;
   revealedHint: string;

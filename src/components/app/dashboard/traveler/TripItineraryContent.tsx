@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -8,29 +7,25 @@ import { useSession } from "next-auth/react";
 import { ArrowLeft, Calendar, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
-import SecureRoute from "@/components/auth/SecureRoute";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { formatAdminDate } from "@/lib/admin/format";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
-import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetailsHero";
-import { TripDetailsBackRow } from "@/components/app/dashboard/traveler/TripDetailsBackRow";
-import { TripEssentialsStrip } from "@/components/app/dashboard/traveler/TripEssentialsStrip";
-import { TripItineraryTimeline } from "@/components/app/dashboard/traveler/TripItineraryTimeline";
-import { TripDetailsHelpStrip } from "@/components/app/dashboard/traveler/TripDetailsHelpStrip";
-import { TripSupportModal } from "@/components/app/dashboard/traveler/TripSupportModal";
-import { TripDocumentsSection } from "@/components/app/dashboard/traveler/TripDocumentsSection";
-import {
-  resolveTripDestination,
-  resolveTripOrigin,
-} from "@/components/app/dashboard/traveler/tripDetailsHelpers";
-import styles from "@/components/app/dashboard/traveler/traveler-trip-details.module.css";
+import { TripDetailsHero } from "./TripDetailsHero";
+import { TripDetailsBackRow } from "./TripDetailsBackRow";
+import { TripEssentialsStrip } from "./TripEssentialsStrip";
+import { TripItineraryTimeline } from "./TripItineraryTimeline";
+import { TripDetailsHelpStrip } from "./TripDetailsHelpStrip";
+import { TripSupportModal } from "./TripSupportModal";
+import { TripDocumentsSection } from "./TripDocumentsSection";
+import { resolveTripDestination, resolveTripOrigin } from "./tripDetailsHelpers";
+import styles from "./traveler-trip-details.module.css";
 
-/** Named export so tests can render the data-driven content directly,
- * bypassing the `SecureRoute` guard and the `dynamic(ssr:false)` wrapper. */
-export function ItineraryContent() {
+/** Self-contained: fetches its own trip data and dictionary, so it can be
+ * mounted directly from the reveal page's post-reveal branch with no props. */
+export function TripItineraryContent() {
   const params = useParams();
   const { data: session } = useSession();
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
@@ -207,17 +202,5 @@ export function ItineraryContent() {
         user={{ email: session?.user?.email ?? null, name: session?.user?.name ?? null }}
       />
     </div>
-  );
-}
-
-const ItineraryPage = dynamic(() => Promise.resolve(ItineraryContent), {
-  ssr: false,
-});
-
-export default function TripItineraryPage() {
-  return (
-    <SecureRoute>
-      <ItineraryPage />
-    </SecureRoute>
   );
 }

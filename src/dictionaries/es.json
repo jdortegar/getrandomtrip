@@ -4859,10 +4859,6 @@
     "minutesLabel": "Minutos",
     "secondsLabel": "Segundos",
     "pendingAssignment": "Tu destino está siendo preparado con mucho cuidado. ¡Ya casi es hora!",
-    "revealedEyebrow": "Tu destino revelado",
-    "revealedTitle": "¡Tu destino ha sido revelado!",
-    "revealedSubtitle": "Prepárate para vivir una experiencia increíble.",
-    "viewItinerary": "Ver Itinerario",
     "notFoundTitle": "Viaje no encontrado",
     "notFoundDescription": "El viaje que buscas no existe o no tienes permiso para verlo.",
     "backToDashboard": "Volver al Dashboard",
@@ -4922,7 +4918,16 @@
     "viewItineraryAction": "Ver Itinerario",
     "tripInfoTitle": "Información del Viaje",
     "typeLabel": "Tipo",
-    "levelLabel": "Nivel",
+    "typeValues": {
+      "solo": "Solo",
+      "couple": "En pareja",
+      "family": "Familiar",
+      "group": "Grupal",
+      "honeymoon": "Luna de miel",
+      "paws": "Con mascota",
+      "xsed": "XSED"
+    },
+    "levelLabel": "Experiencia",
     "confirmedHint": "El destino será revelado 48 horas antes del viaje",
     "revealedHint": "¡Tu destino ha sido revelado!"
   },
