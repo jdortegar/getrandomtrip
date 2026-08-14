@@ -509,6 +509,14 @@
         "all": "All",
         "pending": "Pending review"
       },
+      "filters": {
+        "allTypes": "All types",
+        "allLevels": "All levels",
+        "clearFilters": "Clear filters"
+      },
+      "sort": {
+        "ariaSortBy": "Sort by {field}"
+      },
       "searchPlaceholder": "Search by title…",
       "selectAll": "Select all experiences",
       "selectRow": "Select experience",
@@ -1230,6 +1238,11 @@
       "searchCardDescription": "Find the perfect expert for your adventure.",
       "searchCardCta": "Explore Trippers"
     },
+    "blogTeaser": {
+      "eyebrow": "Three steps, zero stress",
+      "heading": "TRIPPER'S INSPIRATION",
+      "viewAllButton": "View all"
+    },
     "meta": {
       "title": "Our Trippers | Randomtrip",
       "description": "Explore profiles of expert travelers who curate authentic and memorable experiences. Find your ideal Tripper."
@@ -1256,6 +1269,7 @@
     "heroDescription": "Discover stories, guides and experiences from our trippers",
     "heroTitleByTripper": "Blog by {name}",
     "heroTitleDefault": "TRIPPER'S INSPIRATION",
+    "loadMore": "Load more",
     "seenAll": "You've seen all available posts"
   },
   "packagesByType": {

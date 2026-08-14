@@ -4,6 +4,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
+import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import {
   REVIEW_SORT_DEFAULT,
@@ -11,6 +12,7 @@ import {
   type ReviewSortOrder,
   type TripperReviewSortBy,
 } from "@/lib/reviews/sort";
+import type { BlogTeaserPost } from "@/lib/types/BlogIndexPost";
 import { effectiveCommission } from "@/lib/tripper/commission";
 import type {
   ActivityEntry,
@@ -1088,6 +1090,67 @@ export async function getRecentPublishedBlogs(
   locale: "es" | "en" = "es",
 ) {
   return queryPublishedBlogs({ limit, locale });
+}
+
+/**
+ * Recent published posts, round-robined across trippers so a single prolific
+ * tripper doesn't fill a short teaser section (e.g. the trippers page).
+ */
+export async function getBlogTeaserPosts(
+  limit: number = 3,
+): Promise<BlogTeaserPost[]> {
+  try {
+    const blogs = await prisma.blogPost.findMany({
+      where: {
+        status: "PUBLISHED",
+        isReviewCopy: false,
+        isActive: true,
+        coverUrl: { not: null },
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        coverUrl: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            tripperSlug: true,
+            avatarUrl: true,
+            location: true,
+          },
+        },
+      },
+      orderBy: { publishedAt: "desc" },
+      // Wide enough pool that the round-robin below can actually diversify
+      // authors instead of just re-sorting a single tripper's recent run.
+      take: limit * 10,
+    });
+
+    const interleaved = interleavePostsByAuthor(
+      blogs,
+      (blog) => blog.author.id,
+    ).slice(0, limit);
+
+    return interleaved.map((blog) => ({
+      author: {
+        avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
+        id: blog.author.id,
+        location: blog.author.location ?? undefined,
+        name: blog.author.name,
+        slug: blog.author.tripperSlug ?? "",
+      },
+      coverUrl: blog.coverUrl,
+      slug: blog.slug ?? blog.id,
+      subtitle: blog.subtitle ?? "",
+      title: blog.title,
+    }));
+  } catch (error) {
+    console.error("Error fetching blog teaser posts:", error);
+    return [];
+  }
 }
 
 /** Approved and public reviews left by travelers of a given trip type ('solo', 'family', etc). */

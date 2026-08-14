@@ -24,13 +24,19 @@ import {
 import { resolveFieldPeek, resolveEntryPeek } from "@/lib/helpers/experience-form-peek";
 import type { FieldPeek } from "@/components/ui/field-peek";
 import type { AccommodationEntry, ActivityEntry } from "@/types/tripper";
-import type { SaveStatus, ExperienceImageState } from "./NewExperienceShell";
+import type {
+  ExperienceShellMode,
+  SaveStatus,
+  ExperienceImageState,
+} from "./NewExperienceShell";
 
 interface ExperienceFormContentProps {
   activeTab: string;
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   imageState: ExperienceImageState;
+  /** Controls which experience type options are offered — XSED Drop is admin-only. Defaults to 'tripper'. */
+  mode?: ExperienceShellMode;
   adminReviewSlot?: ReactNode;
   /** Renders approve/reject actions in the form action area; suppresses the pending banner. */
   reviewActionsSlot?: ReactNode;
@@ -70,11 +76,12 @@ function resolveStepContent(
   makePeek?: (field: string) => FieldPeek | undefined,
   makeAccommodationPeek?: (index: number, entryKey: keyof AccommodationEntry) => FieldPeek | undefined,
   makeActivityPeek?: (index: number, entryKey: keyof ActivityEntry) => FieldPeek | undefined,
+  isAdmin?: boolean,
 ): React.ReactNode {
   if (activeTab === "about") {
     if (substepId === "experience")
       return (
-        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} peek={makePeek} />
+        <AboutExperienceStep copy={copy} form={form} onChange={onChange} imageState={imageState} changedFieldSet={changedFieldSet} peek={makePeek} isAdmin={isAdmin} />
       );
     if (substepId === "destination")
       return (
@@ -120,6 +127,7 @@ function SaveIndicator({
 
 export function ExperienceFormContent({
   activeTab,
+  mode,
   adminReviewSlot,
   reviewActionsSlot,
   backHref,
@@ -247,6 +255,7 @@ export function ExperienceFormContent({
                 makePeek,
                 makeAccommodationPeek,
                 makeActivityPeek,
+                mode !== undefined && mode !== "tripper",
               )}
             </fieldset>
           </JourneyDropdown>

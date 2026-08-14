@@ -1,18 +1,31 @@
 "use client";
 
 import Link from "next/link";
+import CountryFlag from "@/components/common/CountryFlag";
 import SafeImage from "@/components/common/SafeImage";
 import GlassCard from "@/components/ui/GlassCard";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import type { BlogIndexPost } from "@/lib/types/BlogIndexPost";
+import type { BlogTeaserPost } from "@/lib/types/BlogIndexPost";
 import { cn } from "@/lib/utils";
 
 interface BlogIndexCardProps {
   colSpan: string;
   isLarge: boolean;
   locale: Locale;
-  post: BlogIndexPost;
+  post: BlogTeaserPost;
+}
+
+/** Derive country for flag from location string (e.g. "Ciudad de México, México" → "México"). */
+function getCountryFromLocation(
+  location: string | null | undefined,
+): string | null {
+  if (!location?.trim()) return null;
+  const parts = location
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1]! : location;
 }
 
 export function BlogIndexCard({
@@ -21,6 +34,9 @@ export function BlogIndexCard({
   locale,
   post,
 }: BlogIndexCardProps) {
+  const { author } = post;
+  const countryForFlag = getCountryFromLocation(author?.location);
+
   return (
     <Link
       className={cn("group block", colSpan)}
@@ -42,19 +58,46 @@ export function BlogIndexCard({
           {post.coverUrl && (
             <div
               aria-hidden
-              className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"
+              className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-transparent"
             />
           )}
           <div
             className={cn(
-              "absolute bottom-10 left-0 flex w-full flex-col items-center justify-center p-4",
+              "absolute bottom-0 left-0 flex w-full flex-col gap-3 p-4 pb-6 text-left",
               post.coverUrl ? "text-white" : "text-neutral-900",
             )}
           >
-            <div className="flex flex-col gap-6 text-left">
+            {author?.avatarUrl && (
+              <div className="flex items-center gap-2">
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-white/70">
+                  <SafeImage
+                    alt={author.name}
+                    className="object-cover"
+                    fill
+                    sizes="36px"
+                    src={author.avatarUrl}
+                  />
+                </div>
+                <div className="flex flex-col leading-tight">
+                  {countryForFlag && (
+                    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.18em]">
+                      <CountryFlag
+                        country={countryForFlag}
+                        title={author.location}
+                      />
+                      {countryForFlag}
+                    </span>
+                  )}
+                  <span className="font-barlow-condensed text-sm font-bold uppercase tracking-wide">
+                    {author.name}
+                  </span>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-col gap-1">
               <h3
                 className={cn(
-                  "font-barlow-condensed text-lg font-extrabold uppercase tracking-wide transition-colors sm:text-xl md:text-4xl",
+                  "font-barlow-condensed text-xl font-extrabold uppercase tracking-wide transition-colors sm:text-2xl md:text-3xl",
                   post.coverUrl
                     ? "text-white group-hover:text-blue-200"
                     : "text-neutral-900 group-hover:text-blue-600",
@@ -65,7 +108,7 @@ export function BlogIndexCard({
               {post.subtitle && (
                 <p
                   className={cn(
-                    "mt-2 line-clamp-2 text-base font-normal",
+                    "line-clamp-2 text-sm font-normal",
                     post.coverUrl ? "text-white/95" : "text-neutral-600",
                   )}
                 >

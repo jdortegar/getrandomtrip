@@ -3,6 +3,7 @@
 // ============================================================================
 
 import { BlogStatus } from "@prisma/client";
+import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -56,44 +57,55 @@ export async function GET(request: NextRequest) {
       where.excuseKey = { has: excuseKey.trim() };
     }
 
-    // Fetch blogs with pagination
-    const [blogs, total] = await Promise.all([
-      prisma.blogPost.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { publishedAt: "desc" },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          subtitle: true,
-          tagline: true,
-          coverUrl: true,
-          tags: true,
-          format: true,
-          publishedAt: true,
-          travelType: true,
-          excuseKey: true,
-          author: {
-            select: {
-              id: true,
-              name: true,
-              tripperSlug: true,
-              avatarUrl: true,
-            },
+    // Fetch every matching post (no skip/take yet) so consecutive posts from
+    // the same tripper can be interleaved with other trippers' posts before
+    // paginating — otherwise a prolific tripper's recent posts crowd out
+    // everyone else's on page 1.
+    const allBlogs = await prisma.blogPost.findMany({
+      where,
+      orderBy: { publishedAt: "desc" },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        tagline: true,
+        coverUrl: true,
+        tags: true,
+        format: true,
+        publishedAt: true,
+        travelType: true,
+        excuseKey: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            tripperSlug: true,
+            avatarUrl: true,
+            location: true,
           },
         },
-      }),
-      prisma.blogPost.count({ where }),
-    ]);
+      },
+    });
+
+    type BlogWithAuthor = (typeof allBlogs)[number];
+
+    // Round-robin across trippers, preserving each tripper's internal
+    // recency order (their most recent post still comes before their older ones).
+    const interleavedBlogs = interleavePostsByAuthor(
+      allBlogs,
+      (blog: BlogWithAuthor) => blog.author.id,
+    );
+
+    const total = allBlogs.length;
+    const blogs = interleavedBlogs.slice(skip, skip + limit);
 
     // Transform to match frontend type (author included via select)
-    type BlogWithAuthor = (typeof blogs)[number];
     const transformedBlogs = blogs.map((blog: BlogWithAuthor) => ({
       author: {
         avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
         id: blog.author.id,
+        location: blog.author.location ?? undefined,
         name: blog.author.name,
         slug: blog.author.tripperSlug ?? "",
       },

@@ -1360,6 +1360,14 @@ export interface AdminPagesDict {
       all: string;
       pending: string;
     };
+    filters: {
+      allTypes: string;
+      allLevels: string;
+      clearFilters: string;
+    };
+    sort: {
+      ariaSortBy: string;
+    };
     searchPlaceholder: string;
     selectAll: string;
     selectRow: string;
@@ -2318,6 +2326,11 @@ export interface MarketingDictionary {
       searchCardDescription: string;
       searchCardTitle: string;
     };
+    blogTeaser: {
+      eyebrow: string;
+      heading: string;
+      viewAllButton: string;
+    };
     meta: {
       description: string;
       title: string;
@@ -2346,6 +2359,7 @@ export interface MarketingDictionary {
     heroDescription: string;
     heroTitleByTripper: string;
     heroTitleDefault: string;
+    loadMore: string;
     seenAll: string;
   };
   packagesByType: {

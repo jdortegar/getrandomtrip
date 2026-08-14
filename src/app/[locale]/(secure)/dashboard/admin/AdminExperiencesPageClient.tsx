@@ -11,6 +11,7 @@ import {
   Search,
   Star,
   StarOff,
+  X,
 } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
@@ -18,13 +19,29 @@ import { ExperienceTypePills } from "@/components/common/ExperienceTypePills";
 import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
+import { SortButton } from "@/components/ui/SortButton";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import {
+  EXPERIENCE_SORT_DEFAULT,
+  EXPERIENCE_SORT_INITIAL_ORDER,
+  type ExperienceSortBy,
+  type ExperienceSortOrder,
+} from "@/lib/admin/experiencesSort";
 import type { AdminExperience } from "@/lib/admin/types";
+import { EXPERIENCE_LEVELS, getExperienceTypes } from "@/lib/constants/packages";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { cn } from "@/lib/utils";
 
-type Tab = "all" | "pending";
+/** "PENDING" is a synthetic value spanning both pending-review statuses —
+ * everything else maps 1:1 to an Experience.status value. */
+type StatusFilter =
+  | "ALL"
+  | "PENDING"
+  | "DRAFT"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ARCHIVED";
 
 const SELECT_CLASS = "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 const PAGE_SIZE = 20;
@@ -49,7 +66,15 @@ export function AdminExperiencesPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("pending");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("PENDING");
+  const [typeFilter, setTypeFilter] = useState<string>("ALL");
+  const [levelFilter, setLevelFilter] = useState<string>("ALL");
+  const [sortBy, setSortBy] = useState<ExperienceSortBy>(
+    EXPERIENCE_SORT_DEFAULT.sortBy,
+  );
+  const [sortOrder, setSortOrder] = useState<ExperienceSortOrder>(
+    EXPERIENCE_SORT_DEFAULT.sortOrder,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -75,8 +100,41 @@ export function AdminExperiencesPageClient() {
     }
   }, [someSelected]);
 
-  function setTabAndClear(next: Tab) {
-    setTab(next);
+  function handleStatusChange(next: StatusFilter) {
+    setStatusFilter(next);
+    setSelectedIds(new Set());
+    setPage(1);
+  }
+
+  function handleTypeChange(next: string) {
+    setTypeFilter(next);
+    setSelectedIds(new Set());
+    setPage(1);
+  }
+
+  function handleLevelChange(next: string) {
+    setLevelFilter(next);
+    setSelectedIds(new Set());
+    setPage(1);
+  }
+
+  function toggleSort(field: ExperienceSortBy) {
+    if (field === sortBy) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder(EXPERIENCE_SORT_INITIAL_ORDER[field]);
+    }
+    setSelectedIds(new Set());
+    setPage(1);
+  }
+
+  function clearFilters() {
+    setStatusFilter("PENDING");
+    setTypeFilter("ALL");
+    setLevelFilter("ALL");
+    setSearchQuery("");
+    setDebouncedSearch("");
     setSelectedIds(new Set());
     setPage(1);
   }
@@ -148,8 +206,16 @@ export function AdminExperiencesPageClient() {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(PAGE_SIZE),
+        sortBy,
+        sortOrder,
       });
-      if (tab === "pending") params.set("status", PENDING_STATUSES);
+      if (statusFilter === "PENDING") {
+        params.set("status", PENDING_STATUSES);
+      } else if (statusFilter !== "ALL") {
+        params.set("status", statusFilter);
+      }
+      if (typeFilter !== "ALL") params.set("type", typeFilter);
+      if (levelFilter !== "ALL") params.set("level", levelFilter);
       if (debouncedSearch) params.set("search", debouncedSearch);
 
       const res = await fetch(`/api/admin/experiences?${params.toString()}`);
@@ -171,7 +237,16 @@ export function AdminExperiencesPageClient() {
     } finally {
       setLoading(false);
     }
-  }, [page, tab, debouncedSearch, copy.errorLoad]);
+  }, [
+    page,
+    statusFilter,
+    typeFilter,
+    levelFilter,
+    sortBy,
+    sortOrder,
+    debouncedSearch,
+    copy.errorLoad,
+  ]);
 
   async function updateExperience(
     id: string,
@@ -203,6 +278,23 @@ export function AdminExperiencesPageClient() {
   const st = copy.status;
   const act = copy.actions;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const experienceTypes = getExperienceTypes(locale);
+  const hasActiveFilters =
+    statusFilter !== "PENDING" ||
+    typeFilter !== "ALL" ||
+    levelFilter !== "ALL" ||
+    searchQuery !== "";
+
+  function ariaSortFor(
+    field: ExperienceSortBy,
+  ): "ascending" | "descending" | "none" {
+    if (sortBy !== field) return "none";
+    return sortOrder === "asc" ? "ascending" : "descending";
+  }
+
+  function sortAriaLabel(label: string): string {
+    return copy.sort.ariaSortBy.replace("{field}", label);
+  }
 
   return (
     <div className="space-y-10">
@@ -221,16 +313,56 @@ export function AdminExperiencesPageClient() {
         <div className="flex items-center gap-2 flex-wrap">
           <Select
             className={SELECT_CLASS}
-            onChange={(e) => setTabAndClear(e.target.value as Tab)}
-            value={tab}
+            onChange={(e) =>
+              handleStatusChange(e.target.value as StatusFilter)
+            }
+            value={statusFilter}
           >
-            <option value="all">{copy.tabs.all}</option>
-            <option value="pending">
+            <option value="ALL">{copy.tabs.all}</option>
+            <option value="PENDING">
               {pendingCount > 0
                 ? `${copy.tabs.pending} (${pendingCount})`
                 : copy.tabs.pending}
             </option>
+            <option value="DRAFT">{st.DRAFT}</option>
+            <option value="ACTIVE">{st.ACTIVE}</option>
+            <option value="INACTIVE">{st.INACTIVE}</option>
+            <option value="ARCHIVED">{st.ARCHIVED}</option>
           </Select>
+          <Select
+            className={SELECT_CLASS}
+            onChange={(e) => handleTypeChange(e.target.value)}
+            value={typeFilter}
+          >
+            <option value="ALL">{copy.filters.allTypes}</option>
+            {experienceTypes.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </Select>
+          <Select
+            className={SELECT_CLASS}
+            onChange={(e) => handleLevelChange(e.target.value)}
+            value={levelFilter}
+          >
+            <option value="ALL">{copy.filters.allLevels}</option>
+            {EXPERIENCE_LEVELS.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </Select>
+          {hasActiveFilters && (
+            <button
+              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
+              onClick={clearFilters}
+              type="button"
+            >
+              <X className="h-3.5 w-3.5" />
+              {copy.filters.clearFilters}
+            </button>
+          )}
           <Button
             className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
             disabled={selectedIds.size === 0}
@@ -273,7 +405,7 @@ export function AdminExperiencesPageClient() {
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {experiences.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
-            {tab === "pending" ? copy.emptyPending : copy.empty}
+            {statusFilter === "PENDING" ? copy.emptyPending : copy.empty}
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -290,21 +422,48 @@ export function AdminExperiencesPageClient() {
                       type="checkbox"
                     />
                   </th>
-                  {[
-                    cols.experience,
-                    cols.tripper,
-                    cols.typeLevel,
-                    cols.status,
-                    cols.updated,
-                    cols.actions,
-                  ].map((h) => (
-                    <th
-                      className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500"
-                      key={h}
-                    >
-                      {h}
-                    </th>
-                  ))}
+                  <th aria-sort={ariaSortFor("experience")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "experience"}
+                      ariaLabel={sortAriaLabel(cols.experience)}
+                      label={cols.experience}
+                      onSort={() => toggleSort("experience")}
+                      order={sortOrder}
+                    />
+                  </th>
+                  <th aria-sort={ariaSortFor("tripper")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "tripper"}
+                      ariaLabel={sortAriaLabel(cols.tripper)}
+                      label={cols.tripper}
+                      onSort={() => toggleSort("tripper")}
+                      order={sortOrder}
+                    />
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.typeLevel}
+                  </th>
+                  <th aria-sort={ariaSortFor("status")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "status"}
+                      ariaLabel={sortAriaLabel(cols.status)}
+                      label={cols.status}
+                      onSort={() => toggleSort("status")}
+                      order={sortOrder}
+                    />
+                  </th>
+                  <th aria-sort={ariaSortFor("updated")} className="px-5 py-3 text-left">
+                    <SortButton
+                      active={sortBy === "updated"}
+                      ariaLabel={sortAriaLabel(cols.updated)}
+                      label={cols.updated}
+                      onSort={() => toggleSort("updated")}
+                      order={sortOrder}
+                    />
+                  </th>
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                    {cols.actions}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">

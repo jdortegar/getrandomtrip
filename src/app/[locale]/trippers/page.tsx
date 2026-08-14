@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import React from "react";
+import { TripperBlogTeaser } from "@/components/tripper/TripperBlogTeaser";
 import TopTrippersGrid from "@/components/tripper/TopTrippersGrid";
 import HeaderHero from "@/components/journey/HeaderHero";
-import { getAllTrippers } from "@/lib/db/tripper-queries";
+import { getAllTrippers, getBlogTeaserPosts } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
@@ -28,20 +29,29 @@ export default async function TrippersPage(props: {
   const locale = hasLocale(params.locale) ? params.locale : "es";
   const dict = await getDictionary(locale);
   const hero = dict.trippers.hero;
-  const trippers = await getAllTrippers();
+  const [trippers, blogTeaserPosts] = await Promise.all([
+    getAllTrippers(),
+    getBlogTeaserPosts(3),
+  ]);
 
   return (
     <main className="min-h-screen bg-white">
       <HeaderHero
         className="min-h-[50vh]!"
         description={hero.description}
-        fallbackImage="/images/hero-image-1.jpeg"
+        fallbackImage="/images/trippers-hero.png"
         subtitle={hero.subtitle}
         title={hero.title}
-        videoSrc="/videos/hero-video-1.mp4"
+        videoSrc="/videos/trippers-hero.mp4"
       />
 
       <TopTrippersGrid trippers={trippers} />
+
+      <TripperBlogTeaser
+        copy={dict.trippers.blogTeaser}
+        locale={locale}
+        posts={blogTeaserPosts}
+      />
     </main>
   );
 }

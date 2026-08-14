@@ -1,0 +1,90 @@
+---
+description: >-
+  Core conventions for getrandomtrip — naming, component structure, Tailwind,
+  Zustand slices, auth, i18n, and quality gate. Always apply in this project.
+alwaysApply: true
+---
+
+# GetRandomTrip — Project Rules
+
+Full reference: `AGENTS.md` at repo root.
+
+## Stack
+Next.js 16 App Router · TypeScript strict · Prisma 7 + PostgreSQL · NextAuth 4 ·
+Zustand 5 (slices) · Shadcn UI + Radix + Tailwind · Vitest + happy-dom · Netlify
+
+## Naming
+- Folders: `kebab-case`
+- Components: `PascalCase.tsx`
+- Helpers / utils: `camelCase.ts`
+- Hooks: `useCamelCase.ts`
+- Constants: `SNAKE_CASE.ts`
+- Types: `PascalCase.ts`
+
+## Component rules
+- One component per file. Files ≤ 300 lines.
+- No barrel `index.ts` files — import by direct path.
+- Page files are thin orchestrators (fetch + layout only, no inline UI logic).
+- File order: imports → types/interfaces → routing vars → Zustand → useState →
+  derived → memoized → hooks → useEffect → handleX → refs → JSX return.
+
+## `"use client"` — only when strictly necessary
+Use for: interactivity, Web APIs, Zustand reads, local useState/useEffect.
+Never use for: data fetching, static display, layout, utility functions.
+
+## JSX props — alphabetical order (always)
+```tsx
+<Button aria-label="x" disabled={x} onClick={fn} size="lg" />
+```
+
+## Tailwind classes
+- Alphabetical within each group.
+- Responsive/state prefixes in separate `cn()` strings:
+```tsx
+className={cn('flex gap-4 rounded-xl', 'md:flex-row', 'hover:bg-gray-50')}
+```
+
+## TypeScript
+- Strict mode. Run `npm run typecheck` before committing.
+- Manual types in `src/lib/types/`. Never import `@prisma/client` in UI code.
+- Prefer `interface` over `type`. Avoid enums — use const maps.
+
+## Zustand
+- Slice per file in `src/store/slices/`. Each slice has a typed interface.
+- Composed in `src/store/store.ts` with `devtools` + `persist`.
+- Action naming: `setX`, `clearX`, `updateX`.
+
+## Auth (server-side)
+```ts
+const session = await getServerSession(authOptions);
+if (!session) redirect('/login');
+if (!hasRoleAccess(session.user.role, ['ADMIN'])) return forbidden();
+```
+
+## i18n
+- All user-visible strings must use dictionary keys — no hardcoded text.
+- Add keys to both `src/dictionaries/en.json` and `src/dictionaries/es.json`.
+
+## Images
+- Never use raw `<img>`. Always use `<Img>` from `@/components/common/Img`.
+- Remote hostnames must be added to `next.config.js` `remotePatterns`.
+
+## Design system constraints
+- No dark mode. Never add `dark:` Tailwind variants.
+- Color tokens: gray-900 (ink), text-light-blue (cyan), yellow-400 (sun), white
+  (surface), gray-50 (ground), gray-200 (border).
+- `GlassCard` is marketing-only — never in dashboard pages.
+- Status badges always render through `<StatusIndicatorBadge>`.
+- Icons from `lucide-react`.
+
+## Quality gate (every PR)
+- `npm run typecheck` → zero errors
+- `npm run lint` → zero errors
+- `npm run test` → all pass
+- Both `en.json` and `es.json` updated for any new copy
+- Responsive ≥ 360 px mobile, ≥ 1280 px desktop
+- Empty and error states handled
+
+## Commits
+Conventional format: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`
+No AI attribution in commit messages or PR descriptions.

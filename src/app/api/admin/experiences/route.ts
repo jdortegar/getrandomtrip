@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import {
+  experienceListOrderBy,
+  parseExperienceSortBy,
+  parseExperienceSortOrder,
+} from "@/lib/admin/experiencesSort";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { canonicalizeExperienceTypeFilter } from "@/lib/experiences/experienceTypeFilter";
 import { prisma } from "@/lib/prisma";
@@ -35,6 +40,8 @@ export async function GET(request: NextRequest) {
     const filterStatus = searchParams.get("status");
     const searchParam = searchParams.get("search");
     const ownerActive = searchParams.get("ownerActive") === "true";
+    const sortBy = parseExperienceSortBy(searchParams.get("sortBy"));
+    const sortOrder = parseExperienceSortOrder(searchParams.get("sortOrder"));
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
     const limit = Math.min(
       MAX_LIMIT,
@@ -61,7 +68,7 @@ export async function GET(request: NextRequest) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (prisma.experience.findMany as any)({
         where,
-        orderBy: { updatedAt: "desc" },
+        orderBy: experienceListOrderBy(sortBy, sortOrder),
         skip: (page - 1) * limit,
         take: limit,
         select: {

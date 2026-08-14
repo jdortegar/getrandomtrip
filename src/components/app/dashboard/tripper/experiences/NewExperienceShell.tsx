@@ -749,6 +749,7 @@ export function NewExperienceShell({
           <div className="min-w-0 flex-1">
             <ExperienceFormContent
               activeTab={activeTab}
+              mode={mode}
               adminReviewSlot={adminReviewSlot}
               reviewActionsSlot={reviewActionsSlot}
               onBack={handleBackToStart}
