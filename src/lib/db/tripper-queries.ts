@@ -1011,17 +1011,26 @@ export async function getApprovedReviewsForTripper(tripperId: string) {
   }
 }
 
-/**
- * Get published blog posts for a tripper (for public profile)
- */
-export async function getTripperPublishedBlogs(
-  tripperId: string,
-  limit: number = 6,
-) {
+const BLOG_CATEGORY_FALLBACK: Record<"es" | "en", string> = {
+  es: "Viajes",
+  en: "Travel",
+};
+
+/** Shared by getTripperPublishedBlogs and getRecentPublishedBlogs — same
+ * visibility guards and shape, differing only by an optional author scope. */
+async function queryPublishedBlogs({
+  authorId,
+  limit,
+  locale = "es",
+}: {
+  authorId?: string;
+  limit: number;
+  locale?: "es" | "en";
+}) {
   try {
     const blogs = await prisma.blogPost.findMany({
       where: {
-        authorId: tripperId,
+        ...(authorId ? { authorId } : {}),
         status: "PUBLISHED",
         // Review copies (isReviewCopy: true) share authorId with the
         // original and must never leak into this public-facing list.
@@ -1029,6 +1038,9 @@ export async function getTripperPublishedBlogs(
         // Tripper-unpublished posts stay PUBLISHED (approval history) but
         // must not appear on the public profile.
         isActive: true,
+        // Filtered in the query (not after `take`) so a short run of
+        // cover-less posts can't shrink the result below `limit`.
+        coverUrl: { not: null },
       },
       select: {
         id: true,
@@ -1043,63 +1055,39 @@ export async function getTripperPublishedBlogs(
       take: limit,
     });
 
-    // Transform to match Blog component format; only include posts with a cover
-    return blogs
-      .filter(
-        (blog): blog is typeof blog & { coverUrl: string } =>
-          blog.coverUrl != null,
-      )
-      .map((blog) => ({
-        category: blog.tags[0] ?? "Viajes",
-        href: `/blog/${blog.slug ?? blog.id}`,
-        image: blog.coverUrl,
-        title: blog.title,
-      }));
+    const fallbackCategory = BLOG_CATEGORY_FALLBACK[locale];
+
+    return blogs.map((blog) => ({
+      category: blog.tags[0] ?? fallbackCategory,
+      href: `/blog/${blog.slug ?? blog.id}`,
+      image: blog.coverUrl!,
+      title: blog.title,
+    }));
   } catch (error) {
-    console.error("Error fetching tripper published blogs:", error);
+    console.error("Error fetching published blogs:", error);
     return [];
   }
 }
 
 /**
+ * Get published blog posts for a tripper (for public profile)
+ */
+export async function getTripperPublishedBlogs(
+  tripperId: string,
+  limit: number = 6,
+  locale: "es" | "en" = "es",
+) {
+  return queryPublishedBlogs({ authorId: tripperId, limit, locale });
+}
+
+/**
  * Get the most recently published blog posts across all trippers (for the home page).
  */
-export async function getRecentPublishedBlogs(limit: number = 5) {
-  try {
-    const blogs = await prisma.blogPost.findMany({
-      where: {
-        status: "PUBLISHED",
-        isReviewCopy: false,
-        isActive: true,
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        subtitle: true,
-        coverUrl: true,
-        tags: true,
-        publishedAt: true,
-      },
-      orderBy: { publishedAt: "desc" },
-      take: limit,
-    });
-
-    return blogs
-      .filter(
-        (blog): blog is typeof blog & { coverUrl: string } =>
-          blog.coverUrl != null,
-      )
-      .map((blog) => ({
-        category: blog.tags[0] ?? "Viajes",
-        href: `/blog/${blog.slug ?? blog.id}`,
-        image: blog.coverUrl,
-        title: blog.title,
-      }));
-  } catch (error) {
-    console.error("Error fetching recent published blogs:", error);
-    return [];
-  }
+export async function getRecentPublishedBlogs(
+  limit: number = 5,
+  locale: "es" | "en" = "es",
+) {
+  return queryPublishedBlogs({ limit, locale });
 }
 
 /** Approved and public reviews left by travelers of a given trip type ('solo', 'family', etc). */

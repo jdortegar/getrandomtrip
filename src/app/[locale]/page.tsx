@@ -33,11 +33,15 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function HomePage() {
+export default async function HomePage(props: {
+  params: Promise<{ locale?: string }>;
+}) {
+  const { locale } = await props.params;
+  const resolvedLocale = hasLocale(locale) ? locale : "es";
   const [trippers, testimonials, blogPosts] = await Promise.all([
     getAllTrippers(),
     getHomepageTestimonials(),
-    getRecentPublishedBlogs(5),
+    getRecentPublishedBlogs(5, resolvedLocale),
   ]);
   return (
     <HomePageClient

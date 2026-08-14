@@ -15,7 +15,7 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
     (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   });
 
-  it("queries across all authors (no authorId filter) with status: PUBLISHED, isReviewCopy: false, isActive: true", async () => {
+  it("queries across all authors (no authorId filter) with status: PUBLISHED, isReviewCopy: false, isActive: true, coverUrl: { not: null }", async () => {
     await getRecentPublishedBlogs(5);
 
     const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock
@@ -25,12 +25,17 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
       status: "PUBLISHED",
       isReviewCopy: false,
       isActive: true,
+      coverUrl: { not: null },
     });
     expect(findManyArgs.orderBy).toEqual({ publishedAt: "desc" });
     expect(findManyArgs.take).toBe(5);
   });
 
-  it("filters out posts without a coverUrl and maps to BlogPost shape", async () => {
+  it("filters cover-less posts at the query level, so `take` isn't shrunk by a post-fetch JS filter", async () => {
+    // The DB is trusted to only return posts matching `coverUrl: { not: null }`
+    // (asserted above) — this test locks in that the function no longer
+    // re-filters in JS after `take`, which previously could return fewer
+    // than `limit` results if some of the `take`d rows lacked a cover.
     (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
       {
         id: "post-1",
@@ -39,15 +44,6 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
         subtitle: null,
         coverUrl: "/covers/one.jpg",
         tags: ["Aventura"],
-        publishedAt: new Date(),
-      },
-      {
-        id: "post-2",
-        slug: null,
-        title: "Post Two",
-        subtitle: null,
-        coverUrl: null,
-        tags: [],
         publishedAt: new Date(),
       },
     ]);
@@ -64,7 +60,7 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
     ]);
   });
 
-  it("falls back to 'Viajes' category and post id when tags/slug are missing", async () => {
+  it("falls back to the locale-appropriate category and post id when tags/slug are missing", async () => {
     (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
       {
         id: "post-3",
@@ -77,9 +73,8 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
       },
     ]);
 
-    const result = await getRecentPublishedBlogs(5);
-
-    expect(result).toEqual([
+    const resultEs = await getRecentPublishedBlogs(5);
+    expect(resultEs).toEqual([
       {
         category: "Viajes",
         href: "/blog/post-3",
@@ -87,6 +82,9 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
         title: "Post Three",
       },
     ]);
+
+    const resultEn = await getRecentPublishedBlogs(5, "en");
+    expect(resultEn[0].category).toBe("Travel");
   });
 
   it("returns an empty array on query failure instead of throwing", async () => {

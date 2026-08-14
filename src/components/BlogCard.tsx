@@ -46,7 +46,12 @@ export default function BlogCard({ post }: BlogCardProps) {
           className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit"
           variant="outline"
         >
-          <Link href={href}>Explorar Trip</Link>
+          {/* The full-card Link above already provides the accessible path
+              to this same href — hide this one from keyboard/AT so it isn't
+              a redundant, adjacent duplicate stop. Still mouse-clickable. */}
+          <Link aria-hidden="true" href={href} tabIndex={-1}>
+            Explorar Trip
+          </Link>
         </Button>
       </div>
     </div>

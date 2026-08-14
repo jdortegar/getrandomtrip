@@ -30,6 +30,8 @@ export default function Blog({
   posts,
   viewAll,
 }: BlogProps) {
+  if (posts.length === 0) return null;
+
   return (
     <Section id={id} fullWidth className={cn("pt-24!", className)}>
       <div className="relative flex flex-col gap-12 lg:flex-row lg:rt-container">

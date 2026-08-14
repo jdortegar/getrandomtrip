@@ -15,7 +15,7 @@ describe("getTripperPublishedBlogs — visibility guard", () => {
     (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   });
 
-  it("excludes review-copy rows and unpublished posts via isReviewCopy: false + isActive: true alongside authorId + status: PUBLISHED", async () => {
+  it("excludes review-copy rows, unpublished posts, and cover-less posts via isReviewCopy: false + isActive: true + coverUrl filter, alongside authorId + status: PUBLISHED", async () => {
     await getTripperPublishedBlogs("tripper-1", 6);
 
     const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
@@ -24,6 +24,44 @@ describe("getTripperPublishedBlogs — visibility guard", () => {
       status: "PUBLISHED",
       isReviewCopy: false,
       isActive: true,
+      coverUrl: { not: null },
     });
+    expect(findManyArgs.take).toBe(6);
+  });
+
+  it("defaults the category fallback to Spanish when no locale is passed", async () => {
+    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      {
+        id: "post-1",
+        slug: "post-1-slug",
+        title: "Post One",
+        subtitle: null,
+        coverUrl: "/covers/one.jpg",
+        tags: [],
+        publishedAt: new Date(),
+      },
+    ]);
+
+    const result = await getTripperPublishedBlogs("tripper-1", 6);
+
+    expect(result[0].category).toBe("Viajes");
+  });
+
+  it("uses the English category fallback when locale is 'en'", async () => {
+    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      {
+        id: "post-1",
+        slug: "post-1-slug",
+        title: "Post One",
+        subtitle: null,
+        coverUrl: "/covers/one.jpg",
+        tags: [],
+        publishedAt: new Date(),
+      },
+    ]);
+
+    const result = await getTripperPublishedBlogs("tripper-1", 6, "en");
+
+    expect(result[0].category).toBe("Travel");
   });
 });

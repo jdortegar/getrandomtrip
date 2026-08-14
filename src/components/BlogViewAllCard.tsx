@@ -41,7 +41,10 @@ export default function BlogViewAllCard({ viewAll }: BlogViewAllCardProps) {
           variant="outline"
           className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit"
         >
-          <Link href={viewAll.href}>
+          {/* The full-card Link above already provides the accessible path
+              to this same href — hide this one from keyboard/AT so it isn't
+              a redundant, adjacent duplicate stop. Still mouse-clickable. */}
+          <Link aria-hidden="true" href={viewAll.href} tabIndex={-1}>
             Ver todos
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
