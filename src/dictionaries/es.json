@@ -1230,6 +1230,11 @@
       "searchCardDescription": "Encuentra el experto perfecto para tu aventura.",
       "searchCardCta": "Explorar Trippers"
     },
+    "blogTeaser": {
+      "eyebrow": "Tres pasos, cero stress",
+      "heading": "TRIPPER'S INSPIRATION",
+      "viewAllButton": "Ver todo"
+    },
     "meta": {
       "title": "Nuestros Trippers | Randomtrip",
       "description": "Explorá perfiles de viajeros expertos que curan experiencias auténticas y memorables. Encontrá tu Tripper ideal."

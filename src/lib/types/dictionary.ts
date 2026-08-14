@@ -2318,6 +2318,11 @@ export interface MarketingDictionary {
       searchCardDescription: string;
       searchCardTitle: string;
     };
+    blogTeaser: {
+      eyebrow: string;
+      heading: string;
+      viewAllButton: string;
+    };
     meta: {
       description: string;
       title: string;

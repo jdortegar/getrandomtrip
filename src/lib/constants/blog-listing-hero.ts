@@ -5,7 +5,7 @@
 export const BLOG_LISTING_HERO_CONFIG = {
   className: "min-h-[40vh]!",
   eyebrowColor: "#F2C53D",
-  fallbackImage: "/images/hero-image-1.jpeg",
+  fallbackImage: "/images/trippers-hero.png",
   subtitle: "BLOG",
-  videoSrc: "/videos/hero-video-1.mp4",
+  videoSrc: "/videos/trippers-hero.mp4",
 } as const;
