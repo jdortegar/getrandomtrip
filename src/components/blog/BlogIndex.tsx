@@ -180,6 +180,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
           <BlogFilterHeader
             className="mb-8"
             labels={copy.filters}
+            locale={locale}
             onChange={setFilter}
             trippers={trippers}
             value={filter}

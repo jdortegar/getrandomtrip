@@ -2,8 +2,8 @@
 
 import { ChevronDown } from "lucide-react";
 import {
-  BLOG_EXCUSE_OPTIONS,
-  BLOG_TRAVEL_TYPE_OPTIONS,
+  getBlogExcuseOptions,
+  getBlogTravelTypeOptions,
   type ExcuseFilterOption,
   type TripperFilterOption,
 } from "@/lib/constants/blog-filters";
@@ -21,6 +21,7 @@ export type BlogFilterLabels = MarketingDictionary["blogPage"]["filters"];
 interface BlogFilterHeaderProps {
   className?: string;
   labels: BlogFilterLabels;
+  locale: string;
   onChange: (next: BlogFilterState) => void;
   trippers: TripperFilterOption[];
   value: BlogFilterState;
@@ -70,21 +71,25 @@ function getTripperById(
 export function BlogFilterHeader({
   className,
   labels,
+  locale,
   onChange,
   trippers,
   value,
 }: BlogFilterHeaderProps) {
+  const travelTypeOptions = getBlogTravelTypeOptions(locale);
+  const excuseOptions = getBlogExcuseOptions(locale);
+
   const selectedTripper = value.tripperId
     ? getTripperById(trippers, value.tripperId)
     : null;
   const selectedExcuse: ExcuseFilterOption | null = value.excuseKey
-    ? (BLOG_EXCUSE_OPTIONS.find((e) => e.key === value.excuseKey) ?? null)
+    ? (excuseOptions.find((e) => e.key === value.excuseKey) ?? null)
     : null;
 
   const travelTypeTitle =
     value.travelTypeKey === ""
       ? labels.travelTypeLabel
-      : (BLOG_TRAVEL_TYPE_OPTIONS.find((o) => o.key === value.travelTypeKey)
+      : (travelTypeOptions.find((o) => o.key === value.travelTypeKey)
           ?.label ?? labels.travelTypeLabel);
 
   const excuseTitle = selectedExcuse?.label ?? labels.excuseLabel;
@@ -122,7 +127,7 @@ export function BlogFilterHeader({
           value={value.travelTypeKey}
         >
           <option value="">{labels.allOption}</option>
-          {BLOG_TRAVEL_TYPE_OPTIONS.map((opt) => (
+          {travelTypeOptions.map((opt) => (
             <option key={opt.key} value={opt.key}>
               {opt.label}
             </option>
@@ -140,7 +145,7 @@ export function BlogFilterHeader({
           value={value.excuseKey ?? ""}
         >
           <option value="">{labels.excuseLabel}</option>
-          {BLOG_EXCUSE_OPTIONS.slice(0, 8).map((opt) => (
+          {excuseOptions.slice(0, 8).map((opt) => (
             <option key={opt.key} value={opt.key}>
               {opt.label}
             </option>

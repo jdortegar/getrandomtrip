@@ -21,7 +21,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
-import { BLOG_TRAVEL_TYPE_OPTIONS } from "@/lib/constants/blog-filters";
+import { getBlogTravelTypeOptions } from "@/lib/constants/blog-filters";
 import { resolveBlogRowAction, isBlogRowLockedForDeletion } from "@/lib/blog/row-actions";
 import { useDictionary } from "@/hooks/useDictionary";
 import type { TripperBlogsDict } from "@/lib/types/dictionary";
@@ -69,6 +69,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
 
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const basePath = `/${locale}/dashboard/tripper/blog`;
+  const travelTypeOptions = getBlogTravelTypeOptions(locale);
 
   const scrollToFilters = useCallback(() => {
     filtersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -337,7 +338,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
             value={selectedTravelType}
           >
             <option value="all">{copy.filters.allTravelTypes}</option>
-            {BLOG_TRAVEL_TYPE_OPTIONS.map((travelType) => (
+            {travelTypeOptions.map((travelType) => (
               <option key={travelType.key} value={travelType.key}>
                 {travelType.label}
               </option>
