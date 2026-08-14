@@ -86,13 +86,18 @@ function traveler(overrides: Partial<TravelerDTO> = {}): TravelerDTO {
   };
 }
 
-function roster(travelers: TravelerDTO[]): TravelerRoster {
+function roster(
+  travelers: TravelerDTO[],
+  overrides: Partial<TravelerRoster> = {},
+): TravelerRoster {
   return {
     deadline: null,
+    startDate: null,
     locked: false,
     cap: travelers.length,
     submitted: travelers.filter((t) => t.status === "COMPLETE").length,
     travelers,
+    ...overrides,
   };
 }
 
@@ -179,5 +184,24 @@ describe("TravelerRosterSection — saveAll() completeness", () => {
     });
 
     expect(allComplete).toBe(false);
+  });
+});
+
+describe("TravelerRosterSection — locked banner days", () => {
+  it("shows real days-until-departure, not days since the roster deadline", () => {
+    const t1 = traveler({ id: "t1" });
+    // Deadline (roster cutoff) is already 4 days in the past — the old code
+    // derived {days} from this and clamped to 0. Departure itself is still
+    // 3 days out, which is what the copy claims to show.
+    const startDate = new Date(
+      Date.now() + 3 * 24 * 60 * 60 * 1000 + 60_000,
+    ).toISOString();
+    const deadline = new Date(
+      Date.now() - 4 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    render(roster([t1], { locked: true, startDate, deadline }));
+
+    expect(container.textContent).toContain("Bloqueado hace 3 días");
   });
 });

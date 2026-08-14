@@ -257,6 +257,7 @@ describe("getRosterForTrip", () => {
     expect(roster.deadline).toBe(
       new Date(startDate.getTime() - 7 * DAY_MS).toISOString(),
     );
+    expect(roster.startDate).toBe(startDate.toISOString());
   });
 
   it("returns an empty locked-false roster when the trip does not exist", async () => {
@@ -268,6 +269,7 @@ describe("getRosterForTrip", () => {
 
     expect(roster).toEqual({
       deadline: null,
+      startDate: null,
       locked: false,
       cap: 0,
       submitted: 0,

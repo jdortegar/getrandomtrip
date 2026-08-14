@@ -122,15 +122,23 @@ export async function getRosterForTrip(tripId: string): Promise<TravelerRoster> 
   });
 
   if (!trip) {
-    return { deadline: null, locked: false, cap: 0, submitted: 0, travelers: [] };
+    return {
+      deadline: null,
+      startDate: null,
+      locked: false,
+      cap: 0,
+      submitted: 0,
+      travelers: [],
+    };
   }
 
   const deadline = trip.startDate
     ? new Date(trip.startDate.getTime() - ROSTER_CUTOFF_MS).toISOString()
     : null;
+  const startDate = trip.startDate ? trip.startDate.toISOString() : null;
   const locked = isRosterLocked(trip);
   const travelers = trip.travelers.map(serializeTraveler);
   const submitted = travelers.filter((t) => t.status === "COMPLETE").length;
 
-  return { deadline, locked, cap: travelers.length, submitted, travelers };
+  return { deadline, startDate, locked, cap: travelers.length, submitted, travelers };
 }
