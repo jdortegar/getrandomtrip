@@ -1479,7 +1479,7 @@ export interface AdminPagesDict {
     actions: {
       delete: string;
       deleting: string;
-      inviteTripper: string;
+      invite: string;
       inviting: string;
       resend: string;
     };
@@ -1487,14 +1487,11 @@ export interface AdminPagesDict {
     selectAll: string;
     selectRow: string;
     alreadyMemberBadge: string;
-    alreadyMemberHint: string;
     bulkActions: {
       inviteSelected: string;
       deleteSelected: string;
-      inviteNothingToDo: string;
       inviteConfirmTitle: string;
       inviteConfirmBody: string;
-      inviteSkippedNote: string;
       deleteConfirmTitle: string;
       deleteConfirmBody: string;
       cancel: string;
@@ -1895,6 +1892,14 @@ export interface TripperInviteAcceptDict {
   registerSuccessTitle: string;
   registerSuccessBody: string;
   registerErrorGeneric: string;
+  siteAccess: {
+    grantedTitle: string;
+    grantedBody: string;
+    registerEyebrow: string;
+    registerTitle: string;
+    registerSubtitle: string;
+    registerSuccessBody: string;
+  };
 }
 
 export interface TripDetailDict {
@@ -2998,8 +3003,6 @@ export interface MarketingDictionary {
   waitlist: {
     accessDeniedBody: string;
     accessDeniedTitle: string;
-    adminLoginAction: string;
-    adminLoginLabel: string;
     ariaFacebook: string;
     ariaInstagram: string;
     ariaLinkedin: string;
@@ -3009,6 +3012,7 @@ export interface MarketingDictionary {
     headline: string;
     lastNameLabel: string;
     lastNamePlaceholder: string;
+    loginAction: string;
     nameLabel: string;
     namePlaceholder: string;
     signOutLabel: string;

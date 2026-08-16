@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
-import { issueTripperInvite } from "@/lib/auth/tripperInviteTokens";
-import { sendTripperInviteEmail } from "@/lib/email";
-import { findExistingUserEmails } from "@/lib/admin/waitlistMembership";
+import { issueAccessInvite } from "@/lib/auth/accessInviteTokens";
+import { sendAccessInviteEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -42,20 +41,12 @@ export async function POST(
       );
     }
 
-    const existingEmails = await findExistingUserEmails([entry.email]);
-    if (existingEmails.has(entry.email)) {
-      return NextResponse.json(
-        { error: "Email already belongs to an existing user" },
-        { status: 400 },
-      );
-    }
-
-    const token = await issueTripperInvite(entry.email);
-    sendTripperInviteEmail(entry.email, token, "es"); // fire-and-forget
+    const token = await issueAccessInvite(entry.email, "SITE_ACCESS");
+    sendAccessInviteEmail(entry.email, token, "es", "SITE_ACCESS"); // fire-and-forget
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error("[admin/waitlist/[id]/invite-tripper] POST", error);
+    console.error("[admin/waitlist/[id]/invite] POST", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

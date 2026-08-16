@@ -22,6 +22,7 @@
     "db:backfill-email-verified": "npx tsx scripts/backfill-email-verified.ts",
     "db:backfill-tripper-since": "npx tsx scripts/backfill-tripper-since.ts",
     "db:cleanup-duplicate-trips": "npx tsx scripts/cleanup-duplicate-trip-requests.ts",
+    "db:rename-access-invites": "npx tsx scripts/rename-tripper-invites-to-access-invites.ts",
     "db:seed": "npx tsx prisma/seed.ts",
     "discord:setup": "npx tsx scripts/discord-setup.ts",
     "discord:setup-work": "npx tsx scripts/discord-setup-work-channels.ts",

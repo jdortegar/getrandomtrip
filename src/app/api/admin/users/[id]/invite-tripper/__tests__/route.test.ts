@@ -14,18 +14,18 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/auth/tripperInviteTokens", () => ({
-  issueTripperInvite: vi.fn().mockResolvedValue("plaintext-token"),
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  issueAccessInvite: vi.fn().mockResolvedValue("plaintext-token"),
 }));
 
 vi.mock("@/lib/email", () => ({
-  sendTripperInviteEmail: vi.fn(),
+  sendAccessInviteEmail: vi.fn(),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { issueTripperInvite } from "@/lib/auth/tripperInviteTokens";
-import { sendTripperInviteEmail } from "@/lib/email";
+import { issueAccessInvite } from "@/lib/auth/accessInviteTokens";
+import { sendAccessInviteEmail } from "@/lib/email";
 
 function makeRequest() {
   return new Request(
@@ -57,7 +57,7 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
 
     expect(res.status).toBe(403);
     expect(json.error).toBeDefined();
-    expect(issueTripperInvite).not.toHaveBeenCalled();
+    expect(issueAccessInvite).not.toHaveBeenCalled();
   });
 
   it("rejects with 400 when the target already has TRIPPER or ADMIN", async () => {
@@ -79,7 +79,7 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
 
     expect(res.status).toBe(400);
     expect(json.error).toBeDefined();
-    expect(issueTripperInvite).not.toHaveBeenCalled();
+    expect(issueAccessInvite).not.toHaveBeenCalled();
   });
 
   it("issues + sends the invite using the target user's locale, unaltering their roles", async () => {
@@ -101,11 +101,15 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
 
     expect(res.status).toBe(200);
     expect(json).toEqual({ ok: true });
-    expect(issueTripperInvite).toHaveBeenCalledWith("bob@example.com");
-    expect(sendTripperInviteEmail).toHaveBeenCalledWith(
+    expect(issueAccessInvite).toHaveBeenCalledWith(
+      "bob@example.com",
+      "TRIPPER",
+    );
+    expect(sendAccessInviteEmail).toHaveBeenCalledWith(
       "bob@example.com",
       "plaintext-token",
       "en",
+      "TRIPPER",
     );
     // Only two findUnique calls (caller + target) — no update call on the target.
     expect(prisma.user.findUnique).toHaveBeenCalledTimes(2);
@@ -127,10 +131,11 @@ describe("POST /api/admin/users/[id]/invite-tripper", () => {
     const mod = await import("../route");
     const res = await mod.POST(makeRequest(), makeProps("target-2"));
     expect(res.status).toBe(200);
-    expect(sendTripperInviteEmail).toHaveBeenCalledWith(
+    expect(sendAccessInviteEmail).toHaveBeenCalledWith(
       "carol@example.com",
       "plaintext-token",
       "es",
+      "TRIPPER",
     );
   });
 });

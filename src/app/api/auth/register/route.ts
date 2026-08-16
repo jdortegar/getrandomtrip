@@ -5,9 +5,9 @@ import { isValidPassword } from "@/lib/validation/password";
 import { isValidEmail } from "@/lib/validation/email";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
 import {
-  peekTripperInvite,
-  consumeTripperInvite,
-} from "@/lib/auth/tripperInviteTokens";
+  peekAccessInvite,
+  consumeAccessInvite,
+} from "@/lib/auth/accessInviteTokens";
 import { sendVerificationEmail } from "@/lib/email";
 import type { UserRole } from "@prisma/client";
 
@@ -54,15 +54,18 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Optional Tripper invite carried through registration: peek (never
-    // consume) BEFORE create so the token stays alive until account creation
-    // succeeds. Only grant when the invite email matches the registering
-    // email exactly.
+    // Optional invite carried through registration: peek (never consume)
+    // BEFORE create so the token stays alive until account creation succeeds.
+    // Only grant when the invite email matches the registering email exactly.
+    // grantAccess covers both kinds (site access only); grantTripper is the
+    // TRIPPER-kind subset that additionally elevates the role.
     let roles: UserRole[] | undefined;
+    let grantAccess = false;
     let grantTripper = false;
     if (inviteToken && typeof inviteToken === "string") {
-      const peek = await peekTripperInvite(inviteToken);
-      grantTripper = peek.ok && peek.email === email;
+      const peek = await peekAccessInvite(inviteToken);
+      grantAccess = peek.ok && peek.email === email;
+      grantTripper = grantAccess && peek.ok && peek.kind === "TRIPPER";
       roles = grantTripper ? ["TRAVELER", "TRIPPER"] : ["TRAVELER"];
     }
 
@@ -77,6 +80,7 @@ export async function POST(request: NextRequest) {
         interests: [],
         dislikes: [],
         ...(roles ? { roles } : {}),
+        ...(grantAccess ? { siteAccessGrantedAt: new Date() } : {}),
       },
       select: {
         id: true,
@@ -87,8 +91,8 @@ export async function POST(request: NextRequest) {
     });
     console.log("User created successfully:", user);
 
-    if (grantTripper) {
-      await consumeTripperInvite(inviteToken);
+    if (grantAccess) {
+      await consumeAccessInvite(inviteToken);
       await prisma.waitlistEntry.deleteMany({ where: { email } });
     }
 

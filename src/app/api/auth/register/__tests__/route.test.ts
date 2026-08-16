@@ -13,9 +13,9 @@ vi.mock("@/lib/auth/verificationTokens", () => ({
   issueVerificationToken: vi.fn().mockResolvedValue("plaintext-token"),
 }));
 
-vi.mock("@/lib/auth/tripperInviteTokens", () => ({
-  peekTripperInvite: vi.fn(),
-  consumeTripperInvite: vi.fn(),
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  peekAccessInvite: vi.fn(),
+  consumeAccessInvite: vi.fn(),
 }));
 
 vi.mock("@/lib/email", () => ({
@@ -29,9 +29,9 @@ vi.mock("bcryptjs", () => ({
 import { prisma } from "@/lib/prisma";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
 import {
-  peekTripperInvite,
-  consumeTripperInvite,
-} from "@/lib/auth/tripperInviteTokens";
+  peekAccessInvite,
+  consumeAccessInvite,
+} from "@/lib/auth/accessInviteTokens";
 import { sendVerificationEmail } from "@/lib/email";
 
 function makePostRequest(body: Record<string, unknown>) {
@@ -150,13 +150,14 @@ describe("POST /api/auth/register", () => {
     expect(json.user).toEqual(
       expect.objectContaining({ id: "user-1", email: "ana@example.com" }),
     );
-    // Regression: no inviteToken in the body → no invite lookup, roles untouched
-    // (Prisma schema default [TRAVELER] applies).
-    expect(peekTripperInvite).not.toHaveBeenCalled();
+    // Regression: no inviteToken in the body → no invite lookup, roles/grant untouched
+    // (Prisma schema defaults apply).
+    expect(peekAccessInvite).not.toHaveBeenCalled();
     expect(createArgs.data.roles).toBeUndefined();
+    expect(createArgs.data.siteAccessGrantedAt).toBeUndefined();
   });
 
-  it("grants TRAVELER+TRIPPER at create and consumes the invite + cleans up the waitlist when inviteToken peeks ok with a matching email", async () => {
+  it("grants TRAVELER+TRIPPER at create, stamps siteAccessGrantedAt, and consumes the invite + cleans up the waitlist when inviteToken peeks ok with a matching kind:TRIPPER email", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       null,
     );
@@ -166,9 +167,10 @@ describe("POST /api/auth/register", () => {
       email: "bob@example.com",
       createdAt: new Date("2026-01-01"),
     });
-    (peekTripperInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (peekAccessInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
       email: "bob@example.com",
+      kind: "TRIPPER",
     });
 
     const mod = (await import("../route")) as RouteModule;
@@ -188,7 +190,8 @@ describe("POST /api/auth/register", () => {
     expect(createArgs.data.roles).toEqual(
       expect.arrayContaining(["TRAVELER", "TRIPPER"]),
     );
-    expect(consumeTripperInvite).toHaveBeenCalledWith("good-token");
+    expect(createArgs.data.siteAccessGrantedAt).toBeInstanceOf(Date);
+    expect(consumeAccessInvite).toHaveBeenCalledWith("good-token");
     expect(prisma.waitlistEntry.deleteMany).toHaveBeenCalledWith({
       where: { email: "bob@example.com" },
     });
@@ -197,7 +200,50 @@ describe("POST /api/auth/register", () => {
     );
   });
 
-  it("grants only TRAVELER and does not consume/cleanup when inviteToken peeks ok but the email doesn't match", async () => {
+  it("grants only TRAVELER (no role), stamps siteAccessGrantedAt, and consumes+cleans up the waitlist when inviteToken peeks ok with a matching kind:SITE_ACCESS email (grantAccess widening regression)", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-4",
+      name: "Dave",
+      email: "dave@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    (peekAccessInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      email: "dave@example.com",
+      kind: "SITE_ACCESS",
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Dave",
+        email: "dave@example.com",
+        password: "abc12345",
+        inviteToken: "good-token-site-access",
+      }),
+    );
+    const json = await res.json();
+
+    expect(res.status).toBe(201);
+    const createArgs = (prisma.user.create as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(createArgs.data.roles).toEqual(["TRAVELER"]);
+    expect(createArgs.data.siteAccessGrantedAt).toBeInstanceOf(Date);
+    // Regression: previously this consume+cleanup only fired on `grantTripper`,
+    // leaving SITE_ACCESS tokens live after use. Now gated on `grantAccess`.
+    expect(consumeAccessInvite).toHaveBeenCalledWith("good-token-site-access");
+    expect(prisma.waitlistEntry.deleteMany).toHaveBeenCalledWith({
+      where: { email: "dave@example.com" },
+    });
+    expect(json.user).toEqual(
+      expect.objectContaining({ id: "user-4", email: "dave@example.com" }),
+    );
+  });
+
+  it("grants only TRAVELER and does not consume/cleanup or stamp when inviteToken peeks ok but the email doesn't match", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       null,
     );
@@ -207,9 +253,10 @@ describe("POST /api/auth/register", () => {
       email: "carol@example.com",
       createdAt: new Date("2026-01-01"),
     });
-    (peekTripperInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (peekAccessInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
       email: "someone-else@example.com",
+      kind: "TRIPPER",
     });
 
     const mod = (await import("../route")) as RouteModule;
@@ -227,7 +274,8 @@ describe("POST /api/auth/register", () => {
     const createArgs = (prisma.user.create as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
     expect(createArgs.data.roles).toEqual(["TRAVELER"]);
-    expect(consumeTripperInvite).not.toHaveBeenCalled();
+    expect(createArgs.data.siteAccessGrantedAt).toBeUndefined();
+    expect(consumeAccessInvite).not.toHaveBeenCalled();
     expect(prisma.waitlistEntry.deleteMany).not.toHaveBeenCalled();
     expect(json.user).toEqual(
       expect.objectContaining({ id: "user-3", email: "carol@example.com" }),

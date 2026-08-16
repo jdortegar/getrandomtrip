@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
-import { issueTripperInvite } from "@/lib/auth/tripperInviteTokens";
-import { sendTripperInviteEmail } from "@/lib/email";
+import { issueAccessInvite } from "@/lib/auth/accessInviteTokens";
+import { sendAccessInviteEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -49,11 +49,12 @@ export async function POST(
       );
     }
 
-    const token = await issueTripperInvite(target.email);
-    sendTripperInviteEmail(
+    const token = await issueAccessInvite(target.email, "TRIPPER");
+    sendAccessInviteEmail(
       target.email,
       token,
       resolveLocale(target.locale),
+      "TRIPPER",
     ); // fire-and-forget
 
     return NextResponse.json({ ok: true });

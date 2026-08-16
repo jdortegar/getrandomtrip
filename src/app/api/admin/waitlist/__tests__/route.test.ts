@@ -18,13 +18,13 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/auth/tripperInviteTokens", () => ({
-  getTripperInviteStatuses: vi.fn().mockResolvedValue(new Map()),
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  getAccessInviteStatuses: vi.fn().mockResolvedValue(new Map()),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { getTripperInviteStatuses } from "@/lib/auth/tripperInviteTokens";
+import { getAccessInviteStatuses } from "@/lib/auth/accessInviteTokens";
 
 function makeRequest(query = ""): NextRequest {
   return new NextRequest(`http://localhost/api/admin/waitlist${query}`);
@@ -63,7 +63,7 @@ describe("GET /api/admin/waitlist — alreadyMember enrichment", () => {
     );
     (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     (
-      getTripperInviteStatuses as ReturnType<typeof vi.fn>
+      getAccessInviteStatuses as ReturnType<typeof vi.fn>
     ).mockResolvedValue(new Map());
     const mod = (await import("../route")) as RouteModule;
     GET = mod.GET;

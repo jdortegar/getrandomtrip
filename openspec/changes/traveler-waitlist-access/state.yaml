@@ -1,0 +1,56 @@
+change: traveler-waitlist-access
+status: proposed
+artifact_store: engram
+phases:
+  explore: done
+  proposal: done
+  spec: pending
+  design: pending
+  tasks: pending
+  apply: pending
+  verify: pending
+  archive: pending
+created: 2026-08-16
+revisions:
+  - date: 2026-08-16
+    phase: proposal
+    summary: >-
+      Proposal written from the exploration plus the user's locked product
+      decisions: waitlist invite is renamed "Invite as Traveler" and no longer
+      grants TRIPPER (Users-table promotion already covers that, unchanged);
+      the gate CTA collapses to a single "Iniciar sesión"/"Log in" label; and
+      the gate must pass for every invited user regardless of role while
+      blocking everyone else. Architectural calls made and closed here, not
+      left open: (1) the gate signal is `User.siteAccessGrantedAt DateTime?`
+      surfaced as `session.user.hasSiteAccess` off the existing `session()`
+      select — not a role, not a `WaitlistEntry`-keyed lookup (avoids the
+      universal-TRAVELER trap, the per-session join, and email drift);
+      (2) `TripperInvite` is GENERALIZED, not cloned, into `AccessInvite`
+      with an `AccessInviteKind (TRIPPER | SITE_ACCESS)` discriminator
+      defaulting to TRIPPER, table renamed via a hand-edited
+      `ALTER TABLE ... RENAME` migration so pending invites survive — both
+      kinds stamp site access on accept, only TRIPPER appends the role;
+      (3) the shipped `/invite/[token]` companion lockout (accepts, gets
+      pushed to `/dashboard`, which is NOT gate-exempt, holding only
+      TRAVELER) is confirmed a live bug whenever `gateEnabled` is true and is
+      fixed IN scope — a companion is an invited user and the delta is one
+      stamp in `POST /api/travelers/submit`; (4) the waitlist invite's
+      existing-`User` 400 guard (added by `waitlist-bulk-actions`) is DROPPED
+      for SITE_ACCESS, because otherwise a self-registered waitlister has no
+      admin action that can grant them access — the accept page's
+      `hasAccount` login branch already handles existing accounts;
+      (5) `GATE_ALLOWED_ROLES` is kept as an OR rather than replaced, so
+      admins/trippers cannot be locked out mid-rollout; (6) explicit
+      revocation UI is OUT of scope, but clearing `GATE_STORAGE_KEY` when an
+      authenticated session has neither role nor grant is IN scope, since
+      opening the gate to regular customers makes the never-revalidated
+      localStorage unlock a materially different risk. Anonymous
+      already-unlocked browsers remain a documented pre-existing gap.
+      Verified by direct source read, not assumed: `GATE_ALLOWED_ROLES` and
+      the localStorage effect in `GateAwareChrome.tsx`; `User.roles
+      @default([TRAVELER])`; `TripperInvite` shape and `@@map`; the waitlist
+      invite route's `findExistingUserEmails` 400 guard; the Users-table
+      promote route's role-based 400; `TravelerInviteClient`'s
+      `router.push('/{locale}/dashboard')` against `GATE_EXEMPT_ROUTES`; and
+      the `waitlist.adminLoginLabel`/`adminLoginAction` keys in both
+      dictionaries.

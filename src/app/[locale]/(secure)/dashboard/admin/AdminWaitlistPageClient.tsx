@@ -82,10 +82,10 @@ export function AdminWaitlistPageClient() {
     }
   }
 
-  async function inviteAsTripper(id: string) {
+  async function inviteEntry(id: string) {
     setInvitingId(id);
     try {
-      const res = await fetch(`/api/admin/waitlist/${id}/invite-tripper`, {
+      const res = await fetch(`/api/admin/waitlist/${id}/invite`, {
         method: "POST",
       });
       if (!res.ok) return;
@@ -133,21 +133,17 @@ export function AdminWaitlistPageClient() {
     });
   }
 
-  const invitableSelectedIds = entries
-    .filter((e) => selectedIds.has(e.id) && !e.alreadyMember)
-    .map((e) => e.id);
-  const inviteDisabled = invitableSelectedIds.length === 0;
+  const inviteDisabled = selectedIds.size === 0;
   const deleteDisabled = selectedIds.size === 0;
-  const skippedCount = selectedIds.size - invitableSelectedIds.length;
 
   function handleBulkInvite() {
-    const ids = invitableSelectedIds;
+    const ids = Array.from(selectedIds);
     setIsBulkInviting(true);
     (async () => {
       try {
         const results = await Promise.allSettled(
           ids.map((id) =>
-            fetch(`/api/admin/waitlist/${id}/invite-tripper`, {
+            fetch(`/api/admin/waitlist/${id}/invite`, {
               method: "POST",
             }).then((res) => {
               if (!res.ok) throw new Error(String(res.status));
@@ -225,11 +221,6 @@ export function AdminWaitlistPageClient() {
             className="h-11 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
             disabled={inviteDisabled}
             onClick={() => setBulkInviteConfirmOpen(true)}
-            title={
-              inviteDisabled && selectedIds.size > 0
-                ? copy.bulkActions.inviteNothingToDo
-                : undefined
-            }
             type="button"
           >
             <UserPlus className="mr-2 h-4 w-4" />
@@ -350,16 +341,14 @@ export function AdminWaitlistPageClient() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <TableIconButton
-                          disabled={invitingId === entry.id || entry.alreadyMember}
-                          onClick={() => void inviteAsTripper(entry.id)}
+                          disabled={invitingId === entry.id}
+                          onClick={() => void inviteEntry(entry.id)}
                           title={
-                            entry.alreadyMember
-                              ? copy.alreadyMemberHint
-                              : invitingId === entry.id
-                                ? copy.actions.inviting
-                                : entry.inviteStatus
-                                  ? copy.actions.resend
-                                  : copy.actions.inviteTripper
+                            invitingId === entry.id
+                              ? copy.actions.inviting
+                              : entry.inviteStatus
+                                ? copy.actions.resend
+                                : copy.actions.invite
                           }
                         >
                           {invitingId === entry.id ? (
@@ -406,20 +395,10 @@ export function AdminWaitlistPageClient() {
       <ConfirmModal
         cancelLabel={copy.bulkActions.cancel}
         confirmLabel={copy.bulkActions.confirm}
-        description={
-          skippedCount > 0
-            ? `${copy.bulkActions.inviteConfirmBody.replace(
-                "{count}",
-                String(invitableSelectedIds.length),
-              )} ${copy.bulkActions.inviteSkippedNote.replace(
-                "{skipped}",
-                String(skippedCount),
-              )}`
-            : copy.bulkActions.inviteConfirmBody.replace(
-                "{count}",
-                String(invitableSelectedIds.length),
-              )
-        }
+        description={copy.bulkActions.inviteConfirmBody.replace(
+          "{count}",
+          String(selectedIds.size),
+        )}
         icon={UserPlus}
         isConfirming={isBulkInviting}
         onConfirm={handleBulkInvite}

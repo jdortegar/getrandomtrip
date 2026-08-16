@@ -27,9 +27,14 @@ vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
   consumeTravelerInvite: vi.fn(),
 }));
 
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  stampSiteAccess: vi.fn(),
+}));
+
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { consumeTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import { stampSiteAccess } from "@/lib/auth/accessInviteTokens";
 import esCopy from "@/dictionaries/es.json";
 import enCopy from "@/dictionaries/en.json";
 
@@ -243,5 +248,62 @@ describe("POST /api/travelers/submit", () => {
 
     expect(res.status).toBe(400);
     expect(prisma.notification.create).not.toHaveBeenCalled();
+  });
+
+  it("stamps siteAccessGrantedAt for the claiming user on a successful claim", async () => {
+    mockSessionAndUser();
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      ok: true,
+      travelerId: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      buyerFirstName: "Alice",
+    });
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } });
+
+    const res = await POST(makeRequest(validBody));
+
+    expect(res.status).toBe(200);
+    expect(stampSiteAccess).toHaveBeenCalledWith(dbUser.id);
+  });
+
+  it("does not fail the response when stampSiteAccess throws", async () => {
+    mockSessionAndUser();
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      ok: true,
+      travelerId: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      buyerFirstName: "Alice",
+    });
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } });
+    (stampSiteAccess as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error("db hiccup"),
+    );
+
+    const res = await POST(makeRequest(validBody));
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.ok).toBe(true);
+  });
+
+  it("does not stamp site access when consumeTravelerInvite is not ok", async () => {
+    mockSessionAndUser();
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ ok: false, reason: "expired" });
+
+    await POST(makeRequest(validBody));
+
+    expect(stampSiteAccess).not.toHaveBeenCalled();
   });
 });

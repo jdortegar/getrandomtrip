@@ -223,7 +223,7 @@ describe("AdminWaitlistPageClient — bulk-action bar", () => {
     expect(buttonWithText("Eliminar (5)")).toBeTruthy();
   });
 
-  it("bulk-invite button is disabled when the selection is entirely alreadyMember, even though the bar shows the raw count", async () => {
+  it("bulk-invite button stays enabled when the selection is entirely alreadyMember — the fan-out is not filtered", async () => {
     const entries = makeEntries(2, { alreadyMember: true });
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
@@ -238,14 +238,13 @@ describe("AdminWaitlistPageClient — bulk-action bar", () => {
     });
 
     const inviteButton = buttonWithText("Invitar (2)");
-    expect(inviteButton.disabled).toBe(true);
-    // Delete stays enabled — it never filters alreadyMember.
+    expect(inviteButton.disabled).toBe(false);
     expect(buttonWithText("Eliminar (2)").disabled).toBe(false);
   });
 });
 
 describe("AdminWaitlistPageClient — already-member badge and single-row gating", () => {
-  it("shows the badge instead of Invited/Expired chip, and disables the single-row invite button", async () => {
+  it("shows the badge instead of Invited/Expired chip, and keeps the single-row invite button clickable", async () => {
     const entries = [
       entry({ id: "entry-1", alreadyMember: true, inviteStatus: "invited" }),
     ];
@@ -264,7 +263,7 @@ describe("AdminWaitlistPageClient — already-member badge and single-row gating
       container.querySelectorAll("button"),
     ).filter((b) => b.className.includes("h-[34px]"));
     // First icon button in the row is invite (see component order: invite, delete)
-    expect(inviteButtons[0].disabled).toBe(true);
+    expect(inviteButtons[0].disabled).toBe(false);
   });
 });
 
@@ -290,13 +289,13 @@ describe("AdminWaitlistPageClient — bulk invite", () => {
       );
     });
 
-    expect(document.body.textContent).toContain("Invitar como Tripper");
+    expect(document.body.textContent).toContain("Invitar como viajero");
     expect(
       (fetch as ReturnType<typeof vi.fn>).mock.calls.length,
     ).toBe(fetchCallsBefore);
   });
 
-  it("excludes alreadyMember rows from the fan-out and resends to a live Invited row", async () => {
+  it("fans out to the full selection including alreadyMember rows, and resends to a live Invited row", async () => {
     const entries = [
       entry({ id: "e1", alreadyMember: false, inviteStatus: "invited" }),
       entry({ id: "e2", alreadyMember: true, email: "e2@example.com" }),
@@ -336,11 +335,12 @@ describe("AdminWaitlistPageClient — bulk invite", () => {
     const postCalls = fetchMock.mock.calls.filter(
       ([, init]) => init?.method === "POST",
     );
-    expect(postCalls).toHaveLength(2);
+    expect(postCalls).toHaveLength(3);
     expect(postCalls.map(([url]) => url)).toEqual(
       expect.arrayContaining([
-        "/api/admin/waitlist/e1/invite-tripper",
-        "/api/admin/waitlist/e3/invite-tripper",
+        "/api/admin/waitlist/e1/invite",
+        "/api/admin/waitlist/e2/invite",
+        "/api/admin/waitlist/e3/invite",
       ]),
     );
   });
@@ -351,10 +351,10 @@ describe("AdminWaitlistPageClient — bulk invite", () => {
       entry({ id: "e2", email: "e2@example.com" }),
     ];
     const fetchMock = vi.fn().mockImplementation((url: string, init?: RequestInit) => {
-      if (init?.method === "POST" && url === "/api/admin/waitlist/e1/invite-tripper") {
+      if (init?.method === "POST" && url === "/api/admin/waitlist/e1/invite") {
         return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
       }
-      if (init?.method === "POST" && url === "/api/admin/waitlist/e2/invite-tripper") {
+      if (init?.method === "POST" && url === "/api/admin/waitlist/e2/invite") {
         return Promise.resolve({ ok: false, json: async () => ({ error: "boom" }) });
       }
       if (!init) {
