@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
-import { getSiteSettings, setGateEnabled } from "@/lib/siteSettings";
+import { getSiteSettings, updateSiteSettings } from "@/lib/siteSettings";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +30,10 @@ export async function GET() {
     }
 
     const settings = await getSiteSettings();
-    return NextResponse.json({ gateEnabled: settings.gateEnabled });
+    return NextResponse.json({
+      gateEnabled: settings.gateEnabled,
+      xsedWindowEnforcementEnabled: settings.xsedWindowEnforcementEnabled,
+    });
   } catch (error) {
     console.error("[admin/site-settings] GET", error);
     return NextResponse.json(
@@ -48,12 +51,24 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    if (typeof body?.gateEnabled !== "boolean") {
+    const patch: { gateEnabled?: boolean; xsedWindowEnforcementEnabled?: boolean } = {};
+    if (typeof body?.gateEnabled === "boolean") {
+      patch.gateEnabled = body.gateEnabled;
+    }
+    if (typeof body?.xsedWindowEnforcementEnabled === "boolean") {
+      patch.xsedWindowEnforcementEnabled = body.xsedWindowEnforcementEnabled;
+    }
+
+    if (Object.keys(patch).length === 0) {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
     }
 
-    const settings = await setGateEnabled(body.gateEnabled);
-    return NextResponse.json({ gateEnabled: settings.gateEnabled });
+    const settings = await updateSiteSettings(patch);
+
+    return NextResponse.json({
+      gateEnabled: settings.gateEnabled,
+      xsedWindowEnforcementEnabled: settings.xsedWindowEnforcementEnabled,
+    });
   } catch (error) {
     console.error("[admin/site-settings] PATCH", error);
     return NextResponse.json(

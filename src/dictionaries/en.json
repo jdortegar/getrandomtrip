@@ -673,18 +673,29 @@
         "users": "Users",
         "waitlist": "Waitlist",
         "xsedNotifications": "TGIS Notifications",
-        "siteAccess": "Site Access"
+        "features": "Features"
       }
     },
-    "siteAccess": {
-      "toggleLabel": "Waitlist gate",
-      "toggleDescription": "When on, visitors without an admin or tripper account see the early-access waitlist instead of the site. Trippers and admins always get through.",
-      "maintenanceHint": "Turn this back on during a maintenance window to show the same screen to regular visitors — flip it off when you're done.",
-      "stateOn": "On",
-      "stateOff": "Off",
-      "savedNote": "Saved.",
-      "errorLoad": "Couldn't load this setting. Try reloading the page.",
-      "errorSave": "Couldn't save this change. Try again."
+    "features": {
+      "siteAccessGate": {
+        "toggleLabel": "Waitlist gate",
+        "toggleDescription": "When on, visitors without an invited account see the early-access waitlist instead of the site. Invited users always get through.",
+        "maintenanceHint": "Turn this back on during a maintenance window to show the same screen to regular visitors — flip it off when you're done.",
+        "stateOn": "On",
+        "stateOff": "Off",
+        "savedNote": "Saved.",
+        "errorLoad": "Couldn't load this setting. Try reloading the page.",
+        "errorSave": "Couldn't save this change. Try again."
+      },
+      "xsedWindowEnforcement": {
+        "toggleLabel": "XSED window validation",
+        "toggleDescription": "When on, XSED experience purchases are only allowed on Sundays 4-8pm local time. Turn it off to allow purchases at any time.",
+        "stateOn": "On",
+        "stateOff": "Off",
+        "savedNote": "Saved.",
+        "errorLoad": "Couldn't load this setting. Try reloading the page.",
+        "errorSave": "Couldn't save this change. Try again."
+      }
     },
     "tripRequests": {
       "eyebrow": "Client requests",

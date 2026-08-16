@@ -7,6 +7,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { countryToTimezone } from "@/lib/xsed/country-tz";
 import { isLocalWindowOpen } from "@/lib/xsed/window";
 import { getCurrentXsedDrop } from "@/lib/data/xsed";
+import { isXsedWindowEnforcementEnabled } from "@/lib/siteSettings";
 import { XsedUnavailablePage } from "@/components/app/xsed/XsedUnavailablePage";
 import { XsedBookClient } from "@/components/app/xsed/XsedBookClient";
 
@@ -24,11 +25,18 @@ export default async function XsedBookPage({ params }: Props) {
   // request's IP. We map it to a timezone and check if it's Sunday 4pm–8pm
   // local time. If not, we render the unavailable page — same URL, no redirect,
   // nothing to bypass via URL manipulation.
-  const [reqHeaders, session] = await Promise.all([headers(), getServerSession(authOptions)]);
+  const [reqHeaders, session, windowEnforcementEnabled] = await Promise.all([
+    headers(),
+    getServerSession(authOptions),
+    isXsedWindowEnforcementEnabled(),
+  ]);
   const isAdmin = session?.user ? hasRoleAccess(session.user, "admin") : false;
   const country = reqHeaders.get("x-country") ?? "";
   const tz = countryToTimezone(country) ?? "America/Argentina/Buenos_Aires";
-  const bypassWindow = isAdmin || process.env.XSED_BYPASS_WINDOW === "true";
+  const bypassWindow =
+    isAdmin ||
+    process.env.XSED_BYPASS_WINDOW === "true" ||
+    !windowEnforcementEnabled;
   const windowOpen = bypassWindow || isLocalWindowOpen(tz);
 
   if (!windowOpen) {

@@ -673,18 +673,29 @@
         "users": "Usuarios",
         "waitlist": "Lista de espera",
         "xsedNotifications": "Notificaciones TGIS",
-        "siteAccess": "Acceso al sitio"
+        "features": "Funciones"
       }
     },
-    "siteAccess": {
-      "toggleLabel": "Muro de lista de espera",
-      "toggleDescription": "Cuando está activado, los visitantes sin cuenta de admin o tripper ven la lista de espera en lugar del sitio. Trippers y admins siempre pueden entrar.",
-      "maintenanceHint": "Activalo de nuevo durante una ventana de mantenimiento para mostrar la misma pantalla a los visitantes habituales — desactivalo cuando termines.",
-      "stateOn": "Activado",
-      "stateOff": "Desactivado",
-      "savedNote": "Guardado.",
-      "errorLoad": "No se pudo cargar esta configuración. Recarga la página.",
-      "errorSave": "No se pudo guardar este cambio. Intenta de nuevo."
+    "features": {
+      "siteAccessGate": {
+        "toggleLabel": "Muro de lista de espera",
+        "toggleDescription": "Cuando está activado, los visitantes sin una cuenta invitada ven la lista de espera en lugar del sitio. Los usuarios invitados siempre pueden entrar.",
+        "maintenanceHint": "Activalo de nuevo durante una ventana de mantenimiento para mostrar la misma pantalla a los visitantes habituales — desactivalo cuando termines.",
+        "stateOn": "Activado",
+        "stateOff": "Desactivado",
+        "savedNote": "Guardado.",
+        "errorLoad": "No se pudo cargar esta configuración. Recarga la página.",
+        "errorSave": "No se pudo guardar este cambio. Intenta de nuevo."
+      },
+      "xsedWindowEnforcement": {
+        "toggleLabel": "Validación de ventana XSED",
+        "toggleDescription": "Cuando está activado, la compra de experiencias XSED solo se permite los domingos de 16 a 20hs (hora local). Desactivalo para permitir la compra en cualquier momento.",
+        "stateOn": "Activado",
+        "stateOff": "Desactivado",
+        "savedNote": "Guardado.",
+        "errorLoad": "No se pudo cargar esta configuración. Recarga la página.",
+        "errorSave": "No se pudo guardar este cambio. Intenta de nuevo."
+      }
     },
     "tripRequests": {
       "eyebrow": "Solicitudes de clientes",
