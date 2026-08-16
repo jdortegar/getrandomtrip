@@ -8,8 +8,6 @@ import { FormField } from "@/components/ui/FormField";
 interface WaitlistDict {
   accessDeniedBody: string;
   accessDeniedTitle: string;
-  adminLoginAction: string;
-  adminLoginLabel: string;
   ariaFacebook: string;
   ariaInstagram: string;
   ariaLinkedin: string;
@@ -19,6 +17,7 @@ interface WaitlistDict {
   headline: string;
   lastNameLabel: string;
   lastNamePlaceholder: string;
+  loginAction: string;
   nameLabel: string;
   namePlaceholder: string;
   signOutLabel: string;
@@ -163,14 +162,13 @@ export function WaitlistPage({
                 </p>
               )}
               <Button
-                className="mt-8 mx-auto flex flex-col leading-tight lg:flex-row lg:gap-1.5 lg:leading-normal"
+                className="mt-8 mx-auto"
                 onClick={onOpenLogin}
                 size="md"
                 type="button"
                 variant="link"
               >
-                <span>{dict.adminLoginLabel}</span>
-                <span>{dict.adminLoginAction}</span>
+                <span>{dict.loginAction}</span>
               </Button>
             </>
           )}

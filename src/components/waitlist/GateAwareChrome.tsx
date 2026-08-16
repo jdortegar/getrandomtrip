@@ -52,23 +52,32 @@ export function GateAwareChrome({
   gateEnabled,
   locale,
 }: GateAwareChromeProps) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const [gateUnlocked, setGateUnlocked] = useState<boolean | null>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [navbarBackgroundPrimary, setNavbarBackgroundPrimary] = useState(false);
+
+  const role = session?.user?.role;
+  const sessionGrantsAccess =
+    (!!role && GATE_ALLOWED_ROLES.has(role)) || !!session?.user?.hasSiteAccess;
 
   useEffect(() => {
     setGateUnlocked(getGateUnlocked());
   }, []);
 
   useEffect(() => {
-    const role = session?.user?.role;
-    if (!role || !GATE_ALLOWED_ROLES.has(role)) return;
-    window.localStorage.setItem(GATE_STORAGE_KEY, "1");
-    setLoginModalOpen(false);
-    setGateUnlocked(true);
-  }, [session?.user?.role]);
+    if (status === "loading") return;
+    if (status !== "authenticated") return;
+    if (sessionGrantsAccess) {
+      window.localStorage.setItem(GATE_STORAGE_KEY, "1");
+      setLoginModalOpen(false);
+      setGateUnlocked(true);
+    } else {
+      window.localStorage.removeItem(GATE_STORAGE_KEY);
+      setGateUnlocked(false);
+    }
+  }, [status, sessionGrantsAccess]);
 
   const normalChrome = (
     <>
@@ -95,8 +104,7 @@ export function GateAwareChrome({
   if (gateUnlocked === null) return null;
 
   if (!gateUnlocked) {
-    const role = session?.user?.role;
-    const accessDenied = !!role && !GATE_ALLOWED_ROLES.has(role);
+    const accessDenied = status === "authenticated" && !sessionGrantsAccess;
 
     return (
       <>
