@@ -24,10 +24,19 @@ export async function isGateEnabled(): Promise<boolean> {
   return settings.gateEnabled;
 }
 
-export async function setGateEnabled(enabled: boolean) {
+export async function isXsedWindowEnforcementEnabled(): Promise<boolean> {
+  const settings = await getSiteSettings();
+  return settings.xsedWindowEnforcementEnabled;
+}
+
+/** Partial update of the singleton settings row — only the provided keys change. */
+export async function updateSiteSettings(patch: {
+  gateEnabled?: boolean;
+  xsedWindowEnforcementEnabled?: boolean;
+}) {
   return prisma.siteSetting.upsert({
     where: { id: SITE_SETTINGS_ID },
-    update: { gateEnabled: enabled },
-    create: { id: SITE_SETTINGS_ID, gateEnabled: enabled },
+    update: patch,
+    create: { id: SITE_SETTINGS_ID, ...patch },
   });
 }

@@ -5,7 +5,7 @@ import { Mail, Megaphone, ToggleLeft, Users } from "lucide-react";
 import { TabSelector } from "@/components/ui/TabSelector";
 import { useDictionary } from "@/hooks/useDictionary";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
-import { AdminSiteAccessPageClient } from "./AdminSiteAccessPageClient";
+import { AdminFeaturesPageClient } from "./AdminFeaturesPageClient";
 import { AdminUsersPageClient } from "./AdminUsersPageClient";
 import { AdminWaitlistPageClient } from "./AdminWaitlistPageClient";
 import { AdminXsedNotificationsPageClient } from "./AdminXsedNotificationsPageClient";
@@ -14,7 +14,7 @@ type SettingsTabId =
   | "users"
   | "waitlist"
   | "xsedNotifications"
-  | "siteAccess";
+  | "features";
 
 interface AdminSettingsPageClientProps {
   copy: MarketingDictionary["adminUsers"];
@@ -36,8 +36,8 @@ export function AdminSettingsPageClient({
     },
     {
       icon: ToggleLeft,
-      id: "siteAccess" as const,
-      label: pageCopy.tabs.siteAccess,
+      id: "features" as const,
+      label: pageCopy.tabs.features,
     },
   ];
 
@@ -65,7 +65,7 @@ export function AdminSettingsPageClient({
       {activeTab === "xsedNotifications" && (
         <AdminXsedNotificationsPageClient />
       )}
-      {activeTab === "siteAccess" && <AdminSiteAccessPageClient />}
+      {activeTab === "features" && <AdminFeaturesPageClient />}
     </div>
   );
 }

@@ -698,6 +698,9 @@ model WaitlistEntry {
 model SiteSetting {
   id          String   @id @default(cuid())
   gateEnabled Boolean  @default(true)
+  /// When false, XSED purchases bypass the Sunday 16-20hs local-time window
+  /// check (src/lib/xsed/window.ts) entirely — anyone can book anytime.
+  xsedWindowEnforcementEnabled Boolean  @default(true)
   updatedAt   DateTime @updatedAt
 
   @@map("site_settings")

@@ -1513,18 +1513,29 @@ export interface AdminPagesDict {
       users: string;
       waitlist: string;
       xsedNotifications: string;
-      siteAccess: string;
+      features: string;
     };
   };
-  siteAccess: {
-    errorLoad: string;
-    errorSave: string;
-    maintenanceHint: string;
-    savedNote: string;
-    stateOff: string;
-    stateOn: string;
-    toggleDescription: string;
-    toggleLabel: string;
+  features: {
+    siteAccessGate: {
+      errorLoad: string;
+      errorSave: string;
+      maintenanceHint: string;
+      savedNote: string;
+      stateOff: string;
+      stateOn: string;
+      toggleDescription: string;
+      toggleLabel: string;
+    };
+    xsedWindowEnforcement: {
+      errorLoad: string;
+      errorSave: string;
+      savedNote: string;
+      stateOff: string;
+      stateOn: string;
+      toggleDescription: string;
+      toggleLabel: string;
+    };
   };
   tripRequests: {
     eyebrow: string;
