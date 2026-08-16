@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
-import { getTripperInviteStatuses } from "@/lib/auth/tripperInviteTokens";
+import { getAccessInviteStatuses } from "@/lib/auth/accessInviteTokens";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where }),
     ]);
 
-    const inviteStatuses = await getTripperInviteStatuses(
+    const inviteStatuses = await getAccessInviteStatuses(
       rows.map((u) => u.email),
     );
     const users = rows.map((u) => ({

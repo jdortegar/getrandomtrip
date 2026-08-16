@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
-import { getTripperInviteStatuses } from "@/lib/auth/tripperInviteTokens";
+import { getAccessInviteStatuses } from "@/lib/auth/accessInviteTokens";
 import { findExistingUserEmails } from "@/lib/admin/waitlistMembership";
 import { prisma } from "@/lib/prisma";
 
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     const emails = rows.map((r) => r.email);
     const [inviteStatuses, existingEmails] = await Promise.all([
-      getTripperInviteStatuses(emails),
+      getAccessInviteStatuses(emails),
       findExistingUserEmails(emails),
     ]);
     const entries = rows.map((r) => ({

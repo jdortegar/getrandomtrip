@@ -339,8 +339,8 @@ describe("AdminWaitlistPageClient — bulk invite", () => {
     expect(postCalls).toHaveLength(2);
     expect(postCalls.map(([url]) => url)).toEqual(
       expect.arrayContaining([
-        "/api/admin/waitlist/e1/invite-tripper",
-        "/api/admin/waitlist/e3/invite-tripper",
+        "/api/admin/waitlist/e1/invite",
+        "/api/admin/waitlist/e3/invite",
       ]),
     );
   });
@@ -351,10 +351,10 @@ describe("AdminWaitlistPageClient — bulk invite", () => {
       entry({ id: "e2", email: "e2@example.com" }),
     ];
     const fetchMock = vi.fn().mockImplementation((url: string, init?: RequestInit) => {
-      if (init?.method === "POST" && url === "/api/admin/waitlist/e1/invite-tripper") {
+      if (init?.method === "POST" && url === "/api/admin/waitlist/e1/invite") {
         return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
       }
-      if (init?.method === "POST" && url === "/api/admin/waitlist/e2/invite-tripper") {
+      if (init?.method === "POST" && url === "/api/admin/waitlist/e2/invite") {
         return Promise.resolve({ ok: false, json: async () => ({ error: "boom" }) });
       }
       if (!init) {

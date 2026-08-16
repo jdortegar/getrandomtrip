@@ -85,7 +85,7 @@ export function AdminWaitlistPageClient() {
   async function inviteAsTripper(id: string) {
     setInvitingId(id);
     try {
-      const res = await fetch(`/api/admin/waitlist/${id}/invite-tripper`, {
+      const res = await fetch(`/api/admin/waitlist/${id}/invite`, {
         method: "POST",
       });
       if (!res.ok) return;
@@ -147,7 +147,7 @@ export function AdminWaitlistPageClient() {
       try {
         const results = await Promise.allSettled(
           ids.map((id) =>
-            fetch(`/api/admin/waitlist/${id}/invite-tripper`, {
+            fetch(`/api/admin/waitlist/${id}/invite`, {
               method: "POST",
             }).then((res) => {
               if (!res.ok) throw new Error(String(res.status));

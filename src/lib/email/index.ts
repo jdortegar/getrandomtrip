@@ -1,3 +1,4 @@
+import type { AccessInviteKind } from "@prisma/client";
 import AdminNewBooking, {
   subject as adminNewBookingSubject,
 } from "@/emails/AdminNewBooking";
@@ -843,14 +844,17 @@ export function sendPasswordResetEmail(userId: string, token: string): void {
 }
 
 /**
- * Sends a Tripper invite email. Unlike the other senders here, this one
- * takes email/locale as direct args instead of a `userId` — the invitee
+ * Sends an access invite email — either a `TRIPPER` invite (become a
+ * Tripper) or a `SITE_ACCESS` invite (waitlist-originated, gets the invitee
+ * into the site with no role change). Unlike the other senders here, this
+ * one takes email/locale as direct args instead of a `userId` — the invitee
  * frequently has no `User` row yet.
  */
-export function sendTripperInviteEmail(
+export function sendAccessInviteEmail(
   email: string,
   token: string,
   locale: "es" | "en",
+  kind: AccessInviteKind,
 ): void {
   void (async () => {
     try {
@@ -859,16 +863,17 @@ export function sendTripperInviteEmail(
 
       await sendMail({
         to: email,
-        subject: tripperInviteSubjects[locale],
+        subject: tripperInviteSubjects[kind][locale],
         content: {
           react: React.createElement(TripperInvite, {
             inviteUrl,
             locale,
+            kind,
           }),
         },
       });
     } catch (err) {
-      console.error("[email] sendTripperInviteEmail:", err);
+      console.error("[email] sendAccessInviteEmail:", err);
     }
   })();
 }

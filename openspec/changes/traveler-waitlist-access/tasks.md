@@ -68,27 +68,28 @@ Chain strategy: pending
 
 ## Phase 5: Email Template + Sender (ADR 6 gap)
 
-- [ ] 5.1 Modify `src/emails/TripperInvite.tsx`: `copy[kind][locale]`, `subjects: Record<AccessInviteKind, Record<"es"|"en", string>>`, `kind` prop threaded to both.
-- [ ] 5.2 Modify `src/lib/email/index.ts` (`:850-874`): rename `sendTripperInviteEmail` → `sendAccessInviteEmail(email, token, locale, kind)`, pass `kind` through.
-- [ ] 5.3 RED: add/extend a test asserting `SITE_ACCESS` subject/body does not reference "Tripper". (spec: tripper — Admin Trigger Endpoints, email-content scenario from Phase 0.3)
-- [ ] 5.4 GREEN: confirm 5.3 passes against 5.1/5.2 implementation.
+- [x] 5.1 Modify `src/emails/TripperInvite.tsx`: `copy[kind][locale]`, `subjects: Record<AccessInviteKind, Record<"es"|"en", string>>`, `kind` prop threaded to both.
+- [x] 5.2 Modify `src/lib/email/index.ts` (`:850-874`): rename `sendTripperInviteEmail` → `sendAccessInviteEmail(email, token, locale, kind)`, pass `kind` through.
+- [x] 5.3 RED: add/extend a test asserting `SITE_ACCESS` subject/body does not reference "Tripper". (spec: tripper — Admin Trigger Endpoints, email-content scenario from Phase 0.3)
+- [x] 5.4 GREEN: confirm 5.3 passes against 5.1/5.2 implementation.
 
 ## Phase 6: Waitlist Invite Route Move + Drop Guard (ADR 8)
 
-- [ ] 6.1 Rename dir `src/app/api/admin/waitlist/[id]/invite-tripper/` → `.../[id]/invite/` (route + `__tests__/route.test.ts` move together).
-- [ ] 6.2 RED: in the moved test, drop the `400` existing-user case; assert `issueAccessInvite(email, "SITE_ACCESS")` and `sendAccessInviteEmail(..., "SITE_ACCESS")`, no-400-on-existing-user case. (spec: tripper — Waitlist invite no longer blocked by an existing user)
-- [ ] 6.3 GREEN: in `.../invite/route.ts`, issue `kind: "SITE_ACCESS"`; remove the `findExistingUserEmails` guard/import; send with `"SITE_ACCESS"`. Confirm 6.2 passes.
+- [x] 6.1 Rename dir `src/app/api/admin/waitlist/[id]/invite-tripper/` → `.../[id]/invite/` (route + `__tests__/route.test.ts` move together).
+- [x] 6.2 RED: in the moved test, drop the `400` existing-user case; assert `issueAccessInvite(email, "SITE_ACCESS")` and `sendAccessInviteEmail(..., "SITE_ACCESS")`, no-400-on-existing-user case. (spec: tripper — Waitlist invite no longer blocked by an existing user)
+- [x] 6.3 GREEN: in `.../invite/route.ts`, issue `kind: "SITE_ACCESS"`; remove the `findExistingUserEmails` guard/import; send with `"SITE_ACCESS"`. Confirm 6.2 passes.
+- [x] 6.4 (added during apply — interim URL-coupling fix, option (b) per orchestrator's judgment call) One-line fetch URL fix in `AdminWaitlistPageClient.tsx` (`:88`, `:150`): `.../invite-tripper` → `.../invite`, plus matching mock-URL updates in its existing test file. Does NOT touch `alreadyMember`/`invitableSelectedIds`/`skippedCount` logic — that remains PR4 scope.
 
 ## Phase 7: Users-Table Invite Route (ADR 3/8 table)
 
-- [ ] 7.1 RED: extend `src/app/api/admin/users/[id]/invite-tripper/__tests__/route.test.ts` to assert `issueAccessInvite(target.email, "TRIPPER")` and `sendAccessInviteEmail(..., "TRIPPER")`.
-- [ ] 7.2 GREEN: modify `src/app/api/admin/users/[id]/invite-tripper/route.ts` accordingly — path/shapes/existing-TRIPPER-guard unchanged. Confirm 7.1 passes.
-- [ ] 7.3 Rename-only: `getTripperInviteStatuses` → `getAccessInviteStatuses` in `src/app/api/admin/waitlist/route.ts` and `src/app/api/admin/users/route.ts`; update their `__tests__` mocks. No logic change.
+- [x] 7.1 RED: extend `src/app/api/admin/users/[id]/invite-tripper/__tests__/route.test.ts` to assert `issueAccessInvite(target.email, "TRIPPER")` and `sendAccessInviteEmail(..., "TRIPPER")`.
+- [x] 7.2 GREEN: modify `src/app/api/admin/users/[id]/invite-tripper/route.ts` accordingly — path/shapes/existing-TRIPPER-guard unchanged. Confirm 7.1 passes.
+- [x] 7.3 Rename-only: `getTripperInviteStatuses` → `getAccessInviteStatuses` in `src/app/api/admin/waitlist/route.ts` and `src/app/api/admin/users/route.ts`; update their `__tests__` mocks. No logic change.
 
 ## Phase 8: `/api/travelers/submit` Stamp (ADR 9)
 
-- [ ] 8.1 RED: extend/create the route's test — successful claim calls `stampSiteAccess(dbUser.id)`; a stamp failure is caught and the response still returns `200`. (spec: site-access-gate — Companion claim grants access)
-- [ ] 8.2 GREEN: in `src/app/api/travelers/submit/route.ts`, call `stampSiteAccess(dbUser.id)` in a try/catch after a successful consume, before the notification block. Confirm 8.1 passes.
+- [x] 8.1 RED: extend/create the route's test — successful claim calls `stampSiteAccess(dbUser.id)`; a stamp failure is caught and the response still returns `200`. (spec: site-access-gate — Companion claim grants access)
+- [x] 8.2 GREEN: in `src/app/api/travelers/submit/route.ts`, call `stampSiteAccess(dbUser.id)` in a try/catch after a successful consume, before the notification block. Confirm 8.1 passes.
 
 ## Phase 9: Gate Component (ADR 7)
 

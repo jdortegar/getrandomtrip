@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { consumeTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import { stampSiteAccess } from "@/lib/auth/accessInviteTokens";
 import esCopy from "@/dictionaries/es.json";
 import enCopy from "@/dictionaries/en.json";
 
@@ -64,6 +65,15 @@ export async function POST(request: NextRequest) {
 
     if (!result.ok) {
       return NextResponse.json({ reason: result.reason }, { status: 400 });
+    }
+
+    // Best-effort: the roster row is already COMPLETE at this point. A DB
+    // hiccup on the grant must not fail the response and push the companion
+    // into re-submitting an already-consumed token (which resolves `used`).
+    try {
+      await stampSiteAccess(dbUser.id);
+    } catch (err) {
+      console.error("[travelers/submit] siteAccess stamp failed:", err);
     }
 
     const trip = await prisma.tripRequest.findUnique({

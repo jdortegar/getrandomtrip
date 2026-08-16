@@ -21,8 +21,8 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/auth/tripperInviteTokens", () => ({
-  getTripperInviteStatuses: vi.fn().mockResolvedValue(new Map()),
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  getAccessInviteStatuses: vi.fn().mockResolvedValue(new Map()),
 }));
 
 import { getServerSession } from "next-auth";
