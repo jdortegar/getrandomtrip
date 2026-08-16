@@ -12,11 +12,12 @@ import type { Locale } from "@/lib/i18n/config";
 import { isValidPassword } from "@/lib/validation/password";
 import { registerErrorMessage } from "@/lib/auth/registerErrorMessages";
 import type { MarketingDictionary, TripperInviteAcceptDict } from "@/lib/types/dictionary";
+import type { AccessInviteKind } from "@/lib/auth/accessInviteTokens";
 
 type Reason = "invalid" | "expired" | "used" | "missing";
 
 export type TripperInviteResolution =
-  | { ok: true; email: string; hasAccount: boolean }
+  | { ok: true; email: string; hasAccount: boolean; kind: AccessInviteKind }
   | { ok: false; reason: Reason };
 
 type ExistingUserState = "granting" | "granted" | "error";
@@ -52,12 +53,18 @@ export default function TripperInviteClient({
   }
 
   return resolution.hasAccount ? (
-    <ExistingUserBranch copy={copy} loginHref={loginHref} token={token} />
+    <ExistingUserBranch
+      copy={copy}
+      kind={resolution.kind}
+      loginHref={loginHref}
+      token={token}
+    />
   ) : (
     <NewUserBranch
       authCopy={authCopy}
       copy={copy}
       email={resolution.email}
+      kind={resolution.kind}
       locale={locale}
       loginHref={loginHref}
       token={token}
@@ -104,13 +111,16 @@ function ErrorCard({
 
 function ExistingUserBranch({
   copy,
+  kind,
   loginHref,
   token,
 }: {
   copy: TripperInviteAcceptDict;
+  kind: AccessInviteKind;
   loginHref: string;
   token: string | null;
 }) {
+  const c = kind === "SITE_ACCESS" ? { ...copy, ...copy.siteAccess } : copy;
   const [state, setState] = useState<ExistingUserState>("granting");
   const [reason, setReason] = useState<Reason>("invalid");
 
@@ -176,9 +186,9 @@ function ExistingUserBranch({
           className="mx-auto mb-4 h-10 w-10 text-green-600"
         />
         <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
-          {copy.grantedTitle}
+          {c.grantedTitle}
         </h1>
-        <p className="mt-2 text-sm text-neutral-600">{copy.grantedBody}</p>
+        <p className="mt-2 text-sm text-neutral-600">{c.grantedBody}</p>
         <Link className="mt-6 inline-block" href={loginHref}>
           <Button size="md">{copy.loginCta}</Button>
         </Link>
@@ -202,6 +212,7 @@ function NewUserBranch({
   authCopy,
   copy,
   email,
+  kind,
   locale,
   loginHref,
   token,
@@ -209,10 +220,12 @@ function NewUserBranch({
   authCopy: MarketingDictionary["auth"];
   copy: TripperInviteAcceptDict;
   email: string;
+  kind: AccessInviteKind;
   locale: Locale;
   loginHref: string;
   token: string | null;
 }) {
+  const c = kind === "SITE_ACCESS" ? { ...copy, ...copy.siteAccess } : copy;
   const [state, setState] = useState<NewUserState>("form");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -281,7 +294,7 @@ function NewUserBranch({
           {copy.registerSuccessTitle}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
-          {copy.registerSuccessBody}
+          {c.registerSuccessBody}
         </p>
         <Link className="mt-6 inline-block" href={loginHref}>
           <Button size="md">{copy.loginCta}</Button>
@@ -293,12 +306,12 @@ function NewUserBranch({
   return (
     <CardShell>
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
-        {copy.registerEyebrow}
+        {c.registerEyebrow}
       </p>
       <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
-        {copy.registerTitle}
+        {c.registerTitle}
       </h1>
-      <p className="mt-2 text-sm text-neutral-600">{copy.registerSubtitle}</p>
+      <p className="mt-2 text-sm text-neutral-600">{c.registerSubtitle}</p>
 
       <Button
         className="mt-6 h-14 w-full bg-[#f2f3f8] text-base text-neutral-800 hover:bg-[#e9ebf3] border-neutral-200"

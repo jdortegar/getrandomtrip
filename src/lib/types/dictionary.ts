@@ -1895,6 +1895,14 @@ export interface TripperInviteAcceptDict {
   registerSuccessTitle: string;
   registerSuccessBody: string;
   registerErrorGeneric: string;
+  siteAccess: {
+    grantedTitle: string;
+    grantedBody: string;
+    registerEyebrow: string;
+    registerTitle: string;
+    registerSubtitle: string;
+    registerSuccessBody: string;
+  };
 }
 
 export interface TripDetailDict {

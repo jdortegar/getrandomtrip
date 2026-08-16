@@ -1,6 +1,6 @@
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { peekTripperInvite } from "@/lib/auth/tripperInviteTokens";
+import { peekAccessInvite } from "@/lib/auth/accessInviteTokens";
 import { prisma } from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import TripperInviteClient, {
@@ -28,7 +28,7 @@ export default async function TripperInvitePage({
   if (!token) {
     resolution = { ok: false, reason: "missing" };
   } else {
-    const peek = await peekTripperInvite(token);
+    const peek = await peekAccessInvite(token);
     if (!peek.ok) {
       resolution = { ok: false, reason: peek.reason };
     } else {
@@ -40,6 +40,7 @@ export default async function TripperInvitePage({
         ok: true,
         email: peek.email,
         hasAccount: !!existing,
+        kind: peek.kind,
       };
     }
   }

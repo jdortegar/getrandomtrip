@@ -24,10 +24,11 @@ vi.mock("@/lib/email", () => ({
   sendVerificationEmail: vi.fn(),
 }));
 
-vi.mock("@/lib/auth/tripperInviteTokens", () => ({
-  peekTripperInvite: vi.fn(),
-  consumeTripperInvite: vi.fn(),
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  peekAccessInvite: vi.fn(),
+  consumeAccessInvite: vi.fn(),
   resolveOAuthInviteGrant: vi.fn(),
+  ACCESS_INVITE_COOKIE: "grt_tripper_invite",
 }));
 
 vi.mock("@/lib/travelers/travelerInviteTokens", () => ({

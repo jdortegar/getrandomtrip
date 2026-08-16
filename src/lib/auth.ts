@@ -15,10 +15,11 @@ import {
 import { sendWelcomeEmail, sendVerificationEmail } from "@/lib/email";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
 import {
-  peekTripperInvite,
-  consumeTripperInvite,
+  peekAccessInvite,
+  consumeAccessInvite,
   resolveOAuthInviteGrant,
-} from "@/lib/auth/tripperInviteTokens";
+  ACCESS_INVITE_COOKIE,
+} from "@/lib/auth/accessInviteTokens";
 import {
   TRAVELER_INVITE_COOKIE,
   hasLiveTravelerInviteGrant,
@@ -142,11 +143,13 @@ export const authOptions: NextAuthOptions = {
         // Peek (never consume) BEFORE create so the token stays alive until
         // account creation succeeds.
         const cookieStore = await cookies();
-        const inviteToken = cookieStore.get("grt_tripper_invite")?.value;
+        const inviteToken = cookieStore.get(ACCESS_INVITE_COOKIE)?.value;
         const invitePeek = inviteToken
-          ? await peekTripperInvite(inviteToken)
+          ? await peekAccessInvite(inviteToken)
           : null;
-        const grantTripper = resolveOAuthInviteGrant(invitePeek, user.email);
+        const grantAccess = resolveOAuthInviteGrant(invitePeek, user.email);
+        const grantTripper =
+          grantAccess && invitePeek!.ok && invitePeek!.kind === "TRIPPER";
 
         dbUser = await prisma.user.create({
           data: {
@@ -158,14 +161,17 @@ export const authOptions: NextAuthOptions = {
             interests: [],
             dislikes: [],
             emailVerified: new Date(),
-            ...(grantTripper ? { roles: ["TRAVELER", "TRIPPER"] } : {}),
+            ...(grantAccess ? { siteAccessGrantedAt: new Date() } : {}),
+            ...(grantTripper
+              ? { roles: ["TRAVELER", "TRIPPER"], tripperSince: new Date() }
+              : {}),
           },
         });
         console.log("✅ Created new user from Google OAuth:", dbUser.id);
         sendWelcomeEmail(dbUser.id);
 
-        if (grantTripper && inviteToken) {
-          await consumeTripperInvite(inviteToken);
+        if (grantAccess && inviteToken) {
+          await consumeAccessInvite(inviteToken);
           await prisma.waitlistEntry.deleteMany({
             where: { email: user.email },
           });
@@ -227,11 +233,13 @@ export const authOptions: NextAuthOptions = {
             interests: true,
             dislikes: true,
             avatarUrl: true,
+            siteAccessGrantedAt: true,
           },
         });
 
         if (dbUser) {
           session.user.id = dbUser.id;
+          session.user.hasSiteAccess = !!dbUser.siteAccessGrantedAt;
           session.user.name = dbUser.name;
           session.user.email = dbUser.email;
           session.user.role = prismaUserRoleToAppRole(

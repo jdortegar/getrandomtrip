@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/auth/tripperInviteTokens", () => ({
-  peekTripperInvite: vi.fn(),
+vi.mock("@/lib/auth/accessInviteTokens", () => ({
+  peekAccessInvite: vi.fn(),
+  ACCESS_INVITE_COOKIE: "grt_tripper_invite",
 }));
 
-import { peekTripperInvite } from "@/lib/auth/tripperInviteTokens";
+import { peekAccessInvite } from "@/lib/auth/accessInviteTokens";
 
 function makePostRequest(body: Record<string, unknown>) {
   return new Request("http://localhost/api/tripper-invite/oauth-init", {
@@ -20,7 +21,7 @@ describe("POST /api/tripper-invite/oauth-init", () => {
   });
 
   it("returns 400 when the token doesn't peek ok, and sets no cookie", async () => {
-    (peekTripperInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (peekAccessInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: false,
       reason: "invalid",
     });
@@ -32,10 +33,11 @@ describe("POST /api/tripper-invite/oauth-init", () => {
     expect(res.headers.get("set-cookie")).toBeNull();
   });
 
-  it("sets a short-lived HttpOnly grt_tripper_invite cookie and returns ok for a valid token", async () => {
-    (peekTripperInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
+  it("sets a short-lived HttpOnly grt_tripper_invite cookie (via ACCESS_INVITE_COOKIE) and returns ok for a valid token", async () => {
+    (peekAccessInvite as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
       email: "bob@example.com",
+      kind: "SITE_ACCESS",
     });
 
     const mod = await import("../route");

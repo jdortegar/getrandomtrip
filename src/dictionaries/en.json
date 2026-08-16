@@ -1037,7 +1037,15 @@
     "submitting": "Creating account…",
     "registerSuccessTitle": "Account created!",
     "registerSuccessBody": "We sent you an email to verify your account. Confirm it, then sign in.",
-    "registerErrorGeneric": "We couldn't create your account. Please try again."
+    "registerErrorGeneric": "We couldn't create your account. Please try again.",
+    "siteAccess": {
+      "grantedTitle": "You're in!",
+      "grantedBody": "We activated your site access. Sign in to start exploring Randomtrip.",
+      "registerEyebrow": "You're invited",
+      "registerTitle": "Complete your account",
+      "registerSubtitle": "You've been invited to join Randomtrip. Create your account to get access.",
+      "registerSuccessBody": "We sent you an email to verify your account. Confirm it, then sign in to access the site."
+    }
   },
   "home": {
     "hero": {

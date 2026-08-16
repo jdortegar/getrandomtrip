@@ -8,6 +8,7 @@ declare module "next-auth" {
       createdAt?: string;
       dislikes?: string[];
       email: string;
+      hasSiteAccess?: boolean;
       image?: string | null;
       interests?: string[];
       name: string;

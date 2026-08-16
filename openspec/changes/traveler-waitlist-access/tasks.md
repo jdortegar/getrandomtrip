@@ -48,23 +48,23 @@ Chain strategy: pending
 
 ## Phase 3: Session + OAuth signIn (ADR 4, 5)
 
-- [ ] 3.1 RED: create `src/lib/__tests__/auth.session.test.ts` — asserts `session()` sets `hasSiteAccess: true/false` from `siteAccessGrantedAt`, and `prisma.user.findUnique` is called exactly once. (spec: site-access-gate — Site Access Grant)
-- [ ] 3.2 GREEN: in `src/lib/auth.ts` `session()`, add `siteAccessGrantedAt: true` to the existing `select`; assign `session.user.hasSiteAccess = !!dbUser.siteAccessGrantedAt`. Confirm 3.1 passes.
-- [ ] 3.3 Add `hasSiteAccess?: boolean` to `Session["user"]` in `src/types/next-auth.d.ts` (ADR 10).
-- [ ] 3.4 RED: create `src/lib/__tests__/auth.signIn.test.ts` — OAuth create with `SITE_ACCESS` cookie → stamp, no `TRIPPER` role, token consumed; with `TRIPPER` → role+`tripperSince`+stamp; email mismatch → neither, token not consumed. (spec: tripper — Accept Flow New User; OAuth email mismatch)
-- [ ] 3.5 GREEN: in `src/lib/auth.ts` `signIn()` OAuth-create branch, split `grantAccess`/`grantTripper` per ADR 5, widen the consume/cleanup condition to `grantAccess`, add `tripperSince: new Date()` on the `grantTripper` branch. Repoint imports to `accessInviteTokens`. Confirm 3.4 passes.
+- [x] 3.1 RED: create `src/lib/__tests__/auth.session.test.ts` — asserts `session()` sets `hasSiteAccess: true/false` from `siteAccessGrantedAt`, and `prisma.user.findUnique` is called exactly once. (spec: site-access-gate — Site Access Grant)
+- [x] 3.2 GREEN: in `src/lib/auth.ts` `session()`, add `siteAccessGrantedAt: true` to the existing `select`; assign `session.user.hasSiteAccess = !!dbUser.siteAccessGrantedAt`. Confirm 3.1 passes.
+- [x] 3.3 Add `hasSiteAccess?: boolean` to `Session["user"]` in `src/types/next-auth.d.ts` (ADR 10).
+- [x] 3.4 RED: create `src/lib/__tests__/auth.signIn.test.ts` — OAuth create with `SITE_ACCESS` cookie → stamp, no `TRIPPER` role, token consumed; with `TRIPPER` → role+`tripperSince`+stamp; email mismatch → neither, token not consumed. (spec: tripper — Accept Flow New User; OAuth email mismatch)
+- [x] 3.5 GREEN: in `src/lib/auth.ts` `signIn()` OAuth-create branch, split `grantAccess`/`grantTripper` per ADR 5, widen the consume/cleanup condition to `grantAccess`, add `tripperSince: new Date()` on the `grantTripper` branch. Repoint imports to `accessInviteTokens`. Confirm 3.4 passes.
 
 ## Phase 4: Accept Route + Page + Client + Register Route (ADR 6)
 
-- [ ] 4.1 RED: extend `src/app/api/tripper-invite/accept/__tests__/route.test.ts` — asserts `grantAccessAndCleanup` is called with `result.kind`. (spec: tripper — Accept Flow Existing User, all 3 scenarios)
-- [ ] 4.2 GREEN: in `src/app/api/tripper-invite/accept/route.ts`, call `consumeAccessInvite` and pass `result.kind` into `grantAccessAndCleanup`. Confirm 4.1 passes.
-- [ ] 4.3 Modify `src/app/[locale]/tripper-invite/page.tsx`: use `peekAccessInvite`; pass `kind` into `resolution`.
-- [ ] 4.4 RED: extend `src/app/api/tripper-invite/oauth-init/__tests__/route.test.ts` for `peekAccessInvite` rename and `ACCESS_INVITE_COOKIE` const usage.
-- [ ] 4.5 GREEN: modify `src/app/api/tripper-invite/oauth-init/route.ts` accordingly. Confirm 4.4 passes.
-- [ ] 4.6 Add `siteAccess` override object to `TripperInviteAcceptDict` in `src/lib/types/dictionary.ts` (ADR 6/11): `grantedTitle`, `grantedBody`, `registerEyebrow`, `registerTitle`, `registerSubtitle`, `registerSuccessBody`.
-- [ ] 4.7 Modify `src/components/auth/TripperInviteClient.tsx`: `TripperInviteResolution.ok` gains `kind`; one-line `const c = kind === "SITE_ACCESS" ? { ...copy, ...copy.siteAccess } : copy;` per branch.
-- [ ] 4.8 RED: extend `src/app/api/auth/register/__tests__/route.test.ts` — register consumes+cleans up on `grantAccess` (not only `grantTripper`); `SITE_ACCESS` token → `roles: [TRAVELER]`, stamp set, invite consumed.
-- [ ] 4.9 GREEN: in `src/app/api/auth/register/route.ts`, use `peekAccessInvite`/`consumeAccessInvite`; split `grantAccess`/`grantTripper`; stamp `siteAccessGrantedAt`; gate consume+waitlist cleanup on `grantAccess`. Confirm 4.8 passes.
+- [x] 4.1 RED: extend `src/app/api/tripper-invite/accept/__tests__/route.test.ts` — asserts `grantAccessAndCleanup` is called with `result.kind`. (spec: tripper — Accept Flow Existing User, all 3 scenarios)
+- [x] 4.2 GREEN: in `src/app/api/tripper-invite/accept/route.ts`, call `consumeAccessInvite` and pass `result.kind` into `grantAccessAndCleanup`. Confirm 4.1 passes.
+- [x] 4.3 Modify `src/app/[locale]/tripper-invite/page.tsx`: use `peekAccessInvite`; pass `kind` into `resolution`.
+- [x] 4.4 RED: extend `src/app/api/tripper-invite/oauth-init/__tests__/route.test.ts` for `peekAccessInvite` rename and `ACCESS_INVITE_COOKIE` const usage.
+- [x] 4.5 GREEN: modify `src/app/api/tripper-invite/oauth-init/route.ts` accordingly. Confirm 4.4 passes.
+- [x] 4.6 Add `siteAccess` override object to `TripperInviteAcceptDict` in `src/lib/types/dictionary.ts` (ADR 6/11): `grantedTitle`, `grantedBody`, `registerEyebrow`, `registerTitle`, `registerSubtitle`, `registerSuccessBody`.
+- [x] 4.7 Modify `src/components/auth/TripperInviteClient.tsx`: `TripperInviteResolution.ok` gains `kind`; one-line `const c = kind === "SITE_ACCESS" ? { ...copy, ...copy.siteAccess } : copy;` per branch.
+- [x] 4.8 RED: extend `src/app/api/auth/register/__tests__/route.test.ts` — register consumes+cleans up on `grantAccess` (not only `grantTripper`); `SITE_ACCESS` token → `roles: [TRAVELER]`, stamp set, invite consumed.
+- [x] 4.9 GREEN: in `src/app/api/auth/register/route.ts`, use `peekAccessInvite`/`consumeAccessInvite`; split `grantAccess`/`grantTripper`; stamp `siteAccessGrantedAt`; gate consume+waitlist cleanup on `grantAccess`. Confirm 4.8 passes.
 
 ## Phase 5: Email Template + Sender (ADR 6 gap)
 
