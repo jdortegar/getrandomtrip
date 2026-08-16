@@ -36,18 +36,19 @@ model User {
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
 
   // Tripper profile fields
-  tripperSince       DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after
-  isActive           Boolean   @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
-  nickname           String? // Public display name shown to clients instead of the legal name, if set
-  bio                String? // Tripper biography/description
-  heroImage          String? // Hero banner image
-  heroImagePositionX Float? // Hero image horizontal focal point (0–100, null = 50)
-  heroImagePositionY Float? // Hero image vertical focal point (0–100, null = 50)
-  location           String? // Tripper location
-  motto              String? // Inspirational quote for testimonial banner
-  specialization     String? // e.g. "Tripper especializada en aventuras acuáticas"
-  tierLevel          String? // Tripper tier level
-  destinations       String[]  @default([]) // Countries/cities they specialize in
+  tripperSince        DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after
+  siteAccessGrantedAt DateTime? // Set once, the moment the gate is unlocked for this account (any AccessInvite kind, or a companion claim) — first-grant-wins, never overwritten or cleared
+  isActive            Boolean   @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
+  nickname            String? // Public display name shown to clients instead of the legal name, if set
+  bio                 String? // Tripper biography/description
+  heroImage           String? // Hero banner image
+  heroImagePositionX  Float? // Hero image horizontal focal point (0–100, null = 50)
+  heroImagePositionY  Float? // Hero image vertical focal point (0–100, null = 50)
+  location            String? // Tripper location
+  motto               String? // Inspirational quote for testimonial banner
+  specialization      String? // e.g. "Tripper especializada en aventuras acuáticas"
+  tierLevel           String? // Tripper tier level
+  destinations        String[]  @default([]) // Countries/cities they specialize in
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -717,16 +718,22 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-model TripperInvite {
-  id         String    @id @default(cuid())
+enum AccessInviteKind {
+  TRIPPER
+  SITE_ACCESS
+}
+
+model AccessInvite {
+  id         String           @id @default(cuid())
   email      String // NO FK — resolved by email at accept-time; invitee may have no User yet
-  tokenHash  String    @unique // SHA-256 hex of the plaintext; consumption + peek lookup key
+  tokenHash  String           @unique // SHA-256 hex of the plaintext; consumption + peek lookup key
   expiresAt  DateTime
   consumedAt DateTime? // null = still pending (single-use)
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime         @default(now())
+  kind       AccessInviteKind @default(TRIPPER) // TRIPPER = grants role + access; SITE_ACCESS = grants access only
 
   @@index([email])
-  @@map("tripper_invites")
+  @@map("access_invites")
 }
 
 model XsedNotificationSignup {
