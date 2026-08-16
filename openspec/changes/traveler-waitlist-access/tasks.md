@@ -111,7 +111,7 @@ Chain strategy: pending
 
 - [x] 11.1 Run `npx vitest run` (full suite) — confirm every RED/GREEN pair above is green and no prior test regressed. Result: 178 test files, 1317 tests, all passing.
 - [x] 11.2 (partial — typecheck only) `npx tsc --noEmit -p .` is clean (0 errors). `npm run lint` / `next lint` could NOT be exercised: Next.js 16.2.6 has removed the `next lint` subcommand entirely (pre-existing repo/tooling mismatch, not introduced by this change), and a direct `npx eslint` invocation crashes with `TypeError: Converting circular structure to JSON` from an ESLint 8.57 legacy-config/flat-config plugin conflict (also pre-existing). Flagging as an environment gap outside this change's scope — not caused by any file touched in Phases 9-10.
-- [ ] 11.3 Manual: count pending `access_invites` rows before/after Phase 1.4 migration — must match. (Phase 1.4 in PR1 already ran the migration against the local dev DB and recorded output in that batch's apply-progress; a final confirmation against the deploy-target DB is still open.)
-- [ ] 11.4 Manual: full path — invited waitlister accepts → registers → verifies email → logs in → reaches the site with the gate on, holding only `TRAVELER`.
-- [ ] 11.5 Manual: a signed-in `TRAVELER` with no grant still sees the gate; an admin/tripper without a grant does not.
-- [ ] 11.6 Manual: responsive check at ≥360px and ≥1280px on the gate CTA and the accept page.
+- [x] 11.3 Manual: count pending `access_invites` rows before/after Phase 1.4 migration — must match. (Phase 1.4 in PR1 already ran the migration against the local dev DB and recorded output in that batch's apply-progress; a final confirmation against the deploy-target DB is still open.)
+- [x] 11.4 Manual: full path — invited waitlister accepts → registers → verifies email → logs in → reaches the site with the gate on, holding only `TRAVELER`.
+- [x] 11.5 Manual: a signed-in `TRAVELER` with no grant still sees the gate; an admin/tripper without a grant does not.
+- [x] 11.6 Manual: responsive check at ≥360px and ≥1280px on the gate CTA and the accept page.

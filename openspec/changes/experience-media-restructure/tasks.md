@@ -79,6 +79,6 @@ Chain strategy: stacked-to-main
 
 - [x] 7.1 Run `npm run typecheck` — must pass with 0 errors.
 - [x] 7.2 Run `npm run lint` — must pass; confirm no raw `<img>` tags introduced, no `highlights`/`galleryImages` refs survive.
-- [ ] 7.3 Manual QA: open the experience wizard — verify hero upload in About step, blog-post checkbox in About step, tags block in Activities step, per-activity image upload, per-day image upload in Itinerary step.
-- [ ] 7.4 Manual QA: create a draft, upload a per-activity image (blob stage), save/reload — confirm blob is resolved to a persisted URL after `flushPendingBlobs`.
-- [ ] 7.5 Manual QA: open `TripperInspirationGallery` for an experience — confirm first 3 activity names appear as highlights; confirm no crash when fewer than 3 activities exist.
+- [x] 7.3 Manual QA: open the experience wizard — verify hero upload in About step, blog-post checkbox in About step, tags block in Activities step, per-activity image upload, per-day image upload in Itinerary step.
+- [x] 7.4 Manual QA: create a draft, upload a per-activity image (blob stage), save/reload — confirm blob is resolved to a persisted URL after `flushPendingBlobs`.
+- [x] 7.5 Manual QA: open `TripperInspirationGallery` for an experience — confirm first 3 activity names appear as highlights; confirm no crash when fewer than 3 activities exist.

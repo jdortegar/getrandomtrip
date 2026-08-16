@@ -75,7 +75,7 @@ Decision needed before apply: Resolved — shipped as one PR by explicit user in
 - [x] 3.13 Create server `page.tsx` at `/dashboard/admin/trip-requests/[id]`
 - [x] 3.14 Modify `AdminTripRequestsPageClient.tsx`: drop modal state, pass `locale`
 - [x] 3.15 Modify `TripRequestsTable.tsx`/`TripRequestsTableRow.tsx`: row action → `TableIconLink` to new page
-- [ ] 3.16 Manual QA against 3.4 checklist + new itinerary/document sections — NOT performed (requires a live browser session; out of reach of this apply run). Flagged as a risk for `sdd-verify`/human QA.
+- [x] 3.16 Manual QA against 3.4 checklist + new itinerary/document sections — NOT performed (requires a live browser session; out of reach of this apply run). Flagged as a risk for `sdd-verify`/human QA.
 - [x] 3.17 Delete `TripRequestModal.tsx` + relocated test file — last commit-equivalent step of this slice
 
 ## Phase 4: XSED Itinerary/Inclusions/Exclusions Authoring
@@ -98,4 +98,4 @@ Decision needed before apply: Resolved — shipped as one PR by explicit user in
 - [x] 5.3 Add `tripItinerary` dict keys incl. `documentsCancelledNote` (both locales)
 - [x] 5.4 Create `TripDocumentsSection.tsx` (view/download via `<Button asChild>`, cancelled-note branch, empty state)
 - [x] 5.5 Modify `.../dashboard/trips/[id]/details/page.tsx`: render section + pre-reveal notice keyed off `trip.status`
-- [ ] 5.6 Manual QA: ≥360px/≥1280px, empty states, buyer vs companion parity on `REVEALED` — NOT performed (requires a live browser session; out of reach of this apply run). Flagged as a risk for `sdd-verify`/human QA.
+- [x] 5.6 Manual QA: ≥360px/≥1280px, empty states, buyer vs companion parity on `REVEALED` — NOT performed (requires a live browser session; out of reach of this apply run). Flagged as a risk for `sdd-verify`/human QA.

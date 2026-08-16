@@ -82,4 +82,4 @@ Chain strategy: pending
 
 - [x] D.1 Full `npm run test` (all new + existing suites) and `npm run typecheck` pass.
 - [x] D.2 Confirm `git diff prisma/schema.prisma` is empty — no migration.
-- [ ] D.3 Manual QA: all 3 roles (traveler/tripper/admin) — filter, paginate, select, bulk-delete, mark-all-read beyond page 1, unread dot updates live.
+- [x] D.3 Manual QA: all 3 roles (traveler/tripper/admin) — filter, paginate, select, bulk-delete, mark-all-read beyond page 1, unread dot updates live.
