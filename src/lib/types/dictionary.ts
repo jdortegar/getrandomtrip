@@ -1729,6 +1729,11 @@ export interface TripItineraryDict {
     /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
     line: string;
   };
+  /** Scratch-to-reveal gate shown once per trip over the hero (TripScratchReveal). */
+  scratch: {
+    title: string;
+    subtitle: string;
+  };
 }
 
 export interface AdminTripFulfillmentDict {
@@ -3044,6 +3049,21 @@ export interface MarketingDictionary {
     };
     comingSoon: string;
     comingSoonDescription: string;
+    /** Self-service account deactivation, in the Security tab. Soft-delete:
+     * no data is destroyed, logging back in restores the account. */
+    dangerZone: {
+      title: string;
+      hint: string;
+      deleteButton: string;
+      confirmTitle: string;
+      cancel: string;
+      confirming: string;
+      error: string;
+      blockedTitle: string;
+      blockedActiveTrips: string;
+      blockedOwnedExperiences: string;
+      blockedAdmin: string;
+    };
     header: {
       badgeActiveTraveler: string;
       badgeAdmin: string;

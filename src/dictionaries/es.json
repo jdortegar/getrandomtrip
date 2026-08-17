@@ -3161,29 +3161,32 @@
       "eyebrow": "Equipo multidisciplinario",
       "items": [
         {
-          "bio": "Diseña la visión de Randomtrip: convertir la sorpresa en una experiencia confiable, operable y con alma.",
+          "bio": "Operador de hospitalidad de lujo con más de 17 años en apertura de resorts, operaciones y experiencia del huésped.",
           "img": "/images/about-us-santiago.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/santiagosng/",
           "name": "Santiago Senega",
-          "role": "Founder & CEO"
+          "role": "Founder & CEO",
+          "tagline": "Construye Randomtrip desde la realidad del servicio, no desde la teoría de viajes."
         },
         {
-          "bio": "Construye los sistemas que hacen posible escalar la serendipia sin perder claridad, velocidad ni experiencia premium.",
+          "bio": "Ingeniero full-stack senior con amplia experiencia en React, Node, GraphQL, DevOps y productos de IA.",
           "img": "/images/about-us-david.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/jdortegar/",
           "name": "David Ortega",
-          "role": "Co-Founder & CTO"
+          "role": "Co-Founder & CTO",
+          "tagline": "Conecta el rendimiento del frontend, la lógica del backend y flujos impulsados por IA."
         },
         {
-          "bio": "Da forma visual al universo Randomtrip, cuidando que cada interacción se sienta clara, humana y memorable.",
+          "bio": "Con más de 10 años en sistemas creativos, productos digitales, campañas y ejecución de marca. Se asegura de que cada interacción se sienta clara y memorable.",
           "img": "/images/about-us-carla.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/carlacvazquez/",
           "name": "Carla C. J Vázquez",
-          "role": "Head UX / UI"
+          "role": "Head UX / UI",
+          "tagline": "Vela por la consistencia visual, las decisiones de UX y la usabilidad del producto."
         }
       ],
       "sectionTitle": "Quiénes somos",
-      "subtitle": "Somos un equipo de producto, tecnología, operaciones, diseño y curaduría con categoría de viaje: Asombro Controlado. No somos una agencia tradicional ni una OTA. Somos un managed marketplace de experiencias sorpresa, donde cada ruta combina sensibilidad humana, tecnología operativa y conocimiento local. La promesa es simple: el destino puede sorprenderte; la experiencia no debería preocuparte."
+      "subtitle": "Somos un equipo que mezcla creatividad, logística y obsesión por el detalle para crear viajes que no sabías que necesitabas."
     },
     "faq": {
       "description": "Todo lo que necesitas saber antes de dar el salto.",
@@ -3386,6 +3389,19 @@
     },
     "comingSoon": "Próximamente",
     "comingSoonDescription": "Esta sección estará disponible próximamente.",
+    "dangerZone": {
+      "title": "Eliminar cuenta",
+      "hint": "Desactiva tu cuenta y cerrás sesión. Iniciá sesión de nuevo dentro de los próximos 30 días para recuperarla con todos tus datos intactos — pasado ese plazo, tu cuenta se elimina de forma permanente.",
+      "deleteButton": "Eliminar cuenta",
+      "confirmTitle": "¿Seguro que querés eliminar tu cuenta?",
+      "cancel": "Cancelar",
+      "confirming": "Eliminando...",
+      "error": "No pudimos eliminar tu cuenta. Intentá de nuevo.",
+      "blockedTitle": "Todavía no podés eliminar tu cuenta.",
+      "blockedActiveTrips": "Tenés viajes activos — esperá a que finalicen o cancelalos primero.",
+      "blockedOwnedExperiences": "Tenés experiencias publicadas — eliminalas o transferilas primero.",
+      "blockedAdmin": "Las cuentas de administrador no se pueden eliminar desde acá."
+    },
     "tripperSections": {
       "publicProfileDescription": "Tu perfil público es lo que ven los clientes. Mantenerlo actualizado mejora tu visibilidad.",
       "publicProfileCta": "Ver y editar perfil público",
@@ -3896,7 +3912,7 @@
       "newPost": "Nuevo Post",
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
-      "settings": "Mi Perfil",
+      "settings": "Configuración",
       "settingsSub": "Gestiona tu perfil",
       "dashboard": "Mi Dashboard",
       "notifications": "Notificaciones"
@@ -4009,7 +4025,7 @@
       "trips": "Mis viajes",
       "reviews": "Mis reseñas",
       "notifications": "Notificaciones",
-      "settings": "Mi Perfil"
+      "settings": "Configuración"
     },
     "pageHeadings": {
       "dashboard": {
@@ -4877,6 +4893,10 @@
     },
     "footer": {
       "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
+    },
+    "scratch": {
+      "title": "Rascá para descubrir",
+      "subtitle": "Deslizá el dedo sobre la tarjeta"
     }
   },
   "tripReveal": {

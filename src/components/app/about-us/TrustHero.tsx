@@ -32,7 +32,7 @@ interface TrustHeroProps {
 
 export function TrustHero({ content, locale }: TrustHeroProps) {
   return (
-    <section className="relative min-h-[800px] w-full overflow-hidden md:min-h-screen">
+    <section className="relative min-h-[60vh] w-full overflow-hidden">
       <SafeImage
         alt=""
         aria-hidden="true"
@@ -42,7 +42,7 @@ export function TrustHero({ content, locale }: TrustHeroProps) {
         src={content.backgroundImage}
       />
 
-      <div className="relative z-10 flex h-full min-h-[800px] flex-col justify-between px-6 py-12 sm:px-12 md:px-16 md:py-20">
+      <div className="relative z-10 flex h-full min-h-[60vh] flex-col justify-between px-6 py-12 sm:px-12 md:px-16 md:py-20">
         <div className="max-w-3xl">
           <h2 className="text-center md:text-left font-barlow-condensed text-[56px] font-bold uppercase leading-none tracking-tight text-white sm:text-[64px]">
             {content.headline}
@@ -86,7 +86,7 @@ export function TrustHero({ content, locale }: TrustHeroProps) {
                     width={24}
                   />
 
-                  <p className="font-barlow text-[10px] leading-relaxed text-white">
+                  <p className="font-barlow text-sm leading-relaxed text-white">
                     <span className="font-bold">{item.title}: </span>
                     <span className="font-normal text-white/85">
                       {item.description}

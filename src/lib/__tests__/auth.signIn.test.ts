@@ -7,7 +7,7 @@ vi.mock("next/headers", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    user: { findUnique: vi.fn(), create: vi.fn() },
+    user: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
     waitlistEntry: { deleteMany: vi.fn() },
   },
 }));
@@ -175,5 +175,48 @@ describe("signIn() callback — OAuth create branch grantAccess/grantTripper spl
     expect(createArgs.data.siteAccessGrantedAt).toBeUndefined();
     expect(consumeAccessInvite).not.toHaveBeenCalled();
     expect(prisma.waitlistEntry.deleteMany).not.toHaveBeenCalled();
+  });
+});
+
+describe("signIn() callback — reactivates a self-deactivated account on next sign-in", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("existing user with deactivatedAt set: clears deactivatedAt and restores isActive", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-4",
+      email: "returning@example.com",
+      deactivatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    });
+
+    const signIn = await getSignInCallback();
+    const result = await signIn({
+      user: { email: "returning@example.com", name: "Returning", image: null },
+      account: { provider: "credentials" },
+    } as unknown as Parameters<typeof signIn>[0]);
+
+    expect(result).toBe(true);
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      data: { deactivatedAt: null, isActive: true },
+      where: { id: "user-4" },
+    });
+  });
+
+  it("existing user without deactivatedAt: does not call update", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-5",
+      email: "active@example.com",
+      deactivatedAt: null,
+    });
+
+    const signIn = await getSignInCallback();
+    const result = await signIn({
+      user: { email: "active@example.com", name: "Active", image: null },
+      account: { provider: "credentials" },
+    } as unknown as Parameters<typeof signIn>[0]);
+
+    expect(result).toBe(true);
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
 });

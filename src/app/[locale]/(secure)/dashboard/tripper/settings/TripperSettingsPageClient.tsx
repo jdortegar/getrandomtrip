@@ -72,6 +72,11 @@ interface TripperSettingsPageClientProps {
   initialExtras: TripperSessionExtras | null;
   initialStats: TripperSettingsStats;
   initialTravelerProfile: UserProfileMe | null;
+  /** Which tab opens first. Defaults to "tripper" (the tripper settings
+   * route); the traveler settings route passes "traveler" so a user who is
+   * also a tripper lands on their traveler fields first, with the tripper
+   * tab one click away. */
+  initialViewMode?: TripperProfileViewMode;
 }
 
 export default function TripperSettingsPageClient({
@@ -80,12 +85,13 @@ export default function TripperSettingsPageClient({
   initialExtras,
   initialStats,
   initialTravelerProfile,
+  initialViewMode = "tripper",
 }: TripperSettingsPageClientProps) {
   const dict = initialDict;
 
   const { data: session, update: updateSession } = useSession();
   const { user } = useUserStore();
-  const [viewMode, setViewMode] = useState<TripperProfileViewMode>("tripper");
+  const [viewMode, setViewMode] = useState<TripperProfileViewMode>(initialViewMode);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);

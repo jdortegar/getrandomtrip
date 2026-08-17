@@ -3161,29 +3161,32 @@
       "eyebrow": "Multidisciplinary team",
       "items": [
         {
-          "bio": "Designs the vision of Randomtrip: turning the surprise into a reliable, operable experience with soul.",
+          "bio": "Luxury hospitality operator with 17+ years across resort openings, operations and guest experience.",
           "img": "/images/about-us-santiago.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/santiagosng/",
           "name": "Santiago Senega",
-          "role": "Founder & CEO"
+          "role": "Founder & CEO",
+          "tagline": "Builds Randomtrip from service reality, not travel theory."
         },
         {
-          "bio": "Builds the systems that make it possible to scale serendipity without losing clarity, speed, or premium experience.",
+          "bio": "Senior full-stack engineer with deep React, Node, GraphQL, DevOps and AI product experience.",
           "img": "/images/about-us-david.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/jdortegar/",
           "name": "David Ortega",
-          "role": "Co-Founder & CTO"
+          "role": "Co-Founder & CTO",
+          "tagline": "Bridges frontend performance, backend logic and AI-driven workflows."
         },
         {
-          "bio": "Shapes the visual universe of Randomtrip, making sure every interaction feels clear, human, and memorable.",
+          "bio": "With 10+ years across creative systems, digital products, campaigns and brand execution. Ensuring that every interaction feels clear and memorable.",
           "img": "/images/about-us-carla.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/carlacvazquez/",
           "name": "Carla C. J Vázquez",
-          "role": "Head UX / UI"
+          "role": "Head UX / UI",
+          "tagline": "Owns visual consistency, UX decisions and product usability."
         }
       ],
       "sectionTitle": "Who we are",
-      "subtitle": "We are a team of product, technology, operations, design and curation with a travel category: Controlled Wonder. We are not a traditional agency or OTA. We are a managed marketplace of surprise experiences, where every route combines human sensibility, operational technology, and local knowledge. The promise is simple: the destination can surprise you; the experience should not worry you."
+      "subtitle": "We are a team that blends creativity, logistics and an obsession with detail to create trips you didn't know you needed."
     },
     "faq": {
       "description": "Everything you need to know before taking the leap.",
@@ -3386,6 +3389,19 @@
     },
     "comingSoon": "Coming soon",
     "comingSoonDescription": "This section will be available soon.",
+    "dangerZone": {
+      "title": "Delete account",
+      "hint": "This deactivates your account and signs you out. Log back in within 30 days to restore it with all your data intact — after that, your account is permanently deleted.",
+      "deleteButton": "Delete account",
+      "confirmTitle": "Are you sure you want to delete your account?",
+      "cancel": "Cancel",
+      "confirming": "Deleting...",
+      "error": "We couldn't delete your account. Please try again.",
+      "blockedTitle": "You can't delete your account yet.",
+      "blockedActiveTrips": "You have active trips — wait until they're completed or cancel them first.",
+      "blockedOwnedExperiences": "You have published experiences — remove or transfer them first.",
+      "blockedAdmin": "Admin accounts can't be deleted from here."
+    },
     "tripperSections": {
       "publicProfileDescription": "Your public profile is what clients see when looking for trippers. Keeping it updated improves your visibility.",
       "publicProfileCta": "View and edit public profile",
@@ -3896,7 +3912,7 @@
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
       "newPost": "New Post",
-      "settings": "My Profile",
+      "settings": "Settings",
       "settingsSub": "Manage your profile",
       "dashboard": "My Dashboard",
       "notifications": "Notifications"
@@ -4009,7 +4025,7 @@
       "trips": "My trips",
       "reviews": "My reviews",
       "notifications": "Notifications",
-      "settings": "My Profile"
+      "settings": "Settings"
     },
     "pageHeadings": {
       "dashboard": {
@@ -4877,6 +4893,10 @@
     },
     "footer": {
       "line": "Trip #{{tripId}} · Destination revealed on {{date}}"
+    },
+    "scratch": {
+      "title": "Scratch to reveal",
+      "subtitle": "Drag your finger across the card"
     }
   },
   "tripReveal": {

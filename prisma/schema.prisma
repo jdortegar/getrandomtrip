@@ -39,6 +39,7 @@ model User {
   tripperSince        DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after
   siteAccessGrantedAt DateTime? // Set once, the moment the gate is unlocked for this account (any AccessInvite kind, or a companion claim) — first-grant-wins, never overwritten or cleared
   isActive            Boolean   @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
+  deactivatedAt       DateTime? // Self-service account deactivation (soft-delete) — null means active. Cleared automatically on next successful sign-in, so the account and all its data are preserved.
   nickname            String? // Public display name shown to clients instead of the legal name, if set
   bio                 String? // Tripper biography/description
   heroImage           String? // Hero banner image

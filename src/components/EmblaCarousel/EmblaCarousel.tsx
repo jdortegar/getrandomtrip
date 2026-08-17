@@ -47,6 +47,12 @@ const EmblaCarousel = ({
   wrapperClassName,
 }: EmblaCarouselProps) => {
   const slides = React.Children.toArray(children);
+  // When every slide already fits in view there's nothing to scroll — Embla's
+  // own "center" align only centers the current snap's slide, not the group
+  // as a whole, and its inline transform on this same node fights plain CSS
+  // centering. Skip attaching the ref so Embla never mounts/translates it,
+  // and let flexbox center the row instead.
+  const isStatic = slides.length <= slidesPerView;
   const wheelGestures = useMemo(() => WheelGestures(), []);
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
@@ -127,9 +133,9 @@ const EmblaCarousel = ({
         <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>
       )}
 
-      <div style={maskStyle}>
+      <div style={isStatic ? undefined : maskStyle}>
         <div
-          ref={emblaRef}
+          ref={isStatic ? undefined : emblaRef}
           className={cn(
             "w-full",
             {
@@ -143,7 +149,12 @@ const EmblaCarousel = ({
             wrapperClassName,
           )}
         >
-          <div className="flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start gap-3">
+          <div
+            className={cn(
+              "flex min-w-0 w-full touch-[pan-y_pinch-zoom] items-start gap-3",
+              { "justify-center": isStatic },
+            )}
+          >
             {slides.map((child, index) => (
               <div
                 key={index}
