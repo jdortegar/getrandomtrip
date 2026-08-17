@@ -3161,29 +3161,32 @@
       "eyebrow": "Multidisciplinary team",
       "items": [
         {
-          "bio": "Designs the vision of Randomtrip: turning the surprise into a reliable, operable experience with soul.",
+          "bio": "Luxury hospitality operator with 17+ years across resort openings, operations and guest experience.",
           "img": "/images/about-us-santiago.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/santiagosng/",
           "name": "Santiago Senega",
-          "role": "Founder & CEO"
+          "role": "Founder & CEO",
+          "tagline": "Builds Randomtrip from service reality, not travel theory."
         },
         {
-          "bio": "Builds the systems that make it possible to scale serendipity without losing clarity, speed, or premium experience.",
+          "bio": "Senior full-stack engineer with deep React, Node, GraphQL, DevOps and AI product experience.",
           "img": "/images/about-us-david.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/jdortegar/",
           "name": "David Ortega",
-          "role": "Co-Founder & CTO"
+          "role": "Co-Founder & CTO",
+          "tagline": "Bridges frontend performance, backend logic and AI-driven workflows."
         },
         {
-          "bio": "Shapes the visual universe of Randomtrip, making sure every interaction feels clear, human, and memorable.",
+          "bio": "With 10+ years across creative systems, digital products, campaigns and brand execution. Ensuring that every interaction feels clear and memorable.",
           "img": "/images/about-us-carla.png",
-          "linkedin": "#",
+          "linkedin": "https://www.linkedin.com/in/carlacvazquez/",
           "name": "Carla C. J Vázquez",
-          "role": "Head UX / UI"
+          "role": "Head UX / UI",
+          "tagline": "Owns visual consistency, UX decisions and product usability."
         }
       ],
       "sectionTitle": "Who we are",
-      "subtitle": "We are a team of product, technology, operations, design and curation with a travel category: Controlled Wonder. We are not a traditional agency or OTA. We are a managed marketplace of surprise experiences, where every route combines human sensibility, operational technology, and local knowledge. The promise is simple: the destination can surprise you; the experience should not worry you."
+      "subtitle": "We are a team that blends creativity, logistics and an obsession with detail to create trips you didn't know you needed."
     },
     "faq": {
       "description": "Everything you need to know before taking the leap.",

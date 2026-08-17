@@ -47,7 +47,7 @@ export default async function AboutUsPage(props: LocaleParams) {
   ]);
 
   const trippers = rawTrippers
-    .filter((t) => t.tripperSlug)
+    .filter((t) => t.tripperSlug && t.bio && t.bio.trim().length > 0)
     .map((t) => ({
       id: t.id,
       avatarUrl: t.avatarUrl,

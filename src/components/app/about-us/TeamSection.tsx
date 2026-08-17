@@ -111,23 +111,23 @@ export function TeamSection({ content }: TeamSectionProps) {
 
                   {/* Back face */}
                   <div
-                    className="absolute inset-0 rounded-xl overflow-hidden bg-primary flex flex-col p-4 sm:p-5 lg:p-6 text-left"
+                    className="absolute inset-0 rounded-xl overflow-hidden bg-accent-cyan-800 flex flex-col p-6 sm:p-7 lg:p-8 text-left"
                     style={{
                       backfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                     }}
                   >
                     {/* Block 1: Role */}
-                    <p className="text-[11px] font-medium text-white/55 uppercase tracking-widest">
+                    <p className="text-[11px] font-medium text-white/60 uppercase tracking-widest">
                       {roleFormatted}
                     </p>
                     {/* Block 2: Bio */}
-                    <p className="text-sm text-white/85 leading-relaxed mt-4">
+                    <p className="text-sm text-white/90 leading-relaxed mt-6">
                       {member.bio}
                     </p>
                     {/* Block 3: Tagline */}
                     {member.tagline && (
-                      <p className="font-barlow font-bold text-xl lg:text-2xl text-light-blue leading-snug mt-6 lg:mt-auto">
+                      <p className="font-barlow font-bold text-xl lg:text-2xl text-light-blue leading-snug mt-6">
                         {member.tagline}
                       </p>
                     )}
